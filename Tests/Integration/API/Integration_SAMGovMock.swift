@@ -1,190 +1,126 @@
-import ComposableArchitecture
 import Foundation
+@testable import AIKO
 
-// Mock SAM.gov service for testing without API key
-extension SAMGovService {
-    static var mockValue: SAMGovService {
-        SAMGovService(
-            searchEntity: { query in
-                // Mock responses based on query
-                if query.lowercased().contains("lockheed") {
-                    return EntitySearchResult(totalRecords: 1, entities: [
-                        EntitySummary(
-                            ueiSAM: "G2Y7W1E3LJK5",
-                            cageCode: "1F353",
-                            legalBusinessName: "LOCKHEED MARTIN CORPORATION",
-                            registrationStatus: "Active",
-                            registrationDate: Calendar.current.date(byAdding: .year, value: -2, to: Date()),
-                            expirationDate: Calendar.current.date(byAdding: .day, value: 67, to: Date())
-                        ),
-                    ])
-                } else if query.lowercased().contains("booz") {
-                    return EntitySearchResult(totalRecords: 1, entities: [
-                        EntitySummary(
-                            ueiSAM: "R3Q8P8B7VNJ3",
-                            cageCode: "17038",
-                            legalBusinessName: "BOOZ ALLEN HAMILTON INC",
-                            registrationStatus: "Active",
-                            registrationDate: Calendar.current.date(byAdding: .month, value: -7, to: Date()),
-                            expirationDate: Calendar.current.date(byAdding: .day, value: 133, to: Date())
-                        ),
-                    ])
-                } else if query.contains("CAGE:1F353") {
-                    return EntitySearchResult(totalRecords: 1, entities: [
-                        EntitySummary(
-                            ueiSAM: "G2Y7W1E3LJK5",
-                            cageCode: "1F353",
-                            legalBusinessName: "LOCKHEED MARTIN CORPORATION",
-                            registrationStatus: "Active",
-                            registrationDate: Calendar.current.date(byAdding: .year, value: -2, to: Date()),
-                            expirationDate: Calendar.current.date(byAdding: .day, value: 67, to: Date())
-                        ),
-                    ])
-                } else if query.contains("CAGE:17038") {
-                    return EntitySearchResult(totalRecords: 1, entities: [
-                        EntitySummary(
-                            ueiSAM: "R3Q8P8B7VNJ3",
-                            cageCode: "17038",
-                            legalBusinessName: "BOOZ ALLEN HAMILTON INC",
-                            registrationStatus: "Active",
-                            registrationDate: Calendar.current.date(byAdding: .month, value: -7, to: Date()),
-                            expirationDate: Calendar.current.date(byAdding: .day, value: 133, to: Date())
-                        ),
-                    ])
-                } else {
-                    throw SAMGovError.entityNotFound
-                }
-            },
-            getEntityByCAGE: { cage in
-                switch cage {
-                case "1F353":
-                    return EntityDetail(
-                        ueiSAM: "G2Y7W1E3LJK5",
-                        cageCode: "1F353",
-                        legalBusinessName: "LOCKHEED MARTIN CORPORATION",
-                        registrationStatus: "Active",
-                        registrationDate: Calendar.current.date(byAdding: .year, value: -2, to: Date()),
-                        expirationDate: Calendar.current.date(byAdding: .day, value: 67, to: Date()),
-                        cageCodeExpirationDate: Calendar.current.date(byAdding: .day, value: 67, to: Date()),
-                        physicalAddress: SAMGovAddress(
-                            streetAddress: "6801 Rockledge Drive",
-                            city: "Bethesda",
-                            state: "MD",
-                            zipCode: "20817",
-                            country: "USA"
-                        ),
-                        businessTypes: [
-                            BusinessType(code: "2X", description: "For Profit Organization"),
-                            BusinessType(code: "OY", description: "Other Than Small Business"),
-                        ],
-                        naicsCodes: [
-                            NAICSCode(code: "336411", description: "Aircraft Manufacturing", isPrimary: true),
-                            NAICSCode(code: "541330", description: "Engineering Services", isPrimary: false),
-                        ],
-                        pointsOfContact: [],
-                        isSmallBusiness: false,
-                        isVeteranOwned: false,
-                        isServiceDisabledVeteranOwned: false,
-                        isWomanOwned: false,
-                        is8aProgram: false,
-                        isHUBZone: false,
-                        section889Certifications: Section889Status(
-                            doesNotProvideProhibitedTelecom: true,
-                            doesNotUseProhibitedTelecom: true,
-                            certificationDate: Date()
-                        ),
-                        hasActiveExclusions: false,
-                        exclusionURL: nil,
-                        responsibilityInformation: ResponsibilityInfo(
-                            hasDelinquentFederalDebt: false,
-                            hasUnpaidTaxLiability: false,
-                            integrityRecords: []
-                        ),
-                        architectEngineerQualifications: nil,
-                        foreignGovtEntities: []
-                    )
-                case "17038":
-                    return EntityDetail(
-                        ueiSAM: "R3Q8P8B7VNJ3",
-                        cageCode: "17038",
-                        legalBusinessName: "BOOZ ALLEN HAMILTON INC",
-                        registrationStatus: "Active",
-                        registrationDate: Calendar.current.date(byAdding: .month, value: -7, to: Date()),
-                        expirationDate: Calendar.current.date(byAdding: .day, value: 133, to: Date()),
-                        cageCodeExpirationDate: Calendar.current.date(byAdding: .day, value: 133, to: Date()),
-                        physicalAddress: SAMGovAddress(
-                            streetAddress: "8283 Greensboro Drive",
-                            city: "McLean",
-                            state: "VA",
-                            zipCode: "22102",
-                            country: "USA"
-                        ),
-                        businessTypes: [
-                            BusinessType(code: "2X", description: "For Profit Organization"),
-                            BusinessType(code: "OY", description: "Other Than Small Business"),
-                        ],
-                        naicsCodes: [
-                            NAICSCode(code: "541511", description: "Custom Computer Programming Services", isPrimary: true),
-                            NAICSCode(code: "541512", description: "Computer Systems Design Services", isPrimary: false),
-                        ],
-                        pointsOfContact: [],
-                        isSmallBusiness: false,
-                        isVeteranOwned: false,
-                        isServiceDisabledVeteranOwned: false,
-                        isWomanOwned: false,
-                        is8aProgram: false,
-                        isHUBZone: false,
-                        section889Certifications: Section889Status(
-                            doesNotProvideProhibitedTelecom: true,
-                            doesNotUseProhibitedTelecom: true,
-                            certificationDate: Date()
-                        ),
-                        hasActiveExclusions: false,
-                        exclusionURL: nil,
-                        responsibilityInformation: ResponsibilityInfo(
-                            hasDelinquentFederalDebt: false,
-                            hasUnpaidTaxLiability: false,
-                            integrityRecords: []
-                        ),
-                        architectEngineerQualifications: nil,
-                        foreignGovtEntities: []
-                    )
-                default:
-                    throw SAMGovError.entityNotFound
-                }
-            },
-            getEntityByUEI: { uei in
-                switch uei {
-                case "G2Y7W1E3LJK5":
-                    return try await SAMGovService.mockValue.getEntityByCAGE("1F353")
-                case "R3Q8P8B7VNJ3":
-                    return try await SAMGovService.mockValue.getEntityByCAGE("17038")
-                default:
-                    throw SAMGovError.entityNotFound
-                }
-            }
+// Mock SAM.gov API client for testing without API key
+class MockSAMGovAPIClient: SAMGovAPIClientProtocol {
+    
+    func searchEntities(query: String) async throws -> [SAMEntity] {
+        // Mock responses based on query
+        if query.lowercased().contains("lockheed") || query.contains("1F353") {
+            return [createLockheedEntity()]
+        } else if query.lowercased().contains("booz") || query.contains("17038") {
+            return [createBoozAllenEntity()]
+        } else if query.lowercased().contains("error") {
+            throw SAMGovError.apiError("Mock error for testing")
+        } else {
+            return [] // Empty array for no results
+        }
+    }
+    
+    func getEntity(uei: String) async throws -> SAMEntity? {
+        // Search for entity by UEI or CAGE
+        switch uei {
+        case "G2Y7W1E3LJK5", "1F353":
+            return createLockheedEntity()
+        case "R3Q8P8B7VNJ3", "17038":
+            return createBoozAllenEntity()
+        default:
+            return nil
+        }
+    }
+    
+    // MARK: - Helper Methods
+    
+    private func createLockheedEntity() -> SAMEntity {
+        SAMEntity(
+            ueiSAM: "G2Y7W1E3LJK5",
+            cageCode: "1F353",
+            legalBusinessName: "LOCKHEED MARTIN CORPORATION",
+            registrationStatus: "Active",
+            registrationExpirationDate: ISO8601DateFormatter().string(from: Calendar.current.date(byAdding: .day, value: 67, to: Date())!),
+            purposeOfRegistrationCode: "Z2",
+            purposeOfRegistrationDesc: "All Awards",
+            entityStructureCode: "2L",
+            entityStructureDesc: "Corporate Entity (Not Tax Exempt)",
+            entityTypeCode: "F",
+            entityTypeDesc: "Business or Organization",
+            exclusions: [],
+            isSmallBusiness: false
+        )
+    }
+    
+    private func createBoozAllenEntity() -> SAMEntity {
+        SAMEntity(
+            ueiSAM: "R3Q8P8B7VNJ3",
+            cageCode: "17038",
+            legalBusinessName: "BOOZ ALLEN HAMILTON INC",
+            registrationStatus: "Active",
+            registrationExpirationDate: ISO8601DateFormatter().string(from: Calendar.current.date(byAdding: .day, value: 133, to: Date())!),
+            purposeOfRegistrationCode: "Z2",
+            purposeOfRegistrationDesc: "All Awards",
+            entityStructureCode: "2L",
+            entityStructureDesc: "Corporate Entity (Not Tax Exempt)",
+            entityTypeCode: "F",
+            entityTypeDesc: "Business or Organization",
+            exclusions: [],
+            isSmallBusiness: false
         )
     }
 }
 
-// Mock settings manager that returns empty API key
-extension SettingsManager {
-    static var mockValue: SettingsManager {
-        SettingsManager(
-            loadSettings: {
-                SettingsData()
-            },
-            saveSettings: {},
-            resetToDefaults: {},
-            restoreDefaults: {},
-            saveAPIKey: { _ in },
-            loadAPIKey: { "" },
-            validateAPIKey: { _ in true },
-            exportData: { _ in URL(fileURLWithPath: "/tmp/export.json") },
-            importData: { _ in },
-            clearCache: {},
-            performBackup: { _ in URL(fileURLWithPath: "/tmp/backup.json") },
-            restoreBackup: { _, _ in }
+// MARK: - Mock Factory
+
+extension SAMGovRepository {
+    /// Creates a SAMGovRepository with mock API client for testing
+    static func createMock(context: NSManagedObjectContext) -> SAMGovRepository {
+        return SAMGovRepository(
+            context: context,
+            apiClient: MockSAMGovAPIClient()
+        )
+    }
+}
+
+// MARK: - Test Data Factory
+
+struct SAMGovTestData {
+    static let lockheedUEI = "G2Y7W1E3LJK5"
+    static let lockheedCAGE = "1F353"
+    static let lockheedName = "LOCKHEED MARTIN CORPORATION"
+    
+    static let boozAllenUEI = "R3Q8P8B7VNJ3"
+    static let boozAllenCAGE = "17038"
+    static let boozAllenName = "BOOZ ALLEN HAMILTON INC"
+    
+    static func createExclusion(type: String = "Debarment") -> SAMExclusion {
+        SAMExclusion(
+            classificationType: type,
+            exclusionType: "Ineligible (Proceedings Completed)",
+            exclusionProgram: "Reciprocal",
+            excludingAgencyCode: "DOD",
+            excludingAgencyName: "Department of Defense",
+            activeDate: ISO8601DateFormatter().string(from: Date()),
+            terminationDate: nil,
+            recordStatus: "Active",
+            crossReference: nil,
+            samAdditionalComments: nil
+        )
+    }
+    
+    static func createEntityWithExclusions() -> SAMEntity {
+        SAMEntity(
+            ueiSAM: "EXCL123456",
+            cageCode: "99999",
+            legalBusinessName: "EXCLUDED COMPANY INC",
+            registrationStatus: "Active",
+            registrationExpirationDate: ISO8601DateFormatter().string(from: Date()),
+            purposeOfRegistrationCode: "Z2",
+            purposeOfRegistrationDesc: "All Awards",
+            entityStructureCode: "2L",
+            entityStructureDesc: "Corporate Entity (Not Tax Exempt)",
+            entityTypeCode: "F",
+            entityTypeDesc: "Business or Organization",
+            exclusions: [createExclusion()],
+            isSmallBusiness: false
         )
     }
 }

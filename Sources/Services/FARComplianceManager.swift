@@ -30,7 +30,7 @@ public struct FARComplianceManager {
     public var generateComplianceReport: (ComplianceCheckResults) async throws -> Data
 
     // Updates and monitoring
-    public var checkForUpdates: () async throws -> [FARUpdate]
+    public var checkForUpdates: () async throws -> [FARUpdateInfo]
     public var subscribeToClause: (String) async throws -> Void
     public var getChangeHistory: (String) async throws -> [FARChange]
 }
@@ -712,7 +712,7 @@ public struct PossibleExemption {
     public let justificationRequired: Bool
 }
 
-public struct FARUpdate {
+public struct FARUpdateInfo {
     public let clauseNumber: String
     public let changeType: ChangeType
     public let effectiveDate: Date

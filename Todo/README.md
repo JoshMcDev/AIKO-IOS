@@ -1,121 +1,131 @@
-# Todo Folder Structure & Usage Guide
+# AIKO Task Pipeline
 
-This folder contains persistent memory systems for maintaining context and tracking progress across Claude Code sessions.
+> A 7-stage pipeline for tracking task progression from planning to production with multi-agent support
 
-## 📁 Folder Structure
+## Overview
+
+The AIKO project implements a comprehensive task management system that integrates:
+- 6-phase deployment strategy over 14 weeks
+- 7-stage quality pipeline for each task
+- Multi-agent parallel processing capability
+- Task Master AI integration for tracking
+- 95% production-ready standard
+
+## Pipeline Stages
+
+1. **Working Tasks** → Planning, design, and task breakdown
+2. **Working SubTasks** → Detailed subtask and sub-subtask breakdown
+3. **Parallel Tasks** → Multi-agent parallel development
+4. **Completed Tasks** → Code complete, awaiting testing
+5. **Tested Tasks** → All tests passing (0 errors, 0 warnings)
+6. **Verified Tasks** → Quality score ≥ 95/100
+7. **Certified Tasks** → Production-ready certification
+8. **Production Tasks** → Live and operational
+9. **Deployed Tasks** → Beta versions with version tracking
+
+## File Structure
 
 ```
-Todo/
-├── README.md                             # This file (CAPITALS first)
-├── ChatHistory_20250711.md               # Current daily conversation log
-├── Todo_00_CurrentWorking_TodoList.md    # Active task list with Task Master integration
-├── Todo_01_InProgress_FARPart53Implementation.json  # In-progress task tracking
-├── Todo_03_Completed_ProjectCleanup.md   # Completed task archive
-└── ChatHistory/                          # Archived chat history files
-    └── [Older chat history files]
+00_Phased_Deployment_Plan.md  # 6-phase deployment strategy
+01_Current_Phase_Reference.md # Current phase status and commands
+02_Working_Tasks.md           # Current phase tasks in planning
+03_Working_SubTasks.md        # Detailed subtask breakdown
+04_Parallel_Tasks.md          # Multi-agent parallel processing
+05_Completed_Tasks.md         # Code complete tasks
+06_Tested_Tasks.md            # Tasks passing all tests
+07_Verified_Tasks.md          # Tasks meeting quality standards
+08_Certified_Tasks.md         # Production-ready tasks
+09_Production_Tasks.md        # Live operational tasks
+10_Deployed_Tasks.md          # Beta deployments with versions
+AIKO_Task_Management_Protocol.md # Comprehensive protocol guide
 ```
 
-**Note**: File system display may show folders first, but our logical organization lists files before subfolders, with CAPITAL files at the top.
+## Task Master AI Integration
 
-##  File Naming Convention
+All tasks are tracked in Task Master AI:
+- Phase tracking: Tasks #8-13 (Phases 1-6)
+- Implementation tasks: #1-7, #14-15
+- Use `--projectRoot /Users/J/aiko` for all commands
 
-All files follow a consistent naming pattern:
-- **Category prefix** followed by underscore (e.g., Todo_, ChatHistory_)
-- **Number** (if applicable) followed by underscore separator (e.g., Todo_00_, Todo_01_)
-- **Status** followed by underscore and description (e.g., CurrentWorking_TodoList)
-- **Pattern**: `Category_##_Status_Description`
-- **Number meanings**:
-  - `00` = Current/Active working files
-  - `01` = In Progress tasks
-  - `02` = Under Review
-  - `03` = Completed tasks
-  - `99` = Archived files
-
-**Special formats**:
-- ChatHistory files: `ChatHistory_YYYYMMDD.md` (e.g., ChatHistory_20250711.md)
-- Standard files: README.md and CLAUDE.md maintain conventional naming
-
-##  How It Works
-
-### 1. Todo List Management (`Todo_00_CurrentWorking_TodoList.md`)
-- **Purpose**: Maintains current task state across sessions
-- **Format**: Task Master AI integrated with checkboxes
-- **Updates**: Mark ☒ for completed, ☐ for pending
-- **Integration**: Synced with `.taskmaster/tasks/tasks.json`
-- **Usage**: 
-  - Updated in real-time as tasks complete
-  - Referenced on session start for context
-  - Shows all main tasks and subtasks with dependencies
-
-### 2. Chat History (`ChatHistory_YYYYMMDD.md`)
-- **Purpose**: Preserves conversation context
-- **Format**: Verbatim conversation log with timestamps
-- **Location**: Current day's file stays in Todo folder for quick reference
-- **Archival**: Previous days' files move to ChatHistory/ subfolder
-- **Naming**: Files named with ChatHistory_ prefix and date (e.g., `ChatHistory_20250711.md`)
-- **Updates**: 
-  - Every 30 minutes automatically
-  - On any memory save event
-  - When tasks are completed
-- **Special Protocol**: 
-  - "Goodnight" command adds daily summary at file top
-  - Summary includes work completed and next steps
-
-### 3. Recovery Protocol
-
-When starting a new session or after context reset:
-```bash
-1. Check ./Todo/Todo_00_CurrentWorking_TodoList.md
-2. Load ./Todo/ChatHistory_YYYYMMDD.md (today's date)
-3. Review any "Goodnight" summaries
-4. Continue from last completed subtask
-```
-
-##  Benefits
-
-1. **Context Persistence**: Never lose progress between sessions
-2. **Task Continuity**: Always know what's next
-3. **History Tracking**: Complete audit trail of conversations
-4. **Recovery**: Quick restoration after crashes or resets
-5. **Collaboration**: Clear handoff points for team work
-
-##  Best Practices
-
-1. **Update Regularly**: Don't wait for memory events
-2. **Use Checkboxes**: Visual progress tracking
-3. **Write Summaries**: Use "Goodnight" for clean handoffs
-4. **Review on Start**: Always check these files when beginning work
-5. **Keep Current**: Archive old completed tasks to maintain clarity
-
-##  Integration Points
-
-- **Task Master AI**: Tasks synced with `.taskmaster/tasks/tasks.json`
-- **Global CLAUDE.md**: System configuration at `/Users/J/.claude/CLAUDE.md`
-- **Project CLAUDE.md**: Project-specific settings at `/Users/J/aiko/CLAUDE.md`
-- **Memory Graph**: Persistent_Memory_System entity tracks state
-
-##  Todo File Template Structure
-
-When creating new Todo files, use this structure:
+## Task Format
 
 ```markdown
-# Current Working Tasks
-
-## Active File: [File Name]
-**Status**: In Progress
-**Started**: [Date]
-
-### Tasks:
-- [ ] Task 1
-- [ ] Task 2
-- [ ] Task 3
-
-### Notes:
-- [Add relevant notes here]
+### Task ID: Task Name
+- [ ] Subtask 1
+- [ ] Subtask 2
+**Status**: Not Started/In Progress/Complete
+**Complexity**: Low/Medium/High (X/10)
+**Dependencies**: Task IDs
+**See**: Reference to detailed subtasks
 ```
+
+## Workflow
+
+1. **Phase Planning**: Tasks aligned to current phase (Phase 1: Weeks 1-2)
+2. **Task Breakdown**: Complex tasks get subtasks and sub-subtasks
+3. **Parallel Distribution**: Ready tasks move to `03_Parallel_Tasks.md`
+4. **Quality Gates**: Each task must pass ALL 7 stages
+5. **Task Master Sync**: Update status at each stage transition
+
+## Multi-Agent Processing
+
+Tasks in `03_Parallel_Tasks.md` can be distributed:
+- Subtasks assigned to different agents
+- Independent parallel execution
+- Sync points at task completion
+- Integration testing required
+
+## Success Criteria by Stage
+
+- **Working → SubTasks**: Task breakdown complete, sub-subtasks defined
+- **SubTasks → Parallel**: Ready for multi-agent distribution
+- **Parallel → Completed**: All subtasks complete, integrated
+- **Completed → Tested**: 0 errors, 0 warnings
+- **Tested → Verified**: Score ≥ 95/100
+- **Verified → Certified**: Security passed, docs complete
+- **Certified → Production**: Deployed and operational
+- **Production → Deployed**: Beta version released with tracking
+
+## Quality Gates
+
+| Stage | Minimum Requirement | Target |
+|-------|-------------------|---------|
+| Tested | 0 errors, 0 warnings | 100% pass |
+| Verified | 85/100 score | 95/100 score |
+| Certified | 95/100 score | 98/100 score |
+| Production | Simulation pass | Zero defects |
+
+## Quick Commands
+
+```bash
+# Check current phase
+/task-master-ai.get_task --projectRoot /Users/J/aiko --id 8 --withSubtasks
+
+# Start a task
+/task-master-ai.set_task_status --projectRoot /Users/J/aiko --id 1 --status in-progress
+
+# View all tasks
+/task-master-ai.get_tasks --projectRoot /Users/J/aiko --withSubtasks
+```
+
+## Tracking Metrics
+
+- **Velocity**: Tasks moving through pipeline per week
+- **Quality**: Average verification scores
+- **Cycle Time**: Days from Working to Production
+- **Defect Rate**: Issues found in each stage
+- **Rework Rate**: Tasks moving backward
+
+## Best Practices
+
+1. **Never Skip Stages**: Each stage has important quality checks
+2. **Document Everything**: Track decisions and changes
+3. **Maintain Standards**: Don't lower scores to push through
+4. **Regular Reviews**: Daily sync for parallel tasks
+5. **Continuous Improvement**: Update based on learnings
 
 ---
 
-**Project Owner**: Mr. Joshua  
-**Last Updated**: 2025-07-11  
-**System Version**: v3.1
+**Protocol Version**: 1.0  
+**Last Updated**: January 2025  
+**Current Phase**: 1 - Foundation & Core Document Processing

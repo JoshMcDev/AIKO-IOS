@@ -347,6 +347,7 @@ private func workflowOrder(_ documentType: DocumentType) -> Int {
     case .corAppointment: 16
     case .analytics: 17
     case .otherTransactionAgreement: 18
+    case .farUpdates: 19
     }
 }
 

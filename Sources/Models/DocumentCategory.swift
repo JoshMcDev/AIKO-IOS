@@ -8,6 +8,7 @@ public enum DocumentCategory: String, CaseIterable {
     case solicitation = "Solicitation"
     case award = "Award"
     case analytics = "Analytics"
+    case resourcesTools = "Resources and Tools"
 
     public var icon: String {
         switch self {
@@ -18,6 +19,7 @@ public enum DocumentCategory: String, CaseIterable {
         case .solicitation: "envelope"
         case .award: "rosette"
         case .analytics: "chart.bar"
+        case .resourcesTools: "wrench.and.screwdriver"
         }
     }
 
@@ -30,6 +32,7 @@ public enum DocumentCategory: String, CaseIterable {
         case .solicitation: "Request quotes and proposals from vendors"
         case .award: "Contract award and administration"
         case .analytics: "Performance metrics and data analysis"
+        case .resourcesTools: "Resources, tools, and regulation updates"
         }
     }
 
@@ -49,6 +52,8 @@ public enum DocumentCategory: String, CaseIterable {
             .analytics
         case .otherTransactionAgreement:
             .award
+        case .farUpdates:
+            .resourcesTools
         }
     }
 
@@ -72,6 +77,8 @@ public enum DocumentCategory: String, CaseIterable {
             [.contractScaffold, .corAppointment, .otherTransactionAgreement]
         case .analytics:
             [.analytics]
+        case .resourcesTools:
+            [.farUpdates]
         }
     }
 }

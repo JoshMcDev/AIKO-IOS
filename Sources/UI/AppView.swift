@@ -604,6 +604,12 @@ public struct DocumentGenerationView: View {
                     )
                 )
             }
+            .sheet(isPresented: .init(
+                get: { viewStore.execution.showingFARUpdatesView },
+                set: { viewStore.send(.execution(.showFARUpdatesView($0))) }
+            )) {
+                FARUpdatesView()
+            }
         }
     }
 }

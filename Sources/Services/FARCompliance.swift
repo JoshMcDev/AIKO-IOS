@@ -644,6 +644,11 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Include cost sharing percentages if applicable"
             ))
         }
+        
+    case .farUpdates:
+        // FAR Updates don't require specific compliance validation
+        // They are informational documents
+        break
     }
 
     return issues
@@ -727,6 +732,8 @@ private func generateRecommendations(for documentType: DocumentType, issues: [Co
             recommendations.append("Include comprehensive procurement metrics and spend analysis per FAR 7.102")
         case .otherTransactionAgreement:
             recommendations.append("Structure agreement to maximize innovation and non-traditional participation per 10 U.S.C. § 2371b")
+        case .farUpdates:
+            recommendations.append("Review recent FAR/DFAR updates for impact on current contracts")
         }
     }
 

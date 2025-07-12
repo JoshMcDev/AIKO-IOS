@@ -16,6 +16,7 @@ public struct DocumentExecutionFeature {
         public var executionError: String?
         public var showingExecutionView: Bool = false
         public var showingInformationGathering: Bool = false
+        public var showingFARUpdatesView: Bool = false
         public var informationQuestions: [InformationQuestion] = []
         public var currentQuestionIndex: Int = 0
         public var gatheredInformation: [String: String] = [:]
@@ -73,6 +74,7 @@ public struct DocumentExecutionFeature {
         case downloadDocument
         case emailDocument
         case showExecutionView(Bool)
+        case showFARUpdatesView(Bool)
         case reset
     }
 
@@ -85,6 +87,12 @@ public struct DocumentExecutionFeature {
         Reduce { state, action in
             switch action {
             case let .executeCategory(category, documentTypes, dfDocumentTypes):
+                // Special handling for FAR Updates
+                if documentTypes.contains(.farUpdates) {
+                    state.showingFARUpdatesView = true
+                    return .none
+                }
+                
                 state.executingCategory = category
                 state.executingDocumentTypes = documentTypes
                 state.executingDFDocumentTypes = dfDocumentTypes
@@ -98,6 +106,13 @@ public struct DocumentExecutionFeature {
 
                 return .run { [documentTypes = state.executingDocumentTypes,
                                dfDocumentTypes = state.executingDFDocumentTypes] send in
+                        // Special handling for FAR Updates
+                        if documentTypes.contains(.farUpdates) {
+                            // FAR Updates doesn't need information gathering
+                            await send(.informationCheckCompleted(true, []))
+                            return
+                        }
+                        
                         // Simulate checking if we have enough information
                         // In real implementation, this would call the LLM to check
                         try await clock.sleep(for: .seconds(1))
@@ -334,6 +349,10 @@ public struct DocumentExecutionFeature {
                 if !show {
                     return .send(.reset)
                 }
+                return .none
+
+            case let .showFARUpdatesView(show):
+                state.showingFARUpdatesView = show
                 return .none
 
             case .reset:

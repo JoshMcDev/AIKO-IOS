@@ -1,0 +1,1228 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "lastUpdated": "2025-01-12",
+    "description": "FAR/DFAR Clause Database for Automated Contract Generation"
+  },
+  "clauseLogic": {
+    "thresholds": {
+      "microPurchase": 10000,
+      "simplifiedAcquisition": 250000,
+      "costAccountingStandards": 2000000,
+      "truthInNegotiations": 2000000
+    },
+    "contractTypes": [
+      "FIXED_PRICE",
+      "COST_REIMBURSEMENT", 
+      "TIME_AND_MATERIALS",
+      "LABOR_HOUR",
+      "INDEFINITE_DELIVERY"
+    ],
+    "requirementTypes": [
+      "SUPPLIES",
+      "SERVICES",
+      "CONSTRUCTION",
+      "ARCHITECT_ENGINEERING",
+      "INFORMATION_TECHNOLOGY",
+      "RESEARCH_DEVELOPMENT"
+    ]
+  },
+  "clauses": {
+    "52.202-1": {
+      "title": "Definitions",
+      "prescription": "2.201",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 0,
+        "conditions": ["ALWAYS"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.203-3": {
+      "title": "Gratuities",
+      "prescription": "3.202",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 0,
+        "conditions": ["ALWAYS"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.203-5": {
+      "title": "Covenant Against Contingent Fees",
+      "prescription": "3.404",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 150000,
+        "conditions": ["OVER_SAT"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.203-6": {
+      "title": "Restrictions on Subcontractor Sales to the Government",
+      "prescription": "3.503-2",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 150000,
+        "conditions": ["OVER_SAT"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.203-7": {
+      "title": "Anti-Kickback Procedures",
+      "prescription": "3.502-3",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 150000,
+        "conditions": ["OVER_SAT"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.203-12": {
+      "title": "Limitation on Payments to Influence Certain Federal Transactions",
+      "prescription": "3.808(b)",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 150000,
+        "conditions": ["OVER_SAT"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.204-7": {
+      "title": "System for Award Management",
+      "prescription": "4.1105(a)(1)",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 30000,
+        "conditions": ["OVER_MICRO_PURCHASE"]
+      },
+      "provision": true,
+      "clause": false,
+      "fillIns": []
+    },
+    "52.204-10": {
+      "title": "Reporting Executive Compensation and First-Tier Subcontract Awards",
+      "prescription": "4.1403(a)",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 30000,
+        "conditions": ["OVER_MICRO_PURCHASE"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.209-6": {
+      "title": "Protecting the Government's Interest When Subcontracting With Contractors Debarred, Suspended, or Proposed for Debarment",
+      "prescription": "9.409",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 35000,
+        "conditions": ["OVER_35000"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.215-2": {
+      "title": "Audit and Records - Negotiation",
+      "prescription": "15.209(b)",
+      "applicability": {
+        "required": true,
+        "contracts": ["NEGOTIATED"],
+        "threshold": 0,
+        "conditions": ["NEGOTIATED_CONTRACT"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.215-8": {
+      "title": "Order of Precedence - Uniform Contract Format",
+      "prescription": "15.209(h)",
+      "applicability": {
+        "required": true,
+        "contracts": ["NEGOTIATED"],
+        "threshold": 0,
+        "conditions": ["UNIFORM_CONTRACT_FORMAT"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.215-10": {
+      "title": "Price Reduction for Defective Certified Cost or Pricing Data",
+      "prescription": "15.408(b)",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 2000000,
+        "conditions": ["CERTIFIED_COST_PRICING_DATA"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.215-12": {
+      "title": "Subcontractor Certified Cost or Pricing Data",
+      "prescription": "15.408(d)",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 2000000,
+        "conditions": ["CERTIFIED_COST_PRICING_DATA", "SUBCONTRACTS_EXPECTED"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.216-7": {
+      "title": "Allowable Cost and Payment",
+      "prescription": "16.307(a)",
+      "applicability": {
+        "required": true,
+        "contracts": ["COST_REIMBURSEMENT"],
+        "threshold": 0,
+        "conditions": ["COST_REIMBURSEMENT_CONTRACT"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.217-8": {
+      "title": "Option to Extend Services",
+      "prescription": "17.208(f)",
+      "applicability": {
+        "required": false,
+        "contracts": ["SERVICES"],
+        "threshold": 0,
+        "conditions": ["OPTION_TO_EXTEND_SERVICES"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": ["OPTION_PERIOD", "NOTIFICATION_DAYS"]
+    },
+    "52.217-9": {
+      "title": "Option to Extend the Term of the Contract",
+      "prescription": "17.208(g)",
+      "applicability": {
+        "required": false,
+        "contracts": ["ALL"],
+        "threshold": 0,
+        "conditions": ["OPTION_TO_EXTEND_TERM"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": ["OPTION_PERIOD", "NOTIFICATION_DAYS"]
+    },
+    "52.219-8": {
+      "title": "Utilization of Small Business Concerns",
+      "prescription": "19.708(a)",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 150000,
+        "conditions": ["OVER_SAT", "NOT_SET_ASIDE"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.219-9": {
+      "title": "Small Business Subcontracting Plan",
+      "prescription": "19.708(b)",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 750000,
+        "conditions": ["OVER_750000", "NOT_SMALL_BUSINESS", "SUBCONTRACTING_OPPORTUNITIES"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": ["SUBCONTRACTING_GOALS"]
+    },
+    "52.219-28": {
+      "title": "Post-Award Small Business Program Representation",
+      "prescription": "19.708(a)",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 150000,
+        "conditions": ["OVER_SAT"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.222-3": {
+      "title": "Convict Labor",
+      "prescription": "22.202",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 0,
+        "conditions": ["ALWAYS", "EXCEPT_COMMERCIAL"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.222-21": {
+      "title": "Prohibition of Segregated Facilities",
+      "prescription": "22.810(a)(1)",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 10000,
+        "conditions": ["OVER_MICRO_PURCHASE", "EXCEPT_CONSTRUCTION_UNDER_2000"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.222-26": {
+      "title": "Equal Opportunity",
+      "prescription": "22.810(a)(1)",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 10000,
+        "conditions": ["OVER_MICRO_PURCHASE", "EXCEPT_CONSTRUCTION_UNDER_2000"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.222-35": {
+      "title": "Equal Opportunity for Veterans",
+      "prescription": "22.1310(a)(1)",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 150000,
+        "conditions": ["OVER_SAT"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.222-36": {
+      "title": "Equal Opportunity for Workers with Disabilities",
+      "prescription": "22.1408(a)",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 15000,
+        "conditions": ["OVER_15000"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.222-37": {
+      "title": "Employment Reports on Veterans",
+      "prescription": "22.1310(b)",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 150000,
+        "conditions": ["OVER_SAT"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.222-40": {
+      "title": "Notification of Employee Rights Under the National Labor Relations Act",
+      "prescription": "22.1605(a)",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 10000,
+        "conditions": ["OVER_MICRO_PURCHASE"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.222-41": {
+      "title": "Service Contract Labor Standards",
+      "prescription": "22.1006(a)",
+      "applicability": {
+        "required": true,
+        "contracts": ["SERVICES"],
+        "threshold": 2500,
+        "conditions": ["SERVICE_CONTRACT", "OVER_2500", "SUBJECT_TO_SCA"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": ["WAGE_DETERMINATION_NUMBER"]
+    },
+    "52.222-50": {
+      "title": "Combating Trafficking in Persons",
+      "prescription": "22.1705(a)",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 0,
+        "conditions": ["ALWAYS"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.222-54": {
+      "title": "Employment Eligibility Verification",
+      "prescription": "22.1803",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 150000,
+        "conditions": ["OVER_SAT", "WORK_IN_US", "OVER_120_DAYS"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.223-6": {
+      "title": "Drug-Free Workplace",
+      "prescription": "23.505",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 30000,
+        "conditions": ["OVER_MICRO_PURCHASE", "EXCEPT_COMMERCIAL_UNDER_SAT"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.223-18": {
+      "title": "Encouraging Contractor Policies to Ban Text Messaging While Driving",
+      "prescription": "23.1105",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 0,
+        "conditions": ["ALWAYS"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.224-1": {
+      "title": "Privacy Act Notification",
+      "prescription": "24.104",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 0,
+        "conditions": ["REQUIRES_PRIVACY_ACT_DATA"]
+      },
+      "provision": true,
+      "clause": false,
+      "fillIns": []
+    },
+    "52.224-2": {
+      "title": "Privacy Act",
+      "prescription": "24.104",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 0,
+        "conditions": ["REQUIRES_PRIVACY_ACT_DATA"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.225-1": {
+      "title": "Buy American - Supplies",
+      "prescription": "25.1101(a)(1)",
+      "applicability": {
+        "required": true,
+        "contracts": ["SUPPLIES"],
+        "threshold": 0,
+        "conditions": ["SUPPLIES", "DELIVERED_IN_US", "NOT_COMMERCIAL"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.225-13": {
+      "title": "Restrictions on Certain Foreign Purchases",
+      "prescription": "25.1103(a)",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 0,
+        "conditions": ["ALWAYS"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.227-14": {
+      "title": "Rights in Data - General",
+      "prescription": "27.409(a)",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 0,
+        "conditions": ["EXPERIMENTAL_DEVELOPMENTAL_RESEARCH", "NOT_COMMERCIAL"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": ["ALTERNATE_SELECTED"]
+    },
+    "52.230-2": {
+      "title": "Cost Accounting Standards",
+      "prescription": "30.201-4(a)",
+      "applicability": {
+        "required": true,
+        "contracts": ["NEGOTIATED"],
+        "threshold": 2000000,
+        "conditions": ["CAS_COVERED"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.232-7": {
+      "title": "Payments under Time-and-Materials and Labor-Hour Contracts",
+      "prescription": "32.111(a)(7)",
+      "applicability": {
+        "required": true,
+        "contracts": ["TIME_AND_MATERIALS", "LABOR_HOUR"],
+        "threshold": 0,
+        "conditions": ["TM_OR_LH_CONTRACT"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.232-17": {
+      "title": "Interest",
+      "prescription": "32.614",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 0,
+        "conditions": ["ALWAYS"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.232-18": {
+      "title": "Availability of Funds",
+      "prescription": "32.706-1(a)",
+      "applicability": {
+        "required": false,
+        "contracts": ["ALL"],
+        "threshold": 0,
+        "conditions": ["FUNDS_NOT_PRESENTLY_AVAILABLE"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.232-20": {
+      "title": "Limitation of Cost",
+      "prescription": "32.706-2(a)",
+      "applicability": {
+        "required": true,
+        "contracts": ["COST_REIMBURSEMENT"],
+        "threshold": 0,
+        "conditions": ["FULLY_FUNDED_COST_CONTRACT"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.232-22": {
+      "title": "Limitation of Funds",
+      "prescription": "32.706-2(b)",
+      "applicability": {
+        "required": true,
+        "contracts": ["COST_REIMBURSEMENT"],
+        "threshold": 0,
+        "conditions": ["INCREMENTALLY_FUNDED_COST_CONTRACT"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.232-25": {
+      "title": "Prompt Payment",
+      "prescription": "32.908(b)(1)",
+      "applicability": {
+        "required": true,
+        "contracts": ["FIXED_PRICE"],
+        "threshold": 0,
+        "conditions": ["FIXED_PRICE_CONTRACT"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.232-33": {
+      "title": "Payment by Electronic Funds Transfer - System for Award Management",
+      "prescription": "32.1110(a)(1)",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 0,
+        "conditions": ["ALWAYS"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.233-1": {
+      "title": "Disputes",
+      "prescription": "33.215",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 0,
+        "conditions": ["ALWAYS"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": ["ALTERNATE_IF_APPLICABLE"]
+    },
+    "52.233-3": {
+      "title": "Protest After Award",
+      "prescription": "33.106(b)",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 30000,
+        "conditions": ["OVER_MICRO_PURCHASE", "EXCEPT_COMMERCIAL"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": ["ALTERNATE_IF_APPLICABLE"]
+    },
+    "52.233-4": {
+      "title": "Applicable Law for Breach of Contract Claim",
+      "prescription": "33.215",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 0,
+        "conditions": ["ALWAYS"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.242-13": {
+      "title": "Stop-Work Order",
+      "prescription": "42.1305(a)",
+      "applicability": {
+        "required": false,
+        "contracts": ["ALL"],
+        "threshold": 150000,
+        "conditions": ["OVER_SAT", "WHEN_APPROPRIATE"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": ["ALTERNATE_IF_APPLICABLE"]
+    },
+    "52.243-1": {
+      "title": "Changes - Fixed-Price",
+      "prescription": "43.205(a)",
+      "applicability": {
+        "required": true,
+        "contracts": ["FIXED_PRICE"],
+        "threshold": 0,
+        "conditions": ["FIXED_PRICE_SUPPLY_CONTRACT"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": ["ALTERNATE_SELECTION"]
+    },
+    "52.244-2": {
+      "title": "Subcontracts",
+      "prescription": "44.204(a)",
+      "applicability": {
+        "required": true,
+        "contracts": ["COST_REIMBURSEMENT", "TIME_AND_MATERIALS", "LABOR_HOUR"],
+        "threshold": 0,
+        "conditions": ["COST_OR_TM_OR_LH"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": ["ALTERNATE_SELECTION"]
+    },
+    "52.244-6": {
+      "title": "Subcontracts for Commercial Products and Commercial Services",
+      "prescription": "44.403",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 0,
+        "conditions": ["ALWAYS"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.245-1": {
+      "title": "Government Property",
+      "prescription": "45.107(a)",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 0,
+        "conditions": ["GOVERNMENT_PROPERTY"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.245-9": {
+      "title": "Use and Charges",
+      "prescription": "45.107(b)(1)",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 0,
+        "conditions": ["GOVERNMENT_PROPERTY", "RENTAL_CHARGES"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.246-2": {
+      "title": "Inspection of Supplies - Fixed Price",
+      "prescription": "46.302",
+      "applicability": {
+        "required": true,
+        "contracts": ["FIXED_PRICE"],
+        "threshold": 0,
+        "conditions": ["FIXED_PRICE_SUPPLIES"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.246-4": {
+      "title": "Inspection of Services - Fixed Price",
+      "prescription": "46.304",
+      "applicability": {
+        "required": true,
+        "contracts": ["FIXED_PRICE"],
+        "threshold": 0,
+        "conditions": ["FIXED_PRICE_SERVICES"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.247-63": {
+      "title": "Preference for U.S.-Flag Air Carriers",
+      "prescription": "47.405",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 0,
+        "conditions": ["INTERNATIONAL_AIR_TRANSPORT"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.247-64": {
+      "title": "Preference for Privately Owned U.S.-Flag Commercial Vessels",
+      "prescription": "47.507(a)",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 0,
+        "conditions": ["OCEAN_TRANSPORT_SUPPLIES"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.248-1": {
+      "title": "Value Engineering",
+      "prescription": "48.202",
+      "applicability": {
+        "required": false,
+        "contracts": ["ALL"],
+        "threshold": 150000,
+        "conditions": ["OVER_SAT", "WHEN_APPROPRIATE"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.249-2": {
+      "title": "Termination for Convenience of the Government (Fixed-Price)",
+      "prescription": "49.502(a)(1)",
+      "applicability": {
+        "required": true,
+        "contracts": ["FIXED_PRICE"],
+        "threshold": 0,
+        "conditions": ["FIXED_PRICE_OVER_SAT"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.249-8": {
+      "title": "Default (Fixed-Price Supply and Service)",
+      "prescription": "49.504(a)(1)",
+      "applicability": {
+        "required": true,
+        "contracts": ["FIXED_PRICE"],
+        "threshold": 150000,
+        "conditions": ["FIXED_PRICE_OVER_SAT"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.251-1": {
+      "title": "Government Supply Sources",
+      "prescription": "51.107",
+      "applicability": {
+        "required": false,
+        "contracts": ["ALL"],
+        "threshold": 0,
+        "conditions": ["GOVERNMENT_SUPPLY_SOURCES_AUTHORIZED"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.252-2": {
+      "title": "Clauses Incorporated by Reference",
+      "prescription": "52.102(a)",
+      "applicability": {
+        "required": true,
+        "contracts": ["ALL"],
+        "threshold": 0,
+        "conditions": ["ALWAYS"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.253-1": {
+      "title": "Computer Generated Forms",
+      "prescription": "53.111",
+      "applicability": {
+        "required": false,
+        "contracts": ["ALL"],
+        "threshold": 0,
+        "conditions": ["COMPUTER_GENERATED_FORMS"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    }
+  },
+  "commercialItemClauses": {
+    "52.212-4": {
+      "title": "Contract Terms and Conditions - Commercial Products and Commercial Services",
+      "prescription": "12.301(b)(3)",
+      "applicability": {
+        "required": true,
+        "contracts": ["COMMERCIAL"],
+        "threshold": 0,
+        "conditions": ["COMMERCIAL_ITEMS"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.212-5": {
+      "title": "Contract Terms and Conditions Required to Implement Statutes or Executive Orders - Commercial Products and Commercial Services",
+      "prescription": "12.301(b)(4)",
+      "applicability": {
+        "required": true,
+        "contracts": ["COMMERCIAL"],
+        "threshold": 0,
+        "conditions": ["COMMERCIAL_ITEMS"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": ["APPLICABLE_CLAUSES"]
+    }
+  },
+  "constructionClauses": {
+    "52.236-2": {
+      "title": "Differing Site Conditions",
+      "prescription": "36.502",
+      "applicability": {
+        "required": true,
+        "contracts": ["CONSTRUCTION"],
+        "threshold": 0,
+        "conditions": ["FIXED_PRICE_CONSTRUCTION"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.236-3": {
+      "title": "Site Investigation and Conditions Affecting the Work",
+      "prescription": "36.503",
+      "applicability": {
+        "required": true,
+        "contracts": ["CONSTRUCTION"],
+        "threshold": 0,
+        "conditions": ["FIXED_PRICE_CONSTRUCTION"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.236-5": {
+      "title": "Material and Workmanship",
+      "prescription": "36.505",
+      "applicability": {
+        "required": true,
+        "contracts": ["CONSTRUCTION"],
+        "threshold": 0,
+        "conditions": ["CONSTRUCTION"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.236-7": {
+      "title": "Permits and Responsibilities",
+      "prescription": "36.507",
+      "applicability": {
+        "required": true,
+        "contracts": ["CONSTRUCTION"],
+        "threshold": 0,
+        "conditions": ["FIXED_PRICE_CONSTRUCTION"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "52.236-13": {
+      "title": "Accident Prevention",
+      "prescription": "36.513(a)",
+      "applicability": {
+        "required": true,
+        "contracts": ["CONSTRUCTION"],
+        "threshold": 0,
+        "conditions": ["CONSTRUCTION"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": ["ALTERNATE_IF_APPLICABLE"]
+    },
+    "52.236-15": {
+      "title": "Schedules for Construction Contracts",
+      "prescription": "36.515",
+      "applicability": {
+        "required": true,
+        "contracts": ["CONSTRUCTION"],
+        "threshold": 0,
+        "conditions": ["FIXED_PRICE_CONSTRUCTION"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    }
+  },
+  "dfarClauses": {
+    "252.203-7001": {
+      "title": "Prohibition on Persons Convicted of Fraud or Other Defense-Contract-Related Felonies",
+      "prescription": "203.570-2",
+      "applicability": {
+        "required": true,
+        "contracts": ["DOD"],
+        "threshold": 150000,
+        "conditions": ["DOD_OVER_SAT"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "252.204-7012": {
+      "title": "Safeguarding Covered Defense Information and Cyber Incident Reporting",
+      "prescription": "204.7304(a)",
+      "applicability": {
+        "required": true,
+        "contracts": ["DOD"],
+        "threshold": 0,
+        "conditions": ["COVERED_DEFENSE_INFO"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "252.225-7001": {
+      "title": "Buy American and Balance of Payments Program",
+      "prescription": "225.1101(2)",
+      "applicability": {
+        "required": true,
+        "contracts": ["DOD"],
+        "threshold": 0,
+        "conditions": ["DOD_SUPPLIES"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "252.225-7002": {
+      "title": "Qualifying Country Sources as Subcontractors",
+      "prescription": "225.1101(3)",
+      "applicability": {
+        "required": true,
+        "contracts": ["DOD"],
+        "threshold": 0,
+        "conditions": ["DOD_SUPPLIES"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "252.232-7003": {
+      "title": "Electronic Submission of Payment Requests and Receiving Reports",
+      "prescription": "232.7004",
+      "applicability": {
+        "required": true,
+        "contracts": ["DOD"],
+        "threshold": 0,
+        "conditions": ["DOD_CONTRACT"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    },
+    "252.247-7023": {
+      "title": "Transportation of Supplies by Sea",
+      "prescription": "247.574(a)",
+      "applicability": {
+        "required": true,
+        "contracts": ["DOD"],
+        "threshold": 0,
+        "conditions": ["DOD_OCEAN_TRANSPORT"]
+      },
+      "provision": false,
+      "clause": true,
+      "fillIns": []
+    }
+  },
+  "clauseSelectionEngine": {
+    "rules": {
+      "mandatoryInclusion": {
+        "description": "These clauses must always be included based on contract characteristics",
+        "logic": [
+          {
+            "condition": "contractValue > thresholds.microPurchase",
+            "clauses": ["52.204-7", "52.222-40", "52.204-10"]
+          },
+          {
+            "condition": "contractValue > thresholds.simplifiedAcquisition",
+            "clauses": ["52.203-5", "52.203-6", "52.203-7", "52.219-8"]
+          },
+          {
+            "condition": "contractType === 'COST_REIMBURSEMENT'",
+            "clauses": ["52.216-7", "52.232-20", "52.232-22", "52.244-2"]
+          },
+          {
+            "condition": "requirementType === 'CONSTRUCTION'",
+            "clauses": ["52.236-2", "52.236-3", "52.236-5", "52.236-7", "52.236-13", "52.236-15"]
+          },
+          {
+            "condition": "requirementType === 'SERVICES' && contractValue > 2500",
+            "clauses": ["52.222-41"]
+          },
+          {
+            "condition": "agency === 'DOD'",
+            "clauses": ["252.204-7012", "252.232-7003"]
+          }
+        ]
+      },
+      "conditionalInclusion": {
+        "description": "These clauses are included when specific conditions are met",
+        "logic": [
+          {
+            "condition": "hasOptions === true",
+            "clauses": ["52.217-8", "52.217-9"]
+          },
+          {
+            "condition": "governmentPropertyProvided === true",
+            "clauses": ["52.245-1", "52.245-9"]
+          },
+          {
+            "condition": "internationalTransport === true",
+            "clauses": ["52.247-63", "52.247-64"]
+          },
+          {
+            "condition": "workPerformedInUS === true && contractValue > 150000 && performancePeriod > 120",
+            "clauses": ["52.222-54"]
+          },
+          {
+            "condition": "subcontractingExpected === true && contractValue > 750000 && !smallBusiness",
+            "clauses": ["52.219-9"]
+          },
+          {
+            "condition": "certifiedCostPricingDataRequired === true",
+            "clauses": ["52.215-10", "52.215-12"]
+          }
+        ]
+      },
+      "commercialItemRules": {
+        "description": "Special rules for commercial item acquisitions",
+        "logic": [
+          {
+            "condition": "commercialItem === true",
+            "includeBase": ["52.212-4", "52.212-5"],
+            "excludeNonCommercial": ["52.203-3", "52.222-3", "52.215-2"]
+          }
+        ]
+      }
+    },
+    "fillInProcessor": {
+      "description": "Logic for processing clauses that require fill-in information",
+      "templates": {
+        "52.217-8": {
+          "OPTION_PERIOD": "Derived from contract schedule",
+          "NOTIFICATION_DAYS": "Default: 30 days unless specified"
+        },
+        "52.217-9": {
+          "OPTION_PERIOD": "Derived from contract schedule",
+          "NOTIFICATION_DAYS": "Default: 30 days unless specified"
+        },
+        "52.222-41": {
+          "WAGE_DETERMINATION_NUMBER": "From www.wdol.gov based on location and service type"
+        },
+        "52.219-9": {
+          "SUBCONTRACTING_GOALS": "Per agency goals and contract requirements"
+        },
+        "52.227-14": {
+          "ALTERNATE_SELECTED": "Based on data rights requirements"
+        }
+      }
+    },
+    "provisionMapping": {
+      "description": "Maps provisions to their corresponding contract clauses",
+      "mappings": {
+        "52.204-7": "Provision - include in solicitation",
+        "52.224-1": "Provision - include when Privacy Act data required",
+        "52.212-1": "Instructions to Offerors - Commercial",
+        "52.212-2": "Evaluation - Commercial"
+      }
+    }
+  },
+  "implementationGuide": {
+    "overview": "This clause database enables automatic clause selection based on contract attributes",
+    "usage": {
+      "step1": "Define contract attributes (type, value, requirements, etc.)",
+      "step2": "Run clause selection engine against contract attributes",
+      "step3": "Review mandatory and conditional clause lists",
+      "step4": "Process fill-in requirements for selected clauses",
+      "step5": "Generate clause text for inclusion in contract documents"
+    },
+    "integration": {
+      "RFQGeneration": "Automatically include applicable provisions and clauses",
+      "RFPGeneration": "Include evaluation provisions and contract clauses",
+      "ContractAward": "Include all applicable contract clauses",
+      "ContractModification": "Add/update clauses based on modification scope"
+    },
+    "customization": {
+      "agencySpecific": "Add agency-specific clauses to database",
+      "localClauses": "Include local/activity-specific clauses",
+      "specialRequirements": "Define custom logic rules for unique requirements"
+    }
+  },
+  "clauseCategories": {
+    "administrative": ["52.202-1", "52.203-3", "52.204-7", "52.233-1"],
+    "socioeconomic": ["52.219-8", "52.219-9", "52.219-28", "52.222-26", "52.222-35"],
+    "laborStandards": ["52.222-3", "52.222-21", "52.222-40", "52.222-41", "52.222-50"],
+    "inspection": ["52.246-2", "52.246-4"],
+    "payment": ["52.232-7", "52.232-17", "52.232-25", "52.232-33"],
+    "termination": ["52.249-2", "52.249-8"],
+    "changes": ["52.243-1"],
+    "disputes": ["52.233-1", "52.233-3", "52.233-4"],
+    "compliance": ["52.203-5", "52.203-6", "52.203-7", "52.203-12"],
+    "dataRights": ["52.227-14"],
+    "costAccounting": ["52.230-2"],
+    "property": ["52.245-1", "52.245-9"],
+    "transportation": ["52.247-63", "52.247-64"],
+    "construction": ["52.236-2", "52.236-3", "52.236-5", "52.236-7", "52.236-13", "52.236-15"],
+    "dod": ["252.203-7001", "252.204-7012", "252.225-7001", "252.225-7002", "252.232-7003", "252.247-7023"]
+  },
+  "apiEndpoints": {
+    "description": "Suggested API structure for clause management",
+    "endpoints": {
+      "getApplicableClauses": {
+        "method": "POST",
+        "path": "/api/clauses/applicable",
+        "input": {
+          "contractType": "string",
+          "contractValue": "number",
+          "requirementType": "string",
+          "agency": "string",
+          "additionalAttributes": "object"
+        },
+        "output": {
+          "mandatoryClauses": "array",
+          "conditionalClauses": "array",
+          "optionalClauses": "array",
+          "fillInRequirements": "object"
+        }
+      },
+      "generateClauseText": {
+        "method": "POST",
+        "path": "/api/clauses/generate",
+        "input": {
+          "clauseNumbers": "array",
+          "fillInValues": "object",
+          "format": "string"
+        },
+        "output": {
+          "clauseText": "string",
+          "formattedDocument": "object"
+        }
+      },
+      "validateClauses": {
+        "method": "POST",
+        "path": "/api/clauses/validate",
+        "input": {
+          "contractDocument": "object",
+          "includedClauses": "array"
+        },
+        "output": {
+          "isValid": "boolean",
+          "missingRequired": "array",
+          "suggestions": "array"
+        }
+      }
+    }
+  }
+}

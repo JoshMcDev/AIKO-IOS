@@ -717,6 +717,15 @@ extension AIDocumentGenerator: DependencyKey {
             - Transition to Phase III considerations
             - Success fee structures
             """
+            
+        case .farUpdates:
+            """
+            1. Summary of recent FAR/DFAR changes
+            2. Effective dates for each change
+            3. Impact analysis on current contracts
+            4. Action items for compliance
+            5. References to Federal Register citations
+            """
         }
     }
 

@@ -27,4 +27,13 @@ node_modules/
 
 # Task files
 tasks.json
-tasks/ 
+tasks/
+
+# Task Master configuration (contains API keys)
+.taskmaster/config.json
+
+# Environment and secrets
+.env.local
+.env.production
+*.pem
+*.key 

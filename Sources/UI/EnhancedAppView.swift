@@ -391,18 +391,42 @@ struct EnhancedDocumentGenerationView: View {
     @State private var scrollOffset: CGFloat = 0
     @Environment(\.sizeCategory) private var sizeCategory
 
+    struct ViewState: Equatable {
+        let analysisConversationHistory: [String]
+        let analysisIsAnalyzingRequirements: Bool
+        let analysisUploadedDocuments: [UploadedDocument]
+        let analysisIsRecording: Bool
+        let requirements: String
+        let isGenerating: Bool
+        let selectedDocumentTypes: Set<DocumentType>
+        let selectedDFDocumentTypes: Set<DFDocumentType>
+        let documentReadinessStatus: [DocumentType: DocumentStatusFeature.DocumentStatus]
+        
+        init(state: DocumentGenerationFeature.State) {
+            self.analysisConversationHistory = state.analysis.conversationHistory
+            self.analysisIsAnalyzingRequirements = state.analysis.isAnalyzingRequirements
+            self.analysisUploadedDocuments = state.analysis.uploadedDocuments
+            self.analysisIsRecording = state.analysis.isRecording
+            self.requirements = state.requirements
+            self.isGenerating = state.isGenerating
+            self.selectedDocumentTypes = state.selectedDocumentTypes
+            self.selectedDFDocumentTypes = state.status.selectedDFDocumentTypes
+            self.documentReadinessStatus = state.status.documentReadinessStatus
+        }
+    }
+    
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: ViewState.init) { viewStore in
             VStack(spacing: 0) {
                 // Main Content Area with parallax effect
                 ScrollView(.vertical, showsIndicators: true) {
                     VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
                         // Content sections with enhanced animations
                         Group {
-                            if isChatMode, loadedAcquisition != nil, !viewStore.analysis.conversationHistory.isEmpty {
+                            if isChatMode, loadedAcquisition != nil, !viewStore.analysisConversationHistory.isEmpty {
                                 EnhancedChatHistoryView(
-                                    messages: viewStore.analysis.conversationHistory,
-                                    isLoading: viewStore.analysis.isAnalyzingRequirements
+                                    messages: viewStore.analysisConversationHistory,
+                                    isLoading: viewStore.analysisIsAnalyzingRequirements
                                 )
                                 .transition(.asymmetric(
                                     insertion: .scale(scale: 0.9).combined(with: .opacity),
@@ -414,8 +438,8 @@ struct EnhancedDocumentGenerationView: View {
                             EnhancedDocumentTypesSection(
                                 documentTypes: DocumentType.allCases,
                                 selectedTypes: viewStore.selectedDocumentTypes,
-                                selectedDFTypes: viewStore.status.selectedDFDocumentTypes,
-                                documentStatus: viewStore.status.documentReadinessStatus,
+                                selectedDFTypes: viewStore.selectedDFDocumentTypes,
+                                documentStatus: viewStore.documentReadinessStatus,
                                 hasAcquisition: loadedAcquisition != nil,
                                 onTypeToggled: { documentType in
                                     HapticManager.shared.selection()
@@ -449,12 +473,12 @@ struct EnhancedDocumentGenerationView: View {
                 .background(Theme.Colors.aikoBackground)
 
                 // Enhanced Input Area
-                EnhancedInputArea(
+                InputArea(
                     requirements: viewStore.requirements,
                     isGenerating: viewStore.isGenerating,
-                    uploadedDocuments: viewStore.analysis.uploadedDocuments,
+                    uploadedDocuments: viewStore.analysisUploadedDocuments,
                     isChatMode: isChatMode,
-                    isRecording: viewStore.analysis.isRecording,
+                    isRecording: viewStore.analysisIsRecording,
                     onRequirementsChanged: { requirements in
                         viewStore.send(.requirementsChanged(requirements))
                     },
@@ -1056,7 +1080,7 @@ struct StatusIndicator: View {
 
 // MARK: - Enhanced Input Area
 
-struct EnhancedInputArea: View {
+struct AppEnhancedInputArea: View {
     let requirements: String
     let isGenerating: Bool
     let uploadedDocuments: [UploadedDocument]
@@ -1517,6 +1541,7 @@ extension DocumentCategory {
         case .solicitation: .green
         case .award: .red
         case .analytics: .indigo
+        case .resourcesTools: .gray
         }
     }
 }

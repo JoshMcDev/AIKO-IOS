@@ -35,6 +35,12 @@ public struct AcquisitionService {
 
 extension AcquisitionService: DependencyKey {
     public static var liveValue: AcquisitionService {
+        // Always use repository-based implementation as part of Phase 4 migration
+        return .repositoryBased
+    }
+    
+    // Keep the old implementation as a backup/reference
+    static var directCoreDataValue: AcquisitionService {
         let coreDataStack = CoreDataStack.shared
 
         return AcquisitionService(

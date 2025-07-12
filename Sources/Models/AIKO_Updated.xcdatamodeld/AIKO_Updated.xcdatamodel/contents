@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22225" systemVersion="23G93" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="Acquisition" representedClassName="Acquisition" syncable="YES">
+        <attribute name="createdDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="lastModifiedDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="projectNumber" optional="YES" attributeType="String"/>
+        <attribute name="requirements" optional="YES" attributeType="String"/>
+        <attribute name="status" attributeType="String" defaultValueString="draft"/>
+        <attribute name="title" attributeType="String"/>
+        <relationship name="documents" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="AcquisitionDocument" inverseName="acquisition" inverseEntity="AcquisitionDocument"/>
+        <relationship name="forms" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="GovernmentFormData" inverseName="acquisition" inverseEntity="GovernmentFormData"/>
+        <relationship name="generatedFiles" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="GeneratedFile" inverseName="acquisition" inverseEntity="GeneratedFile"/>
+        <relationship name="uploadedFiles" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="UploadedFile" inverseName="acquisition" inverseEntity="UploadedFile"/>
+    </entity>
+    <entity name="AcquisitionDocument" representedClassName="AcquisitionDocument" syncable="YES">
+        <attribute name="content" optional="YES" attributeType="String"/>
+        <attribute name="createdDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="documentType" attributeType="String"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="status" attributeType="String" defaultValueString="draft"/>
+        <relationship name="acquisition" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Acquisition" inverseName="documents" inverseEntity="Acquisition"/>
+    </entity>
+    <entity name="GeneratedFile" representedClassName="GeneratedFile" syncable="YES">
+        <attribute name="content" attributeType="Binary"/>
+        <attribute name="createdDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="fileName" attributeType="String"/>
+        <attribute name="fileType" attributeType="String"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <relationship name="acquisition" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Acquisition" inverseName="generatedFiles" inverseEntity="Acquisition"/>
+    </entity>
+    <entity name="GovernmentFormData" representedClassName="GovernmentFormData" syncable="YES">
+        <attribute name="createdDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="formData" attributeType="Binary"/>
+        <attribute name="formNumber" attributeType="String"/>
+        <attribute name="formType" attributeType="String"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="lastModifiedDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="metadata" optional="YES" attributeType="Binary"/>
+        <attribute name="revision" optional="YES" attributeType="String"/>
+        <attribute name="status" attributeType="String" defaultValueString="draft"/>
+        <relationship name="acquisition" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Acquisition" inverseName="forms" inverseEntity="Acquisition"/>
+    </entity>
+    <entity name="UploadedFile" representedClassName="UploadedFile" syncable="YES">
+        <attribute name="contentSummary" optional="YES" attributeType="String"/>
+        <attribute name="data" attributeType="Binary"/>
+        <attribute name="fileName" attributeType="String"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="uploadDate" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="acquisition" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Acquisition" inverseName="uploadedFiles" inverseEntity="Acquisition"/>
+    </entity>
+</model>

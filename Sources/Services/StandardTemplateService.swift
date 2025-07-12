@@ -93,6 +93,8 @@ extension StandardTemplateService: DependencyKey {
                     "Analytics"
                 case .otherTransactionAgreement:
                     "OTAgreement"
+                case .farUpdates:
+                    "FARUpdates"
                 }
 
                 // Load template from bundle
@@ -183,6 +185,7 @@ public extension StandardTemplateService {
         case .corAppointment: "CORAppointment"
         case .analytics: "Analytics"
         case .otherTransactionAgreement: "OTAgreement"
+        case .farUpdates: "FARUpdates"
         }
     }
 

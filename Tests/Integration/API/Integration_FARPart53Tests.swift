@@ -1,556 +1,307 @@
-@testable import AIKO_IOS
 import XCTest
+import CoreData
+@testable import AIKO
 
 /// Comprehensive test suite for FAR Part 53 forms integration
-/// Tests both MOP (Measurement of Performance) and MOE (Measurement of Effectiveness)
-final class FARPart53IntegrationTests: XCTestCase {
+/// Tests the new repository architecture and form factories
+final class Integration_FARPart53Tests: XCTestCase {
+    
     // MARK: - Properties
-
-    private var formMappingService: FormMappingService!
-    private var mopScores: [String: Double] = [:]
-    private var moeScores: [String: Double] = [:]
-
-    // MARK: - Setup
-
+    
+    private var context: NSManagedObjectContext!
+    private var formRegistry: FormFactoryRegistry!
+    private var documentRepository: DocumentRepository!
+    private var acquisitionRepository: AcquisitionRepository!
+    private var mockEventStore: InMemoryEventStore!
+    
+    // MARK: - Setup/Teardown
+    
     override func setUp() {
         super.setUp()
-        formMappingService = FormMappingService.shared
-        mopScores.removeAll()
-        moeScores.removeAll()
+        
+        // Create in-memory Core Data stack
+        let model = CoreDataStack.model
+        let coordinator = NSPersistentStoreCoordinator(managedObjectModel: model)
+        try! coordinator.addPersistentStore(ofType: NSInMemoryStoreType, configurationName: nil, at: nil, options: nil)
+        
+        context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+        context.persistentStoreCoordinator = coordinator
+        
+        // Create repositories
+        mockEventStore = InMemoryEventStore()
+        documentRepository = DocumentRepository(context: context)
+        acquisitionRepository = AcquisitionRepository(context: context, eventStore: mockEventStore)
+        
+        // Setup form registry
+        formRegistry = FormFactoryRegistry()
+        registerAllFormFactories()
     }
-
+    
     override func tearDown() {
+        context = nil
+        formRegistry = nil
+        documentRepository = nil
+        acquisitionRepository = nil
+        mockEventStore = nil
         super.tearDown()
-        generateTestReport()
     }
-
-    // MARK: - Test Scenario 1: RFQ Template to SF 18
-
-    func testRFQToSF18Mapping() async throws {
-        let testName = "RFQ to SF 18"
-        print("\n=== Testing Scenario 1: \(testName) ===")
-
-        // Test data
-        let rfqTemplate = TemplateData(
-            documentType: .rfqSimplified,
-            data: [
-                "projectTitle": "IT Equipment Purchase",
-                "deliveryDate": Date().addingTimeInterval(30 * 24 * 60 * 60), // 30 days
-                "quantity": 50,
-                "estimatedValue": 150_000.00,
-                "requisitionNumber": "REQ-2025-001",
-                "deliveryLocation": "Building A, Room 101",
-                "description": "Desktop computers with specifications as per attachment",
-            ],
-            metadata: TemplateMetadata(
-                templateId: "RFQ-001",
-                version: "1.0"
-            )
+    
+    // MARK: - Form Factory Registration
+    
+    private func registerAllFormFactories() {
+        formRegistry.register(SF1449Factory(), for: "SF1449")
+        formRegistry.register(SF33Factory(), for: "SF33")
+        formRegistry.register(SF30Factory(), for: "SF30")
+        formRegistry.register(SF18Factory(), for: "SF18")
+        formRegistry.register(SF26Factory(), for: "SF26")
+        formRegistry.register(SF44Factory(), for: "SF44")
+        formRegistry.register(DD1155Factory(), for: "DD1155")
+    }
+    
+    // MARK: - Integration Test: Full Acquisition Flow
+    
+    func testFullAcquisitionFlowWithForms() async throws {
+        // Step 1: Create acquisition
+        let acquisition = try await acquisitionRepository.create(
+            title: "IT Equipment Purchase FY2025",
+            requirements: "Purchase of 50 desktop computers for new office"
         )
-
-        var mopScore = 0.0
-        var moeScore = 0.0
-
-        do {
-            // Test mapping
-            let startTime = Date()
-            let result = try await formMappingService.mapTemplateToForm(
-                templateData: rfqTemplate,
-                formType: .sf18
-            )
-            let processingTime = Date().timeIntervalSince(startTime)
-
-            // MOP Test 1: Field Mapping Accuracy
-            let requiredFields = ["requisitionNumber", "deliveryDate", "itemDescription", "quantity", "unitPrice"]
-            let mappedFields = requiredFields.filter { result.formData[$0] != nil }
-            let mappingAccuracy = Double(mappedFields.count) / Double(requiredFields.count)
-            mopScore += mappingAccuracy * 0.25
-            print("  ✓ Field mapping accuracy: \(mappingAccuracy * 100)%")
-
-            // MOP Test 2: Data Transformation Correctness
-            var transformationScore = 1.0
-
-            // Check date formatting
-            if let deliveryDate = result.formData["deliveryDate"] as? String {
-                let expectedFormat = "MM/dd/yyyy"
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = expectedFormat
-                if dateFormatter.date(from: deliveryDate) == nil {
-                    transformationScore -= 0.25
-                    print("  ✗ Date format incorrect: \(deliveryDate)")
-                } else {
-                    print("  ✓ Date format correct: \(deliveryDate)")
-                }
-            }
-
-            // Check currency formatting
-            if let unitPrice = result.formData["unitPrice"] as? String {
-                if !unitPrice.hasPrefix("$") {
-                    transformationScore -= 0.25
-                    print("  ✗ Currency format incorrect: \(unitPrice)")
-                } else {
-                    print("  ✓ Currency format correct: \(unitPrice)")
-                }
-            }
-
-            mopScore += transformationScore * 0.25
-
-            // MOP Test 3: FAR Validation Rules
-            if result.isCompliant {
-                mopScore += 0.25
-                print("  ✓ FAR compliance: PASSED")
-            } else {
-                print("  ✗ FAR compliance: FAILED")
-                print("    Failed rules: \(result.complianceStatus.failedRules)")
-            }
-
-            // MOP Test 4: Data Integrity
-            let originalValue = rfqTemplate.data["estimatedValue"] as? Double ?? 0
-            if let mappedPrice = extractNumberFromCurrency(result.formData["unitPrice"] as? String) {
-                if abs(mappedPrice - originalValue) < 0.01 {
-                    mopScore += 0.25
-                    print("  ✓ Data integrity maintained")
-                } else {
-                    print("  ✗ Data integrity issue: \(originalValue) != \(mappedPrice)")
-                }
-            }
-
-            // MOE Test 1: Workflow Efficiency
-            if processingTime < 2.0 {
-                moeScore += 0.25
-                print("  ✓ Processing time: \(String(format: "%.2f", processingTime))s (efficient)")
-            } else {
-                moeScore += 0.125
-                print("  ~ Processing time: \(String(format: "%.2f", processingTime))s (acceptable)")
-            }
-
-            // MOE Test 2: Compliance Achievement
-            if result.complianceStatus.overallCompliance, result.complianceStatus.warnings == 0 {
-                moeScore += 0.25
-                print("  ✓ Full compliance achieved with no warnings")
-            } else if result.complianceStatus.overallCompliance {
-                moeScore += 0.20
-                print("  ~ Compliance achieved with \(result.complianceStatus.warnings) warnings")
-            }
-
-            // MOE Test 3: Form Selection Appropriateness
-            let availableForms = formMappingService.getFormsForTemplate(.rfqSimplified)
-            if availableForms.first?.formType == .sf18 {
-                moeScore += 0.25
-                print("  ✓ Correct form selected for RFQ under $250K")
-            }
-
-            // MOE Test 4: Error Handling
-            moeScore += 0.25 // No errors encountered
-            print("  ✓ No errors during processing")
-
-        } catch {
-            print("  ✗ Error occurred: \(error.localizedDescription)")
-            // Partial MOE score for error handling
-            if let mappingError = error as? FormMappingError {
-                switch mappingError {
-                case let .validationFailed(errors):
-                    moeScore += 0.125 // Proper validation error
-                    print("  ~ Validation errors properly reported: \(errors.count) issues")
-                default:
-                    break
-                }
+        
+        XCTAssertNotNil(acquisition)
+        XCTAssertEqual(acquisition.status, .draft)
+        
+        // Step 2: Add requirements document
+        let requirementsDoc = try await documentRepository.saveDocument(
+            fileName: "requirements.pdf",
+            data: Data("Requirements content".utf8),
+            contentSummary: "Detailed technical specifications for desktop computers",
+            acquisitionId: acquisition.id
+        )
+        
+        try await acquisitionRepository.update(acquisition.id) { acq in
+            acq.addDocument(requirementsDoc)
+        }
+        
+        // Step 3: Create and add RFQ form (SF18)
+        let rfqData = createRFQFormData()
+        let sf18Form = try formRegistry.createForm(type: "SF18", with: rfqData)
+        XCTAssertNotNil(sf18Form)
+        
+        try await acquisitionRepository.update(acquisition.id) { acq in
+            acq.addForm(sf18Form!)
+        }
+        
+        // Step 4: Update status to in review
+        try await acquisitionRepository.update(acquisition.id) { acq in
+            acq.updateStatus(.inReview)
+        }
+        
+        // Step 5: Create solicitation form (SF1449)
+        let solicitationData = createSolicitationFormData()
+        let sf1449Form = try formRegistry.createForm(type: "SF1449", with: solicitationData)
+        XCTAssertNotNil(sf1449Form)
+        
+        try await acquisitionRepository.update(acquisition.id) { acq in
+            acq.addForm(sf1449Form!)
+        }
+        
+        // Step 6: Approve acquisition
+        try await acquisitionRepository.update(acquisition.id) { acq in
+            acq.updateStatus(.approved)
+        }
+        
+        // Verify final state
+        let finalAcquisition = try await acquisitionRepository.findById(acquisition.id)
+        XCTAssertNotNil(finalAcquisition)
+        XCTAssertEqual(finalAcquisition?.status, .approved)
+        XCTAssertEqual(finalAcquisition?.documents.count, 1)
+        XCTAssertEqual(finalAcquisition?.forms.count, 2)
+        XCTAssertTrue(finalAcquisition?.isValidForSubmission() ?? false)
+        
+        // Verify domain events
+        let events = try await mockEventStore.eventsForAggregate(id: acquisition.id, after: nil)
+        XCTAssertGreaterThan(events.count, 5) // Multiple events should be recorded
+    }
+    
+    // MARK: - Integration Test: Form Generation Pipeline
+    
+    func testFormGenerationPipeline() async throws {
+        // Create acquisition with multiple forms
+        let acquisition = try await acquisitionRepository.create(
+            title: "Multi-Form Acquisition",
+            requirements: "Complex acquisition requiring multiple forms"
+        )
+        
+        // Generate all form types
+        let formTypes = ["SF18", "SF33", "SF1449", "SF30", "SF26", "SF44", "DD1155"]
+        
+        for formType in formTypes {
+            let formData = createGenericFormData(for: formType)
+            let form = try formRegistry.createForm(type: formType, with: formData)
+            
+            XCTAssertNotNil(form, "Failed to create form: \(formType)")
+            
+            try await acquisitionRepository.update(acquisition.id) { acq in
+                acq.addForm(form!)
             }
         }
-
-        mopScores[testName] = mopScore
-        moeScores[testName] = moeScore
+        
+        // Verify all forms were added
+        let updatedAcquisition = try await acquisitionRepository.findById(acquisition.id)
+        XCTAssertEqual(updatedAcquisition?.forms.count, formTypes.count)
+        
+        // Test form retrieval by type
+        for formType in formTypes {
+            let hasForm = updatedAcquisition?.forms.contains { $0.formNumber == formType } ?? false
+            XCTAssertTrue(hasForm, "Missing form: \(formType)")
+        }
     }
-
-    // MARK: - Test Scenario 2: Contract Template to SF 1449
-
-    func testContractToSF1449Mapping() async throws {
-        let testName = "Contract to SF 1449"
-        print("\n=== Testing Scenario 2: \(testName) ===")
-
-        // Test data
-        let contractTemplate = TemplateData(
-            documentType: .contract,
-            data: [
-                "contractNumber": "W912DQ-25-C-1001",
-                "solicitationNumber": "W912DQ-25-R-0001",
-                "contractor": [
-                    "name": "Acme Corporation",
-                    "address": [
-                        "street": "123 Main Street",
-                        "city": "Arlington",
-                        "state": "VA",
-                        "zip": "22201",
-                    ],
-                ],
-                "totalValue": 500_000.00,
-                "items": [
-                    [
-                        "number": "0001",
-                        "description": "Professional Services",
-                        "quantity": 1,
-                        "unitPrice": 300_000.00,
-                        "totalPrice": 300_000.00,
-                        "isService": true,
-                    ],
-                    [
-                        "number": "0002",
-                        "description": "Software Licenses",
-                        "quantity": 100,
-                        "unitPrice": 2000.00,
-                        "totalPrice": 200_000.00,
-                        "isService": false,
-                    ],
-                ],
-                "farClauses": ["52.212-1", "52.212-2"], // Partial list to test completion
-            ]
+    
+    // MARK: - Integration Test: Error Handling
+    
+    func testErrorHandlingInFormCreation() async throws {
+        // Test missing required fields
+        let incompleteData = FormData()
+        incompleteData["someField"] = "value"
+        
+        // Should throw validation error
+        XCTAssertThrowsError(try formRegistry.createForm(type: "SF1449", with: incompleteData)) { error in
+            XCTAssertTrue(error is FormValidationError)
+        }
+        
+        // Test invalid form type
+        let validData = createSolicitationFormData()
+        let unknownForm = try formRegistry.createForm(type: "UnknownForm", with: validData)
+        XCTAssertNil(unknownForm)
+    }
+    
+    // MARK: - Integration Test: Concurrent Operations
+    
+    func testConcurrentFormOperations() async throws {
+        let acquisition = try await acquisitionRepository.create(
+            title: "Concurrent Test",
+            requirements: "Testing concurrent form operations"
         )
-
-        var mopScore = 0.0
-        var moeScore = 0.0
-
-        do {
-            let startTime = Date()
-            let result = try await formMappingService.mapTemplateToForm(
-                templateData: contractTemplate,
-                formType: .sf1449
-            )
-            let processingTime = Date().timeIntervalSince(startTime)
-
-            // MOP Test 1: Field Mapping Accuracy
-            let requiredFields = ["contractNumber", "solicitationNumber", "contractorName", "totalPrice", "scheduleItems"]
-            let mappedFields = requiredFields.filter { result.formData[$0] != nil }
-            let mappingAccuracy = Double(mappedFields.count) / Double(requiredFields.count)
-            mopScore += mappingAccuracy * 0.25
-            print("  ✓ Field mapping accuracy: \(mappingAccuracy * 100)%")
-
-            // MOP Test 2: Complex Data Transformation
-            var transformationScore = 1.0
-
-            // Check address formatting
-            if let address = result.formData["contractorAddress"] as? String {
-                if address.contains("Arlington"), address.contains("VA"), address.contains("22201") {
-                    print("  ✓ Address properly formatted")
-                } else {
-                    transformationScore -= 0.25
-                    print("  ✗ Address formatting issue")
-                }
-            }
-
-            // Check line items transformation
-            if let scheduleItems = result.formData["scheduleItems"] as? [[String: Any]] {
-                if scheduleItems.count == 2 {
-                    print("  ✓ All line items transformed")
-
-                    // Check service/supply coding
-                    if let firstItem = scheduleItems.first,
-                       let supplyService = firstItem["supplyService"] as? String
-                    {
-                        if supplyService == "S" {
-                            print("  ✓ Service type correctly coded")
-                        } else {
-                            transformationScore -= 0.25
-                            print("  ✗ Service type incorrectly coded: \(supplyService)")
+        
+        // Perform concurrent form additions
+        await withTaskGroup(of: Void.self) { group in
+            for i in 1...5 {
+                group.addTask {
+                    let formData = self.createRFQFormData()
+                    formData["rfqNumber"] = "RFQ-CONCURRENT-\(i)"
+                    
+                    if let form = try? self.formRegistry.createForm(type: "SF18", with: formData) {
+                        try? await self.acquisitionRepository.update(acquisition.id) { acq in
+                            acq.addForm(form)
                         }
                     }
-                } else {
-                    transformationScore -= 0.5
-                    print("  ✗ Line items count mismatch: expected 2, got \(scheduleItems.count)")
                 }
             }
-
-            mopScore += transformationScore * 0.25
-
-            // MOP Test 3: FAR Clause Completion
-            if let farClauses = result.formData["farClauses"] as? [String] {
-                let requiredClauses = ["52.212-1", "52.212-2", "52.212-3", "52.212-4", "52.212-5"]
-                let hasAllClauses = requiredClauses.allSatisfy { farClauses.contains($0) }
-
-                if hasAllClauses {
-                    mopScore += 0.25
-                    print("  ✓ All required FAR clauses included")
-                } else {
-                    let missingClauses = requiredClauses.filter { !farClauses.contains($0) }
-                    print("  ✗ Missing FAR clauses: \(missingClauses)")
-                }
-            }
-
-            // MOP Test 4: Data Integrity
-            let originalTotal = contractTemplate.data["totalValue"] as? Double ?? 0
-            if let mappedTotal = extractNumberFromCurrency(result.formData["totalPrice"] as? String) {
-                if abs(mappedTotal - originalTotal) < 0.01 {
-                    mopScore += 0.25
-                    print("  ✓ Total value integrity maintained")
-                } else {
-                    print("  ✗ Total value mismatch")
-                }
-            }
-
-            // MOE Tests
-            if processingTime < 3.0 {
-                moeScore += 0.25
-                print("  ✓ Processing time: \(String(format: "%.2f", processingTime))s")
-            }
-
-            if result.isCompliant {
-                moeScore += 0.25
-                print("  ✓ Compliance achieved")
-            }
-
-            // Form completeness check
-            let totalFields = result.formData.count
-            if totalFields >= 15 {
-                moeScore += 0.25
-                print("  ✓ Form completeness: \(totalFields) fields populated")
-            }
-
-            moeScore += 0.25 // No errors
-
-        } catch {
-            print("  ✗ Error occurred: \(error.localizedDescription)")
         }
-
-        mopScores[testName] = mopScore
-        moeScores[testName] = moeScore
+        
+        // Verify forms were added (some might fail due to concurrency)
+        let finalAcquisition = try await acquisitionRepository.findById(acquisition.id)
+        XCTAssertGreaterThan(finalAcquisition?.forms.count ?? 0, 0)
     }
-
-    // MARK: - Test Scenario 3: Micro-purchase with SF 44
-
-    func testMicroPurchaseToSF44() async throws {
-        let testName = "Micro-purchase to SF 44"
-        print("\n=== Testing Scenario 3: \(testName) ===")
-
-        // Test data - Under threshold
-        let microPurchase = TemplateData(
-            documentType: .micro_purchase,
-            data: [
-                "orderNumber": "PO-2025-0001",
-                "dateOrdered": Date(),
-                "vendor": [
-                    "name": "Office Supplies Inc",
-                    "street1": "456 Commerce Ave",
-                    "city": "Washington",
-                    "state": "DC",
-                    "zip": "20001",
-                ],
-                "itemDescription": "Office supplies and equipment",
-                "quantity": 10,
-                "unitPrice": 500.00,
-                "totalAmount": 5000.00,
-                "purchaseCardLastFour": "1234",
-            ]
-        )
-
-        var mopScore = 0.0
-        var moeScore = 0.0
-
-        do {
-            let result = try await formMappingService.mapTemplateToForm(
-                templateData: microPurchase,
-                formType: .sf44
-            )
-
-            // MOP Test 1: Threshold Validation
-            if result.isCompliant {
-                mopScore += 0.25
-                print("  ✓ Threshold validation passed (under $10K)")
-            }
-
-            // MOP Test 2: Payment Method
-            if let paymentMethod = result.formData["paymentMethod"] as? String,
-               paymentMethod.contains("1234")
-            {
-                mopScore += 0.25
-                print("  ✓ Payment method correctly formatted")
-            }
-
-            // MOP Test 3: Required Fields
-            let requiredFields = ["orderNumber", "vendorFullAddress", "totalAmount", "immediateDelivery"]
-            let present = requiredFields.filter { result.formData[$0] != nil }.count
-            mopScore += (Double(present) / Double(requiredFields.count)) * 0.25
-
-            // MOP Test 4: Data transformation
-            if result.formData["immediateDelivery"] as? Bool == true {
-                mopScore += 0.25
-                print("  ✓ Immediate delivery flag set")
-            }
-
-            // MOE Tests
-            moeScore += 0.25 // Efficiency
-            moeScore += 0.25 // Compliance
-            moeScore += 0.25 // Appropriateness
-            moeScore += 0.25 // Error handling
-
-        } catch {
-            print("  ✗ Error occurred: \(error.localizedDescription)")
-        }
-
-        // Test over-threshold scenario
-        print("\n  Testing over-threshold scenario...")
-        let overThreshold = TemplateData(
-            documentType: .micro_purchase,
-            data: [
-                "totalAmount": 15000.00,
-                "orderNumber": "PO-2025-0002",
-                "vendor": ["name": "Test Vendor"],
-                "itemDescription": "Expensive equipment",
-            ]
-        )
-
-        do {
-            _ = try await formMappingService.mapTemplateToForm(
-                templateData: overThreshold,
-                formType: .sf44
-            )
-            print("  ✗ Should have failed for over-threshold amount")
-            moeScore -= 0.125 // Deduct for improper validation
-        } catch {
-            print("  ✓ Correctly rejected over-threshold purchase")
-            // Error handling working correctly
-        }
-
-        mopScores[testName] = mopScore
-        moeScores[testName] = moeScore
-    }
-
-    // MARK: - Test Scenario 4: Amendment Workflow with SF 30
-
-    func testAmendmentToSF30() async throws {
-        let testName = "Amendment to SF 30"
-        print("\n=== Testing Scenario 4: \(testName) ===")
-
-        let amendment = TemplateData(
-            documentType: .amendment,
-            data: [
-                "contractNumber": "W912DQ-25-C-1001",
-                "effectiveDate": Date(),
-                "changes": [
-                    "Extend period of performance by 30 days",
-                    "Add CLIN 0003 for additional services",
-                    "Update delivery location to Building B",
-                ],
-                "changeAmount": 50000.00,
-                "isAdministrative": false,
-            ]
-        )
-
-        var mopScore = 0.0
-        var moeScore = 0.0
-
-        do {
-            let result = try await formMappingService.mapTemplateToForm(
-                templateData: amendment,
-                formType: .sf30
-            )
-
-            // MOP Test 1: Amendment numbering
-            if result.formData["amendmentNumber"] != nil {
-                mopScore += 0.25
-                print("  ✓ Amendment number generated")
-            }
-
-            // MOP Test 2: Change description formatting
-            if let modDesc = result.formData["modificationDescription"] as? String {
-                let hasAllChanges = amendment.data["changes"] as? [String] ?? []
-                let allIncluded = hasAllChanges.allSatisfy { modDesc.contains($0) }
-                if allIncluded {
-                    mopScore += 0.25
-                    print("  ✓ All changes properly formatted")
+    
+    // MARK: - Performance Test
+    
+    func testPerformance_FormCreation() throws {
+        measure {
+            let expectation = self.expectation(description: "Form creation")
+            
+            Task {
+                for i in 1...100 {
+                    let formData = createSolicitationFormData()
+                    formData["solicitationNumber"] = "SOL-PERF-\(i)"
+                    _ = try? formRegistry.createForm(type: "SF1449", with: formData)
                 }
+                expectation.fulfill()
             }
-
-            // MOP Test 3: Modification code
-            if result.formData["modificationCode"] as? String == "B" {
-                mopScore += 0.25
-                print("  ✓ Correct modification code for bilateral mod")
-            }
-
-            // MOP Test 4: Required fields
-            mopScore += 0.25
-
-            // MOE Tests
-            moeScore = 1.0 // Full score for successful processing
-            print("  ✓ Amendment workflow completed successfully")
-
-        } catch {
-            print("  ✗ Error occurred: \(error.localizedDescription)")
+            
+            wait(for: [expectation], timeout: 10.0)
         }
-
-        mopScores[testName] = mopScore
-        moeScores[testName] = moeScore
     }
-
+    
     // MARK: - Helper Methods
-
-    private func extractNumberFromCurrency(_ currencyString: String?) -> Double? {
-        guard let currency = currencyString else { return nil }
-        let cleanString = currency.replacingOccurrences(of: "$", with: "")
-            .replacingOccurrences(of: ",", with: "")
-        return Double(cleanString)
+    
+    private func createRFQFormData() -> FormData {
+        let data = FormData()
+        data["rfqNumber"] = "RFQ-2025-001"
+        data["issueDate"] = "2025-01-15"
+        data["dueDate"] = "2025-01-30"
+        data["buyerName"] = "John Smith"
+        data["buyerPhone"] = "555-0123"
+        data["deliveryDate"] = "2025-02-28"
+        data["deliveryLocation"] = "Building A, Room 101"
+        data["itemDescription"] = "Desktop Computers - High Performance"
+        data["quantity"] = 50
+        data["vendorName"] = ""
+        data["vendorContact"] = ""
+        data["quotedPrice"] = 0.0
+        data["deliveryTerms"] = "FOB Destination"
+        data["revision"] = "06/2016"
+        return data
     }
-
-    private func generateTestReport() {
-        print("\n" + String(repeating: "=", count: 60))
-        print("FAR PART 53 INTEGRATION TEST REPORT")
-        print(String(repeating: "=", count: 60))
-
-        print("\nMEASUREMENT OF PERFORMANCE (MOP) SCORES:")
-        print(String(repeating: "-", count: 40))
-        var totalMOP = 0.0
-        for (test, score) in mopScores {
-            print(String(format: "%-25s: %.2f/1.00 (%.0f%%)", test, score, score * 100))
-            totalMOP += score
-        }
-
-        print("\nMEASUREMENT OF EFFECTIVENESS (MOE) SCORES:")
-        print(String(repeating: "-", count: 40))
-        var totalMOE = 0.0
-        for (test, score) in moeScores {
-            print(String(format: "%-25s: %.2f/1.00 (%.0f%%)", test, score, score * 100))
-            totalMOE += score
-        }
-
-        let avgMOP = totalMOP / Double(mopScores.count)
-        let avgMOE = totalMOE / Double(moeScores.count)
-        let combinedScore = (avgMOP + avgMOE) / 2.0
-
-        print("\n" + String(repeating: "=", count: 60))
-        print("SUMMARY:")
-        print(String(format: "Average MOP Score: %.2f (%.0f%%)", avgMOP, avgMOP * 100))
-        print(String(format: "Average MOE Score: %.2f (%.0f%%)", avgMOE, avgMOE * 100))
-        print(String(format: "Combined Score: %.2f (%.0f%%)", combinedScore, combinedScore * 100))
-        print("Success Threshold: 0.80 (80%)")
-        print(String(format: "Result: %@", combinedScore >= 0.8 ? " PASSED" : "❌ FAILED"))
-        print(String(repeating: "=", count: 60))
-
-        if combinedScore < 0.8 {
-            print("\nAREAS FOR IMPROVEMENT:")
-            if avgMOP < 0.8 {
-                print("- Technical implementation needs enhancement")
-                print("- Review field mapping rules and transformations")
-                print("- Ensure FAR validation rules are properly implemented")
-            }
-            if avgMOE < 0.8 {
-                print("- Business value delivery needs improvement")
-                print("- Optimize processing efficiency")
-                print("- Enhance error handling and user feedback")
-            }
-        }
+    
+    private func createSolicitationFormData() -> FormData {
+        let data = FormData()
+        data["requisitionNumber"] = "REQ-2025-001"
+        data["requisitionDate"] = "2025-01-10"
+        data["pageCount"] = 10
+        data["solicitationNumber"] = "SOL-2025-001"
+        data["solicitationDate"] = "2025-01-20"
+        data["contractorName"] = ""
+        data["contractorAddress"] = ""
+        data["itemDescription"] = "IT Equipment and Services"
+        data["quantity"] = 1
+        data["unitPrice"] = 0.0
+        data["totalAmount"] = 0.0
+        data["deliveryDate"] = "2025-03-01"
+        data["deliveryLocation"] = "Main Office"
+        data["certificationSignature"] = ""
+        data["certificationDate"] = ""
+        data["revision"] = "04/2024"
+        return data
     }
-}
-
-// MARK: - Test Execution
-
-extension FARPart53IntegrationTests {
-    /// Run all tests and generate comprehensive report
-    func testComprehensiveIntegration() async throws {
-        print("\n Starting FAR Part 53 Integration Tests\n")
-
-        try await testRFQToSF18Mapping()
-        try await testContractToSF1449Mapping()
-        try await testMicroPurchaseToSF44()
-        try await testAmendmentToSF30()
-
-        // Additional edge case tests could be added here
+    
+    private func createGenericFormData(for formType: String) -> FormData {
+        let data = FormData()
+        
+        switch formType {
+        case "SF18":
+            return createRFQFormData()
+        case "SF1449":
+            return createSolicitationFormData()
+        case "SF33":
+            data["solicitationNumber"] = "SOL-2025-002"
+            data["issuedBy"] = "Contracting Office"
+            data["issueDate"] = "2025-01-15"
+            data["revision"] = "04/2024"
+        case "SF30":
+            data["modificationNumber"] = "P00001"
+            data["contractNumber"] = "W912QR-25-C-0001"
+            data["effectiveDate"] = "2025-02-01"
+            data["revision"] = "04/2024"
+        case "SF26":
+            data["contractNumber"] = "W912QR-25-C-0002"
+            data["awardDate"] = "2025-01-30"
+            data["effectiveDate"] = "2025-02-01"
+            data["revision"] = "04/2024"
+        case "SF44":
+            data["orderNumber"] = "PO-2025-0001"
+            data["orderDate"] = "2025-01-15"
+            data["revision"] = "10/1983"
+        case "DD1155":
+            data["orderNumber"] = "SPE7LX-25-D-0001"
+            data["requisitionNumber"] = "REQ-DOD-2025-001"
+            data["priority"] = "03 - Routine"
+            data["issueDate"] = "2025-01-20"
+            data["revision"] = "06/2024"
+        default:
+            break
+        }
+        
+        return data
     }
 }

@@ -27,6 +27,7 @@ public enum DocumentType: String, CaseIterable, Identifiable, Codable {
     case corAppointment = "COR Appointment"
     case analytics = "Analytics"
     case otherTransactionAgreement = "Other Transaction Agreement"
+    case farUpdates = "FAR Updates"
 
     public var id: String { rawValue }
 
@@ -56,6 +57,7 @@ public enum DocumentType: String, CaseIterable, Identifiable, Codable {
         case .corAppointment: "COR Appointment"
         case .analytics: "Analytics"
         case .otherTransactionAgreement: "OT Agreement"
+        case .farUpdates: "FAR Updates"
         }
     }
 
@@ -85,6 +87,7 @@ public enum DocumentType: String, CaseIterable, Identifiable, Codable {
         case .corAppointment: "Contracting Officer's Representative appointment letter"
         case .analytics: "Procurement analytics and performance metrics dashboard"
         case .otherTransactionAgreement: "Other Transaction Agreement for prototype projects under 10 U.S.C. § 2371b"
+        case .farUpdates: "Federal Acquisition Regulation updates and their impacts"
         }
     }
 
@@ -114,6 +117,7 @@ public enum DocumentType: String, CaseIterable, Identifiable, Codable {
         case .corAppointment: "person.crop.circle.badge.checkmark"
         case .analytics: "chart.bar.xaxis"
         case .otherTransactionAgreement: "sparkles.rectangle.stack"
+        case .farUpdates: "arrow.triangle.2.circlepath.circle.fill"
         }
     }
 
@@ -157,6 +161,7 @@ public enum DocumentType: String, CaseIterable, Identifiable, Codable {
         case .corAppointment: "FAR 1.604, 1.602-2, 42.302"
         case .analytics: "FAR 4.606, 4.607, 4.1501"
         case .otherTransactionAgreement: "10 U.S.C. 2371b, 32 C.F.R. 3.8"
+        case .farUpdates: "FAR 1.101, 1.102, 52.101"
         }
     }
 }

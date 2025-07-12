@@ -151,7 +151,13 @@ public enum SAMGovError: Error, LocalizedError {
 
 extension SAMGovService: DependencyKey {
     public static var liveValue: SAMGovService {
-        SAMGovService(
+        // Always use repository-based implementation as part of Phase 4 migration
+        return .liveValueWithRepository
+    }
+    
+    // Keep the old implementation as a backup/reference
+    static var directAPIValue: SAMGovService {
+        return SAMGovService(
             searchEntity: { query in
                 // Get API key from settings
                 @Dependency(\.settingsManager) var settingsManager
