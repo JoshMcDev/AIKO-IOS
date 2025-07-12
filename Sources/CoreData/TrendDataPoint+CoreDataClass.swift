@@ -1,6 +1,5 @@
-import Foundation
 import CoreData
+import Foundation
 
 @objc(TrendDataPointEntity)
-public class TrendDataPointEntity: NSManagedObject {
-}
+public class TrendDataPointEntity: NSManagedObject {}

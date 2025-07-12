@@ -1,22 +1,22 @@
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
 struct SAMGovLookupView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var searchResults: [EntityDetail] = []
     @State private var errorMessage: String?
     @State private var showingAPIKeyAlert = false
-    
+
     // Multiple search entries
     @State private var searchEntries: [SearchEntry] = [
         SearchEntry(),
         SearchEntry(),
-        SearchEntry()
+        SearchEntry(),
     ]
-    
+
     @Dependency(\.samGovService) var samGovService
     @Dependency(\.settingsManager) var settingsManager
-    
+
     struct SearchEntry: Identifiable {
         let id = UUID()
         var text: String = ""
@@ -24,29 +24,29 @@ struct SAMGovLookupView: View {
         var isSearching: Bool = false
         var result: EntityDetail?
     }
-    
+
     enum SearchType: String, CaseIterable {
         case cage = "CAGE Code"
         case companyName = "Company Name"
         case uei = "UEI"
-        
+
         var placeholder: String {
             switch self {
-            case .companyName: return "Enter company name..."
-            case .uei: return "Enter UEI (12 characters)..."
-            case .cage: return "Enter CAGE code..."
+            case .companyName: "Enter company name..."
+            case .uei: "Enter UEI (12 characters)..."
+            case .cage: "Enter CAGE code..."
             }
         }
-        
+
         var icon: String {
             switch self {
-            case .companyName: return "building.2"
-            case .uei: return "number"
-            case .cage: return "barcode"
+            case .companyName: "building.2"
+            case .uei: "number"
+            case .cage: "barcode"
             }
         }
     }
-    
+
     var body: some View {
         SwiftUI.NavigationView {
             VStack(spacing: 0) {
@@ -58,7 +58,7 @@ struct SAMGovLookupView: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 60, height: 60)
                     }
-                    
+
                     Text("Search SAM.gov")
                         .font(.title2)
                         .bold()
@@ -67,7 +67,7 @@ struct SAMGovLookupView: View {
                                 colors: [
                                     Color(red: 0.698, green: 0.132, blue: 0.203),
                                     Color.white,
-                                    Color(red: 0.0, green: 0.125, blue: 0.698)
+                                    Color(red: 0.0, green: 0.125, blue: 0.698),
                                 ],
                                 startPoint: .leading,
                                 endPoint: .trailing
@@ -75,7 +75,7 @@ struct SAMGovLookupView: View {
                         )
                 }
                 .padding(.top)
-                
+
                 // Search Section
                 ScrollView {
                     VStack(spacing: Theme.Spacing.lg) {
@@ -84,12 +84,12 @@ struct SAMGovLookupView: View {
                             SearchEntryView(
                                 entry: $searchEntries[index],
                                 onSearch: { performSearch(for: index) },
-                                onRemove: index > 0 ? {  // Show X on all cards except the first one
+                                onRemove: index > 0 ? { // Show X on all cards except the first one
                                     searchEntries.remove(at: index)
                                 } : nil
                             )
                         }
-                        
+
                         // Add more button
                         Button(action: {
                             searchEntries.append(SearchEntry())
@@ -110,11 +110,11 @@ struct SAMGovLookupView: View {
                             )
                         }
                         .padding(.horizontal)
-                        
+
                         // Search all button
                         Button(action: performAllSearches) {
                             HStack {
-                                if searchEntries.contains(where: { $0.isSearching }) {
+                                if searchEntries.contains(where: \.isSearching) {
                                     ProgressView()
                                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                         .scaleEffect(0.8)
@@ -130,13 +130,13 @@ struct SAMGovLookupView: View {
                             .background(Theme.Colors.aikoPrimary)
                             .cornerRadius(Theme.CornerRadius.sm)
                         }
-                        .disabled(searchEntries.allSatisfy { $0.text.isEmpty } || searchEntries.contains(where: { $0.isSearching }))
+                        .disabled(searchEntries.allSatisfy(\.text.isEmpty) || searchEntries.contains(where: \.isSearching))
                         .padding(.horizontal)
                     }
                     .padding(.vertical)
-                
-                Divider()
-                
+
+                    Divider()
+
                     // Results Section
                     if !searchResults.isEmpty {
                         Divider()
@@ -144,7 +144,7 @@ struct SAMGovLookupView: View {
                             .font(.headline)
                             .padding(.horizontal)
                             .padding(.top)
-                        
+
                         ForEach(searchResults, id: \.legalBusinessName) { result in
                             EntityDetailView(entity: result)
                                 .padding()
@@ -175,38 +175,38 @@ struct SAMGovLookupView: View {
             Text("Please configure your SAM.gov API key in Settings to use this feature.")
         }
     }
-    
+
     private func loadSAMIcon() -> Image? {
         guard let url = Bundle.module.url(forResource: "SAMIcon", withExtension: "png") else {
             return nil
         }
-        
+
         #if os(iOS)
-        guard let uiImage = UIImage(contentsOfFile: url.path) else {
-            return nil
-        }
-        return Image(uiImage: uiImage)
+            guard let uiImage = UIImage(contentsOfFile: url.path) else {
+                return nil
+            }
+            return Image(uiImage: uiImage)
         #elseif os(macOS)
-        guard let nsImage = NSImage(contentsOfFile: url.path) else {
-            return nil
-        }
-        return Image(nsImage: nsImage)
+            guard let nsImage = NSImage(contentsOfFile: url.path) else {
+                return nil
+            }
+            return Image(nsImage: nsImage)
         #endif
     }
-    
+
     private func performSearch(for index: Int) {
         guard index < searchEntries.count else { return }
         let entry = searchEntries[index]
-        
+
         guard !entry.text.isEmpty else { return }
-        
+
         searchEntries[index].isSearching = true
         searchEntries[index].result = nil
-        
+
         Task {
             do {
                 let result: EntityDetail?
-                
+
                 switch entry.type {
                 case .companyName:
                     let searchResults = try await samGovService.searchEntity(entry.text)
@@ -219,11 +219,11 @@ struct SAMGovLookupView: View {
                 case .cage:
                     result = try await samGovService.getEntityByCAGE(entry.text)
                 }
-                
+
                 await MainActor.run {
                     searchEntries[index].isSearching = false
                     searchEntries[index].result = result
-                    if let result = result {
+                    if let result {
                         if !searchResults.contains(where: { $0.legalBusinessName == result.legalBusinessName }) {
                             searchResults.append(result)
                         }
@@ -237,10 +237,10 @@ struct SAMGovLookupView: View {
             }
         }
     }
-    
+
     private func performAllSearches() {
         for index in searchEntries.indices {
-            if !searchEntries[index].text.isEmpty && !searchEntries[index].isSearching {
+            if !searchEntries[index].text.isEmpty, !searchEntries[index].isSearching {
                 performSearch(for: index)
             }
         }
@@ -248,11 +248,12 @@ struct SAMGovLookupView: View {
 }
 
 // MARK: - Search Entry View
+
 struct SearchEntryView: View {
     @Binding var entry: SAMGovLookupView.SearchEntry
     let onSearch: () -> Void
     let onRemove: (() -> Void)?
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
             // Search type filter buttons
@@ -279,10 +280,10 @@ struct SearchEntryView: View {
                         .cornerRadius(Theme.CornerRadius.sm)
                     }
                 }
-                
+
                 Spacer()
-                
-                if let onRemove = onRemove {
+
+                if let onRemove {
                     Button(action: onRemove) {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundColor(.secondary)
@@ -290,27 +291,27 @@ struct SearchEntryView: View {
                     }
                 }
             }
-            
+
             // Search field
             HStack {
                 TextField(entry.type.placeholder, text: $entry.text)
                     .textFieldStyle(PlainTextFieldStyle())
-                    #if os(iOS)
+                #if os(iOS)
                     .autocapitalization(entry.type == .cage || entry.type == .uei ? .allCharacters : .words)
                     .disableAutocorrection(true)
                     .submitLabel(.search)
-                    #endif
+                #endif
                     .onSubmit {
                         onSearch()
                     }
-                
+
                 if !entry.text.isEmpty {
                     Button(action: { entry.text = "" }) {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundColor(.secondary)
                     }
                 }
-                
+
                 // Search button with magnifying glass
                 Button(action: onSearch) {
                     if entry.isSearching {
@@ -328,7 +329,7 @@ struct SearchEntryView: View {
             .padding()
             .background(Theme.Colors.aikoSecondary)
             .cornerRadius(Theme.CornerRadius.sm)
-            
+
             // Result display
             if let result = entry.result {
                 VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
@@ -358,9 +359,10 @@ struct SearchEntryView: View {
 }
 
 // MARK: - Entity Detail View
+
 struct EntityDetailView: View {
     let entity: EntityDetail
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
             // Active Exclusions Warning (if applicable)
@@ -369,17 +371,17 @@ struct EntityDetailView: View {
                     Image(systemName: "exclamationmark.triangle.fill")
                         .foregroundColor(.white)
                         .font(.headline)
-                    
+
                     VStack(alignment: .leading, spacing: 4) {
                         Text("ACTIVE EXCLUSIONS")
                             .font(.headline)
                             .foregroundColor(.white)
-                        
+
                         Text("This entity is excluded from receiving federal contracts, grants, and benefits")
                             .font(.caption)
                             .foregroundColor(.white.opacity(0.9))
                     }
-                    
+
                     Spacer()
                 }
                 .padding()
@@ -388,16 +390,16 @@ struct EntityDetailView: View {
                         .fill(Color.red)
                 )
             }
-            
+
             // Status Badge
             HStack {
                 Image(systemName: entity.registrationStatus == "Active" ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
                     .foregroundColor(entity.registrationStatus == "Active" ? .green : .orange)
-                
+
                 Text(entity.registrationStatus)
                     .font(.headline)
                     .foregroundColor(entity.registrationStatus == "Active" ? .green : .orange)
-                
+
                 Spacer()
             }
             .padding()
@@ -405,7 +407,7 @@ struct EntityDetailView: View {
                 RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
                     .fill(entity.registrationStatus == "Active" ? Color.green.opacity(0.1) : Color.orange.opacity(0.1))
             )
-            
+
             // Basic Information
             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                 InfoRow(label: "Legal Name", value: entity.legalBusinessName)
@@ -417,20 +419,20 @@ struct EntityDetailView: View {
             .padding()
             .background(Theme.Colors.aikoCard)
             .cornerRadius(Theme.CornerRadius.sm)
-            
+
             // Registration Dates
             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                 Text("Registration Information")
                     .font(.headline)
                     .padding(.bottom, 4)
-                
+
                 if let regDate = entity.registrationDate {
                     InfoRow(label: "Registration Date", value: formatDate(regDate))
                 }
-                
+
                 if let expDate = entity.expirationDate {
                     InfoRow(label: "Expiration Date", value: formatDate(expDate))
-                    
+
                     // Days until expiration
                     let daysUntil = Calendar.current.dateComponents([.day], from: Date(), to: expDate).day ?? 0
                     if daysUntil > 0 {
@@ -448,14 +450,14 @@ struct EntityDetailView: View {
             .padding()
             .background(Theme.Colors.aikoCard)
             .cornerRadius(Theme.CornerRadius.sm)
-            
+
             // Business Types
             if !entity.businessTypes.isEmpty {
                 VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                     Text("Business Types")
                         .font(.headline)
                         .padding(.bottom, 4)
-                    
+
                     ForEach(entity.businessTypes, id: \.code) { type in
                         HStack {
                             Image(systemName: "checkmark.circle")
@@ -470,21 +472,21 @@ struct EntityDetailView: View {
                 .background(Theme.Colors.aikoCard)
                 .cornerRadius(Theme.CornerRadius.sm)
             }
-            
+
             // NAICS Codes
             if !entity.naicsCodes.isEmpty {
                 VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                     Text("NAICS Codes")
                         .font(.headline)
                         .padding(.bottom, 4)
-                    
+
                     ForEach(entity.naicsCodes, id: \.code) { naics in
                         HStack(alignment: .top, spacing: Theme.Spacing.xs) {
                             Text(naics.code)
                                 .font(.caption.monospaced())
                                 .foregroundColor(.secondary)
                                 .frame(width: 60, alignment: .leading)
-                            
+
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(naics.description)
                                     .font(.caption)
@@ -496,7 +498,7 @@ struct EntityDetailView: View {
                                         .foregroundColor(.blue)
                                 }
                             }
-                            
+
                             Spacer()
                         }
                     }
@@ -505,14 +507,14 @@ struct EntityDetailView: View {
                 .background(Theme.Colors.aikoCard)
                 .cornerRadius(Theme.CornerRadius.sm)
             }
-            
+
             // Certifications
             if entity.isSmallBusiness || entity.isVeteranOwned || entity.isWomanOwned || entity.is8aProgram || entity.isHUBZone {
                 VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                     Text("Certifications")
                         .font(.headline)
                         .padding(.bottom, 4)
-                    
+
                     if entity.isSmallBusiness {
                         Label("Small Business", systemImage: "checkmark.circle.fill")
                             .font(.caption)
@@ -548,14 +550,14 @@ struct EntityDetailView: View {
                 .background(Theme.Colors.aikoCard)
                 .cornerRadius(Theme.CornerRadius.sm)
             }
-            
+
             // Section 889 Compliance
             if let section889 = entity.section889Certifications {
                 VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                     Text("Section 889 Compliance")
                         .font(.headline)
                         .padding(.bottom, 4)
-                    
+
                     if let doesNotProvide = section889.doesNotProvideProhibitedTelecom {
                         HStack {
                             Image(systemName: doesNotProvide ? "checkmark.circle.fill" : "xmark.circle.fill")
@@ -565,7 +567,7 @@ struct EntityDetailView: View {
                                 .font(.caption)
                         }
                     }
-                    
+
                     if let doesNotUse = section889.doesNotUseProhibitedTelecom {
                         HStack {
                             Image(systemName: doesNotUse ? "checkmark.circle.fill" : "xmark.circle.fill")
@@ -575,8 +577,8 @@ struct EntityDetailView: View {
                                 .font(.caption)
                         }
                     }
-                    
-                    if section889.doesNotProvideProhibitedTelecom == nil && section889.doesNotUseProhibitedTelecom == nil {
+
+                    if section889.doesNotProvideProhibitedTelecom == nil, section889.doesNotUseProhibitedTelecom == nil {
                         HStack {
                             Image(systemName: "exclamationmark.triangle")
                                 .foregroundColor(.orange)
@@ -591,7 +593,7 @@ struct EntityDetailView: View {
                 .background(Theme.Colors.aikoCard)
                 .cornerRadius(Theme.CornerRadius.sm)
             }
-            
+
             // Foreign Government Entities
             if !entity.foreignGovtEntities.isEmpty {
                 VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
@@ -603,7 +605,7 @@ struct EntityDetailView: View {
                             .foregroundColor(.orange)
                     }
                     .padding(.bottom, 4)
-                    
+
                     ForEach(entity.foreignGovtEntities, id: \.name) { fge in
                         VStack(alignment: .leading, spacing: 4) {
                             HStack {
@@ -614,25 +616,25 @@ struct EntityDetailView: View {
                                     .font(.caption)
                                     .fontWeight(.semibold)
                             }
-                            
+
                             Text(fge.name)
                                 .font(.caption)
                                 .padding(.leading, 20)
-                            
+
                             if let interestType = fge.interestType {
                                 Text("Interest Type: \(interestType)")
                                     .font(.caption2)
                                     .foregroundColor(.secondary)
                                     .padding(.leading, 20)
                             }
-                            
+
                             if let ownership = fge.ownershipPercentage {
                                 Text("Ownership: \(ownership)")
                                     .font(.caption2)
                                     .foregroundColor(.secondary)
                                     .padding(.leading, 20)
                             }
-                            
+
                             if let control = fge.controlDescription {
                                 Text("Control: \(control)")
                                     .font(.caption2)
@@ -641,7 +643,7 @@ struct EntityDetailView: View {
                             }
                         }
                         .padding(.vertical, 4)
-                        
+
                         if fge != entity.foreignGovtEntities.last {
                             Divider()
                         }
@@ -657,14 +659,14 @@ struct EntityDetailView: View {
                         )
                 )
             }
-            
+
             // Responsibility & Qualification
             if let responsibility = entity.responsibilityInformation {
                 VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                     Text("Responsibility & Qualification")
                         .font(.headline)
                         .padding(.bottom, 4)
-                    
+
                     // Financial Responsibility
                     if let hasDebt = responsibility.hasDelinquentFederalDebt {
                         HStack {
@@ -675,7 +677,7 @@ struct EntityDetailView: View {
                                 .font(.caption)
                         }
                     }
-                    
+
                     if let hasTax = responsibility.hasUnpaidTaxLiability {
                         HStack {
                             Image(systemName: hasTax ? "xmark.circle.fill" : "checkmark.circle.fill")
@@ -685,7 +687,7 @@ struct EntityDetailView: View {
                                 .font(.caption)
                         }
                     }
-                    
+
                     // Integrity Records (FAPIIS)
                     if !responsibility.integrityRecords.isEmpty {
                         Text("Integrity Records")
@@ -693,7 +695,7 @@ struct EntityDetailView: View {
                             .fontWeight(.semibold)
                             .foregroundColor(.orange)
                             .padding(.top, 4)
-                        
+
                         ForEach(responsibility.integrityRecords, id: \.proceedingDescription) { record in
                             VStack(alignment: .leading, spacing: 2) {
                                 if let type = record.proceedingType {
@@ -720,15 +722,16 @@ struct EntityDetailView: View {
                 .background(Theme.Colors.aikoCard)
                 .cornerRadius(Theme.CornerRadius.sm)
             }
-            
+
             // Architect-Engineer Qualifications
             if let aeInfo = entity.architectEngineerQualifications,
-               aeInfo.hasArchitectEngineerResponses {
+               aeInfo.hasArchitectEngineerResponses
+            {
                 VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                     Text("Architect-Engineer Qualifications")
                         .font(.headline)
                         .padding(.bottom, 4)
-                    
+
                     HStack {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundColor(.green)
@@ -736,13 +739,13 @@ struct EntityDetailView: View {
                         Text(aeInfo.hasSF330Filed ? "SF 330 Filed" : "A-E Qualifications on file")
                             .font(.caption)
                     }
-                    
+
                     if !aeInfo.disciplines.isEmpty {
                         Text("Disciplines:")
                             .font(.caption)
                             .fontWeight(.semibold)
                             .padding(.top, 4)
-                        
+
                         ForEach(aeInfo.disciplines, id: \.self) { discipline in
                             HStack {
                                 Text("•")
@@ -758,14 +761,14 @@ struct EntityDetailView: View {
                 .background(Theme.Colors.aikoCard)
                 .cornerRadius(Theme.CornerRadius.sm)
             }
-            
+
             // Address
             if let address = entity.physicalAddress {
                 VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                     Text("Physical Address")
                         .font(.headline)
                         .padding(.bottom, 4)
-                    
+
                     if let street = address.streetAddress {
                         Text(street)
                             .font(.caption)
@@ -781,7 +784,7 @@ struct EntityDetailView: View {
             }
         }
     }
-    
+
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
@@ -791,10 +794,11 @@ struct EntityDetailView: View {
 }
 
 // MARK: - Helper Views
+
 struct InfoRow: View {
     let label: String
     let value: String
-    
+
     var body: some View {
         HStack {
             Text(label)
@@ -814,10 +818,10 @@ struct SAMGovEmptyStateView: View {
             Image(systemName: "building.2.crop.circle")
                 .font(.system(size: 60))
                 .foregroundColor(.secondary)
-            
+
             Text("Search SAM.gov")
                 .font(.headline)
-            
+
             Text("Enter a company name, UEI, or CAGE code to verify registration status")
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -830,16 +834,16 @@ struct SAMGovEmptyStateView: View {
 
 struct SAMGovErrorView: View {
     let message: String
-    
+
     var body: some View {
         VStack(spacing: Theme.Spacing.md) {
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: 40))
                 .foregroundColor(Theme.Colors.aikoError)
-            
+
             Text("Search Failed")
                 .font(.headline)
-            
+
             Text(message)
                 .font(.caption)
                 .foregroundColor(.secondary)

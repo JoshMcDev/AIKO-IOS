@@ -1,7 +1,8 @@
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 // MARK: - Document Dependency Service
+
 public struct DocumentDependencyService {
     public var getDependencies: (DocumentType) -> [DocumentDependency]
     public var getRequiredDocuments: (DocumentType) -> [DocumentType]
@@ -9,7 +10,7 @@ public struct DocumentDependencyService {
     public var suggestNextDocuments: ([DocumentType], CollectedData) -> [DocumentType]
     public var validateDependencies: ([GeneratedDocument], DocumentType) -> DependencyValidation
     public var extractDataForDependents: (GeneratedDocument) -> CollectedData
-    
+
     public init(
         getDependencies: @escaping (DocumentType) -> [DocumentDependency],
         getRequiredDocuments: @escaping (DocumentType) -> [DocumentType],
@@ -28,12 +29,13 @@ public struct DocumentDependencyService {
 }
 
 // MARK: - Dependency Validation
+
 public struct DependencyValidation: Equatable {
     public let isValid: Bool
     public let missingDocuments: [DocumentType]
     public let missingFields: [String]
     public let warnings: [String]
-    
+
     public init(
         isValid: Bool,
         missingDocuments: [DocumentType] = [],
@@ -48,61 +50,62 @@ public struct DependencyValidation: Equatable {
 }
 
 // MARK: - Document Dependency Definitions
+
 extension DocumentDependencyService: DependencyKey {
     public static var liveValue: DocumentDependencyService {
         // Define the dependency graph
         let dependencyGraph = buildDependencyGraph()
-        
+
         return DocumentDependencyService(
             getDependencies: { documentType in
                 dependencyGraph[documentType] ?? []
             },
-            
+
             getRequiredDocuments: { documentType in
                 dependencyGraph[documentType]?
-                    .filter { $0.isRequired }
-                    .map { $0.sourceDocumentType } ?? []
+                    .filter(\.isRequired)
+                    .map(\.sourceDocumentType) ?? []
             },
-            
+
             getDataFlow: { fromDocument, toDocument in
                 dependencyGraph[toDocument]?
                     .first { $0.sourceDocumentType == fromDocument }?
                     .dataFields ?? []
             },
-            
-            suggestNextDocuments: { existingDocuments, collectedData in
+
+            suggestNextDocuments: { existingDocuments, _ in
                 // Analyze what documents would benefit from the current data
                 var suggestions: [DocumentType] = []
                 let existingSet = Set(existingDocuments)
-                
+
                 // Check each document type to see if we have its dependencies
                 for (docType, dependencies) in dependencyGraph {
                     guard !existingSet.contains(docType) else { continue }
-                    
-                    let requiredDeps = dependencies.filter { $0.isRequired }
+
+                    let requiredDeps = dependencies.filter(\.isRequired)
                     let hasAllRequired = requiredDeps.allSatisfy { dep in
                         existingSet.contains(dep.sourceDocumentType)
                     }
-                    
+
                     if hasAllRequired {
                         suggestions.append(docType)
                     }
                 }
-                
+
                 // Prioritize based on typical workflow order
                 return suggestions.sorted { a, b in
                     workflowOrder(a) < workflowOrder(b)
                 }
             },
-            
+
             validateDependencies: { existingDocuments, targetDocument in
                 let dependencies = dependencyGraph[targetDocument] ?? []
-                let existingTypes = Set(existingDocuments.compactMap { $0.documentType })
-                
+                let existingTypes = Set(existingDocuments.compactMap(\.documentType))
+
                 var missingDocuments: [DocumentType] = []
                 var missingFields: [String] = []
                 var warnings: [String] = []
-                
+
                 for dependency in dependencies {
                     if !existingTypes.contains(dependency.sourceDocumentType) {
                         if dependency.isRequired {
@@ -122,9 +125,9 @@ extension DocumentDependencyService: DependencyKey {
                         }
                     }
                 }
-                
+
                 let isValid = missingDocuments.isEmpty && missingFields.isEmpty
-                
+
                 return DependencyValidation(
                     isValid: isValid,
                     missingDocuments: missingDocuments,
@@ -132,7 +135,7 @@ extension DocumentDependencyService: DependencyKey {
                     warnings: warnings
                 )
             },
-            
+
             extractDataForDependents: { document in
                 extractDataFromDocument(document)
             }
@@ -141,12 +144,13 @@ extension DocumentDependencyService: DependencyKey {
 }
 
 // MARK: - Helper Functions
+
 private func buildDependencyGraph() -> [DocumentType: [DocumentDependency]] {
     var graph: [DocumentType: [DocumentDependency]] = [:]
-    
+
     // Market Research Report dependencies
     graph[.marketResearch] = []
-    
+
     // Acquisition Plan dependencies
     graph[.acquisitionPlan] = [
         DocumentDependency(
@@ -154,9 +158,9 @@ private func buildDependencyGraph() -> [DocumentType: [DocumentDependency]] {
             targetDocumentType: .acquisitionPlan,
             dataFields: ["market_analysis", "vendor_capabilities", "cost_estimates"],
             isRequired: false
-        )
+        ),
     ]
-    
+
     // SOW/SOO/PWS dependencies
     graph[.sow] = [
         DocumentDependency(
@@ -170,27 +174,27 @@ private func buildDependencyGraph() -> [DocumentType: [DocumentDependency]] {
             targetDocumentType: .sow,
             dataFields: ["acquisition_strategy", "timeline", "deliverables"],
             isRequired: false
-        )
+        ),
     ]
-    
+
     graph[.soo] = [
         DocumentDependency(
             sourceDocumentType: .acquisitionPlan,
             targetDocumentType: .soo,
             dataFields: ["objectives", "desired_outcomes"],
             isRequired: false
-        )
+        ),
     ]
-    
+
     graph[.pws] = [
         DocumentDependency(
             sourceDocumentType: .acquisitionPlan,
             targetDocumentType: .pws,
             dataFields: ["performance_standards", "metrics"],
             isRequired: false
-        )
+        ),
     ]
-    
+
     // QASP dependencies
     graph[.qasp] = [
         DocumentDependency(
@@ -204,9 +208,9 @@ private func buildDependencyGraph() -> [DocumentType: [DocumentDependency]] {
             targetDocumentType: .qasp,
             dataFields: ["deliverables", "acceptance_criteria"],
             isRequired: false
-        )
+        ),
     ]
-    
+
     // Cost Estimate dependencies
     graph[.costEstimate] = [
         DocumentDependency(
@@ -220,9 +224,9 @@ private func buildDependencyGraph() -> [DocumentType: [DocumentDependency]] {
             targetDocumentType: .costEstimate,
             dataFields: ["market_rates", "vendor_pricing"],
             isRequired: false
-        )
+        ),
     ]
-    
+
     // Evaluation Plan dependencies
     graph[.evaluationPlan] = [
         DocumentDependency(
@@ -236,9 +240,9 @@ private func buildDependencyGraph() -> [DocumentType: [DocumentDependency]] {
             targetDocumentType: .evaluationPlan,
             dataFields: ["acquisition_strategy", "source_selection_method"],
             isRequired: false
-        )
+        ),
     ]
-    
+
     // RFQ/RFP dependencies
     graph[.requestForQuote] = [
         DocumentDependency(
@@ -258,9 +262,9 @@ private func buildDependencyGraph() -> [DocumentType: [DocumentDependency]] {
             targetDocumentType: .requestForQuote,
             dataFields: ["evaluation_criteria", "submission_requirements"],
             isRequired: true
-        )
+        ),
     ]
-    
+
     graph[.requestForProposal] = [
         DocumentDependency(
             sourceDocumentType: .sow,
@@ -279,9 +283,9 @@ private func buildDependencyGraph() -> [DocumentType: [DocumentDependency]] {
             targetDocumentType: .requestForProposal,
             dataFields: ["budget_range", "cost_evaluation_factors"],
             isRequired: false
-        )
+        ),
     ]
-    
+
     // Contract dependencies
     graph[.contractScaffold] = [
         DocumentDependency(
@@ -301,9 +305,9 @@ private func buildDependencyGraph() -> [DocumentType: [DocumentDependency]] {
             targetDocumentType: .contractScaffold,
             dataFields: ["performance_requirements", "deliverables"],
             isRequired: true
-        )
+        ),
     ]
-    
+
     // COR Appointment dependencies
     graph[.corAppointment] = [
         DocumentDependency(
@@ -317,38 +321,38 @@ private func buildDependencyGraph() -> [DocumentType: [DocumentDependency]] {
             targetDocumentType: .corAppointment,
             dataFields: ["surveillance_duties", "reporting_requirements"],
             isRequired: false
-        )
+        ),
     ]
-    
+
     return graph
 }
 
 private func workflowOrder(_ documentType: DocumentType) -> Int {
     switch documentType {
-    case .marketResearch: return 1
-    case .acquisitionPlan: return 2
-    case .sow, .soo, .pws: return 3
-    case .qasp: return 4
-    case .costEstimate: return 5
-    case .evaluationPlan: return 6
-    case .fiscalLawReview, .opsecReview: return 7
-    case .industryRFI, .sourcesSought: return 8
-    case .justificationApproval: return 9
-    case .codes: return 10
-    case .competitionAnalysis: return 11
-    case .procurementSourcing: return 12
-    case .rrd: return 13
-    case .requestForQuoteSimplified, .requestForQuote, .requestForProposal: return 14
-    case .contractScaffold: return 15
-    case .corAppointment: return 16
-    case .analytics: return 17
-    case .otherTransactionAgreement: return 18
+    case .marketResearch: 1
+    case .acquisitionPlan: 2
+    case .sow, .soo, .pws: 3
+    case .qasp: 4
+    case .costEstimate: 5
+    case .evaluationPlan: 6
+    case .fiscalLawReview, .opsecReview: 7
+    case .industryRFI, .sourcesSought: 8
+    case .justificationApproval: 9
+    case .codes: 10
+    case .competitionAnalysis: 11
+    case .procurementSourcing: 12
+    case .rrd: 13
+    case .requestForQuoteSimplified, .requestForQuote, .requestForProposal: 14
+    case .contractScaffold: 15
+    case .corAppointment: 16
+    case .analytics: 17
+    case .otherTransactionAgreement: 18
     }
 }
 
 private func extractDataFromDocument(_ document: GeneratedDocument) -> CollectedData {
     var extractedData = CollectedData()
-    
+
     // Extract key data based on document type
     // This would be enhanced with actual parsing logic
     switch document.documentType {
@@ -356,34 +360,34 @@ private func extractDataFromDocument(_ document: GeneratedDocument) -> Collected
         extractedData["market_analysis"] = "Market analysis from \(document.title)"
         extractedData["vendor_capabilities"] = "Vendor capabilities identified"
         extractedData["cost_estimates"] = "Preliminary cost estimates"
-        
+
     case .sow:
         extractedData["deliverables"] = "Extracted deliverables"
         extractedData["timeline"] = "Project timeline"
         extractedData["requirements"] = "Technical requirements"
         extractedData["labor_categories"] = "Labor categories"
-        
+
     case .costEstimate:
         extractedData["estimated_value"] = "Total estimated cost"
         extractedData["pricing_structure"] = "Pricing breakdown"
         extractedData["budget_range"] = "Budget range"
-        
+
     case .evaluationPlan:
         extractedData["evaluation_criteria"] = "Technical evaluation criteria"
         extractedData["submission_requirements"] = "Proposal submission requirements"
         extractedData["technical_factors"] = "Technical evaluation factors"
-        
+
     default:
         // Extract generic data
         extractedData["document_type"] = document.documentType?.rawValue ?? "Unknown"
         extractedData["created_date"] = document.createdAt.description
     }
-    
+
     return extractedData
 }
 
-extension DependencyValues {
-    public var documentDependencyService: DocumentDependencyService {
+public extension DependencyValues {
+    var documentDependencyService: DocumentDependencyService {
         get { self[DocumentDependencyService.self] }
         set { self[DocumentDependencyService.self] = newValue }
     }

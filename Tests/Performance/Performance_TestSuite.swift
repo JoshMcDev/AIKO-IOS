@@ -1,40 +1,39 @@
-import XCTest
 @testable import AIKO
 import ComposableArchitecture
+import XCTest
 
 /// Comprehensive performance testing suite for AIKO-IOS
 @MainActor
 final class PerformanceTestSuite: XCTestCase {
-    
     // MARK: - Configuration
-    
+
     private let standardIterations = 10
     private let stressIterations = 100
     private let largeDataSetSize = 1000
-    
+
     override func setUp() async throws {
         try await super.setUp()
         // Warm up caches and services
         _ = AdaptiveDocumentCache()
         _ = UnifiedDocumentCacheService()
     }
-    
+
     // MARK: - Memory Management Performance Tests
-    
+
     func testMemoryPoolAllocatorPerformance() throws {
         let allocator = MemoryPoolAllocator(poolSize: 100, bufferSize: 1024 * 1024)
-        
+
         measure(metrics: [XCTMemoryMetric(), XCTClockMetric()]) {
-            for _ in 0..<standardIterations {
+            for _ in 0 ..< standardIterations {
                 // Allocate and deallocate buffers
                 var buffers: [MemoryPoolAllocator.BufferHandle] = []
-                
-                for _ in 0..<50 {
+
+                for _ in 0 ..< 50 {
                     if let buffer = allocator.allocate() {
                         buffers.append(buffer)
                     }
                 }
-                
+
                 // Random deallocations
                 buffers.shuffle()
                 for buffer in buffers {
@@ -43,58 +42,58 @@ final class PerformanceTestSuite: XCTestCase {
             }
         }
     }
-    
+
     func testAsyncMemoryPoolPerformance() async throws {
         let pool = AsyncMemoryPool<Data>()
-        
+
         let metrics = XCTMeasureOptions()
         metrics.iterationCount = 5
-        
-        self.measure(options: metrics) {
+
+        measure(options: metrics) {
             let expectation = self.expectation(description: "Async operations")
-            
+
             Task {
                 // Concurrent allocations
                 await withTaskGroup(of: Void.self) { group in
-                    for i in 0..<100 {
+                    for i in 0 ..< 100 {
                         group.addTask {
                             let data = Data(repeating: UInt8(i), count: 1024)
                             await pool.store(data, for: "\(i)")
                         }
                     }
                 }
-                
+
                 // Concurrent retrievals
                 await withTaskGroup(of: Data?.self) { group in
-                    for i in 0..<100 {
+                    for i in 0 ..< 100 {
                         group.addTask {
                             await pool.retrieve(for: "\(i)")
                         }
                     }
-                    
+
                     for await _ in group {
                         // Process results
                     }
                 }
-                
+
                 await pool.clear()
                 expectation.fulfill()
             }
-            
+
             wait(for: [expectation], timeout: 10.0)
         }
     }
-    
+
     // MARK: - Document Cache Performance Tests
-    
+
     func testAdaptiveCachePerformance() async throws {
         let cache = AdaptiveDocumentCache(
             baseCacheSize: 500,
             baseMemorySize: 100 * 1024 * 1024
         )
-        
+
         // Prepare test documents
-        let documents = (0..<largeDataSetSize).map { i in
+        let documents = (0 ..< largeDataSetSize).map { i in
             CachedDocument(
                 id: UUID(),
                 data: Data(repeating: UInt8(i % 256), count: 1024),
@@ -107,43 +106,43 @@ final class PerformanceTestSuite: XCTestCase {
                 )
             )
         }
-        
+
         measure(metrics: [XCTClockMetric(), XCTMemoryMetric()]) {
             let expectation = self.expectation(description: "Cache operations")
-            
+
             Task {
                 // Store documents
                 for document in documents.prefix(500) {
                     try? await cache.store(document: document)
                 }
-                
+
                 // Random access pattern
-                for _ in 0..<1000 {
-                    let randomIndex = Int.random(in: 0..<documents.count)
+                for _ in 0 ..< 1000 {
+                    let randomIndex = Int.random(in: 0 ..< documents.count)
                     _ = try? await cache.retrieve(id: documents[randomIndex].id)
                 }
-                
+
                 // Clear and repeat
                 await cache.clear()
                 expectation.fulfill()
             }
-            
+
             wait(for: [expectation], timeout: 30.0)
         }
     }
-    
+
     func testCacheEvictionPerformance() async throws {
         let cache = AdaptiveDocumentCache(
             baseCacheSize: 100,
             baseMemorySize: 10 * 1024 * 1024
         )
-        
+
         measure(metrics: [XCTClockMetric()]) {
             let expectation = self.expectation(description: "Eviction performance")
-            
+
             Task {
                 // Fill cache beyond capacity
-                for i in 0..<200 {
+                for i in 0 ..< 200 {
                     let document = CachedDocument(
                         id: UUID(),
                         data: Data(repeating: UInt8(i), count: 100 * 1024), // 100KB each
@@ -157,25 +156,25 @@ final class PerformanceTestSuite: XCTestCase {
                     )
                     try? await cache.store(document: document)
                 }
-                
+
                 // Verify eviction occurred
                 let metrics = await cache.getMetrics()
                 XCTAssertGreaterThan(metrics.totalEvictions, 0)
-                
+
                 expectation.fulfill()
             }
-            
+
             wait(for: [expectation], timeout: 10.0)
         }
     }
-    
+
     // MARK: - API Optimization Performance Tests
-    
+
     func testBatchedAPIRequestPerformance() async throws {
         let optimizer = OptimizedLLMService()
-        
+
         // Create test prompts
-        let prompts = (0..<100).map { i in
+        let prompts = (0 ..< 100).map { i in
             LLMRequest(
                 id: UUID(),
                 prompt: "Test prompt \(i)",
@@ -185,30 +184,30 @@ final class PerformanceTestSuite: XCTestCase {
                 metadata: ["index": i]
             )
         }
-        
+
         measure(metrics: [XCTClockMetric()]) {
             let expectation = self.expectation(description: "Batch processing")
-            
+
             Task {
                 // Process in batches
                 let batchSize = 10
                 for i in stride(from: 0, to: prompts.count, by: batchSize) {
-                    let batch = Array(prompts[i..<min(i + batchSize, prompts.count)])
+                    let batch = Array(prompts[i ..< min(i + batchSize, prompts.count)])
                     _ = await optimizer.processBatch(batch)
                 }
-                
+
                 expectation.fulfill()
             }
-            
+
             wait(for: [expectation], timeout: 20.0)
         }
     }
-    
+
     func testResponseCachePerformance() async throws {
         let cache = LLMResponseCache()
-        
+
         // Generate test responses
-        let responses = (0..<500).map { i in
+        let responses = (0 ..< 500).map { i in
             CachedLLMResponse(
                 requestHash: "hash_\(i)",
                 response: "Response content \(i)",
@@ -217,50 +216,48 @@ final class PerformanceTestSuite: XCTestCase {
                 tokenCount: 50
             )
         }
-        
+
         measure(metrics: [XCTClockMetric(), XCTMemoryMetric()]) {
             let expectation = self.expectation(description: "Cache operations")
-            
+
             Task {
                 // Store responses
                 for response in responses {
                     await cache.store(response)
                 }
-                
+
                 // Retrieve with various hit rates
                 var hits = 0
                 var misses = 0
-                
-                for _ in 0..<1000 {
-                    let shouldHit = Int.random(in: 0..<100) < 80 // 80% hit rate
-                    let hash: String
-                    
-                    if shouldHit {
-                        hash = "hash_\(Int.random(in: 0..<responses.count))"
+
+                for _ in 0 ..< 1000 {
+                    let shouldHit = Int.random(in: 0 ..< 100) < 80 // 80% hit rate
+                    let hash = if shouldHit {
+                        "hash_\(Int.random(in: 0 ..< responses.count))"
                     } else {
-                        hash = "miss_\(Int.random(in: 1000..<2000))"
+                        "miss_\(Int.random(in: 1000 ..< 2000))"
                     }
-                    
+
                     if let _ = await cache.retrieve(for: hash) {
                         hits += 1
                     } else {
                         misses += 1
                     }
                 }
-                
+
                 XCTAssertGreaterThan(hits, misses)
                 expectation.fulfill()
             }
-            
+
             wait(for: [expectation], timeout: 10.0)
         }
     }
-    
+
     // MARK: - Service Layer Performance Tests
-    
+
     func testUnifiedServicePerformance() async throws {
         let service = UnifiedDocumentCacheService()
-        
+
         // Configure for performance testing
         let config = CacheConfiguration(
             mode: .adaptive,
@@ -269,15 +266,15 @@ final class PerformanceTestSuite: XCTestCase {
             maxCacheSize: 1000,
             maxMemorySize: 200 * 1024 * 1024
         )
-        
+
         try await service.updateConfiguration(config)
-        
+
         measure(metrics: [XCTClockMetric()]) {
             let expectation = self.expectation(description: "Service operations")
-            
+
             Task {
                 // Mixed operations
-                let documents = (0..<200).map { i in
+                let documents = (0 ..< 200).map { i in
                     CachedDocument(
                         id: UUID(),
                         data: Data("Content \(i)".utf8),
@@ -290,14 +287,14 @@ final class PerformanceTestSuite: XCTestCase {
                         )
                     )
                 }
-                
+
                 // Batch store
                 try await service.batchStore(documents: documents)
-                
+
                 // Random operations
-                for _ in 0..<500 {
-                    let operation = Int.random(in: 0..<4)
-                    
+                for _ in 0 ..< 500 {
+                    let operation = Int.random(in: 0 ..< 4)
+
                     switch operation {
                     case 0: // Retrieve
                         let id = documents.randomElement()!.id
@@ -312,32 +309,32 @@ final class PerformanceTestSuite: XCTestCase {
                         break
                     }
                 }
-                
+
                 await service.clear()
                 expectation.fulfill()
             }
-            
+
             wait(for: [expectation], timeout: 15.0)
         }
     }
-    
+
     // MARK: - TCA Reducer Performance Tests
-    
+
     func testReducerCompositionPerformance() async throws {
         let store = TestStore(
             initialState: OptimizedAppFeature.State()
         ) {
             OptimizedAppFeature()
         }
-        
+
         measure(metrics: [XCTClockMetric()]) {
             let expectation = self.expectation(description: "Reducer actions")
-            
+
             Task {
                 // Simulate user interactions
-                for i in 0..<100 {
+                for i in 0 ..< 100 {
                     let action = i % 5
-                    
+
                     switch action {
                     case 0:
                         await store.send(.navigation(.navigate(to: .profile)))
@@ -353,60 +350,60 @@ final class PerformanceTestSuite: XCTestCase {
                         break
                     }
                 }
-                
+
                 expectation.fulfill()
             }
-            
+
             wait(for: [expectation], timeout: 10.0)
         }
     }
-    
+
     // MARK: - Encryption Performance Tests
-    
+
     func testDocumentEncryptionPerformance() async throws {
         let encryptionService = DocumentEncryptionService()
-        
+
         // Create test documents of various sizes
         let documents = [
-            Data(repeating: 0, count: 1024),        // 1KB
-            Data(repeating: 0, count: 10 * 1024),   // 10KB
-            Data(repeating: 0, count: 100 * 1024),  // 100KB
-            Data(repeating: 0, count: 1024 * 1024)  // 1MB
+            Data(repeating: 0, count: 1024), // 1KB
+            Data(repeating: 0, count: 10 * 1024), // 10KB
+            Data(repeating: 0, count: 100 * 1024), // 100KB
+            Data(repeating: 0, count: 1024 * 1024), // 1MB
         ]
-        
+
         for (index, documentData) in documents.enumerated() {
             let size = documentData.count / 1024
-            
+
             measure(metrics: [XCTClockMetric()]) {
                 let expectation = self.expectation(description: "Encryption \(size)KB")
-                
+
                 Task {
-                    for _ in 0..<standardIterations {
+                    for _ in 0 ..< standardIterations {
                         // Encrypt
                         let encrypted = try await encryptionService.encrypt(documentData)
-                        
+
                         // Decrypt
                         let decrypted = try await encryptionService.decrypt(encrypted)
-                        
+
                         XCTAssertEqual(documentData, decrypted)
                     }
-                    
+
                     expectation.fulfill()
                 }
-                
+
                 wait(for: [expectation], timeout: 30.0)
             }
         }
     }
-    
+
     // MARK: - Template Service Performance Tests
-    
+
     func testTemplateSearchPerformance() async throws {
         let service = UnifiedTemplateService()
-        
+
         measure(metrics: [XCTClockMetric()]) {
             let expectation = self.expectation(description: "Template search")
-            
+
             Task {
                 // Search with various queries
                 let queries = [
@@ -414,36 +411,36 @@ final class PerformanceTestSuite: XCTestCase {
                     "performance work statement",
                     "evaluation",
                     "far compliant",
-                    "template"
+                    "template",
                 ]
-                
+
                 for query in queries {
                     _ = try await service.searchTemplates(
                         query: query,
                         in: TemplateSource.allCases
                     )
                 }
-                
+
                 expectation.fulfill()
             }
-            
+
             wait(for: [expectation], timeout: 10.0)
         }
     }
-    
+
     // MARK: - Stress Tests
-    
+
     func testConcurrentAccessStress() async throws {
         let cache = AdaptiveDocumentCache()
         let concurrentTasks = 50
-        
+
         measure(metrics: [XCTClockMetric(), XCTMemoryMetric()]) {
             let expectation = self.expectation(description: "Concurrent stress")
-            
+
             Task {
                 await withTaskGroup(of: Void.self) { group in
                     // Concurrent writes
-                    for i in 0..<concurrentTasks {
+                    for i in 0 ..< concurrentTasks {
                         group.addTask {
                             let document = CachedDocument(
                                 id: UUID(),
@@ -459,36 +456,36 @@ final class PerformanceTestSuite: XCTestCase {
                             try? await cache.store(document: document)
                         }
                     }
-                    
+
                     // Concurrent reads
-                    for _ in 0..<concurrentTasks {
+                    for _ in 0 ..< concurrentTasks {
                         group.addTask {
                             _ = await cache.getAllDocuments()
                         }
                     }
                 }
-                
+
                 expectation.fulfill()
             }
-            
+
             wait(for: [expectation], timeout: 30.0)
         }
     }
-    
+
     // MARK: - Memory Pressure Tests
-    
+
     func testMemoryPressureHandling() async throws {
         let cache = AdaptiveDocumentCache(
             baseCacheSize: 1000,
             baseMemorySize: 50 * 1024 * 1024 // 50MB
         )
-        
+
         measure(metrics: [XCTMemoryMetric()]) {
             let expectation = self.expectation(description: "Memory pressure")
-            
+
             Task {
                 // Fill memory aggressively
-                for i in 0..<1000 {
+                for i in 0 ..< 1000 {
                     autoreleasepool {
                         let largeData = Data(repeating: UInt8(i % 256), count: 100 * 1024) // 100KB each
                         let document = CachedDocument(
@@ -502,25 +499,25 @@ final class PerformanceTestSuite: XCTestCase {
                                 lastAccessedAt: Date()
                             )
                         )
-                        
+
                         Task {
                             try? await cache.store(document: document)
                         }
                     }
-                    
+
                     // Allow memory pressure to trigger
                     if i % 100 == 0 {
                         await cache.adjustCacheLimits()
                     }
                 }
-                
+
                 // Verify adaptive behavior
                 let finalSize = cache.currentMaxCacheSize
                 XCTAssertLessThan(finalSize, 1000) // Should have reduced size
-                
+
                 expectation.fulfill()
             }
-            
+
             wait(for: [expectation], timeout: 60.0)
         }
     }
@@ -529,11 +526,10 @@ final class PerformanceTestSuite: XCTestCase {
 // MARK: - Performance Baseline Tests
 
 extension PerformanceTestSuite {
-    
     /// Establishes performance baselines for critical operations
     func testEstablishBaselines() async throws {
         var baselines: [String: Double] = [:]
-        
+
         // Document store baseline
         let storeBaseline = await measureAsync {
             let cache = AdaptiveDocumentCache()
@@ -551,7 +547,7 @@ extension PerformanceTestSuite {
             try? await cache.store(document: document)
         }
         baselines["document_store"] = storeBaseline
-        
+
         // Document retrieve baseline
         let retrieveBaseline = await measureAsync {
             let cache = AdaptiveDocumentCache()
@@ -559,7 +555,7 @@ extension PerformanceTestSuite {
             _ = try? await cache.retrieve(id: id)
         }
         baselines["document_retrieve"] = retrieveBaseline
-        
+
         // API request baseline
         let apiBaseline = await measureAsync {
             let request = LLMRequest(
@@ -574,16 +570,16 @@ extension PerformanceTestSuite {
             try? await Task.sleep(nanoseconds: 1_000_000) // 1ms
         }
         baselines["api_request"] = apiBaseline
-        
+
         // Log baselines
         for (operation, time) in baselines {
             print("Performance baseline - \(operation): \(String(format: "%.3f", time * 1000))ms")
         }
-        
+
         // Store baselines for regression testing
         UserDefaults.standard.set(baselines, forKey: "performance_baselines")
     }
-    
+
     private func measureAsync(_ block: @escaping () async throws -> Void) async -> Double {
         let start = CFAbsoluteTimeGetCurrent()
         try? await block()
@@ -603,11 +599,11 @@ private struct CachedLLMResponse {
 
 private actor LLMResponseCache {
     private var cache: [String: CachedLLMResponse] = [:]
-    
+
     func store(_ response: CachedLLMResponse) {
         cache[response.requestHash] = response
     }
-    
+
     func retrieve(for hash: String) -> CachedLLMResponse? {
         cache[hash]
     }

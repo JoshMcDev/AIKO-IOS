@@ -1,47 +1,47 @@
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
 struct SettingsView: View {
     let store: StoreOf<SettingsFeature>
-    
+
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             Group {
                 #if os(iOS)
-                if UIDevice.current.userInterfaceIdiom == .phone {
-                    // iPhone: Use NavigationView with single column
-                    SwiftUI.NavigationView {
-                        List {
-                            ForEach(SettingsFeature.SettingsSection.allCases, id: \.self) { section in
-                                NavigationLink(destination: SettingsDetailView(store: store, section: section)) {
-                                    HStack {
-                                        Image(systemName: section.icon)
-                                            .frame(width: 20)
-                                            .foregroundColor(.accentColor)
-                                        Text(section.rawValue)
+                    if UIDevice.current.userInterfaceIdiom == .phone {
+                        // iPhone: Use NavigationView with single column
+                        SwiftUI.NavigationView {
+                            List {
+                                ForEach(SettingsFeature.SettingsSection.allCases, id: \.self) { section in
+                                    NavigationLink(destination: SettingsDetailView(store: store, section: section)) {
+                                        HStack {
+                                            Image(systemName: section.icon)
+                                                .frame(width: 20)
+                                                .foregroundColor(.accentColor)
+                                            Text(section.rawValue)
+                                        }
                                     }
                                 }
                             }
+                            .navigationTitle("Settings")
+                            .listStyle(InsetGroupedListStyle())
                         }
-                        .navigationTitle("Settings")
-                        .listStyle(InsetGroupedListStyle())
+                        .navigationViewStyle(StackNavigationViewStyle())
+                    } else {
+                        // iPad: Use split view
+                        SwiftUI.NavigationView {
+                            SettingsSidebar(store: store)
+                            SettingsDetailView(store: store, section: viewStore.selectedSection)
+                        }
+                        .navigationViewStyle(DoubleColumnNavigationViewStyle())
                     }
-                    .navigationViewStyle(StackNavigationViewStyle())
-                } else {
-                    // iPad: Use split view
+                #else
+                    // macOS: Use split view
                     SwiftUI.NavigationView {
                         SettingsSidebar(store: store)
                         SettingsDetailView(store: store, section: viewStore.selectedSection)
                     }
                     .navigationViewStyle(DoubleColumnNavigationViewStyle())
-                }
-                #else
-                // macOS: Use split view
-                SwiftUI.NavigationView {
-                    SettingsSidebar(store: store)
-                    SettingsDetailView(store: store, section: viewStore.selectedSection)
-                }
-                .navigationViewStyle(DoubleColumnNavigationViewStyle())
                 #endif
             }
             .sheet(isPresented: viewStore.binding(
@@ -87,37 +87,37 @@ struct SettingsView: View {
 
 struct SettingsSidebar: View {
     let store: StoreOf<SettingsFeature>
-    
+
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             List {
-            ForEach(SettingsFeature.SettingsSection.allCases, id: \.self) { section in
-                Button(action: {
-                    viewStore.send(.selectSection(section))
-                }) {
-                    HStack {
-                        Image(systemName: section.icon)
-                            .frame(width: 20)
-                        Text(section.rawValue)
-                        Spacer()
-                        if viewStore.selectedSection == section {
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.accentColor)
+                ForEach(SettingsFeature.SettingsSection.allCases, id: \.self) { section in
+                    Button(action: {
+                        viewStore.send(.selectSection(section))
+                    }) {
+                        HStack {
+                            Image(systemName: section.icon)
+                                .frame(width: 20)
+                            Text(section.rawValue)
+                            Spacer()
+                            if viewStore.selectedSection == section {
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.accentColor)
+                            }
                         }
                     }
+                    .buttonStyle(PlainButtonStyle())
+                    .padding(.vertical, 4)
+                    .background(
+                        viewStore.selectedSection == section ?
+                            Color.accentColor.opacity(0.1) : Color.clear
+                    )
+                    .cornerRadius(6)
                 }
-                .buttonStyle(PlainButtonStyle())
-                .padding(.vertical, 4)
-                .background(
-                    viewStore.selectedSection == section ?
-                    Color.accentColor.opacity(0.1) : Color.clear
-                )
-                .cornerRadius(6)
             }
-        }
-        .listStyle(SidebarListStyle())
-        .navigationTitle("Settings")
-        .frame(minWidth: 200)
+            .listStyle(SidebarListStyle())
+            .navigationTitle("Settings")
+            .frame(minWidth: 200)
         }
     }
 }
@@ -125,7 +125,7 @@ struct SettingsSidebar: View {
 struct SettingsDetailView: View {
     let store: StoreOf<SettingsFeature>
     let section: SettingsFeature.SettingsSection
-    
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
@@ -152,9 +152,10 @@ struct SettingsDetailView: View {
 }
 
 // MARK: - General Settings
+
 struct GeneralSettingsView: View {
     let store: StoreOf<SettingsFeature>
-    
+
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
@@ -175,7 +176,7 @@ struct GeneralSettingsView: View {
                             .pickerStyle(SegmentedPickerStyle())
                             .frame(width: 250)
                         }
-                        
+
                         // Accent Color
                         HStack {
                             Text("Accent Color")
@@ -189,7 +190,7 @@ struct GeneralSettingsView: View {
                                             Circle()
                                                 .stroke(
                                                     store.appSettings.accentColor == color ?
-                                                    Color.primary : Color.clear,
+                                                        Color.primary : Color.clear,
                                                     lineWidth: 2
                                                 )
                                         )
@@ -199,7 +200,7 @@ struct GeneralSettingsView: View {
                                 }
                             }
                         }
-                        
+
                         // Font Size
                         HStack {
                             Text("Font Size")
@@ -217,7 +218,7 @@ struct GeneralSettingsView: View {
                         }
                     }
                 }
-                
+
                 SettingsSection(title: "Security") {
                     VStack(alignment: .leading, spacing: Theme.Spacing.md) {
                         HStack {
@@ -229,20 +230,20 @@ struct GeneralSettingsView: View {
                                 send: { .toggleFaceID($0) }
                             ))
                         }
-                        
+
                         Text("Use Face ID to quickly and securely access AIKO")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
-                
+
                 SettingsSection(title: "Behavior") {
                     VStack(alignment: .leading, spacing: Theme.Spacing.md) {
                         Toggle("Enable Auto-save", isOn: viewStore.binding(
                             get: { $0.appSettings.autoSaveEnabled },
                             send: { .toggleAutoSave($0) }
                         ))
-                        
+
                         if store.appSettings.autoSaveEnabled {
                             HStack {
                                 Text("Auto-save interval")
@@ -253,20 +254,20 @@ struct GeneralSettingsView: View {
                                         get: { $0.appSettings.autoSaveInterval },
                                         send: { .updateAutoSaveInterval($0) }
                                     ),
-                                    in: 10...300,
+                                    in: 10 ... 300,
                                     step: 10
                                 )
                                 .frame(width: 200)
                             }
                         }
-                        
+
                         Toggle("Confirm before deleting", isOn: viewStore.binding(
                             get: { $0.appSettings.confirmBeforeDelete },
                             send: { .toggleConfirmDelete($0) }
                         ))
                     }
                 }
-                
+
                 SettingsSection(title: "File Handling") {
                     VStack(alignment: .leading, spacing: Theme.Spacing.md) {
                         HStack {
@@ -285,7 +286,7 @@ struct GeneralSettingsView: View {
                         }
                     }
                 }
-                
+
                 SettingsSection(title: "Backup & Restore") {
                     VStack(alignment: .leading, spacing: Theme.Spacing.md) {
                         // Backup settings
@@ -293,7 +294,7 @@ struct GeneralSettingsView: View {
                             get: { $0.appSettings.backupEnabled },
                             send: { .toggleBackup($0) }
                         ))
-                        
+
                         if store.appSettings.backupEnabled {
                             HStack {
                                 Text("Backup schedule")
@@ -309,7 +310,7 @@ struct GeneralSettingsView: View {
                                 .pickerStyle(MenuPickerStyle())
                                 .frame(width: 150)
                             }
-                            
+
                             if let nextBackup = store.appSettings.nextScheduledBackup {
                                 HStack {
                                     Text("Next backup")
@@ -319,7 +320,7 @@ struct GeneralSettingsView: View {
                                 }
                             }
                         }
-                        
+
                         if let lastBackup = store.appSettings.lastBackupDate {
                             HStack {
                                 Text("Last backup")
@@ -328,19 +329,19 @@ struct GeneralSettingsView: View {
                                     .foregroundColor(.secondary)
                             }
                         }
-                        
+
                         HStack {
                             Button("Backup Now") {
                                 store.send(.backupNow)
                             }
                             .buttonStyle(.borderedProminent)
-                            
+
                             Spacer()
                         }
-                        
+
                         Divider()
                             .padding(.vertical, Theme.Spacing.sm)
-                        
+
                         // Restore button
                         HStack {
                             Button(role: .destructive) {
@@ -348,10 +349,10 @@ struct GeneralSettingsView: View {
                             } label: {
                                 Label("Restore to Factory Settings", systemImage: "arrow.counterclockwise")
                             }
-                            
+
                             Spacer()
                         }
-                        
+
                         Text("This will reset the app to its initial state and clear all data")
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -380,17 +381,18 @@ struct GeneralSettingsView: View {
             } message: {
                 Text("Are you sure you want to restore the app to factory settings? This will:\n\n• Clear all settings\n• Remove all saved data\n• Delete your API key\n• Clear all caches\n\nThis action cannot be undone.")
             }
-            }
         }
     }
+}
 
 // MARK: - API Settings
+
 struct APISettingsView: View {
     let store: StoreOf<SettingsFeature>
     @State private var apiKeyInput: String = ""
     @State private var apiKeyName: String = ""
     @State private var showingAddKey = false
-    
+
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
@@ -407,13 +409,13 @@ struct APISettingsView: View {
                                 .font(.headline)
                                 .foregroundColor(.blue)
                         }
-                        
+
                         Text("The latest Claude model is used for all document generation")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
-                
+
                 // SAM.gov API Key
                 SettingsSection(title: "SAM.gov API") {
                     VStack(alignment: .leading, spacing: Theme.Spacing.md) {
@@ -424,19 +426,19 @@ struct APISettingsView: View {
                                 get: { $0.apiSettings.samGovAPIKey },
                                 send: { .updateSAMGovAPIKey($0) }
                             ), prompt: Text("...").foregroundColor(.gray))
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .frame(width: 300)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .frame(width: 300)
                         }
-                        
+
                         Text("Required for entity verification and CAGE code lookups")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        
+
                         Link("Get a free API key at SAM.gov", destination: URL(string: "https://open.gsa.gov/api/entity-api/")!)
                             .font(.caption)
                     }
                 }
-                
+
                 // API Keys Management
                 SettingsSection(title: "Anthropic API Keys") {
                     VStack(alignment: .leading, spacing: Theme.Spacing.md) {
@@ -451,7 +453,7 @@ struct APISettingsView: View {
                             }
                             .buttonStyle(.borderedProminent)
                         }
-                        
+
                         // List of API keys
                         if viewStore.apiSettings.apiKeys.isEmpty {
                             HStack {
@@ -472,7 +474,7 @@ struct APISettingsView: View {
                                 )
                             }
                         }
-                        
+
                         Text("API keys are stored securely in the system keychain")
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -503,19 +505,20 @@ struct APISettingsView: View {
 }
 
 // MARK: - API Key Row
+
 struct APIKeyRow: View {
     let key: SettingsFeature.APIKeyEntry
     let isSelected: Bool
     let onSelect: () -> Void
     let onDelete: () -> Void
-    
+
     var body: some View {
         HStack {
             Button(action: onSelect) {
                 HStack {
                     Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                         .foregroundColor(isSelected ? .green : .secondary)
-                    
+
                     VStack(alignment: .leading) {
                         Text(key.name)
                             .font(.headline)
@@ -524,9 +527,9 @@ struct APIKeyRow: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    
+
                     Spacer()
-                    
+
                     if isSelected {
                         Label("Active", systemImage: "dot.radiowaves.left.and.right")
                             .font(.caption)
@@ -536,7 +539,7 @@ struct APIKeyRow: View {
                 .padding(.vertical, Theme.Spacing.xs)
             }
             .buttonStyle(PlainButtonStyle())
-            
+
             Button(action: onDelete) {
                 Image(systemName: "trash")
                     .foregroundColor(.red)
@@ -552,6 +555,7 @@ struct APIKeyRow: View {
 }
 
 // MARK: - Add API Key View
+
 struct AddAPIKeyView: View {
     @Binding var keyName: String
     @Binding var keyValue: String
@@ -559,11 +563,11 @@ struct AddAPIKeyView: View {
     let onToggleShow: () -> Void
     let onCancel: () -> Void
     let onSave: () -> Void
-    
+
     var canSave: Bool {
         !keyName.isEmpty && !keyValue.isEmpty && keyValue.hasPrefix("sk-ant-")
     }
-    
+
     var body: some View {
         SwiftUI.NavigationView {
             VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
@@ -571,14 +575,14 @@ struct AddAPIKeyView: View {
                     .font(.title2)
                     .fontWeight(.bold)
                     .padding(.top)
-                
+
                 VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                     Text("Key Name")
                         .font(.headline)
                     TextField("", text: $keyName, prompt: Text("...").foregroundColor(.gray))
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                 }
-                
+
                 VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                     Text("API Key")
                         .font(.headline)
@@ -591,50 +595,51 @@ struct AddAPIKeyView: View {
                             }
                         }
                         .textFieldStyle(RoundedBorderTextFieldStyle())
-                        
+
                         Button(action: onToggleShow) {
                             Image(systemName: showingAPIKey ? "eye.slash" : "eye")
                                 .foregroundColor(.secondary)
                         }
                     }
-                    
-                    if !keyValue.isEmpty && !keyValue.hasPrefix("sk-ant-") {
+
+                    if !keyValue.isEmpty, !keyValue.hasPrefix("sk-ant-") {
                         Text("API key must start with 'sk-ant-'")
                             .font(.caption)
                             .foregroundColor(.red)
                     }
                 }
-                
+
                 Spacer()
             }
             .padding()
             #if os(iOS)
-            .navigationBarTitle("Add API Key", displayMode: .inline)
-            .navigationBarItems(
-                leading: Button("Cancel", action: onCancel),
-                trailing: Button("Save", action: onSave)
-                    .disabled(!canSave)
-            )
-            #else
-            .navigationTitle("Add API Key")
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", action: onCancel)
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save", action: onSave)
+                .navigationBarTitle("Add API Key", displayMode: .inline)
+                .navigationBarItems(
+                    leading: Button("Cancel", action: onCancel),
+                    trailing: Button("Save", action: onSave)
                         .disabled(!canSave)
-                }
-            }
+                )
+            #else
+                .navigationTitle("Add API Key")
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Cancel", action: onCancel)
+                        }
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Save", action: onSave)
+                                .disabled(!canSave)
+                        }
+                    }
             #endif
         }
     }
 }
 
 // MARK: - Document Settings
+
 struct DocumentSettingsView: View {
     let store: StoreOf<SettingsFeature>
-    
+
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
@@ -656,19 +661,19 @@ struct DocumentSettingsView: View {
                         }
                     }
                 }
-                
+
                 SettingsSection(title: "Document Features") {
                     VStack(alignment: .leading, spacing: Theme.Spacing.md) {
                         Toggle("Include metadata", isOn: viewStore.binding(
                             get: { $0.documentSettings.includeMetadata },
                             send: { .toggleIncludeMetadata($0) }
                         ))
-                        
+
                         Toggle("Include version history", isOn: viewStore.binding(
                             get: { $0.documentSettings.includeVersionHistory },
                             send: { .toggleIncludeVersionHistory($0) }
                         ))
-                        
+
                         Toggle("Auto-generate table of contents", isOn: viewStore.binding(
                             get: { $0.documentSettings.autoGenerateTableOfContents },
                             send: { .toggleAutoGenerateTOC($0) }
@@ -681,9 +686,10 @@ struct DocumentSettingsView: View {
 }
 
 // MARK: - Notification Settings
+
 struct NotificationSettingsView: View {
     let store: StoreOf<SettingsFeature>
-    
+
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
@@ -701,9 +707,10 @@ struct NotificationSettingsView: View {
 }
 
 // MARK: - Data & Privacy Settings
+
 struct DataPrivacySettingsView: View {
     let store: StoreOf<SettingsFeature>
-    
+
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
@@ -713,20 +720,20 @@ struct DataPrivacySettingsView: View {
                             get: { $0.dataPrivacySettings.analyticsEnabled },
                             send: { .toggleAnalytics($0) }
                         ))
-                        
+
                         Text("Help improve AIKO by sharing anonymous usage data")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
-                
+
                 SettingsSection(title: "Data Management") {
                     VStack(alignment: .leading, spacing: Theme.Spacing.md) {
                         HStack {
                             Button("Export All Data") {
                                 viewStore.send(.exportData)
                             }
-                            
+
                             Button("Import Data") {
                                 viewStore.send(.importData)
                             }
@@ -739,9 +746,10 @@ struct DataPrivacySettingsView: View {
 }
 
 // MARK: - Advanced Settings
+
 struct AdvancedSettingsView: View {
     let store: StoreOf<SettingsFeature>
-    
+
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
@@ -751,14 +759,14 @@ struct AdvancedSettingsView: View {
                             get: { $0.advancedSettings.debugModeEnabled },
                             send: { .toggleDebugMode($0) }
                         ))
-                        
+
                         Toggle("Show detailed error messages", isOn: viewStore.binding(
                             get: { $0.advancedSettings.showDetailedErrors },
                             send: { .toggleDetailedErrors($0) }
                         ))
                     }
                 }
-                
+
                 SettingsSection(title: "Performance") {
                     VStack(alignment: .leading, spacing: Theme.Spacing.md) {
                         Button("Clear Cache") {
@@ -766,7 +774,7 @@ struct AdvancedSettingsView: View {
                         }
                     }
                 }
-                
+
                 SettingsSection(title: "Output Settings") {
                     VStack(alignment: .leading, spacing: Theme.Spacing.md) {
                         // Output Format
@@ -784,13 +792,13 @@ struct AdvancedSettingsView: View {
                             .pickerStyle(MenuPickerStyle())
                             .frame(width: 200)
                         }
-                        
+
                         Text("Default format for generated documents")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
-                
+
                 SettingsSection(title: "AI Model Settings") {
                     VStack(alignment: .leading, spacing: Theme.Spacing.md) {
                         // Temperature
@@ -802,23 +810,23 @@ struct AdvancedSettingsView: View {
                                     .foregroundColor(.secondary)
                                     .monospacedDigit()
                             }
-                            
+
                             Slider(
                                 value: viewStore.binding(
                                     get: { $0.advancedSettings.llmTemperature },
                                     send: { .updateLLMTemperature($0) }
                                 ),
-                                in: 0...1,
+                                in: 0 ... 1,
                                 step: 0.1
                             )
-                            
+
                             Text("Controls creativity vs consistency (0 = focused, 1 = creative)")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
-                        
+
                         Divider()
-                        
+
                         // Output Length
                         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                             HStack {
@@ -828,28 +836,28 @@ struct AdvancedSettingsView: View {
                                     .foregroundColor(.secondary)
                                     .monospacedDigit()
                             }
-                            
+
                             Stepper(
                                 "Output length",
                                 value: viewStore.binding(
                                     get: { $0.advancedSettings.outputLength },
                                     send: { .updateOutputLength($0) }
                                 ),
-                                in: 100...20000,
+                                in: 100 ... 20000,
                                 step: 500
                             )
                             .labelsHidden()
-                            
+
                             Text("Maximum tokens for document generation (100-20,000)")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
                     }
                 }
-                
+
                 Divider()
                     .padding(.vertical)
-                
+
                 // Reset button
                 HStack {
                     Spacer()
@@ -865,21 +873,22 @@ struct AdvancedSettingsView: View {
 }
 
 // MARK: - Settings Section Component
+
 struct SettingsSection<Content: View>: View {
     let title: String
     let content: Content
-    
+
     init(title: String, @ViewBuilder content: () -> Content) {
         self.title = title
         self.content = content()
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
             Text(title)
                 .font(.headline)
                 .foregroundColor(.primary)
-            
+
             content
                 .padding()
                 .background(Color.secondary.opacity(0.1))
@@ -889,14 +898,15 @@ struct SettingsSection<Content: View>: View {
 }
 
 // MARK: - Export Progress View
+
 struct ExportProgressView: View {
     let progress: Double
-    
+
     var body: some View {
         VStack(spacing: Theme.Spacing.lg) {
             ProgressView(value: progress)
                 .progressViewStyle(LinearProgressViewStyle())
-            
+
             Text("Exporting data... \(Int(progress * 100))%")
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -909,14 +919,15 @@ struct ExportProgressView: View {
 }
 
 // MARK: - Backup Progress View
+
 struct BackupProgressView: View {
     let progress: Double
-    
+
     var body: some View {
         VStack(spacing: Theme.Spacing.lg) {
             ProgressView(value: progress)
                 .progressViewStyle(LinearProgressViewStyle())
-            
+
             Text("Creating backup... \(Int(progress * 100))%")
                 .font(.caption)
                 .foregroundColor(.secondary)

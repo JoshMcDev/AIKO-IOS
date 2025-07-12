@@ -1,16 +1,16 @@
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
 struct DocumentExecutionView: View {
     let store: StoreOf<DocumentExecutionFeature>
-    
+
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             SwiftUI.NavigationView {
                 ZStack {
                     Theme.Colors.aikoBackground
                         .ignoresSafeArea()
-                    
+
                     VStack(spacing: 0) {
                         // Header
                         HStack {
@@ -19,16 +19,16 @@ struct DocumentExecutionView: View {
                                     .font(.largeTitle)
                                     .fontWeight(.bold)
                                     .foregroundColor(.white)
-                                
+
                                 if let category = viewStore.executingCategory {
                                     Text(category.rawValue)
                                         .font(.headline)
                                         .foregroundColor(.white.opacity(0.8))
                                 }
                             }
-                            
+
                             Spacer()
-                            
+
                             Button(action: {
                                 viewStore.send(.showExecutionView(false))
                             }) {
@@ -38,24 +38,24 @@ struct DocumentExecutionView: View {
                             }
                         }
                         .padding()
-                        
+
                         // Content based on status
                         ScrollView {
                             VStack(spacing: Theme.Spacing.xl) {
                                 switch viewStore.executionStatus {
                                 case .idle:
                                     EmptyView()
-                                    
+
                                 case .checkingInformation:
                                     CheckingInformationView()
-                                    
+
                                 case .gatheringInformation:
                                     // This is handled by sheet
                                     EmptyView()
-                                    
+
                                 case .generating:
                                     GeneratingDocumentsView(progress: viewStore.executionProgress)
-                                    
+
                                 case .completed:
                                     CompletedView(
                                         content: viewStore.generatedContent,
@@ -63,8 +63,8 @@ struct DocumentExecutionView: View {
                                         onDownload: { viewStore.send(.downloadDocument) },
                                         onEmail: { viewStore.send(.emailDocument) }
                                     )
-                                    
-                                case .failed(let error):
+
+                                case let .failed(error):
                                     ErrorView(error: error)
                                 }
                             }
@@ -92,11 +92,11 @@ struct CheckingInformationView: View {
             ProgressView()
                 .progressViewStyle(CircularProgressViewStyle(tint: .blue))
                 .scaleEffect(1.5)
-            
+
             Text("Analyzing requirements...")
                 .font(.headline)
                 .foregroundColor(.white)
-            
+
             Text("Checking if we have sufficient information to generate the requested documents")
                 .font(.subheadline)
                 .foregroundColor(.white.opacity(0.8))
@@ -109,7 +109,7 @@ struct CheckingInformationView: View {
 
 struct GeneratingDocumentsView: View {
     let progress: Double
-    
+
     var body: some View {
         VStack(spacing: Theme.Spacing.xl) {
             // Progress Circle
@@ -117,7 +117,7 @@ struct GeneratingDocumentsView: View {
                 Circle()
                     .stroke(Color.white.opacity(0.2), lineWidth: 10)
                     .frame(width: 120, height: 120)
-                
+
                 Circle()
                     .trim(from: 0, to: CGFloat(progress))
                     .stroke(
@@ -131,32 +131,32 @@ struct GeneratingDocumentsView: View {
                     .frame(width: 120, height: 120)
                     .rotationEffect(.degrees(-90))
                     .animation(.easeInOut, value: progress)
-                
+
                 Text("\(Int(progress * 100))%")
                     .font(.title)
                     .fontWeight(.bold)
                     .foregroundColor(.white)
             }
-            
+
             VStack(spacing: Theme.Spacing.sm) {
                 Text("Generating Documents")
                     .font(.headline)
                     .foregroundColor(.white)
-                
+
                 Text("AIKO is creating your documents based on the requirements and information provided")
                     .font(.subheadline)
                     .foregroundColor(.white.opacity(0.8))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
             }
-            
+
             // Progress bar
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 8)
                         .fill(Color.white.opacity(0.2))
                         .frame(height: 8)
-                    
+
                     RoundedRectangle(cornerRadius: 8)
                         .fill(
                             LinearGradient(
@@ -181,21 +181,21 @@ struct CompletedView: View {
     let onCopy: () -> Void
     let onDownload: () -> Void
     let onEmail: () -> Void
-    
+
     @State private var showCopiedToast = false
-    
+
     var body: some View {
         VStack(spacing: Theme.Spacing.xl) {
             // Success indicator
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 60))
                 .foregroundColor(.green)
-            
+
             Text("Documents Generated Successfully")
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundColor(.white)
-            
+
             // Action buttons
             HStack(spacing: Theme.Spacing.lg) {
                 ActionButton(
@@ -213,26 +213,26 @@ struct CompletedView: View {
                         }
                     }
                 )
-                
+
                 ActionButton(
                     title: "Download",
                     icon: "arrow.down.circle",
                     action: onDownload
                 )
-                
+
                 ActionButton(
                     title: "Email",
                     icon: "envelope",
                     action: onEmail
                 )
             }
-            
+
             // Generated content preview
             VStack(alignment: .leading, spacing: Theme.Spacing.md) {
                 Text("Preview")
                     .font(.headline)
                     .foregroundColor(.white)
-                
+
                 DocumentRichTextView(content: content)
                     .frame(maxHeight: 400)
                     .background(
@@ -248,7 +248,7 @@ struct CompletedView: View {
                 if showCopiedToast {
                     VStack {
                         Spacer()
-                        
+
                         HStack {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundColor(.green)
@@ -274,7 +274,7 @@ struct ActionButton: View {
     let title: String
     let icon: String
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             VStack(spacing: 8) {
@@ -295,18 +295,18 @@ struct ActionButton: View {
 
 struct ErrorView: View {
     let error: String
-    
+
     var body: some View {
         VStack(spacing: Theme.Spacing.lg) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 60))
                 .foregroundColor(.red)
-            
+
             Text("Generation Failed")
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundColor(.white)
-            
+
             Text(error)
                 .font(.body)
                 .foregroundColor(.white.opacity(0.8))

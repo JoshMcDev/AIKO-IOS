@@ -1,30 +1,30 @@
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
 // Question Display Component
 struct QuestionView: View {
     let question: DocumentExecutionFeature.InformationQuestion
     let index: Int
     let total: Int
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
             HStack {
                 Image(systemName: "questionmark.circle.fill")
                     .font(.title2)
                     .foregroundColor(.blue)
-                
+
                 Text("Question \(index + 1) of \(total)")
                     .font(.subheadline)
                     .foregroundColor(.white.opacity(0.8))
             }
-            
+
             Text(question.question)
                 .font(.title3)
                 .fontWeight(.semibold)
                 .foregroundColor(.white)
                 .fixedSize(horizontal: false, vertical: true)
-            
+
             if question.isRequired {
                 Text("* Required")
                     .font(.caption)
@@ -45,54 +45,54 @@ struct AnswerFieldView: View {
     let question: DocumentExecutionFeature.InformationQuestion
     @Binding var answer: String
     @FocusState var isTextFieldFocused: Bool
-    
+
     @ViewBuilder
     var body: some View {
         switch question.fieldType {
-            case .text:
-                TextField("", text: $answer, prompt: Text("...").foregroundColor(.gray))
-                    .textFieldStyle(CustomTextFieldStyle())
-                    .focused($isTextFieldFocused)
-                    .onAppear {
-                        isTextFieldFocused = true
-                    }
-                
-            case .number:
-                TextField("", text: $answer, prompt: Text("...").foregroundColor(.gray))
-                    .textFieldStyle(CustomTextFieldStyle())
-                    #if os(iOS)
-                    .keyboardType(.numberPad)
-                    #endif
-                    .focused($isTextFieldFocused)
-                    .onAppear {
-                        isTextFieldFocused = true
-                    }
-                
-            case .multilineText:
-                TextEditor(text: $answer)
-                    .frame(minHeight: 120)
-                    .padding(8)
-                    .background(
-                        RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
-                            .fill(Color.white.opacity(0.1))
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
-                            .stroke(Color.white.opacity(0.3), lineWidth: 1)
-                    )
-                    .foregroundColor(.white)
-                    .focused($isTextFieldFocused)
-                    .onAppear {
-                        isTextFieldFocused = true
-                    }
-                
-            case .date:
-                TextField("", text: $answer, prompt: Text("...").foregroundColor(.gray))
-                    .textFieldStyle(CustomTextFieldStyle())
-                    .focused($isTextFieldFocused)
-                
-            case .selection(let options):
-                SelectionFieldView(options: options, selectedOption: $answer)
+        case .text:
+            TextField("", text: $answer, prompt: Text("...").foregroundColor(.gray))
+                .textFieldStyle(CustomTextFieldStyle())
+                .focused($isTextFieldFocused)
+                .onAppear {
+                    isTextFieldFocused = true
+                }
+
+        case .number:
+            TextField("", text: $answer, prompt: Text("...").foregroundColor(.gray))
+                .textFieldStyle(CustomTextFieldStyle())
+            #if os(iOS)
+                .keyboardType(.numberPad)
+            #endif
+                .focused($isTextFieldFocused)
+                .onAppear {
+                    isTextFieldFocused = true
+                }
+
+        case .multilineText:
+            TextEditor(text: $answer)
+                .frame(minHeight: 120)
+                .padding(8)
+                .background(
+                    RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                        .fill(Color.white.opacity(0.1))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                        .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                )
+                .foregroundColor(.white)
+                .focused($isTextFieldFocused)
+                .onAppear {
+                    isTextFieldFocused = true
+                }
+
+        case .date:
+            TextField("", text: $answer, prompt: Text("...").foregroundColor(.gray))
+                .textFieldStyle(CustomTextFieldStyle())
+                .focused($isTextFieldFocused)
+
+        case let .selection(options):
+            SelectionFieldView(options: options, selectedOption: $answer)
         }
     }
 }
@@ -101,7 +101,7 @@ struct AnswerFieldView: View {
 struct SelectionFieldView: View {
     let options: [String]
     @Binding var selectedOption: String
-    
+
     var body: some View {
         VStack(spacing: Theme.Spacing.sm) {
             ForEach(options, id: \.self) { option in
@@ -136,10 +136,10 @@ struct SelectionFieldView: View {
 struct ProgressIndicatorView: View {
     let currentIndex: Int
     let total: Int
-    
+
     var body: some View {
         HStack(spacing: 4) {
-            ForEach(0..<total, id: \.self) { index in
+            ForEach(0 ..< total, id: \.self) { index in
                 Circle()
                     .fill(index <= currentIndex ? Color.blue : Color.white.opacity(0.3))
                     .frame(width: 8, height: 8)

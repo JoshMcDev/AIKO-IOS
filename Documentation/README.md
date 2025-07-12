@@ -2,59 +2,54 @@
 
 A powerful iOS application for generating federal contract documents using AI with intelligent requirement analysis and multi-format input support.
 
-## 📚 Table of Contents
+## Table of Contents
 
 - [Quick Start Guide](#quick-start-guide)
 - [Features](#features)
 - [Installation Guide](#installation-guide)
-- [User Guide](#user-guide)
-- [Architecture](#architecture)
-- [API Reference](#api-reference)
-- [Troubleshooting](#troubleshooting)
-- [Security](#security)
+- [User Guide](Doc_UserGuide.md)
+- [Project Overview](Doc_01_ProjectOverview.md)
+- [API Reference](Doc_02_APIReference.md)
+- [Architecture Guide](Doc_03_ArchitectureGuide.md)
+- [Security Guide](Doc_04_SecurityGuide.md)
+- [Troubleshooting Guide](Doc_05_TroubleshootingGuide.md)
 - [Contributing](#contributing)
 
 ## Features
 
-### 🤖 **Intelligent Requirement Analysis**
+### Intelligent Requirement Analysis
 - **Multi-Format Input**: Text input, PDF/DOCX upload, or photo capture of requirements
 - **LLM-Powered Analysis**: Advanced AI analysis with completeness scoring (1-10 scale)
 - **Smart Completeness Detection**: Document modules turn green when ≥5 completeness score achieved
 - **Interactive Guidance**: AI prompts for missing information and recommends next steps
 - **Minimal Information Requirement**: Only asks for essential details needed for generation
 
-### 📄 **Document Processing & Parsing**
-- **PDF Parser**: Extract text from uploaded PDF documents
+### Document Processing & Parsing- **PDF Parser**: Extract text from uploaded PDF documents
 - **DOCX Support**: Handle Microsoft Word documents and text files
 - **OCR Capability**: Process images and photos using Vision framework
 - **Federal Acquisitions Regulation (FAR) Compliance**: Built-in compliance checking and recommendations
 
-### 📋 **AI-Powered Document Generation**
-- **Professional Contract Documents**: SOW, PWS, QASP, Contract Scaffold, and IGCE
+### AI-Powered Document Generation- **Professional Contract Documents**: SOW, PWS, QASP, Contract Scaffold, and IGCE
 - **Auto-Generation Option**: AI automatically generates all recommended documents
 - **Manual Selection**: Choose specific documents to generate
 - **FAR-Compliant Output**: All documents meet federal contracting standards
 
-### 📤 **Export & Delivery Options**
-- **PDF Export**: Professional PDF generation with proper formatting
+### Export & Delivery Options- **PDF Export**: Professional PDF generation with proper formatting
 - **DOCX Export**: Microsoft Word-compatible document export  
 - **Email Delivery**: Send documents directly to email with confirmation
 - **Profile Integration**: Uses default profile email or custom address
 - **Batch Processing**: Generate and deliver multiple documents simultaneously
 
-### 🎯 **Smart Visual Indicators**
-- **Green Status Indicators**: Document types turn green when ready to generate
+### Smart Visual Indicators- **Green Status Indicators**: Document types turn green when ready to generate
 - **Status System**: Ready/Needs More Info/Not Ready visual feedback
 - **Interactive Selection**: Easy document type selection interface
 
-### 🔒 **Security & Management**
-- **Subscription Tiers**: Free, Trial, Basic ($9.99/mo), and Pro ($29.99/mo) plans
+### Security & Management- **Subscription Tiers**: Free, Trial, Basic ($9.99/mo), and Pro ($29.99/mo) plans
 - **Secure API Management**: Keychain-based API key storage with environment variable support
 - **Cross-Platform**: Built with SwiftUI for iOS 16.0+ and macOS 13.0+
 - **The Composable Architecture**: Modern, testable architecture with TCA
 
-### 📖 **In-App Resources**
-- **User Guide**: Comprehensive guide accessible from the menu (☰ → User Guide)
+###  **In-App Resources- **User Guide**: Comprehensive guide accessible from the menu (☰ → User Guide)
 - **Quick References**: Access to Acquisition.gov, SAM.gov, and FPDS-NG
 - **Search Templates**: Browse and search document templates
 - **My Acquisitions**: View and manage your acquisition history
@@ -149,24 +144,20 @@ API keys are securely stored in the iOS Keychain after first use.
 - Capture photos of requirement documents
 - Multiple input methods can be combined
 
-### 2. **AI Analysis**
-- LLM analyzes uploaded content for completeness
+### 2. **AI Analysis- LLM analyzes uploaded content for completeness
 - Scores requirements on 1-10 scale
 - Identifies missing information gaps
 - Provides interactive guidance for improvements
 
-### 3. **Document Readiness**
-- Document modules turn **green** when completeness ≥5 score
+### 3. **Document Readiness- Document modules turn **green** when completeness ≥5 score
 - Visual indicators show Ready/Needs More Info/Not Ready status
 - FAR compliance recommendations provided
 
-### 4. **Generation Options**
-- **Auto-Generate**: AI selects and generates all recommended documents
+### 4. **Generation Options- **Auto-Generate**: AI selects and generates all recommended documents
 - **Manual Selection**: Choose specific document types to generate
 - Real-time preview of selected documents
 
-### 5. **Delivery & Export**
-- **Download**: PDF and DOCX files saved to device
+### 5. **Delivery & Export- **Download**: PDF and DOCX files saved to device
 - **Email**: Professional delivery with formatted email template
 - **Format Options**: Both PDF and DOCX generated simultaneously
 
@@ -208,26 +199,22 @@ make clean
 
 ## Technical Highlights
 
-### **AI-Powered Analysis Engine**
-- OpenAI GPT-4 integration for requirement analysis
+### **AI-Powered Analysis Engine- OpenAI GPT-4 integration for requirement analysis
 - Intelligent completeness scoring algorithm
 - Context-aware missing information detection
 - FAR compliance validation and recommendations
 
-### **Multi-Format Document Processing**
-- PDF text extraction using PDFKit
+### **Multi-Format Document Processing- PDF text extraction using PDFKit
 - DOCX and text file parsing
 - Vision framework OCR for image/photo processing
 - Unified parsing interface across all formats
 
-### **Professional Document Generation**
-- Template-based PDF generation with proper formatting
+### **Professional Document Generation- Template-based PDF generation with proper formatting
 - RTF/DOCX export with Microsoft Word compatibility
 - Batch processing for multiple document types
 - Professional styling and layout
 
-### **Advanced User Experience**
-- Real-time visual status indicators
+### **Advanced User Experience- Real-time visual status indicators
 - Interactive confirmation dialogs
 - Progressive disclosure of complexity
 - Comprehensive error handling and recovery
@@ -246,7 +233,7 @@ make clean
 
 ## Quick Start Guide
 
-### 🚀 First Time Setup (5 minutes)
+###  First Time Setup (5 minutes)
 
 1. **Download AIKO** from the App Store
 2. **Launch the app** and create your profile
@@ -257,7 +244,7 @@ make clean
    - Let AIKO analyze and suggest documents
    - Generate your first document package
 
-### 💡 Pro Tips for Beginners
+###  Pro Tips for Beginners
 
 - **Start simple**: Enter basic requirements first, AIKO will ask for details
 - **Use templates**: Browse pre-built templates for common acquisitions
@@ -266,7 +253,7 @@ make clean
 
 ## User Guide
 
-### 📱 Getting Started with AIKO
+###  Getting Started with AIKO
 
 #### Step 1: Setting Up Your Profile
 
@@ -327,7 +314,7 @@ AIKO uses a **Completeness Score** (1-10) to guide you:
    - **Email**: Send to yourself or team members
    - **Share**: Use iOS share sheet for other apps
 
-### 🎯 Common Use Cases
+###  Common Use Cases
 
 #### Use Case 1: Simple Purchase Request
 
@@ -359,12 +346,11 @@ AIKO uses a **Completeness Score** (1-10) to guide you:
 4. Generates: J&A, Market Research, Determination & Findings
 5. Includes all required FAR citations
 
-### 📋 Document Types Explained
+###  Document Types Explained
 
 #### Basic Documents (Free Tier)
 
-**Statement of Work (SOW)**
-- **When to use**: Detailed requirements for any acquisition
+**Statement of Work (SOW)- **When to use**: Detailed requirements for any acquisition
 - **What it includes**: Scope, tasks, deliverables, timeline
 - **Tips**: Be specific about deliverables and deadlines
 
@@ -375,22 +361,19 @@ AIKO uses a **Completeness Score** (1-10) to guide you:
 
 #### Advanced Documents (Pro Tier)
 
-**Quality Assurance Surveillance Plan (QASP)**
-- **When to use**: With every PWS or complex SOW
+**Quality Assurance Surveillance Plan (QASP)- **When to use**: With every PWS or complex SOW
 - **What it includes**: Inspection methods, performance standards
 - **Tips**: Align metrics with PWS requirements
 
-**Contract Scaffold**
-- **When to use**: Planning complex acquisitions
+**Contract Scaffold- **When to use**: Planning complex acquisitions
 - **What it includes**: Complete acquisition framework
 - **Tips**: Use for acquisitions over $1M
 
-**Independent Government Cost Estimate (IGCE)**
-- **When to use**: All acquisitions requiring cost analysis
+**Independent Government Cost Estimate (IGCE)- **When to use**: All acquisitions requiring cost analysis
 - **What it includes**: Detailed cost breakdown, assumptions
 - **Tips**: Update with current market data
 
-### 🛠️ Advanced Features
+###  Advanced Features
 
 #### Requirement Analysis Deep Dive
 
@@ -438,7 +421,7 @@ AIKO includes templates for common acquisitions:
 4. Modify only the changing elements
 5. Batch generate all documents
 
-### 💼 For Different User Roles
+###  For Different User Roles
 
 #### Contracting Officers
 
@@ -463,7 +446,7 @@ AIKO includes templates for common acquisitions:
 
 ## Installation Guide
 
-### 📱 iOS App Installation
+###  iOS App Installation
 
 #### From App Store (Recommended)
 
@@ -479,7 +462,7 @@ AIKO includes templates for common acquisitions:
 - **Storage**: 100MB free space
 - **Network**: Internet connection required
 
-### 🔧 Development Setup
+###  Development Setup
 
 #### Prerequisites
 
@@ -526,7 +509,7 @@ AIKO includes templates for common acquisitions:
    # Press Run (⌘+R)
    ```
 
-### 🔑 API Configuration
+###  API Configuration
 
 #### Setting Up OpenAI API
 
@@ -584,7 +567,7 @@ class RequirementAnalyzer {
 
 **Returns**: Analysis with score (1-10) and improvement suggestions
 
-### 📊 Data Models
+###  Data Models
 
 #### DocumentType
 
@@ -610,7 +593,7 @@ struct AcquisitionContext {
 }
 ```
 
-### 🔄 Workflow States
+###  Workflow States
 
 ```swift
 enum WorkflowState {
@@ -667,7 +650,7 @@ enum WorkflowState {
 3. Try different export format
 4. Grant necessary permissions
 
-### 🔍 Advanced Troubleshooting
+###  Advanced Troubleshooting
 
 #### Debug Mode
 
@@ -691,7 +674,7 @@ Force sync with cloud:
 2. Pull down to refresh
 3. Check sync status
 
-### 📞 Getting Help
+###  Getting Help
 
 #### In-App Support
 
@@ -709,7 +692,7 @@ Force sync with cloud:
 
 ## Performance Optimization
 
-### 💨 Speed Tips
+###  Speed Tips
 
 #### Faster Document Generation
 
@@ -725,7 +708,7 @@ Force sync with cloud:
 3. **Selective generation**: Only generate needed documents
 4. **Use caching**: Enable smart caching in settings
 
-### 📱 Device Optimization
+###  Device Optimization
 
 #### Storage Management
 

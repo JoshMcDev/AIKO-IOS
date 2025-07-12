@@ -1,8 +1,9 @@
 import Foundation
 
 // MARK: - Workflow State
+
 public enum WorkflowState: String, CaseIterable {
-    case initial = "initial"
+    case initial
     case gatheringRequirements = "gathering_requirements"
     case analyzingRequirements = "analyzing_requirements"
     case suggestingDocuments = "suggesting_documents"
@@ -10,54 +11,55 @@ public enum WorkflowState: String, CaseIterable {
     case generatingDocuments = "generating_documents"
     case reviewingDocuments = "reviewing_documents"
     case finalizingDocuments = "finalizing_documents"
-    case completed = "completed"
-    
+    case completed
+
     public var displayName: String {
         switch self {
-        case .initial: return "Initial"
-        case .gatheringRequirements: return "Gathering Requirements"
-        case .analyzingRequirements: return "Analyzing Requirements"
-        case .suggestingDocuments: return "Suggesting Documents"
-        case .collectingData: return "Collecting Data"
-        case .generatingDocuments: return "Generating Documents"
-        case .reviewingDocuments: return "Reviewing Documents"
-        case .finalizingDocuments: return "Finalizing Documents"
-        case .completed: return "Completed"
+        case .initial: "Initial"
+        case .gatheringRequirements: "Gathering Requirements"
+        case .analyzingRequirements: "Analyzing Requirements"
+        case .suggestingDocuments: "Suggesting Documents"
+        case .collectingData: "Collecting Data"
+        case .generatingDocuments: "Generating Documents"
+        case .reviewingDocuments: "Reviewing Documents"
+        case .finalizingDocuments: "Finalizing Documents"
+        case .completed: "Completed"
         }
     }
-    
+
     public var nextStates: [WorkflowState] {
         switch self {
         case .initial:
-            return [.gatheringRequirements]
+            [.gatheringRequirements]
         case .gatheringRequirements:
-            return [.analyzingRequirements]
+            [.analyzingRequirements]
         case .analyzingRequirements:
-            return [.suggestingDocuments, .collectingData]
+            [.suggestingDocuments, .collectingData]
         case .suggestingDocuments:
-            return [.collectingData, .generatingDocuments]
+            [.collectingData, .generatingDocuments]
         case .collectingData:
-            return [.generatingDocuments]
+            [.generatingDocuments]
         case .generatingDocuments:
-            return [.reviewingDocuments, .collectingData]
+            [.reviewingDocuments, .collectingData]
         case .reviewingDocuments:
-            return [.finalizingDocuments, .generatingDocuments]
+            [.finalizingDocuments, .generatingDocuments]
         case .finalizingDocuments:
-            return [.completed, .reviewingDocuments]
+            [.completed, .reviewingDocuments]
         case .completed:
-            return []
+            []
         }
     }
 }
 
 // MARK: - Collected Data
+
 public struct CollectedData: Equatable, Codable {
     public var data: [String: String] = [:]
-    
+
     public init(data: [String: String] = [:]) {
         self.data = data
     }
-    
+
     public subscript(key: String) -> String? {
         get { data[key] }
         set { data[key] = newValue }
@@ -65,6 +67,7 @@ public struct CollectedData: Equatable, Codable {
 }
 
 // MARK: - Workflow Step
+
 public struct WorkflowStep: Identifiable, Equatable {
     public let id = UUID()
     public let timestamp: Date
@@ -75,7 +78,7 @@ public struct WorkflowStep: Identifiable, Equatable {
     public let dataCollected: CollectedData?
     public let requiresApproval: Bool
     public let approvalStatus: ApprovalStatus?
-    
+
     public init(
         timestamp: Date = Date(),
         state: WorkflowState,
@@ -98,14 +101,16 @@ public struct WorkflowStep: Identifiable, Equatable {
 }
 
 // MARK: - Approval Status
+
 public enum ApprovalStatus: String {
-    case pending = "pending"
-    case approved = "approved"
-    case rejected = "rejected"
-    case skipped = "skipped"
+    case pending
+    case approved
+    case rejected
+    case skipped
 }
 
 // MARK: - Automation Settings
+
 public struct AutomationSettings: Equatable, Codable {
     public var enabled: Bool
     public var requireApprovalForDocumentGeneration: Bool
@@ -114,7 +119,7 @@ public struct AutomationSettings: Equatable, Codable {
     public var autoSuggestNextSteps: Bool
     public var autoFillFromProfile: Bool
     public var autoFillFromPreviousDocuments: Bool
-    
+
     public init(
         enabled: Bool = false,
         requireApprovalForDocumentGeneration: Bool = true,
@@ -135,13 +140,14 @@ public struct AutomationSettings: Equatable, Codable {
 }
 
 // MARK: - Document Dependency
+
 public struct DocumentDependency: Identifiable, Equatable {
     public let id = UUID()
     public let sourceDocumentType: DocumentType
     public let targetDocumentType: DocumentType
     public let dataFields: [String] // Fields that flow from source to target
     public let isRequired: Bool
-    
+
     public init(
         sourceDocumentType: DocumentType,
         targetDocumentType: DocumentType,
@@ -156,6 +162,7 @@ public struct DocumentDependency: Identifiable, Equatable {
 }
 
 // MARK: - Workflow Context
+
 public struct WorkflowContext: Equatable {
     public var acquisitionId: UUID
     public var currentState: WorkflowState
@@ -164,7 +171,7 @@ public struct WorkflowContext: Equatable {
     public var collectedData: CollectedData
     public var suggestedPrompts: [SuggestedPrompt]
     public var pendingApprovals: [WorkflowStep]
-    
+
     public init(
         acquisitionId: UUID,
         currentState: WorkflowState = .initial,
@@ -185,6 +192,7 @@ public struct WorkflowContext: Equatable {
 }
 
 // MARK: - Suggested Prompt
+
 public struct SuggestedPrompt: Identifiable, Equatable {
     public let id = UUID()
     public let prompt: String
@@ -192,22 +200,22 @@ public struct SuggestedPrompt: Identifiable, Equatable {
     public let priority: PromptPriority
     public let dataToCollect: [String]
     public let nextState: WorkflowState?
-    
+
     public enum PromptCategory: String {
         case dataCollection = "data_collection"
-        case clarification = "clarification"
+        case clarification
         case documentSelection = "document_selection"
-        case approval = "approval"
+        case approval
         case nextStep = "next_step"
     }
-    
+
     public enum PromptPriority: Int {
         case low = 0
         case medium = 1
         case high = 2
         case critical = 3
     }
-    
+
     public init(
         prompt: String,
         category: PromptCategory,
@@ -224,13 +232,14 @@ public struct SuggestedPrompt: Identifiable, Equatable {
 }
 
 // MARK: - Document Generation Context
+
 public struct DocumentGenerationContext: Equatable {
     public let documentType: DocumentType
     public let acquisitionData: CollectedData
     public let userProfileData: CollectedData
     public let previousDocumentsData: CollectedData
     public let templateVariables: [String: String]
-    
+
     public init(
         documentType: DocumentType,
         acquisitionData: CollectedData,

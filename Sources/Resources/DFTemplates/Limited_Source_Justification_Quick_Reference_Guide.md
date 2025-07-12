@@ -185,7 +185,7 @@ Before using this template, ensure you have:
 - Accept unreasonable pricing due to limited competition
 - Neglect documentation of specific circumstances
 
-✅ **Do:**
+ **Do:**
 - Conduct thorough market research before limiting sources
 - Document specific justifying circumstances
 - Consider all available sources within constraints

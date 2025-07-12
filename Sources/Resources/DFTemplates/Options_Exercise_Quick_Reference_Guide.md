@@ -124,7 +124,7 @@ Before using this template, ensure you have:
 - Exercise options without adequate funding
 - Miss option exercise deadlines
 
-✅ **Do:**
+ **Do:**
 - Conduct thorough performance evaluation
 - Analyze price reasonableness comprehensively
 - Verify adequate funding availability

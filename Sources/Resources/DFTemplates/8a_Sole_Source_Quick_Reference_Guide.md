@@ -111,7 +111,7 @@ Before using this template, ensure you have:
 - Ignore SBA program requirements and conditions
 - Fail to include required 8(a) contract clauses
 
-✅ **Do:**
+ **Do:**
 - Coordinate early with SBA district office
 - Verify 8(a) firm certification and good standing
 - Conduct thorough capability assessment

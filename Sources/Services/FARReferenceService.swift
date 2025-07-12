@@ -1,8 +1,7 @@
 import Foundation
 
 /// Service for managing FAR and DFAR references throughout the application
-public struct FARReferenceService {
-    
+public enum FARReferenceService {
     /// Comprehensive FAR/DFAR reference mappings for all document types
     public static let farReferences: [String: ComprehensiveFARReference] = [
         // Standard Documents
@@ -150,7 +149,7 @@ public struct FARReferenceService {
             dfar: ["DFARS Appendix I"],
             description: "Other Transaction Authority"
         ),
-        
+
         // Determination & Findings Documents
         "8(a) Sole Source": ComprehensiveFARReference(
             primary: "FAR 19.804-2",
@@ -277,33 +276,33 @@ public struct FARReferenceService {
             related: ["FAR 13.106", "FAR 13.201"],
             dfar: ["DFARS 213.003"],
             description: "Simplified acquisition threshold"
-        )
+        ),
     ]
-    
+
     /// Get FAR reference for a document type
     public static func getFARReference(for documentType: String) -> ComprehensiveFARReference? {
-        return farReferences[documentType]
+        farReferences[documentType]
     }
-    
+
     /// Get all relevant FAR/DFAR citations for a document
     public static func getAllCitations(for documentType: String) -> [String] {
         guard let reference = farReferences[documentType] else { return [] }
-        
+
         var citations = [reference.primary]
         citations.append(contentsOf: reference.related)
         citations.append(contentsOf: reference.dfar)
-        
+
         return citations
     }
-    
+
     /// Format FAR references for display in templates
     public static func formatFARReferences(for documentType: String) -> String {
         guard let reference = farReferences[documentType] else {
             return "No FAR reference available"
         }
-        
+
         var formatted = "**Primary Reference:** \(reference.primary)\n\n"
-        
+
         if !reference.related.isEmpty {
             formatted += "**Related FAR References:**\n"
             for ref in reference.related {
@@ -311,7 +310,7 @@ public struct FARReferenceService {
             }
             formatted += "\n"
         }
-        
+
         if !reference.dfar.isEmpty {
             formatted += "**DFAR References:**\n"
             for ref in reference.dfar {
@@ -319,9 +318,9 @@ public struct FARReferenceService {
             }
             formatted += "\n"
         }
-        
+
         formatted += "**Description:** \(reference.description)"
-        
+
         return formatted
     }
 }
@@ -332,7 +331,7 @@ public struct ComprehensiveFARReference {
     public let related: [String]
     public let dfar: [String]
     public let description: String
-    
+
     public init(primary: String, related: [String] = [], dfar: [String] = [], description: String) {
         self.primary = primary
         self.related = related

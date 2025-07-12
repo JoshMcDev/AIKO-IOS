@@ -1,5 +1,5 @@
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 // MARK: - Document Template Model
 
@@ -7,9 +7,9 @@ public struct DocumentTemplate: Identifiable, Codable, Equatable {
     public let metadata: UnifiedTemplateMetadata
     public let structure: DocumentStructure
     public let style: DocumentStyle
-    
+
     public var id: String { metadata.id }
-    
+
     public init(metadata: UnifiedTemplateMetadata, structure: DocumentStructure, style: DocumentStyle) {
         self.metadata = metadata
         self.structure = structure
@@ -26,7 +26,7 @@ public struct UnifiedTemplateMetadata: Codable, Equatable {
     public let tags: [String]
     public let isEditable: Bool
     public let isFavorite: Bool
-    
+
     public init(
         id: String,
         name: String,
@@ -50,7 +50,7 @@ public struct UnifiedTemplateMetadata: Codable, Equatable {
 
 public struct DocumentStructure: Codable, Equatable {
     public let sections: [DocumentSection]
-    
+
     public init(sections: [DocumentSection]) {
         self.sections = sections
     }
@@ -63,7 +63,7 @@ public struct DocumentSection: Codable, Equatable {
     public let fields: [DocumentField]
     public let isRequired: Bool
     public let order: Int
-    
+
     public init(
         id: String,
         title: String,
@@ -89,7 +89,7 @@ public struct DocumentField: Codable, Equatable {
     public let defaultValue: String?
     public let isRequired: Bool
     public let validation: FieldValidation?
-    
+
     public enum FieldType: String, Codable, Equatable {
         case text
         case multilineText
@@ -99,7 +99,7 @@ public struct DocumentField: Codable, Equatable {
         case checkbox
         case radio
     }
-    
+
     public init(
         id: String,
         label: String,
@@ -133,13 +133,13 @@ public struct DocumentStyle: Codable, Equatable {
     public let fontSize: Double
     public let lineSpacing: Double
     public let margins: Margins
-    
+
     public struct Margins: Codable, Equatable {
         public let top: Double
         public let bottom: Double
         public let left: Double
         public let right: Double
-        
+
         public init(top: Double, bottom: Double, left: Double, right: Double) {
             self.top = top
             self.bottom = bottom
@@ -147,7 +147,7 @@ public struct DocumentStyle: Codable, Equatable {
             self.right = right
         }
     }
-    
+
     public init(
         font: String = "Times New Roman",
         fontSize: Double = 12,
@@ -166,27 +166,27 @@ public struct UnifiedTemplateService {
     // Template loading
     public var loadTemplate: (TemplateIdentifier) async throws -> DocumentTemplate
     public var loadAllTemplates: (TemplateCategory?) async throws -> [DocumentTemplate]
-    
+
     // Template management
     public var saveCustomTemplate: (DocumentTemplate) async throws -> Void
     public var deleteCustomTemplate: (String) async throws -> Void
     public var updateTemplate: (DocumentTemplate) async throws -> Void
-    
+
     // Template search and filtering
     public var searchTemplates: (String, TemplateCategory?) async throws -> [DocumentTemplate]
     public var getTemplatesByCategory: (TemplateCategory) async throws -> [DocumentTemplate]
     public var getRecentTemplates: (Int) async -> [DocumentTemplate]
     public var getFavoriteTemplates: () async -> [DocumentTemplate]
-    
+
     // Template metadata
     public var toggleFavorite: (String) async throws -> Void
     public var recordTemplateUsage: (String) async throws -> Void
     public var getTemplateStatistics: (String) async -> TemplateStatistics?
-    
+
     // Import/Export
     public var exportTemplate: (String) async throws -> Data
     public var importTemplate: (Data) async throws -> DocumentTemplate
-    
+
     // Validation
     public var validateTemplate: (DocumentTemplate) async -> [ValidationIssue]
 }
@@ -197,7 +197,7 @@ public struct TemplateIdentifier: Equatable, Codable {
     public let id: String
     public let category: TemplateCategory
     public let version: String?
-    
+
     public init(id: String, category: TemplateCategory, version: String? = nil) {
         self.id = id
         self.category = category
@@ -206,25 +206,25 @@ public struct TemplateIdentifier: Equatable, Codable {
 }
 
 public enum TemplateCategory: String, CaseIterable, Codable {
-    case standard = "standard"
-    case dataFreedom = "dataFreedom"
-    case custom = "custom"
-    case office = "office"
-    case sla = "sla"
-    case ota = "ota"
-    case far = "far"
-    case cmmc = "cmmc"
-    
+    case standard
+    case dataFreedom
+    case custom
+    case office
+    case sla
+    case ota
+    case far
+    case cmmc
+
     public var displayName: String {
         switch self {
-        case .standard: return "Standard Templates"
-        case .dataFreedom: return "Data Freedom Templates"
-        case .custom: return "Custom Templates"
-        case .office: return "Office Templates"
-        case .sla: return "Service Level Agreements"
-        case .ota: return "Other Transaction Agreements"
-        case .far: return "FAR Compliant"
-        case .cmmc: return "CMMC Requirements"
+        case .standard: "Standard Templates"
+        case .dataFreedom: "Data Freedom Templates"
+        case .custom: "Custom Templates"
+        case .office: "Office Templates"
+        case .sla: "Service Level Agreements"
+        case .ota: "Other Transaction Agreements"
+        case .far: "FAR Compliant"
+        case .cmmc: "CMMC Requirements"
         }
     }
 }
@@ -243,7 +243,7 @@ public struct ValidationIssue: Equatable {
         case warning
         case info
     }
-    
+
     public let severity: Severity
     public let field: String?
     public let message: String
@@ -256,22 +256,22 @@ actor UnifiedTemplateStorage {
     private var templateCache: [String: CachedTemplate] = [:]
     private var customTemplates: [String: DocumentTemplate] = [:]
     private var templateMetadata: [String: TemplateMetadata] = [:]
-    
+
     // Standard template sources
     private let standardTemplates: [DocumentTemplate]
     private let dataFreedomTemplates: [DocumentTemplate]
     private let officeTemplates: [OfficeTemplate]
-    
+
     // Configuration
     private let cacheExpiration: TimeInterval = 3600 // 1 hour
     private let maxCacheSize: Int = 100
-    
+
     struct CachedTemplate {
         let template: DocumentTemplate
         let cachedAt: Date
         let category: TemplateCategory
     }
-    
+
     struct TemplateMetadata: Codable {
         var isFavorite: Bool
         var usageCount: Int
@@ -280,135 +280,136 @@ actor UnifiedTemplateStorage {
         var successfulGenerations: Int
         var failedGenerations: Int
         var popularFields: [String: Int]
-        
+
         var successRate: Double {
             let total = successfulGenerations + failedGenerations
             return total > 0 ? Double(successfulGenerations) / Double(total) : 1.0
         }
-        
+
         var averageGenerationTime: TimeInterval {
-            return successfulGenerations > 0 ? totalGenerationTime / Double(successfulGenerations) : 0
+            successfulGenerations > 0 ? totalGenerationTime / Double(successfulGenerations) : 0
         }
     }
-    
+
     init() async throws {
         // Load standard templates
-        self.standardTemplates = try await Self.loadStandardTemplates()
-        self.dataFreedomTemplates = try await Self.loadDataFreedomTemplates()
-        self.officeTemplates = try await Self.loadOfficeTemplates()
-        
+        standardTemplates = try await Self.loadStandardTemplates()
+        dataFreedomTemplates = try await Self.loadDataFreedomTemplates()
+        officeTemplates = try await Self.loadOfficeTemplates()
+
         // Load custom templates from storage
-        self.customTemplates = try await Self.loadCustomTemplates()
-        
+        customTemplates = try await Self.loadCustomTemplates()
+
         // Load metadata
-        self.templateMetadata = try await Self.loadTemplateMetadata()
+        templateMetadata = try await Self.loadTemplateMetadata()
     }
-    
+
     // MARK: - Template Loading
-    
+
     func loadTemplate(identifier: TemplateIdentifier) async throws -> DocumentTemplate {
         // Check cache first
         if let cached = templateCache[identifier.id],
-           Date().timeIntervalSince(cached.cachedAt) < cacheExpiration {
+           Date().timeIntervalSince(cached.cachedAt) < cacheExpiration
+        {
             return cached.template
         }
-        
+
         // Load based on category
         let template: DocumentTemplate
-        
+
         switch identifier.category {
         case .standard:
             guard let standardTemplate = standardTemplates.first(where: { $0.metadata.id == identifier.id }) else {
                 throw TemplateError.templateNotFound(identifier.id)
             }
             template = standardTemplate
-            
+
         case .dataFreedom:
             guard let dfTemplate = dataFreedomTemplates.first(where: { $0.metadata.id == identifier.id }) else {
                 throw TemplateError.templateNotFound(identifier.id)
             }
             template = dfTemplate
-            
+
         case .custom:
             guard let customTemplate = customTemplates[identifier.id] else {
                 throw TemplateError.templateNotFound(identifier.id)
             }
             template = customTemplate
-            
+
         case .office:
             guard let officeData = officeTemplates.first(where: { $0.id == UUID(uuidString: identifier.id) }) else {
                 throw TemplateError.templateNotFound(identifier.id)
             }
             template = try convertOfficeTemplate(officeData)
-            
+
         case .sla:
             template = try await loadSLATemplate(identifier.id)
-            
+
         case .ota:
             template = try await loadOTATemplate(identifier.id)
-            
+
         case .far:
             template = try await loadFARTemplate(identifier.id)
-            
+
         case .cmmc:
             template = try await loadCMMCTemplate(identifier.id)
         }
-        
+
         // Cache the template
         await cacheTemplate(template, category: identifier.category)
-        
+
         return template
     }
-    
+
     func loadAllTemplates(category: TemplateCategory?) async throws -> [DocumentTemplate] {
-        if let category = category {
+        if let category {
             return try await loadTemplatesByCategory(category)
         }
-        
+
         // Load all templates
         var allTemplates: [DocumentTemplate] = []
-        
+
         for category in TemplateCategory.allCases {
             let categoryTemplates = try await loadTemplatesByCategory(category)
             allTemplates.append(contentsOf: categoryTemplates)
         }
-        
+
         return allTemplates
     }
-    
+
     private func loadTemplatesByCategory(_ category: TemplateCategory) async throws -> [DocumentTemplate] {
         switch category {
         case .standard:
-            return standardTemplates
+            standardTemplates
         case .dataFreedom:
-            return dataFreedomTemplates
+            dataFreedomTemplates
         case .custom:
-            return Array(customTemplates.values)
+            Array(customTemplates.values)
         case .office:
-            return try officeTemplates.map { try convertOfficeTemplate($0) }
+            try officeTemplates.map { try convertOfficeTemplate($0) }
         case .sla:
-            return try await loadAllSLATemplates()
+            try await loadAllSLATemplates()
         case .ota:
-            return try await loadAllOTATemplates()
+            try await loadAllOTATemplates()
         case .far:
-            return try await loadAllFARTemplates()
+            try await loadAllFARTemplates()
         case .cmmc:
-            return try await loadAllCMMCTemplates()
+            try await loadAllCMMCTemplates()
         }
     }
-    
+
     // MARK: - Template Management
-    
+
     func saveCustomTemplate(_ template: DocumentTemplate) async throws {
         // Validate template
         let issues = await validateTemplate(template)
         if issues.contains(where: { $0.severity == .error }) {
             throw TemplateError.validationFailed(issues)
         }
-        
+
         // Save to custom templates
         customTemplates[template.metadata.id] = template
-        
+
         // Initialize metadata if needed
         if templateMetadata[template.metadata.id] == nil {
             templateMetadata[template.metadata.id] = TemplateMetadata(
@@ -421,94 +422,94 @@ actor UnifiedTemplateStorage {
                 popularFields: [:]
             )
         }
-        
+
         // Persist to storage
         try await persistCustomTemplates()
     }
-    
+
     func deleteCustomTemplate(_ templateId: String) async throws {
         guard customTemplates[templateId] != nil else {
             throw TemplateError.templateNotFound(templateId)
         }
-        
+
         customTemplates.removeValue(forKey: templateId)
         templateMetadata.removeValue(forKey: templateId)
-        
+
         // Remove from cache
         templateCache.removeValue(forKey: templateId)
-        
+
         // Persist changes
         try await persistCustomTemplates()
         try await persistTemplateMetadata()
     }
-    
+
     // MARK: - Search and Filter
-    
+
     func searchTemplates(query: String, category: TemplateCategory?) async throws -> [DocumentTemplate] {
         let allTemplates = try await loadAllTemplates(category: category)
-        
+
         guard !query.isEmpty else { return allTemplates }
-        
+
         let lowercasedQuery = query.lowercased()
-        
+
         return allTemplates.filter { template in
             template.metadata.name.lowercased().contains(lowercasedQuery) ||
-            template.metadata.description.lowercased().contains(lowercasedQuery) ||
-            template.metadata.tags.contains { $0.lowercased().contains(lowercasedQuery) }
+                template.metadata.description.lowercased().contains(lowercasedQuery) ||
+                template.metadata.tags.contains { $0.lowercased().contains(lowercasedQuery) }
         }
     }
-    
+
     func getRecentTemplates(limit: Int) async -> [DocumentTemplate] {
         let recentIds = templateMetadata
-            .compactMap { (id, metadata) -> (String, Date)? in
+            .compactMap { id, metadata -> (String, Date)? in
                 guard let lastUsed = metadata.lastUsed else { return nil }
                 return (id, lastUsed)
             }
             .sorted { $0.1 > $1.1 }
             .prefix(limit)
-            .map { $0.0 }
-        
+            .map(\.0)
+
         var recentTemplates: [DocumentTemplate] = []
-        
+
         for id in recentIds {
             // Try to find template in any category
             if let template = try? await findTemplateById(id) {
                 recentTemplates.append(template)
             }
         }
-        
+
         return recentTemplates
     }
-    
+
     func getFavoriteTemplates() async -> [DocumentTemplate] {
         let favoriteIds = templateMetadata
-            .filter { $0.value.isFavorite }
-            .map { $0.key }
-        
+            .filter(\.value.isFavorite)
+            .map(\.key)
+
         var favoriteTemplates: [DocumentTemplate] = []
-        
+
         for id in favoriteIds {
             if let template = try? await findTemplateById(id) {
                 favoriteTemplates.append(template)
             }
         }
-        
+
         return favoriteTemplates
     }
-    
+
     // MARK: - Metadata Operations
-    
+
     func toggleFavorite(_ templateId: String) async throws {
         guard var metadata = templateMetadata[templateId] else {
             throw TemplateError.templateNotFound(templateId)
         }
-        
+
         metadata.isFavorite.toggle()
         templateMetadata[templateId] = metadata
-        
+
         try await persistTemplateMetadata()
     }
-    
+
     func recordTemplateUsage(_ templateId: String, generationTime: TimeInterval, success: Bool) async throws {
         var metadata = templateMetadata[templateId] ?? TemplateMetadata(
             isFavorite: false,
@@ -519,41 +520,41 @@ actor UnifiedTemplateStorage {
             failedGenerations: 0,
             popularFields: [:]
         )
-        
+
         metadata.usageCount += 1
         metadata.lastUsed = Date()
-        
+
         if success {
             metadata.successfulGenerations += 1
             metadata.totalGenerationTime += generationTime
         } else {
             metadata.failedGenerations += 1
         }
-        
+
         templateMetadata[templateId] = metadata
-        
+
         try await persistTemplateMetadata()
     }
-    
+
     func getTemplateStatistics(_ templateId: String) async -> TemplateStatistics? {
         guard let metadata = templateMetadata[templateId] else { return nil }
-        
+
         return TemplateStatistics(
             usageCount: metadata.usageCount,
             lastUsed: metadata.lastUsed,
             averageGenerationTime: metadata.averageGenerationTime,
             successRate: metadata.successRate,
-            popularFields: Array(metadata.popularFields.keys.sorted { 
-                metadata.popularFields[$0]! > metadata.popularFields[$1]! 
+            popularFields: Array(metadata.popularFields.keys.sorted {
+                metadata.popularFields[$0]! > metadata.popularFields[$1]!
             }.prefix(5))
         )
     }
-    
+
     // MARK: - Validation
-    
+
     func validateTemplate(_ template: DocumentTemplate) async -> [ValidationIssue] {
         var issues: [ValidationIssue] = []
-        
+
         // Check required fields
         if template.metadata.name.isEmpty {
             issues.append(ValidationIssue(
@@ -562,7 +563,7 @@ actor UnifiedTemplateStorage {
                 message: "Template name is required"
             ))
         }
-        
+
         if template.metadata.description.isEmpty {
             issues.append(ValidationIssue(
                 severity: .warning,
@@ -570,7 +571,7 @@ actor UnifiedTemplateStorage {
                 message: "Template description is recommended"
             ))
         }
-        
+
         // Validate template structure
         if template.structure.sections.isEmpty {
             issues.append(ValidationIssue(
@@ -579,7 +580,7 @@ actor UnifiedTemplateStorage {
                 message: "Template must have at least one section"
             ))
         }
-        
+
         // Check for duplicate field IDs
         var fieldIds = Set<String>()
         for section in template.structure.sections {
@@ -594,33 +595,33 @@ actor UnifiedTemplateStorage {
                 fieldIds.insert(field.id)
             }
         }
-        
+
         return issues
     }
-    
+
     // MARK: - Helper Methods
-    
+
     private func cacheTemplate(_ template: DocumentTemplate, category: TemplateCategory) async {
         let cached = CachedTemplate(
             template: template,
             cachedAt: Date(),
             category: category
         )
-        
+
         templateCache[template.metadata.id] = cached
-        
+
         // Enforce cache size limit
         if templateCache.count > maxCacheSize {
             // Remove oldest cached items
             let sortedCache = templateCache.sorted { $0.value.cachedAt < $1.value.cachedAt }
             let itemsToRemove = sortedCache.prefix(templateCache.count - maxCacheSize)
-            
+
             for (key, _) in itemsToRemove {
                 templateCache.removeValue(forKey: key)
             }
         }
     }
-    
+
     private func findTemplateById(_ id: String) async throws -> DocumentTemplate? {
         // Check all categories
         for category in TemplateCategory.allCases {
@@ -631,12 +632,12 @@ actor UnifiedTemplateStorage {
         }
         return nil
     }
-    
+
     // MARK: - Template Conversion
-    
+
     private func convertOfficeTemplate(_ officeData: OfficeTemplate) throws -> DocumentTemplate {
         // Convert office template format to unified format
-        return DocumentTemplate(
+        DocumentTemplate(
             metadata: UnifiedTemplateMetadata(
                 id: officeData.id.uuidString,
                 name: officeData.officeName,
@@ -653,56 +654,56 @@ actor UnifiedTemplateStorage {
             style: DocumentStyle()
         )
     }
-    
+
     // MARK: - Specialized Template Loading
-    
-    private func loadSLATemplate(_ id: String) async throws -> DocumentTemplate {
+
+    private func loadSLATemplate(_: String) async throws -> DocumentTemplate {
         // Load from SLATemplates
         throw TemplateError.categoryNotImplemented(.sla)
     }
-    
-    private func loadOTATemplate(_ id: String) async throws -> DocumentTemplate {
+
+    private func loadOTATemplate(_: String) async throws -> DocumentTemplate {
         // Load from OTAgreementTemplates
         throw TemplateError.categoryNotImplemented(.ota)
     }
-    
-    private func loadFARTemplate(_ id: String) async throws -> DocumentTemplate {
+
+    private func loadFARTemplate(_: String) async throws -> DocumentTemplate {
         // Load from FAR templates
         throw TemplateError.categoryNotImplemented(.far)
     }
-    
-    private func loadCMMCTemplate(_ id: String) async throws -> DocumentTemplate {
+
+    private func loadCMMCTemplate(_: String) async throws -> DocumentTemplate {
         // Load from CMMC templates
         throw TemplateError.categoryNotImplemented(.cmmc)
     }
-    
+
     private func loadAllSLATemplates() async throws -> [DocumentTemplate] {
-        return []
+        []
     }
-    
+
     private func loadAllOTATemplates() async throws -> [DocumentTemplate] {
-        return []
+        []
     }
-    
+
     private func loadAllFARTemplates() async throws -> [DocumentTemplate] {
-        return []
+        []
     }
-    
+
     private func loadAllCMMCTemplates() async throws -> [DocumentTemplate] {
-        return []
+        []
     }
-    
+
     // MARK: - Persistence
-    
+
     private static func loadStandardTemplates() async throws -> [DocumentTemplate] {
         // Create service instance
         let service = StandardTemplateService.liveValue
         var templates: [DocumentTemplate] = []
-        
+
         // Convert each document type to a unified template
         for documentType in DocumentType.allCases {
             do {
-                let _ = try await service.loadTemplate(documentType)
+                _ = try await service.loadTemplate(documentType)
                 let template = DocumentTemplate(
                     metadata: UnifiedTemplateMetadata(
                         id: "standard-\(documentType.rawValue)",
@@ -723,15 +724,15 @@ actor UnifiedTemplateStorage {
                 print("Failed to load standard template for \(documentType.rawValue): \(error)")
             }
         }
-        
+
         return templates
     }
-    
+
     private static func loadDataFreedomTemplates() async throws -> [DocumentTemplate] {
         // Create service instance
         let service = DFTemplateService.liveValue
         let dfTemplates = try await service.loadAllTemplates()
-        
+
         // Convert DF templates to unified format
         return dfTemplates.map { dfTemplate in
             DocumentTemplate(
@@ -750,26 +751,26 @@ actor UnifiedTemplateStorage {
             )
         }
     }
-    
+
     private static func loadOfficeTemplates() async throws -> [OfficeTemplate] {
         // Load office templates
-        return []
+        []
     }
-    
+
     private static func loadCustomTemplates() async throws -> [String: DocumentTemplate] {
         // Load from UserDefaults or file storage
-        return [:]
+        [:]
     }
-    
+
     private static func loadTemplateMetadata() async throws -> [String: TemplateMetadata] {
         // Load from UserDefaults
-        return [:]
+        [:]
     }
-    
+
     private func persistCustomTemplates() async throws {
         // Save to storage
     }
-    
+
     private func persistTemplateMetadata() async throws {
         // Save to UserDefaults
     }
@@ -783,19 +784,19 @@ enum TemplateError: LocalizedError {
     case categoryNotImplemented(TemplateCategory)
     case importFailed(String)
     case exportFailed(String)
-    
+
     var errorDescription: String? {
         switch self {
-        case .templateNotFound(let id):
+        case let .templateNotFound(id):
             return "Template not found: \(id)"
-        case .validationFailed(let issues):
+        case let .validationFailed(issues):
             let errors = issues.filter { $0.severity == .error }
             return "Template validation failed with \(errors.count) errors"
-        case .categoryNotImplemented(let category):
+        case let .categoryNotImplemented(category):
             return "Template category not implemented: \(category.displayName)"
-        case .importFailed(let reason):
+        case let .importFailed(reason):
             return "Failed to import template: \(reason)"
-        case .exportFailed(let reason):
+        case let .exportFailed(reason):
             return "Failed to export template: \(reason)"
         }
     }
@@ -808,11 +809,11 @@ extension UnifiedTemplateService: DependencyKey {
         let storage = Task {
             try await UnifiedTemplateStorage()
         }
-        
+
         func getStorage() async throws -> UnifiedTemplateStorage {
             try await storage.value
         }
-        
+
         return UnifiedTemplateService(
             loadTemplate: { identifier in
                 let storage = try await getStorage()
@@ -862,11 +863,11 @@ extension UnifiedTemplateService: DependencyKey {
                 guard let storage = try? await getStorage() else { return nil }
                 return await storage.getTemplateStatistics(templateId)
             },
-            exportTemplate: { templateId in
+            exportTemplate: { _ in
                 // Implementation for export
-                return Data()
+                Data()
             },
-            importTemplate: { data in
+            importTemplate: { _ in
                 // Implementation for import
                 throw TemplateError.importFailed("Not implemented")
             },
@@ -878,8 +879,8 @@ extension UnifiedTemplateService: DependencyKey {
     }
 }
 
-extension DependencyValues {
-    public var unifiedTemplateService: UnifiedTemplateService {
+public extension DependencyValues {
+    var unifiedTemplateService: UnifiedTemplateService {
         get { self[UnifiedTemplateService.self] }
         set { self[UnifiedTemplateService.self] = newValue }
     }

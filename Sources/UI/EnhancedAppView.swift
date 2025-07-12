@@ -1,58 +1,58 @@
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 #if os(iOS)
-import UIKit
+    import UIKit
 #elseif os(macOS)
-import AppKit
+    import AppKit
 #endif
 
 // MARK: - Enhanced App View with UI/UX Improvements
 
 public struct EnhancedAppView: View {
     let store: StoreOf<AppFeature>
-    
+
     @StateObject private var hapticManager = HapticManager.shared
     @Environment(\.sizeCategory) private var sizeCategory
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    
+
     public init(store: StoreOf<AppFeature>) {
         self.store = store
     }
-    
+
     public var body: some View {
         #if os(iOS)
-        if #available(iOS 16.0, *) {
-            NavigationStack {
-                contentView
-                    .navigationBarHidden(true)
+            if #available(iOS 16.0, *) {
+                NavigationStack {
+                    contentView
+                        .navigationBarHidden(true)
+                }
+                .preferredColorScheme(.dark)
+                .tint(.white)
+                .dynamicTypeSize(.xSmall ... DynamicTypeSize.accessibility3)
+            } else {
+                SwiftUI.NavigationView {
+                    contentView
+                        .navigationBarHidden(true)
+                }
+                .navigationViewStyle(StackNavigationViewStyle())
+                .preferredColorScheme(.dark)
+                .dynamicTypeSize(.xSmall ... DynamicTypeSize.accessibility3)
             }
-            .preferredColorScheme(.dark)
-            .tint(.white)
-            .dynamicTypeSize(.xSmall...DynamicTypeSize.accessibility3)
-        } else {
+        #else
             SwiftUI.NavigationView {
                 contentView
-                    .navigationBarHidden(true)
             }
-            .navigationViewStyle(StackNavigationViewStyle())
             .preferredColorScheme(.dark)
-            .dynamicTypeSize(.xSmall...DynamicTypeSize.accessibility3)
-        }
-        #else
-        SwiftUI.NavigationView {
-            contentView
-        }
-        .preferredColorScheme(.dark)
         #endif
     }
-    
+
     @ViewBuilder
     private var contentView: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             ZStack {
                 // Animated background gradient
                 AnimatedGradientBackground()
-                
+
                 if !viewStore.isOnboardingCompleted {
                     onboardingView
                         .pageTransition(isActive: true, from: .trailing)
@@ -77,9 +77,9 @@ public struct EnhancedAppView: View {
             }
         }
     }
-    
+
     // MARK: - View Components
-    
+
     private var onboardingView: some View {
         OnboardingView(
             store: store.scope(
@@ -96,14 +96,14 @@ public struct EnhancedAppView: View {
             hint: "Complete the setup process"
         )
     }
-    
+
     private func authenticationView(viewStore: ViewStore<AppFeature.State, AppFeature.Action>) -> some View {
         FaceIDAuthenticationView(
             isAuthenticating: viewStore.isAuthenticating,
             error: viewStore.authenticationError,
-            onRetry: { 
+            onRetry: {
                 HapticManager.shared.impact(.medium)
-                viewStore.send(.authenticateWithFaceID) 
+                viewStore.send(.authenticateWithFaceID)
             }
         )
         .transition(.asymmetric(
@@ -115,7 +115,7 @@ public struct EnhancedAppView: View {
             hint: "Use Face ID or enter passcode to continue"
         )
     }
-    
+
     @ViewBuilder
     private func mainContentView(viewStore: ViewStore<AppFeature.State, AppFeature.Action>) -> some View {
         ZStack(alignment: .trailing) {
@@ -144,7 +144,7 @@ public struct EnhancedAppView: View {
                 )
                 .accessibilityElement(children: .contain)
                 .accessibilityLabel("Navigation Header")
-                
+
                 // Enhanced Document Generation View
                 EnhancedDocumentGenerationView(
                     store: store.scope(
@@ -159,7 +159,7 @@ public struct EnhancedAppView: View {
             .modifier(NavigationBarHiddenModifier())
             .preferredColorScheme(.dark)
             .ignoresSafeArea(.keyboard)
-            
+
             // Enhanced Menu overlay with glassmorphism
             if viewStore.showingMenu {
                 Rectangle()
@@ -168,7 +168,7 @@ public struct EnhancedAppView: View {
                     .onTapGesture {
                         viewStore.send(.toggleMenu(false), animation: AnimationSystem.Spring.smooth)
                     }
-                
+
                 EnhancedMenuView(
                     store: store,
                     isShowing: .init(
@@ -220,33 +220,33 @@ struct EnhancedHeaderView: View {
     let onNewAcquisition: () -> Void
     let onSAMGovLookup: () -> Void
     let onExecuteAll: () -> Void
-    
+
     @State private var logoScale: CGFloat = 1.0
     @Environment(\.sizeCategory) private var sizeCategory
-    
+
     private func loadSAMIcon() -> Image? {
         // For Swift Package, load from module bundle
         guard let url = Bundle.module.url(forResource: "SAMIcon", withExtension: "png") else {
             return nil
         }
-        
+
         guard let data = try? Data(contentsOf: url) else {
             return nil
         }
-        
+
         #if os(iOS)
-        if let uiImage = UIImage(data: data) {
-            return Image(uiImage: uiImage)
-        }
+            if let uiImage = UIImage(data: data) {
+                return Image(uiImage: uiImage)
+            }
         #elseif os(macOS)
-        if let nsImage = NSImage(data: data) {
-            return Image(nsImage: nsImage)
-        }
+            if let nsImage = NSImage(data: data) {
+                return Image(nsImage: nsImage)
+            }
         #endif
-        
+
         return nil
     }
-    
+
     var body: some View {
         HStack(spacing: 0) {
             // Animated AIKO Logo
@@ -264,9 +264,9 @@ struct EnhancedHeaderView: View {
                     }
                 }
                 .accessibilityLabel("AIKO - AI Contract Intelligence Officer")
-            
+
             Spacer()
-            
+
             // Acquisition name with animation
             if let displayName = loadedAcquisitionDisplayName {
                 ResponsiveText(content: displayName, style: .headline)
@@ -275,10 +275,10 @@ struct EnhancedHeaderView: View {
                     .frame(maxWidth: 200)
                     .transition(.scale.combined(with: .opacity))
                     .accessibilityLabel("Current acquisition: \(displayName)")
-                
+
                 Spacer()
             }
-            
+
             // Enhanced action buttons
             DynamicStack {
                 // Execute all button with pulse animation
@@ -301,7 +301,7 @@ struct EnhancedHeaderView: View {
                 )
                 .pulse(duration: 2.0, scale: 1.1)
                 .opacity(hasSelectedDocuments ? 1.0 : 0.6)
-                
+
                 // New acquisition button
                 AnimatedButton(action: onNewAcquisition) {
                     Image(systemName: "plus")
@@ -317,7 +317,7 @@ struct EnhancedHeaderView: View {
                     label: "New acquisition",
                     hint: "Start a new acquisition"
                 )
-                
+
                 // SAM.gov lookup button
                 AnimatedButton(action: onSAMGovLookup) {
                     Group {
@@ -351,7 +351,7 @@ struct EnhancedHeaderView: View {
                     label: "SAM.gov lookup",
                     hint: "Search SAM.gov database"
                 )
-                
+
                 // Menu button with rotation animation
                 AnimatedButton(action: { showMenu.toggle() }) {
                     Image(systemName: "line.horizontal.3")
@@ -387,10 +387,10 @@ struct EnhancedDocumentGenerationView: View {
     let isChatMode: Bool
     let loadedAcquisition: Acquisition?
     let loadedAcquisitionDisplayName: String?
-    
+
     @State private var scrollOffset: CGFloat = 0
     @Environment(\.sizeCategory) private var sizeCategory
-    
+
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             VStack(spacing: 0) {
@@ -399,7 +399,7 @@ struct EnhancedDocumentGenerationView: View {
                     VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
                         // Content sections with enhanced animations
                         Group {
-                            if isChatMode && loadedAcquisition != nil && !viewStore.analysis.conversationHistory.isEmpty {
+                            if isChatMode, loadedAcquisition != nil, !viewStore.analysis.conversationHistory.isEmpty {
                                 EnhancedChatHistoryView(
                                     messages: viewStore.analysis.conversationHistory,
                                     isLoading: viewStore.analysis.isAnalyzingRequirements
@@ -409,7 +409,7 @@ struct EnhancedDocumentGenerationView: View {
                                     removal: .scale(scale: 1.1).combined(with: .opacity)
                                 ))
                             }
-                            
+
                             // Enhanced document selection
                             EnhancedDocumentTypesSection(
                                 documentTypes: DocumentType.allCases,
@@ -431,7 +431,7 @@ struct EnhancedDocumentGenerationView: View {
                                 }
                             )
                         }
-                        
+
                         Spacer(minLength: 100)
                     }
                     .padding(Theme.Spacing.lg)
@@ -447,7 +447,7 @@ struct EnhancedDocumentGenerationView: View {
                     scrollOffset = value
                 }
                 .background(Theme.Colors.aikoBackground)
-                
+
                 // Enhanced Input Area
                 EnhancedInputArea(
                     requirements: viewStore.requirements,
@@ -498,12 +498,12 @@ struct EnhancedDocumentGenerationView: View {
 struct EnhancedChatHistoryView: View {
     let messages: [String]
     let isLoading: Bool
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
             ResponsiveText(content: "Chat History", style: .headline)
                 .accessibleHeader(label: "Chat History", level: .h2)
-            
+
             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                 ForEach(Array(messages.enumerated()), id: \.offset) { index, message in
                     EnhancedChatBubble(
@@ -517,7 +517,7 @@ struct EnhancedChatHistoryView: View {
                         removal: .opacity
                     ))
                 }
-                
+
                 if isLoading {
                     HStack(spacing: Theme.Spacing.sm) {
                         LoadingDotsView(dotSize: 8, color: .blue)
@@ -545,17 +545,17 @@ struct EnhancedChatBubble: View {
     let message: String
     let isUser: Bool
     let isLoading: Bool
-    
+
     @State private var showMessage = false
-    
+
     var cleanMessage: String {
         if isUser {
-            return message.replacingOccurrences(of: "User: ", with: "")
+            message.replacingOccurrences(of: "User: ", with: "")
         } else {
-            return message.replacingOccurrences(of: "AIKO: ", with: "")
+            message.replacingOccurrences(of: "AIKO: ", with: "")
         }
     }
-    
+
     var body: some View {
         HStack(alignment: .top, spacing: Theme.Spacing.sm) {
             if !isUser {
@@ -565,7 +565,7 @@ struct EnhancedChatBubble: View {
                             Color.blue.opacity(0.3)
                         )
                         .frame(width: 32, height: 32)
-                    
+
                     Image(systemName: "brain.head.profile")
                         .font(.caption)
                         .foregroundColor(.white)
@@ -573,14 +573,14 @@ struct EnhancedChatBubble: View {
                 .pulse(duration: 2.0, scale: 1.1)
                 .accessibilityHidden(true)
             }
-            
+
             VStack(alignment: isUser ? .trailing : .leading, spacing: 4) {
                 ResponsiveText(
                     content: isUser ? "You" : "AIKO",
                     style: .caption
                 )
                 .foregroundColor(.secondary)
-                
+
                 ResponsiveText(content: cleanMessage, style: .body)
                     .padding(.horizontal, Theme.Spacing.md)
                     .padding(.vertical, Theme.Spacing.sm)
@@ -593,7 +593,7 @@ struct EnhancedChatBubble: View {
                     .opacity(showMessage ? 1.0 : 0.0)
             }
             .frame(maxWidth: .infinity, alignment: isUser ? .trailing : .leading)
-            
+
             if isUser {
                 Image(systemName: "person.circle.fill")
                     .font(.title2)
@@ -622,10 +622,10 @@ struct EnhancedDocumentTypesSection: View {
     let onTypeToggled: (DocumentType) -> Void
     let onDFTypeToggled: (DFDocumentType) -> Void
     let onExecuteCategory: (DocumentCategory) -> Void
-    
+
     @State private var expandedCategories: Set<DocumentCategory> = []
     @State private var searchText = ""
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
             // Header
@@ -635,14 +635,14 @@ struct EnhancedDocumentTypesSection: View {
                     .fontWeight(.semibold)
                     .foregroundColor(Theme.Colors.aikoPrimary)
                     .accessibleHeader(label: "Document Types", level: .h2)
-                
+
                 Spacer()
-                
+
                 // Search field
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.secondary)
-                    
+
                     TextField("Search", text: $searchText)
                         .textFieldStyle(.plain)
                         .foregroundColor(.white)
@@ -656,7 +656,7 @@ struct EnhancedDocumentTypesSection: View {
                 .frame(maxWidth: 200)
                 .transition(.scale.combined(with: .opacity))
             }
-            
+
             // Category cards with enhanced styling
             VStack(spacing: Theme.Spacing.md) {
                 ForEach(DocumentCategory.allCases, id: \.self) { category in
@@ -687,7 +687,7 @@ struct EnhancedDocumentTypesSection: View {
             }
         }
     }
-    
+
     func filteredDocumentTypes(for category: DocumentCategory) -> [DocumentType] {
         let types = category.documentTypes
         if searchText.isEmpty {
@@ -695,7 +695,7 @@ struct EnhancedDocumentTypesSection: View {
         }
         return types.filter { type in
             type.shortName.localizedCaseInsensitiveContains(searchText) ||
-            type.description.localizedCaseInsensitiveContains(searchText)
+                type.description.localizedCaseInsensitiveContains(searchText)
         }
     }
 }
@@ -714,17 +714,17 @@ struct EnhancedDocumentCategoryCard: View {
     let onTypeToggled: (DocumentType) -> Void
     let onDFTypeToggled: (DFDocumentType) -> Void
     let onExecute: () -> Void
-    
+
     @State private var isHovered = false
-    
+
     var selectedCount: Int {
         if category == .determinationFindings {
-            return selectedDFTypes.count
+            selectedDFTypes.count
         } else {
-            return documentTypes.filter { selectedTypes.contains($0) }.count
+            documentTypes.filter { selectedTypes.contains($0) }.count
         }
     }
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // Enhanced folder header
@@ -740,22 +740,22 @@ struct EnhancedDocumentCategoryCard: View {
                                 category.color.opacity(0.2)
                             )
                             .frame(width: 48, height: 48)
-                        
+
                         Image(systemName: category.icon)
                             .font(.title2)
                             .foregroundColor(Theme.Colors.aikoPrimary)
                             .rotationEffect(.degrees(isExpanded ? 15 : 0))
                     }
                     .scaleEffect(isHovered ? 1.1 : 1.0)
-                    
+
                     // Category info with dynamic type
                     VStack(alignment: .leading, spacing: 4) {
                         HStack {
                             ResponsiveText(content: category.rawValue, style: .headline)
                                 .foregroundColor(.white)
-                            
+
                             Spacer()
-                            
+
                             // Enhanced status badges
                             if selectedCount > 0 {
                                 EnhancedStatusBadge(
@@ -765,7 +765,7 @@ struct EnhancedDocumentCategoryCard: View {
                                 )
                                 .transition(.scale.combined(with: .opacity))
                             }
-                            
+
                             // Execute button with animation
                             if selectedCount > 0 {
                                 AnimatedButton(action: onExecute) {
@@ -776,14 +776,14 @@ struct EnhancedDocumentCategoryCard: View {
                                 }
                                 .transition(.scale.combined(with: .opacity))
                             }
-                            
+
                             // Animated chevron
                             Image(systemName: "chevron.right")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                                 .rotationEffect(.degrees(isExpanded ? 90 : 0))
                         }
-                        
+
                         ResponsiveText(content: category.description, style: .caption)
                             .foregroundColor(.white.opacity(0.8))
                             .lineLimit(1)
@@ -811,7 +811,7 @@ struct EnhancedDocumentCategoryCard: View {
                 hint: isExpanded ? "Tap to collapse" : "Tap to expand",
                 traits: .isButton
             )
-            
+
             // Expanded document list with staggered animation
             if isExpanded {
                 if category == .determinationFindings {
@@ -871,10 +871,10 @@ struct EnhancedStatusBadge: View {
     let text: String
     let color: Color
     let icon: String?
-    
+
     var body: some View {
         HStack(spacing: 4) {
-            if let icon = icon {
+            if let icon {
                 Image(systemName: icon)
                     .font(.caption2)
             }
@@ -900,16 +900,16 @@ struct EnhancedDocumentTypeCard: View {
     let isAvailable: Bool
     let status: DocumentStatusFeature.DocumentStatus
     let onToggle: () -> Void
-    
+
     @State private var isPressed = false
-    
+
     var body: some View {
         AnimatedButton(action: onToggle) {
             HStack(spacing: Theme.Spacing.md) {
                 // Animated status indicator
                 StatusIndicator(status: status)
                     .accessibilityLabel("Status: \(status.accessibilityLabel)")
-                
+
                 // Document icon with subtle animation
                 Image(systemName: documentType.icon)
                     .font(.body)
@@ -917,20 +917,20 @@ struct EnhancedDocumentTypeCard: View {
                     .frame(width: 20, height: 20)
                     .rotationEffect(.degrees(isSelected ? 360 : 0))
                     .animation(AnimationSystem.Spring.bouncy, value: isSelected)
-                
+
                 // Document info
                 VStack(alignment: .leading, spacing: 2) {
                     ResponsiveText(content: documentType.shortName, style: .subheadline)
                         .fontWeight(.medium)
                         .foregroundColor(.white)
                         .lineLimit(1)
-                    
+
                     ResponsiveText(content: documentType.farReference, style: .caption2)
                         .foregroundColor(.secondary)
                 }
-                
+
                 Spacer()
-                
+
                 // Animated checkmark
                 if isSelected {
                     AnimatedCheckmark(size: 20, color: .green)
@@ -959,7 +959,7 @@ struct EnhancedDocumentTypeCard: View {
         .accessibilityElement(
             label: "\(documentType.shortName). \(documentType.farReference)",
             hint: isSelected ? "Selected. Tap to deselect" : "Tap to select",
-            traits: [.isButton, isSelected ? .isSelected : []].reduce([], { $0.union($1) })
+            traits: [.isButton, isSelected ? .isSelected : []].reduce([]) { $0.union($1) }
         )
     }
 }
@@ -969,7 +969,7 @@ struct EnhancedDFDocumentCard: View {
     let isSelected: Bool
     let hasAcquisition: Bool
     let onToggle: () -> Void
-    
+
     var body: some View {
         AnimatedButton(action: onToggle) {
             HStack(spacing: Theme.Spacing.md) {
@@ -978,26 +978,26 @@ struct EnhancedDFDocumentCard: View {
                     status: hasAcquisition ? .ready : .notReady,
                     pulse: !hasAcquisition
                 )
-                
+
                 // Icon
                 Image(systemName: dfDocumentType.icon)
                     .font(.body)
                     .foregroundColor(.blue)
                     .frame(width: 20, height: 20)
-                
+
                 // Document info
                 VStack(alignment: .leading, spacing: 2) {
                     ResponsiveText(content: dfDocumentType.shortName, style: .subheadline)
                         .fontWeight(.medium)
                         .foregroundColor(.white)
                         .lineLimit(1)
-                    
+
                     ResponsiveText(content: dfDocumentType.farReference, style: .caption2)
                         .foregroundColor(.secondary)
                 }
-                
+
                 Spacer()
-                
+
                 // Selection indicator
                 if isSelected {
                     AnimatedCheckmark(size: 20, color: .green)
@@ -1022,10 +1022,10 @@ struct EnhancedDFDocumentCard: View {
         }
         .accessibilityElement(
             label: "\(dfDocumentType.shortName). \(dfDocumentType.farReference)",
-            hint: hasAcquisition ? 
+            hint: hasAcquisition ?
                 (isSelected ? "Selected. Tap to deselect" : "Tap to select") :
                 "Acquisition required to select this document",
-            traits: [.isButton, isSelected ? .isSelected : []].reduce([], { $0.union($1) })
+            traits: [.isButton, isSelected ? .isSelected : []].reduce([]) { $0.union($1) }
         )
     }
 }
@@ -1035,15 +1035,15 @@ struct EnhancedDFDocumentCard: View {
 struct StatusIndicator: View {
     let status: DocumentStatusFeature.DocumentStatus
     var pulse: Bool = false
-    
+
     var statusColor: Color {
         switch status {
-        case .notReady: return .red
-        case .needsMoreInfo: return .yellow
-        case .ready: return .green
+        case .notReady: .red
+        case .needsMoreInfo: .yellow
+        case .ready: .green
         }
     }
-    
+
     var body: some View {
         Circle()
             .fill(statusColor)
@@ -1070,24 +1070,24 @@ struct EnhancedInputArea: View {
     let onShowDocumentPicker: () -> Void
     let onShowImagePicker: () -> Void
     let onRemoveDocument: (UploadedDocument.ID) -> Void
-    
+
     @State private var showingUploadOptions = false
     @State private var inputFieldHeight: CGFloat = 44
     @FocusState private var isInputFocused: Bool
-    
+
     private var hasContent: Bool {
         !requirements.isEmpty || !uploadedDocuments.isEmpty
     }
-    
+
     private var canAnalyze: Bool {
         hasContent && !isGenerating
     }
-    
+
     var body: some View {
         VStack(spacing: 0) {
             Divider()
                 .background(Color.gray.opacity(0.3 as Double))
-            
+
             VStack(spacing: Theme.Spacing.md) {
                 // Uploaded documents carousel
                 if !uploadedDocuments.isEmpty {
@@ -1106,14 +1106,14 @@ struct EnhancedInputArea: View {
                     .frame(height: 60)
                     .animation(AnimationSystem.Spring.smooth, value: uploadedDocuments)
                 }
-                
+
                 // Enhanced input container
                 HStack(spacing: 0) {
                     // Animated text input
                     ZStack(alignment: .leading) {
                         if requirements.isEmpty {
                             ResponsiveText(
-                                content: isChatMode ? 
+                                content: isChatMode ?
                                     "How may I assist you with this acquisition?" :
                                     "Describe your project requirements...",
                                 style: .body
@@ -1123,28 +1123,28 @@ struct EnhancedInputArea: View {
                             .allowsHitTesting(false)
                             .transition(.opacity)
                         }
-                        
+
                         TextField("", text: .init(
                             get: { requirements },
                             set: onRequirementsChanged
                         ), axis: .vertical)
-                        .textFieldStyle(.plain)
-                        .foregroundColor(.white)
-                        .padding(.leading, Theme.Spacing.lg)
-                        .padding(.vertical, Theme.Spacing.md)
-                        .padding(.trailing, Theme.Spacing.sm)
-                        .lineLimit(1...4)
-                        .focused($isInputFocused)
-                        .background(
-                            GeometryReader { geometry in
-                                Color.clear.preference(
-                                    key: HeightPreferenceKey.self,
-                                    value: geometry.size.height
-                                )
-                            }
-                        )
+                            .textFieldStyle(.plain)
+                            .foregroundColor(.white)
+                            .padding(.leading, Theme.Spacing.lg)
+                            .padding(.vertical, Theme.Spacing.md)
+                            .padding(.trailing, Theme.Spacing.sm)
+                            .lineLimit(1 ... 4)
+                            .focused($isInputFocused)
+                            .background(
+                                GeometryReader { geometry in
+                                    Color.clear.preference(
+                                        key: HeightPreferenceKey.self,
+                                        value: geometry.size.height
+                                    )
+                                }
+                            )
                     }
-                    
+
                     // Enhanced action buttons
                     HStack(spacing: Theme.Spacing.sm) {
                         // Enhance prompt with sparkle animation
@@ -1165,7 +1165,7 @@ struct EnhancedInputArea: View {
                             label: "Enhance prompt",
                             hint: requirements.isEmpty ? "Enter text first" : "Improve your prompt with AI"
                         )
-                        
+
                         // Upload options with animation
                         AnimatedButton(action: { showingUploadOptions.toggle() }) {
                             Image(systemName: "plus")
@@ -1175,13 +1175,13 @@ struct EnhancedInputArea: View {
                                 .rotationEffect(.degrees(showingUploadOptions ? 45 : 0))
                         }
                         .confirmationDialog("Add Content", isPresented: $showingUploadOptions) {
-                            Button("📄 Upload Documents") {
+                            Button(" Upload Documents") {
                                 onShowDocumentPicker()
                             }
                             #if os(iOS)
-                            Button("📷 Scan Document") {
-                                onShowImagePicker()
-                            }
+                                Button("📷 Scan Document") {
+                                    onShowImagePicker()
+                                }
                             #endif
                             Button("Cancel", role: .cancel) {}
                         }
@@ -1189,7 +1189,7 @@ struct EnhancedInputArea: View {
                             label: "Add content",
                             hint: "Upload documents or scan"
                         )
-                        
+
                         // Voice input with pulse animation
                         AnimatedButton(action: {
                             if isRecording {
@@ -1210,7 +1210,7 @@ struct EnhancedInputArea: View {
                             label: isRecording ? "Stop recording" : "Start voice input",
                             hint: "Dictate your requirements"
                         )
-                        
+
                         // Analyze button with loading animation
                         AnimatedButton(action: onAnalyzeRequirements) {
                             ZStack {
@@ -1231,8 +1231,8 @@ struct EnhancedInputArea: View {
                             Circle()
                                 .fill(
                                     canAnalyze ?
-                                    Theme.Colors.aikoPrimary :
-                                    Color.clear
+                                        Theme.Colors.aikoPrimary :
+                                        Color.clear
                                 )
                                 .shadow(
                                     color: Theme.Colors.aikoPrimary.opacity(0.3),
@@ -1242,7 +1242,7 @@ struct EnhancedInputArea: View {
                         .disabled(!canAnalyze)
                         .accessibleButton(
                             label: "Analyze",
-                            hint: hasContent ? 
+                            hint: hasContent ?
                                 "Submit for AI analysis" :
                                 "Enter requirements or upload documents first"
                         )
@@ -1256,14 +1256,14 @@ struct EnhancedInputArea: View {
                         .overlay(
                             RoundedRectangle(cornerRadius: 24)
                                 .stroke(
-                                    isInputFocused ? 
-                                    Theme.Colors.aikoPrimary :
-                                    Color.gray.opacity(0.3),
+                                    isInputFocused ?
+                                        Theme.Colors.aikoPrimary :
+                                        Color.gray.opacity(0.3),
                                     lineWidth: isInputFocused ? 2 : 1
                                 )
                         )
                         .shadow(
-                            color: isInputFocused ? 
+                            color: isInputFocused ?
                                 Theme.Colors.aikoPrimary.opacity(0.2) :
                                 Color.clear,
                             radius: 8
@@ -1292,9 +1292,9 @@ struct EnhancedInputArea: View {
 struct EnhancedUploadedDocumentCard: View {
     let document: UploadedDocument
     let onRemove: () -> Void
-    
+
     @State private var isHovered = false
-    
+
     var body: some View {
         HStack(spacing: Theme.Spacing.sm) {
             // Animated file icon
@@ -1302,20 +1302,20 @@ struct EnhancedUploadedDocumentCard: View {
                 .font(.title3)
                 .foregroundColor(.blue)
                 .rotationEffect(.degrees(isHovered ? 10 : 0))
-            
+
             VStack(alignment: .leading, spacing: 2) {
                 ResponsiveText(content: document.fileName, style: .caption)
                     .fontWeight(.medium)
                     .foregroundColor(.white)
                     .lineLimit(1)
-                
+
                 ResponsiveText(
                     content: formattedFileSize(document.data.count),
                     style: .caption2
                 )
                 .foregroundColor(.secondary)
             }
-            
+
             // Remove button with animation
             AnimatedButton(action: onRemove) {
                 Image(systemName: "xmark.circle.fill")
@@ -1344,10 +1344,10 @@ struct EnhancedUploadedDocumentCard: View {
             AccessibilityActionModifier.AccessibilityAction(
                 name: "Remove",
                 action: onRemove
-            )
+            ),
         ])
     }
-    
+
     func fileIcon(for fileName: String) -> String {
         let ext = (fileName as NSString).pathExtension.lowercased()
         switch ext {
@@ -1357,7 +1357,7 @@ struct EnhancedUploadedDocumentCard: View {
         default: return "doc.fill"
         }
     }
-    
+
     func formattedFileSize(_ bytes: Int) -> String {
         let formatter = ByteCountFormatter()
         formatter.countStyle = .file
@@ -1371,40 +1371,40 @@ struct EnhancedMenuView: View {
     let store: StoreOf<AppFeature>
     @Binding var isShowing: Bool
     @Binding var selectedMenuItem: AppFeature.MenuItem?
-    
+
     #if os(iOS)
-    @State private var profileImage: UIImage?
+        @State private var profileImage: UIImage?
     #else
-    @State private var profileImage: NSImage?
+        @State private var profileImage: NSImage?
     #endif
     @State private var menuOffset: CGFloat = 300
-    
+
     var body: some View {
         HStack(spacing: 0) {
             // Backdrop
             Color.clear
-                #if os(iOS)
+            #if os(iOS)
                 .frame(width: UIScreen.main.bounds.width - 300)
-                #else
-                .frame(width: 1000)  // Default width for macOS
-                #endif
+            #else
+                .frame(width: 1000) // Default width for macOS
+            #endif
                 .contentShape(Rectangle())
                 .onTapGesture {
                     withAnimation(AnimationSystem.Spring.smooth) {
                         isShowing = false
                     }
                 }
-            
+
             // Menu content with glassmorphism
             GlassmorphicView {
                 VStack(spacing: 0) {
                     // Profile section
                     EnhancedProfileSection(profileImage: $profileImage)
                         .padding(Theme.Spacing.lg)
-                    
+
                     Divider()
                         .background(Color.gray.opacity(0.3))
-                    
+
                     // Menu items with enhanced styling
                     ScrollView {
                         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
@@ -1426,14 +1426,14 @@ struct EnhancedMenuView: View {
                         }
                         .padding(Theme.Spacing.md)
                     }
-                    
+
                     Spacer()
-                    
+
                     // Footer with version info
                     VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                         Divider()
                             .background(Color.gray.opacity(0.3))
-                        
+
                         HStack {
                             VStack(alignment: .leading) {
                                 ResponsiveText(content: "AIKO v1.0.0", style: .caption2)
@@ -1444,9 +1444,9 @@ struct EnhancedMenuView: View {
                                 )
                                 .foregroundColor(.secondary)
                             }
-                            
+
                             Spacer()
-                            
+
                             // Theme toggle
                             Image(systemName: "moon.stars.fill")
                                 .font(.title3)
@@ -1477,18 +1477,18 @@ struct EnhancedMenuView: View {
 
 struct AnimatedGradientBackground: View {
     @State private var animateGradient = false
-    
+
     var body: some View {
         Color.black.opacity(0.95)
-        .ignoresSafeArea()
-        .onAppear {
-            withAnimation(
-                Animation.linear(duration: 10.0)
-                    .repeatForever(autoreverses: true)
-            ) {
-                animateGradient.toggle()
+            .ignoresSafeArea()
+            .onAppear {
+                withAnimation(
+                    Animation.linear(duration: 10.0)
+                        .repeatForever(autoreverses: true)
+                ) {
+                    animateGradient.toggle()
+                }
             }
-        }
     }
 }
 
@@ -1510,13 +1510,13 @@ struct HeightPreferenceKey: PreferenceKey {
 extension DocumentCategory {
     var color: Color {
         switch self {
-        case .requirements: return .blue
-        case .marketIntelligence: return .orange
-        case .planning: return .purple
-        case .determinationFindings: return .yellow
-        case .solicitation: return .green
-        case .award: return .red
-        case .analytics: return .indigo
+        case .requirements: .blue
+        case .marketIntelligence: .orange
+        case .planning: .purple
+        case .determinationFindings: .yellow
+        case .solicitation: .green
+        case .award: .red
+        case .analytics: .indigo
         }
     }
 }
@@ -1524,9 +1524,9 @@ extension DocumentCategory {
 extension DocumentStatusFeature.DocumentStatus {
     var accessibilityLabel: String {
         switch self {
-        case .notReady: return "Not ready"
-        case .needsMoreInfo: return "Needs more information"
-        case .ready: return "Ready to generate"
+        case .notReady: "Not ready"
+        case .needsMoreInfo: "Needs more information"
+        case .ready: "Ready to generate"
         }
     }
 }
@@ -1535,11 +1535,11 @@ extension DocumentStatusFeature.DocumentStatus {
 
 struct EnhancedProfileSection: View {
     #if os(iOS)
-    @Binding var profileImage: UIImage?
+        @Binding var profileImage: UIImage?
     #else
-    @Binding var profileImage: NSImage?
+        @Binding var profileImage: NSImage?
     #endif
-    
+
     var body: some View {
         VStack(spacing: Theme.Spacing.md) {
             // Profile image with animation
@@ -1549,20 +1549,20 @@ struct EnhancedProfileSection: View {
                         Theme.Colors.aikoPrimary.opacity(0.3)
                     )
                     .frame(width: 80, height: 80)
-                
-                if let profileImage = profileImage {
+
+                if let profileImage {
                     #if os(iOS)
-                    Image(uiImage: profileImage)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 80, height: 80)
-                        .clipShape(Circle())
+                        Image(uiImage: profileImage)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 80, height: 80)
+                            .clipShape(Circle())
                     #else
-                    Image(nsImage: profileImage)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 80, height: 80)
-                        .clipShape(Circle())
+                        Image(nsImage: profileImage)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 80, height: 80)
+                            .clipShape(Circle())
                     #endif
                 } else {
                     Image(systemName: "person.circle.fill")
@@ -1571,17 +1571,17 @@ struct EnhancedProfileSection: View {
                 }
             }
             .shadow(color: Theme.Colors.aikoPrimary.opacity(0.3), radius: 8, y: 4)
-            
+
             // User info
             VStack(spacing: 4) {
                 ResponsiveText(content: "User", style: .title3)
                     .fontWeight(.semibold)
                     .foregroundColor(.white)
-                
+
                 ResponsiveText(content: "user@example.com", style: .caption)
                     .foregroundColor(.secondary)
             }
-            
+
             // Quick stats
             HStack(spacing: Theme.Spacing.xl) {
                 VStack {
@@ -1591,10 +1591,10 @@ struct EnhancedProfileSection: View {
                     ResponsiveText(content: "Projects", style: .caption2)
                         .foregroundColor(.secondary)
                 }
-                
+
                 Divider()
                     .frame(height: 30)
-                
+
                 VStack {
                     ResponsiveText(content: "48", style: .title2)
                         .fontWeight(.bold)
@@ -1615,9 +1615,9 @@ struct EnhancedMenuItemRow: View {
     let item: AppFeature.MenuItem
     let isSelected: Bool
     let action: () -> Void
-    
+
     @State private var isHovered = false
-    
+
     var body: some View {
         AnimatedButton(action: action) {
             HStack(spacing: Theme.Spacing.md) {
@@ -1627,14 +1627,14 @@ struct EnhancedMenuItemRow: View {
                     .foregroundColor(isSelected ? .white : .gray)
                     .frame(width: 24, height: 24)
                     .rotationEffect(.degrees(isHovered ? 10 : 0))
-                
+
                 // Label
                 ResponsiveText(content: item.rawValue, style: .body)
                     .fontWeight(isSelected ? .medium : .regular)
                     .foregroundColor(isSelected ? .white : .gray)
-                
+
                 Spacer()
-                
+
                 // Selection indicator
                 if isSelected {
                     Rectangle()
@@ -1663,8 +1663,7 @@ struct EnhancedMenuItemRow: View {
         .accessibilityElement(
             label: item.rawValue,
             hint: isSelected ? "Currently selected" : "Tap to select",
-            traits: [.isButton, isSelected ? .isSelected : []].reduce([], { $0.union($1) })
+            traits: [.isButton, isSelected ? .isSelected : []].reduce([]) { $0.union($1) }
         )
     }
 }
-

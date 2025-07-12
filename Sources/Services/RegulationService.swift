@@ -1,31 +1,35 @@
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 /// Main service for regulatory API integration
 /// Handles data ingestion from Regulations.gov and GSA DITA toolkit
 public struct RegulationService {
     // MARK: - Core API Operations
+
     public var searchDocuments: (RegulationSearchQuery) async throws -> RegulationSearchResponse
     public var getDocument: (String) async throws -> RegulationDocument
     public var getDocumentComments: (String) async throws -> [RegulationComment]
     public var getDocket: (String) async throws -> RegulationDocket
     public var downloadAttachment: (String, String) async throws -> Data
-    
+
     // MARK: - FAR/DFARS Operations
+
     public var getFARContent: (FARReference) async throws -> FARContent
     public var getDFARSContent: (DFARSReference) async throws -> DFARSContent
-    public var parseDITAContent: (Data) async throws -> RegulationContent
+    public var parseDITAContent: (Data) async throws -> RegulationServiceContent
     public var searchFARClauses: (String) async throws -> [FARClause]
-    
+
     // MARK: - Subscription & Updates
+
     public var subscribeToUpdates: (RegulationSubscription) async throws -> Void
     public var unsubscribeFromUpdates: (String) async throws -> Void
-    public var checkForUpdates: ([RegulationCategory]) async throws -> [RegulationUpdate]
-    
+    public var checkForUpdates: ([RegulationCategory]) async throws -> [RegulationServiceUpdate]
+
     // MARK: - Batch Operations
+
     public var batchDownloadDocuments: ([String]) async throws -> [RegulationDocument]
     public var batchSearchClauses: ([String]) async throws -> [FARClause]
-    
+
     public init(
         searchDocuments: @escaping (RegulationSearchQuery) async throws -> RegulationSearchResponse,
         getDocument: @escaping (String) async throws -> RegulationDocument,
@@ -34,11 +38,11 @@ public struct RegulationService {
         downloadAttachment: @escaping (String, String) async throws -> Data,
         getFARContent: @escaping (FARReference) async throws -> FARContent,
         getDFARSContent: @escaping (DFARSReference) async throws -> DFARSContent,
-        parseDITAContent: @escaping (Data) async throws -> RegulationContent,
+        parseDITAContent: @escaping (Data) async throws -> RegulationServiceContent,
         searchFARClauses: @escaping (String) async throws -> [FARClause],
         subscribeToUpdates: @escaping (RegulationSubscription) async throws -> Void,
         unsubscribeFromUpdates: @escaping (String) async throws -> Void,
-        checkForUpdates: @escaping ([RegulationCategory]) async throws -> [RegulationUpdate],
+        checkForUpdates: @escaping ([RegulationCategory]) async throws -> [RegulationServiceUpdate],
         batchDownloadDocuments: @escaping ([String]) async throws -> [RegulationDocument],
         batchSearchClauses: @escaping ([String]) async throws -> [FARClause]
     ) {
@@ -72,7 +76,7 @@ public struct RegulationSearchQuery: Equatable {
     public let sortOrder: SortOrder
     public let pageSize: Int
     public let pageNumber: Int
-    
+
     public enum RegulationDocumentType: String {
         case rule = "Rule"
         case proposedRule = "Proposed Rule"
@@ -80,24 +84,24 @@ public struct RegulationSearchQuery: Equatable {
         case publicSubmission = "Public Submission"
         case supportingMaterial = "Supporting & Related Material"
     }
-    
+
     public enum SortField: String {
-        case postedDate = "postedDate"
-        case title = "title"
-        case documentId = "documentId"
-        case commentDueDate = "commentDueDate"
+        case postedDate
+        case title
+        case documentId
+        case commentDueDate
     }
-    
+
     public enum SortOrder: String {
         case ascending = "ASC"
         case descending = "DESC"
     }
-    
+
     public struct DateRange: Equatable {
         public let startDate: Date
         public let endDate: Date
     }
-    
+
     public init(
         searchTerm: String,
         documentType: RegulationDocumentType? = nil,
@@ -146,11 +150,11 @@ public struct RegulationDocument: Identifiable, Equatable, Codable {
     public let fullTextUrl: String?
     public let attachments: [Attachment]
     public let metadata: [String: String]
-    
+
     public struct Attachment: Equatable, Codable {
         public let fileFormats: [FileFormat]
         public let title: String
-        
+
         public struct FileFormat: Equatable, Codable {
             public let fileUrl: String
             public let format: String
@@ -187,16 +191,16 @@ public struct FARReference: Equatable {
     public let subpart: String?
     public let section: String?
     public let paragraph: String?
-    
+
     public var fullReference: String {
         var ref = "FAR \(part)"
-        if let subpart = subpart {
+        if let subpart {
             ref += ".\(subpart)"
         }
-        if let section = section {
+        if let section {
             ref += ".\(section)"
         }
-        if let paragraph = paragraph {
+        if let paragraph {
             ref += "(\(paragraph))"
         }
         return ref
@@ -208,16 +212,16 @@ public struct DFARSReference: Equatable {
     public let subpart: String?
     public let section: String?
     public let paragraph: String?
-    
+
     public var fullReference: String {
         var ref = "DFARS \(part)"
-        if let subpart = subpart {
+        if let subpart {
             ref += ".\(subpart)"
         }
-        if let section = section {
+        if let section {
             ref += ".\(section)"
         }
-        if let paragraph = paragraph {
+        if let paragraph {
             ref += "(\(paragraph))"
         }
         return ref
@@ -260,15 +264,15 @@ public struct FARClause: Identifiable, Equatable, Codable {
     public let applicability: [String]
 }
 
-public struct RegulationContent: Equatable {
+public struct RegulationServiceContent: Equatable {
     public let title: String
     public let content: String
     public let structure: DocumentStructure
     public let metadata: [String: String]
-    
+
     public struct DocumentStructure: Equatable {
         public let sections: [Section]
-        
+
         public struct Section: Equatable {
             public let id: String
             public let title: String
@@ -292,7 +296,7 @@ public enum RegulationCategory: String, CaseIterable {
     case cybersecurity = "Cybersecurity"
 }
 
-public struct RegulationUpdate: Equatable {
+public struct RegulationServiceUpdate: Equatable {
     public let id = UUID()
     public let type: UpdateType
     public let title: String
@@ -300,7 +304,7 @@ public struct RegulationUpdate: Equatable {
     public let effectiveDate: Date
     public let source: String
     public let documentId: String?
-    
+
     public enum UpdateType: String {
         case farUpdate = "FAR Update"
         case dfarsUpdate = "DFARS Update"
@@ -319,30 +323,30 @@ public struct RegulationSubscription: Equatable {
     public let docketIds: [String]
     public let notificationFrequency: NotificationFrequency
     public let isActive: Bool
-    
+
     public enum NotificationFrequency: String, CaseIterable {
-        case realtime = "realtime"
-        case daily = "daily"
-        case weekly = "weekly"
-        case monthly = "monthly"
+        case realtime
+        case daily
+        case weekly
+        case monthly
     }
 }
 
 // MARK: - API Configuration
 
-public struct RegulationsGovConfig {
+public enum RegulationsGovConfig {
     public static let baseURL = "https://api.regulations.gov/v4"
     public static let apiKey = ProcessInfo.processInfo.environment["REGULATIONS_GOV_API_KEY"] ?? ""
-    
+
     public static var headers: [String: String] {
         [
             "X-Api-Key": apiKey,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         ]
     }
 }
 
-public struct GSADITAConfig {
+public enum GSADITAConfig {
     public static let baseURL = "https://www.acquisition.gov"
     public static let farURL = "\(baseURL)/far"
     public static let dfarsURL = "\(baseURL)/dfars"
@@ -356,7 +360,7 @@ extension RegulationService: DependencyKey {
         let urlSession = URLSession.shared
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
-        
+
         return RegulationService(
             searchDocuments: { query in
                 var components = URLComponents(string: "\(RegulationsGovConfig.baseURL)/documents")!
@@ -364,9 +368,9 @@ extension RegulationService: DependencyKey {
                     URLQueryItem(name: "filter[searchTerm]", value: query.searchTerm),
                     URLQueryItem(name: "sort", value: "\(query.sortOrder.rawValue == "ASC" ? "" : "-")\(query.sortBy.rawValue)"),
                     URLQueryItem(name: "page[size]", value: String(query.pageSize)),
-                    URLQueryItem(name: "page[number]", value: String(query.pageNumber))
+                    URLQueryItem(name: "page[number]", value: String(query.pageNumber)),
                 ]
-                
+
                 if let documentType = query.documentType {
                     queryItems.append(URLQueryItem(name: "filter[documentType]", value: documentType.rawValue))
                 }
@@ -376,22 +380,23 @@ extension RegulationService: DependencyKey {
                 if let docketId = query.docketId {
                     queryItems.append(URLQueryItem(name: "filter[docketId]", value: docketId))
                 }
-                
+
                 components.queryItems = queryItems
-                
+
                 var request = URLRequest(url: components.url!)
                 RegulationsGovConfig.headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
-                
+
                 let (data, response) = try await urlSession.data(for: request)
-                
+
                 guard let httpResponse = response as? HTTPURLResponse,
-                      (200...299).contains(httpResponse.statusCode) else {
+                      (200 ... 299).contains(httpResponse.statusCode)
+                else {
                     throw RegulationServiceError.apiError("Invalid response")
                 }
-                
+
                 // Parse the response
                 let apiResponse = try decoder.decode(RegulationsGovAPIResponse.self, from: data)
-                
+
                 return RegulationSearchResponse(
                     documents: apiResponse.data.map { $0.toRegulationDocument() },
                     totalCount: apiResponse.meta.totalCount,
@@ -400,59 +405,59 @@ extension RegulationService: DependencyKey {
                     hasMoreResults: apiResponse.meta.hasNextPage
                 )
             },
-            
+
             getDocument: { documentId in
                 let url = URL(string: "\(RegulationsGovConfig.baseURL)/documents/\(documentId)")!
                 var request = URLRequest(url: url)
                 RegulationsGovConfig.headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
-                
+
                 let (data, _) = try await urlSession.data(for: request)
                 let apiDocument = try decoder.decode(RegulationsGovDocument.self, from: data)
-                
+
                 return apiDocument.data.toRegulationDocument()
             },
-            
+
             getDocumentComments: { documentId in
                 let url = URL(string: "\(RegulationsGovConfig.baseURL)/comments?filter[commentOnId]=\(documentId)")!
                 var request = URLRequest(url: url)
                 RegulationsGovConfig.headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
-                
+
                 let (data, _) = try await urlSession.data(for: request)
                 let apiResponse = try decoder.decode(RegulationsGovCommentsResponse.self, from: data)
-                
+
                 return apiResponse.data.map { $0.toRegulationComment() }
             },
-            
+
             getDocket: { docketId in
                 let url = URL(string: "\(RegulationsGovConfig.baseURL)/dockets/\(docketId)")!
                 var request = URLRequest(url: url)
                 RegulationsGovConfig.headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
-                
+
                 let (data, _) = try await urlSession.data(for: request)
                 let apiDocket = try decoder.decode(RegulationsGovDocket.self, from: data)
-                
+
                 return apiDocket.data.toRegulationDocket()
             },
-            
-            downloadAttachment: { documentId, attachmentUrl in
+
+            downloadAttachment: { _, attachmentUrl in
                 let url = URL(string: attachmentUrl)!
                 var request = URLRequest(url: url)
                 RegulationsGovConfig.headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
-                
+
                 let (data, _) = try await urlSession.data(for: request)
                 return data
             },
-            
+
             getFARContent: { reference in
                 // Construct URL based on FAR reference
                 let urlPath = reference.fullReference.replacingOccurrences(of: " ", with: "_")
                 let url = URL(string: "\(GSADITAConfig.farURL)/\(urlPath).dita")!
-                
+
                 let (data, _) = try await urlSession.data(from: url)
-                
+
                 // Parse DITA content
                 let content = try parseDITAData(data)
-                
+
                 return FARContent(
                     reference: reference.fullReference,
                     title: content.title,
@@ -465,15 +470,15 @@ extension RegulationService: DependencyKey {
                     ditaContent: data
                 )
             },
-            
+
             getDFARSContent: { reference in
                 let urlPath = reference.fullReference.replacingOccurrences(of: " ", with: "_")
                 let url = URL(string: "\(GSADITAConfig.dfarsURL)/\(urlPath).dita")!
-                
+
                 let (data, _) = try await urlSession.data(from: url)
-                
+
                 let content = try parseDITAData(data)
-                
+
                 return DFARSContent(
                     reference: reference.fullReference,
                     title: content.title,
@@ -486,15 +491,15 @@ extension RegulationService: DependencyKey {
                     ditaContent: data
                 )
             },
-            
+
             parseDITAContent: { data in
                 try parseDITAData(data)
             },
-            
-            searchFARClauses: { searchTerm in
+
+            searchFARClauses: { _ in
                 // This would search through indexed FAR clauses
                 // For now, return mock data
-                return [
+                [
                     FARClause(
                         id: "52.204-25",
                         clauseNumber: "52.204-25",
@@ -505,36 +510,36 @@ extension RegulationService: DependencyKey {
                         lastUpdated: Date(),
                         isDeviation: false,
                         applicability: ["All contracts"]
-                    )
+                    ),
                 ]
             },
-            
+
             subscribeToUpdates: { subscription in
                 // Store subscription in user defaults or persistent storage
                 var subscriptions = loadSubscriptions()
                 subscriptions.append(subscription)
                 saveSubscriptions(subscriptions)
             },
-            
+
             unsubscribeFromUpdates: { subscriptionId in
                 var subscriptions = loadSubscriptions()
                 subscriptions.removeAll { $0.id == subscriptionId }
                 saveSubscriptions(subscriptions)
             },
-            
+
             checkForUpdates: { categories in
                 // Check for updates in specified categories
-                var updates: [RegulationUpdate] = []
-                
+                var updates: [RegulationServiceUpdate] = []
+
                 for category in categories {
                     // Make API calls to check for updates
                     let categoryUpdates = try await fetchUpdatesForCategory(category)
                     updates.append(contentsOf: categoryUpdates)
                 }
-                
+
                 return updates
             },
-            
+
             batchDownloadDocuments: { documentIds in
                 try await withThrowingTaskGroup(of: RegulationDocument.self) { group in
                     for documentId in documentIds {
@@ -542,7 +547,7 @@ extension RegulationService: DependencyKey {
                             try await RegulationService.liveValue.getDocument(documentId)
                         }
                     }
-                    
+
                     var documents: [RegulationDocument] = []
                     for try await document in group {
                         documents.append(document)
@@ -550,7 +555,7 @@ extension RegulationService: DependencyKey {
                     return documents
                 }
             },
-            
+
             batchSearchClauses: { clauseNumbers in
                 try await withThrowingTaskGroup(of: [FARClause].self) { group in
                     for clauseNumber in clauseNumbers {
@@ -558,7 +563,7 @@ extension RegulationService: DependencyKey {
                             try await RegulationService.liveValue.searchFARClauses(clauseNumber)
                         }
                     }
-                    
+
                     var allClauses: [FARClause] = []
                     for try await clauses in group {
                         allClauses.append(contentsOf: clauses)
@@ -572,15 +577,15 @@ extension RegulationService: DependencyKey {
 
 // MARK: - Helper Functions
 
-private func parseDITAData(_ data: Data) throws -> RegulationContent {
+private func parseDITAData(_ data: Data) throws -> RegulationServiceContent {
     // Parse DITA XML content
     // This is a simplified implementation
     let content = String(data: data, encoding: .utf8) ?? ""
-    
-    return RegulationContent(
+
+    return RegulationServiceContent(
         title: "Parsed DITA Content",
         content: content,
-        structure: RegulationContent.DocumentStructure(sections: []),
+        structure: RegulationServiceContent.DocumentStructure(sections: []),
         metadata: [:]
     )
 }
@@ -590,7 +595,7 @@ private func extractRelatedClauses(from content: String) -> [String] {
     let pattern = #"(FAR|DFARS)\s+\d+\.\d+(-\d+)?"#
     let regex = try? NSRegularExpression(pattern: pattern, options: [])
     let matches = regex?.matches(in: content, options: [], range: NSRange(content.startIndex..., in: content)) ?? []
-    
+
     return matches.compactMap { match in
         guard let range = Range(match.range, in: content) else { return nil }
         return String(content[range])
@@ -602,7 +607,7 @@ private func extractPrescribedForms(from content: String) -> [String] {
     let pattern = #"(SF|DD|OF)\s*\d+"#
     let regex = try? NSRegularExpression(pattern: pattern, options: [])
     let matches = regex?.matches(in: content, options: [], range: NSRange(content.startIndex..., in: content)) ?? []
-    
+
     return matches.compactMap { match in
         guard let range = Range(match.range, in: content) else { return nil }
         return String(content[range])
@@ -614,7 +619,7 @@ private func extractImplementsFAR(from content: String) -> [String] {
     let pattern = #"implements\s+FAR\s+\d+\.\d+(-\d+)?"#
     let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
     let matches = regex?.matches(in: content, options: [], range: NSRange(content.startIndex..., in: content)) ?? []
-    
+
     return matches.compactMap { match in
         guard let range = Range(match.range, in: content) else { return nil }
         let text = String(content[range])
@@ -624,16 +629,16 @@ private func extractImplementsFAR(from content: String) -> [String] {
 
 private func loadSubscriptions() -> [RegulationSubscription] {
     // Load from persistent storage
-    return []
+    []
 }
 
-private func saveSubscriptions(_ subscriptions: [RegulationSubscription]) {
+private func saveSubscriptions(_: [RegulationSubscription]) {
     // Save to persistent storage
 }
 
-private func fetchUpdatesForCategory(_ category: RegulationCategory) async throws -> [RegulationUpdate] {
+private func fetchUpdatesForCategory(_: RegulationCategory) async throws -> [RegulationServiceUpdate] {
     // Fetch updates for specific category
-    return []
+    []
 }
 
 // MARK: - API Response Models
@@ -641,7 +646,7 @@ private func fetchUpdatesForCategory(_ category: RegulationCategory) async throw
 private struct RegulationsGovAPIResponse: Decodable {
     let data: [RegulationsGovDocumentData]
     let meta: Meta
-    
+
     struct Meta: Decodable {
         let totalCount: Int
         let pageCount: Int
@@ -656,7 +661,7 @@ private struct RegulationsGovDocument: Decodable {
 private struct RegulationsGovDocumentData: Decodable {
     let id: String
     let attributes: Attributes
-    
+
     struct Attributes: Decodable {
         let documentId: String
         let documentType: String
@@ -668,10 +673,10 @@ private struct RegulationsGovDocumentData: Decodable {
         let effectiveDate: String?
         let summary: String?
     }
-    
+
     func toRegulationDocument() -> RegulationDocument {
         let dateFormatter = ISO8601DateFormatter()
-        
+
         return RegulationDocument(
             id: id,
             documentId: attributes.documentId,
@@ -698,7 +703,7 @@ private struct RegulationsGovCommentsResponse: Decodable {
 private struct RegulationsGovCommentData: Decodable {
     let id: String
     let attributes: Attributes
-    
+
     struct Attributes: Decodable {
         let commentId: String
         let documentId: String
@@ -708,10 +713,10 @@ private struct RegulationsGovCommentData: Decodable {
         let organization: String?
         let comment: String
     }
-    
+
     func toRegulationComment() -> RegulationComment {
         let dateFormatter = ISO8601DateFormatter()
-        
+
         return RegulationComment(
             id: id,
             commentId: attributes.commentId,
@@ -733,7 +738,7 @@ private struct RegulationsGovDocket: Decodable {
 private struct RegulationsGovDocketData: Decodable {
     let id: String
     let attributes: Attributes
-    
+
     struct Attributes: Decodable {
         let docketId: String
         let title: String
@@ -741,9 +746,9 @@ private struct RegulationsGovDocketData: Decodable {
         let objectId: String
         let category: String?
     }
-    
+
     func toRegulationDocket() -> RegulationDocket {
-        return RegulationDocket(
+        RegulationDocket(
             id: id,
             docketId: attributes.docketId,
             title: attributes.title,
@@ -764,25 +769,25 @@ public enum RegulationServiceError: LocalizedError {
     case parsingError(String)
     case invalidAPIKey
     case rateLimitExceeded
-    
+
     public var errorDescription: String? {
         switch self {
-        case .apiError(let message):
-            return "API Error: \(message)"
-        case .networkError(let error):
-            return "Network Error: \(error.localizedDescription)"
-        case .parsingError(let message):
-            return "Parsing Error: \(message)"
+        case let .apiError(message):
+            "API Error: \(message)"
+        case let .networkError(error):
+            "Network Error: \(error.localizedDescription)"
+        case let .parsingError(message):
+            "Parsing Error: \(message)"
         case .invalidAPIKey:
-            return "Invalid API Key"
+            "Invalid API Key"
         case .rateLimitExceeded:
-            return "API Rate Limit Exceeded"
+            "API Rate Limit Exceeded"
         }
     }
 }
 
-extension DependencyValues {
-    public var regulationService: RegulationService {
+public extension DependencyValues {
+    var regulationService: RegulationService {
         get { self[RegulationService.self] }
         set { self[RegulationService.self] = newValue }
     }

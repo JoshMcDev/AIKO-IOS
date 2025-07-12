@@ -1,24 +1,24 @@
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
 struct InformationGatheringView: View {
     let store: StoreOf<DocumentExecutionFeature>
     @State private var currentAnswer: String = ""
     @FocusState private var isTextFieldFocused: Bool
-    
+
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             SwiftUI.NavigationView {
                 ZStack {
                     Theme.Colors.aikoBackground
                         .ignoresSafeArea()
-                    
+
                     VStack(spacing: 0) {
                         // Header
                         InformationHeaderView(onClose: {
                             viewStore.send(.showInformationGathering(false))
                         })
-                        
+
                         // Progress indicator
                         if !viewStore.informationQuestions.isEmpty {
                             ProgressIndicatorView(
@@ -26,7 +26,7 @@ struct InformationGatheringView: View {
                                 total: viewStore.informationQuestions.count
                             )
                         }
-                        
+
                         // Main content
                         QuestionContentView(
                             viewStore: viewStore,
@@ -46,16 +46,16 @@ struct InformationGatheringView: View {
 // Header Component
 struct InformationHeaderView: View {
     let onClose: () -> Void
-    
+
     var body: some View {
         HStack {
             Text("Additional Information Needed")
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundColor(.white)
-            
+
             Spacer()
-            
+
             Button(action: onClose) {
                 Image(systemName: "xmark.circle.fill")
                     .font(.title2)
@@ -71,11 +71,11 @@ struct QuestionContentView: View {
     let viewStore: ViewStore<DocumentExecutionFeature.State, DocumentExecutionFeature.Action>
     @Binding var currentAnswer: String
     @FocusState var isTextFieldFocused: Bool
-    
+
     var body: some View {
         if viewStore.currentQuestionIndex < viewStore.informationQuestions.count {
             let question = viewStore.informationQuestions[viewStore.currentQuestionIndex]
-            
+
             ScrollView {
                 VStack(spacing: Theme.Spacing.xl) {
                     // Question
@@ -84,21 +84,21 @@ struct QuestionContentView: View {
                         index: viewStore.currentQuestionIndex,
                         total: viewStore.informationQuestions.count
                     )
-                    
+
                     // Answer field
                     AnswerFieldView(
                         question: question,
                         answer: $currentAnswer,
                         isTextFieldFocused: _isTextFieldFocused
                     )
-                    
+
                     // Action buttons
                     ActionButtonsView(
                         viewStore: viewStore,
                         question: question,
                         currentAnswer: $currentAnswer
                     )
-                    
+
                     Spacer()
                 }
                 .padding()
@@ -112,7 +112,7 @@ struct ActionButtonsView: View {
     let viewStore: ViewStore<DocumentExecutionFeature.State, DocumentExecutionFeature.Action>
     let question: DocumentExecutionFeature.InformationQuestion
     @Binding var currentAnswer: String
-    
+
     var body: some View {
         HStack(spacing: Theme.Spacing.md) {
             if viewStore.currentQuestionIndex > 0 {
@@ -133,9 +133,9 @@ struct ActionButtonsView: View {
                     )
                 }
             }
-            
+
             Spacer()
-            
+
             Button(action: {
                 if !currentAnswer.isEmpty || !question.isRequired {
                     viewStore.send(.answerQuestion(question.id.uuidString, currentAnswer))
@@ -180,7 +180,7 @@ struct CustomTextFieldStyle: TextFieldStyle {
 // View modifier helper
 extension View {
     @ViewBuilder
-    func `if`<Transform: View>(_ condition: Bool, transform: (Self) -> Transform) -> some View {
+    func `if`(_ condition: Bool, transform: (Self) -> some View) -> some View {
         if condition {
             transform(self)
         } else {

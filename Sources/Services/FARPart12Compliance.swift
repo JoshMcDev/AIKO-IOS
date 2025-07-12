@@ -1,7 +1,8 @@
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 // MARK: - FAR Part 12 Compliance Service
+
 /// Service for ensuring compliance with FAR Part 12 Commercial Item acquisitions
 public struct FARPart12ComplianceService {
     public var validateCommercialItem: (String, DocumentType) async throws -> CommercialItemValidation
@@ -9,7 +10,7 @@ public struct FARPart12ComplianceService {
     public var checkMarketResearch: (String) async throws -> MarketResearchCompliance
     public var validateSolicitationProvisions: (String) async throws -> [ComplianceIssue]
     public var generateCommercialItemDetermination: (MarketResearchData) async throws -> String
-    
+
     public init(
         validateCommercialItem: @escaping (String, DocumentType) async throws -> CommercialItemValidation,
         getRequiredClauses: @escaping (ContractValue, DocumentType) async throws -> [CommercialItemClause],
@@ -26,6 +27,7 @@ public struct FARPart12ComplianceService {
 }
 
 // MARK: - Models
+
 public struct CommercialItemValidation: Equatable {
     public let isCommercialItem: Bool
     public let determinationBasis: DeterminationBasis
@@ -33,7 +35,7 @@ public struct CommercialItemValidation: Equatable {
     public let requiredClauses: [CommercialItemClause]
     public let prohibitedTerms: [String]
     public let recommendations: [String]
-    
+
     public enum DeterminationBasis: String, Equatable {
         case soldInCommercialMarket = "Sold in substantial quantities in commercial marketplace"
         case evolvedFromCommercial = "Evolved from commercial item"
@@ -53,14 +55,14 @@ public struct CommercialItemClause: Equatable, Identifiable {
     public let fillIns: [String]
     public let isRequired: Bool
     public let alternates: [String]
-    
+
     public enum ClauseApplicability: String, Equatable {
         case always = "Always required"
         case conditional = "Required when applicable"
         case optional = "Optional"
         case thresholdBased = "Based on dollar threshold"
     }
-    
+
     public init(
         id: String,
         title: String,
@@ -84,13 +86,13 @@ public struct ContractValue: Equatable {
     public let amount: Double
     public let isIDIQ: Bool
     public let includesOptions: Bool
-    
+
     public var exceedsSimplifiedAcquisitionThreshold: Bool {
-        return amount > 250_000
+        amount > 250_000
     }
-    
+
     public var exceedsMicroPurchaseThreshold: Bool {
-        return amount > 10_000
+        amount > 10000
     }
 }
 
@@ -100,7 +102,7 @@ public struct MarketResearchCompliance: Equatable {
     public let findings: [String]
     public let gaps: [String]
     public let commercialItemDetermination: Bool
-    
+
     public enum ResearchMethod: String, CaseIterable {
         case internetSearch = "Internet/Online Research"
         case vendorCatalogs = "Review of Vendor Catalogs"
@@ -119,7 +121,7 @@ public struct MarketResearchData: Equatable {
     public let commercialSources: [String]
     public let priceData: [PricePoint]
     public let technicalRequirements: [String]
-    
+
     public struct PricePoint: Equatable {
         public let vendor: String
         public let price: Double
@@ -129,22 +131,23 @@ public struct MarketResearchData: Equatable {
 }
 
 // MARK: - Implementation
+
 extension FARPart12ComplianceService: DependencyKey {
     public static var liveValue: FARPart12ComplianceService {
         FARPart12ComplianceService(
-            validateCommercialItem: { content, documentType in
+            validateCommercialItem: { content, _ in
                 let lowercaseContent = content.lowercased()
                 var evidence: [String] = []
                 var recommendations: [String] = []
-                
+
                 // Check for commercial item indicators
                 let commercialIndicators = [
                     "commercial", "cots", "catalog", "market price", "commercial service",
-                    "standard commercial", "commercially available", "gsa schedule"
+                    "standard commercial", "commercially available", "gsa schedule",
                 ]
-                
+
                 let hasCommercialIndicators = commercialIndicators.contains { lowercaseContent.contains($0) }
-                
+
                 // Determine basis
                 let basis: CommercialItemValidation.DeterminationBasis
                 if lowercaseContent.contains("catalog") || lowercaseContent.contains("market price") {
@@ -163,26 +166,26 @@ extension FARPart12ComplianceService: DependencyKey {
                     basis = .notCommercial
                     recommendations.append("Consider if requirement can be met with commercial items")
                 }
-                
+
                 // Get required clauses based on determination
                 let requiredClauses = basis != .notCommercial ? getCommercialItemClauses() : []
-                
+
                 // Identify prohibited terms for commercial items
                 let prohibitedTerms = basis != .notCommercial ? [
                     "Cost Accounting Standards",
                     "Certified Cost or Pricing Data",
                     "Truth in Negotiations Act",
                     "Detailed Manufacturing Processes",
-                    "Government Property Control"
+                    "Government Property Control",
                 ] : []
-                
+
                 // Add recommendations
                 if basis != .notCommercial {
                     recommendations.append("Use streamlined commercial item procedures")
                     recommendations.append("Consider firm-fixed-price contract type")
                     recommendations.append("Minimize government-unique requirements")
                 }
-                
+
                 return CommercialItemValidation(
                     isCommercialItem: basis != .notCommercial,
                     determinationBasis: basis,
@@ -192,10 +195,10 @@ extension FARPart12ComplianceService: DependencyKey {
                     recommendations: recommendations
                 )
             },
-            
-            getRequiredClauses: { contractValue, documentType in
+
+            getRequiredClauses: { contractValue, _ in
                 var clauses: [CommercialItemClause] = []
-                
+
                 // Basic commercial item clauses (always required)
                 clauses.append(CommercialItemClause(
                     id: "52.212-1",
@@ -203,21 +206,21 @@ extension FARPart12ComplianceService: DependencyKey {
                     prescribedIn: "FAR 12.301(b)(1)",
                     applicability: .always
                 ))
-                
+
                 clauses.append(CommercialItemClause(
                     id: "52.212-2",
                     title: "Evaluation—Commercial Items",
                     prescribedIn: "FAR 12.301(b)(2)",
                     applicability: .always
                 ))
-                
+
                 clauses.append(CommercialItemClause(
                     id: "52.212-3",
                     title: "Offeror Representations and Certifications—Commercial Items",
                     prescribedIn: "FAR 12.301(b)(3)",
                     applicability: .always
                 ))
-                
+
                 clauses.append(CommercialItemClause(
                     id: "52.212-4",
                     title: "Contract Terms and Conditions—Commercial Items",
@@ -225,7 +228,7 @@ extension FARPart12ComplianceService: DependencyKey {
                     applicability: .always,
                     alternates: ["Alt I (services)", "Alt II (personal services)"]
                 ))
-                
+
                 clauses.append(CommercialItemClause(
                     id: "52.212-5",
                     title: "Contract Terms and Conditions Required to Implement Statutes or Executive Orders—Commercial Items",
@@ -233,7 +236,7 @@ extension FARPart12ComplianceService: DependencyKey {
                     applicability: .always,
                     fillIns: ["Applicable clauses must be checked"]
                 ))
-                
+
                 // Threshold-based clauses
                 if contractValue.exceedsSimplifiedAcquisitionThreshold {
                     clauses.append(CommercialItemClause(
@@ -242,7 +245,7 @@ extension FARPart12ComplianceService: DependencyKey {
                         prescribedIn: "FAR 4.1105(a)(1)",
                         applicability: .thresholdBased
                     ))
-                    
+
                     clauses.append(CommercialItemClause(
                         id: "52.204-13",
                         title: "System for Award Management Maintenance",
@@ -250,7 +253,7 @@ extension FARPart12ComplianceService: DependencyKey {
                         applicability: .thresholdBased
                     ))
                 }
-                
+
                 // IDIQ specific
                 if contractValue.isIDIQ {
                     clauses.append(CommercialItemClause(
@@ -259,7 +262,7 @@ extension FARPart12ComplianceService: DependencyKey {
                         prescribedIn: "FAR 16.506(a)",
                         applicability: .conditional
                     ))
-                    
+
                     clauses.append(CommercialItemClause(
                         id: "52.216-19",
                         title: "Order Limitations",
@@ -267,23 +270,23 @@ extension FARPart12ComplianceService: DependencyKey {
                         applicability: .conditional
                     ))
                 }
-                
+
                 return clauses
             },
-            
+
             checkMarketResearch: { content in
                 let lowercaseContent = content.lowercased()
                 var usedMethods: [MarketResearchCompliance.ResearchMethod] = []
                 var findings: [String] = []
                 var gaps: [String] = []
-                
+
                 // Check which research methods were used
                 for method in MarketResearchCompliance.ResearchMethod.allCases {
                     if lowercaseContent.contains(method.rawValue.lowercased()) {
                         usedMethods.append(method)
                     }
                 }
-                
+
                 // Check for key findings
                 if lowercaseContent.contains("commercial") {
                     findings.append("Commercial items identified")
@@ -294,7 +297,7 @@ extension FARPart12ComplianceService: DependencyKey {
                 if lowercaseContent.contains("vendor") || lowercaseContent.contains("supplier") {
                     findings.append("Potential vendors identified")
                 }
-                
+
                 // Identify gaps
                 if usedMethods.count < 3 {
                     gaps.append("Consider using additional research methods")
@@ -305,11 +308,11 @@ extension FARPart12ComplianceService: DependencyKey {
                 if !lowercaseContent.contains("commercial item determination") {
                     gaps.append("Include explicit commercial item determination")
                 }
-                
+
                 let isCompliant = !findings.isEmpty && usedMethods.count >= 2
-                let commercialDetermination = lowercaseContent.contains("commercial item") || 
-                                            lowercaseContent.contains("commercially available")
-                
+                let commercialDetermination = lowercaseContent.contains("commercial item") ||
+                    lowercaseContent.contains("commercially available")
+
                 return MarketResearchCompliance(
                     isCompliant: isCompliant,
                     researchMethods: usedMethods,
@@ -318,11 +321,11 @@ extension FARPart12ComplianceService: DependencyKey {
                     commercialItemDetermination: commercialDetermination
                 )
             },
-            
+
             validateSolicitationProvisions: { content in
                 var issues: [ComplianceIssue] = []
                 let lowercaseContent = content.lowercased()
-                
+
                 // Check for required provisions
                 if !lowercaseContent.contains("52.212-1") {
                     issues.append(ComplianceIssue(
@@ -332,7 +335,7 @@ extension FARPart12ComplianceService: DependencyKey {
                         suggestedFix: "Include FAR 52.212-1 in solicitation provisions"
                     ))
                 }
-                
+
                 if !lowercaseContent.contains("52.212-2") {
                     issues.append(ComplianceIssue(
                         severity: .critical,
@@ -341,7 +344,7 @@ extension FARPart12ComplianceService: DependencyKey {
                         suggestedFix: "Include FAR 52.212-2 and specify evaluation factors"
                     ))
                 }
-                
+
                 // Check for prohibited requirements
                 if lowercaseContent.contains("cost breakdown") || lowercaseContent.contains("certified cost") {
                     issues.append(ComplianceIssue(
@@ -351,7 +354,7 @@ extension FARPart12ComplianceService: DependencyKey {
                         suggestedFix: "Remove requirements for detailed cost breakdowns"
                     ))
                 }
-                
+
                 if lowercaseContent.contains("government property") {
                     issues.append(ComplianceIssue(
                         severity: .minor,
@@ -360,38 +363,38 @@ extension FARPart12ComplianceService: DependencyKey {
                         suggestedFix: "Consider if government property clauses are necessary"
                     ))
                 }
-                
+
                 return issues
             },
-            
+
             generateCommercialItemDetermination: { marketResearchData in
-                return """
+                """
                 COMMERCIAL ITEM DETERMINATION
-                
+
                 1. ITEM DESCRIPTION:
                 \(marketResearchData.productDescription)
-                
+
                 2. MARKET RESEARCH CONDUCTED:
                 \(marketResearchData.researchMethods.map { "• \($0.rawValue)" }.joined(separator: "\n"))
-                
+
                 3. COMMERCIAL SOURCES IDENTIFIED:
                 \(marketResearchData.commercialSources.map { "• \($0)" }.joined(separator: "\n"))
-                
+
                 4. PRICING ANALYSIS:
                 \(marketResearchData.priceData.map { "• \($0.vendor): $\($0.price) for quantity \($0.quantity)" }.joined(separator: "\n"))
-                
+
                 5. DETERMINATION:
                 Based on the market research conducted, this item/service IS DETERMINED TO BE A COMMERCIAL ITEM
                 as defined in FAR 2.101 because it:
-                
+
                 ☑ Is of a type customarily used by the general public or by non-governmental entities
                 ☑ Has been sold, leased, or licensed to the general public
                 ☑ Is offered for sale at catalog or market prices
-                
+
                 6. RECOMMENDATION:
                 Proceed with acquisition using FAR Part 12 commercial item procedures.
                 Use standard commercial terms and conditions to maximum extent practicable.
-                
+
                 Contracting Officer: _____________________
                 Date: _____________________
                 """
@@ -401,8 +404,9 @@ extension FARPart12ComplianceService: DependencyKey {
 }
 
 // MARK: - Helper Functions
+
 private func getCommercialItemClauses() -> [CommercialItemClause] {
-    return [
+    [
         CommercialItemClause(
             id: "52.212-1",
             title: "Instructions to Offerors—Commercial Items",
@@ -432,13 +436,14 @@ private func getCommercialItemClauses() -> [CommercialItemClause] {
             title: "Contract Terms and Conditions Required to Implement Statutes or Executive Orders",
             prescribedIn: "FAR 12.301(b)(5)",
             applicability: .always
-        )
+        ),
     ]
 }
 
 // MARK: - Dependency
-extension DependencyValues {
-    public var farPart12Compliance: FARPart12ComplianceService {
+
+public extension DependencyValues {
+    var farPart12Compliance: FARPart12ComplianceService {
         get { self[FARPart12ComplianceService.self] }
         set { self[FARPart12ComplianceService.self] = newValue }
     }

@@ -1,5 +1,5 @@
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 /// Unified FAR Compliance Manager consolidating all FAR-related functionality
 public struct FARComplianceManager {
@@ -7,28 +7,28 @@ public struct FARComplianceManager {
     public var validateCompliance: (FARValidationRequest) async throws -> FARComplianceResult
     public var validateDocument: (GeneratedDocument, FARPart) async throws -> [FARViolation]
     public var checkClause: (String, FARClause) async -> Bool
-    
+
     // Reference lookup
     public var lookupClause: (String) async throws -> FARClause?
     public var searchClauses: (String, FARPart?) async throws -> [FARClause]
     public var getRequiredClauses: (ContractType, Double) async throws -> [FARClause]
     public var getFlowdownClauses: ([FARClause]) async throws -> [FARClause]
-    
+
     // Part 12 Commercial Items
     public var analyzePart12Applicability: (AcquisitionDetails) async throws -> Part12Analysis
     public var generatePart12Documentation: (Part12Requirements) async throws -> Part12Package
     public var validateCommercialItemDetermination: (CommercialItemData) async throws -> FARValidationResult
-    
+
     // Compliance guidance
     public var getComplianceGuidance: (FARClause) async -> ComplianceGuidance
     public var suggestAlternatives: (FARClause, ContractContext) async throws -> [AlternativeApproach]
     public var checkExemptions: (FARClause, ContractContext) async -> [PossibleExemption]
-    
+
     // Wizard and workflow
     public var startComplianceWizard: (WizardConfiguration) async -> WizardSession
     public var continueWizard: (WizardSession, WizardResponse) async throws -> ComplianceWizardStep?
     public var generateComplianceReport: (ComplianceCheckResults) async throws -> Data
-    
+
     // Updates and monitoring
     public var checkForUpdates: () async throws -> [FARUpdate]
     public var subscribeToClause: (String) async throws -> Void
@@ -51,7 +51,7 @@ public struct FARValidationRequest {
     public let contractType: ContractType
     public let isCommercialItem: Bool
     public let additionalContext: [String: Any]
-    
+
     public init(
         documentType: DocumentType,
         content: String,
@@ -87,7 +87,7 @@ public struct FARViolation: Equatable {
     public let description: String
     public let location: String?
     public let suggestedFix: String?
-    
+
     public enum ViolationSeverity: String, Equatable {
         case critical
         case major
@@ -103,43 +103,43 @@ public struct FARWarning: Equatable {
 }
 
 public enum FARPart: String, CaseIterable {
-    case part1 = "1"    // Federal Acquisition Regulations System
-    case part2 = "2"    // Definitions
-    case part3 = "3"    // Improper Business Practices
-    case part4 = "4"    // Administrative Matters
-    case part5 = "5"    // Publicizing Contract Actions
-    case part6 = "6"    // Competition Requirements
-    case part7 = "7"    // Acquisition Planning
-    case part8 = "8"    // Required Sources
-    case part9 = "9"    // Contractor Qualifications
-    case part10 = "10"  // Market Research
-    case part11 = "11"  // Describing Agency Needs
-    case part12 = "12"  // Commercial Items
-    case part13 = "13"  // Simplified Acquisition
-    case part14 = "14"  // Sealed Bidding
-    case part15 = "15"  // Contracting by Negotiation
-    case part16 = "16"  // Types of Contracts
-    case part52 = "52"  // Solicitation Provisions and Contract Clauses
-    
+    case part1 = "1" // Federal Acquisition Regulations System
+    case part2 = "2" // Definitions
+    case part3 = "3" // Improper Business Practices
+    case part4 = "4" // Administrative Matters
+    case part5 = "5" // Publicizing Contract Actions
+    case part6 = "6" // Competition Requirements
+    case part7 = "7" // Acquisition Planning
+    case part8 = "8" // Required Sources
+    case part9 = "9" // Contractor Qualifications
+    case part10 = "10" // Market Research
+    case part11 = "11" // Describing Agency Needs
+    case part12 = "12" // Commercial Items
+    case part13 = "13" // Simplified Acquisition
+    case part14 = "14" // Sealed Bidding
+    case part15 = "15" // Contracting by Negotiation
+    case part16 = "16" // Types of Contracts
+    case part52 = "52" // Solicitation Provisions and Contract Clauses
+
     public var title: String {
         switch self {
-        case .part1: return "Federal Acquisition Regulations System"
-        case .part2: return "Definitions of Words and Terms"
-        case .part3: return "Improper Business Practices and Personal Conflicts of Interest"
-        case .part4: return "Administrative and Information Matters"
-        case .part5: return "Publicizing Contract Actions"
-        case .part6: return "Competition Requirements"
-        case .part7: return "Acquisition Planning"
-        case .part8: return "Required Sources of Supplies and Services"
-        case .part9: return "Contractor Qualifications"
-        case .part10: return "Market Research"
-        case .part11: return "Describing Agency Needs"
-        case .part12: return "Acquisition of Commercial Items"
-        case .part13: return "Simplified Acquisition Procedures"
-        case .part14: return "Sealed Bidding"
-        case .part15: return "Contracting by Negotiation"
-        case .part16: return "Types of Contracts"
-        case .part52: return "Solicitation Provisions and Contract Clauses"
+        case .part1: "Federal Acquisition Regulations System"
+        case .part2: "Definitions of Words and Terms"
+        case .part3: "Improper Business Practices and Personal Conflicts of Interest"
+        case .part4: "Administrative and Information Matters"
+        case .part5: "Publicizing Contract Actions"
+        case .part6: "Competition Requirements"
+        case .part7: "Acquisition Planning"
+        case .part8: "Required Sources of Supplies and Services"
+        case .part9: "Contractor Qualifications"
+        case .part10: "Market Research"
+        case .part11: "Describing Agency Needs"
+        case .part12: "Acquisition of Commercial Items"
+        case .part13: "Simplified Acquisition Procedures"
+        case .part14: "Sealed Bidding"
+        case .part15: "Contracting by Negotiation"
+        case .part16: "Types of Contracts"
+        case .part52: "Solicitation Provisions and Contract Clauses"
         }
     }
 }
@@ -194,20 +194,20 @@ actor FARComplianceStorage {
     private let part12Engine: Part12ComplianceEngine
     private let validationEngine: FARValidationEngine
     private let wizardEngine: ComplianceWizardEngine
-    
+
     // Caching
     private var clauseCache: [String: FARClause] = [:]
     private var guidanceCache: [String: ComplianceGuidance] = [:]
-    
+
     init() async throws {
-        self.clauseDatabase = try await FARClauseDatabase()
-        self.part12Engine = Part12ComplianceEngine()
-        self.validationEngine = FARValidationEngine()
-        self.wizardEngine = ComplianceWizardEngine()
+        clauseDatabase = try await FARClauseDatabase()
+        part12Engine = Part12ComplianceEngine()
+        validationEngine = FARValidationEngine()
+        wizardEngine = ComplianceWizardEngine()
     }
-    
+
     // MARK: - Compliance Validation
-    
+
     func validateCompliance(request: FARValidationRequest) async throws -> FARComplianceResult {
         // Determine applicable clauses
         let applicableClauses = try await determineApplicableClauses(
@@ -215,40 +215,40 @@ actor FARComplianceStorage {
             contractValue: request.contractValue,
             isCommercialItem: request.isCommercialItem
         )
-        
+
         // Validate document against clauses
         let violations = try await validationEngine.validateDocument(
             content: request.content,
             againstClauses: applicableClauses
         )
-        
+
         // Check for missing required clauses
         let documentClauses = extractClausesFromDocument(request.content)
         let missingClauses = applicableClauses.filter { clause in
             !documentClauses.contains { $0.clauseNumber == clause.clauseNumber }
         }
-        
+
         // Generate warnings
         let warnings = await generateComplianceWarnings(
             violations: violations,
             missingClauses: missingClauses,
             context: request
         )
-        
+
         // Calculate compliance score
         let score = calculateComplianceScore(
             violations: violations,
             warnings: warnings,
             totalClauses: applicableClauses.count
         )
-        
+
         // Generate recommendations
         let recommendations = await generateRecommendations(
             violations: violations,
             missingClauses: missingClauses,
             context: request
         )
-        
+
         return FARComplianceResult(
             isCompliant: violations.filter { $0.severity == .critical || $0.severity == .major }.isEmpty,
             violations: violations,
@@ -259,111 +259,111 @@ actor FARComplianceStorage {
             complianceScore: score
         )
     }
-    
+
     // MARK: - Reference Lookup
-    
+
     func lookupClause(_ clauseNumber: String) async throws -> FARClause? {
         // Check cache
         if let cached = clauseCache[clauseNumber] {
             return cached
         }
-        
+
         // Lookup in database
         guard let clause = await clauseDatabase.getClause(clauseNumber) else {
             return nil
         }
-        
+
         // Cache for future use
         clauseCache[clauseNumber] = clause
-        
+
         return clause
     }
-    
+
     func searchClauses(query: String, part: FARPart?) async throws -> [FARClause] {
-        return await clauseDatabase.searchClauses(
+        await clauseDatabase.searchClauses(
             query: query,
             inPart: part,
             limit: 50
         )
     }
-    
+
     func getRequiredClauses(contractType: ContractType, value: Double) async throws -> [FARClause] {
         var requiredClauses: [FARClause] = []
-        
+
         // Base clauses for all contracts
-        requiredClauses.append(contentsOf: await clauseDatabase.getBaseClauses())
-        
+        await requiredClauses.append(contentsOf: clauseDatabase.getBaseClauses())
+
         // Contract type specific clauses
         switch contractType {
         case .fixedPrice:
-            requiredClauses.append(contentsOf: await clauseDatabase.getFixedPriceClauses())
+            await requiredClauses.append(contentsOf: clauseDatabase.getFixedPriceClauses())
         case .costReimbursement:
-            requiredClauses.append(contentsOf: await clauseDatabase.getCostReimbursementClauses())
+            await requiredClauses.append(contentsOf: clauseDatabase.getCostReimbursementClauses())
         case .timeAndMaterials:
-            requiredClauses.append(contentsOf: await clauseDatabase.getTimeAndMaterialsClauses())
+            await requiredClauses.append(contentsOf: clauseDatabase.getTimeAndMaterialsClauses())
         case .indefiniteDelivery:
-            requiredClauses.append(contentsOf: await clauseDatabase.getIDIQClauses())
+            await requiredClauses.append(contentsOf: clauseDatabase.getIDIQClauses())
         }
-        
+
         // Value-based clauses
         if value > 250_000 {
-            requiredClauses.append(contentsOf: await clauseDatabase.getClausesAboveSimplifiedThreshold())
+            await requiredClauses.append(contentsOf: clauseDatabase.getClausesAboveSimplifiedThreshold())
         }
-        
+
         if value > 2_000_000 {
-            requiredClauses.append(contentsOf: await clauseDatabase.getClausesAboveCertifiedThreshold())
+            await requiredClauses.append(contentsOf: clauseDatabase.getClausesAboveCertifiedThreshold())
         }
-        
+
         return requiredClauses
     }
-    
+
     // MARK: - Part 12 Commercial Items
-    
+
     func analyzePart12Applicability(details: AcquisitionDetails) async throws -> Part12Analysis {
-        return await part12Engine.analyzeApplicability(details)
+        await part12Engine.analyzeApplicability(details)
     }
-    
+
     func generatePart12Documentation(requirements: Part12Requirements) async throws -> Part12Package {
-        return try await part12Engine.generateDocumentation(requirements)
+        try await part12Engine.generateDocumentation(requirements)
     }
-    
+
     func validateCommercialItemDetermination(data: CommercialItemData) async throws -> FARValidationResult {
-        return try await part12Engine.validateDetermination(data)
+        try await part12Engine.validateDetermination(data)
     }
-    
+
     // MARK: - Compliance Guidance
-    
+
     func getComplianceGuidance(clause: FARClause) async -> ComplianceGuidance {
         // Check cache
         if let cached = guidanceCache[clause.clauseNumber] {
             return cached
         }
-        
+
         // Generate guidance
         let guidance = await generateGuidance(for: clause)
-        
+
         // Cache for future use
         guidanceCache[clause.clauseNumber] = guidance
-        
+
         return guidance
     }
-    
+
     private func generateGuidance(for clause: FARClause) async -> ComplianceGuidance {
         // Generate interpretation
         let interpretation = await interpretClause(clause)
-        
+
         // Collect best practices
         let bestPractices = await getBestPractices(for: clause)
-        
+
         // Identify common mistakes
         let commonMistakes = await getCommonMistakes(for: clause)
-        
+
         // Find examples
         let examples = await getComplianceExamples(for: clause)
-        
+
         // Find related clauses
         let relatedClauses = await findRelatedClauses(clause)
-        
+
         return ComplianceGuidance(
             clause: clause,
             interpretation: interpretation,
@@ -373,22 +373,22 @@ actor FARComplianceStorage {
             relatedClauses: relatedClauses
         )
     }
-    
+
     // MARK: - Wizard and Workflow
-    
+
     func startComplianceWizard(configuration: WizardConfiguration) async -> WizardSession {
-        return await wizardEngine.startSession(configuration: configuration)
+        await wizardEngine.startSession(configuration: configuration)
     }
-    
+
     func continueWizard(session: WizardSession, response: WizardResponse) async throws -> ComplianceWizardStep? {
-        return try await wizardEngine.processResponse(
+        try await wizardEngine.processResponse(
             session: session,
             response: response
         )
     }
-    
+
     // MARK: - Helper Methods
-    
+
     private func determineApplicableClauses(
         contractType: ContractType,
         contractValue: Double,
@@ -398,27 +398,27 @@ actor FARComplianceStorage {
             contractType: contractType,
             value: contractValue
         )
-        
+
         // Filter for commercial items if applicable
         if isCommercialItem {
             clauses = clauses.filter { clause in
                 !part12Engine.isClauseInapplicableToCommercialItems(clause)
             }
-            
+
             // Add commercial item specific clauses
-            clauses.append(contentsOf: await clauseDatabase.getCommercialItemClauses())
+            await clauses.append(contentsOf: clauseDatabase.getCommercialItemClauses())
         }
-        
+
         return clauses
     }
-    
+
     private func extractClausesFromDocument(_ content: String) -> [FARClause] {
         // Extract FAR clause references from document
         let pattern = #"FAR\s+(\d+\.\d+(?:-\d+)?)"#
         let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive)
-        
+
         var clauseNumbers: Set<String> = []
-        
+
         if let matches = regex?.matches(in: content, range: NSRange(content.startIndex..., in: content)) {
             for match in matches {
                 if let range = Range(match.range(at: 1), in: content) {
@@ -426,44 +426,44 @@ actor FARComplianceStorage {
                 }
             }
         }
-        
+
         // Look up clauses
         return clauseNumbers.compactMap { number in
             clauseCache[number] ?? clauseDatabase.getClauseSync(number)
         }
     }
-    
+
     private func calculateComplianceScore(
         violations: [FARViolation],
         warnings: [FARWarning],
         totalClauses: Int
     ) -> Double {
         guard totalClauses > 0 else { return 1.0 }
-        
+
         let criticalWeight = 0.4
         let majorWeight = 0.3
         let minorWeight = 0.2
         let warningWeight = 0.1
-        
+
         let criticalCount = violations.filter { $0.severity == .critical }.count
         let majorCount = violations.filter { $0.severity == .major }.count
         let minorCount = violations.filter { $0.severity == .minor }.count
-        
+
         let deduction = (Double(criticalCount) * criticalWeight +
-                        Double(majorCount) * majorWeight +
-                        Double(minorCount) * minorWeight +
-                        Double(warnings.count) * warningWeight) / Double(totalClauses)
-        
+            Double(majorCount) * majorWeight +
+            Double(minorCount) * minorWeight +
+            Double(warnings.count) * warningWeight) / Double(totalClauses)
+
         return max(0, 1.0 - deduction)
     }
-    
+
     private func generateComplianceWarnings(
-        violations: [FARViolation],
+        violations _: [FARViolation],
         missingClauses: [FARClause],
         context: FARValidationRequest
     ) async -> [FARWarning] {
         var warnings: [FARWarning] = []
-        
+
         // Warnings for missing clauses
         for clause in missingClauses {
             warnings.append(FARWarning(
@@ -472,26 +472,26 @@ actor FARComplianceStorage {
                 recommendation: "Add clause \(clause.clauseNumber) to ensure compliance"
             ))
         }
-        
+
         // Context-specific warnings
-        if context.contractValue > 2_000_000 && !context.content.contains("52.203-") {
+        if context.contractValue > 2_000_000, !context.content.contains("52.203-") {
             warnings.append(FARWarning(
                 clause: nil,
                 message: "Contract over $2M may require additional certifications",
                 recommendation: "Review FAR 52.203 for required certifications and representations"
             ))
         }
-        
+
         return warnings
     }
-    
+
     private func generateRecommendations(
         violations: [FARViolation],
         missingClauses: [FARClause],
         context: FARValidationRequest
     ) async -> [ComplianceRecommendation] {
         var recommendations: [ComplianceRecommendation] = []
-        
+
         // Recommendations for violations
         for violation in violations where violation.severity == .critical || violation.severity == .major {
             if let fix = violation.suggestedFix {
@@ -503,7 +503,7 @@ actor FARComplianceStorage {
                 ))
             }
         }
-        
+
         // Recommendations for missing clauses
         if !missingClauses.isEmpty {
             recommendations.append(ComplianceRecommendation(
@@ -513,9 +513,9 @@ actor FARComplianceStorage {
                 estimatedEffort: .low
             ))
         }
-        
+
         // General improvements
-        if context.isCommercialItem && !context.content.contains("Part 12") {
+        if context.isCommercialItem, !context.content.contains("Part 12") {
             recommendations.append(ComplianceRecommendation(
                 priority: .medium,
                 description: "Consider using Part 12 procedures for commercial item acquisition",
@@ -523,33 +523,33 @@ actor FARComplianceStorage {
                 estimatedEffort: .medium
             ))
         }
-        
+
         return recommendations
     }
-    
-    private func interpretClause(_ clause: FARClause) async -> String {
+
+    private func interpretClause(_: FARClause) async -> String {
         // Generate interpretation based on clause content
-        return "This clause requires..."
+        "This clause requires..."
     }
-    
-    private func getBestPractices(for clause: FARClause) async -> [String] {
+
+    private func getBestPractices(for _: FARClause) async -> [String] {
         // Return best practices for the clause
-        return []
+        []
     }
-    
-    private func getCommonMistakes(for clause: FARClause) async -> [String] {
+
+    private func getCommonMistakes(for _: FARClause) async -> [String] {
         // Return common mistakes for the clause
-        return []
+        []
     }
-    
-    private func getComplianceExamples(for clause: FARClause) async -> [ComplianceExample] {
+
+    private func getComplianceExamples(for _: FARClause) async -> [ComplianceExample] {
         // Return compliance examples
-        return []
+        []
     }
-    
-    private func findRelatedClauses(_ clause: FARClause) async -> [FARClause] {
+
+    private func findRelatedClauses(_: FARClause) async -> [FARClause] {
         // Find related clauses
-        return []
+        []
     }
 }
 
@@ -558,10 +558,10 @@ actor FARComplianceStorage {
 final class FARClauseDatabase {
     // Database implementation
     init() async throws {}
-    
-    func getClause(_ number: String) async -> FARClause? { nil }
-    func getClauseSync(_ number: String) -> FARClause? { nil }
-    func searchClauses(query: String, inPart: FARPart?, limit: Int) async -> [FARClause] { [] }
+
+    func getClause(_: String) async -> FARClause? { nil }
+    func getClauseSync(_: String) -> FARClause? { nil }
+    func searchClauses(query _: String, inPart _: FARPart?, limit _: Int) async -> [FARClause] { [] }
     func getBaseClauses() async -> [FARClause] { [] }
     func getFixedPriceClauses() async -> [FARClause] { [] }
     func getCostReimbursementClauses() async -> [FARClause] { [] }
@@ -573,7 +573,7 @@ final class FARClauseDatabase {
 }
 
 final class Part12ComplianceEngine {
-    func analyzeApplicability(_ details: AcquisitionDetails) async -> Part12Analysis {
+    func analyzeApplicability(_: AcquisitionDetails) async -> Part12Analysis {
         Part12Analysis(
             isApplicable: true,
             commercialityDetermination: .commercial,
@@ -583,32 +583,32 @@ final class Part12ComplianceEngine {
             recommendations: []
         )
     }
-    
-    func generateDocumentation(_ requirements: Part12Requirements) async throws -> Part12Package {
+
+    func generateDocumentation(_: Part12Requirements) async throws -> Part12Package {
         throw FARError.notImplemented
     }
-    
-    func validateDetermination(_ data: CommercialItemData) async throws -> FARValidationResult {
+
+    func validateDetermination(_: CommercialItemData) async throws -> FARValidationResult {
         FARValidationResult(isValid: true, issues: [])
     }
-    
-    func isClauseInapplicableToCommercialItems(_ clause: FARClause) -> Bool {
+
+    func isClauseInapplicableToCommercialItems(_: FARClause) -> Bool {
         false
     }
 }
 
 final class FARValidationEngine {
-    func validateDocument(content: String, againstClauses clauses: [FARClause]) async throws -> [FARViolation] {
+    func validateDocument(content _: String, againstClauses _: [FARClause]) async throws -> [FARViolation] {
         []
     }
 }
 
 final class ComplianceWizardEngine {
-    func startSession(configuration: WizardConfiguration) async -> WizardSession {
+    func startSession(configuration _: WizardConfiguration) async -> WizardSession {
         WizardSession(id: UUID().uuidString, currentStep: ComplianceWizardStep(id: "start", title: "Start", questions: []))
     }
-    
-    func processResponse(session: WizardSession, response: WizardResponse) async throws -> ComplianceWizardStep? {
+
+    func processResponse(session _: WizardSession, response _: WizardResponse) async throws -> ComplianceWizardStep? {
         nil
     }
 }
@@ -690,11 +690,11 @@ public struct ComplianceRecommendation {
     public let description: String
     public let clause: FARClause?
     public let estimatedEffort: EffortLevel
-    
+
     public enum Priority {
         case critical, high, medium, low
     }
-    
+
     public enum EffortLevel {
         case minimal, low, medium, high
     }
@@ -717,7 +717,7 @@ public struct FARUpdate {
     public let changeType: ChangeType
     public let effectiveDate: Date
     public let summary: String
-    
+
     public enum ChangeType {
         case new, revised, removed
     }
@@ -732,7 +732,7 @@ public struct FARChange {
 public struct WizardConfiguration {
     public let purpose: WizardPurpose
     public let initialData: [String: Any]
-    
+
     public enum WizardPurpose {
         case compliance, part12, clauseSelection, exemption
     }
@@ -755,7 +755,7 @@ public struct WizardQuestion {
     public let text: String
     public let type: QuestionType
     public let options: [String]?
-    
+
     public enum QuestionType {
         case text, singleChoice, multipleChoice, numeric, date
     }
@@ -768,11 +768,11 @@ public struct WizardResponse {
 
 enum FARError: LocalizedError {
     case notImplemented
-    
+
     var errorDescription: String? {
         switch self {
         case .notImplemented:
-            return "This feature is not yet implemented"
+            "This feature is not yet implemented"
         }
     }
 }
@@ -784,23 +784,23 @@ extension FARComplianceManager: DependencyKey {
         let storage = Task {
             try await FARComplianceStorage()
         }
-        
+
         func getStorage() async throws -> FARComplianceStorage {
             try await storage.value
         }
-        
+
         return FARComplianceManager(
             validateCompliance: { request in
                 let storage = try await getStorage()
                 return try await storage.validateCompliance(request: request)
             },
-            validateDocument: { document, part in
+            validateDocument: { _, _ in
                 // Implementation
-                return []
+                []
             },
-            checkClause: { content, clause in
+            checkClause: { _, _ in
                 // Implementation
-                return true
+                true
             },
             lookupClause: { clauseNumber in
                 let storage = try await getStorage()
@@ -814,9 +814,9 @@ extension FARComplianceManager: DependencyKey {
                 let storage = try await getStorage()
                 return try await storage.getRequiredClauses(contractType: contractType, value: value)
             },
-            getFlowdownClauses: { clauses in
+            getFlowdownClauses: { _ in
                 // Implementation
-                return []
+                []
             },
             analyzePart12Applicability: { details in
                 let storage = try await getStorage()
@@ -843,13 +843,13 @@ extension FARComplianceManager: DependencyKey {
                 }
                 return await storage.getComplianceGuidance(clause: clause)
             },
-            suggestAlternatives: { clause, context in
+            suggestAlternatives: { _, _ in
                 // Implementation
-                return []
+                []
             },
-            checkExemptions: { clause, context in
+            checkExemptions: { _, _ in
                 // Implementation
-                return []
+                []
             },
             startComplianceWizard: { configuration in
                 guard let storage = try? await getStorage() else {
@@ -861,27 +861,27 @@ extension FARComplianceManager: DependencyKey {
                 let storage = try await getStorage()
                 return try await storage.continueWizard(session: session, response: response)
             },
-            generateComplianceReport: { results in
+            generateComplianceReport: { _ in
                 // Implementation
-                return Data()
+                Data()
             },
             checkForUpdates: {
                 // Implementation
-                return []
+                []
             },
-            subscribeToClause: { clauseNumber in
+            subscribeToClause: { _ in
                 // Implementation
             },
-            getChangeHistory: { clauseNumber in
+            getChangeHistory: { _ in
                 // Implementation
-                return []
+                []
             }
         )
     }
 }
 
-extension DependencyValues {
-    public var farComplianceManager: FARComplianceManager {
+public extension DependencyValues {
+    var farComplianceManager: FARComplianceManager {
         get { self[FARComplianceManager.self] }
         set { self[FARComplianceManager.self] = newValue }
     }

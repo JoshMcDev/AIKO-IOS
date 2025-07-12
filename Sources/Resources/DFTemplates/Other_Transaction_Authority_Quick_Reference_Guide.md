@@ -155,7 +155,7 @@ Before using this template, ensure you have:
 - Neglect intellectual property planning
 - Fail to engage non-traditional contractors
 
-✅ **Do:**
+ **Do:**
 - Verify specific OTA authority and limitations
 - Justify unique benefits of OTA approach
 - Plan comprehensive cost-sharing strategy

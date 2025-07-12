@@ -1,5 +1,5 @@
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 // MARK: - CMMC Requirement Templates Service
 
@@ -8,7 +8,7 @@ public struct CMMCRequirementTemplates {
     public var generateImplementationGuide: (CMMCRequirement) async throws -> ImplementationGuide
     public var createAssessmentChecklist: (CMMCLevel) async throws -> AssessmentChecklist
     public var exportSSP: (CMMCLevel, [CMMCRequirement]) async throws -> String
-    
+
     public init(
         loadTemplate: @escaping (CMMCDomain, CMMCLevel) async throws -> CMMCDomainTemplate,
         generateImplementationGuide: @escaping (CMMCRequirement) async throws -> ImplementationGuide,
@@ -31,7 +31,7 @@ public struct CMMCDomainTemplate {
     public let requirements: [CMMCRequirementTemplate]
     public let commonImplementations: [String]
     public let documentationNeeded: [String]
-    
+
     public init(
         domain: CMMCDomain,
         level: CMMCLevel,
@@ -57,7 +57,7 @@ public struct CMMCRequirementTemplate {
     public let commonTools: [String]
     public let estimatedEffort: String
     public let dependencies: [String]
-    
+
     public init(
         requirementId: String,
         description: String,
@@ -83,7 +83,7 @@ public struct ImplementationGuide {
     public let detailedSteps: [ImplementationStep]
     public let templateDocuments: [String]
     public let validationChecklist: [String]
-    
+
     public init(
         requirement: CMMCRequirement,
         quickStart: String,
@@ -105,7 +105,7 @@ public struct ImplementationStep {
     public let description: String
     public let expectedOutcome: String
     public let timeEstimate: String
-    
+
     public init(
         stepNumber: Int,
         title: String,
@@ -126,7 +126,7 @@ public struct AssessmentChecklist {
     public let domains: [DomainChecklist]
     public let totalRequirements: Int
     public let assessmentInstructions: String
-    
+
     public init(
         level: CMMCLevel,
         domains: [DomainChecklist],
@@ -143,7 +143,7 @@ public struct AssessmentChecklist {
 public struct DomainChecklist {
     public let domain: CMMCDomain
     public let checklistItems: [ChecklistItem]
-    
+
     public init(domain: CMMCDomain, checklistItems: [ChecklistItem]) {
         self.domain = domain
         self.checklistItems = checklistItems
@@ -156,7 +156,7 @@ public struct ChecklistItem {
     public let evidenceToReview: [String]
     public let interviewQuestions: [String]
     public let testProcedures: [String]
-    
+
     public init(
         requirementId: String,
         checkDescription: String,
@@ -180,24 +180,24 @@ extension CMMCRequirementTemplates: DependencyKey {
             loadTemplate: { domain, level in
                 switch (domain, level) {
                 case (.accessControl, .level1):
-                    return accessControlLevel1Template
+                    accessControlLevel1Template
                 case (.accessControl, .level2):
-                    return accessControlLevel2Template
+                    accessControlLevel2Template
                 case (.accessControl, .level3):
-                    return accessControlLevel3Template
+                    accessControlLevel3Template
                 case (.identificationAndAuthentication, .level1):
-                    return identificationAuthLevel1Template
+                    identificationAuthLevel1Template
                 case (.identificationAndAuthentication, .level2):
-                    return identificationAuthLevel2Template
+                    identificationAuthLevel2Template
                 case (.auditAndAccountability, .level2):
-                    return auditLevel2Template
+                    auditLevel2Template
                 case (.systemAndCommunicationsProtection, .level1):
-                    return systemProtectionLevel1Template
+                    systemProtectionLevel1Template
                 default:
-                    return createGenericTemplate(for: domain, level: level)
+                    createGenericTemplate(for: domain, level: level)
                 }
             },
-            
+
             generateImplementationGuide: { requirement in
                 ImplementationGuide(
                     requirement: requirement,
@@ -207,12 +207,12 @@ extension CMMCRequirementTemplates: DependencyKey {
                     validationChecklist: generateValidationChecklist(for: requirement)
                 )
             },
-            
+
             createAssessmentChecklist: { level in
                 let domains = CMMCDomain.allCases
                 var domainChecklists: [DomainChecklist] = []
                 var totalRequirements = 0
-                
+
                 for domain in domains {
                     let items = generateChecklistItems(for: domain, level: level)
                     if !items.isEmpty {
@@ -220,7 +220,7 @@ extension CMMCRequirementTemplates: DependencyKey {
                         totalRequirements += items.count
                     }
                 }
-                
+
                 return AssessmentChecklist(
                     level: level,
                     domains: domainChecklists,
@@ -228,7 +228,7 @@ extension CMMCRequirementTemplates: DependencyKey {
                     assessmentInstructions: getAssessmentInstructions(for: level)
                 )
             },
-            
+
             exportSSP: { level, requirements in
                 generateSystemSecurityPlan(for: level, requirements: requirements)
             }
@@ -251,13 +251,13 @@ private let accessControlLevel1Template = CMMCDomainTemplate(
                 "Document authorized user list",
                 "Implement account request/approval process",
                 "Configure system access controls",
-                "Remove default accounts"
+                "Remove default accounts",
             ],
             evidenceRequired: [
                 "User account list",
                 "Account management procedures",
                 "Access approval forms",
-                "System configuration screenshots"
+                "System configuration screenshots",
             ],
             commonTools: ["Active Directory", "LDAP", "Local user management"],
             estimatedEffort: "4-8 hours",
@@ -271,30 +271,30 @@ private let accessControlLevel1Template = CMMCDomainTemplate(
                 "Implement role-based access control",
                 "Configure least privilege access",
                 "Document permission matrix",
-                "Test access restrictions"
+                "Test access restrictions",
             ],
             evidenceRequired: [
                 "Role definitions",
                 "Permission matrix",
                 "RBAC configuration",
-                "Test results"
+                "Test results",
             ],
             commonTools: ["Group Policy", "ACLs", "Application permissions"],
             estimatedEffort: "8-16 hours",
             dependencies: ["AC.L1-3.1.1"]
-        )
+        ),
     ],
     commonImplementations: [
         "Active Directory Group Policy",
         "Role-Based Access Control (RBAC)",
         "Principle of Least Privilege",
-        "Access Control Lists (ACLs)"
+        "Access Control Lists (ACLs)",
     ],
     documentationNeeded: [
         "Access Control Policy",
         "User Account Management Procedures",
         "Authorization Matrix",
-        "Account Request Forms"
+        "Account Request Forms",
     ]
 )
 
@@ -311,13 +311,13 @@ private let accessControlLevel2Template = CMMCDomainTemplate(
                 "Map data flow diagrams",
                 "Implement data loss prevention",
                 "Configure boundary protections",
-                "Monitor unauthorized transfers"
+                "Monitor unauthorized transfers",
             ],
             evidenceRequired: [
                 "Data flow diagrams",
                 "DLP policies",
                 "Firewall rules",
-                "Monitoring logs"
+                "Monitoring logs",
             ],
             commonTools: ["DLP solutions", "Firewalls", "CASB", "Email gateways"],
             estimatedEffort: "40-80 hours",
@@ -331,30 +331,30 @@ private let accessControlLevel2Template = CMMCDomainTemplate(
                 "Define separation requirements",
                 "Redistribute responsibilities",
                 "Implement approval workflows",
-                "Document duty matrices"
+                "Document duty matrices",
             ],
             evidenceRequired: [
                 "Separation of duties matrix",
                 "Workflow documentation",
                 "Approval processes",
-                "Role assignments"
+                "Role assignments",
             ],
             commonTools: ["Workflow systems", "Ticketing systems", "Change management"],
             estimatedEffort: "16-32 hours",
             dependencies: ["AC.L1-3.1.2"]
-        )
+        ),
     ],
     commonImplementations: [
         "Data Loss Prevention (DLP)",
         "Network segmentation",
         "Separation of duties matrix",
-        "Workflow automation"
+        "Workflow automation",
     ],
     documentationNeeded: [
         "Data Flow Diagrams",
         "CUI Handling Procedures",
         "Separation of Duties Policy",
-        "Information Flow Enforcement Rules"
+        "Information Flow Enforcement Rules",
     ]
 )
 
@@ -371,30 +371,30 @@ private let accessControlLevel3Template = CMMCDomainTemplate(
                 "Configure TLS 1.2 or higher",
                 "Deploy certificate-based authentication",
                 "Enable perfect forward secrecy",
-                "Monitor encryption strength"
+                "Monitor encryption strength",
             ],
             evidenceRequired: [
                 "VPN configuration",
                 "Encryption policies",
                 "Certificate management",
-                "Cipher suite configuration"
+                "Cipher suite configuration",
             ],
             commonTools: ["VPN solutions", "PKI infrastructure", "SSL/TLS certificates"],
             estimatedEffort: "24-48 hours",
             dependencies: ["SC.L2-3.13.8", "IA.L2-3.5.3"]
-        )
+        ),
     ],
     commonImplementations: [
         "Enterprise VPN solutions",
         "PKI infrastructure",
         "Certificate-based authentication",
-        "Advanced encryption standards"
+        "Advanced encryption standards",
     ],
     documentationNeeded: [
         "Cryptographic Policy",
         "Remote Access Procedures",
         "Certificate Management Plan",
-        "Encryption Standards"
+        "Encryption Standards",
     ]
 )
 
@@ -411,13 +411,13 @@ private let identificationAuthLevel1Template = CMMCDomainTemplate(
                 "Assign unique device identifiers",
                 "Document service accounts",
                 "Create identification standards",
-                "Maintain identifier inventory"
+                "Maintain identifier inventory",
             ],
             evidenceRequired: [
                 "User ID standards",
                 "Device inventory",
                 "Service account list",
-                "Naming conventions"
+                "Naming conventions",
             ],
             commonTools: ["Identity management systems", "Asset management tools"],
             estimatedEffort: "8-16 hours",
@@ -431,30 +431,30 @@ private let identificationAuthLevel1Template = CMMCDomainTemplate(
                 "Configure password policies",
                 "Deploy authentication servers",
                 "Enable device authentication",
-                "Test authentication flows"
+                "Test authentication flows",
             ],
             evidenceRequired: [
                 "Authentication configuration",
                 "Password policy",
                 "Authentication logs",
-                "Test documentation"
+                "Test documentation",
             ],
             commonTools: ["Active Directory", "RADIUS", "LDAP", "802.1X"],
             estimatedEffort: "16-32 hours",
             dependencies: ["IA.L1-3.5.1"]
-        )
+        ),
     ],
     commonImplementations: [
         "Active Directory authentication",
         "Password complexity requirements",
         "Account lockout policies",
-        "Device certificates"
+        "Device certificates",
     ],
     documentationNeeded: [
         "Identification and Authentication Policy",
         "Password Standards",
         "Account Management Procedures",
-        "Device Registration Process"
+        "Device Registration Process",
     ]
 )
 
@@ -471,30 +471,30 @@ private let identificationAuthLevel2Template = CMMCDomainTemplate(
                 "Deploy MFA solution",
                 "Configure MFA policies",
                 "Enroll privileged users",
-                "Test MFA scenarios"
+                "Test MFA scenarios",
             ],
             evidenceRequired: [
                 "Privileged account inventory",
                 "MFA configuration",
                 "Enrollment records",
-                "MFA policy documentation"
+                "MFA policy documentation",
             ],
             commonTools: ["Microsoft Authenticator", "Duo", "RSA SecurID", "YubiKey"],
             estimatedEffort: "24-48 hours",
             dependencies: ["IA.L1-3.5.1", "IA.L1-3.5.2"]
-        )
+        ),
     ],
     commonImplementations: [
         "Time-based OTP (TOTP)",
         "SMS-based MFA",
         "Hardware tokens",
-        "Biometric authentication"
+        "Biometric authentication",
     ],
     documentationNeeded: [
         "MFA Policy",
         "Privileged Account Inventory",
         "MFA Enrollment Procedures",
-        "Backup Authentication Methods"
+        "Backup Authentication Methods",
     ]
 )
 
@@ -511,13 +511,13 @@ private let auditLevel2Template = CMMCDomainTemplate(
                 "Configure log retention",
                 "Centralize log collection",
                 "Protect log integrity",
-                "Document retention periods"
+                "Document retention periods",
             ],
             evidenceRequired: [
                 "Logging configuration",
                 "Retention policies",
                 "Log samples",
-                "Storage capacity planning"
+                "Storage capacity planning",
             ],
             commonTools: ["Syslog", "Windows Event Log", "SIEM", "Log management"],
             estimatedEffort: "16-32 hours",
@@ -531,30 +531,30 @@ private let auditLevel2Template = CMMCDomainTemplate(
                 "Correlate user sessions",
                 "Implement log analysis",
                 "Create audit trails",
-                "Test traceability"
+                "Test traceability",
             ],
             evidenceRequired: [
                 "User activity logs",
                 "Correlation rules",
                 "Audit trail samples",
-                "Traceability testing"
+                "Traceability testing",
             ],
             commonTools: ["SIEM solutions", "Log analyzers", "User behavior analytics"],
             estimatedEffort: "24-48 hours",
             dependencies: ["AU.L2-3.3.1", "IA.L1-3.5.1"]
-        )
+        ),
     ],
     commonImplementations: [
         "Centralized logging",
         "SIEM deployment",
         "Log correlation rules",
-        "Automated alerting"
+        "Automated alerting",
     ],
     documentationNeeded: [
         "Audit and Logging Policy",
         "Log Retention Schedule",
         "Audit Review Procedures",
-        "Incident Investigation Guide"
+        "Incident Investigation Guide",
     ]
 )
 
@@ -571,30 +571,30 @@ private let systemProtectionLevel1Template = CMMCDomainTemplate(
                 "Configure access rules",
                 "Enable traffic monitoring",
                 "Implement IDS/IPS",
-                "Document network diagram"
+                "Document network diagram",
             ],
             evidenceRequired: [
                 "Network diagrams",
                 "Firewall rules",
                 "IDS/IPS configuration",
-                "Traffic logs"
+                "Traffic logs",
             ],
             commonTools: ["Firewalls", "IDS/IPS", "Network monitors", "UTM devices"],
             estimatedEffort: "32-64 hours",
             dependencies: []
-        )
+        ),
     ],
     commonImplementations: [
         "Next-gen firewalls",
         "Intrusion detection systems",
         "Network segmentation",
-        "DMZ implementation"
+        "DMZ implementation",
     ],
     documentationNeeded: [
         "Network Security Policy",
         "Firewall Rule Matrix",
         "Network Diagrams",
-        "Boundary Protection Plan"
+        "Boundary Protection Plan",
     ]
 )
 
@@ -623,7 +623,7 @@ private func generateQuickStart(for requirement: CMMCRequirement) -> String {
     """
 }
 
-private func generateDetailedSteps(for requirement: CMMCRequirement) -> [ImplementationStep] {
+private func generateDetailedSteps(for _: CMMCRequirement) -> [ImplementationStep] {
     [
         ImplementationStep(
             stepNumber: 1,
@@ -659,13 +659,13 @@ private func generateDetailedSteps(for requirement: CMMCRequirement) -> [Impleme
             description: "Document procedures and collect evidence",
             expectedOutcome: "Complete documentation package",
             timeEstimate: "2-4 hours"
-        )
+        ),
     ]
 }
 
 private func getTemplateDocuments(for requirement: CMMCRequirement) -> [String] {
     var templates: [String] = ["Policy Template", "Procedure Template", "Evidence Log"]
-    
+
     if requirement.domain == .accessControl {
         templates.append("Access Control Matrix Template")
     } else if requirement.domain == .auditAndAccountability {
@@ -673,22 +673,22 @@ private func getTemplateDocuments(for requirement: CMMCRequirement) -> [String] 
     } else if requirement.domain == .incidentResponse {
         templates.append("Incident Response Plan Template")
     }
-    
+
     return templates
 }
 
-private func generateValidationChecklist(for requirement: CMMCRequirement) -> [String] {
+private func generateValidationChecklist(for _: CMMCRequirement) -> [String] {
     [
         "Control is fully implemented",
         "Documentation is complete and current",
         "Evidence demonstrates effectiveness",
         "Personnel are trained on procedures",
         "Control is integrated with other practices",
-        "Monitoring and metrics are in place"
+        "Monitoring and metrics are in place",
     ]
 }
 
-private func generateChecklistItems(for domain: CMMCDomain, level: CMMCLevel) -> [ChecklistItem] {
+private func generateChecklistItems(for _: CMMCDomain, level _: CMMCLevel) -> [ChecklistItem] {
     // This would normally pull from a comprehensive database
     // For now, returning sample items
     []
@@ -697,7 +697,7 @@ private func generateChecklistItems(for domain: CMMCDomain, level: CMMCLevel) ->
 private func getAssessmentInstructions(for level: CMMCLevel) -> String {
     """
     CMMC \(level.rawValue) Assessment Instructions:
-    
+
     1. Review all applicable practices for this level
     2. Gather evidence for each practice
     3. Interview relevant personnel
@@ -706,7 +706,7 @@ private func getAssessmentInstructions(for level: CMMCLevel) -> String {
     6. Document findings and gaps
     7. Calculate domain scores
     8. Determine overall compliance status
-    
+
     Note: All practices must be fully implemented to achieve certification.
     """
 }
@@ -715,35 +715,35 @@ private func generateSystemSecurityPlan(for level: CMMCLevel, requirements: [CMM
     """
     SYSTEM SECURITY PLAN (SSP)
     CMMC \(level.rawValue) Implementation
-    
+
     1. SYSTEM INFORMATION
     Organization: {{ORGANIZATION}}
     System Name: {{SYSTEM_NAME}}
     System Type: {{SYSTEM_TYPE}}
-    
+
     2. SYSTEM BOUNDARIES
     {{BOUNDARY_DESCRIPTION}}
-    
+
     3. IMPLEMENTED CONTROLS
     \(requirements.map { "- \($0.id): \($0.description)" }.joined(separator: "\n"))
-    
+
     4. CONTROL IMPLEMENTATION DETAILS
     [Detailed implementation for each control]
-    
+
     5. ROLES AND RESPONSIBILITIES
     - System Owner: {{OWNER}}
     - Security Officer: {{SECURITY_OFFICER}}
     - System Administrator: {{ADMIN}}
-    
+
     6. SYSTEM INTERCONNECTIONS
     {{INTERCONNECTIONS}}
-    
+
     7. LAWS AND REGULATIONS
     - CMMC Level \(level.rawValue) Requirements
     - NIST SP 800-171
     - FAR 52.204-21
     - DFARS 252.204-7012
-    
+
     8. APPENDICES
     A. Network Diagrams
     B. Hardware/Software Inventory
@@ -754,8 +754,8 @@ private func generateSystemSecurityPlan(for level: CMMCLevel, requirements: [CMM
 
 // MARK: - Test Value
 
-extension CMMCRequirementTemplates {
-    public static var testValue: CMMCRequirementTemplates {
+public extension CMMCRequirementTemplates {
+    static var testValue: CMMCRequirementTemplates {
         CMMCRequirementTemplates(
             loadTemplate: { _, _ in
                 CMMCDomainTemplate(
@@ -791,8 +791,8 @@ extension CMMCRequirementTemplates {
 
 // MARK: - Dependency Registration
 
-extension DependencyValues {
-    public var cmmcRequirementTemplates: CMMCRequirementTemplates {
+public extension DependencyValues {
+    var cmmcRequirementTemplates: CMMCRequirementTemplates {
         get { self[CMMCRequirementTemplates.self] }
         set { self[CMMCRequirementTemplates.self] = newValue }
     }

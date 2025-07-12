@@ -1,36 +1,34 @@
-import Foundation
 import CoreData
+import Foundation
 
-extension MetricTrendEntity {
-    
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<MetricTrendEntity> {
-        return NSFetchRequest<MetricTrendEntity>(entityName: "MetricTrend")
+public extension MetricTrendEntity {
+    @nonobjc class func fetchRequest() -> NSFetchRequest<MetricTrendEntity> {
+        NSFetchRequest<MetricTrendEntity>(entityName: "MetricTrend")
     }
-    
-    @NSManaged public var id: UUID?
-    @NSManaged public var metricName: String?
-    @NSManaged public var direction: String?
-    @NSManaged public var magnitude: Double
-    @NSManaged public var significance: Double
-    @NSManaged public var report: MetricsReportEntity?
-    @NSManaged public var trendDataPoints: NSSet?
+
+    @NSManaged var id: UUID?
+    @NSManaged var metricName: String?
+    @NSManaged var direction: String?
+    @NSManaged var magnitude: Double
+    @NSManaged var significance: Double
+    @NSManaged var report: MetricsReportEntity?
+    @NSManaged var trendDataPoints: NSSet?
 }
 
 // MARK: Generated accessors for trendDataPoints
-extension MetricTrendEntity {
-    
+
+public extension MetricTrendEntity {
     @objc(addTrendDataPointsObject:)
-    @NSManaged public func addToTrendDataPoints(_ value: TrendDataPointEntity)
-    
+    @NSManaged func addToTrendDataPoints(_ value: TrendDataPointEntity)
+
     @objc(removeTrendDataPointsObject:)
-    @NSManaged public func removeFromTrendDataPoints(_ value: TrendDataPointEntity)
-    
+    @NSManaged func removeFromTrendDataPoints(_ value: TrendDataPointEntity)
+
     @objc(addTrendDataPoints:)
-    @NSManaged public func addToTrendDataPoints(_ values: NSSet)
-    
+    @NSManaged func addToTrendDataPoints(_ values: NSSet)
+
     @objc(removeTrendDataPoints:)
-    @NSManaged public func removeFromTrendDataPoints(_ values: NSSet)
+    @NSManaged func removeFromTrendDataPoints(_ values: NSSet)
 }
 
-extension MetricTrendEntity : Identifiable {
-}
+extension MetricTrendEntity: Identifiable {}

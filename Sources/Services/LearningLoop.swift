@@ -1,7 +1,8 @@
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 // MARK: - Learning Loop
+
 /// Continuous learning system that improves the app's intelligence over time
 public struct LearningLoop {
     // Core learning functions
@@ -10,7 +11,7 @@ public struct LearningLoop {
     public var processQueue: () async throws -> ProcessingResult
     public var generateInsights: () async throws -> [Insight]
     public var applyLearnings: ([Learning]) async throws -> Void
-    
+
     public init(
         startLearning: @escaping () async -> Void,
         recordEvent: @escaping (LearningEvent) async -> Void,
@@ -27,21 +28,22 @@ public struct LearningLoop {
 }
 
 // MARK: - Learning Event
+
 public struct LearningEvent: Equatable, Codable {
     public let id: UUID
     public let timestamp: Date
     public let eventType: EventType
     public let context: EventContext
     public let outcome: EventOutcome?
-    
+
     public init(eventType: EventType, context: EventContext, outcome: EventOutcome? = nil) {
-        self.id = UUID()
-        self.timestamp = Date()
+        id = UUID()
+        timestamp = Date()
         self.eventType = eventType
         self.context = context
         self.outcome = outcome
     }
-    
+
     public enum EventType: String, Codable {
         // User actions
         case requirementEntered
@@ -51,19 +53,19 @@ public struct LearningEvent: Equatable, Codable {
         case documentGenerated
         case documentEdited
         case workflowCompleted
-        
+
         // System events
         case llmResponse
         case dataExtracted
         case dependencyResolved
         case automationTriggered
-        
+
         // Feedback events
         case userFeedback
         case errorOccurred
         case successAchieved
     }
-    
+
     public struct EventContext: Equatable, Codable {
         public let workflowState: String
         public let acquisitionId: UUID?
@@ -71,7 +73,7 @@ public struct LearningEvent: Equatable, Codable {
         public let userData: [String: String]
         public let systemData: [String: String]
     }
-    
+
     public enum EventOutcome: String, Codable {
         case success
         case failure
@@ -81,6 +83,7 @@ public struct LearningEvent: Equatable, Codable {
 }
 
 // MARK: - Processing Result
+
 public struct ProcessingResult: Equatable {
     public let eventsProcessed: Int
     public let learningsGenerated: [Learning]
@@ -89,13 +92,14 @@ public struct ProcessingResult: Equatable {
 }
 
 // MARK: - Learning
+
 public struct Learning: Equatable {
     public let id = UUID()
     public let type: LearningType
     public let confidence: Double
     public let evidence: [Evidence]
     public let recommendation: Recommendation
-    
+
     public enum LearningType: String {
         case userPreference
         case workflowOptimization
@@ -103,22 +107,22 @@ public struct Learning: Equatable {
         case automationOpportunity
         case errorPrevention
     }
-    
+
     public struct Evidence: Equatable {
         public let eventId: UUID
         public let description: String
         public let weight: Double
     }
-    
+
     public struct Recommendation: Equatable {
         public let action: String
         public let impact: Impact
         public let implementation: Implementation
-        
+
         public enum Impact: String {
             case high, medium, low
         }
-        
+
         public enum Implementation: String {
             case immediate, scheduled, manual
         }
@@ -126,6 +130,7 @@ public struct Learning: Equatable {
 }
 
 // MARK: - Detected Pattern
+
 public struct DetectedPattern: Equatable {
     public let id = UUID()
     public let name: String
@@ -136,26 +141,28 @@ public struct DetectedPattern: Equatable {
 }
 
 // MARK: - Anomaly
+
 public struct Anomaly: Equatable {
     public let id = UUID()
     public let type: AnomalyType
     public let severity: Severity
     public let description: String
     public let context: [String: String]
-    
+
     public enum AnomalyType: String {
         case unusualSequence
         case performanceIssue
         case dataInconsistency
         case userStruggle
     }
-    
+
     public enum Severity: String {
         case critical, high, medium, low
     }
 }
 
 // MARK: - Insight
+
 public struct Insight: Equatable {
     public let id = UUID()
     public let category: Category
@@ -163,7 +170,7 @@ public struct Insight: Equatable {
     public let description: String
     public let actionableSteps: [String]
     public let expectedBenefit: String
-    
+
     public enum Category: String {
         case efficiency
         case quality
@@ -174,33 +181,34 @@ public struct Insight: Equatable {
 }
 
 // MARK: - Implementation
+
 extension LearningLoop: DependencyKey {
     public static var liveValue: LearningLoop {
         let eventQueue = EventQueue()
         let patternDetector = PatternDetector()
         let insightGenerator = InsightGenerator()
         let adaptiveEngine = AdaptiveEngine()
-        
+
         return LearningLoop(
             startLearning: {
                 // Start background learning process
                 Task {
                     while true {
                         try? await Task.sleep(nanoseconds: 60_000_000_000) // Process every minute
-                        
+
                         do {
                             // Process accumulated events
                             let result = try await processEvents(eventQueue, patternDetector)
-                            
+
                             // Generate insights if patterns found
                             if !result.patternsDetected.isEmpty {
                                 _ = try await insightGenerator.generate(from: result)
-                                
+
                                 // Apply high-confidence learnings immediately
                                 let immediatelearnings = result.learningsGenerated.filter {
                                     $0.confidence > 0.8 && $0.recommendation.implementation == .immediate
                                 }
-                                
+
                                 if !immediatelearnings.isEmpty {
                                     try await adaptiveEngine.apply(immediatelearnings)
                                 }
@@ -211,10 +219,10 @@ extension LearningLoop: DependencyKey {
                     }
                 }
             },
-            
+
             recordEvent: { event in
                 await eventQueue.enqueue(event)
-                
+
                 // Process critical events immediately
                 if event.eventType == .errorOccurred || event.eventType == .userFeedback {
                     Task {
@@ -222,11 +230,11 @@ extension LearningLoop: DependencyKey {
                     }
                 }
             },
-            
+
             processQueue: {
                 try await processEvents(eventQueue, patternDetector)
             },
-            
+
             generateInsights: {
                 let recentEvents = await eventQueue.getRecent(limit: 1000)
                 let patterns = try await patternDetector.detect(in: recentEvents)
@@ -237,7 +245,7 @@ extension LearningLoop: DependencyKey {
                     anomaliesFound: []
                 ))
             },
-            
+
             applyLearnings: { learnings in
                 try await adaptiveEngine.apply(learnings)
             }
@@ -246,71 +254,74 @@ extension LearningLoop: DependencyKey {
 }
 
 // MARK: - Event Queue
+
 private actor EventQueue {
     private var events: [LearningEvent] = []
     private let maxSize = 10000
-    
+
     func enqueue(_ event: LearningEvent) {
         events.append(event)
-        
+
         // Maintain queue size
         if events.count > maxSize {
             events.removeFirst(events.count - maxSize)
         }
     }
-    
+
     func dequeue(count: Int) -> [LearningEvent] {
         let result = Array(events.prefix(count))
         events.removeFirst(min(count, events.count))
         return result
     }
-    
+
     func getRecent(limit: Int) -> [LearningEvent] {
         Array(events.suffix(limit))
     }
 }
 
 // MARK: - Pattern Detector
+
 private struct PatternDetector {
     func detect(in events: [LearningEvent]) async throws -> [DetectedPattern] {
         var patterns: [DetectedPattern] = []
-        
+
         // Detect document sequence patterns
         let sequences = detectSequencePatterns(events)
         patterns.append(contentsOf: sequences)
-        
+
         // Detect time-based patterns
         let timePatterns = detectTimePatterns(events)
         patterns.append(contentsOf: timePatterns)
-        
+
         // Detect user behavior patterns
         let behaviorPatterns = detectBehaviorPatterns(events)
         patterns.append(contentsOf: behaviorPatterns)
-        
+
         return patterns
     }
-    
-    private func detectSequencePatterns(_ events: [LearningEvent]) -> [DetectedPattern] {
+
+    private func detectSequencePatterns(_: [LearningEvent]) -> [DetectedPattern] {
         // Implementation for sequence detection
-        return []
+        []
     }
-    
-    private func detectTimePatterns(_ events: [LearningEvent]) -> [DetectedPattern] {
+
+    private func detectTimePatterns(_: [LearningEvent]) -> [DetectedPattern] {
         // Implementation for time pattern detection
-        return []
+        []
     }
-    
-    private func detectBehaviorPatterns(_ events: [LearningEvent]) -> [DetectedPattern] {
+
+    private func detectBehaviorPatterns(_: [LearningEvent]) -> [DetectedPattern] {
         // Implementation for behavior pattern detection
-        return []
+        []
     }
 }
 
 // MARK: - Insight Generator
+
 private struct InsightGenerator {
     func generate(from result: ProcessingResult) async throws -> [Insight] {
         var insights: [Insight] = []
-        
+
         // Generate insights from patterns
         for pattern in result.patternsDetected {
             if pattern.significance > 0.7 {
@@ -323,7 +334,7 @@ private struct InsightGenerator {
                 ))
             }
         }
-        
+
         // Generate insights from anomalies
         for anomaly in result.anomaliesFound {
             if anomaly.severity == .critical || anomaly.severity == .high {
@@ -336,20 +347,20 @@ private struct InsightGenerator {
                 ))
             }
         }
-        
+
         return insights
     }
-    
-    private func categorizePattern(_ pattern: DetectedPattern) -> Insight.Category {
+
+    private func categorizePattern(_: DetectedPattern) -> Insight.Category {
         // Categorize based on pattern characteristics
-        return .efficiency
+        .efficiency
     }
-    
+
     private func generateSteps(for pattern: DetectedPattern) -> [String] {
         // Generate actionable steps based on pattern
-        return ["Review pattern: \(pattern.name)", "Consider automation", "Update workflows"]
+        ["Review pattern: \(pattern.name)", "Consider automation", "Update workflows"]
     }
-    
+
     private func estimateBenefit(of pattern: DetectedPattern) -> String {
         // Estimate benefit based on pattern frequency and significance
         let timeSaving = Double(pattern.frequency) * pattern.significance * 5 // minutes
@@ -358,6 +369,7 @@ private struct InsightGenerator {
 }
 
 // MARK: - Adaptive Engine
+
 private struct AdaptiveEngine {
     func apply(_ learnings: [Learning]) async throws {
         for learning in learnings {
@@ -375,29 +387,30 @@ private struct AdaptiveEngine {
             }
         }
     }
-    
-    private func applyUserPreference(_ learning: Learning) async {
+
+    private func applyUserPreference(_: Learning) async {
         // Update user preferences based on learning
     }
-    
-    private func optimizeWorkflow(_ learning: Learning) async {
+
+    private func optimizeWorkflow(_: Learning) async {
         // Optimize workflow based on learning
     }
-    
-    private func improveDocument(_ learning: Learning) async {
+
+    private func improveDocument(_: Learning) async {
         // Improve document templates based on learning
     }
-    
-    private func createAutomation(_ learning: Learning) async {
+
+    private func createAutomation(_: Learning) async {
         // Create automation rules based on learning
     }
-    
-    private func preventError(_ learning: Learning) async {
+
+    private func preventError(_: Learning) async {
         // Add error prevention measures
     }
 }
 
 // MARK: - Helper Functions
+
 private func processEvents(_ queue: EventQueue, _ detector: PatternDetector) async throws -> ProcessingResult {
     let events = await queue.dequeue(count: 100)
     guard !events.isEmpty else {
@@ -408,11 +421,11 @@ private func processEvents(_ queue: EventQueue, _ detector: PatternDetector) asy
             anomaliesFound: []
         )
     }
-    
+
     let patterns = try await detector.detect(in: events)
     let learnings = generateLearnings(from: events, patterns: patterns)
     let anomalies = detectAnomalies(in: events)
-    
+
     return ProcessingResult(
         eventsProcessed: events.count,
         learningsGenerated: learnings,
@@ -421,18 +434,18 @@ private func processEvents(_ queue: EventQueue, _ detector: PatternDetector) asy
     )
 }
 
-private func generateLearnings(from events: [LearningEvent], patterns: [DetectedPattern]) -> [Learning] {
+private func generateLearnings(from _: [LearningEvent], patterns _: [DetectedPattern]) -> [Learning] {
     // Generate learnings from events and patterns
-    return []
+    []
 }
 
-private func detectAnomalies(in events: [LearningEvent]) -> [Anomaly] {
+private func detectAnomalies(in _: [LearningEvent]) -> [Anomaly] {
     // Detect anomalies in events
-    return []
+    []
 }
 
-extension DependencyValues {
-    public var learningLoop: LearningLoop {
+public extension DependencyValues {
+    var learningLoop: LearningLoop {
         get { self[LearningLoop.self] }
         set { self[LearningLoop.self] = newValue }
     }

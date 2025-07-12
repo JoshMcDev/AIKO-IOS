@@ -1,19 +1,20 @@
 import SwiftUI
 #if os(iOS)
-import UIKit
+    import UIKit
 #endif
 
 // MARK: - Agent State Indicator
+
 /// An animated indicator showing the current state of the AI agent with pulse effects
 public struct AgentStateIndicator: View {
     let state: AgentState
     @State private var isPulsing = false
     @State private var rotationAngle: Double = 0
-    
+
     public init(state: AgentState) {
         self.state = state
     }
-    
+
     public var body: some View {
         HStack(spacing: 8) {
             // Animated icon
@@ -26,7 +27,7 @@ public struct AgentStateIndicator: View {
                         state == .idle ? nil : Animation.easeInOut(duration: 1.0).repeatForever(autoreverses: true),
                         value: isPulsing
                     )
-                
+
                 // Main icon
                 Image(systemName: stateIcon)
                     .font(.system(size: 16, weight: .medium))
@@ -38,13 +39,13 @@ public struct AgentStateIndicator: View {
                     )
             }
             .frame(width: 40, height: 40)
-            
+
             // State text
             VStack(alignment: .leading, spacing: 2) {
                 Text(stateTitle)
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.primary)
-                
+
                 if let subtitle = stateSubtitle {
                     Text(subtitle)
                         .font(.system(size: 12))
@@ -79,69 +80,70 @@ public struct AgentStateIndicator: View {
             }
         }
     }
-    
+
     private var stateIcon: String {
         switch state {
         case .idle:
-            return "circle.fill"
+            "circle.fill"
         case .thinking:
-            return "brain"
+            "brain"
         case .executing:
-            return "gearshape.2.fill"
+            "gearshape.2.fill"
         case .waitingForApproval:
-            return "hourglass"
+            "hourglass"
         case .monitoring:
-            return "eye.fill"
+            "eye.fill"
         }
     }
-    
+
     private var stateColor: Color {
         switch state {
         case .idle:
-            return .gray
+            .gray
         case .thinking:
-            return .blue
+            .blue
         case .executing:
-            return .green
+            .green
         case .waitingForApproval:
-            return .orange
+            .orange
         case .monitoring:
-            return .purple
+            .purple
         }
     }
-    
+
     private var stateTitle: String {
         switch state {
         case .idle:
-            return "Ready"
+            "Ready"
         case .thinking:
-            return "Thinking"
+            "Thinking"
         case .executing:
-            return "Working"
+            "Working"
         case .waitingForApproval:
-            return "Awaiting Approval"
+            "Awaiting Approval"
         case .monitoring:
-            return "Monitoring"
+            "Monitoring"
         }
     }
-    
+
     private var stateSubtitle: String? {
         switch state {
         case .idle:
-            return "Ask me anything"
+            "Ask me anything"
         case .thinking:
-            return "Processing your request"
+            "Processing your request"
         case .executing:
-            return "Executing tasks"
+            "Executing tasks"
         case .waitingForApproval:
-            return "Review required"
+            "Review required"
         case .monitoring:
-            return "Tracking progress"
+            "Tracking progress"
         }
     }
 }
 
 // MARK: - Preview
+
 struct AgentStateIndicator_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 20) {

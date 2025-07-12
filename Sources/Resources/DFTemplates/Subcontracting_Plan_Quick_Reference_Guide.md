@@ -109,7 +109,7 @@ Before using this template, ensure you have:
 - Fail to require specific outreach commitments
 - Accept vague or generic plan language
 
-✅ **Do:**
+ **Do:**
 - Require detailed opportunity analysis
 - Negotiate realistic but challenging goals
 - Review contractor's historical performance

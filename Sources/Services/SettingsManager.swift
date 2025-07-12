@@ -1,7 +1,7 @@
-import Foundation
 import ComposableArchitecture
-import Security
 import CoreData
+import Foundation
+import Security
 
 public struct SettingsManager {
     public var loadSettings: () async throws -> SettingsData
@@ -16,7 +16,7 @@ public struct SettingsManager {
     public var clearCache: () async throws -> Void
     public var performBackup: (@escaping (Double) -> Void) async throws -> URL
     public var restoreBackup: (URL, @escaping (Double) -> Void) async throws -> Void
-    
+
     public init(
         loadSettings: @escaping () async throws -> SettingsData,
         saveSettings: @escaping () async throws -> Void,
@@ -53,7 +53,7 @@ public struct SettingsData: Codable, Equatable {
     public var notificationSettings: NotificationSettingsData
     public var dataPrivacySettings: DataPrivacySettingsData
     public var advancedSettings: AdvancedSettingsData
-    
+
     public init(
         appSettings: AppSettingsData = AppSettingsData(),
         apiSettings: APISettingsData = APISettingsData(),
@@ -86,7 +86,7 @@ public struct AppSettingsData: Codable, Equatable {
     public var nextScheduledBackup: Date?
     // Biometric authentication
     public var faceIDEnabled: Bool = false
-    
+
     public init() {}
 }
 
@@ -102,7 +102,7 @@ public struct APISettingsData: Codable, Equatable {
     public var selectedModel: String = "Claude 3 Opus"
     // SAM.gov API
     public var samGovAPIKey: String = ""
-    
+
     public init() {}
 }
 
@@ -111,7 +111,7 @@ public struct APIKeyEntryData: Codable, Equatable {
     public var name: String
     public var key: String
     public var isActive: Bool
-    
+
     public init(id: String = UUID().uuidString, name: String, key: String, isActive: Bool = false) {
         self.id = id
         self.name = name
@@ -130,7 +130,7 @@ public struct DocumentSettingsData: Codable, Equatable {
     public var headerFooterEnabled: Bool = true
     public var watermarkEnabled: Bool = false
     public var watermarkText: String = "DRAFT"
-    
+
     public init() {}
 }
 
@@ -142,7 +142,7 @@ public struct NotificationSettingsData: Codable, Equatable {
     public var weeklyUsageReport: Bool = false
     public var soundEnabled: Bool = true
     public var notificationSound: String = "default"
-    
+
     public init() {}
 }
 
@@ -153,7 +153,7 @@ public struct DataPrivacySettingsData: Codable, Equatable {
     public var autoDeleteOldAcquisitions: Bool = false
     public var encryptLocalData: Bool = true
     public var biometricLockEnabled: Bool = false
-    
+
     public init() {}
 }
 
@@ -169,7 +169,7 @@ public struct AdvancedSettingsData: Codable, Equatable {
     public var outputFormat: String = "rtf"
     public var llmTemperature: Double = 0.3
     public var outputLength: Int = 4000
-    
+
     public init() {}
 }
 
@@ -177,7 +177,7 @@ extension SettingsManager: DependencyKey {
     public static var liveValue: SettingsManager {
         let settingsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("aiko_settings.json")
-        
+
         @Sendable
         func loadSettingsData() async throws -> SettingsData {
             if FileManager.default.fileExists(atPath: settingsURL.path) {
@@ -187,16 +187,16 @@ extension SettingsManager: DependencyKey {
                 return SettingsData()
             }
         }
-        
+
         @Sendable
         func saveSettingsData(_ settings: SettingsData) async throws {
             let data = try JSONEncoder().encode(settings)
             try data.write(to: settingsURL)
         }
-        
+
         // Shared settings state
         let currentSettings = LockIsolated<SettingsData>(SettingsData())
-        
+
         return SettingsManager(
             loadSettings: {
                 let settings = try await loadSettingsData()
@@ -217,21 +217,21 @@ extension SettingsManager: DependencyKey {
                 let defaultSettings = SettingsData()
                 currentSettings.withValue { $0 = defaultSettings }
                 try await saveSettingsData(defaultSettings)
-                
+
                 // Clear API key from keychain
                 let query: [String: Any] = [
                     kSecClass as String: kSecClassGenericPassword,
                     kSecAttrService as String: "com.aiko.api",
-                    kSecAttrAccount as String: "anthropic_api_key"
+                    kSecAttrAccount as String: "anthropic_api_key",
                 ]
                 SecItemDelete(query as CFDictionary)
-                
+
                 // Clear cache
                 let cacheURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
                 if FileManager.default.fileExists(atPath: cacheURL.path) {
                     try FileManager.default.removeItem(at: cacheURL)
                 }
-                
+
                 // Clear documents directory (except settings file)
                 let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
                 let contents = try FileManager.default.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: nil)
@@ -247,12 +247,12 @@ extension SettingsManager: DependencyKey {
                     kSecClass as String: kSecClassGenericPassword,
                     kSecAttrService as String: "com.aiko.api",
                     kSecAttrAccount as String: "anthropic_api_key",
-                    kSecValueData as String: key.data(using: .utf8)!
+                    kSecValueData as String: key.data(using: .utf8)!,
                 ]
-                
+
                 // Delete existing
                 SecItemDelete(query as CFDictionary)
-                
+
                 // Add new
                 let status = SecItemAdd(query as CFDictionary, nil)
                 if status != errSecSuccess {
@@ -264,35 +264,36 @@ extension SettingsManager: DependencyKey {
                     kSecClass as String: kSecClassGenericPassword,
                     kSecAttrService as String: "com.aiko.api",
                     kSecAttrAccount as String: "anthropic_api_key",
-                    kSecReturnData as String: true
+                    kSecReturnData as String: true,
                 ]
-                
+
                 var result: AnyObject?
                 let status = SecItemCopyMatching(query as CFDictionary, &result)
-                
+
                 if status == errSecSuccess,
                    let data = result as? Data,
-                   let key = String(data: data, encoding: .utf8) {
+                   let key = String(data: data, encoding: .utf8)
+                {
                     return key
                 }
-                
+
                 return nil
             },
             validateAPIKey: { key in
                 // Simple validation - check if it looks like a valid Anthropic API key
-                return key.hasPrefix("sk-ant-") && key.count > 20
+                key.hasPrefix("sk-ant-") && key.count > 20
             },
             exportData: { progressHandler in
                 let exportURL = FileManager.default.temporaryDirectory
                     .appendingPathComponent("aiko_export_\(Date().timeIntervalSince1970).json")
-                
+
                 // Simulate progress
                 progressHandler(0.1)
-                
+
                 // Gather all data
                 let settings = currentSettings.value
                 progressHandler(0.3)
-                
+
                 // Create export data structure
                 let exportData = ExportData(
                     settings: settings,
@@ -300,18 +301,18 @@ extension SettingsManager: DependencyKey {
                     version: "1.0"
                 )
                 progressHandler(0.6)
-                
+
                 // Encode and save
                 let data = try JSONEncoder().encode(exportData)
                 try data.write(to: exportURL)
                 progressHandler(1.0)
-                
+
                 return exportURL
             },
             importData: { url in
                 let data = try Data(contentsOf: url)
                 let exportData = try JSONDecoder().decode(ExportData.self, from: data)
-                
+
                 // Import settings
                 currentSettings.withValue { $0 = exportData.settings }
                 try await saveSettingsData(exportData.settings)
@@ -320,7 +321,7 @@ extension SettingsManager: DependencyKey {
                 // Clear cache directory
                 let cacheURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
                 let contents = try FileManager.default.contentsOfDirectory(at: cacheURL, includingPropertiesForKeys: nil)
-                
+
                 for item in contents {
                     try FileManager.default.removeItem(at: item)
                 }
@@ -328,13 +329,13 @@ extension SettingsManager: DependencyKey {
             performBackup: { progressHandler in
                 let backupURL = FileManager.default.temporaryDirectory
                     .appendingPathComponent("aiko_backup_\(Date().timeIntervalSince1970).json")
-                
+
                 progressHandler(0.1)
-                
+
                 // Gather all data including settings, Core Data, templates
                 let settings = currentSettings.value
                 progressHandler(0.2)
-                
+
                 // Export Core Data
                 let coreDataSnapshot: Data?
                 do {
@@ -346,7 +347,7 @@ extension SettingsManager: DependencyKey {
                     coreDataSnapshot = nil
                 }
                 progressHandler(0.4)
-                
+
                 // Export templates
                 var templates: [CustomTemplate] = []
                 do {
@@ -357,7 +358,7 @@ extension SettingsManager: DependencyKey {
                     templates = []
                 }
                 progressHandler(0.6)
-                
+
                 // Create backup data structure
                 let backupData = BackupData(
                     settings: settings,
@@ -365,7 +366,8 @@ extension SettingsManager: DependencyKey {
                     templates: templates.map { template in
                         // Convert CustomTemplate to JSON string
                         if let data = try? JSONEncoder().encode(template),
-                           let jsonString = String(data: data, encoding: .utf8) {
+                           let jsonString = String(data: data, encoding: .utf8)
+                        {
                             return jsonString
                         }
                         return ""
@@ -374,29 +376,29 @@ extension SettingsManager: DependencyKey {
                     version: "1.0"
                 )
                 progressHandler(0.7)
-                
+
                 // Encode and save
                 let encoder = JSONEncoder()
                 encoder.outputFormatting = .prettyPrinted
                 let data = try encoder.encode(backupData)
                 try data.write(to: backupURL)
                 progressHandler(1.0)
-                
+
                 return backupURL
             },
             restoreBackup: { url, progressHandler in
                 progressHandler(0.1)
-                
+
                 // Read backup file
                 let data = try Data(contentsOf: url)
                 let backupData = try JSONDecoder().decode(BackupData.self, from: data)
                 progressHandler(0.2)
-                
+
                 // Restore settings
                 currentSettings.withValue { $0 = backupData.settings }
                 try await saveSettingsData(backupData.settings)
                 progressHandler(0.4)
-                
+
                 // Restore Core Data if available
                 if let coreDataSnapshot = backupData.coreDataSnapshot {
                     do {
@@ -408,13 +410,14 @@ extension SettingsManager: DependencyKey {
                     }
                 }
                 progressHandler(0.7)
-                
+
                 // Restore templates
                 if !backupData.templates.isEmpty {
                     @Dependency(\.templateStorageService) var templateService
                     for templateJSON in backupData.templates {
                         if let data = templateJSON.data(using: .utf8),
-                           let template = try? JSONDecoder().decode(CustomTemplate.self, from: data) {
+                           let template = try? JSONDecoder().decode(CustomTemplate.self, from: data)
+                        {
                             try? await templateService.saveTemplate(template)
                         }
                     }
@@ -423,40 +426,40 @@ extension SettingsManager: DependencyKey {
             }
         )
     }
-    
+
     public static var testValue: SettingsManager {
         SettingsManager(
             loadSettings: { SettingsData() },
-            saveSettings: { },
-            resetToDefaults: { },
-            restoreDefaults: { },
+            saveSettings: {},
+            resetToDefaults: {},
+            restoreDefaults: {},
             saveAPIKey: { _ in },
             loadAPIKey: { "test-api-key" },
             validateAPIKey: { _ in true },
             exportData: { _ in URL(string: "file://test.json")! },
             importData: { _ in },
-            clearCache: { },
+            clearCache: {},
             performBackup: { _ in URL(string: "file://backup.json")! },
             restoreBackup: { _, _ in }
         )
     }
-    
+
     public static var previewValue: SettingsManager {
         SettingsManager(
-            loadSettings: { 
+            loadSettings: {
                 var settings = SettingsData()
                 settings.appSettings.faceIDEnabled = false // Disable Face ID for previews
                 return settings
             },
-            saveSettings: { },
-            resetToDefaults: { },
-            restoreDefaults: { },
+            saveSettings: {},
+            resetToDefaults: {},
+            restoreDefaults: {},
             saveAPIKey: { _ in },
             loadAPIKey: { "preview-api-key" },
             validateAPIKey: { _ in true },
             exportData: { _ in URL(string: "file://test.json")! },
             importData: { _ in },
-            clearCache: { },
+            clearCache: {},
             performBackup: { _ in URL(string: "file://backup.json")! },
             restoreBackup: { _, _ in }
         )
@@ -483,8 +486,8 @@ enum SettingsError: Error {
     case exportError
 }
 
-extension DependencyValues {
-    public var settingsManager: SettingsManager {
+public extension DependencyValues {
+    var settingsManager: SettingsManager {
         get { self[SettingsManager.self] }
         set { self[SettingsManager.self] = newValue }
     }

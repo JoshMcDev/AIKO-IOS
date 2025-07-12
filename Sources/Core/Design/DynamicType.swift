@@ -5,46 +5,46 @@ import SwiftUI
 /// Scalable font system that supports Dynamic Type
 struct ScalableFont: ViewModifier {
     @Environment(\.sizeCategory) var sizeCategory
-    
+
     let textStyle: Font.TextStyle
     let baseSize: CGFloat
     let weight: Font.Weight
     let design: Font.Design
-    
+
     func body(content: Content) -> some View {
         content
             .font(scaledFont)
     }
-    
+
     private var scaledFont: Font {
         #if os(iOS)
-        let scaledSize = UIFontMetrics(forTextStyle: uiTextStyle)
-            .scaledValue(for: baseSize)
-        return Font.system(size: scaledSize, weight: weight, design: design)
+            let scaledSize = UIFontMetrics(forTextStyle: uiTextStyle)
+                .scaledValue(for: baseSize)
+            return Font.system(size: scaledSize, weight: weight, design: design)
         #else
-        // For macOS, use a simpler scaling approach
-        let scaledSize = baseSize * sizeCategory.scaleFactor
-        return Font.system(size: scaledSize, weight: weight, design: design)
+            // For macOS, use a simpler scaling approach
+            let scaledSize = baseSize * sizeCategory.scaleFactor
+            return Font.system(size: scaledSize, weight: weight, design: design)
         #endif
     }
-    
+
     #if os(iOS)
-    private var uiTextStyle: UIFont.TextStyle {
-        switch textStyle {
-        case .largeTitle: return .largeTitle
-        case .title: return .title1
-        case .title2: return .title2
-        case .title3: return .title3
-        case .headline: return .headline
-        case .subheadline: return .subheadline
-        case .body: return .body
-        case .callout: return .callout
-        case .footnote: return .footnote
-        case .caption: return .caption1
-        case .caption2: return .caption2
-        @unknown default: return .body
+        private var uiTextStyle: UIFont.TextStyle {
+            switch textStyle {
+            case .largeTitle: return .largeTitle
+            case .title: return .title1
+            case .title2: return .title2
+            case .title3: return .title3
+            case .headline: return .headline
+            case .subheadline: return .subheadline
+            case .body: return .body
+            case .callout: return .callout
+            case .footnote: return .footnote
+            case .caption: return .caption1
+            case .caption2: return .caption2
+            @unknown default: return .body
+            }
         }
-    }
     #endif
 }
 
@@ -70,91 +70,91 @@ extension View {
 // MARK: - Theme Typography with Dynamic Type
 
 extension Theme {
-    struct DynamicTypography {
+    enum DynamicTypography {
         // Large Title
         static func largeTitle(_ text: Text) -> some View {
             text
                 .font(.largeTitle)
                 .fontWeight(.bold)
-                .dynamicTypeSize(.xSmall...DynamicTypeSize.accessibility3)
+                .dynamicTypeSize(.xSmall ... DynamicTypeSize.accessibility3)
         }
-        
+
         // Title 1
         static func title(_ text: Text) -> some View {
             text
                 .font(.title)
                 .fontWeight(.semibold)
-                .dynamicTypeSize(.xSmall...DynamicTypeSize.accessibility3)
+                .dynamicTypeSize(.xSmall ... DynamicTypeSize.accessibility3)
         }
-        
+
         // Title 2
         static func title2(_ text: Text) -> some View {
             text
                 .font(.title2)
                 .fontWeight(.medium)
-                .dynamicTypeSize(.xSmall...DynamicTypeSize.accessibility3)
+                .dynamicTypeSize(.xSmall ... DynamicTypeSize.accessibility3)
         }
-        
+
         // Title 3
         static func title3(_ text: Text) -> some View {
             text
                 .font(.title3)
                 .fontWeight(.medium)
-                .dynamicTypeSize(.xSmall...DynamicTypeSize.accessibility3)
+                .dynamicTypeSize(.xSmall ... DynamicTypeSize.accessibility3)
         }
-        
+
         // Headline
         static func headline(_ text: Text) -> some View {
             text
                 .font(.headline)
                 .fontWeight(.semibold)
-                .dynamicTypeSize(.xSmall...DynamicTypeSize.accessibility3)
+                .dynamicTypeSize(.xSmall ... DynamicTypeSize.accessibility3)
         }
-        
+
         // Body
         static func body(_ text: Text) -> some View {
             text
                 .font(.body)
-                .dynamicTypeSize(.xSmall...DynamicTypeSize.accessibility3)
+                .dynamicTypeSize(.xSmall ... DynamicTypeSize.accessibility3)
         }
-        
+
         // Callout
         static func callout(_ text: Text) -> some View {
             text
                 .font(.callout)
-                .dynamicTypeSize(.xSmall...DynamicTypeSize.accessibility3)
+                .dynamicTypeSize(.xSmall ... DynamicTypeSize.accessibility3)
         }
-        
+
         // Subheadline
         static func subheadline(_ text: Text) -> some View {
             text
                 .font(.subheadline)
                 .foregroundColor(.secondary)
-                .dynamicTypeSize(.xSmall...DynamicTypeSize.accessibility3)
+                .dynamicTypeSize(.xSmall ... DynamicTypeSize.accessibility3)
         }
-        
+
         // Footnote
         static func footnote(_ text: Text) -> some View {
             text
                 .font(.footnote)
                 .foregroundColor(.secondary)
-                .dynamicTypeSize(.xSmall...DynamicTypeSize.accessibility3)
+                .dynamicTypeSize(.xSmall ... DynamicTypeSize.accessibility3)
         }
-        
+
         // Caption
         static func caption(_ text: Text) -> some View {
             text
                 .font(.caption)
                 .foregroundColor(.secondary)
-                .dynamicTypeSize(.xSmall...DynamicTypeSize.accessibility3)
+                .dynamicTypeSize(.xSmall ... DynamicTypeSize.accessibility3)
         }
-        
+
         // Caption 2
         static func caption2(_ text: Text) -> some View {
             text
                 .font(.caption2)
                 .foregroundColor(.secondary)
-                .dynamicTypeSize(.xSmall...DynamicTypeSize.accessibility3)
+                .dynamicTypeSize(.xSmall ... DynamicTypeSize.accessibility3)
         }
     }
 }
@@ -164,9 +164,9 @@ extension Theme {
 struct ResponsiveText: View {
     let content: String
     let style: TextStyle
-    
+
     @Environment(\.sizeCategory) private var sizeCategory
-    
+
     enum TextStyle {
         case largeTitle
         case title
@@ -179,18 +179,18 @@ struct ResponsiveText: View {
         case footnote
         case caption
         case caption2
-        
+
         var maxLines: Int? {
             switch self {
-            case .largeTitle, .title: return 2
-            case .title2, .title3, .headline: return 3
-            case .body: return nil
-            case .callout, .subheadline: return 4
-            case .footnote, .caption, .caption2: return 2
+            case .largeTitle, .title: 2
+            case .title2, .title3, .headline: 3
+            case .body: nil
+            case .callout, .subheadline: 4
+            case .footnote, .caption, .caption2: 2
             }
         }
     }
-    
+
     var body: some View {
         Group {
             switch style {
@@ -243,7 +243,7 @@ extension ContentSizeCategory {
         @unknown default: return 1.0
         }
     }
-    
+
     var isAccessibilityCategory: Bool {
         self >= .accessibilityMedium
     }
@@ -254,11 +254,11 @@ extension ContentSizeCategory {
 struct DynamicStack<Content: View>: View {
     @Environment(\.sizeCategory) private var sizeCategory
     let content: Content
-    
+
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
     }
-    
+
     var body: some View {
         if sizeCategory.isAccessibilityCategory {
             // Use vertical stack for accessibility sizes
@@ -279,12 +279,12 @@ struct DynamicStack<Content: View>: View {
 struct LineHeightModifier: ViewModifier {
     @Environment(\.sizeCategory) private var sizeCategory
     let multiplier: CGFloat
-    
+
     func body(content: Content) -> some View {
         content
             .lineSpacing(lineSpacing)
     }
-    
+
     private var lineSpacing: CGFloat {
         let baseSpacing: CGFloat = 4
         return baseSpacing * multiplier * sizeCategory.scaleFactor

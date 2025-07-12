@@ -100,10 +100,10 @@ Quotations will be evaluated based on:
 ## Quick Reference Guide
 
 ### **Before You Start:**
-1. ✅ Identify your requirement clearly
-2. ✅ Determine your budget range
-3. ✅ Set realistic timeline expectations
-4. ✅ Identify qualified vendors
+1.  Identify your requirement clearly
+2.  Determine your budget range
+3.  Set realistic timeline expectations
+4.  Identify qualified vendors
 
 ### **Variable Replacement Guide:**
 - **{{REQUIREMENT_TITLE}}** - Brief title of what you're procuring
@@ -130,11 +130,11 @@ Ensure all evaluation criteria percentages total 100%. Typical distributions:
 - Follow up 1-2 days before deadline if no responses
 
 ### **When to Use This Template:**
-✅ Simple products/services  
-✅ Standard specifications  
-✅ Quick turnaround needed  
-✅ Established vendor relationships  
-✅ Low to medium complexity requirements  
+ Simple products/services  
+ Standard specifications  
+ Quick turnaround needed  
+ Established vendor relationships  
+ Low to medium complexity requirements  
 
 ### **When NOT to Use:**
 ❌ Complex technical requirements  

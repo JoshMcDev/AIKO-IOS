@@ -1,79 +1,83 @@
-import Foundation
 import Combine
+import Foundation
 
 /// Service responsible for mapping AIKO templates to official government forms
 public final class FormMappingService: ObservableObject {
     // MARK: - Singleton
+
     public static let shared = FormMappingService()
-    
+
     // MARK: - Published Properties
+
     @Published public private(set) var availableForms: [FormDefinition] = []
     @Published public private(set) var isLoading = false
     @Published public private(set) var error: FormMappingError?
-    
+
     // MARK: - Private Properties
+
     private let formRepository: FormRepository
     private let mappingEngine: MappingEngine
     private let validationService: FARValidationService
     private let transformationService: DataTransformationService
     private var cancellables = Set<AnyCancellable>()
-    
+
     // MARK: - Initialization
+
     private init() {
-        self.formRepository = FormRepository()
-        self.mappingEngine = MappingEngine()
-        self.validationService = FARValidationService()
-        self.transformationService = DataTransformationService()
-        
+        formRepository = FormRepository()
+        mappingEngine = MappingEngine()
+        validationService = FARValidationService()
+        transformationService = DataTransformationService()
+
         loadAvailableForms()
     }
-    
+
     // MARK: - Public Methods
-    
+
     /// Get available forms for a specific template type
     public func getFormsForTemplate(_ templateType: DocumentType) -> [FormDefinition] {
-        return availableForms.filter { form in
+        availableForms.filter { form in
             form.supportedTemplates.contains(templateType)
         }
     }
-    
+
     /// Map template data to a specific form
     public func mapTemplateToForm(
         templateData: TemplateData,
         formType: FormType,
-        options: MappingOptions = MappingOptions()
+        options _: MappingOptions = MappingOptions()
     ) async throws -> FormOutput {
         isLoading = true
         error = nil
-        
+
         do {
             // 1. Validate template data
             try await validationService.validateTemplateData(templateData)
-            
+
             // 2. Get form definition
             guard let formDefinition = availableForms.first(where: { $0.formType == formType }) else {
                 throw FormMappingError.formNotFound(formType)
             }
-            
+
             // 3. Perform mapping
             let mappingRules = try await mappingEngine.getMappingRules(
                 from: templateData.documentType,
                 to: formType
             )
-            
+
             // 4. Transform data
             let transformedData = try await transformationService.transform(
                 templateData: templateData,
                 using: mappingRules,
                 targetForm: formDefinition
             )
-            
+
             // 5. Validate FAR compliance
             let complianceResult = try await validationService.validateFARCompliance(
                 formData: transformedData,
                 formType: formType
             )
-            
+
             // 6. Generate output
             let output = FormOutput(
                 formType: formType,
@@ -81,10 +85,10 @@ public final class FormMappingService: ObservableObject {
                 complianceStatus: complianceResult,
                 generatedAt: Date()
             )
-            
+
             isLoading = false
             return output
-            
+
         } catch let mappingError as FormMappingError {
             error = mappingError
             isLoading = false
@@ -96,23 +100,23 @@ public final class FormMappingService: ObservableObject {
             throw mappingError
         }
     }
-    
+
     /// Generate a blank form for download
     public func generateBlankForm(_ formType: FormType) async throws -> Data {
         guard let formDefinition = availableForms.first(where: { $0.formType == formType }) else {
             throw FormMappingError.formNotFound(formType)
         }
-        
+
         return try await formRepository.generateBlankForm(formDefinition)
     }
-    
+
     /// Get form preview URL
     public func getFormPreviewURL(_ formType: FormType) -> URL? {
-        return formRepository.getPreviewURL(for: formType)
+        formRepository.getPreviewURL(for: formType)
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func loadAvailableForms() {
         Task {
             do {
@@ -133,21 +137,21 @@ public enum FormMappingError: LocalizedError {
     case validationFailed([ValidationError])
     case loadingFailed(Error)
     case unknown(Error)
-    
+
     public var errorDescription: String? {
         switch self {
-        case .formNotFound(let formType):
-            return "Form type \(formType.rawValue) not found"
-        case .invalidTemplateData(let reason):
-            return "Invalid template data: \(reason)"
-        case .mappingFailed(let reason):
-            return "Mapping failed: \(reason)"
-        case .validationFailed(let errors):
-            return "Validation failed: \(errors.map { $0.description }.joined(separator: ", "))"
-        case .loadingFailed(let error):
-            return "Failed to load forms: \(error.localizedDescription)"
-        case .unknown(let error):
-            return "Unknown error: \(error.localizedDescription)"
+        case let .formNotFound(formType):
+            "Form type \(formType.rawValue) not found"
+        case let .invalidTemplateData(reason):
+            "Invalid template data: \(reason)"
+        case let .mappingFailed(reason):
+            "Mapping failed: \(reason)"
+        case let .validationFailed(errors):
+            "Validation failed: \(errors.map(\.description).joined(separator: ", "))"
+        case let .loadingFailed(error):
+            "Failed to load forms: \(error.localizedDescription)"
+        case let .unknown(error):
+            "Unknown error: \(error.localizedDescription)"
         }
     }
 }
@@ -157,7 +161,7 @@ public struct MappingOptions {
     public var strictValidation: Bool = true
     public var autoFillDefaults: Bool = true
     public var preserveOriginalData: Bool = false
-    
+
     public init() {}
 }
 
@@ -166,7 +170,7 @@ public struct FormOutput {
     public let formData: [String: Any]
     public let complianceStatus: FormComplianceResult
     public let generatedAt: Date
-    
+
     public var isCompliant: Bool {
         complianceStatus.overallCompliance
     }

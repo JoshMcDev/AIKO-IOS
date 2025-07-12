@@ -1,5 +1,5 @@
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 public enum DFTemplateError: Error {
     case bundleNotFound
@@ -11,7 +11,7 @@ public struct DFTemplate {
     public let type: DFDocumentType
     public let template: String
     public let quickReferenceGuide: String
-    
+
     public init(type: DFDocumentType, template: String, quickReferenceGuide: String) {
         self.type = type
         self.template = template
@@ -22,7 +22,7 @@ public struct DFTemplate {
 public struct DFTemplateService {
     public var loadTemplate: (DFDocumentType) async throws -> DFTemplate
     public var loadAllTemplates: () async throws -> [DFTemplate]
-    
+
     public init(
         loadTemplate: @escaping (DFDocumentType) async throws -> DFTemplate,
         loadAllTemplates: @escaping () async throws -> [DFTemplate]
@@ -38,38 +38,37 @@ extension DFTemplateService: DependencyKey {
             loadTemplate: { documentType in
                 // Load from app bundle
                 let bundle = Bundle.module
-                
+
                 // Load template
                 let templateFileName = "\(documentType.fileName)"
                 guard let templateURL = bundle.url(forResource: templateFileName, withExtension: "md", subdirectory: "DFTemplates") else {
                     throw DFTemplateError.templateNotFound(documentType.rawValue)
                 }
                 let templateContent = try String(contentsOf: templateURL, encoding: .utf8)
-                
+
                 // Load quick reference guide
                 let guideContent: String
-                
+
                 // Handle special cases for different naming conventions
-                let guideFileName: String
-                switch documentType {
+                let guideFileName = switch documentType {
                 case .lptaDetermination:
-                    guideFileName = "LPTA_Quick_Reference_Guide"
-                    
+                    "LPTA_Quick_Reference_Guide"
+
                 case .emergencyUrgentCompelling:
-                    guideFileName = "Emergency_Urgent_Quick_Reference_Guide"
-                    
+                    "Emergency_Urgent_Quick_Reference_Guide"
+
                 case .jaOtherThanFullOpenCompetition:
-                    guideFileName = "JA_Quick_Reference_Guide"
-                    
+                    "JA_Quick_Reference_Guide"
+
                 default:
-                    guideFileName = "\(documentType.fileName)_Quick_Reference_Guide"
+                    "\(documentType.fileName)_Quick_Reference_Guide"
                 }
-                
+
                 guard let guideURL = bundle.url(forResource: guideFileName, withExtension: "md", subdirectory: "DFTemplates") else {
                     throw DFTemplateError.guideNotFound(documentType.rawValue)
                 }
                 guideContent = try String(contentsOf: guideURL, encoding: .utf8)
-                
+
                 return DFTemplate(
                     type: documentType,
                     template: templateContent,
@@ -78,7 +77,7 @@ extension DFTemplateService: DependencyKey {
             },
             loadAllTemplates: {
                 var templates: [DFTemplate] = []
-                
+
                 for documentType in DFDocumentType.allCases {
                     do {
                         let template = try await DFTemplateService.liveValue.loadTemplate(documentType)
@@ -87,12 +86,12 @@ extension DFTemplateService: DependencyKey {
                         print("Failed to load template for \(documentType.rawValue): \(error)")
                     }
                 }
-                
+
                 return templates
             }
         )
     }
-    
+
     public static var testValue: DFTemplateService {
         DFTemplateService(
             loadTemplate: { documentType in

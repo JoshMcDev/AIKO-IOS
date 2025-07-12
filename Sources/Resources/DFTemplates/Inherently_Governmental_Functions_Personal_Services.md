@@ -129,7 +129,7 @@ The requirement has been reviewed to ensure that no tasks assigned to contractor
 
 ### 7.5 Conclusion - Inherently Governmental Functions
 
-**✅ FINDING:** The work to be performed is **not inherently governmental** and is permissible under FAR 7.503(d).
+** FINDING:** The work to be performed is **not inherently governmental** and is permissible under FAR 7.503(d).
 
 **Supporting Analysis:**
 - All decision-making authority remains with Government personnel
@@ -205,7 +205,7 @@ Personal services contracts are prohibited unless specifically authorized by sta
 
 ### 8.5 Conclusion - Personal Services
 
-**✅ FINDING:** The contract is properly structured as a **non-personal services contract** and does not violate FAR 37.104.
+** FINDING:** The contract is properly structured as a **non-personal services contract** and does not violate FAR 37.104.
 
 **Supporting Analysis:**
 - Contractor maintains management control over personnel

@@ -142,7 +142,7 @@ Before using this template, ensure you have:
 - Approve modifications without proper justification
 - Overlook impact on other contract requirements
 
-✅ **Do:**
+ **Do:**
 - Thoroughly analyze scope and cardinal change implications
 - Verify adequate funding before modification
 - Consider competition requirements for substantial changes

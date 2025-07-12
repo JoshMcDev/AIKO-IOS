@@ -1,11 +1,11 @@
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
 // Standalone test view for SAM.gov functionality
 struct TestSAMGovView: View {
     @State private var showingSAMGov = false
     @State private var showingSAMReport = false
-    
+
     var body: some View {
         SwiftUI.NavigationView {
             VStack(spacing: 40) {
@@ -18,7 +18,7 @@ struct TestSAMGovView: View {
                 .background(Color.blue)
                 .foregroundColor(.white)
                 .cornerRadius(10)
-                
+
                 // Test SAM Report View
                 Button("Test SAM Report View") {
                     showingSAMReport = true
@@ -28,11 +28,11 @@ struct TestSAMGovView: View {
                 .background(Color.green)
                 .foregroundColor(.white)
                 .cornerRadius(10)
-                
+
                 Text("Test Instructions:")
                     .font(.headline)
                     .padding(.top)
-                
+
                 VStack(alignment: .leading, spacing: 10) {
                     Text("1. Card 1 (CAGE): Enter '1F353' (Lockheed Martin)")
                     Text("2. Card 2 (Name): Enter 'BOOZ ALLEN' (Booz Allen Hamilton)")

@@ -4,7 +4,7 @@
 
 ---
 
-## 🔗 Integration with Global CLAUDE.md
+##  Integration with Global CLAUDE.md
 
 This project-level CLAUDE.md complements the global configuration at `/Users/J/.claude/CLAUDE.md`:
 - **Global CLAUDE.md**: Handles system configuration, MCP tools, cognitive frameworks, workflow patterns
@@ -18,7 +18,7 @@ This project-level CLAUDE.md complements the global configuration at `/Users/J/.
 
 ---
 
-## 🚀 Production-Ready MVP Framework (95% Standard)
+##  Production-Ready MVP Framework (95% Standard)
 
 ### Core Philosophy: "Production-Ready First, Certify at 95%, Then Expand"
 
@@ -28,7 +28,7 @@ This project follows the Production-Ready MVP-First Strategy Framework v2.0:
 - **Zero technical debt in MVP**
 - **Test Everything at Scale**
 
-### 📊 Production Status Dashboard
+###  Production Status Dashboard
 
 | Metric | Current | Target | Status |
 |--------|---------|--------|---------|
@@ -40,7 +40,7 @@ This project follows the Production-Ready MVP-First Strategy Framework v2.0:
 
 ---
 
-## 🎯 Current MVP: Adaptive LLM-Driven Acquisition Assistant
+##  Current MVP: Adaptive LLM-Driven Acquisition Assistant
 
 ### Core MVP Features
 The system provides an intelligent LLM assistant that guides users through the acquisition process with minimal effort:
@@ -93,7 +93,7 @@ The system provides an intelligent LLM assistant that guides users through the a
 - [x] Documentation: Complete user guide and tooltips
 - [ ] Recovery: iCloud backup and restore implementation
 
-### 📈 Scoring Breakdown (92/100)
+###  Scoring Breakdown (92/100)
 
 | Category | Score | Details |
 |----------|-------|---------|
@@ -113,7 +113,7 @@ The system provides an intelligent LLM assistant that guides users through the a
 
 ---
 
-## 🏗️ Project Structure & Configuration
+##  Project Structure & Configuration
 
 ### Xcode Project Structure
 **CRITICAL**: Always use the Swift Package structure:
@@ -134,7 +134,7 @@ The system provides an intelligent LLM assistant that guides users through the a
 
 ---
 
-## 🛠️ Project-Specific Commands & Workflows
+##  Project-Specific Commands & Workflows
 
 ### Custom Commands
 - **/err**: Reads error log from desktop and uses ast-grep to fix issues
@@ -161,6 +161,32 @@ The system provides an intelligent LLM assistant that guides users through the a
 "Document any new technical decisions"
 ```
 
+### Persistent Memory System
+
+**Project-Specific Memory Management**:
+
+1. **Todo List Tracking**:
+   - Primary: `./Todo/Todo_00_CurrentWorking_TodoList.md`
+   - Format: Task Master integrated with checkboxes
+   - Updates: Real-time as tasks complete
+   - Includes: Main tasks + all subtasks
+
+2. **Chat History Archive**:
+   - Current: `./Todo/ChatHistory_YYYYMMDD.md` (today's file)
+   - Archive: `./Todo/ChatHistory/` (previous days)
+   - Updates: Every 30 minutes OR on memory events
+   - "Goodnight" creates daily summary at top
+   - Preserves: Complete conversation context
+
+3. **Recovery Protocol**:
+   ```bash
+   # On session start or context reset
+   1. Load "./Todo/Todo_00_CurrentWorking_TodoList.md"
+   2. Continue "./Todo/ChatHistory_YYYYMMDD.md"
+   3. Resume from last completed subtask
+   4. Review any "Goodnight" summaries
+   ```
+
 ### iOS-Specific MCP Tools Usage
 ```bash
 # Build and Test
@@ -179,7 +205,7 @@ The system provides an intelligent LLM assistant that guides users through the a
 
 ---
 
-## 🎨 UI/UX Specifications
+##  UI/UX Specifications
 
 ### Design Principles
 - **Clean UI**: No unnecessary animations
@@ -201,7 +227,7 @@ The system provides an intelligent LLM assistant that guides users through the a
 
 ---
 
-## ✅ Completed Features (Production-Ready)
+##  Completed Features (Production-Ready)
 
 1. **User Authentication**
    - Secure implementation with Keychain
@@ -229,7 +255,7 @@ The system provides an intelligent LLM assistant that guides users through the a
 
 ---
 
-## 🐛 Fixed Issues Log
+##  Fixed Issues Log
 
 ### Performance Optimizations
 - LinearGradient replaced with solid colors (40% render improvement)
@@ -250,7 +276,7 @@ The system provides an intelligent LLM assistant that guides users through the a
 
 ---
 
-## 🚀 Next MVP: Advanced Analytics (Post-95% Certification)
+##  Next MVP: Advanced Analytics (Post-95% Certification)
 
 Once current MVP achieves 95%:
 
@@ -278,7 +304,7 @@ Once current MVP achieves 95%:
 
 ---
 
-## 🔧 Development Guidelines
+##  Development Guidelines
 
 ### Code Quality Standards
 ```swift
@@ -317,7 +343,7 @@ Analytics.log("operation_time", timeElapsed)
 
 ---
 
-## 📝 Context Management Protocol
+##  Context Management Protocol
 
 ### When Context Window < 5%
 1. **IMMEDIATELY save to Memory MCP**:
@@ -346,12 +372,12 @@ When resuming after context reset:
 
 ---
 
-## 🎯 Remember
+##  Remember
 
 **Production-Ready Mindset**:
-- "It works" ❌ → "It's production-ready" ✅
-- "We'll fix it later" ❌ → "Fix it before shipping" ✅
-- "Good enough" ❌ → "95% excellence required" ✅
+- "It works" ❌ → "It's production-ready" 
+- "We'll fix it later" ❌ → "Fix it before shipping" 
+- "Good enough" ❌ → "95% excellence required" 
 
 **Every commit must**:
 - Maintain or improve the production score
@@ -360,5 +386,9 @@ When resuming after context reset:
 - Move us closer to 95% certification
 
 ---
+
+**Project Owner**: Mr. Joshua  
+**Document Version**: 2.1  
+**Last Updated**: 2025-07-11  
 
 *This project-level CLAUDE.md works in harmony with the global CLAUDE.md to ensure consistent, high-quality development practices while maintaining project-specific requirements and standards.*

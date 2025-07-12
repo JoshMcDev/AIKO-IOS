@@ -1,16 +1,16 @@
 # RFQ_Oral Quick Reference Guide
 
-## 📋 Template Usage Instructions
+##  Template Usage Instructions
 
 ### **Before You Start:**
-1. ✅ Identify your requirement clearly
-2. ✅ Determine your budget range
-3. ✅ Set realistic timeline expectations
-4. ✅ Identify qualified vendors
+1.  Identify your requirement clearly
+2.  Determine your budget range
+3.  Set realistic timeline expectations
+4.  Identify qualified vendors
 
 ---
 
-## 🔧 How to Use the Template
+##  How to Use the Template
 
 ### **Step 1: Replace Variables**
 - **{{VARIABLE}}** - Replace with your specific requirement description
@@ -63,14 +63,14 @@
 
 ---
 
-## 🎯 Common Use Cases
+##  Common Use Cases
 
 ### **Ideal for RFQ_Oral:**
-- ✅ Simple products/services
-- ✅ Standard specifications
-- ✅ Quick turnaround needed
-- ✅ Established vendor relationships
-- ✅ Low to medium complexity requirements
+-  Simple products/services
+-  Standard specifications
+-  Quick turnaround needed
+-  Established vendor relationships
+-  Low to medium complexity requirements
 
 ### **Consider Formal RFQ Instead:**
 - ❌ Complex technical requirements
@@ -81,7 +81,7 @@
 
 ---
 
-## 📞 Response Management
+##  Response Management
 
 ### **Vendor Follow-up Tips:**
 - Allow 2-3 business days before first follow-up
@@ -97,7 +97,7 @@
 
 ---
 
-## 🚨 Common Mistakes to Avoid
+##  Common Mistakes to Avoid
 
 - ❌ Unclear requirement descriptions
 - ❌ Unrealistic timelines
@@ -127,7 +127,7 @@
 
 ---
 
-## 📊 Success Metrics
+##  Success Metrics
 
 ### **Track These KPIs:**
 - Response rate from vendors
@@ -138,7 +138,7 @@
 
 ---
 
-## 🔗 Related Resources
+##  Related Resources
 
 - **Formal RFQ Template:** [Link to formal template]
 - **Vendor Management Guide:** [Link to vendor guide]

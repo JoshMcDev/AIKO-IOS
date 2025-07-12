@@ -1,21 +1,17 @@
-import Foundation
 import CoreData
+import Foundation
 
-extension AcquisitionDocument {
-
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<AcquisitionDocument> {
-        return NSFetchRequest<AcquisitionDocument>(entityName: "AcquisitionDocument")
+public extension AcquisitionDocument {
+    @nonobjc class func fetchRequest() -> NSFetchRequest<AcquisitionDocument> {
+        NSFetchRequest<AcquisitionDocument>(entityName: "AcquisitionDocument")
     }
 
-    @NSManaged public var id: UUID?
-    @NSManaged public var content: String?
-    @NSManaged public var documentType: String?
-    @NSManaged public var status: String?
-    @NSManaged public var createdDate: Date?
-    @NSManaged public var acquisition: Acquisition?
-
+    @NSManaged var id: UUID?
+    @NSManaged var content: String?
+    @NSManaged var documentType: String?
+    @NSManaged var status: String?
+    @NSManaged var createdDate: Date?
+    @NSManaged var acquisition: Acquisition?
 }
 
-extension AcquisitionDocument : Identifiable {
-
-}
+extension AcquisitionDocument: Identifiable {}

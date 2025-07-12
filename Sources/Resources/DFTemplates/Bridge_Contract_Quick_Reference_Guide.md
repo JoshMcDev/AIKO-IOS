@@ -151,7 +151,7 @@ Before using this template, ensure you have:
 - Accept unreasonable pricing without justification
 - Allow repeated bridge contract extensions
 
-✅ **Do:**
+ **Do:**
 - Limit duration to minimum necessary time
 - Include only essential requirements
 - Plan competitive strategy from start

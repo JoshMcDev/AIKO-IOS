@@ -1,18 +1,19 @@
-import Foundation
 import CoreData
+import Foundation
 
 @objc(MetricTrendEntity)
 public class MetricTrendEntity: NSManagedObject {
-    
     // MARK: - Core Data to Model Conversion
+
     public func toModel() -> MetricTrend? {
-        guard let id = id,
-              let metricName = metricName,
+        guard let id,
+              let metricName,
               let directionString = direction,
-              let direction = MetricTrend.TrendDirection(rawValue: directionString) else {
+              let direction = MetricTrend.TrendDirection(rawValue: directionString)
+        else {
             return nil
         }
-        
+
         // Convert data points
         let dataPoints = (trendDataPoints?.allObjects as? [TrendDataPointEntity] ?? [])
             .compactMap { entity -> MetricTrend.TrendDataPoint? in
@@ -23,7 +24,7 @@ public class MetricTrendEntity: NSManagedObject {
                 )
             }
             .sorted { $0.timestamp < $1.timestamp }
-        
+
         return MetricTrend(
             id: id,
             metricName: metricName,
@@ -33,8 +34,9 @@ public class MetricTrendEntity: NSManagedObject {
             dataPoints: dataPoints
         )
     }
-    
+
     // MARK: - Model to Core Data Conversion
+
     public static func fromModel(_ model: MetricTrend, context: NSManagedObjectContext) -> MetricTrendEntity {
         let entity = MetricTrendEntity(context: context)
         entity.id = model.id
@@ -42,7 +44,7 @@ public class MetricTrendEntity: NSManagedObject {
         entity.direction = model.direction.rawValue
         entity.magnitude = model.magnitude
         entity.significance = model.significance
-        
+
         // Convert data points
         let dataPointEntities = model.dataPoints.map { dataPoint in
             let dpEntity = TrendDataPointEntity(context: context)
@@ -52,7 +54,7 @@ public class MetricTrendEntity: NSManagedObject {
             return dpEntity
         }
         entity.trendDataPoints = NSSet(array: dataPointEntities)
-        
+
         return entity
     }
 }

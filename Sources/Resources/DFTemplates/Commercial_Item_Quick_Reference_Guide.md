@@ -106,7 +106,7 @@ Before using this template, ensure you have:
 - Use outdated market research data
 - Overlook small business implications
 
-✅ **Do:**
+ **Do:**
 - Conduct current, comprehensive market research
 - Document specific commercial evidence
 - Analyze all aspects of commercial definition

@@ -144,7 +144,7 @@ Before using this template, ensure you have:
 - Fail to document specific waiver rationale
 - Use waiver authority to avoid proper price analysis
 
-✅ **Do:**
+ **Do:**
 - Thoroughly analyze applicable exceptions first
 - Obtain adequate alternative pricing information
 - Document comprehensive price reasonableness determination

@@ -79,7 +79,7 @@ Before using this template, ensure you have:
 - Fail to document market research adequately
 - Ignore competition opportunities for future requirements
 
-✅ **Do:**
+ **Do:**
 - Conduct thorough market research before determining authority
 - Provide specific, detailed justifications
 - Address competition for future requirements

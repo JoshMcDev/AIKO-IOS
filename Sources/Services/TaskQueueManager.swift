@@ -1,22 +1,24 @@
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 // MARK: - Task Queue Manager
+
 /// Manages autonomous task execution with queue management, prioritization, and parallel execution
 public final class TaskQueueManager {
     // MARK: - Properties
+
     private var taskQueue: [QueuedTask] = []
     private var executingTasks: [UUID: QueuedTask] = [:]
     private let maxConcurrentTasks: Int
     private let taskExecutor: TaskExecutor
-    
+
     public init(maxConcurrentTasks: Int = 3, taskExecutor: TaskExecutor) {
         self.maxConcurrentTasks = maxConcurrentTasks
         self.taskExecutor = taskExecutor
     }
-    
+
     // MARK: - Public Methods
-    
+
     /// Adds a task to the queue with automatic prioritization
     public func enqueue(_ task: AgentTask, priority: TaskPriority = .normal, dependencies: [UUID] = []) -> QueuedTask {
         let queuedTask = QueuedTask(
@@ -26,23 +28,23 @@ public final class TaskQueueManager {
             status: .queued,
             progress: 0
         )
-        
+
         taskQueue.append(queuedTask)
         taskQueue.sort { $0.priority.rawValue > $1.priority.rawValue }
-        
+
         return queuedTask
     }
-    
+
     /// Processes the queue and executes available tasks
     public func processQueue() async -> [TaskExecutionResult] {
         var results: [TaskExecutionResult] = []
-        
+
         // Check for tasks that can be executed
         let availableTasks = getExecutableTasks()
-        
+
         // Execute tasks up to the concurrent limit
         let tasksToExecute = Array(availableTasks.prefix(maxConcurrentTasks - executingTasks.count))
-        
+
         for queuedTask in tasksToExecute {
             // Move task from queue to executing
             taskQueue.removeAll { $0.id == queuedTask.id }
@@ -50,17 +52,17 @@ public final class TaskQueueManager {
             executingTask.status = .executing
             executingTask.startTime = Date()
             executingTasks[queuedTask.id] = executingTask
-            
+
             // Execute task asynchronously
             Task {
                 let result = await executeTask(executingTask)
                 results.append(result)
             }
         }
-        
+
         return results
     }
-    
+
     /// Cancels a queued or executing task
     public func cancelTask(_ taskId: UUID) -> Bool {
         // Check if task is in queue
@@ -68,7 +70,7 @@ public final class TaskQueueManager {
             taskQueue.remove(at: index)
             return true
         }
-        
+
         // Check if task is executing
         if let executingTask = executingTasks[taskId] {
             // Mark as cancelled (actual cancellation handled by executor)
@@ -77,10 +79,10 @@ public final class TaskQueueManager {
             executingTasks[taskId] = cancelledTask
             return true
         }
-        
+
         return false
     }
-    
+
     /// Updates task progress
     public func updateProgress(_ taskId: UUID, progress: Double) {
         if var task = executingTasks[taskId] {
@@ -88,7 +90,7 @@ public final class TaskQueueManager {
             executingTasks[taskId] = task
         }
     }
-    
+
     /// Gets the current queue status
     public func getQueueStatus() -> QueueStatus {
         QueueStatus(
@@ -98,21 +100,21 @@ public final class TaskQueueManager {
             completedToday: 0 // This would be tracked separately
         )
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func getExecutableTasks() -> [QueuedTask] {
         taskQueue.filter { task in
             // Check if all dependencies are completed
             let dependenciesCompleted = task.dependencies.allSatisfy { depId in
                 !taskQueue.contains { $0.id == depId } &&
-                !executingTasks.keys.contains(depId)
+                    !executingTasks.keys.contains(depId)
             }
-            
+
             return dependenciesCompleted && task.status == .queued
         }
     }
-    
+
     private func executeTask(_ queuedTask: QueuedTask) async -> TaskExecutionResult {
         do {
             // Update progress callback
@@ -121,26 +123,26 @@ public final class TaskQueueManager {
                     self.updateProgress(queuedTask.id, progress: progress)
                 }
             }
-            
+
             // Execute the task
             let result = try await taskExecutor.execute(
                 queuedTask.task,
                 progressHandler: progressHandler
             )
-            
+
             // Mark as completed
             executingTasks.removeValue(forKey: queuedTask.id)
-            
+
             return TaskExecutionResult(
                 taskId: queuedTask.id,
                 result: .success(result),
                 executionTime: Date().timeIntervalSince(queuedTask.startTime ?? Date())
             )
-            
+
         } catch {
             // Handle failure
             executingTasks.removeValue(forKey: queuedTask.id)
-            
+
             return TaskExecutionResult(
                 taskId: queuedTask.id,
                 result: .failure(error),
@@ -162,7 +164,7 @@ public struct QueuedTask: Equatable, Identifiable {
     public var startTime: Date?
     public var completionTime: Date?
     public var retryCount: Int = 0
-    
+
     public init(
         id: UUID = UUID(),
         task: AgentTask,
@@ -185,7 +187,7 @@ public enum TaskPriority: Int, Comparable {
     case normal = 1
     case high = 2
     case urgent = 3
-    
+
     public static func < (lhs: TaskPriority, rhs: TaskPriority) -> Bool {
         lhs.rawValue < rhs.rawValue
     }
@@ -197,18 +199,18 @@ public enum TaskStatus: Equatable {
     case completed
     case failed(Error)
     case cancelled
-    
+
     public static func == (lhs: TaskStatus, rhs: TaskStatus) -> Bool {
         switch (lhs, rhs) {
         case (.queued, .queued),
              (.executing, .executing),
              (.completed, .completed),
              (.cancelled, .cancelled):
-            return true
+            true
         case let (.failed(lhsError), .failed(rhsError)):
-            return lhsError.localizedDescription == rhsError.localizedDescription
+            lhsError.localizedDescription == rhsError.localizedDescription
         default:
-            return false
+            false
         }
     }
 }
@@ -238,22 +240,22 @@ public extension AgenticChatFeature {
     struct TaskQueueState: Equatable {
         var queueStatus: QueueStatus
         var lastExecutionResults: [TaskExecutionResult] = []
-        
-        public init(taskExecutor: TaskExecutor) {
-            self.queueStatus = QueueStatus(
+
+        public init(taskExecutor _: TaskExecutor) {
+            queueStatus = QueueStatus(
                 queuedTasks: [],
                 executingTasks: [],
                 totalTasks: 0,
                 completedToday: 0
             )
         }
-        
+
         public static func == (lhs: TaskQueueState, rhs: TaskQueueState) -> Bool {
             lhs.queueStatus == rhs.queueStatus &&
-            lhs.lastExecutionResults == rhs.lastExecutionResults
+                lhs.lastExecutionResults == rhs.lastExecutionResults
         }
     }
-    
+
     enum TaskQueueAction {
         case enqueueTask(AgentTask, TaskPriority, [UUID])
         case processQueue
@@ -273,8 +275,8 @@ public struct TaskQueueManagerKey: DependencyKey {
     )
 }
 
-extension DependencyValues {
-    public var taskQueueManager: TaskQueueManager {
+public extension DependencyValues {
+    var taskQueueManager: TaskQueueManager {
         get { self[TaskQueueManagerKey.self] }
         set { self[TaskQueueManagerKey.self] = newValue }
     }
@@ -283,11 +285,11 @@ extension DependencyValues {
 public struct LiveTaskExecutor: TaskExecutor {
     public func execute(_ task: AgentTask, progressHandler: @escaping (Double) -> Void) async throws -> Any {
         // Simulate task execution with progress updates
-        for i in 1...10 {
+        for i in 1 ... 10 {
             try await Task.sleep(for: .milliseconds(200))
             progressHandler(Double(i) / 10.0)
         }
-        
+
         // Return mock result based on task type
         switch task.action.type {
         case .gatherMarketResearch:

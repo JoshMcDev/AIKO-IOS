@@ -115,7 +115,7 @@ Before using this template, ensure you have:
 - Include non-essential requirements in emergency scope
 - Fail to plan competitive follow-on
 
-✅ **Do:**
+ **Do:**
 - Document specific emergency circumstances
 - Limit scope to immediate essential needs
 - Plan competitive strategy from beginning

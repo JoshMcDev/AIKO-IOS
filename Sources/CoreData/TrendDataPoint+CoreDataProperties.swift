@@ -1,16 +1,14 @@
-import Foundation
 import CoreData
+import Foundation
 
-extension TrendDataPointEntity {
-    
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<TrendDataPointEntity> {
-        return NSFetchRequest<TrendDataPointEntity>(entityName: "TrendDataPoint")
+public extension TrendDataPointEntity {
+    @nonobjc class func fetchRequest() -> NSFetchRequest<TrendDataPointEntity> {
+        NSFetchRequest<TrendDataPointEntity>(entityName: "TrendDataPoint")
     }
-    
-    @NSManaged public var timestamp: Date?
-    @NSManaged public var value: Double
-    @NSManaged public var trend: MetricTrendEntity?
+
+    @NSManaged var timestamp: Date?
+    @NSManaged var value: Double
+    @NSManaged var trend: MetricTrendEntity?
 }
 
-extension TrendDataPointEntity : Identifiable {
-}
+extension TrendDataPointEntity: Identifiable {}

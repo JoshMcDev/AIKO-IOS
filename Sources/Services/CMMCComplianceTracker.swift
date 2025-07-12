@@ -1,7 +1,8 @@
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 // MARK: - CMMC Compliance Tracker
+
 /// Service for tracking Cybersecurity Maturity Model Certification (CMMC) compliance
 public struct CMMCComplianceTracker {
     public var loadRequirements: (CMMCLevel) async throws -> [CMMCRequirement]
@@ -9,7 +10,7 @@ public struct CMMCComplianceTracker {
     public var generateComplianceReport: (CMMCLevel) async throws -> CMMCComplianceReport
     public var calculateComplianceScore: (CMMCLevel) async throws -> Double
     public var exportComplianceMatrix: (CMMCLevel) async throws -> String
-    
+
     public init(
         loadRequirements: @escaping (CMMCLevel) async throws -> [CMMCRequirement],
         trackRequirement: @escaping (String, CMMCEvidence) async throws -> Void,
@@ -26,24 +27,25 @@ public struct CMMCComplianceTracker {
 }
 
 // MARK: - Models
+
 public enum CMMCLevel: Int, CaseIterable {
     case level1 = 1
     case level2 = 2
     case level3 = 3
-    
+
     public var name: String {
         switch self {
-        case .level1: return "Foundational"
-        case .level2: return "Advanced"
-        case .level3: return "Expert"
+        case .level1: "Foundational"
+        case .level2: "Advanced"
+        case .level3: "Expert"
         }
     }
-    
+
     public var practiceCount: Int {
         switch self {
-        case .level1: return 17
-        case .level2: return 72
-        case .level3: return 130
+        case .level1: 17
+        case .level2: 72
+        case .level3: 130
         }
     }
 }
@@ -59,7 +61,7 @@ public struct CMMCRequirement: Identifiable, Equatable {
     public let nistMapping: [String]
     public var implemented: Bool
     public var evidence: CMMCEvidence?
-    
+
     public init(
         id: String,
         domain: CMMCDomain,
@@ -111,7 +113,7 @@ public struct CMMCEvidence: Equatable {
     public let uploadDate: Date
     public let verifiedBy: String?
     public let notes: String?
-    
+
     public init(
         documentName: String,
         documentType: String,
@@ -136,36 +138,37 @@ public struct CMMCComplianceReport: Equatable {
     public let gaps: [CMMCRequirement]
     public let recommendations: [String]
     public let generatedDate: Date
-    
+
     public var isCompliant: Bool {
-        return overallScore >= 1.0 // 100% implementation required
+        overallScore >= 1.0 // 100% implementation required
     }
 }
 
 // MARK: - Implementation
+
 extension CMMCComplianceTracker: DependencyKey {
     public static var liveValue: CMMCComplianceTracker {
         // In-memory storage for demo purposes
         var requirementStatus: [String: (Bool, CMMCEvidence?)] = [:]
-        
+
         return CMMCComplianceTracker(
             loadRequirements: { level in
-                return getCMMCRequirements(for: level)
+                getCMMCRequirements(for: level)
             },
-            
+
             trackRequirement: { requirementId, evidence in
                 requirementStatus[requirementId] = (true, evidence)
             },
-            
+
             generateComplianceReport: { level in
                 let requirements = getCMMCRequirements(for: level)
                 var domainCounts: [CMMCDomain: (implemented: Int, total: Int)] = [:]
                 var gaps: [CMMCRequirement] = []
-                
+
                 for requirement in requirements {
                     let status = requirementStatus[requirement.id]
                     let isImplemented = status?.0 ?? false
-                    
+
                     var counts = domainCounts[requirement.domain] ?? (0, 0)
                     counts.total += 1
                     if isImplemented {
@@ -175,18 +178,18 @@ extension CMMCComplianceTracker: DependencyKey {
                     }
                     domainCounts[requirement.domain] = counts
                 }
-                
+
                 var domainScores: [CMMCDomain: Double] = [:]
                 for (domain, counts) in domainCounts {
                     domainScores[domain] = Double(counts.implemented) / Double(counts.total)
                 }
-                
+
                 let implementedCount = domainCounts.values.reduce(0) { $0 + $1.implemented }
                 let totalCount = requirements.count
                 let overallScore = Double(implementedCount) / Double(totalCount)
-                
+
                 let recommendations = generateRecommendations(for: gaps, level: level)
-                
+
                 return CMMCComplianceReport(
                     level: level,
                     overallScore: overallScore,
@@ -198,27 +201,27 @@ extension CMMCComplianceTracker: DependencyKey {
                     generatedDate: Date()
                 )
             },
-            
+
             calculateComplianceScore: { level in
                 let requirements = getCMMCRequirements(for: level)
                 let implementedCount = requirements.filter { requirementStatus[$0.id]?.0 ?? false }.count
                 return Double(implementedCount) / Double(requirements.count)
             },
-            
+
             exportComplianceMatrix: { level in
                 let requirements = getCMMCRequirements(for: level)
                 var csv = "Requirement ID,Domain,Practice,Level,Description,Implemented,Evidence\n"
-                
+
                 for requirement in requirements {
                     let status = requirementStatus[requirement.id]
                     let implemented = status?.0 ?? false
                     let evidence = status?.1?.documentName ?? "N/A"
-                    
+
                     csv += "\"\(requirement.id)\",\"\(requirement.domain.rawValue)\",\"\(requirement.practice)\","
                     csv += "\(requirement.level.rawValue),\"\(requirement.description)\","
                     csv += "\(implemented ? "Yes" : "No"),\"\(evidence)\"\n"
                 }
-                
+
                 return csv
             }
         )
@@ -226,9 +229,10 @@ extension CMMCComplianceTracker: DependencyKey {
 }
 
 // MARK: - CMMC Requirements Database
+
 private func getCMMCRequirements(for level: CMMCLevel) -> [CMMCRequirement] {
     var requirements: [CMMCRequirement] = []
-    
+
     // Add Level 1 requirements
     if level.rawValue >= 1 {
         requirements.append(contentsOf: [
@@ -275,7 +279,7 @@ private func getCMMCRequirements(for level: CMMCLevel) -> [CMMCRequirement] {
             // Add remaining Level 1 requirements...
         ])
     }
-    
+
     // Add Level 2 requirements
     if level.rawValue >= 2 {
         requirements.append(contentsOf: [
@@ -312,7 +316,7 @@ private func getCMMCRequirements(for level: CMMCLevel) -> [CMMCRequirement] {
             // Add remaining Level 2 requirements...
         ])
     }
-    
+
     // Add Level 3 requirements
     if level.rawValue >= 3 {
         requirements.append(contentsOf: [
@@ -349,49 +353,51 @@ private func getCMMCRequirements(for level: CMMCLevel) -> [CMMCRequirement] {
             // Add remaining Level 3 requirements...
         ])
     }
-    
+
     return requirements.sorted { $0.id < $1.id }
 }
 
 // MARK: - Helper Functions
+
 private func generateRecommendations(for gaps: [CMMCRequirement], level: CMMCLevel) -> [String] {
     var recommendations: [String] = []
-    
+
     // Group gaps by domain
     let gapsByDomain = Dictionary(grouping: gaps, by: { $0.domain })
-    
+
     // Priority recommendations based on domain
     if let acGaps = gapsByDomain[.accessControl], !acGaps.isEmpty {
         recommendations.append("Priority 1: Address \(acGaps.count) Access Control gaps - these are fundamental to security")
     }
-    
+
     if let iaGaps = gapsByDomain[.identificationAndAuthentication], !iaGaps.isEmpty {
         recommendations.append("Priority 2: Implement \(iaGaps.count) Identification & Authentication controls")
     }
-    
+
     if let auGaps = gapsByDomain[.auditAndAccountability], !auGaps.isEmpty {
         recommendations.append("Priority 3: Establish \(auGaps.count) Audit & Accountability mechanisms")
     }
-    
+
     // General recommendations
     if gaps.count > 20 {
         recommendations.append("Consider phased implementation approach due to large number of gaps")
     }
-    
-    if level == .level3 && gaps.contains(where: { $0.level == .level1 }) {
+
+    if level == .level3, gaps.contains(where: { $0.level == .level1 }) {
         recommendations.append("Critical: Address all Level 1 basic requirements immediately")
     }
-    
+
     recommendations.append("Develop Plan of Action & Milestones (POA&M) for all identified gaps")
     recommendations.append("Assign responsible parties and target completion dates")
     recommendations.append("Consider third-party assessment to validate implementation")
-    
+
     return recommendations
 }
 
 // MARK: - Dependency
-extension DependencyValues {
-    public var cmmcComplianceTracker: CMMCComplianceTracker {
+
+public extension DependencyValues {
+    var cmmcComplianceTracker: CMMCComplianceTracker {
         get { self[CMMCComplianceTracker.self] }
         set { self[CMMCComplianceTracker.self] = newValue }
     }

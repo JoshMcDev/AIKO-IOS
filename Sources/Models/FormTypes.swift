@@ -12,58 +12,58 @@ public enum FormType: String, CaseIterable, Identifiable, Codable {
     case sf44 = "SF44"
     case sf252 = "SF252"
     case sf1408 = "SF1408"
-    
+
     public var id: String { rawValue }
-    
+
     public var fullName: String {
         switch self {
-        case .sf18: return "Standard Form 18 - Request for Quotations"
-        case .sf1449: return "Standard Form 1449 - Solicitation/Contract/Order"
-        case .sf30: return "Standard Form 30 - Amendment of Solicitation/Modification"
-        case .sf26: return "Standard Form 26 - Award/Contract"
-        case .sf36: return "Standard Form 36 - Continuation Sheet"
-        case .sf44: return "Standard Form 44 - Purchase Order-Invoice-Voucher"
-        case .sf252: return "Standard Form 252 - Architect-Engineer Contract"
-        case .sf1408: return "Standard Form 1408 - Pre-Award Survey"
+        case .sf18: "Standard Form 18 - Request for Quotations"
+        case .sf1449: "Standard Form 1449 - Solicitation/Contract/Order"
+        case .sf30: "Standard Form 30 - Amendment of Solicitation/Modification"
+        case .sf26: "Standard Form 26 - Award/Contract"
+        case .sf36: "Standard Form 36 - Continuation Sheet"
+        case .sf44: "Standard Form 44 - Purchase Order-Invoice-Voucher"
+        case .sf252: "Standard Form 252 - Architect-Engineer Contract"
+        case .sf1408: "Standard Form 1408 - Pre-Award Survey"
         }
     }
-    
+
     public var shortName: String {
         switch self {
-        case .sf18: return "SF 18"
-        case .sf1449: return "SF 1449"
-        case .sf30: return "SF 30"
-        case .sf26: return "SF 26"
-        case .sf36: return "SF 36"
-        case .sf44: return "SF 44"
-        case .sf252: return "SF 252"
-        case .sf1408: return "SF 1408"
+        case .sf18: "SF 18"
+        case .sf1449: "SF 1449"
+        case .sf30: "SF 30"
+        case .sf26: "SF 26"
+        case .sf36: "SF 36"
+        case .sf44: "SF 44"
+        case .sf252: "SF 252"
+        case .sf1408: "SF 1408"
         }
     }
-    
+
     public var description: String {
         switch self {
-        case .sf18: return "Used for simplified acquisitions to request quotations from vendors"
-        case .sf1449: return "Multi-purpose form for commercial product and service acquisitions"
-        case .sf30: return "Used to amend solicitations or modify existing contracts"
-        case .sf26: return "Award document for negotiated procurements"
-        case .sf36: return "Continuation sheet for any standard form needing additional space"
-        case .sf44: return "Simplified purchase order for micro-purchases under $10,000"
-        case .sf252: return "Standard contract form for architect-engineer services"
-        case .sf1408: return "Survey to determine prospective contractor responsibility"
+        case .sf18: "Used for simplified acquisitions to request quotations from vendors"
+        case .sf1449: "Multi-purpose form for commercial product and service acquisitions"
+        case .sf30: "Used to amend solicitations or modify existing contracts"
+        case .sf26: "Award document for negotiated procurements"
+        case .sf36: "Continuation sheet for any standard form needing additional space"
+        case .sf44: "Simplified purchase order for micro-purchases under $10,000"
+        case .sf252: "Standard contract form for architect-engineer services"
+        case .sf1408: "Survey to determine prospective contractor responsibility"
         }
     }
-    
+
     public var icon: String {
         switch self {
-        case .sf18: return "doc.badge.plus"
-        case .sf1449: return "doc.on.doc"
-        case .sf30: return "doc.badge.arrow.up"
-        case .sf26: return "checkmark.seal"
-        case .sf36: return "doc.append"
-        case .sf44: return "cart"
-        case .sf252: return "building.2"
-        case .sf1408: return "magnifyingglass.circle"
+        case .sf18: "doc.badge.plus"
+        case .sf1449: "doc.on.doc"
+        case .sf30: "doc.badge.arrow.up"
+        case .sf26: "checkmark.seal"
+        case .sf36: "doc.append"
+        case .sf44: "cart"
+        case .sf252: "building.2"
+        case .sf1408: "magnifyingglass.circle"
         }
     }
 }
@@ -83,7 +83,7 @@ public struct FormDefinition: Identifiable, Codable {
     public let farReference: String
     public let downloadURL: URL?
     public let threshold: Double?
-    
+
     public var id: String { formType.rawValue }
 }
 
@@ -94,23 +94,23 @@ public struct TemplateData: Codable {
     public let documentType: DocumentType
     public let data: [String: Any]
     public let metadata: TemplateMetadata?
-    
+
     // Custom Codable implementation for [String: Any]
     private enum CodingKeys: String, CodingKey {
         case documentType, data, metadata
     }
-    
+
     public init(documentType: DocumentType, data: [String: Any], metadata: TemplateMetadata? = nil) {
         self.documentType = documentType
         self.data = data
         self.metadata = metadata
     }
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         documentType = try container.decode(DocumentType.self, forKey: .documentType)
         metadata = try container.decodeIfPresent(TemplateMetadata.self, forKey: .metadata)
-        
+
         // Decode [String: Any] using JSONSerialization
         if let dataDict = try? container.decode([String: JSONValue].self, forKey: .data) {
             data = dataDict.mapValues { $0.value }
@@ -118,12 +118,12 @@ public struct TemplateData: Codable {
             data = [:]
         }
     }
-    
+
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(documentType, forKey: .documentType)
         try container.encodeIfPresent(metadata, forKey: .metadata)
-        
+
         // Encode [String: Any] using JSONValue wrapper
         let jsonData = data.compactMapValues { JSONValue(value: $0) }
         try container.encode(jsonData, forKey: .data)
@@ -137,7 +137,7 @@ public struct TemplateMetadata: Codable {
     public let createdDate: Date
     public let lastModified: Date
     public let author: String?
-    
+
     public init(templateId: String, version: String, createdDate: Date = Date(), lastModified: Date = Date(), author: String? = nil) {
         self.templateId = templateId
         self.version = version
@@ -156,7 +156,7 @@ public struct FormSelection: Identifiable {
     public let isRecommended: Bool
     public let complianceScore: Double
     public let notes: String?
-    
+
     public init(formType: FormType, isRecommended: Bool = false, complianceScore: Double = 1.0, notes: String? = nil) {
         self.formType = formType
         self.isRecommended = isRecommended
@@ -173,7 +173,7 @@ public struct FormOutputOptions: Codable {
     public var includeInstructions: Bool
     public var includeAttachments: Bool
     public var digitalSignature: Bool
-    
+
     public init(
         format: OutputFormat = .pdf,
         includeInstructions: Bool = false,
@@ -185,7 +185,7 @@ public struct FormOutputOptions: Codable {
         self.includeAttachments = includeAttachments
         self.digitalSignature = digitalSignature
     }
-    
+
     public enum OutputFormat: String, CaseIterable, Codable {
         case pdf = "PDF"
         case docx = "DOCX"
@@ -205,7 +205,7 @@ private enum JSONValue: Codable {
     case object([String: JSONValue])
     case array([JSONValue])
     case null
-    
+
     init?(value: Any) {
         switch value {
         case let string as String:
@@ -232,16 +232,16 @@ private enum JSONValue: Codable {
             return nil
         }
     }
-    
+
     var value: Any {
         switch self {
-        case .string(let string): return string
-        case .int(let int): return int
-        case .double(let double): return double
-        case .bool(let bool): return bool
-        case .object(let object): return object.mapValues { $0.value }
-        case .array(let array): return array.map { $0.value }
-        case .null: return NSNull()
+        case let .string(string): string
+        case let .int(int): int
+        case let .double(double): double
+        case let .bool(bool): bool
+        case let .object(object): object.mapValues { $0.value }
+        case let .array(array): array.map(\.value)
+        case .null: NSNull()
         }
     }
 }

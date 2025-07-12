@@ -1,48 +1,48 @@
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 // MARK: - Cache Migration Extensions
 
-extension DocumentCacheService {
+public extension DocumentCacheService {
     /// Creates an encrypted version of the document cache
-    public var encrypted: EncryptedDocumentCache {
-        return EncryptedDocumentCache(
-            cacheDocument: self.cacheDocument,
-            getCachedDocument: self.getCachedDocument,
-            cacheAnalysisResponse: self.cacheAnalysisResponse,
-            getCachedAnalysisResponse: self.getCachedAnalysisResponse,
-            clearCache: self.clearCache,
-            getCacheStatistics: self.getCacheStatistics,
-            preloadFrequentDocuments: self.preloadFrequentDocuments,
-            optimizeCacheForMemory: self.optimizeCacheForMemory,
-            rotateEncryptionKey: { 
+    var encrypted: EncryptedDocumentCache {
+        EncryptedDocumentCache(
+            cacheDocument: cacheDocument,
+            getCachedDocument: getCachedDocument,
+            cacheAnalysisResponse: cacheAnalysisResponse,
+            getCachedAnalysisResponse: getCachedAnalysisResponse,
+            clearCache: clearCache,
+            getCacheStatistics: getCacheStatistics,
+            preloadFrequentDocuments: preloadFrequentDocuments,
+            optimizeCacheForMemory: optimizeCacheForMemory,
+            rotateEncryptionKey: {
                 // No-op for standard cache
             },
             exportEncryptedBackup: {
-                return Data()
+                Data()
             },
             importEncryptedBackup: { _ in
                 // No-op for standard cache
             }
         )
     }
-    
+
     /// Creates an adaptive version of the document cache
-    public var adaptive: AdaptiveDocumentCache {
-        return AdaptiveDocumentCache(
-            cacheDocument: self.cacheDocument,
-            getCachedDocument: self.getCachedDocument,
-            cacheAnalysisResponse: self.cacheAnalysisResponse,
-            getCachedAnalysisResponse: self.getCachedAnalysisResponse,
-            clearCache: self.clearCache,
-            getCacheStatistics: self.getCacheStatistics,
-            preloadFrequentDocuments: self.preloadFrequentDocuments,
-            optimizeCacheForMemory: self.optimizeCacheForMemory,
+    var adaptive: AdaptiveDocumentCache {
+        AdaptiveDocumentCache(
+            cacheDocument: cacheDocument,
+            getCachedDocument: getCachedDocument,
+            cacheAnalysisResponse: cacheAnalysisResponse,
+            getCachedAnalysisResponse: getCachedAnalysisResponse,
+            clearCache: clearCache,
+            getCacheStatistics: getCacheStatistics,
+            preloadFrequentDocuments: preloadFrequentDocuments,
+            optimizeCacheForMemory: optimizeCacheForMemory,
             rotateEncryptionKey: {
                 // No-op for standard cache
             },
             exportEncryptedBackup: {
-                return Data()
+                Data()
             },
             importEncryptedBackup: { _ in
                 // No-op for standard cache
@@ -51,7 +51,7 @@ extension DocumentCacheService {
                 // No-op for standard cache
             },
             getAdaptiveMetrics: {
-                return AdaptiveMetrics(
+                AdaptiveMetrics(
                     currentCacheSizeLimit: 50,
                     currentMemoryLimit: 100 * 1024 * 1024,
                     actualCacheSize: 0,
@@ -67,21 +67,21 @@ extension DocumentCacheService {
     }
 }
 
-extension EncryptedDocumentCache {
+public extension EncryptedDocumentCache {
     /// Creates an adaptive version of the encrypted cache
-    public var adaptive: AdaptiveDocumentCache {
-        return AdaptiveDocumentCache(
-            cacheDocument: self.cacheDocument,
-            getCachedDocument: self.getCachedDocument,
-            cacheAnalysisResponse: self.cacheAnalysisResponse,
-            getCachedAnalysisResponse: self.getCachedAnalysisResponse,
-            clearCache: self.clearCache,
-            getCacheStatistics: self.getCacheStatistics,
-            preloadFrequentDocuments: self.preloadFrequentDocuments,
-            optimizeCacheForMemory: self.optimizeCacheForMemory,
-            rotateEncryptionKey: self.rotateEncryptionKey,
-            exportEncryptedBackup: self.exportEncryptedBackup,
-            importEncryptedBackup: self.importEncryptedBackup,
+    var adaptive: AdaptiveDocumentCache {
+        AdaptiveDocumentCache(
+            cacheDocument: cacheDocument,
+            getCachedDocument: getCachedDocument,
+            cacheAnalysisResponse: cacheAnalysisResponse,
+            getCachedAnalysisResponse: getCachedAnalysisResponse,
+            clearCache: clearCache,
+            getCacheStatistics: getCacheStatistics,
+            preloadFrequentDocuments: preloadFrequentDocuments,
+            optimizeCacheForMemory: optimizeCacheForMemory,
+            rotateEncryptionKey: rotateEncryptionKey,
+            exportEncryptedBackup: exportEncryptedBackup,
+            importEncryptedBackup: importEncryptedBackup,
             adjustCacheLimits: {
                 // Delegate to optimize memory
                 try? await self.optimizeCacheForMemory()
@@ -107,10 +107,10 @@ extension EncryptedDocumentCache {
 
 // MARK: - Enhanced Cache Statistics
 
-extension CacheStatistics {
+public extension CacheStatistics {
     /// Creates cache statistics with adaptive metrics
-    public func withAdaptiveMetrics(_ metrics: AdaptiveMetrics) -> EnhancedCacheStatistics {
-        return EnhancedCacheStatistics(
+    func withAdaptiveMetrics(_ metrics: AdaptiveMetrics) -> EnhancedCacheStatistics {
+        EnhancedCacheStatistics(
             base: self,
             adaptive: metrics
         )
@@ -120,22 +120,22 @@ extension CacheStatistics {
 public struct EnhancedCacheStatistics: Equatable {
     public let base: CacheStatistics
     public let adaptive: AdaptiveMetrics
-    
+
     public var formattedMemoryPressure: String {
         switch adaptive.systemMemoryPressure {
         case .normal:
-            return "Normal"
+            "Normal"
         case .warning:
-            return "Warning"
+            "Warning"
         case .urgent:
-            return "Urgent"
+            "Urgent"
         case .critical:
-            return "Critical"
+            "Critical"
         }
     }
-    
+
     public var adaptiveDescription: String {
-        return """
+        """
         Cache Size: \(adaptive.actualCacheSize)/\(adaptive.currentCacheSizeLimit) items
         Memory Usage: \(ByteCountFormatter.string(fromByteCount: adaptive.actualMemoryUsage, countStyle: .binary))/\(ByteCountFormatter.string(fromByteCount: adaptive.currentMemoryLimit, countStyle: .binary))
         System Memory: \(formattedMemoryPressure)
@@ -158,19 +158,19 @@ public struct SimpleCacheConfiguration {
     public let type: CacheType
     public let enableMetrics: Bool
     public let enablePreloading: Bool
-    
+
     public static let `default` = SimpleCacheConfiguration(
         type: .standard,
         enableMetrics: true,
         enablePreloading: false
     )
-    
+
     public static let secure = SimpleCacheConfiguration(
         type: .encrypted,
         enableMetrics: true,
         enablePreloading: false
     )
-    
+
     public static let performance = SimpleCacheConfiguration(
         type: .adaptive,
         enableMetrics: true,
@@ -182,19 +182,19 @@ public struct SimpleCacheConfiguration {
 
 public struct UnifiedCacheProvider {
     private let configuration: SimpleCacheConfiguration
-    
+
     public init(configuration: SimpleCacheConfiguration = .default) {
         self.configuration = configuration
     }
-    
+
     public func makeCache() -> any CacheProtocol {
         switch configuration.type {
         case .standard:
-            return DocumentCacheService.liveValue
+            DocumentCacheService.liveValue
         case .encrypted:
-            return EncryptedDocumentCache.liveValue
+            EncryptedDocumentCache.liveValue
         case .adaptive:
-            return AdaptiveDocumentCache.liveValue
+            AdaptiveDocumentCache.liveValue
         }
     }
 }

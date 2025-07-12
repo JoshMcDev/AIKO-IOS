@@ -1,6 +1,6 @@
-import Foundation
-import ComposableArchitecture
 import Combine
+import ComposableArchitecture
+import Foundation
 import os.log
 
 /// Service responsible for tracking, analyzing, and reporting on system metrics (MOPs and MOEs)
@@ -16,12 +16,13 @@ public struct MetricsService {
 }
 
 // MARK: - Live Implementation
-extension MetricsService {
-    public static let live: Self = {
+
+public extension MetricsService {
+    static let live: Self = {
         let storage = MetricsStorage()
         let analyzer = MetricsAnalyzer()
         let logger = Logger(subsystem: "com.aiko.metrics", category: "MetricsService")
-        
+
         return Self(
             recordMOP: { mop, value, context in
                 let measurement = MetricMeasurement(
@@ -32,16 +33,16 @@ extension MetricsService {
                     score: normalizeScore(value, for: mop),
                     context: context
                 )
-                
+
                 await storage.store(measurement)
                 logger.debug("Recorded MOP: \(mop.rawValue) = \(value)")
-                
+
                 // Check for threshold violations
                 if let insight = analyzer.checkThresholds(measurement) {
                     await storage.storeInsight(insight)
                 }
             },
-            
+
             recordMOE: { moe, value, context in
                 let measurement = MetricMeasurement(
                     name: moe.rawValue,
@@ -51,65 +52,65 @@ extension MetricsService {
                     score: normalizeScore(value, for: moe),
                     context: context
                 )
-                
+
                 await storage.store(measurement)
                 logger.debug("Recorded MOE: \(moe.rawValue) = \(value)")
-                
+
                 // Analyze for insights
                 if let insight = analyzer.checkThresholds(measurement) {
                     await storage.storeInsight(insight)
                 }
             },
-            
+
             recordMetric: { measurement in
                 await storage.store(measurement)
                 logger.debug("Recorded metric: \(measurement.name)")
-                
+
                 // Run real-time analysis
                 let insights = await analyzer.analyzeMeasurement(measurement)
                 for insight in insights {
                     await storage.storeInsight(insight)
                 }
             },
-            
+
             getMetricsSummary: { period in
                 let interval = period ?? DateInterval(
                     start: Date().addingTimeInterval(-24 * 60 * 60), // Last 24 hours
                     end: Date()
                 )
-                
+
                 let measurements = await storage.getMeasurements(for: interval)
-                
+
                 // Calculate MOP scores
                 var mopScores: [MeasureOfPerformance: Double] = [:]
                 for mop in MeasureOfPerformance.allCases {
-                    let mopMeasurements = measurements.filter { 
-                        if case .mop(let measure) = $0.type {
+                    let mopMeasurements = measurements.filter {
+                        if case let .mop(measure) = $0.type {
                             return measure == mop
                         }
                         return false
                     }
                     if !mopMeasurements.isEmpty {
-                        let avgScore = mopMeasurements.map { $0.score }.reduce(0, +) / Double(mopMeasurements.count)
+                        let avgScore = mopMeasurements.map(\.score).reduce(0, +) / Double(mopMeasurements.count)
                         mopScores[mop] = avgScore
                     }
                 }
-                
+
                 // Calculate MOE scores
                 var moeScores: [MeasureOfEffectiveness: Double] = [:]
                 for moe in MeasureOfEffectiveness.allCases {
                     let moeMeasurements = measurements.filter {
-                        if case .moe(let measure) = $0.type {
+                        if case let .moe(measure) = $0.type {
                             return measure == moe
                         }
                         return false
                     }
                     if !moeMeasurements.isEmpty {
-                        let avgScore = moeMeasurements.map { $0.score }.reduce(0, +) / Double(moeMeasurements.count)
+                        let avgScore = moeMeasurements.map(\.score).reduce(0, +) / Double(moeMeasurements.count)
                         moeScores[moe] = avgScore
                     }
                 }
-                
+
                 // Get insights and recommendations
                 let insights = await storage.getInsights(for: interval)
                 let recommendations = await analyzer.generateRecommendations(
@@ -117,7 +118,7 @@ extension MetricsService {
                     moeScores: moeScores,
                     insights: insights
                 )
-                
+
                 return MetricsSummary(
                     period: interval,
                     mopScores: mopScores,
@@ -126,14 +127,14 @@ extension MetricsService {
                     recommendations: recommendations
                 )
             },
-            
+
             generateReport: { period, title in
                 let summary = try await Self.live.getMetricsSummary(period)
                 let measurements = await storage.getMeasurements(for: period)
-                
+
                 // Generate trends
                 let trends = await analyzer.analyzeTrends(measurements, period: period)
-                
+
                 // Generate comparisons
                 let previousPeriod = DateInterval(
                     start: period.start.addingTimeInterval(-period.duration),
@@ -144,14 +145,14 @@ extension MetricsService {
                     current: measurements,
                     previous: previousMeasurements
                 )
-                
+
                 // Generate executive summary
                 let executiveSummary = generateExecutiveSummary(
                     summary: summary,
                     trends: trends,
                     comparisons: comparisons
                 )
-                
+
                 return MetricsReport(
                     title: title,
                     period: period,
@@ -162,47 +163,47 @@ extension MetricsService {
                     executiveSummary: executiveSummary
                 )
             },
-            
+
             analyzeMetrics: {
                 let last24Hours = DateInterval(
                     start: Date().addingTimeInterval(-24 * 60 * 60),
                     end: Date()
                 )
-                
+
                 let measurements = await storage.getMeasurements(for: last24Hours)
                 let insights = await analyzer.performComprehensiveAnalysis(measurements)
-                
+
                 let summary = try await Self.live.getMetricsSummary(last24Hours)
                 let recommendations = await analyzer.generateRecommendations(
                     mopScores: summary.mopScores,
                     moeScores: summary.moeScores,
                     insights: insights
                 )
-                
+
                 return (insights, recommendations)
             },
-            
+
             getRealtimeMetrics: {
                 let last5Minutes = DateInterval(
                     start: Date().addingTimeInterval(-5 * 60),
                     end: Date()
                 )
-                
+
                 let measurements = await storage.getMeasurements(for: last5Minutes)
                 var realtimeMetrics: [String: Double] = [:]
-                
+
                 // Aggregate recent measurements
                 for measurement in measurements {
                     realtimeMetrics[measurement.name] = measurement.aggregatedValue
                 }
-                
+
                 // Add system metrics
-                realtimeMetrics["active_sessions"] = Double(await storage.getActiveSessions())
-                realtimeMetrics["queue_size"] = Double(await storage.getQueueSize())
-                
+                realtimeMetrics["active_sessions"] = await Double(storage.getActiveSessions())
+                realtimeMetrics["queue_size"] = await Double(storage.getQueueSize())
+
                 return realtimeMetrics
             },
-            
+
             subscribeToMetrics: { types in
                 AsyncStream { continuation in
                     Task {
@@ -220,12 +221,13 @@ extension MetricsService {
 }
 
 // MARK: - Helper Functions
+
 private func normalizeScore(_ value: Double, for type: MetricMeasurement.MetricType) -> Double {
     switch type {
-    case .mop(let measure):
-        return normalizeScore(value, for: measure)
-    case .moe(let measure):
-        return normalizeScore(value, for: measure)
+    case let .mop(measure):
+        normalizeScore(value, for: measure)
+    case let .moe(measure):
+        normalizeScore(value, for: measure)
     }
 }
 
@@ -239,11 +241,11 @@ private func normalizeScore(_ value: Double, for mop: MeasureOfPerformance) -> D
         if value <= 1000 { return 0.6 }
         if value <= 2000 { return 0.4 }
         return 0.2
-        
+
     case .accuracy, .precision, .recall, .f1Score, .uptime, .availability:
         // Higher is better, already in percentage
         return value / 100.0
-        
+
     case .errorRate:
         // Lower is better, per thousand
         if value == 0 { return 1.0 }
@@ -251,7 +253,7 @@ private func normalizeScore(_ value: Double, for mop: MeasureOfPerformance) -> D
         if value <= 5 { return 0.7 }
         if value <= 10 { return 0.5 }
         return 0.2
-        
+
     case .cpuUsage, .memoryUsage:
         // Lower is better, percentage
         if value <= 20 { return 1.0 }
@@ -259,7 +261,7 @@ private func normalizeScore(_ value: Double, for mop: MeasureOfPerformance) -> D
         if value <= 60 { return 0.6 }
         if value <= 80 { return 0.4 }
         return 0.2
-        
+
     default:
         // Generic normalization
         return min(value / 100.0, 1.0)
@@ -271,39 +273,39 @@ private func normalizeScore(_ value: Double, for moe: MeasureOfEffectiveness) ->
     switch moe {
     case .userSatisfaction:
         // Assuming 1-5 scale
-        return (value - 1) / 4.0
-        
+        (value - 1) / 4.0
+
     case .netPromoterScore:
         // NPS ranges from -100 to 100
-        return (value + 100) / 200.0
-        
+        (value + 100) / 200.0
+
     case .taskCompletionRate, .complianceRate, .adoptionRate, .userRetention:
         // Already in percentage
-        return value / 100.0
-        
+        value / 100.0
+
     case .timeSaved:
         // Hours saved, normalize to 0-1 based on expected max of 40 hours
-        return min(value / 40.0, 1.0)
-        
+        min(value / 40.0, 1.0)
+
     default:
         // Generic normalization
-        return min(value / 100.0, 1.0)
+        min(value / 100.0, 1.0)
     }
 }
 
 private func generateExecutiveSummary(
     summary: MetricsSummary,
     trends: [MetricTrend],
-    comparisons: [MetricComparison]
+    comparisons _: [MetricComparison]
 ) -> String {
     var sections: [String] = []
-    
+
     // Overall performance
     sections.append("## Overall Performance")
     sections.append("- Combined Score: \(String(format: "%.1f%%", summary.combinedScore * 100))")
     sections.append("- Performance (MOPs): \(String(format: "%.1f%%", summary.overallMOPScore * 100))")
     sections.append("- Effectiveness (MOEs): \(String(format: "%.1f%%", summary.overallMOEScore * 100))")
-    
+
     // Key insights
     if !summary.insights.isEmpty {
         sections.append("\n## Key Insights")
@@ -311,7 +313,7 @@ private func generateExecutiveSummary(
             sections.append("- \(insight.message)")
         }
     }
-    
+
     // Significant trends
     let significantTrends = trends.filter { $0.significance > 0.8 }
     if !significantTrends.isEmpty {
@@ -321,7 +323,7 @@ private func generateExecutiveSummary(
             sections.append("- \(trend.metricName): \(direction) \(String(format: "%.1f%%", abs(trend.magnitude)))")
         }
     }
-    
+
     // Top recommendations
     if !summary.recommendations.isEmpty {
         sections.append("\n## Top Recommendations")
@@ -329,57 +331,58 @@ private func generateExecutiveSummary(
             sections.append("- \(rec.title)")
         }
     }
-    
+
     return sections.joined(separator: "\n")
 }
 
 // MARK: - Supporting Types
+
 private actor MetricsStorage {
     private var measurements: [MetricMeasurement] = []
     private var insights: [MetricInsight] = []
     private let maxStorageSize = 10000
-    
+
     let metricsStream = AsyncStream<MetricMeasurement>.makeStream()
-    
+
     func store(_ measurement: MetricMeasurement) {
         measurements.append(measurement)
         metricsStream.continuation.yield(measurement)
-        
+
         // Maintain storage limit
         if measurements.count > maxStorageSize {
             measurements.removeFirst(measurements.count - maxStorageSize)
         }
     }
-    
+
     func storeInsight(_ insight: MetricInsight) {
         insights.append(insight)
-        
+
         // Maintain storage limit
         if insights.count > 1000 {
             insights.removeFirst(insights.count - 1000)
         }
     }
-    
+
     func getMeasurements(for period: DateInterval) -> [MetricMeasurement] {
         measurements.filter { period.contains($0.timestamp) }
     }
-    
+
     func getInsights(for period: DateInterval) -> [MetricInsight] {
         insights.filter { period.contains($0.timestamp) }
     }
-    
+
     func getActiveSessions() -> Int {
         // Count unique session IDs in recent measurements
         let recentMeasurements = measurements.filter {
             $0.timestamp > Date().addingTimeInterval(-5 * 60)
         }
-        let uniqueSessions = Set(recentMeasurements.map { $0.context.sessionId })
+        let uniqueSessions = Set(recentMeasurements.map(\.context.sessionId))
         return uniqueSessions.count
     }
-    
+
     func getQueueSize() -> Int {
         // Simulated queue size
-        return Int.random(in: 0...100)
+        Int.random(in: 0 ... 100)
     }
 }
 
@@ -390,12 +393,12 @@ private struct MetricsAnalyzer {
         MeasureOfPerformance.cpuUsage.rawValue: (0, 80),
         MeasureOfPerformance.memoryUsage.rawValue: (0, 80),
         MeasureOfEffectiveness.userSatisfaction.rawValue: (3.5, 5.0),
-        MeasureOfEffectiveness.taskCompletionRate.rawValue: (80, 100)
+        MeasureOfEffectiveness.taskCompletionRate.rawValue: (80, 100),
     ]
-    
+
     func checkThresholds(_ measurement: MetricMeasurement) -> MetricInsight? {
         guard let (min, max) = thresholds[measurement.name] else { return nil }
-        
+
         if measurement.aggregatedValue < min {
             return MetricInsight(
                 type: .threshold,
@@ -413,13 +416,13 @@ private struct MetricsAnalyzer {
                 confidence: 1.0
             )
         }
-        
+
         return nil
     }
-    
+
     func analyzeMeasurement(_ measurement: MetricMeasurement) async -> [MetricInsight] {
         var insights: [MetricInsight] = []
-        
+
         // Check for anomalies
         if measurement.score < 0.3 {
             insights.append(MetricInsight(
@@ -430,7 +433,7 @@ private struct MetricsAnalyzer {
                 confidence: 0.9
             ))
         }
-        
+
         // Check for improvements
         if measurement.score > 0.9 {
             insights.append(MetricInsight(
@@ -441,44 +444,42 @@ private struct MetricsAnalyzer {
                 confidence: 0.95
             ))
         }
-        
+
         return insights
     }
-    
-    func analyzeTrends(_ measurements: [MetricMeasurement], period: DateInterval) async -> [MetricTrend] {
+
+    func analyzeTrends(_ measurements: [MetricMeasurement], period _: DateInterval) async -> [MetricTrend] {
         var trends: [MetricTrend] = []
-        
+
         // Group measurements by metric name
         let groupedMeasurements = Dictionary(grouping: measurements) { $0.name }
-        
+
         for (metricName, metricMeasurements) in groupedMeasurements {
             guard metricMeasurements.count >= 3 else { continue }
-            
+
             // Sort by timestamp
             let sorted = metricMeasurements.sorted { $0.timestamp < $1.timestamp }
-            
+
             // Calculate trend
             let firstHalf = sorted.prefix(sorted.count / 2)
             let secondHalf = sorted.suffix(sorted.count / 2)
-            
-            let firstAvg = firstHalf.map { $0.aggregatedValue }.reduce(0, +) / Double(firstHalf.count)
-            let secondAvg = secondHalf.map { $0.aggregatedValue }.reduce(0, +) / Double(secondHalf.count)
-            
+
+            let firstAvg = firstHalf.map(\.aggregatedValue).reduce(0, +) / Double(firstHalf.count)
+            let secondAvg = secondHalf.map(\.aggregatedValue).reduce(0, +) / Double(secondHalf.count)
+
             let change = ((secondAvg - firstAvg) / firstAvg) * 100
-            let direction: MetricTrend.TrendDirection
-            
-            if abs(change) < 5 {
-                direction = .stable
+            let direction: MetricTrend.TrendDirection = if abs(change) < 5 {
+                .stable
             } else if change > 0 {
-                direction = .increasing
+                .increasing
             } else {
-                direction = .decreasing
+                .decreasing
             }
-            
+
             let dataPoints = sorted.map {
                 MetricTrend.TrendDataPoint(timestamp: $0.timestamp, value: $0.aggregatedValue)
             }
-            
+
             trends.append(MetricTrend(
                 metricName: metricName,
                 direction: direction,
@@ -487,26 +488,26 @@ private struct MetricsAnalyzer {
                 dataPoints: dataPoints
             ))
         }
-        
+
         return trends
     }
-    
+
     func generateComparisons(current: [MetricMeasurement], previous: [MetricMeasurement]) -> [MetricComparison] {
         var comparisons: [MetricComparison] = []
-        
+
         // Group by metric name
         let currentGrouped = Dictionary(grouping: current) { $0.name }
         let previousGrouped = Dictionary(grouping: previous) { $0.name }
-        
+
         for (metricName, currentMeasurements) in currentGrouped {
             guard let previousMeasurements = previousGrouped[metricName],
                   !currentMeasurements.isEmpty,
                   !previousMeasurements.isEmpty else { continue }
-            
+
             // Use average measurement for comparison
-            let currentAvg = currentMeasurements.map { $0.aggregatedValue }.reduce(0, +) / Double(currentMeasurements.count)
-            let previousAvg = previousMeasurements.map { $0.aggregatedValue }.reduce(0, +) / Double(previousMeasurements.count)
-            
+            let currentAvg = currentMeasurements.map(\.aggregatedValue).reduce(0, +) / Double(currentMeasurements.count)
+            let previousAvg = previousMeasurements.map(\.aggregatedValue).reduce(0, +) / Double(previousMeasurements.count)
+
             // Create representative measurements
             let currentRep = currentMeasurements.first!
             let previousRep = MetricMeasurement(
@@ -517,13 +518,13 @@ private struct MetricsAnalyzer {
                 score: normalizeScore(previousAvg, for: currentRep.type),
                 context: currentRep.context
             )
-            
+
             let interpretation = interpretComparison(
                 metric: metricName,
                 current: currentAvg,
                 previous: previousAvg
             )
-            
+
             comparisons.append(MetricComparison(
                 type: .periodOverPeriod,
                 baseline: previousRep,
@@ -531,13 +532,13 @@ private struct MetricsAnalyzer {
                 interpretation: interpretation
             ))
         }
-        
+
         return comparisons
     }
-    
+
     func performComprehensiveAnalysis(_ measurements: [MetricMeasurement]) async -> [MetricInsight] {
         var insights: [MetricInsight] = []
-        
+
         // Correlation analysis
         let correlations = findCorrelations(measurements)
         for correlation in correlations {
@@ -549,7 +550,7 @@ private struct MetricsAnalyzer {
                 confidence: correlation.confidence
             ))
         }
-        
+
         // Pattern detection
         let patterns = detectPatterns(measurements)
         for pattern in patterns {
@@ -561,44 +562,44 @@ private struct MetricsAnalyzer {
                 confidence: pattern.confidence
             ))
         }
-        
+
         return insights
     }
-    
+
     func generateRecommendations(
         mopScores: [MeasureOfPerformance: Double],
         moeScores: [MeasureOfEffectiveness: Double],
         insights: [MetricInsight]
     ) async -> [MetricRecommendation] {
         var recommendations: [MetricRecommendation] = []
-        
+
         // Performance recommendations
         for (mop, score) in mopScores where score < 0.7 {
             let recommendation = generatePerformanceRecommendation(mop: mop, score: score)
             recommendations.append(recommendation)
         }
-        
+
         // Effectiveness recommendations
         for (moe, score) in moeScores where score < 0.7 {
             let recommendation = generateEffectivenessRecommendation(moe: moe, score: score)
             recommendations.append(recommendation)
         }
-        
+
         // Insight-based recommendations
         for insight in insights where insight.severity == .critical {
             if let recommendation = generateInsightRecommendation(insight: insight) {
                 recommendations.append(recommendation)
             }
         }
-        
+
         return recommendations.sorted { $0.priority > $1.priority }
     }
-    
+
     private func interpretComparison(metric: String, current: Double, previous: Double) -> String {
         let change = ((current - previous) / previous) * 100
         let direction = change > 0 ? "increased" : "decreased"
         let magnitude = abs(change)
-        
+
         if magnitude < 5 {
             return "\(metric) remained stable"
         } else if magnitude < 20 {
@@ -607,20 +608,20 @@ private struct MetricsAnalyzer {
             return "\(metric) \(direction) significantly by \(String(format: "%.1f%%", magnitude))"
         }
     }
-    
+
     private func findCorrelations(_ measurements: [MetricMeasurement]) -> [(message: String, metrics: [String], confidence: Double)] {
         // Simplified correlation detection
         var correlations: [(message: String, metrics: [String], confidence: Double)] = []
-        
+
         // Example: CPU usage and response time correlation
         let cpuMeasurements = measurements.filter { $0.name == MeasureOfPerformance.cpuUsage.rawValue }
         let responseMeasurements = measurements.filter { $0.name == MeasureOfPerformance.responseTime.rawValue }
-        
-        if !cpuMeasurements.isEmpty && !responseMeasurements.isEmpty {
-            let cpuAvg = cpuMeasurements.map { $0.aggregatedValue }.reduce(0, +) / Double(cpuMeasurements.count)
-            let responseAvg = responseMeasurements.map { $0.aggregatedValue }.reduce(0, +) / Double(responseMeasurements.count)
-            
-            if cpuAvg > 70 && responseAvg > 500 {
+
+        if !cpuMeasurements.isEmpty, !responseMeasurements.isEmpty {
+            let cpuAvg = cpuMeasurements.map(\.aggregatedValue).reduce(0, +) / Double(cpuMeasurements.count)
+            let responseAvg = responseMeasurements.map(\.aggregatedValue).reduce(0, +) / Double(responseMeasurements.count)
+
+            if cpuAvg > 70, responseAvg > 500 {
                 correlations.append((
                     message: "High CPU usage correlates with increased response times",
                     metrics: [MeasureOfPerformance.cpuUsage.rawValue, MeasureOfPerformance.responseTime.rawValue],
@@ -628,26 +629,26 @@ private struct MetricsAnalyzer {
                 ))
             }
         }
-        
+
         return correlations
     }
-    
+
     private func detectPatterns(_ measurements: [MetricMeasurement]) -> [(message: String, metrics: [String], confidence: Double, isPositive: Bool)] {
         var patterns: [(message: String, metrics: [String], confidence: Double, isPositive: Bool)] = []
-        
+
         // Group by metric type
         let groupedByType = Dictionary(grouping: measurements) { $0.name }
-        
+
         for (metricName, metricMeasurements) in groupedByType {
             guard metricMeasurements.count >= 5 else { continue }
-            
+
             // Check for consistent improvement
-            let scores = metricMeasurements.sorted { $0.timestamp < $1.timestamp }.map { $0.score }
+            let scores = metricMeasurements.sorted { $0.timestamp < $1.timestamp }.map(\.score)
             let isImproving = scores.enumerated().allSatisfy { index, score in
                 index == 0 || score >= scores[index - 1] * 0.95
             }
-            
-            if isImproving && scores.last! > scores.first! * 1.1 {
+
+            if isImproving, scores.last! > scores.first! * 1.1 {
                 patterns.append((
                     message: "\(metricName) shows consistent improvement pattern",
                     metrics: [metricName],
@@ -656,13 +657,13 @@ private struct MetricsAnalyzer {
                 ))
             }
         }
-        
+
         return patterns
     }
-    
+
     private func generatePerformanceRecommendation(mop: MeasureOfPerformance, score: Double) -> MetricRecommendation {
         let (title, description, actions) = getPerformanceRecommendation(mop: mop, score: score)
-        
+
         return MetricRecommendation(
             priority: score < 0.5 ? .critical : .high,
             category: .performance,
@@ -677,10 +678,10 @@ private struct MetricsAnalyzer {
             relatedMetrics: [mop.rawValue]
         )
     }
-    
+
     private func generateEffectivenessRecommendation(moe: MeasureOfEffectiveness, score: Double) -> MetricRecommendation {
         let (title, description, actions) = getEffectivenessRecommendation(moe: moe, score: score)
-        
+
         return MetricRecommendation(
             priority: score < 0.5 ? .critical : .high,
             category: .effectiveness,
@@ -695,10 +696,10 @@ private struct MetricsAnalyzer {
             relatedMetrics: [moe.rawValue]
         )
     }
-    
+
     private func generateInsightRecommendation(insight: MetricInsight) -> MetricRecommendation? {
         guard insight.severity == .critical else { return nil }
-        
+
         return MetricRecommendation(
             priority: .critical,
             category: .system,
@@ -713,58 +714,58 @@ private struct MetricsAnalyzer {
             relatedMetrics: insight.affectedMetrics
         )
     }
-    
-    private func getPerformanceRecommendation(mop: MeasureOfPerformance, score: Double) -> (String, String, [String]) {
+
+    private func getPerformanceRecommendation(mop: MeasureOfPerformance, score _: Double) -> (String, String, [String]) {
         switch mop {
         case .responseTime:
-            return (
+            (
                 "Optimize Response Time",
                 "Response times are above acceptable thresholds. Consider implementing caching, query optimization, or infrastructure scaling.",
                 ["Implement response caching", "Optimize database queries", "Scale infrastructure"]
             )
         case .cpuUsage:
-            return (
+            (
                 "Reduce CPU Usage",
                 "CPU utilization is high. Optimize computational algorithms and consider load balancing.",
                 ["Profile CPU-intensive operations", "Implement algorithm optimizations", "Add load balancing"]
             )
         case .errorRate:
-            return (
+            (
                 "Reduce Error Rate",
                 "Error rate exceeds acceptable limits. Implement better error handling and validation.",
                 ["Add input validation", "Implement retry logic", "Enhance error monitoring"]
             )
         default:
-            return (
+            (
                 "Improve \(mop.rawValue)",
                 "Performance metric \(mop.rawValue) is below target. Investigation and optimization required.",
                 ["Analyze root cause", "Implement targeted optimizations", "Monitor improvements"]
             )
         }
     }
-    
-    private func getEffectivenessRecommendation(moe: MeasureOfEffectiveness, score: Double) -> (String, String, [String]) {
+
+    private func getEffectivenessRecommendation(moe: MeasureOfEffectiveness, score _: Double) -> (String, String, [String]) {
         switch moe {
         case .userSatisfaction:
-            return (
+            (
                 "Improve User Satisfaction",
                 "User satisfaction scores are below target. Focus on UX improvements and feature enhancements.",
                 ["Conduct user surveys", "Implement UX improvements", "Add requested features"]
             )
         case .taskCompletionRate:
-            return (
+            (
                 "Increase Task Completion Rate",
                 "Users are struggling to complete tasks. Simplify workflows and improve guidance.",
                 ["Simplify user workflows", "Add contextual help", "Improve error messages"]
             )
         case .adoptionRate:
-            return (
+            (
                 "Boost Feature Adoption",
                 "Feature adoption is low. Improve discoverability and user onboarding.",
                 ["Enhance onboarding flow", "Add feature tutorials", "Improve feature visibility"]
             )
         default:
-            return (
+            (
                 "Enhance \(moe.rawValue)",
                 "Effectiveness metric \(moe.rawValue) needs improvement. Focus on user value and outcomes.",
                 ["Gather user feedback", "Implement improvements", "Measure impact"]
@@ -774,12 +775,13 @@ private struct MetricsAnalyzer {
 }
 
 // MARK: - Dependency Registration
+
 extension MetricsService: DependencyKey {
     public static var liveValue: MetricsService = .live
 }
 
-extension DependencyValues {
-    public var metricsService: MetricsService {
+public extension DependencyValues {
+    var metricsService: MetricsService {
         get { self[MetricsService.self] }
         set { self[MetricsService.self] = newValue }
     }

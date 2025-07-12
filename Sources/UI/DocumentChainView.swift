@@ -1,11 +1,12 @@
 import SwiftUI
 
 // MARK: - Document Chain View
+
 struct DocumentChainView: View {
     let chain: DocumentChain?
     let validation: ChainValidation?
     let onSelectDocument: (DocumentType) -> Void
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
             // Header
@@ -13,17 +14,17 @@ struct DocumentChainView: View {
                 Text("Document Chain")
                     .font(.headline)
                     .foregroundColor(.white)
-                
+
                 Spacer()
-                
-                if let chain = chain {
+
+                if let chain {
                     Text("\(Int(chain.progress * 100))% Complete")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
             }
-            
-            if let chain = chain {
+
+            if let chain {
                 // Chain visualization
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: Theme.Spacing.sm) {
@@ -35,7 +36,7 @@ struct DocumentChainView: View {
                                 hasError: validation?.missingData[document] != nil,
                                 onTap: { onSelectDocument(document) }
                             )
-                            
+
                             if index < chain.plannedDocuments.count - 1 {
                                 ChainConnector(
                                     isActive: chain.completedDocuments[document] != nil
@@ -45,9 +46,9 @@ struct DocumentChainView: View {
                     }
                     .padding(.vertical, Theme.Spacing.sm)
                 }
-                
+
                 // Validation messages
-                if let validation = validation {
+                if let validation {
                     VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
                         if !validation.brokenLinks.isEmpty {
                             ForEach(validation.brokenLinks, id: \.from.rawValue) { link in
@@ -55,20 +56,20 @@ struct DocumentChainView: View {
                                     Image(systemName: "exclamationmark.triangle.fill")
                                         .font(.caption)
                                         .foregroundColor(.orange)
-                                    
+
                                     Text(link.reason)
                                         .font(.caption)
                                         .foregroundColor(.orange)
                                 }
                             }
                         }
-                        
+
                         ForEach(validation.recommendations, id: \.self) { recommendation in
                             HStack(spacing: Theme.Spacing.xs) {
                                 Image(systemName: "lightbulb.fill")
                                     .font(.caption)
                                     .foregroundColor(.blue)
-                                
+
                                 Text(recommendation)
                                     .font(.caption)
                                     .foregroundColor(.blue)
@@ -92,25 +93,26 @@ struct DocumentChainView: View {
 }
 
 // MARK: - Document Chain Node
+
 struct DocumentChainNode: View {
     let document: DocumentType
     let isCompleted: Bool
     let isCurrent: Bool
     let hasError: Bool
     let onTap: () -> Void
-    
+
     var nodeColor: Color {
         if hasError {
-            return .orange
+            .orange
         } else if isCompleted {
-            return .green
+            .green
         } else if isCurrent {
-            return Color(red: 0.6, green: 0.4, blue: 1.0)
+            Color(red: 0.6, green: 0.4, blue: 1.0)
         } else {
-            return .gray
+            .gray
         }
     }
-    
+
     var body: some View {
         Button(action: onTap) {
             VStack(spacing: Theme.Spacing.xs) {
@@ -118,7 +120,7 @@ struct DocumentChainNode: View {
                     Circle()
                         .fill(nodeColor.opacity(0.2))
                         .frame(width: 44, height: 44)
-                    
+
                     if isCompleted {
                         Image(systemName: "checkmark.circle.fill")
                             .font(.title2)
@@ -129,14 +131,14 @@ struct DocumentChainNode: View {
                             .foregroundColor(nodeColor)
                     }
                 }
-                
+
                 Text(document.shortName)
                     .font(.caption2)
                     .foregroundColor(.white)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
                     .frame(width: 80)
-                
+
                 if isCurrent {
                     Text("Current")
                         .font(.caption2)
@@ -149,9 +151,10 @@ struct DocumentChainNode: View {
 }
 
 // MARK: - Chain Connector
+
 struct ChainConnector: View {
     let isActive: Bool
-    
+
     var body: some View {
         Rectangle()
             .fill(isActive ? Color.green : Color.gray)
@@ -165,34 +168,35 @@ struct ChainConnector: View {
 }
 
 // MARK: - Document Chain Progress Bar
+
 struct DocumentChainProgressBar: View {
     let chain: DocumentChain
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
             HStack {
                 Text("Chain Progress")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                
+
                 Spacer()
-                
+
                 Text("\(chain.completedDocuments.count) of \(chain.plannedDocuments.count)")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-            
+
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 4)
                         .fill(Color.gray.opacity(0.3))
                         .frame(height: 8)
-                    
+
                     RoundedRectangle(cornerRadius: 4)
                         .fill(LinearGradient(
                             gradient: Gradient(colors: [
                                 Color(red: 0.6, green: 0.4, blue: 1.0),
-                                Color(red: 0.4, green: 0.2, blue: 0.8)
+                                Color(red: 0.4, green: 0.2, blue: 0.8),
                             ]),
                             startPoint: .leading,
                             endPoint: .trailing

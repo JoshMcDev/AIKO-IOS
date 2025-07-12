@@ -1,5 +1,5 @@
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
 // Test app with mocked dependencies
 @main
@@ -15,14 +15,14 @@ struct TestSAMGovApp: App {
 struct ContentView: View {
     @State private var showingSAMGov = false
     @State private var showingSAMReport = false
-    
+
     var body: some View {
         SwiftUI.NavigationView {
             VStack(spacing: 40) {
                 Text("SAM.gov Test Harness")
                     .font(.largeTitle)
                     .bold()
-                
+
                 // Test SAM.gov Search
                 Button(action: {
                     showingSAMGov = true
@@ -39,7 +39,7 @@ struct ContentView: View {
                     .cornerRadius(10)
                 }
                 .padding(.horizontal)
-                
+
                 // Test SAM Report View
                 Button(action: {
                     showingSAMReport = true
@@ -56,12 +56,12 @@ struct ContentView: View {
                     .cornerRadius(10)
                 }
                 .padding(.horizontal)
-                
+
                 // Instructions
                 VStack(alignment: .leading, spacing: 15) {
                     Text("Test Instructions:")
                         .font(.headline)
-                    
+
                     VStack(alignment: .leading, spacing: 8) {
                         Label("Card 1: Enter CAGE '1F353' (Lockheed Martin)", systemImage: "1.circle")
                         Label("Card 2: Enter 'BOOZ ALLEN' for company name", systemImage: "2.circle")
@@ -76,7 +76,7 @@ struct ContentView: View {
                 .background(Color.gray.opacity(0.2))
                 .cornerRadius(12)
                 .padding(.horizontal)
-                
+
                 Spacer()
             }
             .navigationBarHidden(true)
@@ -99,7 +99,7 @@ struct ContentView: View {
 
 // Required imports and extensions
 extension View {
-    func withDependencies(_ updateDependencies: (inout DependencyValues) -> Void) -> some View {
+    func withDependencies(_: (inout DependencyValues) -> Void) -> some View {
         WithPerceptionTracking {
             self
         }

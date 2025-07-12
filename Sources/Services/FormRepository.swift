@@ -1,15 +1,16 @@
-import Foundation
 import Combine
+import Foundation
 
 /// Repository for managing government form definitions and templates
 final class FormRepository {
-    
     // MARK: - Properties
+
     private let baseURL = "https://www.gsa.gov/forms"
     private let cacheManager: FormCacheManager
     private let networkService: NetworkService
-    
+
     // MARK: - Form Definitions
+
     private let formDefinitions: [FormDefinition] = [
         // SF 18 - Request for Quotations
         FormDefinition(
@@ -22,13 +23,13 @@ final class FormRepository {
             supportedTemplates: [.requestForQuoteSimplified, .requestForQuote],
             requiredFields: [
                 "requisitionNumber", "dateIssued", "deliveryDate",
-                "itemDescription", "quantity", "unit", "unitPrice"
+                "itemDescription", "quantity", "unit", "unitPrice",
             ],
             farReference: "FAR 53.213",
             downloadURL: URL(string: "https://www.gsa.gov/forms/sf18.pdf"),
             threshold: 250_000
         ),
-        
+
         // SF 1449 - Solicitation/Contract/Order for Commercial Products and Commercial Services
         FormDefinition(
             formType: .sf1449,
@@ -41,13 +42,13 @@ final class FormRepository {
             requiredFields: [
                 "contractNumber", "solicitationNumber", "dateIssued",
                 "requisitionNumber", "deliveryTerms", "paymentTerms",
-                "itemDescription", "quantity", "unitPrice", "totalPrice"
+                "itemDescription", "quantity", "unitPrice", "totalPrice",
             ],
             farReference: "FAR 53.212",
             downloadURL: URL(string: "https://www.gsa.gov/forms/sf1449.pdf"),
             threshold: 7_000_000
         ),
-        
+
         // SF 30 - Amendment of Solicitation/Modification of Contract
         FormDefinition(
             formType: .sf30,
@@ -59,13 +60,13 @@ final class FormRepository {
             supportedTemplates: [.contractScaffold],
             requiredFields: [
                 "amendmentNumber", "effectiveDate", "contractNumber",
-                "modificationDescription", "changeAmount"
+                "modificationDescription", "changeAmount",
             ],
             farReference: "FAR 53.243",
             downloadURL: URL(string: "https://www.gsa.gov/forms/sf30.pdf"),
             threshold: nil
         ),
-        
+
         // SF 26 - Award/Contract
         FormDefinition(
             formType: .sf26,
@@ -77,13 +78,13 @@ final class FormRepository {
             supportedTemplates: [.contractScaffold],
             requiredFields: [
                 "contractNumber", "effectiveDate", "contractor",
-                "totalAmount", "performancePeriod"
+                "totalAmount", "performancePeriod",
             ],
             farReference: "FAR 53.214",
             downloadURL: URL(string: "https://www.gsa.gov/forms/sf26.pdf"),
             threshold: nil
         ),
-        
+
         // SF 36 - Continuation Sheet
         FormDefinition(
             formType: .sf36,
@@ -98,7 +99,7 @@ final class FormRepository {
             downloadURL: URL(string: "https://www.gsa.gov/forms/sf36.pdf"),
             threshold: nil
         ),
-        
+
         // SF 44 - Purchase Order-Invoice-Voucher
         FormDefinition(
             formType: .sf44,
@@ -110,13 +111,13 @@ final class FormRepository {
             supportedTemplates: [.requestForQuote, .requestForQuoteSimplified],
             requiredFields: [
                 "orderNumber", "dateOrdered", "vendor",
-                "itemDescription", "quantity", "unitPrice", "totalAmount"
+                "itemDescription", "quantity", "unitPrice", "totalAmount",
             ],
             farReference: "FAR 53.213",
             downloadURL: URL(string: "https://www.gsa.gov/forms/sf44.pdf"),
-            threshold: 10_000
+            threshold: 10000
         ),
-        
+
         // SF 252 - Architect-Engineer Contract
         FormDefinition(
             formType: .sf252,
@@ -128,13 +129,13 @@ final class FormRepository {
             supportedTemplates: [.sow, .pws],
             requiredFields: [
                 "projectTitle", "projectLocation", "estimatedCost",
-                "performancePeriod", "firmName", "services"
+                "performancePeriod", "firmName", "services",
             ],
             farReference: "FAR 53.236-2",
             downloadURL: URL(string: "https://www.gsa.gov/forms/sf252.pdf"),
             threshold: nil
         ),
-        
+
         // SF 1408 - Pre-Award Survey
         FormDefinition(
             formType: .sf1408,
@@ -147,75 +148,76 @@ final class FormRepository {
             requiredFields: [
                 "contractorName", "solicitationNumber", "surveyDate",
                 "technicalCapability", "productionCapacity", "qualityAssurance",
-                "financialCapability", "performanceRecord"
+                "financialCapability", "performanceRecord",
             ],
             farReference: "FAR 53.209",
             downloadURL: URL(string: "https://www.gsa.gov/forms/sf1408.pdf"),
             threshold: nil
-        )
+        ),
     ]
-    
+
     // MARK: - Initialization
+
     init() {
-        self.cacheManager = FormCacheManager()
-        self.networkService = NetworkService.shared
+        cacheManager = FormCacheManager()
+        networkService = NetworkService.shared
     }
-    
+
     // MARK: - Public Methods
-    
+
     /// Load all form definitions
     func loadFormDefinitions() async throws -> [FormDefinition] {
         // Check cache first
         if let cachedForms = cacheManager.getCachedFormDefinitions() {
             return cachedForms
         }
-        
+
         // Return hardcoded definitions for now
         // In production, this would fetch from the API
         cacheManager.cacheFormDefinitions(formDefinitions)
         return formDefinitions
     }
-    
+
     /// Generate a blank form as PDF data
     func generateBlankForm(_ formDefinition: FormDefinition) async throws -> Data {
         // Check cache first
         if let cachedForm = cacheManager.getCachedBlankForm(formDefinition.formType) {
             return cachedForm
         }
-        
+
         // In production, this would download the actual PDF
         // For now, generate a placeholder
         guard let url = formDefinition.downloadURL else {
             throw FormRepositoryError.downloadURLNotAvailable
         }
-        
+
         // Simulate network request
         let data = try await networkService.downloadData(from: url)
-        
+
         // Cache the result
         cacheManager.cacheBlankForm(data, for: formDefinition.formType)
-        
+
         return data
     }
-    
+
     /// Get preview URL for a form
     func getPreviewURL(for formType: FormType) -> URL? {
-        return formDefinitions.first { $0.formType == formType }?.downloadURL
+        formDefinitions.first { $0.formType == formType }?.downloadURL
     }
-    
+
     /// Search forms by criteria
     func searchForms(query: String) -> [FormDefinition] {
         let lowercasedQuery = query.lowercased()
         return formDefinitions.filter { form in
             form.title.lowercased().contains(lowercasedQuery) ||
-            form.formNumber.lowercased().contains(lowercasedQuery) ||
-            form.description.lowercased().contains(lowercasedQuery)
+                form.formNumber.lowercased().contains(lowercasedQuery) ||
+                form.description.lowercased().contains(lowercasedQuery)
         }
     }
-    
+
     /// Get forms by threshold
     func getFormsByThreshold(_ amount: Double) -> [FormDefinition] {
-        return formDefinitions.filter { form in
+        formDefinitions.filter { form in
             guard let threshold = form.threshold else { return true }
             return amount <= threshold
         }
@@ -228,15 +230,15 @@ enum FormRepositoryError: LocalizedError {
     case downloadURLNotAvailable
     case networkError(Error)
     case invalidFormData
-    
+
     var errorDescription: String? {
         switch self {
         case .downloadURLNotAvailable:
-            return "Download URL not available for this form"
-        case .networkError(let error):
-            return "Network error: \(error.localizedDescription)"
+            "Download URL not available for this form"
+        case let .networkError(error):
+            "Network error: \(error.localizedDescription)"
         case .invalidFormData:
-            return "Invalid form data received"
+            "Invalid form data received"
         }
     }
 }
@@ -246,20 +248,20 @@ enum FormRepositoryError: LocalizedError {
 final class FormCacheManager {
     private let cache = NSCache<NSString, NSData>()
     private let definitionsKey = "form_definitions"
-    
+
     func getCachedFormDefinitions() -> [FormDefinition]? {
         // Implementation would retrieve from persistent storage
-        return nil
+        nil
     }
-    
-    func cacheFormDefinitions(_ definitions: [FormDefinition]) {
+
+    func cacheFormDefinitions(_: [FormDefinition]) {
         // Implementation would persist to storage
     }
-    
+
     func getCachedBlankForm(_ formType: FormType) -> Data? {
-        return cache.object(forKey: formType.rawValue as NSString) as Data?
+        cache.object(forKey: formType.rawValue as NSString) as Data?
     }
-    
+
     func cacheBlankForm(_ data: Data, for formType: FormType) {
         cache.setObject(data as NSData, forKey: formType.rawValue as NSString)
     }

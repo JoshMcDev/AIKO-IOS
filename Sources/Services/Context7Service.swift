@@ -1,5 +1,5 @@
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 /// Context7 MCP Service for real-time federal regulation updates and compliance monitoring
 public struct Context7Service {
@@ -8,14 +8,14 @@ public struct Context7Service {
     public var validateCompliance: (DocumentType, String) async throws -> Context7ComplianceResult
     public var getUserBehaviorInsights: () async throws -> UserBehaviorInsights
     public var getSecurityPolicyUpdates: () async throws -> [SecurityPolicy]
-    public var searchRegulations: (String) async throws -> [RegulationSearchResult]
-    
+    public var searchRegulations: (String) async throws -> [Context7SearchResult]
+
     public init(
         getRegulationUpdates: @escaping (Context7RegulationCategory) async throws -> [Context7RegulationUpdate],
         validateCompliance: @escaping (DocumentType, String) async throws -> Context7ComplianceResult,
         getUserBehaviorInsights: @escaping () async throws -> UserBehaviorInsights,
         getSecurityPolicyUpdates: @escaping () async throws -> [SecurityPolicy],
-        searchRegulations: @escaping (String) async throws -> [RegulationSearchResult]
+        searchRegulations: @escaping (String) async throws -> [Context7SearchResult]
     ) {
         self.getRegulationUpdates = getRegulationUpdates
         self.validateCompliance = validateCompliance
@@ -46,19 +46,19 @@ public struct Context7RegulationUpdate: Identifiable, Equatable {
     public let affectedDocumentTypes: [DocumentType]
     public let farReference: String
     public let changesSummary: String
-    
+
     public enum ImpactLevel: String, CaseIterable {
         case critical = "Critical"
         case high = "High"
         case medium = "Medium"
         case low = "Low"
-        
+
         public var color: String {
             switch self {
-            case .critical: return "red"
-            case .high: return "orange"
-            case .medium: return "yellow"
-            case .low: return "green"
+            case .critical: "red"
+            case .high: "orange"
+            case .medium: "yellow"
+            case .low: "green"
             }
         }
     }
@@ -70,20 +70,20 @@ public struct Context7ComplianceResult: Equatable {
     public let regulationMatches: [RegulationMatch]
     public let recommendations: [ComplianceRecommendation]
     public let lastUpdated: Date
-    
+
     public struct RegulationMatch: Equatable {
         public let regulation: String
         public let clause: String
         public let matchConfidence: Double
         public let explanation: String
     }
-    
+
     public struct ComplianceRecommendation: Equatable {
         public let priority: Priority
         public let recommendation: String
         public let relatedRegulation: String
         public let estimatedEffort: String
-        
+
         public enum Priority: String, CaseIterable {
             case immediate = "Immediate"
             case high = "High"
@@ -99,14 +99,14 @@ public struct UserBehaviorInsights: Equatable {
     public let commonRequirementPatterns: [String]
     public let recommendedWorkflows: [WorkflowRecommendation]
     public let usageStatistics: UsageStats
-    
+
     public struct WorkflowRecommendation: Equatable {
         public let title: String
         public let description: String
         public let efficiency: Double // Percentage improvement
         public let basedOnPatterns: [String]
     }
-    
+
     public struct UsageStats: Equatable {
         public let totalDocumentsGenerated: Int
         public let successRate: Double
@@ -123,7 +123,7 @@ public struct SecurityPolicy: Identifiable, Equatable {
     public let lastUpdated: Date
     public let complianceDeadline: Date?
     public let affectedFeatures: [String]
-    
+
     public enum SecurityCategory: String, CaseIterable {
         case dataProtection = "Data Protection"
         case accessControl = "Access Control"
@@ -133,16 +133,7 @@ public struct SecurityPolicy: Identifiable, Equatable {
     }
 }
 
-public struct RegulationSearchResult: Identifiable, Equatable {
-    public let id = UUID()
-    public let regulation: String
-    public let clause: String
-    public let title: String
-    public let content: String
-    public let relevanceScore: Double
-    public let lastUpdated: Date
-    public let relatedDocumentTypes: [DocumentType]
-}
+// Note: Context7SearchResult is now imported from Models module to avoid duplication
 
 // MARK: - Dependency Implementation
 
@@ -153,7 +144,7 @@ extension Context7Service: DependencyKey {
                 // In production, this would connect to the actual Context7 MCP Server
                 // For now, return mock data for development
                 try await Task.sleep(nanoseconds: 500_000_000) // Simulate network delay
-                
+
                 return [
                     Context7RegulationUpdate(
                         category: category,
@@ -174,13 +165,13 @@ extension Context7Service: DependencyKey {
                         affectedDocumentTypes: [.qasp, .acquisitionPlan],
                         farReference: "DFARS 252.204-7012",
                         changesSummary: "Enhanced cybersecurity requirements for contractors"
-                    )
+                    ),
                 ]
             },
-            
-            validateCompliance: { documentType, content in
+
+            validateCompliance: { _, _ in
                 try await Task.sleep(nanoseconds: 750_000_000) // Simulate analysis
-                
+
                 return Context7ComplianceResult(
                     isCompliant: true,
                     complianceScore: 0.92,
@@ -190,7 +181,7 @@ extension Context7Service: DependencyKey {
                             clause: "Audit and Records",
                             matchConfidence: 0.95,
                             explanation: "Document includes required audit provisions"
-                        )
+                        ),
                     ],
                     recommendations: [
                         .init(
@@ -198,22 +189,22 @@ extension Context7Service: DependencyKey {
                             recommendation: "Include specific data retention period",
                             relatedRegulation: "FAR 52.215-2",
                             estimatedEffort: "15 minutes"
-                        )
+                        ),
                     ],
                     lastUpdated: Date()
                 )
             },
-            
+
             getUserBehaviorInsights: {
                 try await Task.sleep(nanoseconds: 500_000_000)
-                
+
                 return UserBehaviorInsights(
                     mostUsedDocumentTypes: [.sow, .pws],
                     averageCompletionTime: 1800, // 30 minutes
                     commonRequirementPatterns: [
                         "software development",
                         "cloud services",
-                        "cybersecurity assessment"
+                        "cybersecurity assessment",
                     ],
                     recommendedWorkflows: [
                         .init(
@@ -221,7 +212,7 @@ extension Context7Service: DependencyKey {
                             description: "Use templates for common requirement patterns",
                             efficiency: 0.45,
                             basedOnPatterns: ["software development"]
-                        )
+                        ),
                     ],
                     usageStatistics: .init(
                         totalDocumentsGenerated: 156,
@@ -231,10 +222,10 @@ extension Context7Service: DependencyKey {
                     )
                 )
             },
-            
+
             getSecurityPolicyUpdates: {
                 try await Task.sleep(nanoseconds: 300_000_000)
-                
+
                 return [
                     SecurityPolicy(
                         policyName: "Zero Trust Architecture",
@@ -242,20 +233,20 @@ extension Context7Service: DependencyKey {
                         requirements: [
                             "Implement multi-factor authentication",
                             "Verify all access requests",
-                            "Encrypt data in transit"
+                            "Encrypt data in transit",
                         ],
                         lastUpdated: Date(),
                         complianceDeadline: Date().addingTimeInterval(90 * 24 * 60 * 60),
                         affectedFeatures: ["API Authentication", "Document Access"]
-                    )
+                    ),
                 ]
             },
-            
-            searchRegulations: { query in
+
+            searchRegulations: { _ in
                 try await Task.sleep(nanoseconds: 600_000_000)
-                
+
                 return [
-                    RegulationSearchResult(
+                    Context7SearchResult(
                         regulation: "FAR",
                         clause: "52.227-14",
                         title: "Rights in Data—General",
@@ -263,12 +254,12 @@ extension Context7Service: DependencyKey {
                         relevanceScore: 0.95,
                         lastUpdated: Date(),
                         relatedDocumentTypes: [.sow, .acquisitionPlan]
-                    )
+                    ),
                 ]
             }
         )
     }
-    
+
     public static var testValue: Context7Service {
         Context7Service(
             getRegulationUpdates: { _ in [] },
@@ -301,8 +292,8 @@ extension Context7Service: DependencyKey {
     }
 }
 
-extension DependencyValues {
-    public var context7Service: Context7Service {
+public extension DependencyValues {
+    var context7Service: Context7Service {
         get { self[Context7Service.self] }
         set { self[Context7Service.self] = newValue }
     }

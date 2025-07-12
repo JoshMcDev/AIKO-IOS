@@ -2,8 +2,8 @@ import Foundation
 
 /// Engine responsible for mapping template fields to form fields
 final class MappingEngine {
-    
     // MARK: - Mapping Rules
+
     private let mappingRules: [DocumentType: [FormType: MappingRuleSet]] = [
         // RFQ Simplified to SF 18
         .requestForQuoteSimplified: [
@@ -33,16 +33,16 @@ final class MappingEngine {
                         sourceField: "requisitionNumber",
                         targetField: "requisitionNumber",
                         transformation: .direct
-                    )
+                    ),
                 ],
                 defaultValues: [
                     "unit": "EA",
                     "fob": "Destination",
-                    "discountTerms": "NET 30"
+                    "discountTerms": "NET 30",
                 ]
-            )
+            ),
         ],
-        
+
         // Contract to SF 1449
         .contractScaffold: [
             .sf1449: MappingRuleSet(
@@ -81,19 +81,19 @@ final class MappingEngine {
                                 "description": item["description"] ?? "",
                                 "quantity": item["quantity"] ?? 0,
                                 "unitPrice": item["unitPrice"] ?? 0,
-                                "totalPrice": item["totalPrice"] ?? 0
+                                "totalPrice": item["totalPrice"] ?? 0,
                             ]
                         }
-                    )
+                    ),
                 ],
                 defaultValues: [
                     "deliveryTerms": "F.O.B. DESTINATION",
                     "paymentTerms": "NET 30 DAYS",
-                    "inspectionTerms": "DESTINATION"
+                    "inspectionTerms": "DESTINATION",
                 ]
-            )
+            ),
         ],
-        
+
         // RFP to SF 1449
         .requestForProposal: [
             .sf1449: MappingRuleSet(
@@ -121,46 +121,47 @@ final class MappingEngine {
                             "8a": "8(A) SET-ASIDE",
                             "wosb": "WOSB SET-ASIDE",
                             "hubzone": "HUBZONE SET-ASIDE",
-                            "sdvosb": "SDVOSB SET-ASIDE"
+                            "sdvosb": "SDVOSB SET-ASIDE",
                         ])
-                    )
+                    ),
                 ],
                 defaultValues: [
                     "acquisitionType": "COMMERCIAL",
-                    "evaluationType": "LPTA"
+                    "evaluationType": "LPTA",
                 ]
-            )
-        ]
+            ),
+        ],
     ]
-    
+
     // MARK: - Public Methods
-    
+
     /// Get mapping rules for a specific template to form conversion
     func getMappingRules(from documentType: DocumentType, to formType: FormType) async throws -> MappingRuleSet {
         guard let rulesForDocument = mappingRules[documentType],
-              let ruleSet = rulesForDocument[formType] else {
+              let ruleSet = rulesForDocument[formType]
+        else {
             throw MappingEngineError.noMappingAvailable(from: documentType, to: formType)
         }
-        
+
         return ruleSet
     }
-    
+
     /// Apply mapping rules to transform data
     func applyMapping(
         sourceData: [String: Any],
         rules: MappingRuleSet
     ) throws -> [String: Any] {
         var result: [String: Any] = [:]
-        
+
         // Apply default values first
         for (key, value) in rules.defaultValues {
             result[key] = value
         }
-        
+
         // Apply mapping rules
         for rule in rules.rules {
             let sourceValue = getNestedValue(from: sourceData, path: rule.sourceField)
-            
+
             if let value = sourceValue {
                 let transformedValue = try applyTransformation(
                     value: value,
@@ -171,10 +172,10 @@ final class MappingEngine {
                 throw MappingEngineError.requiredFieldMissing(rule.sourceField)
             }
         }
-        
+
         return result
     }
-    
+
     /// Validate that all required fields are present
     func validateRequiredFields(
         data: [String: Any],
@@ -183,18 +184,18 @@ final class MappingEngine {
         let missingFields = requiredFields.filter { field in
             getNestedValue(from: data, path: field) == nil
         }
-        
+
         if !missingFields.isEmpty {
             throw MappingEngineError.missingRequiredFields(missingFields)
         }
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func getNestedValue(from data: [String: Any], path: String) -> Any? {
         let components = path.split(separator: ".").map(String.init)
         var current: Any? = data
-        
+
         for component in components {
             if let dict = current as? [String: Any] {
                 current = dict[component]
@@ -202,10 +203,10 @@ final class MappingEngine {
                 return nil
             }
         }
-        
+
         return current
     }
-    
+
     private func applyTransformation(
         value: Any,
         transformation: FieldTransformation
@@ -213,15 +214,15 @@ final class MappingEngine {
         switch transformation {
         case .direct:
             return value
-            
-        case .dateFormat(let format):
+
+        case let .dateFormat(format):
             guard let date = value as? Date else {
                 throw MappingEngineError.invalidTransformation("Expected Date, got \(type(of: value))")
             }
             let formatter = DateFormatter()
             formatter.dateFormat = format
             return formatter.string(from: date)
-            
+
         case .currency:
             guard let number = value as? NSNumber else {
                 throw MappingEngineError.invalidTransformation("Expected Number for currency, got \(type(of: value))")
@@ -230,7 +231,7 @@ final class MappingEngine {
             formatter.numberStyle = .currency
             formatter.locale = Locale(identifier: "en_US")
             return formatter.string(from: number) ?? "$0.00"
-            
+
         case .addressFormat:
             guard let address = value as? [String: Any] else {
                 throw MappingEngineError.invalidTransformation("Expected address dictionary")
@@ -240,21 +241,22 @@ final class MappingEngine {
             let state = address["state"] as? String ?? ""
             let zip = address["zip"] as? String ?? ""
             return "\(street)\n\(city), \(state) \(zip)"
-            
-        case .mapping(let map):
+
+        case let .mapping(map):
             guard let key = value as? String,
-                  let mappedValue = map[key] else {
+                  let mappedValue = map[key]
+            else {
                 return value
             }
             return mappedValue
-            
-        case .array(let transform):
+
+        case let .array(transform):
             guard let array = value as? [[String: Any]] else {
                 throw MappingEngineError.invalidTransformation("Expected array")
             }
             return try array.map { try transform($0) }
-            
-        case .custom(let transform):
+
+        case let .custom(transform):
             return try transform(value)
         }
     }
@@ -280,8 +282,8 @@ enum FieldTransformation {
     case currency
     case addressFormat
     case mapping([String: String])
-    case array((([String: Any]) throws -> [String: Any]))
-    case custom(((Any) throws -> Any))
+    case array(([String: Any]) throws -> [String: Any])
+    case custom((Any) throws -> Any)
 }
 
 enum MappingEngineError: LocalizedError {
@@ -289,17 +291,17 @@ enum MappingEngineError: LocalizedError {
     case requiredFieldMissing(String)
     case missingRequiredFields([String])
     case invalidTransformation(String)
-    
+
     var errorDescription: String? {
         switch self {
-        case .noMappingAvailable(let from, let to):
-            return "No mapping available from \(from) to \(to)"
-        case .requiredFieldMissing(let field):
-            return "Required field missing: \(field)"
-        case .missingRequiredFields(let fields):
-            return "Missing required fields: \(fields.joined(separator: ", "))"
-        case .invalidTransformation(let reason):
-            return "Invalid transformation: \(reason)"
+        case let .noMappingAvailable(from, to):
+            "No mapping available from \(from) to \(to)"
+        case let .requiredFieldMissing(field):
+            "Required field missing: \(field)"
+        case let .missingRequiredFields(fields):
+            "Missing required fields: \(fields.joined(separator: ", "))"
+        case let .invalidTransformation(reason):
+            "Invalid transformation: \(reason)"
         }
     }
 }

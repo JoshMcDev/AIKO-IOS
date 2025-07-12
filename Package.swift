@@ -29,7 +29,7 @@ let package = Package(
                 .copy("Models/AIKO.xcdatamodeld"),
                 .copy("Models/MetricsModel.xcdatamodeld"),
                 .process("Resources/AppIcon.png"),
-                .process("Resources/SAMIcon.png")
+                .process("Resources/SAMIcon.png"),
             ]
         ),
     ]

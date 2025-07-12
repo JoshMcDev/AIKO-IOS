@@ -1,55 +1,53 @@
-import Foundation
 import CoreData
+import Foundation
 
-extension MetricsSummaryEntity {
-    
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<MetricsSummaryEntity> {
-        return NSFetchRequest<MetricsSummaryEntity>(entityName: "MetricsSummary")
+public extension MetricsSummaryEntity {
+    @nonobjc class func fetchRequest() -> NSFetchRequest<MetricsSummaryEntity> {
+        NSFetchRequest<MetricsSummaryEntity>(entityName: "MetricsSummary")
     }
-    
-    @NSManaged public var periodStart: Date?
-    @NSManaged public var periodEnd: Date?
-    @NSManaged public var mopScoresData: Data?
-    @NSManaged public var moeScoresData: Data?
-    @NSManaged public var overallMOPScore: Double
-    @NSManaged public var overallMOEScore: Double
-    @NSManaged public var combinedScore: Double
-    @NSManaged public var insights: NSSet?
-    @NSManaged public var recommendations: NSSet?
-    @NSManaged public var report: MetricsReportEntity?
+
+    @NSManaged var periodStart: Date?
+    @NSManaged var periodEnd: Date?
+    @NSManaged var mopScoresData: Data?
+    @NSManaged var moeScoresData: Data?
+    @NSManaged var overallMOPScore: Double
+    @NSManaged var overallMOEScore: Double
+    @NSManaged var combinedScore: Double
+    @NSManaged var insights: NSSet?
+    @NSManaged var recommendations: NSSet?
+    @NSManaged var report: MetricsReportEntity?
 }
 
 // MARK: Generated accessors for insights
-extension MetricsSummaryEntity {
-    
+
+public extension MetricsSummaryEntity {
     @objc(addInsightsObject:)
-    @NSManaged public func addToInsights(_ value: MetricInsightEntity)
-    
+    @NSManaged func addToInsights(_ value: MetricInsightEntity)
+
     @objc(removeInsightsObject:)
-    @NSManaged public func removeFromInsights(_ value: MetricInsightEntity)
-    
+    @NSManaged func removeFromInsights(_ value: MetricInsightEntity)
+
     @objc(addInsights:)
-    @NSManaged public func addToInsights(_ values: NSSet)
-    
+    @NSManaged func addToInsights(_ values: NSSet)
+
     @objc(removeInsights:)
-    @NSManaged public func removeFromInsights(_ values: NSSet)
+    @NSManaged func removeFromInsights(_ values: NSSet)
 }
 
 // MARK: Generated accessors for recommendations
-extension MetricsSummaryEntity {
-    
+
+public extension MetricsSummaryEntity {
     @objc(addRecommendationsObject:)
-    @NSManaged public func addToRecommendations(_ value: MetricRecommendationEntity)
-    
+    @NSManaged func addToRecommendations(_ value: MetricRecommendationEntity)
+
     @objc(removeRecommendationsObject:)
-    @NSManaged public func removeFromRecommendations(_ value: MetricRecommendationEntity)
-    
+    @NSManaged func removeFromRecommendations(_ value: MetricRecommendationEntity)
+
     @objc(addRecommendations:)
-    @NSManaged public func addToRecommendations(_ values: NSSet)
-    
+    @NSManaged func addToRecommendations(_ values: NSSet)
+
     @objc(removeRecommendations:)
-    @NSManaged public func removeFromRecommendations(_ values: NSSet)
+    @NSManaged func removeFromRecommendations(_ values: NSSet)
 }
 
-extension MetricsSummaryEntity : Identifiable {
-}
+extension MetricsSummaryEntity: Identifiable {}

@@ -1,11 +1,11 @@
+import ComposableArchitecture
 import Foundation
 import SwiftAnthropic
-import ComposableArchitecture
 
 public struct AIDocumentGenerator {
     public var generateDocuments: (String, Set<DocumentType>) async throws -> [GeneratedDocument]
     public var generateDFDocuments: (String, Set<DFDocumentType>) async throws -> [GeneratedDocument]
-    
+
     public init(
         generateDocuments: @escaping (String, Set<DocumentType>) async throws -> [GeneratedDocument],
         generateDFDocuments: @escaping (String, Set<DFDocumentType>) async throws -> [GeneratedDocument]
@@ -26,26 +26,26 @@ extension AIDocumentGenerator: DependencyKey {
                     betaHeaders: nil
                 )
                 var generatedDocuments: [GeneratedDocument] = []
-                
+
                 // Load user profile for template variables
                 let profile = try? await userProfileService.loadProfile()
-                
+
                 for documentType in documentTypes {
                     // Pro features check removed - all features available
-                    
+
                     // Try to load template if available
                     let template = try? await templateService.loadTemplate(documentType)
-                    
+
                     let prompt: String
-                    if let template = template {
+                    if let template {
                         // Replace profile variables in template
                         var processedTemplate = template
-                        if let profile = profile {
+                        if let profile {
                             for (key, value) in profile.templateVariables {
                                 processedTemplate = processedTemplate.replacingOccurrences(of: "{{\(key)}}", with: value)
                             }
                         }
-                        
+
                         // Use template-based prompt
                         prompt = createTemplateBasedPrompt(
                             for: documentType,
@@ -57,14 +57,14 @@ extension AIDocumentGenerator: DependencyKey {
                         // Fall back to original prompt
                         prompt = createPrompt(for: documentType, requirements: requirements, profile: profile)
                     }
-                    
+
                     let messages = [
                         MessageParameter.Message(
                             role: .user,
                             content: .text(prompt)
-                        )
+                        ),
                     ]
-                    
+
                     let parameters = MessageParameter(
                         model: .other("claude-sonnet-4-20250514"),
                         messages: messages,
@@ -79,30 +79,30 @@ extension AIDocumentGenerator: DependencyKey {
                         tools: nil,
                         toolChoice: nil
                     )
-                    
+
                     let result = try await anthropicService.createMessage(parameters)
-                    
+
                     let content: String
                     switch result.content.first {
-                    case .text(let text, _):  // Ignore citations
+                    case let .text(text, _): // Ignore citations
                         content = text
                     default:
                         throw AIDocumentGeneratorError.noContent
                     }
-                    
+
                     // Spell check and correct the content
                     @Dependency(\.spellCheckService) var spellCheckService
                     let correctedContent = await spellCheckService.checkAndCorrect(content)
-                    
+
                     let document = GeneratedDocument(
                         title: "\(documentType.shortName) - \(Date().formatted(date: .abbreviated, time: .omitted))",
                         documentType: documentType,
                         content: correctedContent
                     )
-                    
+
                     generatedDocuments.append(document)
                 }
-                
+
                 return generatedDocuments
             },
             generateDFDocuments: { requirements, dfDocumentTypes in
@@ -113,25 +113,25 @@ extension AIDocumentGenerator: DependencyKey {
                     betaHeaders: nil
                 )
                 var generatedDocuments: [GeneratedDocument] = []
-                
+
                 // Load user profile for template variables
                 let profile = try? await userProfileService.loadProfile()
-                
+
                 for dfDocumentType in dfDocumentTypes {
                     // All D&F documents are pro features
                     // Pro features check removed - all features available
-                    
+
                     // Load the template and quick reference guide
                     let dfTemplate = try await dfTemplateService.loadTemplate(dfDocumentType)
-                    
+
                     // Replace profile variables in template
                     var processedTemplate = dfTemplate.template
-                    if let profile = profile {
+                    if let profile {
                         for (key, value) in profile.templateVariables {
                             processedTemplate = processedTemplate.replacingOccurrences(of: "{{\(key)}}", with: value)
                         }
                     }
-                    
+
                     let prompt = createDFPrompt(
                         for: dfDocumentType,
                         requirements: requirements,
@@ -139,14 +139,14 @@ extension AIDocumentGenerator: DependencyKey {
                         quickReference: dfTemplate.quickReferenceGuide,
                         profile: profile
                     )
-                    
+
                     let messages = [
                         MessageParameter.Message(
                             role: .user,
                             content: .text(prompt)
-                        )
+                        ),
                     ]
-                    
+
                     let parameters = MessageParameter(
                         model: .other("claude-sonnet-4-20250514"),
                         messages: messages,
@@ -161,39 +161,39 @@ extension AIDocumentGenerator: DependencyKey {
                         tools: nil,
                         toolChoice: nil
                     )
-                    
+
                     let result = try await anthropicService.createMessage(parameters)
-                    
+
                     let content: String
                     switch result.content.first {
-                    case .text(let text, _):  // Ignore citations
+                    case let .text(text, _): // Ignore citations
                         content = text
                     default:
                         throw AIDocumentGeneratorError.noContent
                     }
-                    
+
                     // Spell check and correct the content
                     @Dependency(\.spellCheckService) var spellCheckService
                     let correctedContent = await spellCheckService.checkAndCorrect(content)
-                    
+
                     let document = GeneratedDocument(
                         title: "\(dfDocumentType.shortName) D&F - \(Date().formatted(date: .abbreviated, time: .omitted))",
                         dfDocumentType: dfDocumentType,
                         content: correctedContent
                     )
-                    
+
                     generatedDocuments.append(document)
                 }
-                
+
                 return generatedDocuments
             }
         )
     }
-    
+
     public static var testValue: AIDocumentGenerator {
         AIDocumentGenerator(
             generateDocuments: { requirements, documentTypes in
-                return documentTypes.map { documentType in
+                documentTypes.map { documentType in
                     GeneratedDocument(
                         title: "Test \(documentType.shortName)",
                         documentType: documentType,
@@ -202,7 +202,7 @@ extension AIDocumentGenerator: DependencyKey {
                 }
             },
             generateDFDocuments: { requirements, dfDocumentTypes in
-                return dfDocumentTypes.map { dfDocumentType in
+                dfDocumentTypes.map { dfDocumentType in
                     GeneratedDocument(
                         title: "Test \(dfDocumentType.shortName) D&F",
                         dfDocumentType: dfDocumentType,
@@ -212,15 +212,15 @@ extension AIDocumentGenerator: DependencyKey {
             }
         )
     }
-    
+
     private static func createPrompt(for documentType: DocumentType, requirements: String, profile: UserProfile?) -> String {
         // Build the requirements with user profile if available
         var fullRequirements = requirements
-        
-        if let profile = profile {
+
+        if let profile {
             fullRequirements += """
-            
-            
+
+
             USER PROFILE INFORMATION:
             Full Name: \(profile.fullName)
             Title: \(profile.title)
@@ -230,19 +230,19 @@ extension AIDocumentGenerator: DependencyKey {
             Phone: \(profile.phoneNumber)
             """
         }
-        
+
         // Use the government acquisition prompts for the specific document type
         return GovernmentAcquisitionPrompts.promptForDocumentType(documentType, requirements: fullRequirements)
     }
-    
-    private static func getSystemPrompt(for documentType: DocumentType) -> String {
+
+    private static func getSystemPrompt(for _: DocumentType) -> String {
         // Use the government acquisition expert prompts
-        return GovernmentAcquisitionPrompts.systemPrompt + "\n\n" + GovernmentAcquisitionPrompts.contextPrompt
+        GovernmentAcquisitionPrompts.systemPrompt + "\n\n" + GovernmentAcquisitionPrompts.contextPrompt
     }
-    
+
     private static func getSystemPromptOld(for documentType: DocumentType) -> String {
         let formattingInstructions = """
-        
+
         FORMATTING INSTRUCTIONS:
         - Use markdown-style formatting for better readability
         - Use # for main headings, ## for subheadings
@@ -252,7 +252,7 @@ extension AIDocumentGenerator: DependencyKey {
         - Separate sections with blank lines
         - Make the document professional and well-structured
         """
-        
+
         if documentType == .requestForProposal {
             return """
             You are an expert federal contracting officer specializing in complex acquisitions and Request for Proposal (RFP) documents.
@@ -322,7 +322,7 @@ extension AIDocumentGenerator: DependencyKey {
             accelerate prototype development. Your OT agreements balance innovation with appropriate government
             oversight while maintaining compliance with statutory requirements. You excel at crafting milestone-based
             payment structures and intellectual property arrangements that benefit both government and industry partners.
-            
+
             Based on the requirements context, determine the most appropriate OT variation:
             - Research OT: For basic/applied research with universities or labs
             - Prototype OT: For demonstration and testing of new capabilities
@@ -342,20 +342,20 @@ extension AIDocumentGenerator: DependencyKey {
         Always structure your response as a complete, well-formatted document with appropriate sections and professional language.
         """
     }
-    
+
     private static func getSpecificRequirements(for documentType: DocumentType) -> String {
         switch documentType {
         case .sow:
-            return """
+            """
             1. Clear scope of work description
             2. Detailed deliverables list
             3. Timeline and milestones
             4. Acceptance criteria
             5. Performance standards
             """
-            
+
         case .soo:
-            return """
+            """
             1. High-level program objectives
             2. Purpose and mission requirements
             3. Key performance parameters
@@ -363,9 +363,9 @@ extension AIDocumentGenerator: DependencyKey {
             5. Constraints and boundaries
             6. Flexibility for contractor innovation
             """
-            
+
         case .pws:
-            return """
+            """
             1. Performance objectives
             2. Measurable performance standards
             3. Quality metrics
@@ -381,27 +381,27 @@ extension AIDocumentGenerator: DependencyKey {
                - Credit structures and escalation processes
                - Reporting frequency and requirements
             """
-            
+
         case .qasp:
-            return """
+            """
             1. Quality standards framework
             2. Surveillance methods and frequency
             3. Performance metrics
             4. Corrective action procedures
             5. Reporting requirements
             """
-            
+
         case .costEstimate:
-            return """
+            """
             1. Detailed cost breakdown by category
             2. Labor cost estimates with rates
             3. Material and equipment costs
             4. Overhead and profit calculations
             5. Basis of estimate documentation
             """
-            
+
         case .marketResearch:
-            return """
+            """
             1. Industry analysis and market conditions
             2. Vendor capability assessment
             3. Price analysis and cost comparisons
@@ -409,9 +409,9 @@ extension AIDocumentGenerator: DependencyKey {
             5. Recommended acquisition strategy based on findings
             6. Sources sought synopsis results (if applicable)
             """
-            
+
         case .acquisitionPlan:
-            return """
+            """
             1. Acquisition background and objectives
             2. Market research summary
             3. Acquisition strategy and contract type
@@ -421,9 +421,9 @@ extension AIDocumentGenerator: DependencyKey {
             7. Cost/budget estimates
             8. Small business participation plan
             """
-            
+
         case .evaluationPlan:
-            return """
+            """
             1. Evaluation factors and subfactors with relative weights
             2. Technical evaluation criteria and scoring methodology
             3. Past performance assessment approach
@@ -435,9 +435,9 @@ extension AIDocumentGenerator: DependencyKey {
             9. Competitive range determination process
             10. Best value trade-off methodology
             """
-            
+
         case .fiscalLawReview:
-            return """
+            """
             1. Funding source identification and availability
             2. Fiscal year appropriation analysis
             3. Purpose statute compliance review
@@ -446,9 +446,9 @@ extension AIDocumentGenerator: DependencyKey {
             6. Anti-Deficiency Act considerations
             7. Recommendations and legal opinion
             """
-            
+
         case .opsecReview:
-            return """
+            """
             1. Critical information identification
             2. Threat assessment and vulnerabilities
             3. Risk analysis and impact assessment
@@ -456,9 +456,9 @@ extension AIDocumentGenerator: DependencyKey {
             5. Implementation plan and procedures
             6. Monitoring and effectiveness measures
             """
-            
+
         case .industryRFI:
-            return """
+            """
             1. Project background and objectives
             2. Current challenges and capability gaps
             3. Specific information requested from industry
@@ -467,9 +467,9 @@ extension AIDocumentGenerator: DependencyKey {
             6. Key dates and points of contact
             7. Evaluation criteria for responses
             """
-            
+
         case .sourcesSought:
-            return """
+            """
             1. Synopsis of requirement
             2. Capability requirements and specifications
             3. Small business set-aside considerations
@@ -479,9 +479,9 @@ extension AIDocumentGenerator: DependencyKey {
             7. Government point of contact
             8. Notice that this is NOT a solicitation
             """
-            
+
         case .justificationApproval:
-            return """
+            """
             1. Contracting action description and value
             2. Authority being cited (FAR 6.302-X)
             3. Reason for other than full and open competition
@@ -491,9 +491,9 @@ extension AIDocumentGenerator: DependencyKey {
             7. Contracting officer certification
             8. Legal and technical review
             """
-            
+
         case .codes:
-            return """
+            """
             1. Detailed analysis of requirement scope
             2. Primary NAICS code determination with justification
             3. Applicable PSC code selection
@@ -503,9 +503,9 @@ extension AIDocumentGenerator: DependencyKey {
             7. Qualified sources identification with contact information
             8. Compliance with socioeconomic goals
             """
-            
+
         case .competitionAnalysis:
-            return """
+            """
             1. Comprehensive evaluation of all competition options
             2. Market research data integration and analysis
             3. Full and open competition viability assessment
@@ -516,9 +516,9 @@ extension AIDocumentGenerator: DependencyKey {
             8. Clear recommendation with supporting rationale
             9. Implementation timeline and next steps
             """
-            
+
         case .procurementSourcing:
-            return """
+            """
             1. Search SAM.gov for active registrations matching NAICS/PSC codes
             2. Integrate findings from market research and codes reports
             3. Identify qualified vendors with complete contact information
@@ -532,9 +532,9 @@ extension AIDocumentGenerator: DependencyKey {
             11. Verify no exclusions or debarments
             12. Recommend engagement strategy for top vendors
             """
-            
+
         case .rrd:
-            return """
+            """
             1. Begin with open-ended questions to understand the general requirement
             2. Progressively drill down into specific details through targeted questions
             3. Identify and probe for missing critical information
@@ -548,9 +548,9 @@ extension AIDocumentGenerator: DependencyKey {
             11. Create a comprehensive Statement of Requirements as the final output
             12. Recommend next steps and which AIKO documents to generate
             """
-            
+
         case .requestForQuoteSimplified:
-            return """
+            """
             1. Brief description of what is needed
             2. Quantity required
             3. When needed (delivery date)
@@ -560,9 +560,9 @@ extension AIDocumentGenerator: DependencyKey {
             7. Contact information
             Keep it to ONE PAGE maximum - this is for simple, straightforward purchases only.
             """
-            
+
         case .requestForQuote:
-            return """
+            """
             1. Clear description of items or services required
             2. Quantity, specifications, and delivery requirements
             3. Pricing structure and format for quote submission
@@ -574,9 +574,9 @@ extension AIDocumentGenerator: DependencyKey {
             9. Delivery location and schedule
             10. Payment terms and invoicing requirements
             """
-            
+
         case .requestForProposal:
-            return """
+            """
             1. Background and purpose of the procurement
             2. Detailed technical requirements and specifications
             3. Evaluation factors and their relative importance
@@ -592,9 +592,9 @@ extension AIDocumentGenerator: DependencyKey {
             13. Schedule and milestone requirements
             14. Security and compliance requirements
             """
-            
+
         case .contractScaffold:
-            return """
+            """
             1. Cover page with contract number and basic information
             2. Contract sections structure (A through M)
             3. Section A - Solicitation/Contract Form (SF-33 or equivalent)
@@ -610,9 +610,9 @@ extension AIDocumentGenerator: DependencyKey {
             13. Required FAR clauses based on contract type and value
             14. Signature blocks and authorization
             """
-            
+
         case .corAppointment:
-            return """
+            """
             1. COR name and contact information
             2. Contract number and contractor information
             3. Period of appointment
@@ -628,9 +628,9 @@ extension AIDocumentGenerator: DependencyKey {
             13. Contracting Officer signature block
             14. COR acceptance signature block
             """
-            
+
         case .analytics:
-            return """
+            """
             1. Executive dashboard summary
             2. Key procurement metrics and KPIs
             3. Spend analysis by category and vendor
@@ -646,9 +646,9 @@ extension AIDocumentGenerator: DependencyKey {
             13. Recommendations for improvement
             14. Data sources and methodology
             """
-            
+
         case .otherTransactionAgreement:
-            return """
+            """
             Core Requirements (All OT Types):
             1. OT Agreement title and number
             2. Statutory authority (10 U.S.C. § 2371b)
@@ -668,7 +668,7 @@ extension AIDocumentGenerator: DependencyKey {
             16. Key personnel and points of contact
             17. Special terms and conditions
             18. Signature blocks for agreements officer and performer
-            
+
             For Research OT Agreements, also include:
             - Basic/applied research objectives and methodology
             - Publication rights and academic freedom provisions
@@ -676,7 +676,7 @@ extension AIDocumentGenerator: DependencyKey {
             - Collaboration terms with universities/labs
             - Research data management plan
             - Scientific review board requirements
-            
+
             For Production OT Agreements, also include:
             - Quantity commitments and unit pricing
             - Quality assurance and testing provisions
@@ -684,7 +684,7 @@ extension AIDocumentGenerator: DependencyKey {
             - Warranty and sustainment terms
             - Configuration management procedures
             - Production readiness reviews
-            
+
             For Consortium OT Agreements, also include:
             - Consortium management structure and governance
             - Member roles, responsibilities, and work share
@@ -692,7 +692,7 @@ extension AIDocumentGenerator: DependencyKey {
             - New member admission process and criteria
             - Inter-member collaboration agreements
             - Common fund management
-            
+
             For Non-Traditional Contractor OT, also include:
             - Commercial item definitions and practices
             - Reduced oversight and reporting requirements
@@ -700,7 +700,7 @@ extension AIDocumentGenerator: DependencyKey {
             - Flexible IP arrangements favoring contractor
             - Streamlined dispute resolution
             - Commercial warranty terms
-            
+
             For Dual-Use OT Agreements, also include:
             - Commercial and government application descriptions
             - Market rights and exclusivity provisions
@@ -708,7 +708,7 @@ extension AIDocumentGenerator: DependencyKey {
             - Commercial sales reporting requirements
             - Government license rights for commercial versions
             - Export control considerations
-            
+
             For SBIR/STTR OT Agreements, also include:
             - SBIR/STTR phase identification (I, II, or III)
             - Commercialization plan requirements
@@ -719,20 +719,20 @@ extension AIDocumentGenerator: DependencyKey {
             """
         }
     }
-    
-    private static func createDFPrompt(for dfDocumentType: DFDocumentType, requirements: String, template: String, quickReference: String, profile: UserProfile?) -> String {
-        return """
+
+    private static func createDFPrompt(for dfDocumentType: DFDocumentType, requirements: String, template: String, quickReference: String, profile _: UserProfile?) -> String {
+        """
         You are creating a Determination and Findings (D&F) document for: \(dfDocumentType.rawValue)
-        
+
         REQUIREMENTS PROVIDED BY USER:
         \(requirements)
-        
+
         QUICK REFERENCE GUIDE:
         \(quickReference)
-        
+
         TEMPLATE TO FOLLOW:
         \(template)
-        
+
         INSTRUCTIONS:
         1. Fill in the template with specific information based on the requirements
         2. Replace all placeholder text (in {{BRACKETS}}) with appropriate content
@@ -740,14 +740,14 @@ extension AIDocumentGenerator: DependencyKey {
         4. Follow the guidance from the quick reference guide
         5. Ensure compliance with \(dfDocumentType.farReference)
         6. Maintain professional government contracting language throughout
-        
+
         Generate a complete, ready-to-use D&F document based on the template and requirements.
         """
     }
-    
+
     private static func getDFSystemPrompt(for dfDocumentType: DFDocumentType) -> String {
         let formattingInstructions = """
-        
+
         FORMATTING INSTRUCTIONS:
         - Use markdown-style formatting for better readability
         - Use # for main headings, ## for subheadings
@@ -757,7 +757,7 @@ extension AIDocumentGenerator: DependencyKey {
         - Separate sections with blank lines
         - Make the document professional and well-structured
         """
-        
+
         return """
         You are an expert federal contracting officer specializing in Determination and Findings (D&F) documents.
         You have extensive experience with \(dfDocumentType.rawValue) documents and \(dfDocumentType.farReference) requirements.
@@ -766,22 +766,22 @@ extension AIDocumentGenerator: DependencyKey {
         \(formattingInstructions)
         """
     }
-    
+
     private static func createTemplateBasedPrompt(
         for documentType: DocumentType,
         requirements: String,
         template: String,
-        profile: UserProfile?
+        profile _: UserProfile?
     ) -> String {
-        return """
+        """
         Create a \(documentType.rawValue) document based on the following requirements and template.
-        
+
         PROJECT REQUIREMENTS:
         \(requirements)
-        
+
         TEMPLATE TO FOLLOW:
         \(template)
-        
+
         INSTRUCTIONS:
         1. Fill in the template with specific information based on the requirements
         2. Replace all placeholder text (in {{BRACKETS}}) with appropriate content
@@ -789,7 +789,7 @@ extension AIDocumentGenerator: DependencyKey {
         4. Maintain professional government contracting language throughout
         5. Follow FAR compliance requirements
         6. Make sure the document is complete and ready for official use
-        
+
         Generate a complete, ready-to-use \(documentType.shortName) document based on the template and requirements.
         Do not include any explanatory text before or after the document.
         """
@@ -803,8 +803,8 @@ public enum AIDocumentGeneratorError: Error {
     case insufficientCredits
 }
 
-extension DependencyValues {
-    public var aiDocumentGenerator: AIDocumentGenerator {
+public extension DependencyValues {
+    var aiDocumentGenerator: AIDocumentGenerator {
         get { self[AIDocumentGenerator.self] }
         set { self[AIDocumentGenerator.self] = newValue }
     }

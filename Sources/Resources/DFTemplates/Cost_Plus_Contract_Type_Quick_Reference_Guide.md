@@ -135,7 +135,7 @@ Before using this template, ensure you have:
 - Ignore cost control and monitoring requirements
 - Accept unlimited cost growth without controls
 
-✅ **Do:**
+ **Do:**
 - Justify uncertainties requiring cost-plus approach
 - Verify adequate contractor business systems
 - Establish comprehensive oversight and monitoring

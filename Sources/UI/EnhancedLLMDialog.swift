@@ -1,15 +1,15 @@
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
 // MARK: - Enhanced LLM Decision Dialog
 
 public struct EnhancedLLMDialog: View {
     let store: StoreOf<DocumentGenerationFeature>
-    
+
     public init(store: StoreOf<DocumentGenerationFeature>) {
         self.store = store
     }
-    
+
     public var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             SwiftUI.NavigationView {
@@ -24,18 +24,19 @@ public struct EnhancedLLMDialog: View {
             }
         }
     }
-    
+
     // MARK: - Header View
+
     private var headerView: some View {
         VStack(spacing: Theme.Spacing.md) {
             Image(systemName: "brain.head.profile")
                 .font(.system(size: 48))
                 .foregroundColor(.blue)
-            
+
             Text("AIKO Analysis Complete")
                 .font(.title2)
                 .fontWeight(.bold)
-            
+
             Text("How would you like to proceed?")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -43,8 +44,9 @@ public struct EnhancedLLMDialog: View {
         .padding(.top, Theme.Spacing.lg)
         .padding(.horizontal, Theme.Spacing.lg)
     }
-    
+
     // MARK: - Analysis Summary View
+
     private func analysisSummaryView(viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
@@ -56,14 +58,15 @@ public struct EnhancedLLMDialog: View {
             .padding(.bottom, 120)
         }
     }
-    
+
     // MARK: - Analysis Section
+
     private func analysisSection(viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
             Label("Initial Analysis", systemImage: "doc.text.magnifyingglass")
                 .font(.headline)
                 .fontWeight(.semibold)
-            
+
             Text(viewStore.analysis.llmResponse)
                 .font(.body)
                 .padding(Theme.Spacing.lg)
@@ -71,8 +74,9 @@ public struct EnhancedLLMDialog: View {
                 .cornerRadius(Theme.CornerRadius.md)
         }
     }
-    
+
     // MARK: - Confidence Section
+
     @ViewBuilder
     private func confidenceSection(viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> some View {
         if let confidence = calculateConfidence(viewStore) {
@@ -80,16 +84,16 @@ public struct EnhancedLLMDialog: View {
                 Label("Confidence Level", systemImage: "gauge")
                     .font(.headline)
                     .fontWeight(.semibold)
-                
+
                 HStack {
                     ProgressView(value: confidence)
                         .progressViewStyle(LinearProgressViewStyle(tint: confidenceColor(confidence)))
-                    
+
                     Text("\(Int(confidence * 100))%")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                
+
                 Text(confidenceMessage(confidence))
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -99,8 +103,9 @@ public struct EnhancedLLMDialog: View {
             .cornerRadius(Theme.CornerRadius.md)
         }
     }
-    
+
     // MARK: - Recommended Documents Section
+
     @ViewBuilder
     private func recommendedDocumentsSection(viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> some View {
         if !viewStore.analysis.recommendedDocuments.isEmpty {
@@ -109,7 +114,7 @@ public struct EnhancedLLMDialog: View {
                       systemImage: "doc.badge.checkmark")
                     .font(.headline)
                     .fontWeight(.semibold)
-                
+
                 ForEach(viewStore.analysis.recommendedDocuments.prefix(3), id: \.self) { doc in
                     HStack {
                         Image(systemName: doc.icon)
@@ -120,7 +125,7 @@ public struct EnhancedLLMDialog: View {
                         Spacer()
                     }
                 }
-                
+
                 if viewStore.analysis.recommendedDocuments.count > 3 {
                     Text("+ \(viewStore.analysis.recommendedDocuments.count - 3) more")
                         .font(.caption)
@@ -132,20 +137,21 @@ public struct EnhancedLLMDialog: View {
             .cornerRadius(Theme.CornerRadius.md)
         }
     }
-    
+
     // MARK: - Decision Buttons View
+
     private func decisionButtonsView(viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> some View {
         VStack(spacing: 0) {
             Divider()
-            
+
             VStack(spacing: Theme.Spacing.md) {
                 refineRequirementsButton(viewStore: viewStore)
                 manualSelectionButton(viewStore: viewStore)
-                
+
                 if !viewStore.analysis.recommendedDocuments.isEmpty {
                     aiRecommendationsButton(viewStore: viewStore)
                 }
-                
+
                 cancelButton(viewStore: viewStore)
             }
             .padding(.horizontal, Theme.Spacing.lg)
@@ -153,8 +159,9 @@ public struct EnhancedLLMDialog: View {
             .background(Color.black)
         }
     }
-    
+
     // MARK: - Individual Button Views
+
     private func refineRequirementsButton(viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> some View {
         Button(action: {
             viewStore.send(.analysis(.confirmRequirements(true)))
@@ -170,7 +177,7 @@ public struct EnhancedLLMDialog: View {
                     Image(systemName: "chevron.right")
                         .font(.caption)
                 }
-                
+
                 Text("Let AIKO help gather more details for better documents")
                     .font(.caption)
                     .foregroundColor(.white.opacity(0.8))
@@ -190,7 +197,7 @@ public struct EnhancedLLMDialog: View {
             .cornerRadius(Theme.CornerRadius.lg)
         }
     }
-    
+
     private func manualSelectionButton(viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> some View {
         Button(action: {
             viewStore.send(.analysis(.confirmRequirements(false)))
@@ -206,7 +213,7 @@ public struct EnhancedLLMDialog: View {
                     Image(systemName: "chevron.right")
                         .font(.caption)
                 }
-                
+
                 Text("I know what I need - let me choose documents")
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -223,7 +230,7 @@ public struct EnhancedLLMDialog: View {
             .cornerRadius(Theme.CornerRadius.lg)
         }
     }
-    
+
     private func aiRecommendationsButton(viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> some View {
         Button(action: {
             viewStore.send(.generateRecommendedDocuments)
@@ -243,7 +250,7 @@ public struct EnhancedLLMDialog: View {
             .foregroundColor(.blue)
         }
     }
-    
+
     private func cancelButton(viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> some View {
         Button(action: {
             viewStore.send(.analysis(.confirmRequirements(false)))
@@ -254,36 +261,36 @@ public struct EnhancedLLMDialog: View {
         }
         .padding(.top, Theme.Spacing.sm)
     }
-    
+
     // MARK: - Helper Functions
-    
+
     private func calculateConfidence(_ viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> Double? {
         let readyCount = viewStore.status.documentReadinessStatus.values.filter { $0 == .ready }.count
         let totalCount = viewStore.status.documentReadinessStatus.count
-        
+
         guard totalCount > 0 else { return nil }
         return Double(readyCount) / Double(totalCount)
     }
-    
+
     private func confidenceColor(_ confidence: Double) -> Color {
         switch confidence {
-        case 0.8...1.0:
-            return .green
-        case 0.5..<0.8:
-            return .yellow
+        case 0.8 ... 1.0:
+            .green
+        case 0.5 ..< 0.8:
+            .yellow
         default:
-            return .orange
+            .orange
         }
     }
-    
+
     private func confidenceMessage(_ confidence: Double) -> String {
         switch confidence {
-        case 0.8...1.0:
-            return "I have enough information to generate high-quality documents"
-        case 0.5..<0.8:
-            return "I can generate documents, but more details would improve quality"
+        case 0.8 ... 1.0:
+            "I have enough information to generate high-quality documents"
+        case 0.5 ..< 0.8:
+            "I can generate documents, but more details would improve quality"
         default:
-            return "I recommend refining requirements for better results"
+            "I recommend refining requirements for better results"
         }
     }
 }
@@ -294,7 +301,7 @@ public struct RequirementsRefinementDialog: View {
     let store: StoreOf<DocumentGenerationFeature>
     @State private var currentQuestion = 0
     @State private var answers: [String] = []
-    
+
     // Dynamic questions based on requirements
     private let refinementQuestions = [
         RefinementQuestion(
@@ -326,9 +333,9 @@ public struct RequirementsRefinementDialog: View {
             question: "What are the key performance metrics or success criteria?",
             helpText: "How will you measure successful delivery?",
             inputType: .text
-        )
+        ),
     ]
-    
+
     public var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             SwiftUI.NavigationView {
@@ -339,45 +346,47 @@ public struct RequirementsRefinementDialog: View {
                 .background(Theme.Colors.aikoBackground)
                 .navigationTitle("Refine Requirements")
                 #if os(iOS)
-                .navigationBarTitleDisplayMode(.inline)
+                    .navigationBarTitleDisplayMode(.inline)
                 #endif
-                .toolbar {
-                    ToolbarItem(placement: {
-                        #if os(iOS)
-                        return .navigationBarTrailing
-                        #else
-                        return .automatic
-                        #endif
-                    }()) {
-                        Button("Skip") {
-                            // TODO: Handle skip refinement
-                            viewStore.send(.analysis(.showDocumentPicker(true)))
+                    .toolbar {
+                        ToolbarItem(placement: {
+                            #if os(iOS)
+                                return .navigationBarTrailing
+                            #else
+                                return .automatic
+                            #endif
+                        }()) {
+                            Button("Skip") {
+                                // TODO: Handle skip refinement
+                                viewStore.send(.analysis(.showDocumentPicker(true)))
+                            }
                         }
                     }
-                }
             }
         }
     }
-    
+
     // MARK: - Progress Bar
+
     private var progressBar: some View {
         ProgressView(value: Double(currentQuestion + 1), total: Double(refinementQuestions.count))
             .progressViewStyle(LinearProgressViewStyle(tint: .blue))
             .padding(.horizontal)
             .padding(.top)
     }
-    
+
     // MARK: - Question Content
+
     @ViewBuilder
     private func questionContent(viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> some View {
         if currentQuestion < refinementQuestions.count {
             let question = refinementQuestions[currentQuestion]
-            
+
             VStack(spacing: 0) {
                 ScrollView {
                     VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
                         questionHeader(question: question)
-                        
+
                         QuestionInputView(
                             question: question,
                             answer: Binding(
@@ -389,30 +398,32 @@ public struct RequirementsRefinementDialog: View {
                     }
                     .padding()
                 }
-                
+
                 navigationButtons(viewStore: viewStore)
             }
         }
     }
-    
+
     // MARK: - Question Header
+
     private func questionHeader(question: RefinementQuestion) -> some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
             Text("Question \(currentQuestion + 1) of \(refinementQuestions.count)")
                 .font(.caption)
                 .foregroundColor(.secondary)
-            
+
             Text(question.question)
                 .font(.title3)
                 .fontWeight(.bold)
-            
+
             Text(question.helpText)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
         }
     }
-    
+
     // MARK: - Navigation Buttons
+
     private func navigationButtons(viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> some View {
         HStack(spacing: Theme.Spacing.md) {
             if currentQuestion > 0 {
@@ -423,15 +434,16 @@ public struct RequirementsRefinementDialog: View {
                 }
                 .aikoButton(variant: .secondary, size: .medium)
             }
-            
+
             Spacer()
-            
+
             nextOrCompleteButton(viewStore: viewStore)
         }
         .padding()
     }
-    
+
     // MARK: - Next/Complete Button
+
     private func nextOrCompleteButton(viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> some View {
         Button(currentQuestion < refinementQuestions.count - 1 ? "Next" : "Complete") {
             if currentQuestion < refinementQuestions.count - 1 {
@@ -445,8 +457,9 @@ public struct RequirementsRefinementDialog: View {
         .aikoButton(variant: .primary, size: .medium)
         .disabled(answers[safe: currentQuestion]?.isEmpty ?? true)
     }
-    
+
     // MARK: - Complete Refinement
+
     private func completeRefinement(viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) {
         let refinedRequirements = compileRefinedRequirements(
             original: viewStore.analysis.requirements,
@@ -457,16 +470,16 @@ public struct RequirementsRefinementDialog: View {
         viewStore.send(.analysis(.requirementsChanged(refinedRequirements)))
         viewStore.send(.generateDocuments)
     }
-    
+
     private func compileRefinedRequirements(original: String, answers: [String], questions: [RefinementQuestion]) -> String {
         var refined = original + "\n\n--- Additional Requirements ---\n"
-        
+
         for (index, question) in questions.enumerated() {
             if let answer = answers[safe: index], !answer.isEmpty {
                 refined += "\n\(question.question)\n→ \(answer)\n"
             }
         }
-        
+
         return refined
     }
 }
@@ -478,7 +491,7 @@ struct RefinementQuestion {
     let question: String
     let helpText: String
     let inputType: InputType
-    
+
     enum InputType {
         case text
         case currency
@@ -490,7 +503,7 @@ struct RefinementQuestion {
 struct QuestionInputView: View {
     let question: RefinementQuestion
     @Binding var answer: String
-    
+
     var body: some View {
         switch question.inputType {
         case .text:
@@ -499,29 +512,29 @@ struct QuestionInputView: View {
                 .padding(8)
                 .background(Theme.Colors.aikoSecondary)
                 .cornerRadius(Theme.CornerRadius.md)
-            
+
         case .currency:
             HStack {
                 Text("$")
                     .font(.title3)
                 TextField("0", text: $answer)
-                    #if os(iOS)
+                #if os(iOS)
                     .keyboardType(.numberPad)
-                    #endif
+                #endif
                     .font(.title3)
             }
             .padding()
             .background(Theme.Colors.aikoSecondary)
             .cornerRadius(Theme.CornerRadius.md)
-            
+
         case .date:
             DatePicker("Select date", selection: .constant(Date()), displayedComponents: .date)
                 .datePickerStyle(GraphicalDatePickerStyle())
                 .padding()
                 .background(Theme.Colors.aikoSecondary)
                 .cornerRadius(Theme.CornerRadius.md)
-            
-        case .multipleChoice(let options):
+
+        case let .multipleChoice(options):
             VStack(spacing: Theme.Spacing.sm) {
                 ForEach(options, id: \.self) { option in
                     Button(action: {
@@ -560,7 +573,7 @@ extension Array {
         }
         set {
             guard index >= 0, index < count else { return }
-            if let newValue = newValue {
+            if let newValue {
                 self[index] = newValue
             }
         }

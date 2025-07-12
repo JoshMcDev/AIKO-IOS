@@ -8,36 +8,36 @@ public enum AppError: Error, Equatable, Identifiable {
     case fileSystemError(String)
     case apiError(String)
     case unknown(String)
-    
+
     public var id: String {
         switch self {
-        case .networkError(let message),
-             .authenticationError(let message),
-             .dataError(let message),
-             .validationError(let message),
-             .fileSystemError(let message),
-             .apiError(let message),
-             .unknown(let message):
-            return message
+        case let .networkError(message),
+             let .authenticationError(message),
+             let .dataError(message),
+             let .validationError(message),
+             let .fileSystemError(message),
+             let .apiError(message),
+             let .unknown(message):
+            message
         }
     }
-    
+
     public var message: String {
         switch self {
-        case .networkError(let message):
-            return "Network Error: \(message)"
-        case .authenticationError(let message):
-            return "Authentication Error: \(message)"
-        case .dataError(let message):
-            return "Data Error: \(message)"
-        case .validationError(let message):
-            return "Validation Error: \(message)"
-        case .fileSystemError(let message):
-            return "File System Error: \(message)"
-        case .apiError(let message):
-            return "API Error: \(message)"
-        case .unknown(let message):
-            return "Error: \(message)"
+        case let .networkError(message):
+            "Network Error: \(message)"
+        case let .authenticationError(message):
+            "Authentication Error: \(message)"
+        case let .dataError(message):
+            "Data Error: \(message)"
+        case let .validationError(message):
+            "Validation Error: \(message)"
+        case let .fileSystemError(message):
+            "File System Error: \(message)"
+        case let .apiError(message):
+            "API Error: \(message)"
+        case let .unknown(message):
+            "Error: \(message)"
         }
     }
 }

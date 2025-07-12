@@ -1,8 +1,8 @@
 import SwiftUI
 #if os(iOS)
-import UIKit
+    import UIKit
 #elseif os(macOS)
-import AppKit
+    import AppKit
 #endif
 
 struct AppIconPreview: View {
@@ -11,7 +11,7 @@ struct AppIconPreview: View {
             Text("AIKO App Icon")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-            
+
             // Try to load from bundle first, then from file paths
             if let image = loadAppIcon() {
                 image
@@ -31,51 +31,51 @@ struct AppIconPreview: View {
                             .foregroundColor(.secondary)
                     )
             }
-            
+
             Text("AI Contract Intelligence Officer")
                 .font(.headline)
                 .foregroundColor(.secondary)
-            
+
             Spacer()
         }
         .padding()
         .background(systemBackground)
     }
-    
+
     private func loadAppIcon() -> Image? {
         // For SwiftUI previews, we need to load from file directly
-        
+
         // Try loading from file paths
         let paths = [
             "/Users/J/Documents/GitHub/AIKO-IOS/Sources/Resources/AppIcon.png",
             "/Users/J/Documents/GitHub/AIKO-IOS/Sources/UI/AppIcon.png",
-            "/Users/J/Documents/GitHub/AIKO-IOS/AIKO/AIKO/Assets.xcassets/AppIcon.appiconset/AppIcon.png"
+            "/Users/J/Documents/GitHub/AIKO-IOS/AIKO/AIKO/Assets.xcassets/AppIcon.appiconset/AppIcon.png",
         ]
-        
+
         for path in paths {
             if let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
                 #if os(iOS)
-                if let uiImage = UIImage(data: data) {
-                    return Image(uiImage: uiImage)
-                }
+                    if let uiImage = UIImage(data: data) {
+                        return Image(uiImage: uiImage)
+                    }
                 #elseif os(macOS)
-                if let nsImage = NSImage(data: data) {
-                    return Image(nsImage: nsImage)
-                }
+                    if let nsImage = NSImage(data: data) {
+                        return Image(nsImage: nsImage)
+                    }
                 #endif
             }
         }
-        
+
         return nil
     }
-    
+
     private var systemBackground: Color {
         #if os(iOS)
-        return Color(UIColor.systemBackground)
+            return Color(UIColor.systemBackground)
         #elseif os(macOS)
-        return Color(NSColor.windowBackgroundColor)
+            return Color(NSColor.windowBackgroundColor)
         #else
-        return Color.gray
+            return Color.gray
         #endif
     }
 }
@@ -86,7 +86,7 @@ struct AppIconPreview_Previews: PreviewProvider {
             AppIconPreview()
                 .preferredColorScheme(.dark)
                 .previewDisplayName("Dark Mode")
-            
+
             AppIconPreview()
                 .preferredColorScheme(.light)
                 .previewDisplayName("Light Mode")

@@ -1,16 +1,16 @@
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
 struct AcquisitionChatView: View {
     let store: StoreOf<AcquisitionChatFeature>
-    
+
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             ZStack {
                 // Background that extends to safe area
                 Color.black
                     .ignoresSafeArea()
-                
+
                 chatContent(viewStore: viewStore)
             }
             .preferredColorScheme(.dark)
@@ -32,243 +32,243 @@ struct AcquisitionChatView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private func chatContent(viewStore: ViewStore<AcquisitionChatFeature.State, AcquisitionChatFeature.Action>) -> some View {
         VStack(spacing: 0) {
-                    // Ambient status bar like AgenticChatView
-                    HStack(spacing: 12) {
-                    if viewStore.activeTasks.count > 0 {
-                        StatusPill(
-                            text: "\(viewStore.activeTasks.count) Active",
-                            color: .green
-                        )
-                    }
-                    
-                    if viewStore.agentState == .executing {
-                        StatusPill(
-                            text: "Working...",
-                            color: .blue,
-                            isAnimating: true
-                        )
-                    }
-                    
-                    Spacer()
-                    
-                    // Share chat history button
-                    ShareButton(
-                        content: generateChatHistoryContent(viewStore: viewStore),
-                        fileName: "Chat_History_\(Date().formatted(.dateTime.year().month().day()))",
-                        buttonStyle: .icon
+            // Ambient status bar like AgenticChatView
+            HStack(spacing: 12) {
+                if viewStore.activeTasks.count > 0 {
+                    StatusPill(
+                        text: "\(viewStore.activeTasks.count) Active",
+                        color: .green
                     )
-                    .padding(.trailing, 8)
-                    
-                    // Removed Agent State Indicator animation
-                    
-                    // Close button
-                    Button(action: {
-                        if viewStore.gatheredRequirements.hasMinimumInfo {
-                            viewStore.send(.confirmClose(true))
-                        } else {
-                            viewStore.send(.closeChat)
-                        }
-                    }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(.gray)
-                    }
                 }
-                .padding(.horizontal)
-                .padding(.vertical, 8)
-                .background(Theme.Colors.aikoSecondary)
-                
-                // Chat messages
-                ScrollViewReader { proxy in
-                    ScrollView {
-                        LazyVStack(spacing: 12) {
-                            ForEach(viewStore.messages) { message in
-                                HStack(alignment: .top, spacing: 12) {
-                                    if message.role == .user {
-                                        Spacer(minLength: 60)
-                                    }
-                                    
-                                    VStack(alignment: message.role == .user ? .trailing : .leading, spacing: 4) {
-                                        // Message content
-                                        Text(message.content)
-                                            .padding(.horizontal, 16)
-                                            .padding(.vertical, 10)
-                                            .background(
-                                                message.role == .user
-                                                    ? Color.blue
-                                                    : Theme.Colors.aikoCard
-                                            )
-                                            .foregroundColor(
-                                                message.role == .user
-                                                    ? .white
-                                                    : .white
-                                            )
-                                            .clipShape(
-                                                RoundedRectangle(cornerRadius: 18)
-                                            )
-                                        
-                                        // Approval buttons if needed
-                                        if let approval = viewStore.approvalRequests[message.id] {
-                                            ApprovalRequestView(
-                                                request: approval,
-                                                onApprove: {
-                                                    viewStore.send(.approveAction(approval.id))
-                                                },
-                                                onReject: {
-                                                    viewStore.send(.rejectAction(approval.id))
-                                                }
-                                            )
-                                            .padding(.top, 4)
-                                        }
-                                        
-                                        // Message cards
-                                        if let card = viewStore.messageCards[message.id] {
-                                            MessageCardView(card: card)
-                                                .padding(.top, 8)
-                                        }
-                                        
-                                        // Timestamp
-                                        Text(message.timestamp, style: .time)
-                                            .font(.caption2)
-                                            .foregroundColor(.secondary)
-                                    }
-                                    
-                                    if message.role == .assistant {
-                                        Spacer(minLength: 60)
-                                    }
-                                }
-                                .id(message.id)
-                            }
-                        }
-                        .padding()
-                    }
-                    .onChange(of: viewStore.messages.count) { _ in
-                        withAnimation {
-                            proxy.scrollTo(viewStore.messages.last?.id)
-                        }
-                    }
-                }
-                
-                // Input Area - using same component as main app
-                VStack(spacing: 0) {
-                    // Suggestions
-                    if !viewStore.suggestions.isEmpty && viewStore.currentInput.isEmpty {
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 8) {
-                                ForEach(viewStore.suggestions, id: \.self) { suggestion in
-                                    Button(action: {
-                                        viewStore.send(.inputChanged(suggestion))
-                                    }) {
-                                        Text(suggestion)
-                                            .font(.caption)
-                                            .foregroundColor(.white)
-                                            .padding(.horizontal, 12)
-                                            .padding(.vertical, 6)
-                                            .background(Theme.Colors.aikoCard)
-                                            .clipShape(Capsule())
-                                    }
-                                    .buttonStyle(.plain)
-                                }
-                            }
-                            .padding(.horizontal)
-                            .padding(.vertical, 8)
-                        }
-                    }
-                    
-                    // Reuse InputArea component with chat mode
-                    InputArea(
-                        requirements: viewStore.currentInput,
-                        isGenerating: viewStore.agentState == .executing,
-                        uploadedDocuments: viewStore.uploadedDocuments.map { doc in
-                            UploadedDocument(
-                                fileName: doc.fileName,
-                                data: doc.data
-                            )
-                        },
-                        isChatMode: true,
-                        isRecording: viewStore.isRecording,
-                        onRequirementsChanged: { text in
-                            viewStore.send(.inputChanged(text))
-                        },
-                        onAnalyzeRequirements: {
-                            viewStore.send(.sendMessage)
-                        },
-                        onEnhancePrompt: {
-                            viewStore.send(.enhancePrompt)
-                        },
-                        onStartRecording: {
-                            viewStore.send(.startRecording)
-                        },
-                        onStopRecording: {
-                            viewStore.send(.stopRecording)
-                        },
-                        onShowDocumentPicker: {
-                            viewStore.send(.showDocumentPicker)
-                        },
-                        onShowImagePicker: {
-                            viewStore.send(.showImagePicker)
-                        },
-                        onRemoveDocument: { documentId in
-                            viewStore.send(.removeDocument(documentId))
-                        }
+
+                if viewStore.agentState == .executing {
+                    StatusPill(
+                        text: "Working...",
+                        color: .blue,
+                        isAnimating: true
                     )
+                }
+
+                Spacer()
+
+                // Share chat history button
+                ShareButton(
+                    content: generateChatHistoryContent(viewStore: viewStore),
+                    fileName: "Chat_History_\(Date().formatted(.dateTime.year().month().day()))",
+                    buttonStyle: .icon
+                )
+                .padding(.trailing, 8)
+
+                // Removed Agent State Indicator animation
+
+                // Close button
+                Button(action: {
+                    if viewStore.gatheredRequirements.hasMinimumInfo {
+                        viewStore.send(.confirmClose(true))
+                    } else {
+                        viewStore.send(.closeChat)
+                    }
+                }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.title2)
+                        .foregroundColor(.gray)
                 }
             }
-            .background(Theme.Colors.aikoBackground)
+            .padding(.horizontal)
+            .padding(.vertical, 8)
+            .background(Theme.Colors.aikoSecondary)
+
+            // Chat messages
+            ScrollViewReader { proxy in
+                ScrollView {
+                    LazyVStack(spacing: 12) {
+                        ForEach(viewStore.messages) { message in
+                            HStack(alignment: .top, spacing: 12) {
+                                if message.role == .user {
+                                    Spacer(minLength: 60)
+                                }
+
+                                VStack(alignment: message.role == .user ? .trailing : .leading, spacing: 4) {
+                                    // Message content
+                                    Text(message.content)
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 10)
+                                        .background(
+                                            message.role == .user
+                                                ? Color.blue
+                                                : Theme.Colors.aikoCard
+                                        )
+                                        .foregroundColor(
+                                            message.role == .user
+                                                ? .white
+                                                : .white
+                                        )
+                                        .clipShape(
+                                            RoundedRectangle(cornerRadius: 18)
+                                        )
+
+                                    // Approval buttons if needed
+                                    if let approval = viewStore.approvalRequests[message.id] {
+                                        ApprovalRequestView(
+                                            request: approval,
+                                            onApprove: {
+                                                viewStore.send(.approveAction(approval.id))
+                                            },
+                                            onReject: {
+                                                viewStore.send(.rejectAction(approval.id))
+                                            }
+                                        )
+                                        .padding(.top, 4)
+                                    }
+
+                                    // Message cards
+                                    if let card = viewStore.messageCards[message.id] {
+                                        MessageCardView(card: card)
+                                            .padding(.top, 8)
+                                    }
+
+                                    // Timestamp
+                                    Text(message.timestamp, style: .time)
+                                        .font(.caption2)
+                                        .foregroundColor(.secondary)
+                                }
+
+                                if message.role == .assistant {
+                                    Spacer(minLength: 60)
+                                }
+                            }
+                            .id(message.id)
+                        }
+                    }
+                    .padding()
+                }
+                .onChange(of: viewStore.messages.count) { _ in
+                    withAnimation {
+                        proxy.scrollTo(viewStore.messages.last?.id)
+                    }
+                }
+            }
+
+            // Input Area - using same component as main app
+            VStack(spacing: 0) {
+                // Suggestions
+                if !viewStore.suggestions.isEmpty, viewStore.currentInput.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(viewStore.suggestions, id: \.self) { suggestion in
+                                Button(action: {
+                                    viewStore.send(.inputChanged(suggestion))
+                                }) {
+                                    Text(suggestion)
+                                        .font(.caption)
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 6)
+                                        .background(Theme.Colors.aikoCard)
+                                        .clipShape(Capsule())
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.vertical, 8)
+                    }
+                }
+
+                // Reuse InputArea component with chat mode
+                InputArea(
+                    requirements: viewStore.currentInput,
+                    isGenerating: viewStore.agentState == .executing,
+                    uploadedDocuments: viewStore.uploadedDocuments.map { doc in
+                        UploadedDocument(
+                            fileName: doc.fileName,
+                            data: doc.data
+                        )
+                    },
+                    isChatMode: true,
+                    isRecording: viewStore.isRecording,
+                    onRequirementsChanged: { text in
+                        viewStore.send(.inputChanged(text))
+                    },
+                    onAnalyzeRequirements: {
+                        viewStore.send(.sendMessage)
+                    },
+                    onEnhancePrompt: {
+                        viewStore.send(.enhancePrompt)
+                    },
+                    onStartRecording: {
+                        viewStore.send(.startRecording)
+                    },
+                    onStopRecording: {
+                        viewStore.send(.stopRecording)
+                    },
+                    onShowDocumentPicker: {
+                        viewStore.send(.showDocumentPicker)
+                    },
+                    onShowImagePicker: {
+                        viewStore.send(.showImagePicker)
+                    },
+                    onRemoveDocument: { documentId in
+                        viewStore.send(.removeDocument(documentId))
+                    }
+                )
+            }
         }
+        .background(Theme.Colors.aikoBackground)
     }
-    
-    private func generateChatHistoryContent(viewStore: ViewStore<AcquisitionChatFeature.State, AcquisitionChatFeature.Action>) -> String {
-        var content = """
-        Acquisition Chat History
-        Generated: \(Date().formatted())
-        
+}
+
+private func generateChatHistoryContent(viewStore: ViewStore<AcquisitionChatFeature.State, AcquisitionChatFeature.Action>) -> String {
+    var content = """
+    Acquisition Chat History
+    Generated: \(Date().formatted())
+
+    """
+
+    // Add gathered requirements if any
+    if viewStore.gatheredRequirements.hasMinimumInfo {
+        content += """
+        GATHERED REQUIREMENTS:
+        Basic information has been collected for this acquisition.
+
         """
-        
-        // Add gathered requirements if any
-        if viewStore.gatheredRequirements.hasMinimumInfo {
-            content += """
-            GATHERED REQUIREMENTS:
-            Basic information has been collected for this acquisition.
-            
-            """
-        }
-        
-        content += "CHAT MESSAGES:\n\n"
-        
-        // Add all messages
-        for message in viewStore.messages {
-            let role = message.role == .user ? "User" : "Assistant"
-            content += "\(role): \(message.content)\n\n"
-        }
-        
-        return content
     }
+
+    content += "CHAT MESSAGES:\n\n"
+
+    // Add all messages
+    for message in viewStore.messages {
+        let role = message.role == .user ? "User" : "Assistant"
+        content += "\(role): \(message.content)\n\n"
+    }
+
+    return content
+}
 
 // StatusPill is already defined in AgenticChatFeature.swift
 // Import it from AgenticChatFeature module
 
 struct ChatHeaderView: View {
     let onClose: () -> Void
-    
+
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 Text("New Acquisition")
                     .font(.headline)
                     .foregroundColor(.white)
-                
+
                 Text("AIKO Assistant")
                     .font(.caption)
                     .foregroundColor(.white.opacity(0.7))
             }
-            
+
             Spacer()
-            
+
             Button(action: onClose) {
                 Image(systemName: "xmark.circle.fill")
                     .font(.title2)
@@ -283,11 +283,11 @@ struct ChatHeaderView: View {
 struct RequirementsProgressView: View {
     let completionPercentage: Double
     let documentReadiness: [DocumentType: Bool]
-    
+
     var readyDocuments: Int {
         documentReadiness.values.filter { $0 }.count
     }
-    
+
     var body: some View {
         VStack(spacing: Theme.Spacing.sm) {
             // Progress Bar
@@ -296,7 +296,7 @@ struct RequirementsProgressView: View {
                     RoundedRectangle(cornerRadius: 4)
                         .fill(Color.white.opacity(0.2))
                         .frame(height: 6)
-                    
+
                     RoundedRectangle(cornerRadius: 4)
                         .fill(
                             LinearGradient(
@@ -310,15 +310,15 @@ struct RequirementsProgressView: View {
                 }
             }
             .frame(height: 6)
-            
+
             // Status Text
             HStack {
                 Label("\(Int(completionPercentage * 100))% Complete", systemImage: "chart.bar.fill")
                     .font(.caption)
                     .foregroundColor(.white.opacity(0.7))
-                
+
                 Spacer()
-                
+
                 if readyDocuments > 0 {
                     Label("\(readyDocuments) Documents Ready", systemImage: "checkmark.circle.fill")
                         .font(.caption)
@@ -333,14 +333,14 @@ struct RequirementsProgressView: View {
 
 struct AcquisitionChatBubble: View {
     let message: AcquisitionChatFeature.ChatMessage
-    
+
     var body: some View {
         HStack(alignment: .top, spacing: Theme.Spacing.sm) {
             VStack(alignment: message.role == .user ? .trailing : .leading, spacing: 4) {
                 Text(message.role == .user ? "You" : "AIKO")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                
+
                 DocumentRichTextView(content: message.content)
                     .padding(Theme.Spacing.md)
                     .background(
@@ -350,7 +350,7 @@ struct AcquisitionChatBubble: View {
                     .frame(maxWidth: .infinity, alignment: message.role == .user ? .trailing : .leading)
             }
             .frame(maxWidth: .infinity, alignment: message.role == .user ? .trailing : .leading)
-            
+
             if message.role == .user {
                 Image(systemName: "person.circle.fill")
                     .font(.caption)
@@ -363,10 +363,10 @@ struct AcquisitionChatBubble: View {
 
 struct TypingIndicator: View {
     @State private var animationPhase = 0
-    
+
     var body: some View {
         HStack(spacing: 4) {
-            ForEach(0..<3) { index in
+            ForEach(0 ..< 3) { index in
                 Circle()
                     .fill(Color.blue)
                     .frame(width: 8, height: 8)
@@ -394,7 +394,7 @@ struct TypingIndicator: View {
 struct QuickActionsBar: View {
     let onGenerateAll: () -> Void
     let onSelectSpecific: () -> Void
-    
+
     var body: some View {
         HStack(spacing: Theme.Spacing.md) {
             Button(action: onGenerateAll) {
@@ -413,7 +413,7 @@ struct QuickActionsBar: View {
                     )
                     .cornerRadius(Theme.CornerRadius.md)
             }
-            
+
             Button(action: onSelectSpecific) {
                 Label("Select Documents", systemImage: "list.bullet")
                     .font(.subheadline)
@@ -441,16 +441,16 @@ struct ChatInputArea: View {
     let onStartRecording: () -> Void
     let onStopRecording: () -> Void
     let onAddReference: (String) -> Void
-    
+
     @State private var showingUploadOptions = false
     @State private var showingReferenceInput = false
     @State private var referenceInput = ""
-    
+
     var body: some View {
         VStack(spacing: 0) {
             Divider()
                 .background(Color.white.opacity(0.1))
-            
+
             HStack(spacing: 0) {
                 // Text input field
                 ZStack(alignment: .leading) {
@@ -463,26 +463,26 @@ struct ChatInputArea: View {
                             .padding(.vertical, Theme.Spacing.md)
                             .allowsHitTesting(false)
                     }
-                    
+
                     TextField("", text: $text, axis: .vertical)
                         .textFieldStyle(PlainTextFieldStyle())
                         .foregroundColor(.white)
                         .padding(.leading, Theme.Spacing.lg)
                         .padding(.vertical, Theme.Spacing.md)
                         .padding(.trailing, Theme.Spacing.sm)
-                        .lineLimit(1...4)
+                        .lineLimit(1 ... 4)
                         .disabled(isProcessing)
                         .onSubmit {
-                            if !text.isEmpty && !isProcessing {
+                            if !text.isEmpty, !isProcessing {
                                 onSend()
                             }
                         }
                 }
-                
+
                 // Action buttons
                 HStack(spacing: Theme.Spacing.sm) {
                     // Enhance prompt button
-                    Button(action: { 
+                    Button(action: {
                         if !text.isEmpty {
                             onEnhancePrompt()
                         }
@@ -495,7 +495,7 @@ struct ChatInputArea: View {
                             .animation(.easeInOut(duration: 0.2), value: text.isEmpty)
                     }
                     .disabled(text.isEmpty || isProcessing)
-                    
+
                     // Upload options (+ icon)
                     Button(action: { showingUploadOptions.toggle() }) {
                         Image(systemName: "plus")
@@ -504,22 +504,22 @@ struct ChatInputArea: View {
                             .frame(width: 32, height: 32)
                     }
                     .confirmationDialog("Add Content", isPresented: $showingUploadOptions) {
-                        Button("📄 Upload Documents") {
+                        Button(" Upload Documents") {
                             onUploadDocument()
                         }
                         #if os(iOS)
-                        Button("📷 Scan Document") {
-                            onUploadDocument() // For now, use same action
-                        }
+                            Button("📷 Scan Document") {
+                                onUploadDocument() // For now, use same action
+                            }
                         #endif
-                        Button("🔗 Add Reference") {
+                        Button(" Add Reference") {
                             showingReferenceInput = true
                         }
                         Button("Cancel", role: .cancel) {}
                     }
-                    
+
                     // Voice input (microphone)
-                    Button(action: { 
+                    Button(action: {
                         if isRecording {
                             onStopRecording()
                         } else {
@@ -534,7 +534,7 @@ struct ChatInputArea: View {
                             .animation(.easeInOut(duration: 0.2), value: isRecording)
                     }
                     .disabled(isProcessing && !isRecording)
-                    
+
                     // Send button
                     Button(action: onSend) {
                         if isProcessing {
@@ -550,7 +550,7 @@ struct ChatInputArea: View {
                     }
                     .background(
                         Group {
-                            if !text.isEmpty && !isProcessing {
+                            if !text.isEmpty, !isProcessing {
                                 Circle()
                                     .fill(Theme.Colors.aikoPrimary)
                             } else {

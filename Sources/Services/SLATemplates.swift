@@ -1,5 +1,5 @@
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 // MARK: - SLA Template Service
 
@@ -8,7 +8,7 @@ public struct SLATemplateService {
     public var customizeTemplate: (SLATemplate, SLACustomization) async throws -> String
     public var validateSLA: (String) async throws -> SLAValidation
     public var generateMetrics: (SLAIndustry) async throws -> [SLAMetric]
-    
+
     public init(
         loadTemplate: @escaping (SLAIndustry) async throws -> SLATemplate,
         customizeTemplate: @escaping (SLATemplate, SLACustomization) async throws -> String,
@@ -44,7 +44,7 @@ public struct SLATemplate {
     public let sections: [SLASection]
     public let metrics: [SLAMetric]
     public let penalties: [SLAPenalty]
-    
+
     public init(
         industry: SLAIndustry,
         name: String,
@@ -66,7 +66,7 @@ public struct SLASection {
     public let title: String
     public let content: String
     public let isRequired: Bool
-    
+
     public init(title: String, content: String, isRequired: Bool = true) {
         self.title = title
         self.content = content
@@ -80,7 +80,7 @@ public struct SLAMetric {
     public let measurementMethod: String
     public let target: String
     public let criticalThreshold: String?
-    
+
     public init(
         name: String,
         description: String,
@@ -100,7 +100,7 @@ public struct SLAPenalty {
     public let metric: String
     public let threshold: String
     public let penalty: String
-    
+
     public init(metric: String, threshold: String, penalty: String) {
         self.metric = metric
         self.threshold = threshold
@@ -114,7 +114,7 @@ public struct SLACustomization {
     public let responseTimeRequirements: [String: String]
     public let customMetrics: [SLAMetric]
     public let excludedSections: Set<String>
-    
+
     public init(
         availabilityTarget: Double = 99.9,
         maintenanceWindow: String = "Sunday 2-6 AM EST",
@@ -134,7 +134,7 @@ public struct SLAValidation {
     public let isValid: Bool
     public let issues: [String]
     public let suggestions: [String]
-    
+
     public init(isValid: Bool, issues: [String], suggestions: [String]) {
         self.isValid = isValid
         self.issues = issues
@@ -150,112 +150,112 @@ extension SLATemplateService: DependencyKey {
             loadTemplate: { industry in
                 switch industry {
                 case .telecommunications:
-                    return telecommunicationsSLATemplate
+                    telecommunicationsSLATemplate
                 case .cloudComputing:
-                    return cloudComputingSLATemplate
+                    cloudComputingSLATemplate
                 case .dataCenter:
-                    return dataCenterSLATemplate
+                    dataCenterSLATemplate
                 case .cybersecurity:
-                    return cybersecuritySLATemplate
+                    cybersecuritySLATemplate
                 case .logistics:
-                    return logisticsSLATemplate
+                    logisticsSLATemplate
                 case .itSupport:
-                    return itSupportSLATemplate
+                    itSupportSLATemplate
                 case .softwareDevelopment:
-                    return softwareDevelopmentSLATemplate
+                    softwareDevelopmentSLATemplate
                 case .networkServices:
-                    return networkServicesSLATemplate
+                    networkServicesSLATemplate
                 case .satelliteCommunications:
-                    return satelliteCommunicationsSLATemplate
+                    satelliteCommunicationsSLATemplate
                 case .managedServices:
-                    return managedServicesSLATemplate
+                    managedServicesSLATemplate
                 }
             },
-            
+
             customizeTemplate: { template, customization in
                 var content = """
                 SERVICE LEVEL AGREEMENT
                 \(template.name)
-                
+
                 """
-                
+
                 // Add sections
                 for section in template.sections {
                     if !customization.excludedSections.contains(section.title) {
                         content += """
                         \(section.title.uppercased())
-                        
+
                         \(section.content)
-                        
+
                         """
                     }
                 }
-                
+
                 // Add custom metrics
                 if !customization.customMetrics.isEmpty {
                     content += """
                     ADDITIONAL PERFORMANCE METRICS
-                    
+
                     """
                     for metric in customization.customMetrics {
                         content += "• \(metric.name): \(metric.target)\n"
                     }
                     content += "\n"
                 }
-                
+
                 // Apply customizations
                 content = content.replacingOccurrences(of: "{{AVAILABILITY}}", with: "\(customization.availabilityTarget)%")
                 content = content.replacingOccurrences(of: "{{MAINTENANCE_WINDOW}}", with: customization.maintenanceWindow)
-                
+
                 for (key, value) in customization.responseTimeRequirements {
                     content = content.replacingOccurrences(of: "{{\(key)}}", with: value)
                 }
-                
+
                 return content
             },
-            
+
             validateSLA: { slaContent in
                 var issues: [String] = []
                 var suggestions: [String] = []
-                
+
                 // Check for required elements
-                if !slaContent.contains("availability") && !slaContent.contains("uptime") {
+                if !slaContent.contains("availability"), !slaContent.contains("uptime") {
                     issues.append("Missing availability/uptime requirements")
                     suggestions.append("Add specific availability percentage (e.g., 99.9%)")
                 }
-                
+
                 if !slaContent.contains("maintenance") {
                     issues.append("Missing maintenance window definition")
                     suggestions.append("Define scheduled maintenance windows")
                 }
-                
-                if !slaContent.contains("response time") && !slaContent.contains("latency") {
+
+                if !slaContent.contains("response time"), !slaContent.contains("latency") {
                     issues.append("Missing response time requirements")
                     suggestions.append("Add response time metrics and thresholds")
                 }
-                
-                if !slaContent.contains("remedy") && !slaContent.contains("credit") && !slaContent.contains("penalty") {
+
+                if !slaContent.contains("remedy"), !slaContent.contains("credit"), !slaContent.contains("penalty") {
                     issues.append("Missing remedies for SLA violations")
                     suggestions.append("Define service credits or penalties for non-compliance")
                 }
-                
+
                 if !slaContent.contains("report") {
                     issues.append("Missing reporting requirements")
                     suggestions.append("Specify SLA reporting frequency and format")
                 }
-                
+
                 return SLAValidation(
                     isValid: issues.isEmpty,
                     issues: issues,
                     suggestions: suggestions
                 )
             },
-            
+
             generateMetrics: { industry in
                 // Return industry-specific metrics
                 switch industry {
                 case .telecommunications:
-                    return [
+                    [
                         SLAMetric(
                             name: "Network Availability",
                             description: "Percentage of time network is operational",
@@ -290,11 +290,11 @@ extension SLATemplateService: DependencyKey {
                             measurementMethod: "Real-time monitoring",
                             target: "< 5ms",
                             criticalThreshold: "20ms"
-                        )
+                        ),
                     ]
-                    
+
                 case .cloudComputing:
-                    return [
+                    [
                         SLAMetric(
                             name: "Service Availability",
                             description: "Uptime for cloud services",
@@ -322,11 +322,11 @@ extension SLATemplateService: DependencyKey {
                             measurementMethod: "Performance monitoring",
                             target: "< 2 minutes",
                             criticalThreshold: "5 minutes"
-                        )
+                        ),
                     ]
-                    
+
                 default:
-                    return [
+                    [
                         SLAMetric(
                             name: "Service Availability",
                             description: "Overall service uptime",
@@ -340,7 +340,7 @@ extension SLATemplateService: DependencyKey {
                             measurementMethod: "Performance monitoring",
                             target: "Varies by service",
                             criticalThreshold: "2x target"
-                        )
+                        ),
                     ]
                 }
             }
@@ -359,9 +359,9 @@ private let telecommunicationsSLATemplate = SLATemplate(
             title: "Service Availability",
             content: """
             The Service Provider guarantees {{AVAILABILITY}} network availability measured on a monthly basis.
-            
+
             Availability = (Total Minutes - Downtime Minutes) / Total Minutes × 100
-            
+
             Exclusions:
             - Scheduled maintenance during agreed windows
             - Force majeure events
@@ -396,7 +396,7 @@ private let telecommunicationsSLATemplate = SLATemplate(
             97.0% - 97.99%      | 20%
             Below 97.0%         | 30%
             """
-        )
+        ),
     ],
     metrics: [],
     penalties: [
@@ -409,7 +409,7 @@ private let telecommunicationsSLATemplate = SLATemplate(
             metric: "MTTR",
             threshold: "> 4 hours",
             penalty: "5% credit per hour over threshold"
-        )
+        ),
     ]
 )
 
@@ -425,7 +425,7 @@ private let cloudComputingSLATemplate = SLATemplate(
             Storage Services: 99.999999999% durability
             Database Services: 99.99% availability
             Network Services: 99.99% availability
-            
+
             Multi-Region Deployments: 99.995% availability
             """
         ),
@@ -436,7 +436,7 @@ private let cloudComputingSLATemplate = SLATemplate(
             - GET requests: < 100ms (p95)
             - POST/PUT requests: < 200ms (p95)
             - Large payload operations: < 1000ms (p95)
-            
+
             Storage Performance:
             - Read IOPS: {{READ_IOPS}}
             - Write IOPS: {{WRITE_IOPS}}
@@ -460,7 +460,7 @@ private let cloudComputingSLATemplate = SLATemplate(
             Severity 3 (Non-Production): 4 hours
             Severity 4 (General Inquiry): 24 hours
             """
-        )
+        ),
     ],
     metrics: [],
     penalties: []
@@ -508,7 +508,7 @@ private let dataCenterSLATemplate = SLATemplate(
             - Meet-me room access
             - Cross-connect completion: 24 hours
             """
-        )
+        ),
     ],
     metrics: [],
     penalties: []
@@ -527,7 +527,7 @@ private let cybersecuritySLATemplate = SLATemplate(
             - High severity: < 15 minutes
             - Medium severity: < 30 minutes
             - Low severity: < 60 minutes
-            
+
             Response Time:
             - Critical: Immediate escalation
             - High: 15-minute response
@@ -562,13 +562,13 @@ private let cybersecuritySLATemplate = SLATemplate(
             - External scans: Weekly
             - Internal scans: Monthly
             - Critical asset scans: Daily
-            
+
             Reporting:
             - Critical vulnerabilities: Immediate
             - High/Medium: Within 24 hours
             - Remediation tracking provided
             """
-        )
+        ),
     ],
     metrics: [],
     penalties: []
@@ -586,7 +586,7 @@ private let logisticsSLATemplate = SLATemplate(
             - Same-day processing: Orders by 2 PM
             - Order accuracy: {{ORDER_ACCURACY}}%
             - Inventory accuracy: 99.8%
-            
+
             Shipping Times:
             - Standard: 3-5 business days
             - Expedited: 1-2 business days
@@ -621,7 +621,7 @@ private let logisticsSLATemplate = SLATemplate(
             - Credit processing: 5 business days
             - Restocking: Within 72 hours
             """
-        )
+        ),
     ],
     metrics: [],
     penalties: []
@@ -658,7 +658,7 @@ private let itSupportSLATemplate = SLATemplate(
             Priority 2: 8 hours
             Priority 3: 24 hours
             Priority 4: 72 hours
-            
+
             First-call resolution rate: > 70%
             """
         ),
@@ -670,7 +670,7 @@ private let itSupportSLATemplate = SLATemplate(
             - Customer satisfaction: > 90%
             - Ticket backlog: < 5% of monthly volume
             """
-        )
+        ),
     ],
     metrics: [],
     penalties: []
@@ -718,7 +718,7 @@ private let softwareDevelopmentSLATemplate = SLATemplate(
             - Technical debt: 20% of capacity
             - Knowledge transfer: Quarterly
             """
-        )
+        ),
     ],
     metrics: [],
     penalties: []
@@ -766,7 +766,7 @@ private let networkServicesSLATemplate = SLATemplate(
             - Standard Business (AF3): Medium priority
             - Best Effort (BE): Standard delivery
             """
-        )
+        ),
     ],
     metrics: [],
     penalties: []
@@ -793,7 +793,7 @@ private let satelliteCommunicationsSLATemplate = SLATemplate(
             - Bit Error Rate: < 10^-7
             - Eb/No margin: > 3 dB
             - Rain fade margin: Location-specific
-            
+
             Throughput:
             - Committed rate: 100% CIR
             - Burst capability: Per service plan
@@ -816,7 +816,7 @@ private let satelliteCommunicationsSLATemplate = SLATemplate(
             - Remote terminal support: 24/7
             - Spare equipment: 4-hour delivery
             """
-        )
+        ),
     ],
     metrics: [],
     penalties: []
@@ -865,7 +865,7 @@ private let managedServicesSLATemplate = SLATemplate(
             - Annual strategic planning
             - SLA performance metrics
             """
-        )
+        ),
     ],
     metrics: [],
     penalties: []
@@ -873,8 +873,8 @@ private let managedServicesSLATemplate = SLATemplate(
 
 // MARK: - Test Value
 
-extension SLATemplateService {
-    public static var testValue: SLATemplateService {
+public extension SLATemplateService {
+    static var testValue: SLATemplateService {
         SLATemplateService(
             loadTemplate: { _ in
                 SLATemplate(
@@ -882,7 +882,7 @@ extension SLATemplateService {
                     name: "Test SLA",
                     description: "Test template",
                     sections: [
-                        SLASection(title: "Test Section", content: "Test content")
+                        SLASection(title: "Test Section", content: "Test content"),
                     ],
                     metrics: [],
                     penalties: []
@@ -897,8 +897,8 @@ extension SLATemplateService {
 
 // MARK: - Dependency Registration
 
-extension DependencyValues {
-    public var slaTemplateService: SLATemplateService {
+public extension DependencyValues {
+    var slaTemplateService: SLATemplateService {
         get { self[SLATemplateService.self] }
         set { self[SLATemplateService.self] = newValue }
     }

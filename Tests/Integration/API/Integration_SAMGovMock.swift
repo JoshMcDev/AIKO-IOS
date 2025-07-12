@@ -1,5 +1,5 @@
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 // Mock SAM.gov service for testing without API key
 extension SAMGovService {
@@ -16,7 +16,7 @@ extension SAMGovService {
                             registrationStatus: "Active",
                             registrationDate: Calendar.current.date(byAdding: .year, value: -2, to: Date()),
                             expirationDate: Calendar.current.date(byAdding: .day, value: 67, to: Date())
-                        )
+                        ),
                     ])
                 } else if query.lowercased().contains("booz") {
                     return EntitySearchResult(totalRecords: 1, entities: [
@@ -27,7 +27,7 @@ extension SAMGovService {
                             registrationStatus: "Active",
                             registrationDate: Calendar.current.date(byAdding: .month, value: -7, to: Date()),
                             expirationDate: Calendar.current.date(byAdding: .day, value: 133, to: Date())
-                        )
+                        ),
                     ])
                 } else if query.contains("CAGE:1F353") {
                     return EntitySearchResult(totalRecords: 1, entities: [
@@ -38,7 +38,7 @@ extension SAMGovService {
                             registrationStatus: "Active",
                             registrationDate: Calendar.current.date(byAdding: .year, value: -2, to: Date()),
                             expirationDate: Calendar.current.date(byAdding: .day, value: 67, to: Date())
-                        )
+                        ),
                     ])
                 } else if query.contains("CAGE:17038") {
                     return EntitySearchResult(totalRecords: 1, entities: [
@@ -49,7 +49,7 @@ extension SAMGovService {
                             registrationStatus: "Active",
                             registrationDate: Calendar.current.date(byAdding: .month, value: -7, to: Date()),
                             expirationDate: Calendar.current.date(byAdding: .day, value: 133, to: Date())
-                        )
+                        ),
                     ])
                 } else {
                     throw SAMGovError.entityNotFound
@@ -75,11 +75,11 @@ extension SAMGovService {
                         ),
                         businessTypes: [
                             BusinessType(code: "2X", description: "For Profit Organization"),
-                            BusinessType(code: "OY", description: "Other Than Small Business")
+                            BusinessType(code: "OY", description: "Other Than Small Business"),
                         ],
                         naicsCodes: [
                             NAICSCode(code: "336411", description: "Aircraft Manufacturing", isPrimary: true),
-                            NAICSCode(code: "541330", description: "Engineering Services", isPrimary: false)
+                            NAICSCode(code: "541330", description: "Engineering Services", isPrimary: false),
                         ],
                         pointsOfContact: [],
                         isSmallBusiness: false,
@@ -121,11 +121,11 @@ extension SAMGovService {
                         ),
                         businessTypes: [
                             BusinessType(code: "2X", description: "For Profit Organization"),
-                            BusinessType(code: "OY", description: "Other Than Small Business")
+                            BusinessType(code: "OY", description: "Other Than Small Business"),
                         ],
                         naicsCodes: [
                             NAICSCode(code: "541511", description: "Custom Computer Programming Services", isPrimary: true),
-                            NAICSCode(code: "541512", description: "Computer Systems Design Services", isPrimary: false)
+                            NAICSCode(code: "541512", description: "Computer Systems Design Services", isPrimary: false),
                         ],
                         pointsOfContact: [],
                         isSmallBusiness: false,
@@ -174,15 +174,15 @@ extension SettingsManager {
             loadSettings: {
                 SettingsData()
             },
-            saveSettings: { },
-            resetToDefaults: { },
-            restoreDefaults: { },
+            saveSettings: {},
+            resetToDefaults: {},
+            restoreDefaults: {},
             saveAPIKey: { _ in },
             loadAPIKey: { "" },
             validateAPIKey: { _ in true },
             exportData: { _ in URL(fileURLWithPath: "/tmp/export.json") },
             importData: { _ in },
-            clearCache: { },
+            clearCache: {},
             performBackup: { _ in URL(fileURLWithPath: "/tmp/backup.json") },
             restoreBackup: { _, _ in }
         )

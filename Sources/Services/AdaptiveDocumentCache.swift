@@ -1,6 +1,6 @@
-import Foundation
-import CryptoKit
 import ComposableArchitecture
+import CryptoKit
+import Foundation
 
 /// Adaptive Document Cache Service with dynamic memory management
 public struct AdaptiveDocumentCache {
@@ -11,16 +11,16 @@ public struct AdaptiveDocumentCache {
     public var getCachedAnalysisResponse: (String) async -> (response: String, recommendedDocuments: [DocumentType])?
     public var clearCache: () async throws -> Void
     public var getCacheStatistics: () async -> CacheStatistics
-    
+
     // Performance optimization
     public var preloadFrequentDocuments: () async throws -> Void
     public var optimizeCacheForMemory: () async throws -> Void
-    
+
     // Security operations
     public var rotateEncryptionKey: () async throws -> Void
     public var exportEncryptedBackup: () async throws -> Data
     public var importEncryptedBackup: (Data) async throws -> Void
-    
+
     // Adaptive sizing operations
     public var adjustCacheLimits: () async -> Void
     public var getAdaptiveMetrics: () async -> AdaptiveMetrics
@@ -34,51 +34,51 @@ actor AdaptiveCacheStorage {
     private var baseMemorySize: Int64 = 100 * 1024 * 1024 // 100 MB base
     private var currentMaxCacheSize: Int = 50
     private var currentMaxMemorySize: Int64 = 100 * 1024 * 1024
-    
+
     // Memory monitoring
     private let memoryMonitor = MemoryPressureMonitor()
     private var lastMemoryCheck = Date()
     private let memoryCheckInterval: TimeInterval = 30 // Check every 30 seconds
-    
+
     // Performance tracking
     private var hitRateHistory: [Double] = []
     private var evictionRateHistory: [Double] = []
     private var responseTimeHistory: [TimeInterval] = []
-    
+
     // Cache storage (inherited from EncryptedDocumentCache)
     private var documentCache: [CacheKey: EncryptedCachedDocument] = [:]
     private var analysisCache: [String: EncryptedCachedAnalysis] = [:]
     private var accessOrder: [String] = []
-    
+
     // Encryption components
     private var masterKey: SymmetricKey
     private let keyDerivationSalt: Data
     private let encryptionManager: DocumentEncryptionManager
-    
+
     // Metrics tracking
     private var totalEvictions: Int = 0
     private var totalHits: Int = 0
     private var totalMisses: Int = 0
-    
+
     struct CacheKey: Hashable, Codable {
         let documentCategory: DocumentCategoryType
         let requirements: String
     }
-    
+
     struct EncryptedCachedDocument: Codable {
         let encryptedData: Data
         let nonce: Data
         var metadata: DocumentMetadata
         let originalSize: Int // Track original unencrypted size
     }
-    
+
     struct EncryptedCachedAnalysis: Codable {
         let encryptedData: Data
         let nonce: Data
         var metadata: AnalysisMetadata
         let originalSize: Int
     }
-    
+
     struct DocumentMetadata: Codable {
         let documentType: String
         let cachedAt: Date
@@ -87,7 +87,7 @@ actor AdaptiveCacheStorage {
         let checksum: String
         var avgRetrievalTime: TimeInterval
     }
-    
+
     struct AnalysisMetadata: Codable {
         let cachedAt: Date
         var lastAccessed: Date
@@ -95,81 +95,81 @@ actor AdaptiveCacheStorage {
         let recommendedTypes: [String]
         var avgRetrievalTime: TimeInterval
     }
-    
+
     init() async throws {
-        self.encryptionManager = DocumentEncryptionManager()
-        
+        encryptionManager = DocumentEncryptionManager()
+
         // Generate or load encryption key
         if let savedKey = try? await encryptionManager.loadMasterKey() {
-            self.masterKey = savedKey.key
-            self.keyDerivationSalt = savedKey.salt
+            masterKey = savedKey.key
+            keyDerivationSalt = savedKey.salt
         } else {
             let newKey = try await encryptionManager.generateMasterKey()
-            self.masterKey = newKey.key
-            self.keyDerivationSalt = newKey.salt
+            masterKey = newKey.key
+            keyDerivationSalt = newKey.salt
         }
-        
+
         // Start memory monitoring
         Task {
             await startMemoryMonitoring()
         }
     }
-    
+
     // MARK: - Adaptive Sizing Logic
-    
+
     func adjustCacheLimits() async {
         let memoryInfo = memoryMonitor.getCurrentMemoryInfo()
         let hitRate = calculateRecentHitRate()
         let evictionRate = calculateRecentEvictionRate()
-        
+
         // Determine memory pressure level
         let pressureLevel = determinePressureLevel(memoryInfo)
-        
+
         // Adjust based on pressure and performance
         switch pressureLevel {
         case .normal:
             // Can increase cache if performance warrants it
-            if hitRate > 0.8 && evictionRate < 0.1 {
+            if hitRate > 0.8, evictionRate < 0.1 {
                 currentMaxCacheSize = min(baseCacheSize * 2, 100)
                 currentMaxMemorySize = min(baseMemorySize * 2, 200 * 1024 * 1024)
             } else {
                 currentMaxCacheSize = baseCacheSize
                 currentMaxMemorySize = baseMemorySize
             }
-            
+
         case .warning:
             // Reduce cache by 25%
             currentMaxCacheSize = Int(Double(baseCacheSize) * 0.75)
             currentMaxMemorySize = Int64(Double(baseMemorySize) * 0.75)
-            
+
         case .urgent:
             // Reduce cache by 50%
             currentMaxCacheSize = Int(Double(baseCacheSize) * 0.5)
             currentMaxMemorySize = Int64(Double(baseMemorySize) * 0.5)
-            
+
         case .critical:
             // Minimum cache size
             currentMaxCacheSize = max(10, baseCacheSize / 5)
             currentMaxMemorySize = max(10 * 1024 * 1024, baseMemorySize / 5)
         }
-        
+
         // Apply new limits
         await enforceAdaptiveMemoryLimit()
-        
+
         // Record metrics
         hitRateHistory.append(hitRate)
         evictionRateHistory.append(evictionRate)
-        
+
         // Keep history limited
         if hitRateHistory.count > 100 {
             hitRateHistory.removeFirst()
             evictionRateHistory.removeFirst()
         }
     }
-    
+
     private func determinePressureLevel(_ memoryInfo: MemoryInfo) -> MemoryPressureLevel {
         let usagePercentage = Double(memoryInfo.used) / Double(memoryInfo.total)
-        
+
         if usagePercentage < 0.7 {
             return .normal
         } else if usagePercentage < 0.8 {
@@ -180,26 +180,26 @@ actor AdaptiveCacheStorage {
             return .critical
         }
     }
-    
+
     private func calculateRecentHitRate() -> Double {
         let total = totalHits + totalMisses
         guard total > 0 else { return 0.0 }
         return Double(totalHits) / Double(total)
     }
-    
+
     private func calculateRecentEvictionRate() -> Double {
         let totalAccesses = documentCache.values.reduce(0) { $0 + $1.metadata.accessCount } +
-                           analysisCache.values.reduce(0) { $0 + $1.metadata.accessCount }
+            analysisCache.values.reduce(0) { $0 + $1.metadata.accessCount }
         guard totalAccesses > 0 else { return 0.0 }
         return Double(totalEvictions) / Double(totalAccesses)
     }
-    
+
     // MARK: - Memory Monitoring
-    
+
     private func startMemoryMonitoring() async {
         while true {
             try? await Task.sleep(nanoseconds: UInt64(memoryCheckInterval * 1_000_000_000))
-            
+
             // Check if we should adjust limits
             if Date().timeIntervalSince(lastMemoryCheck) >= memoryCheckInterval {
                 await adjustCacheLimits()
@@ -207,24 +207,24 @@ actor AdaptiveCacheStorage {
             }
         }
     }
-    
+
     // MARK: - Enhanced Document Operations
-    
+
     func cacheDocument(_ document: GeneratedDocument, requirements: String) async throws {
         let startTime = Date()
         let key = CacheKey(documentCategory: document.documentCategory, requirements: requirements.lowercased())
-        
+
         // Check adaptive limits before caching
         await adjustCacheLimitsIfNeeded()
-        
+
         // Serialize document
         let encoder = JSONEncoder()
         let documentData = try encoder.encode(document)
         let originalSize = documentData.count
-        
+
         // Encrypt
         let encrypted = try await encryptionManager.encrypt(documentData, using: masterKey)
-        
+
         // Create metadata
         let metadata = DocumentMetadata(
             documentType: String(describing: document.documentCategory),
@@ -234,34 +234,34 @@ actor AdaptiveCacheStorage {
             checksum: SHA256.hash(data: documentData).compactMap { String(format: "%02x", $0) }.joined(),
             avgRetrievalTime: 0
         )
-        
+
         let cachedDoc = EncryptedCachedDocument(
             encryptedData: encrypted.ciphertext,
             nonce: encrypted.nonce,
             metadata: metadata,
             originalSize: originalSize
         )
-        
+
         documentCache[key] = cachedDoc
         updateAccessOrder(key.hashValue.description)
         await enforceAdaptiveMemoryLimit()
-        
+
         // Track caching time
         let cachingTime = Date().timeIntervalSince(startTime)
         responseTimeHistory.append(cachingTime)
     }
-    
+
     func getCachedDocument(type: DocumentType, requirements: String) async -> GeneratedDocument? {
         let startTime = Date()
         let key = CacheKey(documentCategory: .standard(type), requirements: requirements.lowercased())
-        
+
         guard var cached = documentCache[key] else {
             totalMisses += 1
             return nil
         }
-        
+
         totalHits += 1
-        
+
         do {
             // Decrypt document
             let decryptedData = try await encryptionManager.decrypt(
@@ -269,19 +269,19 @@ actor AdaptiveCacheStorage {
                 nonce: cached.nonce,
                 using: masterKey
             )
-            
+
             // Verify integrity
             let checksum = SHA256.hash(data: decryptedData).compactMap { String(format: "%02x", $0) }.joined()
             guard checksum == cached.metadata.checksum else {
-                print("⚠️ Document integrity check failed")
+                print("⚠ Document integrity check failed")
                 documentCache.removeValue(forKey: key)
                 return nil
             }
-            
+
             // Deserialize
             let decoder = JSONDecoder()
             let document = try decoder.decode(GeneratedDocument.self, from: decryptedData)
-            
+
             // Update metadata with retrieval time
             let retrievalTime = Date().timeIntervalSince(startTime)
             cached.metadata.lastAccessed = Date()
@@ -289,24 +289,24 @@ actor AdaptiveCacheStorage {
             cached.metadata.avgRetrievalTime = (cached.metadata.avgRetrievalTime * Double(cached.metadata.accessCount - 1) + retrievalTime) / Double(cached.metadata.accessCount)
             documentCache[key] = cached
             updateAccessOrder(key.hashValue.description)
-            
+
             responseTimeHistory.append(retrievalTime)
-            
+
             return document
-            
+
         } catch {
             print("❌ Failed to decrypt cached document: \(error)")
             totalMisses += 1
             return nil
         }
     }
-    
+
     // MARK: - Adaptive Memory Enforcement
-    
+
     private func enforceAdaptiveMemoryLimit() async {
         var currentSize: Int64 = 0
         var documentSizes: [(key: String, size: Int64, lastAccess: Date, accessCount: Int)] = []
-        
+
         // Calculate current size and build eviction candidates
         for (key, doc) in documentCache {
             let size = Int64(doc.encryptedData.count)
@@ -318,7 +318,7 @@ actor AdaptiveCacheStorage {
                 accessCount: doc.metadata.accessCount
             ))
         }
-        
+
         for (key, analysis) in analysisCache {
             let size = Int64(analysis.encryptedData.count)
             currentSize += size
@@ -329,7 +329,7 @@ actor AdaptiveCacheStorage {
                 accessCount: analysis.metadata.accessCount
             ))
         }
-        
+
         // Sort by adaptive eviction score
         let sortedForEviction = documentSizes.sorted { item1, item2 in
             // Calculate eviction score (lower is better to keep)
@@ -345,45 +345,45 @@ actor AdaptiveCacheStorage {
             )
             return score1 > score2 // Higher score = evict first
         }
-        
+
         // Evict based on adaptive limits
         var evicted = 0
         for item in sortedForEviction {
-            if currentSize <= currentMaxMemorySize && documentCache.count + analysisCache.count <= currentMaxCacheSize {
+            if currentSize <= currentMaxMemorySize, documentCache.count + analysisCache.count <= currentMaxCacheSize {
                 break
             }
-            
+
             evictItem(key: item.key)
             currentSize -= item.size
             evicted += 1
             totalEvictions += 1
         }
-        
+
         if evicted > 0 {
-            print("📊 Adaptive cache evicted \(evicted) items. Current size: \(currentSize / 1024 / 1024) MB")
+            print(" Adaptive cache evicted \(evicted) items. Current size: \(currentSize / 1024 / 1024) MB")
         }
     }
-    
+
     private func calculateEvictionScore(size: Int64, lastAccess: Date, accessCount: Int) -> Double {
         let timeSinceAccess = Date().timeIntervalSince(lastAccess)
         let sizeWeight = 0.3
         let timeWeight = 0.5
         let accessWeight = 0.2
-        
+
         // Normalize factors
         let normalizedSize = Double(size) / Double(currentMaxMemorySize)
         let normalizedTime = min(timeSinceAccess / 3600, 1.0) // Cap at 1 hour
         let normalizedAccess = 1.0 / Double(max(accessCount, 1))
-        
+
         return normalizedSize * sizeWeight + normalizedTime * timeWeight + normalizedAccess * accessWeight
     }
-    
+
     // MARK: - Adaptive Metrics
-    
+
     func getAdaptiveMetrics() -> AdaptiveMetrics {
         let currentMemoryInfo = memoryMonitor.getCurrentMemoryInfo()
         let avgResponseTime = responseTimeHistory.isEmpty ? 0 : responseTimeHistory.reduce(0, +) / Double(responseTimeHistory.count)
-        
+
         return AdaptiveMetrics(
             currentCacheSizeLimit: currentMaxCacheSize,
             currentMemoryLimit: currentMaxMemorySize,
@@ -396,7 +396,7 @@ actor AdaptiveCacheStorage {
             adaptiveAdjustmentCount: hitRateHistory.count
         )
     }
-    
+
     private func calculateCurrentMemoryUsage() -> Int64 {
         var size: Int64 = 0
         for (_, doc) in documentCache {
@@ -407,32 +407,32 @@ actor AdaptiveCacheStorage {
         }
         return size
     }
-    
+
     private func adjustCacheLimitsIfNeeded() async {
         if Date().timeIntervalSince(lastMemoryCheck) >= memoryCheckInterval {
             await adjustCacheLimits()
             lastMemoryCheck = Date()
         }
     }
-    
+
     // MARK: - Inherited Methods (simplified)
-    
+
     private func updateAccessOrder(_ key: String) {
         accessOrder.removeAll { $0 == key }
         accessOrder.append(key)
     }
-    
+
     private func evictItem(key: String) {
         analysisCache.removeValue(forKey: key)
-        
+
         let documentKeys = documentCache.keys.filter { $0.hashValue.description == key }
         for docKey in documentKeys {
             documentCache.removeValue(forKey: docKey)
         }
-        
+
         accessOrder.removeAll { $0 == key }
     }
-    
+
     // Additional methods would include analysis caching, encryption key rotation, etc.
     // These would follow the same pattern as the document operations but with adaptive sizing
 }
@@ -443,27 +443,27 @@ final class MemoryPressureMonitor {
     func getCurrentMemoryInfo() -> MemoryInfo {
         var info = mach_task_basic_info()
         var count = mach_msg_type_number_t(MemoryLayout<mach_task_basic_info>.size) / 4
-        
+
         let result = withUnsafeMutablePointer(to: &info) {
             $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
                 task_info(mach_task_self_,
-                         task_flavor_t(MACH_TASK_BASIC_INFO),
-                         $0,
-                         &count)
+                          task_flavor_t(MACH_TASK_BASIC_INFO),
+                          $0,
+                          &count)
             }
         }
-        
+
         if result == KERN_SUCCESS {
             let totalMemory = ProcessInfo.processInfo.physicalMemory
             let usedMemory = info.resident_size
-            
+
             return MemoryInfo(
                 total: Int64(totalMemory),
                 used: Int64(usedMemory),
                 available: Int64(totalMemory) - Int64(usedMemory)
             )
         }
-        
+
         // Fallback values
         return MemoryInfo(
             total: Int64(ProcessInfo.processInfo.physicalMemory),
@@ -507,11 +507,11 @@ extension AdaptiveDocumentCache: DependencyKey {
         let storage = Task {
             try await AdaptiveCacheStorage()
         }
-        
+
         func getStorage() async throws -> AdaptiveCacheStorage {
             try await storage.value
         }
-        
+
         return AdaptiveDocumentCache(
             cacheDocument: { document in
                 let storage = try await getStorage()
@@ -522,13 +522,13 @@ extension AdaptiveDocumentCache: DependencyKey {
                 guard let storage = try? await getStorage() else { return nil }
                 return await storage.getCachedDocument(type: type, requirements: requirements)
             },
-            cacheAnalysisResponse: { requirements, response, recommendedDocuments in
+            cacheAnalysisResponse: { _, _, _ in
                 // Implementation would be similar to EncryptedDocumentCache
                 // but with adaptive sizing logic
             },
-            getCachedAnalysisResponse: { requirements in
+            getCachedAnalysisResponse: { _ in
                 // Implementation would be similar to EncryptedDocumentCache
-                return nil
+                nil
             },
             clearCache: {
                 // Implementation
@@ -568,7 +568,7 @@ extension AdaptiveDocumentCache: DependencyKey {
             },
             exportEncryptedBackup: {
                 // Implementation similar to EncryptedDocumentCache
-                return Data()
+                Data()
             },
             importEncryptedBackup: { _ in
                 // Implementation similar to EncryptedDocumentCache
@@ -597,8 +597,8 @@ extension AdaptiveDocumentCache: DependencyKey {
     }
 }
 
-extension DependencyValues {
-    public var adaptiveDocumentCache: AdaptiveDocumentCache {
+public extension DependencyValues {
+    var adaptiveDocumentCache: AdaptiveDocumentCache {
         get { self[AdaptiveDocumentCache.self] }
         set { self[AdaptiveDocumentCache.self] = newValue }
     }

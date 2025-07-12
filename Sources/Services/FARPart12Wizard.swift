@@ -1,5 +1,5 @@
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 // MARK: - FAR Part 12 Determination Wizard
 
@@ -8,7 +8,7 @@ public struct FARPart12Wizard {
     public var answerQuestion: (String, WizardAnswer) async throws -> WizardStep
     public var generateDetermination: (CommercialItemWizard) async throws -> CommercialItemDetermination
     public var exportDeterminationMemo: (CommercialItemDetermination) async throws -> String
-    
+
     public init(
         startWizard: @escaping () async throws -> CommercialItemWizard,
         answerQuestion: @escaping (String, WizardAnswer) async throws -> WizardStep,
@@ -30,7 +30,7 @@ public struct CommercialItemWizard {
     public var answers: [String: WizardAnswer]
     public var determination: CommercialItemDetermination?
     public var completionPercentage: Double
-    
+
     public init(
         id: UUID = UUID(),
         currentStep: WizardStep,
@@ -53,7 +53,7 @@ public struct WizardStep {
     public let answerType: AnswerType
     public let options: [String]?
     public let nextStepLogic: (WizardAnswer) -> String?
-    
+
     public init(
         id: String,
         question: String,
@@ -94,7 +94,7 @@ public struct CommercialItemDetermination {
     public let applicableClauses: [String]
     public let recommendations: [String]
     public let risks: [String]
-    
+
     public init(
         isCommercialItem: Bool,
         determinationType: DeterminationType,
@@ -134,14 +134,14 @@ private let wizardSteps: [String: WizardStep] = [
         options: ["Supply", "Service", "Both"],
         nextStepLogic: { answer in
             switch answer {
-            case .choice("Supply"): return "supply_type"
-            case .choice("Service"): return "service_type"
-            case .choice("Both"): return "hybrid_type"
-            default: return nil
+            case .choice("Supply"): "supply_type"
+            case .choice("Service"): "service_type"
+            case .choice("Both"): "hybrid_type"
+            default: nil
             }
         }
     ),
-    
+
     "supply_type": WizardStep(
         id: "supply_type",
         question: "Is this item sold in substantial quantities in the commercial marketplace?",
@@ -150,13 +150,13 @@ private let wizardSteps: [String: WizardStep] = [
         options: nil,
         nextStepLogic: { answer in
             switch answer {
-            case .yes: return "catalog_pricing"
-            case .no: return "evolved_commercial"
-            default: return nil
+            case .yes: "catalog_pricing"
+            case .no: "evolved_commercial"
+            default: nil
             }
         }
     ),
-    
+
     "service_type": WizardStep(
         id: "service_type",
         question: "Are these services of a type offered and sold competitively in the commercial marketplace?",
@@ -165,13 +165,13 @@ private let wizardSteps: [String: WizardStep] = [
         options: nil,
         nextStepLogic: { answer in
             switch answer {
-            case .yes: return "service_pricing"
-            case .no: return "specialized_service"
-            default: return nil
+            case .yes: "service_pricing"
+            case .no: "specialized_service"
+            default: nil
             }
         }
     ),
-    
+
     "catalog_pricing": WizardStep(
         id: "catalog_pricing",
         question: "Does the item have established catalog or market pricing?",
@@ -180,13 +180,13 @@ private let wizardSteps: [String: WizardStep] = [
         options: nil,
         nextStepLogic: { answer in
             switch answer {
-            case .yes: return "modifications_needed"
-            case .no: return "custom_pricing"
-            default: return nil
+            case .yes: "modifications_needed"
+            case .no: "custom_pricing"
+            default: nil
             }
         }
     ),
-    
+
     "modifications_needed": WizardStep(
         id: "modifications_needed",
         question: "Will the item require modifications to meet government needs?",
@@ -195,14 +195,14 @@ private let wizardSteps: [String: WizardStep] = [
         options: ["No modifications", "Minor modifications", "Major modifications"],
         nextStepLogic: { answer in
             switch answer {
-            case .choice("No modifications"): return "cots_criteria"
-            case .choice("Minor modifications"): return "modification_type"
-            case .choice("Major modifications"): return "not_commercial"
-            default: return nil
+            case .choice("No modifications"): "cots_criteria"
+            case .choice("Minor modifications"): "modification_type"
+            case .choice("Major modifications"): "not_commercial"
+            default: nil
             }
         }
     ),
-    
+
     "cots_criteria": WizardStep(
         id: "cots_criteria",
         question: "Is this item sold 'as-is' without customization to multiple customers?",
@@ -211,13 +211,13 @@ private let wizardSteps: [String: WizardStep] = [
         options: nil,
         nextStepLogic: { answer in
             switch answer {
-            case .yes: return "market_research"
-            case .no: return "market_research"
-            default: return nil
+            case .yes: "market_research"
+            case .no: "market_research"
+            default: nil
             }
         }
     ),
-    
+
     "market_research": WizardStep(
         id: "market_research",
         question: "What market research have you conducted?",
@@ -226,7 +226,7 @@ private let wizardSteps: [String: WizardStep] = [
         options: nil,
         nextStepLogic: { _ in "determination_complete" }
     ),
-    
+
     "evolved_commercial": WizardStep(
         id: "evolved_commercial",
         question: "Has this item evolved from a commercial item?",
@@ -235,13 +235,13 @@ private let wizardSteps: [String: WizardStep] = [
         options: nil,
         nextStepLogic: { answer in
             switch answer {
-            case .yes: return "evolution_details"
-            case .no: return "offered_for_sale"
-            default: return nil
+            case .yes: "evolution_details"
+            case .no: "offered_for_sale"
+            default: nil
             }
         }
     ),
-    
+
     "service_pricing": WizardStep(
         id: "service_pricing",
         question: "How is the service typically priced in the commercial market?",
@@ -250,7 +250,7 @@ private let wizardSteps: [String: WizardStep] = [
         options: ["Fixed price", "Time and materials", "Per unit/transaction", "Subscription"],
         nextStepLogic: { _ in "service_customization" }
     ),
-    
+
     "service_customization": WizardStep(
         id: "service_customization",
         question: "Will the service require government-unique features?",
@@ -259,12 +259,12 @@ private let wizardSteps: [String: WizardStep] = [
         options: ["No customization", "Minor tailoring", "Significant customization"],
         nextStepLogic: { answer in
             switch answer {
-            case .choice("Significant customization"): return "not_commercial"
-            default: return "market_research"
+            case .choice("Significant customization"): "not_commercial"
+            default: "market_research"
             }
         }
     ),
-    
+
     "modification_type": WizardStep(
         id: "modification_type",
         question: "What type of modifications are needed?",
@@ -273,7 +273,7 @@ private let wizardSteps: [String: WizardStep] = [
         options: nil,
         nextStepLogic: { _ in "market_research" }
     ),
-    
+
     "not_commercial": WizardStep(
         id: "not_commercial",
         question: "Based on your answers, this does not appear to be a commercial item. Would you like to explore hybrid options?",
@@ -282,13 +282,13 @@ private let wizardSteps: [String: WizardStep] = [
         options: nil,
         nextStepLogic: { answer in
             switch answer {
-            case .yes: return "hybrid_approach"
-            case .no: return "determination_complete"
-            default: return nil
+            case .yes: "hybrid_approach"
+            case .no: "determination_complete"
+            default: nil
             }
         }
     ),
-    
+
     "determination_complete": WizardStep(
         id: "determination_complete",
         question: "Determination complete. Would you like to generate a formal determination memorandum?",
@@ -296,7 +296,7 @@ private let wizardSteps: [String: WizardStep] = [
         answerType: .yesNo,
         options: nil,
         nextStepLogic: { _ in nil }
-    )
+    ),
 ]
 
 // MARK: - Live Value
@@ -308,29 +308,30 @@ extension FARPart12Wizard: DependencyKey {
                 guard let startStep = wizardSteps["start"] else {
                     throw FARPart12WizardError.invalidStep
                 }
-                
+
                 return CommercialItemWizard(
                     currentStep: startStep,
                     completionPercentage: 0
                 )
             },
-            
+
             answerQuestion: { wizardId, answer in
                 // In a real implementation, this would track state
                 // For now, we'll use the step logic to determine next step
                 guard let currentStep = wizardSteps.values.first(where: { $0.id == wizardId }) else {
                     throw FARPart12WizardError.invalidStep
                 }
-                
+
                 guard let nextStepId = currentStep.nextStepLogic(answer),
-                      let nextStep = wizardSteps[nextStepId] else {
+                      let nextStep = wizardSteps[nextStepId]
+                else {
                     // Return completion step
                     return wizardSteps["determination_complete"]!
                 }
-                
+
                 return nextStep
             },
-            
+
             generateDetermination: { wizard in
                 // Analyze answers to generate determination
                 let isCommercial = !wizard.answers.values.contains { answer in
@@ -338,32 +339,31 @@ extension FARPart12Wizard: DependencyKey {
                     if case .choice("Significant customization") = answer { return true }
                     return false
                 }
-                
-                let determinationType: DeterminationType
-                if wizard.answers.values.contains(where: { 
+
+                let determinationType: DeterminationType = if wizard.answers.values.contains(where: {
                     if case .choice("No modifications") = $0 { return true }
                     return false
                 }) {
-                    determinationType = .commerciallyAvailable
+                    .commerciallyAvailable
                 } else if wizard.answers.values.contains(where: {
                     if case .choice("Minor modifications") = $0 { return true }
                     return false
                 }) {
-                    determinationType = .modifiedCommercial
+                    .modifiedCommercial
                 } else if wizard.answers.values.contains(where: {
                     if case .choice("Service") = $0 { return true }
                     return false
                 }) {
-                    determinationType = .commercialService
+                    .commercialService
                 } else {
-                    determinationType = isCommercial ? .commercialItem : .notCommercial
+                    isCommercial ? .commercialItem : .notCommercial
                 }
-                
+
                 let justification = generateJustification(from: wizard.answers, isCommercial: isCommercial)
                 let clauses = getApplicableClauses(for: determinationType)
                 let recommendations = generateRecommendations(for: determinationType)
                 let risks = identifyRisks(for: determinationType, answers: wizard.answers)
-                
+
                 return CommercialItemDetermination(
                     isCommercialItem: isCommercial,
                     determinationType: determinationType,
@@ -374,139 +374,139 @@ extension FARPart12Wizard: DependencyKey {
                     risks: risks
                 )
             },
-            
+
             exportDeterminationMemo: { determination in
-                return generateDeterminationMemo(determination)
+                generateDeterminationMemo(determination)
             }
         )
     }
-    
-    private static func generateJustification(from answers: [String: WizardAnswer], isCommercial: Bool) -> String {
+
+    private static func generateJustification(from _: [String: WizardAnswer], isCommercial: Bool) -> String {
         if isCommercial {
-            return """
+            """
             Based on market research and analysis, this acquisition meets the definition of a commercial item under FAR 2.101. 
             The item/service is of a type customarily used by the general public or non-governmental entities for purposes 
             other than governmental purposes, and has been sold, leased, or licensed to the general public.
             """
         } else {
-            return """
+            """
             After thorough market research and analysis, this acquisition does not meet the criteria for commercial item 
             determination under FAR 2.101. The item/service requires significant customization or modifications that 
             fundamentally alter its commercial nature, or is not offered in the commercial marketplace.
             """
         }
     }
-    
-    private static func extractMarketResearch(from answers: [String: WizardAnswer]) -> String {
+
+    private static func extractMarketResearch(from _: [String: WizardAnswer]) -> String {
         // Extract market research information from answers
-        return "Market research conducted included review of commercial catalogs, industry publications, and vendor capabilities."
+        "Market research conducted included review of commercial catalogs, industry publications, and vendor capabilities."
     }
-    
+
     private static func getApplicableClauses(for type: DeterminationType) -> [String] {
         switch type {
         case .commercialItem, .commerciallyAvailable, .commercialService, .modifiedCommercial:
-            return [
+            [
                 "52.212-1 Instructions to Offerors—Commercial Items",
                 "52.212-2 Evaluation—Commercial Items",
                 "52.212-3 Offeror Representations and Certifications—Commercial Items",
                 "52.212-4 Contract Terms and Conditions—Commercial Items",
-                "52.212-5 Contract Terms and Conditions Required to Implement Statutes or Executive Orders—Commercial Items"
+                "52.212-5 Contract Terms and Conditions Required to Implement Statutes or Executive Orders—Commercial Items",
             ]
         case .notCommercial:
-            return ["Standard FAR Part 15 clauses apply"]
+            ["Standard FAR Part 15 clauses apply"]
         case .hybrid:
-            return ["Mixed commercial and non-commercial clauses as appropriate"]
+            ["Mixed commercial and non-commercial clauses as appropriate"]
         }
     }
-    
+
     private static func generateRecommendations(for type: DeterminationType) -> [String] {
         switch type {
         case .commercialItem, .commerciallyAvailable:
-            return [
+            [
                 "Use FAR Part 12 procedures",
                 "Apply streamlined solicitation process",
                 "Minimize government-unique requirements",
-                "Consider firm-fixed-price contract type"
+                "Consider firm-fixed-price contract type",
             ]
         case .commercialService:
-            return [
+            [
                 "Use commercial service acquisition procedures",
                 "Consider performance-based approach",
-                "Apply commercial quality standards"
+                "Apply commercial quality standards",
             ]
         case .modifiedCommercial:
-            return [
+            [
                 "Document modifications clearly",
                 "Ensure modifications are minor",
-                "Maintain commercial pricing structure"
+                "Maintain commercial pricing structure",
             ]
         case .notCommercial:
-            return [
+            [
                 "Use FAR Part 15 procedures",
                 "Conduct detailed cost analysis",
-                "Apply full competition requirements"
+                "Apply full competition requirements",
             ]
         case .hybrid:
-            return [
+            [
                 "Segregate commercial and non-commercial elements",
                 "Apply appropriate procedures to each element",
-                "Document determination for each component"
+                "Document determination for each component",
             ]
         }
     }
-    
+
     private static func identifyRisks(for type: DeterminationType, answers: [String: WizardAnswer]) -> [String] {
         var risks: [String] = []
-        
+
         if case .modifiedCommercial = type {
             risks.append("Modifications may impact commercial item status if too extensive")
         }
-        
-        if answers.values.contains(where: { 
-            if case .text(let value) = $0, value.isEmpty { return true }
+
+        if answers.values.contains(where: {
+            if case let .text(value) = $0, value.isEmpty { return true }
             return false
         }) {
             risks.append("Incomplete market research may challenge determination")
         }
-        
+
         if case .hybrid = type {
             risks.append("Complex administration of mixed commercial/non-commercial elements")
         }
-        
+
         return risks.isEmpty ? ["No significant risks identified"] : risks
     }
-    
+
     private static func generateDeterminationMemo(_ determination: CommercialItemDetermination) -> String {
-        return """
+        """
         MEMORANDUM FOR RECORD
-        
+
         SUBJECT: Commercial Item Determination - [Contract/Requisition Number]
-        
+
         1. PURPOSE: This memorandum documents the commercial item determination for the subject acquisition.
-        
+
         2. DETERMINATION: \(determination.isCommercialItem ? "This IS" : "This IS NOT") a commercial item acquisition.
            Type: \(determination.determinationType.rawValue)
-        
+
         3. JUSTIFICATION:
         \(determination.justification)
-        
+
         4. MARKET RESEARCH:
         \(determination.marketResearchSummary)
-        
+
         5. APPLICABLE CLAUSES:
         \(determination.applicableClauses.map { "   - \($0)" }.joined(separator: "\n"))
-        
+
         6. RECOMMENDATIONS:
         \(determination.recommendations.map { "   - \($0)" }.joined(separator: "\n"))
-        
+
         7. RISKS:
         \(determination.risks.map { "   - \($0)" }.joined(separator: "\n"))
-        
+
         8. CONTRACTING OFFICER DETERMINATION:
         Based on the above analysis, I have determined that this acquisition \(determination.isCommercialItem ? "qualifies" : "does not qualify") 
         as a commercial item under FAR 2.101. \(determination.isCommercialItem ? "FAR Part 12 procedures shall be used." : "FAR Part 15 procedures shall be used.")
-        
-        
+
+
         _______________________________
         [Contracting Officer Name]
         Contracting Officer
@@ -525,8 +525,8 @@ public enum FARPart12WizardError: Error {
 
 // MARK: - Test Value
 
-extension FARPart12Wizard {
-    public static var testValue: FARPart12Wizard {
+public extension FARPart12Wizard {
+    static var testValue: FARPart12Wizard {
         FARPart12Wizard(
             startWizard: {
                 CommercialItemWizard(
@@ -569,8 +569,8 @@ extension FARPart12Wizard {
 
 // MARK: - Dependency Registration
 
-extension DependencyValues {
-    public var farPart12Wizard: FARPart12Wizard {
+public extension DependencyValues {
+    var farPart12Wizard: FARPart12Wizard {
         get { self[FARPart12Wizard.self] }
         set { self[FARPart12Wizard.self] = newValue }
     }

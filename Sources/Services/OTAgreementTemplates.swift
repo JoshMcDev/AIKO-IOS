@@ -1,5 +1,5 @@
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 // MARK: - OT Agreement Types
 
@@ -12,25 +12,25 @@ public enum OTAgreementType: String, CaseIterable {
     case nonTraditional = "Non-Traditional Contractor OT"
     case dualUse = "Dual-Use OT"
     case sbirSttr = "SBIR/STTR OT"
-    
+
     var description: String {
         switch self {
         case .research:
-            return "Basic or applied research projects with flexible IP arrangements"
+            "Basic or applied research projects with flexible IP arrangements"
         case .prototype:
-            return "Prototype development and demonstration projects"
+            "Prototype development and demonstration projects"
         case .production:
-            return "Follow-on production from successful prototypes"
+            "Follow-on production from successful prototypes"
         case .consortium:
-            return "Multiple performers working collaboratively"
+            "Multiple performers working collaboratively"
         case .traditionalContractor:
-            return "Traditional defense contractors with cost sharing"
+            "Traditional defense contractors with cost sharing"
         case .nonTraditional:
-            return "Commercial entities with simplified business terms"
+            "Commercial entities with simplified business terms"
         case .dualUse:
-            return "Projects with both military and commercial applications"
+            "Projects with both military and commercial applications"
         case .sbirSttr:
-            return "Small business innovation and technology transfer"
+            "Small business innovation and technology transfer"
         }
     }
 }
@@ -41,7 +41,7 @@ public struct OTAgreementTemplates {
     public var selectTemplate: (OTAgreementType) async throws -> String
     public var analyzeRequirements: (String) async throws -> OTAgreementType
     public var getTemplateGuidance: (OTAgreementType) async throws -> OTTemplateGuidance
-    
+
     public init(
         selectTemplate: @escaping (OTAgreementType) async throws -> String,
         analyzeRequirements: @escaping (String) async throws -> OTAgreementType,
@@ -61,7 +61,7 @@ public struct OTTemplateGuidance {
     public let commonPitfalls: [String]
     public let negotiationPoints: [String]
     public let requiredAttachments: [String]
-    
+
     public init(
         type: OTAgreementType,
         keyProvisions: [String],
@@ -85,26 +85,26 @@ extension OTAgreementTemplates: DependencyKey {
             selectTemplate: { type in
                 switch type {
                 case .research:
-                    return researchOTTemplate
+                    researchOTTemplate
                 case .prototype:
-                    return prototypeOTTemplate
+                    prototypeOTTemplate
                 case .production:
-                    return productionOTTemplate
+                    productionOTTemplate
                 case .consortium:
-                    return consortiumOTTemplate
+                    consortiumOTTemplate
                 case .traditionalContractor:
-                    return traditionalContractorOTTemplate
+                    traditionalContractorOTTemplate
                 case .nonTraditional:
-                    return nonTraditionalOTTemplate
+                    nonTraditionalOTTemplate
                 case .dualUse:
-                    return dualUseOTTemplate
+                    dualUseOTTemplate
                 case .sbirSttr:
-                    return sbirSttrOTTemplate
+                    sbirSttrOTTemplate
                 }
             },
             analyzeRequirements: { requirements in
                 let lowercased = requirements.lowercased()
-                
+
                 // Analyze requirements to determine best OT type
                 if lowercased.contains("research") && (lowercased.contains("university") || lowercased.contains("academic")) {
                     return .research
@@ -128,210 +128,210 @@ extension OTAgreementTemplates: DependencyKey {
             getTemplateGuidance: { type in
                 switch type {
                 case .research:
-                    return OTTemplateGuidance(
+                    OTTemplateGuidance(
                         type: .research,
                         keyProvisions: [
                             "Broad publication rights",
                             "5-year government purpose rights",
                             "No deliverable-based payments",
-                            "Flexible research pivots allowed"
+                            "Flexible research pivots allowed",
                         ],
                         commonPitfalls: [
                             "Overly restrictive IP terms",
                             "Fixed deliverables vs research flexibility",
-                            "Inadequate publication procedures"
+                            "Inadequate publication procedures",
                         ],
                         negotiationPoints: [
                             "Publication embargo periods",
                             "Background IP identification",
-                            "Foreign national participation"
+                            "Foreign national participation",
                         ],
                         requiredAttachments: [
                             "Research plan",
                             "Key personnel CVs",
-                            "Facility capabilities"
+                            "Facility capabilities",
                         ]
                     )
-                    
+
                 case .prototype:
-                    return OTTemplateGuidance(
+                    OTTemplateGuidance(
                         type: .prototype,
                         keyProvisions: [
                             "Clear prototype definition",
                             "Success criteria metrics",
                             "Follow-on production rights",
-                            "Cost sharing requirements"
+                            "Cost sharing requirements",
                         ],
                         commonPitfalls: [
                             "Vague success criteria",
                             "Missing follow-on provisions",
-                            "Inadequate testing plans"
+                            "Inadequate testing plans",
                         ],
                         negotiationPoints: [
                             "Cost share percentages",
                             "IP rights allocation",
-                            "Production transition terms"
+                            "Production transition terms",
                         ],
                         requiredAttachments: [
                             "Technical specification",
                             "Test plan",
-                            "Milestone schedule"
+                            "Milestone schedule",
                         ]
                     )
-                    
+
                 case .production:
-                    return OTTemplateGuidance(
+                    OTTemplateGuidance(
                         type: .production,
                         keyProvisions: [
                             "Unit pricing structure",
                             "Quality standards",
                             "Delivery schedule",
-                            "Warranty provisions"
+                            "Warranty provisions",
                         ],
                         commonPitfalls: [
                             "Inadequate configuration control",
                             "Missing sustainment provisions",
-                            "Unclear acceptance criteria"
+                            "Unclear acceptance criteria",
                         ],
                         negotiationPoints: [
                             "Volume discounts",
                             "Option quantities",
-                            "Warranty duration"
+                            "Warranty duration",
                         ],
                         requiredAttachments: [
                             "Production readiness review",
                             "Quality plan",
-                            "Supply chain assessment"
+                            "Supply chain assessment",
                         ]
                     )
-                    
+
                 case .consortium:
-                    return OTTemplateGuidance(
+                    OTTemplateGuidance(
                         type: .consortium,
                         keyProvisions: [
                             "Consortium governance structure",
                             "Member agreements",
                             "Work share allocation",
-                            "Common fund management"
+                            "Common fund management",
                         ],
                         commonPitfalls: [
                             "Unclear decision rights",
                             "IP allocation conflicts",
-                            "Free rider problems"
+                            "Free rider problems",
                         ],
                         negotiationPoints: [
                             "Leadership structure",
                             "New member criteria",
-                            "Exit provisions"
+                            "Exit provisions",
                         ],
                         requiredAttachments: [
                             "Consortium agreement",
                             "Member capabilities matrix",
-                            "Governance charter"
+                            "Governance charter",
                         ]
                     )
-                    
+
                 case .traditionalContractor:
-                    return OTTemplateGuidance(
+                    OTTemplateGuidance(
                         type: .traditionalContractor,
                         keyProvisions: [
                             "1/3 cost share requirement",
                             "Traditional FAR-like terms",
                             "Standard IP provisions",
-                            "Audit requirements"
+                            "Audit requirements",
                         ],
                         commonPitfalls: [
                             "Insufficient cost share",
                             "Over-application of FAR",
-                            "Rigid milestone structure"
+                            "Rigid milestone structure",
                         ],
                         negotiationPoints: [
                             "In-kind contributions",
                             "IP flexibility",
-                            "Milestone adjustments"
+                            "Milestone adjustments",
                         ],
                         requiredAttachments: [
                             "Cost share commitment",
                             "Past performance",
-                            "Technical approach"
+                            "Technical approach",
                         ]
                     )
-                    
+
                 case .nonTraditional:
-                    return OTTemplateGuidance(
+                    OTTemplateGuidance(
                         type: .nonTraditional,
                         keyProvisions: [
                             "Commercial terms preference",
                             "Reduced oversight",
                             "Flexible IP arrangements",
-                            "No cost accounting standards"
+                            "No cost accounting standards",
                         ],
                         commonPitfalls: [
                             "Over-bureaucratization",
                             "Excessive reporting",
-                            "FAR-like provisions"
+                            "FAR-like provisions",
                         ],
                         negotiationPoints: [
                             "Commercial pricing",
                             "IP ownership",
-                            "Minimal reporting"
+                            "Minimal reporting",
                         ],
                         requiredAttachments: [
                             "Commercial capability statement",
                             "Pricing methodology",
-                            "Commercial practices description"
+                            "Commercial practices description",
                         ]
                     )
-                    
+
                 case .dualUse:
-                    return OTTemplateGuidance(
+                    OTTemplateGuidance(
                         type: .dualUse,
                         keyProvisions: [
                             "Dual market rights",
                             "Revenue sharing",
                             "Export control compliance",
-                            "Commercial milestone tracking"
+                            "Commercial milestone tracking",
                         ],
                         commonPitfalls: [
                             "Unclear market boundaries",
                             "Missing export provisions",
-                            "Inadequate revenue tracking"
+                            "Inadequate revenue tracking",
                         ],
                         negotiationPoints: [
                             "Market exclusivity periods",
                             "Revenue share percentages",
-                            "Foreign sales rights"
+                            "Foreign sales rights",
                         ],
                         requiredAttachments: [
                             "Commercialization plan",
                             "Market analysis",
-                            "Export compliance plan"
+                            "Export compliance plan",
                         ]
                     )
-                    
+
                 case .sbirSttr:
-                    return OTTemplateGuidance(
+                    OTTemplateGuidance(
                         type: .sbirSttr,
                         keyProvisions: [
                             "SBIR data rights",
                             "Phase III eligibility",
                             "Commercialization requirements",
-                            "Success fee structure"
+                            "Success fee structure",
                         ],
                         commonPitfalls: [
                             "Violating SBIR policy",
                             "Inadequate Phase III bridge",
-                            "Missing success metrics"
+                            "Missing success metrics",
                         ],
                         negotiationPoints: [
                             "Success fee triggers",
                             "Phase III commitment",
-                            "Mentorship terms"
+                            "Mentorship terms",
                         ],
                         requiredAttachments: [
                             "Commercialization plan",
                             "Phase III strategy",
-                            "Company qualifications"
+                            "Company qualifications",
                         ]
                     )
                 }
@@ -556,8 +556,8 @@ Mentorship available through {{MENTOR_PROGRAM}}
 
 // MARK: - Dependency Registration
 
-extension DependencyValues {
-    public var otAgreementTemplates: OTAgreementTemplates {
+public extension DependencyValues {
+    var otAgreementTemplates: OTAgreementTemplates {
         get { self[OTAgreementTemplates.self] }
         set { self[OTAgreementTemplates.self] = newValue }
     }

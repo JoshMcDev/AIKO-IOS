@@ -1,12 +1,11 @@
-import Foundation
 import CoreData
+import Foundation
 
 @objc(GeneratedFile)
 public class GeneratedFile: NSManagedObject {
-    
-    public override func awakeFromInsert() {
+    override public func awakeFromInsert() {
         super.awakeFromInsert()
-        
+
         setPrimitiveValue(UUID(), forKey: "id")
         setPrimitiveValue(Date(), forKey: "createdDate")
     }

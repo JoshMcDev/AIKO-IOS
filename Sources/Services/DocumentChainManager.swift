@@ -1,15 +1,16 @@
-import Foundation
 import ComposableArchitecture
 import CoreData
+import Foundation
 
 // MARK: - Document Chain Manager
+
 public struct DocumentChainManager {
     public var createChain: (UUID, [DocumentType]) async throws -> DocumentChain
     public var updateChainProgress: (UUID, DocumentType, GeneratedDocument) async throws -> DocumentChain
     public var getNextInChain: (UUID) async throws -> DocumentType?
     public var extractAndPropagate: (UUID, GeneratedDocument) async throws -> CollectedData
     public var validateChain: (UUID) async throws -> ChainValidation
-    
+
     public init(
         createChain: @escaping (UUID, [DocumentType]) async throws -> DocumentChain,
         updateChainProgress: @escaping (UUID, DocumentType, GeneratedDocument) async throws -> DocumentChain,
@@ -26,6 +27,7 @@ public struct DocumentChainManager {
 }
 
 // MARK: - Document Chain Model
+
 public struct DocumentChain: Equatable, Codable {
     public let id: UUID
     public let acquisitionId: UUID
@@ -35,19 +37,19 @@ public struct DocumentChain: Equatable, Codable {
     public let currentIndex: Int
     public let createdAt: Date
     public let updatedAt: Date
-    
+
     // Custom Codable implementation to handle dictionary with DocumentType keys
     private enum CodingKeys: String, CodingKey {
         case id, acquisitionId, plannedDocuments, completedDocuments
         case propagatedData, currentIndex, createdAt, updatedAt
     }
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(UUID.self, forKey: .id)
         acquisitionId = try container.decode(UUID.self, forKey: .acquisitionId)
         plannedDocuments = try container.decode([DocumentType].self, forKey: .plannedDocuments)
-        
+
         // Decode completedDocuments as [String: GeneratedDocument] and convert
         let completedDict = try container.decode([String: GeneratedDocument].self, forKey: .completedDocuments)
         var converted: [DocumentType: GeneratedDocument] = [:]
@@ -57,32 +59,32 @@ public struct DocumentChain: Equatable, Codable {
             }
         }
         completedDocuments = converted
-        
+
         propagatedData = try container.decode(CollectedData.self, forKey: .propagatedData)
         currentIndex = try container.decode(Int.self, forKey: .currentIndex)
         createdAt = try container.decode(Date.self, forKey: .createdAt)
         updatedAt = try container.decode(Date.self, forKey: .updatedAt)
     }
-    
+
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
         try container.encode(acquisitionId, forKey: .acquisitionId)
         try container.encode(plannedDocuments, forKey: .plannedDocuments)
-        
+
         // Convert completedDocuments to [String: GeneratedDocument] for encoding
         var stringKeyedDict: [String: GeneratedDocument] = [:]
         for (key, value) in completedDocuments {
             stringKeyedDict[key.rawValue] = value
         }
         try container.encode(stringKeyedDict, forKey: .completedDocuments)
-        
+
         try container.encode(propagatedData, forKey: .propagatedData)
         try container.encode(currentIndex, forKey: .currentIndex)
         try container.encode(createdAt, forKey: .createdAt)
         try container.encode(updatedAt, forKey: .updatedAt)
     }
-    
+
     public init(
         id: UUID = UUID(),
         acquisitionId: UUID,
@@ -102,28 +104,29 @@ public struct DocumentChain: Equatable, Codable {
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
-    
+
     public var currentDocument: DocumentType? {
         guard currentIndex < plannedDocuments.count else { return nil }
         return plannedDocuments[currentIndex]
     }
-    
+
     public var progress: Double {
         guard !plannedDocuments.isEmpty else { return 0 }
         return Double(completedDocuments.count) / Double(plannedDocuments.count)
     }
-    
+
     public var isComplete: Bool {
-        return completedDocuments.count == plannedDocuments.count
+        completedDocuments.count == plannedDocuments.count
     }
 }
 
 // MARK: - Broken Link
+
 public struct BrokenLink: Equatable {
     public let from: DocumentType
     public let to: DocumentType
     public let reason: String
-    
+
     public init(from: DocumentType, to: DocumentType, reason: String) {
         self.from = from
         self.to = to
@@ -132,12 +135,13 @@ public struct BrokenLink: Equatable {
 }
 
 // MARK: - Chain Validation
+
 public struct ChainValidation: Equatable {
     public let isValid: Bool
     public let brokenLinks: [BrokenLink]
     public let missingData: [DocumentType: [String]]
     public let recommendations: [String]
-    
+
     public init(
         isValid: Bool,
         brokenLinks: [BrokenLink] = [],
@@ -152,14 +156,15 @@ public struct ChainValidation: Equatable {
 }
 
 // MARK: - Live Implementation
+
 extension DocumentChainManager: DependencyKey {
     public static var liveValue: DocumentChainManager {
         let documentDependencyService = DocumentDependencyService.liveValue
         _ = AcquisitionService.liveValue
-        
+
         // In-memory storage for chains (would be persisted in real implementation)
         var chains: [UUID: DocumentChain] = [:]
-        
+
         return DocumentChainManager(
             createChain: { acquisitionId, plannedDocuments in
                 let chain = DocumentChain(
@@ -167,41 +172,41 @@ extension DocumentChainManager: DependencyKey {
                     plannedDocuments: plannedDocuments
                 )
                 chains[acquisitionId] = chain
-                
+
                 // Store in Core Data
                 let context = CoreDataStack.shared.viewContext
                 let fetchRequest: NSFetchRequest<Acquisition> = Acquisition.fetchRequest()
                 fetchRequest.predicate = NSPredicate(format: "id == %@", acquisitionId as CVarArg)
-                
+
                 if let acquisition = try? context.fetch(fetchRequest).first {
                     try? acquisition.setDocumentChainCodable(chain)
                     try? CoreDataStack.shared.save()
                 }
-                
+
                 return chain
             },
-            
+
             updateChainProgress: { acquisitionId, documentType, generatedDocument in
                 guard let chain = chains[acquisitionId] else {
                     throw ChainError.chainNotFound
                 }
-                
+
                 // Update completed documents
                 var updatedCompleted = chain.completedDocuments
                 updatedCompleted[documentType] = generatedDocument
-                
+
                 // Extract data from the document
                 let extractedData = documentDependencyService.extractDataForDependents(generatedDocument)
-                
+
                 // Merge extracted data with propagated data
                 var updatedPropagatedData = chain.propagatedData
                 for (key, value) in extractedData.data {
                     updatedPropagatedData[key] = value
                 }
-                
+
                 // Find next document index
                 let nextIndex = chain.currentIndex + 1
-                
+
                 // Create updated chain
                 let updatedChain = DocumentChain(
                     id: chain.id,
@@ -213,80 +218,80 @@ extension DocumentChainManager: DependencyKey {
                     createdAt: chain.createdAt,
                     updatedAt: Date()
                 )
-                
+
                 chains[acquisitionId] = updatedChain
-                
+
                 // Update Core Data with chain metadata
                 let context = CoreDataStack.shared.viewContext
                 let fetchRequest: NSFetchRequest<Acquisition> = Acquisition.fetchRequest()
                 fetchRequest.predicate = NSPredicate(format: "id == %@", acquisitionId as CVarArg)
-                
+
                 if let acquisition = try? context.fetch(fetchRequest).first {
                     try? acquisition.setDocumentChainCodable(updatedChain)
                     try? CoreDataStack.shared.save()
                 }
-                
+
                 return updatedChain
             },
-            
+
             getNextInChain: { acquisitionId in
                 guard let chain = chains[acquisitionId] else {
                     throw ChainError.chainNotFound
                 }
-                
+
                 // Find the next uncompleted document
                 for document in chain.plannedDocuments {
                     if chain.completedDocuments[document] == nil {
                         // Validate dependencies before suggesting
                         let previousDocs = Array(chain.completedDocuments.values)
                         let validation = documentDependencyService.validateDependencies(previousDocs, document)
-                        
+
                         if validation.isValid {
                             return document
                         }
                     }
                 }
-                
+
                 return nil
             },
-            
+
             extractAndPropagate: { acquisitionId, generatedDocument in
                 guard let chain = chains[acquisitionId] else {
                     throw ChainError.chainNotFound
                 }
-                
+
                 // Extract data from the document
                 let extractedData = documentDependencyService.extractDataForDependents(generatedDocument)
-                
+
                 // Propagate to dependent documents
                 if let documentType = generatedDocument.documentType {
                     // Find all documents that depend on this one
                     for plannedDoc in chain.plannedDocuments {
                         let dependencies = documentDependencyService.getDependencies(plannedDoc)
-                        
+
                         if dependencies.contains(where: { $0.sourceDocumentType == documentType }) {
                             // This document depends on the generated one
                             print("Data from \(documentType.shortName) will flow to \(plannedDoc.shortName)")
                         }
                     }
                 }
-                
+
                 return extractedData
             },
-            
+
             validateChain: { acquisitionId in
                 guard let chain = chains[acquisitionId] else {
                     throw ChainError.chainNotFound
                 }
-                
+
                 var brokenLinks: [BrokenLink] = []
                 var missingData: [DocumentType: [String]] = [:]
                 var recommendations: [String] = []
-                
+
                 // Validate each planned document
                 for (index, document) in chain.plannedDocuments.enumerated() {
                     let dependencies = documentDependencyService.getDependencies(document)
-                    
+
                     for dependency in dependencies where dependency.isRequired {
                         // Check if the source document is in the chain and comes before
                         if let sourceIndex = chain.plannedDocuments.firstIndex(of: dependency.sourceDocumentType) {
@@ -305,17 +310,17 @@ extension DocumentChainManager: DependencyKey {
                             ))
                         }
                     }
-                    
+
                     // Check for missing data fields
-                    let requiredFields = dependencies.flatMap { $0.dataFields }
+                    let requiredFields = dependencies.flatMap(\.dataFields)
                     let availableFields = Set(chain.propagatedData.data.keys)
                     let missing = requiredFields.filter { !availableFields.contains($0) }
-                    
+
                     if !missing.isEmpty {
                         missingData[document] = missing
                     }
                 }
-                
+
                 // Generate recommendations
                 if chain.plannedDocuments.isEmpty {
                     recommendations.append("Start by selecting documents to generate")
@@ -324,14 +329,14 @@ extension DocumentChainManager: DependencyKey {
                 } else {
                     let completion = Int(chain.progress * 100)
                     recommendations.append("Chain is \(completion)% complete")
-                    
+
                     if let next = chain.currentDocument {
                         recommendations.append("Next: Generate \(next.shortName)")
                     }
                 }
-                
+
                 let isValid = brokenLinks.isEmpty && missingData.isEmpty
-                
+
                 return ChainValidation(
                     isValid: isValid,
                     brokenLinks: brokenLinks,
@@ -344,25 +349,26 @@ extension DocumentChainManager: DependencyKey {
 }
 
 // MARK: - Chain Errors
+
 enum ChainError: LocalizedError {
     case chainNotFound
     case invalidDocumentOrder
     case missingDependencies
-    
+
     var errorDescription: String? {
         switch self {
         case .chainNotFound:
-            return "Document chain not found for this acquisition"
+            "Document chain not found for this acquisition"
         case .invalidDocumentOrder:
-            return "Invalid document order in chain"
+            "Invalid document order in chain"
         case .missingDependencies:
-            return "Missing required document dependencies"
+            "Missing required document dependencies"
         }
     }
 }
 
-extension DependencyValues {
-    public var documentChainManager: DocumentChainManager {
+public extension DependencyValues {
+    var documentChainManager: DocumentChainManager {
         get { self[DocumentChainManager.self] }
         set { self[DocumentChainManager.self] = newValue }
     }

@@ -129,7 +129,7 @@ Before using this template, ensure you have:
 - Permit contractors to make budget or financial commitments
 - Let contractors perform source selection or contract award functions
 
-✅ **Do:**
+ **Do:**
 - Maintain clear Government decision-making authority
 - Establish appropriate contractor management structure
 - Limit Government oversight to performance monitoring

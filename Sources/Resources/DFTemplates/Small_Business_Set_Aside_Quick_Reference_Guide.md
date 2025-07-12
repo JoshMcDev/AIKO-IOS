@@ -112,7 +112,7 @@ Before using this template, ensure you have:
 - Fail to coordinate with Small Business Specialist
 - Set aside acquisitions unsuitable for small business
 
-✅ **Do:**
+ **Do:**
 - Conduct thorough small business market research
 - Verify current size standards and NAICS codes
 - Ensure realistic competition expectations

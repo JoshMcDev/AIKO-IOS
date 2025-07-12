@@ -1,12 +1,12 @@
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 /// Service for interacting with SAM.gov Entity API
 public struct SAMGovService {
     public var searchEntity: (String) async throws -> EntitySearchResult
     public var getEntityByCAGE: (String) async throws -> EntityDetail
     public var getEntityByUEI: (String) async throws -> EntityDetail
-    
+
     public init(
         searchEntity: @escaping (String) async throws -> EntitySearchResult,
         getEntityByCAGE: @escaping (String) async throws -> EntityDetail,
@@ -19,6 +19,7 @@ public struct SAMGovService {
 }
 
 // MARK: - Models
+
 public struct EntitySearchResult: Equatable {
     public let totalRecords: Int
     public let entities: [EntitySummary]
@@ -122,30 +123,32 @@ public struct PointOfContact: Equatable {
 }
 
 // MARK: - Errors
+
 public enum SAMGovError: Error, LocalizedError {
     case invalidAPIKey
     case entityNotFound
     case rateLimitExceeded
     case invalidResponse
     case networkError(String)
-    
+
     public var errorDescription: String? {
         switch self {
         case .invalidAPIKey:
-            return "Invalid SAM.gov API key"
+            "Invalid SAM.gov API key"
         case .entityNotFound:
-            return "Entity not found in SAM.gov"
+            "Entity not found in SAM.gov"
         case .rateLimitExceeded:
-            return "SAM.gov API rate limit exceeded"
+            "SAM.gov API rate limit exceeded"
         case .invalidResponse:
-            return "Invalid response from SAM.gov API"
-        case .networkError(let message):
-            return "Network error: \(message)"
+            "Invalid response from SAM.gov API"
+        case let .networkError(message):
+            "Network error: \(message)"
         }
     }
 }
 
 // MARK: - Live Implementation
+
 extension SAMGovService: DependencyKey {
     public static var liveValue: SAMGovService {
         SAMGovService(
@@ -157,27 +160,27 @@ extension SAMGovService: DependencyKey {
                 guard !apiKey.isEmpty else {
                     throw SAMGovError.invalidAPIKey
                 }
-                
+
                 // Build URL with query parameters
                 var components = URLComponents(string: "https://api.sam.gov/entity-information/v3/entities")!
                 components.queryItems = [
                     URLQueryItem(name: "api_key", value: apiKey),
                     URLQueryItem(name: "q", value: query),
                     URLQueryItem(name: "registrationStatus", value: "A"), // Active only
-                    URLQueryItem(name: "includeSections", value: "entityRegistration,coreData,assertions,repsAndCerts,integrityInformation")
+                    URLQueryItem(name: "includeSections", value: "entityRegistration,coreData,assertions,repsAndCerts,integrityInformation"),
                 ]
-                
+
                 guard let url = components.url else {
                     throw SAMGovError.networkError("Invalid URL")
                 }
-                
+
                 // Make request
                 var request = URLRequest(url: url)
                 request.httpMethod = "GET"
                 request.setValue("application/json", forHTTPHeaderField: "Accept")
-                
+
                 let (data, response) = try await URLSession.shared.data(for: request)
-                
+
                 // Check response
                 if let httpResponse = response as? HTTPURLResponse {
                     switch httpResponse.statusCode {
@@ -193,14 +196,14 @@ extension SAMGovService: DependencyKey {
                         throw SAMGovError.networkError("HTTP \(httpResponse.statusCode)")
                     }
                 }
-                
+
                 // Parse response
                 let decoder = JSONDecoder()
                 decoder.dateDecodingStrategy = .iso8601
-                
+
                 do {
                     let apiResponse = try decoder.decode(SAMGovAPIResponse.self, from: data)
-                    
+
                     let entities = apiResponse.entityData?.map { entity in
                         EntitySummary(
                             ueiSAM: entity.entityRegistration?.ueiSAM ?? "",
@@ -211,7 +214,7 @@ extension SAMGovService: DependencyKey {
                             expirationDate: entity.entityRegistration?.expirationDate
                         )
                     } ?? []
-                    
+
                     return EntitySearchResult(
                         totalRecords: apiResponse.totalRecords ?? 0,
                         entities: entities
@@ -227,11 +230,11 @@ extension SAMGovService: DependencyKey {
             getEntityByCAGE: { cageCode in
                 // Search by CAGE code
                 let searchResult = try await SAMGovService.liveValue.searchEntity("CAGE:\(cageCode)")
-                
+
                 guard let firstEntity = searchResult.entities.first else {
                     throw SAMGovError.entityNotFound
                 }
-                
+
                 // Get full details by UEI
                 return try await SAMGovService.liveValue.getEntityByUEI(firstEntity.ueiSAM)
             },
@@ -243,26 +246,26 @@ extension SAMGovService: DependencyKey {
                 guard !apiKey.isEmpty else {
                     throw SAMGovError.invalidAPIKey
                 }
-                
+
                 // Build URL for specific entity
                 let urlString = "https://api.sam.gov/entity-information/v3/entities/\(uei)"
                 var components = URLComponents(string: urlString)!
                 components.queryItems = [
                     URLQueryItem(name: "api_key", value: apiKey),
-                    URLQueryItem(name: "includeSections", value: "entityRegistration,coreData,assertions,repsAndCerts,integrityInformation")
+                    URLQueryItem(name: "includeSections", value: "entityRegistration,coreData,assertions,repsAndCerts,integrityInformation"),
                 ]
-                
+
                 guard let url = components.url else {
                     throw SAMGovError.networkError("Invalid URL")
                 }
-                
+
                 // Make request
                 var request = URLRequest(url: url)
                 request.httpMethod = "GET"
                 request.setValue("application/json", forHTTPHeaderField: "Accept")
-                
+
                 let (data, response) = try await URLSession.shared.data(for: request)
-                
+
                 // Check response
                 if let httpResponse = response as? HTTPURLResponse {
                     switch httpResponse.statusCode {
@@ -278,13 +281,13 @@ extension SAMGovService: DependencyKey {
                         throw SAMGovError.networkError("HTTP \(httpResponse.statusCode)")
                     }
                 }
-                
+
                 // Parse response
                 let decoder = JSONDecoder()
                 decoder.dateDecodingStrategy = .iso8601
-                
+
                 let entity = try decoder.decode(SAMGovEntityResponse.self, from: data)
-                
+
                 // Parse business types
                 var businessTypes: [BusinessType] = []
                 var isSmallBusiness = false
@@ -293,14 +296,15 @@ extension SAMGovService: DependencyKey {
                 var isWomanOwned = false
                 var is8aProgram = false
                 var isHUBZone = false
-                
+
                 if let coreData = entity.coreData,
                    let businessTypesData = coreData.businessTypes,
-                   let typeList = businessTypesData.businessTypeList {
+                   let typeList = businessTypesData.businessTypeList
+                {
                     businessTypes = typeList.compactMap { type in
                         guard let code = type.businessTypeCode,
                               let desc = type.businessTypeDesc else { return nil }
-                        
+
                         // Check for specific business types
                         switch code {
                         case "A5": isVeteranOwned = true
@@ -311,24 +315,25 @@ extension SAMGovService: DependencyKey {
                         case "A6", "JT", "ZS": isSmallBusiness = true
                         default: break
                         }
-                        
+
                         return BusinessType(code: code, description: desc)
                     }
                 }
-                
+
                 // Parse NAICS codes from assertions
                 var naicsCodes: [NAICSCode] = []
                 var primaryNAICS: String?
-                
+
                 if let assertions = entity.assertions,
-                   let goodsAndServices = assertions.goodsAndServices {
+                   let goodsAndServices = assertions.goodsAndServices
+                {
                     primaryNAICS = goodsAndServices.primaryNaics
-                    
+
                     if let naicsList = goodsAndServices.naicsList {
                         naicsCodes = naicsList.compactMap { naics in
                             guard let code = naics.naicsCode,
                                   let desc = naics.naicsDescription else { return nil }
-                            
+
                             // Check small business status from NAICS
                             if let sbaSmallBusiness = naics.sbaSmallBusiness {
                                 switch sbaSmallBusiness {
@@ -338,17 +343,18 @@ extension SAMGovService: DependencyKey {
                                     break
                                 }
                             }
-                            
+
                             let isPrimary = (code == primaryNAICS)
                             return NAICSCode(code: code, description: desc, isPrimary: isPrimary)
                         }
                     }
                 }
-                
+
                 // Parse address
                 var address: SAMGovAddress?
                 if let coreData = entity.coreData,
-                   let physAddr = coreData.physicalAddress {
+                   let physAddr = coreData.physicalAddress
+                {
                     address = SAMGovAddress(
                         streetAddress: physAddr.addressLine1,
                         city: physAddr.city,
@@ -357,41 +363,45 @@ extension SAMGovService: DependencyKey {
                         country: physAddr.countryCode
                     )
                 }
-                
+
                 // Parse Section 889 certifications
                 var section889Status: Section889Status?
                 var foreignGovtEntities: [ForeignGovtEntity] = []
-                
+
                 if let repsAndCerts = entity.repsAndCerts,
-                   let certifications = repsAndCerts.certifications {
-                    
+                   let certifications = repsAndCerts.certifications
+                {
                     // Check both farResponses and fARResponses (different naming in API)
                     let allFarResponses = (certifications.farResponses ?? []) + (certifications.fARResponses ?? [])
-                    
+
                     var doesNotProvide: Bool?
                     var doesNotUse: Bool?
-                    
+
                     for response in allFarResponses {
                         // Section 889 Part A(1)(A) - Does not provide prohibited telecom
-                        if response.provisionId == "FAR 52.204-26" || 
-                           response.provisionId?.contains("52.204-26") == true {
+                        if response.provisionId == "FAR 52.204-26" ||
+                            response.provisionId?.contains("52.204-26") == true
+                        {
                             if let answers = response.listOfAnswers {
                                 for answer in answers {
                                     // Check specific sections
-                                    if answer.section == "52.204-26.c.1" || 
-                                       answer.questionText?.lowercased().contains("provide covered telecommunications") == true {
+                                    if answer.section == "52.204-26.c.1" ||
+                                        answer.questionText?.lowercased().contains("provide covered telecommunications") == true
+                                    {
                                         doesNotProvide = answer.answerText?.lowercased() == "no"
                                     }
-                                    if answer.section == "52.204-26.c.2" || 
-                                       answer.questionText?.lowercased().contains("use covered telecommunications") == true {
+                                    if answer.section == "52.204-26.c.2" ||
+                                        answer.questionText?.lowercased().contains("use covered telecommunications") == true
+                                    {
                                         doesNotUse = answer.answerText?.lowercased() == "no"
                                     }
-                                    
+
                                     // Extract foreign government entities
                                     if let fgeList = answer.foreignGovtEntitiesList, !fgeList.isEmpty {
                                         for fge in fgeList {
                                             if let country = fge.country,
-                                               let name = fge.name {
+                                               let name = fge.name
+                                            {
                                                 let entity = ForeignGovtEntity(
                                                     country: country,
                                                     name: name,
@@ -406,7 +416,7 @@ extension SAMGovService: DependencyKey {
                                 }
                             }
                         }
-                        
+
                         // Also check for foreign government control questions
                         if response.provisionId?.contains("252.209-7002") == true {
                             if let answers = response.listOfAnswers {
@@ -414,7 +424,8 @@ extension SAMGovService: DependencyKey {
                                     if let fgeList = answer.foreignGovtEntitiesList, !fgeList.isEmpty {
                                         for fge in fgeList {
                                             if let country = fge.country,
-                                               let name = fge.name {
+                                               let name = fge.name
+                                            {
                                                 let entity = ForeignGovtEntity(
                                                     country: country,
                                                     name: name,
@@ -430,7 +441,7 @@ extension SAMGovService: DependencyKey {
                             }
                         }
                     }
-                    
+
                     if doesNotProvide != nil || doesNotUse != nil {
                         section889Status = Section889Status(
                             doesNotProvideProhibitedTelecom: doesNotProvide,
@@ -439,17 +450,17 @@ extension SAMGovService: DependencyKey {
                         )
                     }
                 }
-                
+
                 // Parse exclusion status
                 let hasActiveExclusions = entity.entityRegistration?.exclusionStatusFlag == "Y"
                 let exclusionURL = entity.entityRegistration?.exclusionURL
-                
+
                 // Parse responsibility information
                 var responsibilityInfo: ResponsibilityInfo?
                 if let financialInfo = entity.coreData?.financialInformation {
                     let hasDelinquentDebt = financialInfo.delinquentFederalDebt == "Y"
                     let hasUnpaidTax = financialInfo.unpaidTaxLiability == "Y"
-                    
+
                     var integrityRecords: [IntegrityRecord] = []
                     if let records = entity.integrityInformation?.integrityRecords {
                         integrityRecords = records.compactMap { record in
@@ -462,21 +473,22 @@ extension SAMGovService: DependencyKey {
                             )
                         }
                     }
-                    
+
                     responsibilityInfo = ResponsibilityInfo(
                         hasDelinquentFederalDebt: hasDelinquentDebt,
                         hasUnpaidTaxLiability: hasUnpaidTax,
                         integrityRecords: integrityRecords
                     )
                 }
-                
+
                 // Parse architect-engineer qualifications
                 var architectEngineerInfo: ArchitectEngineerInfo?
                 if let qualifications = entity.repsAndCerts?.qualifications,
-                   let aeResponses = qualifications.architectEngineerResponses {
+                   let aeResponses = qualifications.architectEngineerResponses
+                {
                     let hasResponses = aeResponses.architectExperiencesList?.isEmpty == false
-                    let disciplines = aeResponses.architectExperiencesList?.compactMap { $0.experienceDescription } ?? []
-                    
+                    let disciplines = aeResponses.architectExperiencesList?.compactMap(\.experienceDescription) ?? []
+
                     architectEngineerInfo = ArchitectEngineerInfo(
                         hasArchitectEngineerResponses: hasResponses,
                         hasSF330Filed: hasResponses, // If they have responses, they've filed SF330
@@ -484,7 +496,7 @@ extension SAMGovService: DependencyKey {
                         disciplines: disciplines
                     )
                 }
-                
+
                 return EntityDetail(
                     ueiSAM: entity.entityRegistration?.ueiSAM ?? uei,
                     cageCode: entity.entityRegistration?.cageCode,
@@ -513,7 +525,7 @@ extension SAMGovService: DependencyKey {
             }
         )
     }
-    
+
     public static var testValue: SAMGovService {
         SAMGovService(
             searchEntity: { _ in
@@ -525,7 +537,7 @@ extension SAMGovService: DependencyKey {
                         registrationStatus: "Active",
                         registrationDate: Date(),
                         expirationDate: Date().addingTimeInterval(365 * 24 * 60 * 60)
-                    )
+                    ),
                 ])
             },
             getEntityByCAGE: { _ in
@@ -587,6 +599,7 @@ extension SAMGovService: DependencyKey {
 }
 
 // MARK: - API Response Models
+
 private struct SAMGovAPIResponse: Decodable {
     let totalRecords: Int?
     let entityData: [SAMGovEntity]?
@@ -736,8 +749,8 @@ private struct SAMGovIntegrityRecord: Decodable {
     let agency: String?
 }
 
-extension DependencyValues {
-    public var samGovService: SAMGovService {
+public extension DependencyValues {
+    var samGovService: SAMGovService {
         get { self[SAMGovService.self] }
         set { self[SAMGovService.self] = newValue }
     }

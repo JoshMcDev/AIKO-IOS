@@ -1,6 +1,6 @@
-import Foundation
-import ComposableArchitecture
 import Combine
+import ComposableArchitecture
+import Foundation
 
 /// Service responsible for handling actions on different object types in the adaptive intelligence system
 public struct ObjectActionHandler {
@@ -10,7 +10,7 @@ public struct ObjectActionHandler {
     public var validateAction: @Sendable (ObjectAction) async throws -> ValidationResult
     public var learnFromExecution: @Sendable (ActionResult) async throws -> Void
     public var optimizeActionPlan: @Sendable ([ObjectAction]) async throws -> [ObjectAction]
-    
+
     public struct ValidationResult: Equatable {
         public let isValid: Bool
         public let errors: [String]
@@ -20,11 +20,12 @@ public struct ObjectActionHandler {
 }
 
 // MARK: - Live Implementation
-extension ObjectActionHandler {
-    public static let live: Self = {
+
+public extension ObjectActionHandler {
+    static let live: Self = {
         let learningQueue = DispatchQueue(label: "com.aiko.object-action-learning", qos: .utility)
         let metricsCollector = MetricsCollector()
-        
+
         return Self(
             identifyObjectType: { object in
                 // Pattern matching to identify object types
@@ -49,7 +50,7 @@ extension ObjectActionHandler {
                     // Use reflection for unknown types
                     let mirror = Mirror(reflecting: object)
                     let typeName = String(describing: mirror.subjectType).lowercased()
-                    
+
                     if typeName.contains("document") {
                         return .document
                     } else if typeName.contains("acquisition") {
@@ -61,13 +62,13 @@ extension ObjectActionHandler {
                     }
                 }
             },
-            
+
             getAvailableActions: { objectType, context in
                 var actions: [ObjectAction] = []
-                
+
                 // Get base actions for the object type
                 let supportedActionTypes = objectType.supportedActions
-                
+
                 for actionType in supportedActionTypes {
                     // Check if action is available in current context
                     if isActionAvailable(actionType, for: objectType, in: context) {
@@ -84,7 +85,7 @@ extension ObjectActionHandler {
                         actions.append(action)
                     }
                 }
-                
+
                 // Sort by priority and estimated duration
                 return actions.sorted { lhs, rhs in
                     if lhs.priority != rhs.priority {
@@ -93,25 +94,25 @@ extension ObjectActionHandler {
                     return lhs.estimatedDuration < rhs.estimatedDuration
                 }
             },
-            
+
             executeAction: { action in
                 let startTime = Date()
                 let startMetrics = await metricsCollector.captureMetrics()
-                
+
                 do {
                     // Validate action before execution
                     let validation = try await validateActionInternal(action)
                     guard validation.isValid else {
                         throw ActionExecutionError.validationFailed(validation.errors)
                     }
-                    
+
                     // Execute based on action type
                     let output = try await executeActionInternal(action)
-                    
+
                     // Capture end metrics
                     let endTime = Date()
                     let endMetrics = await metricsCollector.captureMetrics()
-                    
+
                     // Calculate performance metrics
                     let metrics = ActionMetrics(
                         startTime: startTime,
@@ -125,10 +126,10 @@ extension ObjectActionHandler {
                         ),
                         effectivenessScore: calculateEffectivenessScore(output, action: action)
                     )
-                    
+
                     // Generate learning insights
                     let insights = generateLearningInsights(action: action, output: output, metrics: metrics)
-                    
+
                     return ActionResult(
                         actionId: action.id,
                         status: .completed,
@@ -137,11 +138,11 @@ extension ObjectActionHandler {
                         errors: [],
                         learningInsights: insights
                     )
-                    
+
                 } catch {
                     let endTime = Date()
                     let endMetrics = await metricsCollector.captureMetrics()
-                    
+
                     let metrics = ActionMetrics(
                         startTime: startTime,
                         endTime: endTime,
@@ -151,7 +152,7 @@ extension ObjectActionHandler {
                         performanceScore: 0.0,
                         effectivenessScore: 0.0
                     )
-                    
+
                     return ActionResult(
                         actionId: action.id,
                         status: .failed,
@@ -167,11 +168,11 @@ extension ObjectActionHandler {
                     )
                 }
             },
-            
+
             validateAction: { action in
                 try await validateActionInternal(action)
             },
-            
+
             learnFromExecution: { result in
                 learningQueue.async {
                     // Process learning insights
@@ -189,33 +190,33 @@ extension ObjectActionHandler {
                             RecommendationEngine.shared.add(insight)
                         }
                     }
-                    
+
                     // Update performance models
                     if result.metrics.performanceScore < 0.8 {
                         PerformanceOptimizer.shared.analyze(result)
                     }
-                    
+
                     // Update effectiveness models
                     if result.metrics.effectivenessScore < 0.8 {
                         EffectivenessAnalyzer.shared.improve(result)
                     }
                 }
             },
-            
+
             optimizeActionPlan: { actions in
                 // Analyze dependencies
                 let dependencies = analyzeDependencies(actions)
-                
+
                 // Identify parallelizable actions
                 let parallelGroups = identifyParallelGroups(actions, dependencies: dependencies)
-                
+
                 // Optimize order based on:
                 // 1. Dependencies
                 // 2. Priority
                 // 3. Resource requirements
                 // 4. Estimated duration
                 var optimizedPlan: [ObjectAction] = []
-                
+
                 for group in parallelGroups {
                     let sortedGroup = group.sorted { lhs, rhs in
                         if lhs.priority != rhs.priority {
@@ -225,7 +226,7 @@ extension ObjectActionHandler {
                     }
                     optimizedPlan.append(contentsOf: sortedGroup)
                 }
-                
+
                 return optimizedPlan
             }
         )
@@ -233,10 +234,11 @@ extension ObjectActionHandler {
 }
 
 // MARK: - Helper Functions
-private func isActionAvailable(_ actionType: ActionType, for objectType: ObjectType, in context: ActionContext) -> Bool {
+
+private func isActionAvailable(_ actionType: ActionType, for _: ObjectType, in context: ActionContext) -> Bool {
     // Check permissions
     guard hasPermission(for: actionType, in: context) else { return false }
-    
+
     // Check environmental constraints
     switch context.environment {
     case .development:
@@ -249,9 +251,9 @@ private func isActionAvailable(_ actionType: ActionType, for objectType: ObjectT
     }
 }
 
-private func getDefaultParameters(for actionType: ActionType, objectType: ObjectType) -> [String: Any] {
+private func getDefaultParameters(for actionType: ActionType, objectType _: ObjectType) -> [String: Any] {
     var params: [String: Any] = [:]
-    
+
     switch actionType {
     case .create:
         params["template"] = "default"
@@ -268,33 +270,33 @@ private func getDefaultParameters(for actionType: ActionType, objectType: Object
     default:
         break
     }
-    
+
     return params
 }
 
-private func determinePriority(_ actionType: ActionType, context: ActionContext) -> ActionPriority {
+private func determinePriority(_ actionType: ActionType, context _: ActionContext) -> ActionPriority {
     // Critical actions
     if [.validate, .approve, .reject].contains(actionType) {
         return .critical
     }
-    
+
     // High priority actions
     if [.execute, .complete, .generate].contains(actionType) {
         return .high
     }
-    
+
     // Low priority actions
     if [.track, .visualize, .report].contains(actionType) {
         return .low
     }
-    
+
     return .normal
 }
 
 private func estimateDuration(_ actionType: ActionType, objectType: ObjectType) -> TimeInterval {
     // Base duration by action type
     var duration: TimeInterval = 1.0
-    
+
     switch actionType {
     case .create, .generate:
         duration = 5.0
@@ -307,7 +309,7 @@ private func estimateDuration(_ actionType: ActionType, objectType: ObjectType) 
     default:
         duration = 1.0
     }
-    
+
     // Adjust for object complexity
     switch objectType {
     case .document, .acquisition, .workflow:
@@ -317,13 +319,13 @@ private func estimateDuration(_ actionType: ActionType, objectType: ObjectType) 
     default:
         break
     }
-    
+
     return duration
 }
 
 private func determineRequiredCapabilities(_ actionType: ActionType) -> Set<Capability> {
     var capabilities: Set<Capability> = []
-    
+
     switch actionType {
     case .generate:
         capabilities.insert(.documentGeneration)
@@ -340,7 +342,7 @@ private func determineRequiredCapabilities(_ actionType: ActionType) -> Set<Capa
     default:
         break
     }
-    
+
     return capabilities
 }
 
@@ -348,12 +350,12 @@ private func validateActionInternal(_ action: ObjectAction) async throws -> Obje
     var errors: [String] = []
     var warnings: [String] = []
     var suggestions: [String] = []
-    
+
     // Validate object type supports action
     if !action.objectType.supportedActions.contains(action.type) {
         errors.append("Action '\(action.type)' is not supported for object type '\(action.objectType)'")
     }
-    
+
     // Validate required parameters
     let requiredParams = getRequiredParameters(for: action.type)
     for param in requiredParams {
@@ -361,20 +363,20 @@ private func validateActionInternal(_ action: ObjectAction) async throws -> Obje
             errors.append("Missing required parameter: '\(param)'")
         }
     }
-    
+
     // Validate capabilities
     let availableCapabilities = await getAvailableCapabilities()
     let missingCapabilities = action.requiredCapabilities.subtracting(availableCapabilities)
     if !missingCapabilities.isEmpty {
-        errors.append("Missing required capabilities: \(missingCapabilities.map { $0.rawValue }.joined(separator: ", "))")
+        errors.append("Missing required capabilities: \(missingCapabilities.map(\.rawValue).joined(separator: ", "))")
     }
-    
+
     // Performance warnings
     if action.estimatedDuration > 10.0 {
         warnings.append("This action may take more than 10 seconds to complete")
         suggestions.append("Consider breaking this into smaller actions")
     }
-    
+
     return ObjectActionHandler.ValidationResult(
         isValid: errors.isEmpty,
         errors: errors,
@@ -412,6 +414,7 @@ private func executeActionInternal(_ action: ObjectAction) async throws -> Actio
 }
 
 // MARK: - Action Handlers
+
 private func handleCreateAction(_ action: ObjectAction) async throws -> ActionOutput {
     // Implementation would create the object based on type
     let data = "Created \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
@@ -423,7 +426,7 @@ private func handleAnalyzeAction(_ action: ObjectAction) async throws -> ActionO
     let analysis: [String: Any] = [
         "objectType": action.objectType.rawValue,
         "insights": ["Pattern detected", "Optimization opportunity found"],
-        "score": 0.85
+        "score": 0.85,
     ]
     let data = try JSONSerialization.data(withJSONObject: analysis)
     return ActionOutput(type: .json, data: data, metadata: ["analyzed": "true"])
@@ -472,60 +475,61 @@ private func handleOptimizeAction(_ action: ObjectAction) async throws -> Action
 }
 
 // MARK: - Utility Functions
+
 private func calculatePerformanceScore(duration: TimeInterval, expectedDuration: TimeInterval) -> Double {
     if duration <= expectedDuration {
-        return 1.0
+        1.0
     } else if duration <= expectedDuration * 1.5 {
-        return 0.8
+        0.8
     } else if duration <= expectedDuration * 2.0 {
-        return 0.6
+        0.6
     } else {
-        return max(0.3, 1.0 - (duration / (expectedDuration * 3)))
+        max(0.3, 1.0 - (duration / (expectedDuration * 3)))
     }
 }
 
 private func calculateEffectivenessScore(_ output: ActionOutput?, action: ObjectAction) -> Double {
-    guard let output = output else { return 0.0 }
-    
+    guard let output else { return 0.0 }
+
     // Base score on output completeness
     var score = 0.5
-    
+
     // Check if output has expected type
     if output.type == getExpectedOutputType(for: action.type) {
         score += 0.2
     }
-    
+
     // Check if output has metadata
     if !output.metadata.isEmpty {
         score += 0.1
     }
-    
+
     // Check data size (non-empty)
     if output.data.count > 0 {
         score += 0.2
     }
-    
+
     return min(score, 1.0)
 }
 
 private func getExpectedOutputType(for actionType: ActionType) -> ActionOutput.OutputType {
     switch actionType {
     case .generate:
-        return .document
+        .document
     case .analyze:
-        return .json
+        .json
     case .visualize:
-        return .visualization
+        .visualization
     case .calculate:
-        return .metrics
+        .metrics
     default:
-        return .json
+        .json
     }
 }
 
 private func generateLearningInsights(action: ObjectAction, output: ActionOutput?, metrics: ActionMetrics) -> [LearningInsight] {
     var insights: [LearningInsight] = []
-    
+
     // Performance insights
     if metrics.performanceScore < 0.7 {
         insights.append(LearningInsight(
@@ -536,9 +540,9 @@ private func generateLearningInsights(action: ObjectAction, output: ActionOutput
             impact: .medium
         ))
     }
-    
+
     // Pattern insights
-    if action.type == .analyze && output != nil {
+    if action.type == .analyze, output != nil {
         insights.append(LearningInsight(
             type: .pattern,
             description: "Analysis pattern detected for \(action.objectType)",
@@ -547,7 +551,7 @@ private func generateLearningInsights(action: ObjectAction, output: ActionOutput
             impact: .low
         ))
     }
-    
+
     // Effectiveness insights
     if metrics.effectivenessScore > 0.9 {
         insights.append(LearningInsight(
@@ -558,22 +562,23 @@ private func generateLearningInsights(action: ObjectAction, output: ActionOutput
             impact: .high
         ))
     }
-    
+
     return insights
 }
 
 // MARK: - Helper Types
+
 private struct MetricsCollector {
     struct Metrics {
         let cpu: Double
         let memory: Double
     }
-    
+
     func captureMetrics() async -> Metrics {
         // In real implementation, would capture actual system metrics
-        return Metrics(
-            cpu: Double.random(in: 0.1...0.9),
-            memory: Double.random(in: 100...500)
+        Metrics(
+            cpu: Double.random(in: 0.1 ... 0.9),
+            memory: Double.random(in: 100 ... 500)
         )
     }
 }
@@ -583,120 +588,123 @@ private enum ActionExecutionError: LocalizedError {
     case unsupportedAction(ActionType)
     case missingCapabilities(Set<Capability>)
     case executionFailed(String)
-    
+
     var errorDescription: String? {
         switch self {
-        case .validationFailed(let errors):
-            return "Validation failed: \(errors.joined(separator: ", "))"
-        case .unsupportedAction(let type):
-            return "Unsupported action type: \(type)"
-        case .missingCapabilities(let capabilities):
-            return "Missing capabilities: \(capabilities.map { $0.rawValue }.joined(separator: ", "))"
-        case .executionFailed(let reason):
-            return "Execution failed: \(reason)"
+        case let .validationFailed(errors):
+            "Validation failed: \(errors.joined(separator: ", "))"
+        case let .unsupportedAction(type):
+            "Unsupported action type: \(type)"
+        case let .missingCapabilities(capabilities):
+            "Missing capabilities: \(capabilities.map(\.rawValue).joined(separator: ", "))"
+        case let .executionFailed(reason):
+            "Execution failed: \(reason)"
         }
     }
 }
 
 // MARK: - Supporting Functions
-private func hasPermission(for actionType: ActionType, in context: ActionContext) -> Bool {
+
+private func hasPermission(for _: ActionType, in _: ActionContext) -> Bool {
     // Check user permissions - simplified for demo
-    return true
+    true
 }
 
 private func isDestructiveAction(_ actionType: ActionType) -> Bool {
-    return [.delete, .reject].contains(actionType)
+    [.delete, .reject].contains(actionType)
 }
 
 private func hasElevatedPermissions(_ context: ActionContext) -> Bool {
     // Check if user has admin/elevated permissions
-    return context.metadata["role"] == "admin"
+    context.metadata["role"] == "admin"
 }
 
 private func getRequiredParameters(for actionType: ActionType) -> [String] {
     switch actionType {
     case .create:
-        return ["template", "name"]
+        ["template", "name"]
     case .update:
-        return ["fields"]
+        ["fields"]
     case .generate:
-        return ["format"]
+        ["format"]
     case .analyze:
-        return ["depth"]
+        ["depth"]
     default:
-        return []
+        []
     }
 }
 
 private func getAvailableCapabilities() async -> Set<Capability> {
     // In real implementation, would check system capabilities
-    return Set(Capability.allCases)
+    Set(Capability.allCases)
 }
 
-private func isErrorRecoverable(_ error: Error) -> Bool {
+private func isErrorRecoverable(_: Error) -> Bool {
     // Determine if error can be recovered from
-    return true
+    true
 }
 
 private func analyzeDependencies(_ actions: [ObjectAction]) -> [UUID: Set<UUID>] {
     // Analyze action dependencies
     var dependencies: [UUID: Set<UUID>] = [:]
-    
+
     for action in actions {
         dependencies[action.id] = []
     }
-    
+
     return dependencies
 }
 
-private func identifyParallelGroups(_ actions: [ObjectAction], dependencies: [UUID: Set<UUID>]) -> [[ObjectAction]] {
+private func identifyParallelGroups(_ actions: [ObjectAction], dependencies _: [UUID: Set<UUID>]) -> [[ObjectAction]] {
     // Group actions that can be executed in parallel
-    return [actions]
+    [actions]
 }
 
 // MARK: - Mock Services (would be real implementations)
+
 private struct PatternRepository {
     static let shared = PatternRepository()
-    func store(_ insight: LearningInsight) {}
+    func store(_: LearningInsight) {}
 }
 
 private struct AnomalyDetector {
     static let shared = AnomalyDetector()
-    func record(_ insight: LearningInsight) {}
+    func record(_: LearningInsight) {}
 }
 
 private struct OptimizationEngine {
     static let shared = OptimizationEngine()
-    func apply(_ insight: LearningInsight) {}
+    func apply(_: LearningInsight) {}
 }
 
 private struct PredictionModel {
     static let shared = PredictionModel()
-    func update(_ insight: LearningInsight) {}
+    func update(_: LearningInsight) {}
 }
 
 private struct RecommendationEngine {
     static let shared = RecommendationEngine()
-    func add(_ insight: LearningInsight) {}
+    func add(_: LearningInsight) {}
 }
 
 private struct PerformanceOptimizer {
     static let shared = PerformanceOptimizer()
-    func analyze(_ result: ActionResult) {}
+    func analyze(_: ActionResult) {}
 }
 
 private struct EffectivenessAnalyzer {
     static let shared = EffectivenessAnalyzer()
-    func improve(_ result: ActionResult) {}
+    func improve(_: ActionResult) {}
 }
 
 // MARK: - Dependency Registration
+
 extension ObjectActionHandler: DependencyKey {
     public static var liveValue: ObjectActionHandler = .live
 }
 
-extension DependencyValues {
-    public var objectActionHandler: ObjectActionHandler {
+public extension DependencyValues {
+    var objectActionHandler: ObjectActionHandler {
         get { self[ObjectActionHandler.self] }
         set { self[ObjectActionHandler.self] = newValue }
     }

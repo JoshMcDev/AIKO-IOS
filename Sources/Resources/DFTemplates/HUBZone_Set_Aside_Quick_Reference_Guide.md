@@ -106,7 +106,7 @@ Before using this template, ensure you have:
 - Fail to consider travel/geographic requirements
 - Use outdated HUBZone designation maps
 
-✅ **Do:**
+ **Do:**
 - Verify current HUBZone certification through SBA
 - Consider geographic requirements and HUBZone firm locations
 - Conduct thorough capability assessment

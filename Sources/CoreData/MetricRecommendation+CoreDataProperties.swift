@@ -1,24 +1,22 @@
-import Foundation
 import CoreData
+import Foundation
 
-extension MetricRecommendationEntity {
-    
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<MetricRecommendationEntity> {
-        return NSFetchRequest<MetricRecommendationEntity>(entityName: "MetricRecommendation")
+public extension MetricRecommendationEntity {
+    @nonobjc class func fetchRequest() -> NSFetchRequest<MetricRecommendationEntity> {
+        NSFetchRequest<MetricRecommendationEntity>(entityName: "MetricRecommendation")
     }
-    
-    @NSManaged public var id: UUID?
-    @NSManaged public var priority: String?
-    @NSManaged public var category: String?
-    @NSManaged public var title: String?
-    @NSManaged public var desc: String?
-    @NSManaged public var expectedImpactData: Data?
-    @NSManaged public var timeToImpact: TimeInterval
-    @NSManaged public var impactConfidence: Double
-    @NSManaged public var requiredActionsData: Data?
-    @NSManaged public var relatedMetricsData: Data?
-    @NSManaged public var summary: MetricsSummaryEntity?
+
+    @NSManaged var id: UUID?
+    @NSManaged var priority: String?
+    @NSManaged var category: String?
+    @NSManaged var title: String?
+    @NSManaged var desc: String?
+    @NSManaged var expectedImpactData: Data?
+    @NSManaged var timeToImpact: TimeInterval
+    @NSManaged var impactConfidence: Double
+    @NSManaged var requiredActionsData: Data?
+    @NSManaged var relatedMetricsData: Data?
+    @NSManaged var summary: MetricsSummaryEntity?
 }
 
-extension MetricRecommendationEntity : Identifiable {
-}
+extension MetricRecommendationEntity: Identifiable {}

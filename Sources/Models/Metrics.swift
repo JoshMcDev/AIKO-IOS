@@ -1,69 +1,70 @@
 import Foundation
 
 // MARK: - Measures of Performance (MOPs)
+
 /// Technical metrics that measure how well the system performs its functions
 public enum MeasureOfPerformance: String, CaseIterable, Codable {
     // Speed & Efficiency
     case responseTime = "response_time"
     case processingSpeed = "processing_speed"
-    case throughput = "throughput"
-    case latency = "latency"
-    
+    case throughput
+    case latency
+
     // Resource Utilization
     case cpuUsage = "cpu_usage"
     case memoryUsage = "memory_usage"
     case diskUsage = "disk_usage"
     case networkBandwidth = "network_bandwidth"
-    
+
     // Accuracy & Quality
-    case accuracy = "accuracy"
-    case precision = "precision"
-    case recall = "recall"
+    case accuracy
+    case precision
+    case recall
     case f1Score = "f1_score"
-    
+
     // Reliability
-    case uptime = "uptime"
+    case uptime
     case errorRate = "error_rate"
     case recoveryTime = "recovery_time"
-    case availability = "availability"
-    
+    case availability
+
     // Scalability
     case concurrentUsers = "concurrent_users"
     case transactionRate = "transaction_rate"
     case queueLength = "queue_length"
     case loadCapacity = "load_capacity"
-    
+
     public var unit: MetricUnit {
         switch self {
         case .responseTime, .processingSpeed, .latency, .recoveryTime:
-            return .milliseconds
+            .milliseconds
         case .throughput, .transactionRate:
-            return .perSecond
+            .perSecond
         case .cpuUsage, .memoryUsage, .diskUsage, .accuracy, .precision, .recall, .f1Score, .uptime, .availability:
-            return .percentage
+            .percentage
         case .networkBandwidth:
-            return .megabitsPerSecond
+            .megabitsPerSecond
         case .errorRate:
-            return .perThousand
+            .perThousand
         case .concurrentUsers, .queueLength:
-            return .count
+            .count
         case .loadCapacity:
-            return .percentage
+            .percentage
         }
     }
-    
+
     public var category: MOPCategory {
         switch self {
         case .responseTime, .processingSpeed, .throughput, .latency:
-            return .speed
+            .speed
         case .cpuUsage, .memoryUsage, .diskUsage, .networkBandwidth:
-            return .resources
+            .resources
         case .accuracy, .precision, .recall, .f1Score:
-            return .quality
+            .quality
         case .uptime, .errorRate, .recoveryTime, .availability:
-            return .reliability
+            .reliability
         case .concurrentUsers, .transactionRate, .queueLength, .loadCapacity:
-            return .scalability
+            .scalability
         }
     }
 }
@@ -77,6 +78,7 @@ public enum MOPCategory: String, CaseIterable, Codable {
 }
 
 // MARK: - Measures of Effectiveness (MOEs)
+
 /// Business/mission metrics that measure how well the system achieves its intended outcomes
 public enum MeasureOfEffectiveness: String, CaseIterable, Codable {
     // User Satisfaction
@@ -84,61 +86,61 @@ public enum MeasureOfEffectiveness: String, CaseIterable, Codable {
     case netPromoterScore = "net_promoter_score"
     case customerEffortScore = "customer_effort_score"
     case taskCompletionRate = "task_completion_rate"
-    
+
     // Business Value
     case timeSaved = "time_saved"
     case costReduction = "cost_reduction"
     case revenueIncrease = "revenue_increase"
     case processEfficiency = "process_efficiency"
-    
+
     // Mission Success
     case goalAchievement = "goal_achievement"
     case complianceRate = "compliance_rate"
     case decisionQuality = "decision_quality"
     case missionReadiness = "mission_readiness"
-    
+
     // User Adoption
     case adoptionRate = "adoption_rate"
     case activeUsers = "active_users"
     case featureUtilization = "feature_utilization"
     case userRetention = "user_retention"
-    
+
     // Knowledge & Learning
     case learningRate = "learning_rate"
     case knowledgeRetention = "knowledge_retention"
     case insightGeneration = "insight_generation"
     case adaptationSpeed = "adaptation_speed"
-    
+
     public var unit: MetricUnit {
         switch self {
         case .userSatisfaction, .netPromoterScore, .customerEffortScore:
-            return .score
+            .score
         case .taskCompletionRate, .costReduction, .revenueIncrease, .processEfficiency,
              .goalAchievement, .complianceRate, .decisionQuality, .missionReadiness,
              .adoptionRate, .featureUtilization, .userRetention, .learningRate,
              .knowledgeRetention, .adaptationSpeed:
-            return .percentage
+            .percentage
         case .timeSaved:
-            return .hours
+            .hours
         case .activeUsers:
-            return .count
+            .count
         case .insightGeneration:
-            return .perDay
+            .perDay
         }
     }
-    
+
     public var category: MOECategory {
         switch self {
         case .userSatisfaction, .netPromoterScore, .customerEffortScore, .taskCompletionRate:
-            return .userExperience
+            .userExperience
         case .timeSaved, .costReduction, .revenueIncrease, .processEfficiency:
-            return .businessValue
+            .businessValue
         case .goalAchievement, .complianceRate, .decisionQuality, .missionReadiness:
-            return .missionSuccess
+            .missionSuccess
         case .adoptionRate, .activeUsers, .featureUtilization, .userRetention:
-            return .adoption
+            .adoption
         case .learningRate, .knowledgeRetention, .insightGeneration, .adaptationSpeed:
-            return .learning
+            .learning
         }
     }
 }
@@ -152,6 +154,7 @@ public enum MOECategory: String, CaseIterable, Codable {
 }
 
 // MARK: - Metric Types
+
 public enum MetricUnit: String, Codable {
     case milliseconds
     case seconds
@@ -176,7 +179,7 @@ public struct MetricValue: Identifiable, Equatable, Codable {
     public let value: Double
     public let unit: MetricUnit
     public let metadata: [String: String]
-    
+
     public init(
         id: UUID = UUID(),
         timestamp: Date = Date(),
@@ -190,7 +193,7 @@ public struct MetricValue: Identifiable, Equatable, Codable {
         self.unit = unit
         self.metadata = metadata
     }
-    
+
     /// Normalized value between 0 and 1 for scoring
     public func normalizedValue(min: Double, max: Double) -> Double {
         guard max > min else { return 0 }
@@ -208,30 +211,30 @@ public struct MetricMeasurement: Identifiable, Equatable, Codable {
     public let aggregatedValue: Double
     public let score: Double // 0-1 normalized score
     public let context: MetricContext
-    
+
     public enum MetricType: Equatable, Codable {
         case mop(MeasureOfPerformance)
         case moe(MeasureOfEffectiveness)
-        
+
         public var name: String {
             switch self {
-            case .mop(let measure):
-                return measure.rawValue
-            case .moe(let measure):
-                return measure.rawValue
+            case let .mop(measure):
+                measure.rawValue
+            case let .moe(measure):
+                measure.rawValue
             }
         }
-        
+
         public var unit: MetricUnit {
             switch self {
-            case .mop(let measure):
-                return measure.unit
-            case .moe(let measure):
-                return measure.unit
+            case let .mop(measure):
+                measure.unit
+            case let .moe(measure):
+                measure.unit
             }
         }
     }
-    
+
     public init(
         id: UUID = UUID(),
         name: String,
@@ -261,7 +264,7 @@ public struct MetricContext: Equatable, Codable {
     public let action: String?
     public let environment: String
     public let tags: Set<String>
-    
+
     public init(
         sessionId: String,
         userId: String,
@@ -289,7 +292,7 @@ public struct MetricsSummary: Equatable, Codable {
     public let combinedScore: Double
     public let insights: [MetricInsight]
     public let recommendations: [MetricRecommendation]
-    
+
     public init(
         period: DateInterval,
         mopScores: [MeasureOfPerformance: Double],
@@ -300,19 +303,19 @@ public struct MetricsSummary: Equatable, Codable {
         self.period = period
         self.mopScores = mopScores
         self.moeScores = moeScores
-        
+
         // Calculate overall scores
         let mopSum = mopScores.values.reduce(0, +)
         let mopCount = Double(mopScores.count)
-        self.overallMOPScore = mopCount > 0 ? mopSum / mopCount : 0
-        
+        overallMOPScore = mopCount > 0 ? mopSum / mopCount : 0
+
         let moeSum = moeScores.values.reduce(0, +)
         let moeCount = Double(moeScores.count)
-        self.overallMOEScore = moeCount > 0 ? moeSum / moeCount : 0
-        
+        overallMOEScore = moeCount > 0 ? moeSum / moeCount : 0
+
         // Combined score with 60% weight on effectiveness, 40% on performance
-        self.combinedScore = (overallMOEScore * 0.6) + (overallMOPScore * 0.4)
-        
+        combinedScore = (overallMOEScore * 0.6) + (overallMOPScore * 0.4)
+
         self.insights = insights
         self.recommendations = recommendations
     }
@@ -327,7 +330,7 @@ public struct MetricInsight: Identifiable, Equatable, Codable {
     public let affectedMetrics: [String]
     public let confidence: Double
     public let timestamp: Date
-    
+
     public enum InsightType: String, Codable {
         case anomaly
         case trend
@@ -336,14 +339,14 @@ public struct MetricInsight: Identifiable, Equatable, Codable {
         case improvement
         case degradation
     }
-    
+
     public enum InsightSeverity: String, Codable {
         case info
         case warning
         case critical
         case positive
     }
-    
+
     public init(
         id: UUID = UUID(),
         type: InsightType,
@@ -373,18 +376,18 @@ public struct MetricRecommendation: Identifiable, Equatable, Codable {
     public let expectedImpact: ExpectedImpact
     public let requiredActions: [String]
     public let relatedMetrics: [String]
-    
+
     public enum RecommendationPriority: Int, Codable, Comparable {
         case low = 0
         case medium = 1
         case high = 2
         case critical = 3
-        
+
         public static func < (lhs: RecommendationPriority, rhs: RecommendationPriority) -> Bool {
             lhs.rawValue < rhs.rawValue
         }
     }
-    
+
     public enum RecommendationCategory: String, Codable {
         case performance
         case effectiveness
@@ -392,12 +395,12 @@ public struct MetricRecommendation: Identifiable, Equatable, Codable {
         case user
         case system
     }
-    
+
     public struct ExpectedImpact: Equatable, Codable {
         public let metricImprovements: [String: Double] // Metric name to expected % improvement
         public let timeToImpact: TimeInterval
         public let confidence: Double
-        
+
         public init(
             metricImprovements: [String: Double],
             timeToImpact: TimeInterval,
@@ -408,7 +411,7 @@ public struct MetricRecommendation: Identifiable, Equatable, Codable {
             self.confidence = min(max(confidence, 0), 1)
         }
     }
-    
+
     public init(
         id: UUID = UUID(),
         priority: RecommendationPriority,
@@ -441,7 +444,7 @@ public struct MetricsReport: Equatable, Codable {
     public let trends: [MetricTrend]
     public let comparisons: [MetricComparison]
     public let executiveSummary: String
-    
+
     public init(
         id: UUID = UUID(),
         title: String,
@@ -473,24 +476,24 @@ public struct MetricTrend: Identifiable, Equatable, Codable {
     public let magnitude: Double // Percentage change
     public let significance: Double // Statistical significance 0-1
     public let dataPoints: [TrendDataPoint]
-    
+
     public enum TrendDirection: String, Codable {
         case increasing
         case decreasing
         case stable
         case volatile
     }
-    
+
     public struct TrendDataPoint: Equatable, Codable {
         public let timestamp: Date
         public let value: Double
-        
+
         public init(timestamp: Date, value: Double) {
             self.timestamp = timestamp
             self.value = value
         }
     }
-    
+
     public init(
         id: UUID = UUID(),
         metricName: String,
@@ -517,14 +520,14 @@ public struct MetricComparison: Identifiable, Equatable, Codable {
     public let difference: Double
     public let percentageChange: Double
     public let interpretation: String
-    
+
     public enum ComparisonType: String, Codable {
         case periodOverPeriod
         case targetVsActual
         case userVsAverage
         case systemVsBaseline
     }
-    
+
     public init(
         id: UUID = UUID(),
         type: ComparisonType,
@@ -536,8 +539,8 @@ public struct MetricComparison: Identifiable, Equatable, Codable {
         self.type = type
         self.baseline = baseline
         self.comparison = comparison
-        self.difference = comparison.aggregatedValue - baseline.aggregatedValue
-        self.percentageChange = baseline.aggregatedValue > 0 
+        difference = comparison.aggregatedValue - baseline.aggregatedValue
+        percentageChange = baseline.aggregatedValue > 0
             ? ((comparison.aggregatedValue - baseline.aggregatedValue) / baseline.aggregatedValue) * 100
             : 0
         self.interpretation = interpretation

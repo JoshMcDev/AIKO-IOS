@@ -141,7 +141,7 @@ Before using this template, ensure you have:
 - Fail to allow meaningful competition
 - Accept higher costs without justification
 
-✅ **Do:**
+ **Do:**
 - Thoroughly research market alternatives
 - Develop objective equivalency criteria
 - Encourage competition through "or equal" provisions

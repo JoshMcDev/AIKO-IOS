@@ -1,6 +1,6 @@
+import ComposableArchitecture
 import Foundation
 import LocalAuthentication
-import ComposableArchitecture
 
 public struct BiometricAuthenticationService {
     public enum BiometricError: Error {
@@ -11,16 +11,16 @@ public struct BiometricAuthenticationService {
         case passcodeNotSet
         case unknown(Error)
     }
-    
+
     public enum BiometricType {
         case faceID
         case touchID
         case none
     }
-    
+
     public var biometricType: () -> BiometricType
     public var authenticate: (String) async throws -> Bool
-    
+
     public init(
         biometricType: @escaping () -> BiometricType,
         authenticate: @escaping (String) async throws -> Bool
@@ -36,11 +36,11 @@ extension BiometricAuthenticationService: DependencyKey {
             biometricType: {
                 let context = LAContext()
                 var error: NSError?
-                
+
                 guard context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) else {
                     return .none
                 }
-                
+
                 switch context.biometryType {
                 case .faceID:
                     return .faceID
@@ -57,15 +57,15 @@ extension BiometricAuthenticationService: DependencyKey {
             authenticate: { reason in
                 let context = LAContext()
                 var error: NSError?
-                
+
                 // Check if biometric authentication is available
                 guard context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) else {
-                    if let error = error {
+                    if let error {
                         throw mapError(error)
                     }
                     throw BiometricError.notAvailable
                 }
-                
+
                 // Perform authentication
                 do {
                     let success = try await context.evaluatePolicy(
@@ -79,14 +79,14 @@ extension BiometricAuthenticationService: DependencyKey {
             }
         )
     }
-    
+
     public static var testValue: BiometricAuthenticationService {
         BiometricAuthenticationService(
             biometricType: { .faceID },
             authenticate: { _ in true }
         )
     }
-    
+
     public static var previewValue: BiometricAuthenticationService {
         BiometricAuthenticationService(
             biometricType: { .none },
@@ -98,22 +98,22 @@ extension BiometricAuthenticationService: DependencyKey {
 private func mapError(_ error: NSError) -> BiometricAuthenticationService.BiometricError {
     switch error.code {
     case LAError.biometryNotAvailable.rawValue:
-        return .notAvailable
+        .notAvailable
     case LAError.biometryNotEnrolled.rawValue:
-        return .notEnrolled
+        .notEnrolled
     case LAError.authenticationFailed.rawValue:
-        return .authenticationFailed
+        .authenticationFailed
     case LAError.userCancel.rawValue:
-        return .userCancelled
+        .userCancelled
     case LAError.passcodeNotSet.rawValue:
-        return .passcodeNotSet
+        .passcodeNotSet
     default:
-        return .unknown(error)
+        .unknown(error)
     }
 }
 
-extension DependencyValues {
-    public var biometricAuthenticationService: BiometricAuthenticationService {
+public extension DependencyValues {
+    var biometricAuthenticationService: BiometricAuthenticationService {
         get { self[BiometricAuthenticationService.self] }
         set { self[BiometricAuthenticationService.self] = newValue }
     }

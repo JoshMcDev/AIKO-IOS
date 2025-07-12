@@ -1,10 +1,10 @@
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 public struct FARComplianceService {
     public var getRecommendedDocuments: (String, ProjectCategory) async throws -> [DocumentRecommendation]
     public var validateCompliance: (DocumentType, String) async throws -> ComplianceResult
-    
+
     public init(
         getRecommendedDocuments: @escaping (String, ProjectCategory) async throws -> [DocumentRecommendation],
         validateCompliance: @escaping (DocumentType, String) async throws -> ComplianceResult
@@ -23,25 +23,25 @@ public enum ProjectCategory: String, CaseIterable {
     case maintenance = "Maintenance Services"
     case training = "Training Services"
     case other = "Other"
-    
+
     public var farReference: String {
         switch self {
         case .softwareDevelopment:
-            return "FAR 39.1 - Information Technology"
+            "FAR 39.1 - Information Technology"
         case .consulting:
-            return "FAR 37.2 - Advisory Services"
+            "FAR 37.2 - Advisory Services"
         case .research:
-            return "FAR 35 - Research and Development"
+            "FAR 35 - Research and Development"
         case .construction:
-            return "FAR 36 - Construction Contracting"
+            "FAR 36 - Construction Contracting"
         case .equipment:
-            return "FAR 11 - Describing Agency Needs"
+            "FAR 11 - Describing Agency Needs"
         case .maintenance:
-            return "FAR 37.1 - Service Contracting"
+            "FAR 37.1 - Service Contracting"
         case .training:
-            return "FAR 37.6 - Performance-Based Service Contracting"
+            "FAR 37.6 - Performance-Based Service Contracting"
         case .other:
-            return "FAR General Provisions"
+            "FAR General Provisions"
         }
     }
 }
@@ -51,13 +51,13 @@ public struct DocumentRecommendation {
     public let priority: Priority
     public let farJustification: String
     public let description: String
-    
+
     public enum Priority: String, CaseIterable {
         case required = "Required"
         case recommended = "Recommended"
         case optional = "Optional"
     }
-    
+
     public init(documentType: DocumentType, priority: Priority, farJustification: String, description: String) {
         self.documentType = documentType
         self.priority = priority
@@ -71,7 +71,7 @@ public struct ComplianceResult {
     public let score: Double // 0.0 to 1.0
     public let issues: [ComplianceIssue]
     public let recommendations: [String]
-    
+
     public init(isCompliant: Bool, score: Double, issues: [ComplianceIssue], recommendations: [String]) {
         self.isCompliant = isCompliant
         self.score = score
@@ -85,14 +85,14 @@ public struct ComplianceIssue {
     public let description: String
     public let farReference: String
     public let suggestedFix: String
-    
+
     public enum Severity: String, CaseIterable {
         case critical = "Critical"
         case major = "Major"
         case minor = "Minor"
         case informational = "Informational"
     }
-    
+
     public init(severity: Severity, description: String, farReference: String, suggestedFix: String) {
         self.severity = severity
         self.description = description
@@ -108,7 +108,7 @@ extension FARComplianceService: DependencyKey {
                 // Analyze requirements and category to recommend appropriate documents
                 let keywords = requirements.lowercased()
                 var recommendations: [DocumentRecommendation] = []
-                
+
                 // Always recommend SOW for basic scope definition
                 recommendations.append(DocumentRecommendation(
                     documentType: .sow,
@@ -116,7 +116,7 @@ extension FARComplianceService: DependencyKey {
                     farJustification: "FAR 11.002(a) - Agencies must describe their needs clearly",
                     description: "Essential for defining project scope and deliverables"
                 ))
-                
+
                 // Performance-based contracting recommendations
                 if keywords.contains("performance") || keywords.contains("outcome") || category == .softwareDevelopment {
                     recommendations.append(DocumentRecommendation(
@@ -126,7 +126,7 @@ extension FARComplianceService: DependencyKey {
                         description: "Recommended for outcome-based performance requirements"
                     ))
                 }
-                
+
                 // Quality assurance for complex projects
                 if keywords.contains("quality") || keywords.contains("testing") || category == .softwareDevelopment {
                     recommendations.append(DocumentRecommendation(
@@ -136,7 +136,7 @@ extension FARComplianceService: DependencyKey {
                         description: "Essential for monitoring and ensuring quality deliverables"
                     ))
                 }
-                
+
                 // Cost estimation requirements
                 if keywords.contains("cost") || keywords.contains("budget") || keywords.contains("price") {
                     recommendations.append(DocumentRecommendation(
@@ -146,7 +146,7 @@ extension FARComplianceService: DependencyKey {
                         description: "Required for independent cost validation and negotiation"
                     ))
                 }
-                
+
                 // Contract scaffold for comprehensive acquisition strategy
                 if keywords.contains("complex") || keywords.contains("large") || category == .construction {
                     recommendations.append(DocumentRecommendation(
@@ -156,7 +156,7 @@ extension FARComplianceService: DependencyKey {
                         description: "Comprehensive acquisition strategy for complex procurements"
                     ))
                 }
-                
+
                 return recommendations
             },
             validateCompliance: { documentType, content in
@@ -164,9 +164,9 @@ extension FARComplianceService: DependencyKey {
                 let issues = validateDocumentContent(documentType: documentType, content: content)
                 let score = calculateComplianceScore(issues: issues)
                 let isCompliant = score >= 0.7 && !issues.contains { $0.severity == .critical }
-                
+
                 let recommendations = generateRecommendations(for: documentType, issues: issues)
-                
+
                 return ComplianceResult(
                     isCompliant: isCompliant,
                     score: score,
@@ -176,10 +176,10 @@ extension FARComplianceService: DependencyKey {
             }
         )
     }
-    
+
     public static var testValue: FARComplianceService {
         FARComplianceService(
-            getRecommendedDocuments: { _, category in
+            getRecommendedDocuments: { _, _ in
                 [
                     DocumentRecommendation(
                         documentType: .sow,
@@ -192,7 +192,7 @@ extension FARComplianceService: DependencyKey {
                         priority: .recommended,
                         farJustification: "FAR 37.6 - Mock justification",
                         description: "Mock PWS recommendation"
-                    )
+                    ),
                 ]
             },
             validateCompliance: { _, _ in
@@ -210,11 +210,11 @@ extension FARComplianceService: DependencyKey {
 private func validateDocumentContent(documentType: DocumentType, content: String) -> [ComplianceIssue] {
     var issues: [ComplianceIssue] = []
     let lowercaseContent = content.lowercased()
-    
+
     switch documentType {
     case .sow:
         // SOW validation
-        if !lowercaseContent.contains("scope") && !lowercaseContent.contains("objective") {
+        if !lowercaseContent.contains("scope"), !lowercaseContent.contains("objective") {
             issues.append(ComplianceIssue(
                 severity: .critical,
                 description: "SOW must clearly define scope and objectives",
@@ -222,10 +222,10 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Add clear scope and objective statements"
             ))
         }
-        
+
     case .soo:
         // SOO validation
-        if !lowercaseContent.contains("objective") && !lowercaseContent.contains("outcome") {
+        if !lowercaseContent.contains("objective"), !lowercaseContent.contains("outcome") {
             issues.append(ComplianceIssue(
                 severity: .critical,
                 description: "SOO must define objectives and desired outcomes",
@@ -233,7 +233,7 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Add clear objectives and desired end states"
             ))
         }
-        
+
         if !lowercaseContent.contains("deliverable") {
             issues.append(ComplianceIssue(
                 severity: .major,
@@ -242,10 +242,10 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Include detailed deliverable descriptions"
             ))
         }
-        
+
     case .pws:
         // PWS validation
-        if !lowercaseContent.contains("performance") && !lowercaseContent.contains("outcome") {
+        if !lowercaseContent.contains("performance"), !lowercaseContent.contains("outcome") {
             issues.append(ComplianceIssue(
                 severity: .critical,
                 description: "PWS must focus on performance outcomes",
@@ -253,10 +253,10 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Define clear performance standards and outcomes"
             ))
         }
-        
+
     case .qasp:
         // QASP validation
-        if !lowercaseContent.contains("quality") && !lowercaseContent.contains("surveillance") {
+        if !lowercaseContent.contains("quality"), !lowercaseContent.contains("surveillance") {
             issues.append(ComplianceIssue(
                 severity: .critical,
                 description: "QASP must define quality surveillance methods",
@@ -264,10 +264,10 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Include quality surveillance procedures"
             ))
         }
-        
+
     case .costEstimate:
         // IGCE validation
-        if !lowercaseContent.contains("cost") && !lowercaseContent.contains("estimate") {
+        if !lowercaseContent.contains("cost"), !lowercaseContent.contains("estimate") {
             issues.append(ComplianceIssue(
                 severity: .critical,
                 description: "Cost estimate must include detailed cost breakdown",
@@ -275,11 +275,10 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Provide comprehensive cost analysis"
             ))
         }
-        
-        
+
     case .marketResearch:
         // Market Research validation
-        if !lowercaseContent.contains("market") && !lowercaseContent.contains("industry") {
+        if !lowercaseContent.contains("market"), !lowercaseContent.contains("industry") {
             issues.append(ComplianceIssue(
                 severity: .major,
                 description: "Market research must include industry analysis",
@@ -287,10 +286,10 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Add market analysis and industry assessment"
             ))
         }
-        
+
     case .acquisitionPlan:
         // Acquisition Plan validation
-        if !lowercaseContent.contains("strategy") && !lowercaseContent.contains("approach") {
+        if !lowercaseContent.contains("strategy"), !lowercaseContent.contains("approach") {
             issues.append(ComplianceIssue(
                 severity: .critical,
                 description: "Acquisition plan must define acquisition strategy",
@@ -298,7 +297,7 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Include clear acquisition strategy and approach"
             ))
         }
-        
+
     case .evaluationPlan:
         // Evaluation Plan validation
         if !lowercaseContent.contains("evaluation") || !lowercaseContent.contains("criteria") {
@@ -325,10 +324,10 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Add past performance evaluation methodology"
             ))
         }
-        
+
     case .fiscalLawReview:
         // Fiscal Law Review validation
-        if !lowercaseContent.contains("fund") && !lowercaseContent.contains("appropriation") {
+        if !lowercaseContent.contains("fund"), !lowercaseContent.contains("appropriation") {
             issues.append(ComplianceIssue(
                 severity: .critical,
                 description: "Fiscal law review must address funding sources",
@@ -336,10 +335,10 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Include funding source and appropriation analysis"
             ))
         }
-        
+
     case .opsecReview:
         // OPSEC Review validation
-        if !lowercaseContent.contains("security") && !lowercaseContent.contains("opsec") {
+        if !lowercaseContent.contains("security"), !lowercaseContent.contains("opsec") {
             issues.append(ComplianceIssue(
                 severity: .major,
                 description: "OPSEC review must address security concerns",
@@ -347,10 +346,10 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Include security assessment and OPSEC measures"
             ))
         }
-        
+
     case .industryRFI:
         // Industry RFI validation
-        if !lowercaseContent.contains("information") && !lowercaseContent.contains("request") {
+        if !lowercaseContent.contains("information"), !lowercaseContent.contains("request") {
             issues.append(ComplianceIssue(
                 severity: .major,
                 description: "RFI must clearly state information being requested",
@@ -358,10 +357,10 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Clearly define the information requested from industry"
             ))
         }
-        
+
     case .sourcesSought:
         // Sources Sought validation
-        if !lowercaseContent.contains("sources") && !lowercaseContent.contains("capability") {
+        if !lowercaseContent.contains("sources"), !lowercaseContent.contains("capability") {
             issues.append(ComplianceIssue(
                 severity: .major,
                 description: "Sources sought must describe capability requirements",
@@ -369,10 +368,10 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Include clear capability requirements and qualifications"
             ))
         }
-        
+
     case .justificationApproval:
         // J&A validation
-        if !lowercaseContent.contains("competition") && !lowercaseContent.contains("justification") {
+        if !lowercaseContent.contains("competition"), !lowercaseContent.contains("justification") {
             issues.append(ComplianceIssue(
                 severity: .critical,
                 description: "J&A must justify limited competition",
@@ -380,7 +379,7 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Include justification for other than full and open competition"
             ))
         }
-        
+
     case .codes:
         // Codes validation
         if !lowercaseContent.contains("naics") {
@@ -391,7 +390,7 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Include NAICS code determination with justification"
             ))
         }
-        if !lowercaseContent.contains("psc") && !lowercaseContent.contains("product service code") {
+        if !lowercaseContent.contains("psc"), !lowercaseContent.contains("product service code") {
             issues.append(ComplianceIssue(
                 severity: .major,
                 description: "Must identify Product Service Code",
@@ -407,7 +406,7 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Include applicable size standard for the NAICS code"
             ))
         }
-        
+
     case .competitionAnalysis:
         // Competition Analysis validation
         if !lowercaseContent.contains("market research") {
@@ -434,7 +433,7 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Include specific recommendation for competition approach"
             ))
         }
-        
+
     case .procurementSourcing:
         // Procurement Sourcing validation
         if !lowercaseContent.contains("sam.gov") && !lowercaseContent.contains("sam") {
@@ -461,7 +460,7 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Include CAGE codes and UEI numbers for all vendors"
             ))
         }
-        
+
     case .rrd:
         // RRD validation
         if !lowercaseContent.contains("requirement") || !lowercaseContent.contains("statement") {
@@ -488,10 +487,10 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Include timeline requirements and budget constraints"
             ))
         }
-        
+
     case .requestForQuoteSimplified:
         // Simplified RFQ validation
-        if !lowercaseContent.contains("quote") && !lowercaseContent.contains("price") {
+        if !lowercaseContent.contains("quote"), !lowercaseContent.contains("price") {
             issues.append(ComplianceIssue(
                 severity: .critical,
                 description: "RFQ must request pricing information",
@@ -499,7 +498,7 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Include clear request for price quotes"
             ))
         }
-        if !lowercaseContent.contains("delivery") && !lowercaseContent.contains("when") {
+        if !lowercaseContent.contains("delivery"), !lowercaseContent.contains("when") {
             issues.append(ComplianceIssue(
                 severity: .minor,
                 description: "RFQ should specify delivery timeframe",
@@ -507,7 +506,7 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Add delivery timeframe or 'as soon as possible'"
             ))
         }
-        
+
     case .requestForQuote:
         // RFQ validation
         if !lowercaseContent.contains("quote") || !lowercaseContent.contains("price") {
@@ -526,7 +525,7 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Add delivery schedule and location requirements"
             ))
         }
-        
+
     case .requestForProposal:
         // RFP validation
         if !lowercaseContent.contains("evaluation") || !lowercaseContent.contains("criteria") {
@@ -545,7 +544,7 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Add Section L - Instructions to Offerors"
             ))
         }
-        if !lowercaseContent.contains("technical") && !lowercaseContent.contains("requirement") {
+        if !lowercaseContent.contains("technical"), !lowercaseContent.contains("requirement") {
             issues.append(ComplianceIssue(
                 severity: .major,
                 description: "RFP must include technical requirements",
@@ -553,7 +552,7 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Add detailed technical requirements and specifications"
             ))
         }
-        
+
     case .contractScaffold:
         // Contract Scaffold validation
         if !lowercaseContent.contains("section") || !lowercaseContent.contains("contract") {
@@ -572,7 +571,7 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Add Section I with all applicable FAR clauses"
             ))
         }
-        
+
     case .corAppointment:
         // COR Appointment validation
         if !lowercaseContent.contains("authority") || !lowercaseContent.contains("limitation") {
@@ -591,7 +590,7 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Include specific technical and administrative responsibilities"
             ))
         }
-        
+
     case .analytics:
         // Analytics validation
         if !lowercaseContent.contains("metric") && !lowercaseContent.contains("kpi") {
@@ -610,10 +609,10 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Include spend analysis by category and vendor"
             ))
         }
-        
+
     case .otherTransactionAgreement:
         // OT Agreement validation
-        if !lowercaseContent.contains("10 u.s.c") && !lowercaseContent.contains("2371b") {
+        if !lowercaseContent.contains("10 u.s.c"), !lowercaseContent.contains("2371b") {
             issues.append(ComplianceIssue(
                 severity: .critical,
                 description: "OT Agreement must cite statutory authority",
@@ -646,38 +645,38 @@ private func validateDocumentContent(documentType: DocumentType, content: String
             ))
         }
     }
-    
+
     return issues
 }
 
 private func calculateComplianceScore(issues: [ComplianceIssue]) -> Double {
     if issues.isEmpty { return 1.0 }
-    
+
     let totalDeductions = issues.reduce(0.0) { total, issue in
         switch issue.severity {
-        case .critical: return total + 0.4
-        case .major: return total + 0.2
-        case .minor: return total + 0.1
-        case .informational: return total + 0.05
+        case .critical: total + 0.4
+        case .major: total + 0.2
+        case .minor: total + 0.1
+        case .informational: total + 0.05
         }
     }
-    
+
     return max(0.0, 1.0 - totalDeductions)
 }
 
 private func generateRecommendations(for documentType: DocumentType, issues: [ComplianceIssue]) -> [String] {
     var recommendations: [String] = []
-    
+
     if issues.isEmpty {
         recommendations.append("Document meets FAR compliance requirements")
     } else {
         recommendations.append("Address \(issues.count) compliance issues identified")
-        
+
         let criticalIssues = issues.filter { $0.severity == .critical }
         if !criticalIssues.isEmpty {
             recommendations.append("Prioritize \(criticalIssues.count) critical compliance issues")
         }
-        
+
         // Add specific recommendations based on document type
         switch documentType {
         case .sow:
@@ -730,12 +729,12 @@ private func generateRecommendations(for documentType: DocumentType, issues: [Co
             recommendations.append("Structure agreement to maximize innovation and non-traditional participation per 10 U.S.C. § 2371b")
         }
     }
-    
+
     return recommendations
 }
 
-extension DependencyValues {
-    public var farComplianceService: FARComplianceService {
+public extension DependencyValues {
+    var farComplianceService: FARComplianceService {
         get { self[FARComplianceService.self] }
         set { self[FARComplianceService.self] = newValue }
     }

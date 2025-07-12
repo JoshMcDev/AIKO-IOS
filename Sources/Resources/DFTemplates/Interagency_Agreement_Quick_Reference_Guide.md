@@ -157,7 +157,7 @@ Before using this template, ensure you have:
 - Accept higher costs without adequate justification
 - Neglect proper oversight and monitoring procedures
 
-✅ **Do:**
+ **Do:**
 - Conduct thorough cost-benefit analysis
 - Verify servicing agency authority and capability
 - Establish clear agreement terms and conditions

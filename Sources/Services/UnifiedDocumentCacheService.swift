@@ -1,6 +1,6 @@
-import Foundation
-import CryptoKit
 import ComposableArchitecture
+import CryptoKit
+import Foundation
 
 /// Unified Document Cache Service combining standard, encrypted, and adaptive caching
 public struct UnifiedDocumentCacheService {
@@ -11,20 +11,20 @@ public struct UnifiedDocumentCacheService {
     public var getCachedAnalysisResponse: (String) async -> (response: String, recommendedDocuments: [DocumentType])?
     public var clearCache: () async throws -> Void
     public var getCacheStatistics: () async -> CacheStatistics
-    
+
     // Performance operations
     public var preloadFrequentDocuments: () async throws -> Void
     public var optimizeCacheForMemory: () async throws -> Void
-    
+
     // Security operations (optional)
     public var rotateEncryptionKey: (() async throws -> Void)?
     public var exportEncryptedBackup: (() async throws -> Data)?
     public var importEncryptedBackup: ((Data) async throws -> Void)?
-    
+
     // Adaptive operations (optional)
     public var adjustCacheLimits: (() async -> Void)?
     public var getAdaptiveMetrics: (() async -> AdaptiveMetrics)?
-    
+
     // Configuration
     public var updateConfiguration: (CacheConfiguration) async throws -> Void
     public var getCurrentConfiguration: () async -> CacheConfiguration
@@ -40,7 +40,7 @@ public struct CacheConfiguration: Codable, Equatable {
     public let maxMemorySize: Int64
     public let enableMetrics: Bool
     public let enablePreloading: Bool
-    
+
     public init(
         mode: CacheMode = .standard,
         encryptionEnabled: Bool = false,
@@ -58,23 +58,23 @@ public struct CacheConfiguration: Codable, Equatable {
         self.enableMetrics = enableMetrics
         self.enablePreloading = enablePreloading
     }
-    
+
     // Preset configurations
     public static let standard = CacheConfiguration()
-    
+
     public static let secure = CacheConfiguration(
         mode: .encrypted,
         encryptionEnabled: true,
         adaptiveSizingEnabled: false
     )
-    
+
     public static let performance = CacheConfiguration(
         mode: .adaptive,
         encryptionEnabled: true,
         adaptiveSizingEnabled: true,
         enablePreloading: true
     )
-    
+
     public static let minimal = CacheConfiguration(
         mode: .standard,
         maxCacheSize: 20,
@@ -94,48 +94,48 @@ public enum CacheMode: String, Codable, Equatable {
 actor UnifiedCacheStorage {
     // Configuration
     private var configuration: CacheConfiguration
-    
+
     // Storage components
     private let standardStorage: StandardCacheComponent
     private let encryptionLayer: EncryptionLayer?
     private let adaptiveEngine: AdaptiveEngine?
-    
+
     // Metrics
     private let metricsCollector: MetricsCollector
-    
+
     init(configuration: CacheConfiguration) async throws {
         self.configuration = configuration
-        
+
         // Initialize base storage
-        self.standardStorage = StandardCacheComponent(
+        standardStorage = StandardCacheComponent(
             maxCacheSize: configuration.maxCacheSize,
             maxMemorySize: configuration.maxMemorySize
         )
-        
+
         // Initialize optional components
         if configuration.encryptionEnabled {
-            self.encryptionLayer = try await EncryptionLayer()
+            encryptionLayer = try await EncryptionLayer()
         } else {
-            self.encryptionLayer = nil
+            encryptionLayer = nil
         }
-        
+
         if configuration.adaptiveSizingEnabled {
-            self.adaptiveEngine = AdaptiveEngine(
+            adaptiveEngine = AdaptiveEngine(
                 baseCacheSize: configuration.maxCacheSize,
                 baseMemorySize: configuration.maxMemorySize
             )
         } else {
-            self.adaptiveEngine = nil
+            adaptiveEngine = nil
         }
-        
-        self.metricsCollector = MetricsCollector(enabled: configuration.enableMetrics)
+
+        metricsCollector = MetricsCollector(enabled: configuration.enableMetrics)
     }
-    
+
     // MARK: - Document Operations
-    
+
     func cacheDocument(_ document: GeneratedDocument, requirements: String) async throws {
         let startTime = Date()
-        
+
         // Apply adaptive limits if enabled
         if let adaptive = adaptiveEngine {
             await adaptive.adjustLimitsIfNeeded()
@@ -145,15 +145,15 @@ actor UnifiedCacheStorage {
                 maxMemorySize: limits.memorySize
             )
         }
-        
+
         // Prepare data
         let encoder = JSONEncoder()
         let documentData = try encoder.encode(document)
-        
+
         // Encrypt if enabled
         let dataToCache: Data
         let metadata: CacheMetadata
-        
+
         if let encryption = encryptionLayer {
             let encrypted = try await encryption.encrypt(documentData)
             dataToCache = encrypted.ciphertext
@@ -172,7 +172,7 @@ actor UnifiedCacheStorage {
                 checksum: SHA256.hash(data: documentData).compactMap { String(format: "%02x", $0) }.joined()
             )
         }
-        
+
         // Cache the document
         try await standardStorage.cacheDocument(
             data: dataToCache,
@@ -180,7 +180,7 @@ actor UnifiedCacheStorage {
             requirements: requirements,
             metadata: metadata
         )
-        
+
         // Update metrics
         let cachingTime = Date().timeIntervalSince(startTime)
         await metricsCollector.recordCacheOperation(
@@ -190,10 +190,10 @@ actor UnifiedCacheStorage {
             success: true
         )
     }
-    
+
     func getCachedDocument(type: DocumentType, requirements: String) async -> GeneratedDocument? {
         let startTime = Date()
-        
+
         // Retrieve from storage
         guard let cachedData = await standardStorage.getCachedDocument(
             type: type,
@@ -207,7 +207,7 @@ actor UnifiedCacheStorage {
             )
             return nil
         }
-        
+
         do {
             // Decrypt if needed
             let documentData: Data
@@ -222,17 +222,17 @@ actor UnifiedCacheStorage {
             } else {
                 documentData = cachedData.data
             }
-            
+
             // Verify integrity
             let checksum = SHA256.hash(data: documentData).compactMap { String(format: "%02x", $0) }.joined()
             guard checksum == cachedData.metadata.checksum else {
                 throw CacheError.integrityCheckFailed
             }
-            
+
             // Deserialize
             let decoder = JSONDecoder()
             let document = try decoder.decode(GeneratedDocument.self, from: documentData)
-            
+
             // Update metrics
             let retrievalTime = Date().timeIntervalSince(startTime)
             await metricsCollector.recordCacheOperation(
@@ -241,9 +241,9 @@ actor UnifiedCacheStorage {
                 size: cachedData.data.count,
                 success: true
             )
-            
+
             return document
-            
+
         } catch {
             print("❌ Failed to retrieve cached document: \(error)")
             await metricsCollector.recordCacheOperation(
@@ -255,25 +255,25 @@ actor UnifiedCacheStorage {
             return nil
         }
     }
-    
+
     // MARK: - Configuration Updates
-    
+
     func updateConfiguration(_ newConfig: CacheConfiguration) async throws {
         // Update storage limits
         await standardStorage.updateLimits(
             maxCacheSize: newConfig.maxCacheSize,
             maxMemorySize: newConfig.maxMemorySize
         )
-        
+
         // Handle encryption changes
-        if newConfig.encryptionEnabled && encryptionLayer == nil {
+        if newConfig.encryptionEnabled, encryptionLayer == nil {
             // Enable encryption - need to re-encrypt existing data
             throw CacheError.configurationChangeRequiresClear
-        } else if !newConfig.encryptionEnabled && encryptionLayer != nil {
+        } else if !newConfig.encryptionEnabled, encryptionLayer != nil {
             // Disable encryption - need to decrypt existing data
             throw CacheError.configurationChangeRequiresClear
         }
-        
+
         // Update adaptive engine
         if let adaptive = adaptiveEngine {
             await adaptive.updateBaseLimits(
@@ -281,21 +281,21 @@ actor UnifiedCacheStorage {
                 memorySize: newConfig.maxMemorySize
             )
         }
-        
-        self.configuration = newConfig
+
+        configuration = newConfig
     }
-    
+
     // MARK: - Cache Management
-    
+
     func clearCache() async {
         await standardStorage.clearCache()
         await metricsCollector.reset()
     }
-    
+
     func getStatistics() async -> CacheStatistics {
         let baseStats = await standardStorage.getStatistics()
         let metrics = await metricsCollector.getMetrics()
-        
+
         return CacheStatistics(
             totalCachedDocuments: baseStats.documentCount,
             totalCachedAnalyses: baseStats.analysisCount,
@@ -306,20 +306,20 @@ actor UnifiedCacheStorage {
             mostAccessedDocumentTypes: baseStats.mostAccessedTypes
         )
     }
-    
+
     // MARK: - Security Operations
-    
+
     func rotateEncryptionKey() async throws {
         guard let encryption = encryptionLayer else {
             throw CacheError.encryptionNotEnabled
         }
-        
+
         // Get all cached items
         let allItems = await standardStorage.getAllCachedItems()
-        
+
         // Generate new key
         try await encryption.rotateKey()
-        
+
         // Re-encrypt all items
         for item in allItems {
             if item.metadata.isEncrypted, let nonce = item.metadata.nonce {
@@ -328,14 +328,14 @@ actor UnifiedCacheStorage {
                     ciphertext: item.data,
                     nonce: nonce
                 )
-                
+
                 // Re-encrypt with new key
                 let reEncrypted = try await encryption.encrypt(decrypted)
-                
+
                 // Update in storage
                 var newMetadata = item.metadata
                 newMetadata.nonce = reEncrypted.nonce
-                
+
                 try await standardStorage.updateCachedItem(
                     key: item.key,
                     data: reEncrypted.ciphertext,
@@ -344,38 +344,38 @@ actor UnifiedCacheStorage {
             }
         }
     }
-    
+
     // MARK: - Adaptive Operations
-    
+
     func adjustCacheLimits() async {
         guard let adaptive = adaptiveEngine else { return }
-        
+
         await adaptive.adjustLimitsIfNeeded()
         let limits = await adaptive.getCurrentLimits()
-        
+
         await standardStorage.updateLimits(
             maxCacheSize: limits.cacheSize,
             maxMemorySize: limits.memorySize
         )
     }
-    
+
     func getAdaptiveMetrics() async -> AdaptiveMetrics? {
         guard let adaptive = adaptiveEngine else { return nil }
-        
+
         let metrics = await metricsCollector.getMetrics()
         let limits = await adaptive.getCurrentLimits()
         let pressure = await adaptive.getMemoryPressure()
-        
-        return AdaptiveMetrics(
+
+        return await AdaptiveMetrics(
             currentCacheSizeLimit: limits.cacheSize,
             currentMemoryLimit: limits.memorySize,
-            actualCacheSize: await standardStorage.getStatistics().documentCount,
-            actualMemoryUsage: await standardStorage.getStatistics().totalSize,
+            actualCacheSize: standardStorage.getStatistics().documentCount,
+            actualMemoryUsage: standardStorage.getStatistics().totalSize,
             systemMemoryPressure: pressure,
             recentHitRate: metrics.hitRate,
             recentEvictionRate: metrics.evictionRate,
             averageResponseTime: metrics.averageRetrievalTime,
-            adaptiveAdjustmentCount: await adaptive.getAdjustmentCount()
+            adaptiveAdjustmentCount: adaptive.getAdjustmentCount()
         )
     }
 }
@@ -387,42 +387,42 @@ private final class StandardCacheComponent {
     // Similar to DocumentCacheStorage but without encryption/adaptive features
     private var maxCacheSize: Int
     private var maxMemorySize: Int64
-    
+
     init(maxCacheSize: Int, maxMemorySize: Int64) {
         self.maxCacheSize = maxCacheSize
         self.maxMemorySize = maxMemorySize
     }
-    
+
     func updateLimits(maxCacheSize: Int, maxMemorySize: Int64) async {
         self.maxCacheSize = maxCacheSize
         self.maxMemorySize = maxMemorySize
     }
-    
-    func cacheDocument(data: Data, documentType: DocumentCategoryType, requirements: String, metadata: CacheMetadata) async throws {
+
+    func cacheDocument(data _: Data, documentType _: DocumentCategoryType, requirements _: String, metadata _: CacheMetadata) async throws {
         // Implementation
     }
-    
-    func getCachedDocument(type: DocumentType, requirements: String) async -> CachedItem? {
+
+    func getCachedDocument(type _: DocumentType, requirements _: String) async -> CachedItem? {
         // Implementation
-        return nil
+        nil
     }
-    
+
     func getAllCachedItems() async -> [CachedItem] {
         // Implementation
-        return []
+        []
     }
-    
-    func updateCachedItem(key: String, data: Data, metadata: CacheMetadata) async throws {
+
+    func updateCachedItem(key _: String, data _: Data, metadata _: CacheMetadata) async throws {
         // Implementation
     }
-    
+
     func clearCache() async {
         // Implementation
     }
-    
+
     func getStatistics() async -> BaseStatistics {
         // Implementation
-        return BaseStatistics(
+        BaseStatistics(
             documentCount: 0,
             analysisCount: 0,
             totalSize: 0,
@@ -435,37 +435,37 @@ private final class StandardCacheComponent {
 private final class EncryptionLayer {
     private var masterKey: SymmetricKey
     private let keychainService = "com.aiko.unified.cache"
-    
+
     struct EncryptedData {
         let ciphertext: Data
         let nonce: Data
     }
-    
+
     init() async throws {
         // Initialize or load encryption key
-        self.masterKey = SymmetricKey(size: .bits256)
+        masterKey = SymmetricKey(size: .bits256)
     }
-    
+
     func encrypt(_ data: Data) async throws -> EncryptedData {
         let sealedBox = try AES.GCM.seal(data, using: masterKey)
         guard let combined = sealedBox.combined else {
             throw CacheError.encryptionFailed
         }
-        
+
         return EncryptedData(
             ciphertext: combined,
             nonce: sealedBox.nonce.withUnsafeBytes { Data($0) }
         )
     }
-    
-    func decrypt(ciphertext: Data, nonce: Data) async throws -> Data {
+
+    func decrypt(ciphertext: Data, nonce _: Data) async throws -> Data {
         let sealedBox = try AES.GCM.SealedBox(combined: ciphertext)
         return try AES.GCM.open(sealedBox, using: masterKey)
     }
-    
+
     func rotateKey() async throws {
         // Generate new key
-        self.masterKey = SymmetricKey(size: .bits256)
+        masterKey = SymmetricKey(size: .bits256)
         // Save to keychain
     }
 }
@@ -474,45 +474,45 @@ private final class AdaptiveEngine {
     private var baseCacheSize: Int
     private var baseMemorySize: Int64
     private var adjustmentCount: Int = 0
-    
+
     init(baseCacheSize: Int, baseMemorySize: Int64) {
         self.baseCacheSize = baseCacheSize
         self.baseMemorySize = baseMemorySize
     }
-    
+
     func adjustLimitsIfNeeded() async {
         // Implementation of adaptive sizing logic
         adjustmentCount += 1
     }
-    
+
     func getCurrentLimits() async -> (cacheSize: Int, memorySize: Int64) {
         // Return current adaptive limits
-        return (baseCacheSize, baseMemorySize)
+        (baseCacheSize, baseMemorySize)
     }
-    
+
     func getMemoryPressure() async -> MemoryPressureLevel {
         // Check system memory and return pressure level
-        return .normal
+        .normal
     }
-    
+
     func updateBaseLimits(cacheSize: Int, memorySize: Int64) async {
-        self.baseCacheSize = cacheSize
-        self.baseMemorySize = memorySize
+        baseCacheSize = cacheSize
+        baseMemorySize = memorySize
     }
-    
+
     func getAdjustmentCount() async -> Int {
-        return adjustmentCount
+        adjustmentCount
     }
 }
 
 private final class MetricsCollector {
     private var enabled: Bool
     private var operations: [CacheOperation] = []
-    
+
     enum OperationType {
         case cache, hit, miss, error
     }
-    
+
     struct CacheOperation {
         let type: OperationType
         let duration: TimeInterval
@@ -520,14 +520,14 @@ private final class MetricsCollector {
         let timestamp: Date
         let success: Bool
     }
-    
+
     init(enabled: Bool) {
         self.enabled = enabled
     }
-    
+
     func recordCacheOperation(type: OperationType, duration: TimeInterval, size: Int, success: Bool) async {
         guard enabled else { return }
-        
+
         let operation = CacheOperation(
             type: type,
             duration: duration,
@@ -535,38 +535,38 @@ private final class MetricsCollector {
             timestamp: Date(),
             success: success
         )
-        
+
         operations.append(operation)
-        
+
         // Keep only recent operations
         if operations.count > 1000 {
             operations.removeFirst(operations.count - 1000)
         }
     }
-    
+
     func getMetrics() async -> CacheMetrics {
         let hits = operations.filter { $0.type == .hit }.count
         let misses = operations.filter { $0.type == .miss }.count
         let total = hits + misses
-        
+
         let hitRate = total > 0 ? Double(hits) / Double(total) : 0.0
-        
+
         let retrievalTimes = operations
             .filter { $0.type == .hit || $0.type == .miss }
-            .map { $0.duration }
-        
+            .map(\.duration)
+
         let avgRetrievalTime = retrievalTimes.isEmpty ? 0.0 : retrievalTimes.reduce(0, +) / Double(retrievalTimes.count)
-        
+
         // Calculate eviction rate (simplified)
         let evictionRate = 0.05 // Would calculate based on actual evictions
-        
+
         return CacheMetrics(
             hitRate: hitRate,
             evictionRate: evictionRate,
             averageRetrievalTime: avgRetrievalTime
         )
     }
-    
+
     func reset() async {
         operations.removeAll()
     }
@@ -608,21 +608,21 @@ enum CacheError: LocalizedError {
     case missingEncryptionData
     case integrityCheckFailed
     case configurationChangeRequiresClear
-    
+
     var errorDescription: String? {
         switch self {
         case .encryptionNotEnabled:
-            return "Encryption is not enabled for this cache"
+            "Encryption is not enabled for this cache"
         case .encryptionFailed:
-            return "Failed to encrypt data"
+            "Failed to encrypt data"
         case .decryptionFailed:
-            return "Failed to decrypt data"
+            "Failed to decrypt data"
         case .missingEncryptionData:
-            return "Missing encryption data (nonce)"
+            "Missing encryption data (nonce)"
         case .integrityCheckFailed:
-            return "Data integrity check failed"
+            "Data integrity check failed"
         case .configurationChangeRequiresClear:
-            return "Configuration change requires clearing the cache"
+            "Configuration change requires clearing the cache"
         }
     }
 }
@@ -634,11 +634,11 @@ extension UnifiedDocumentCacheService: DependencyKey {
         let storage = Task {
             try await UnifiedCacheStorage(configuration: .standard)
         }
-        
+
         func getStorage() async throws -> UnifiedCacheStorage {
             try await storage.value
         }
-        
+
         return UnifiedDocumentCacheService(
             cacheDocument: { document in
                 let storage = try await getStorage()
@@ -649,12 +649,12 @@ extension UnifiedDocumentCacheService: DependencyKey {
                 guard let storage = try? await getStorage() else { return nil }
                 return await storage.getCachedDocument(type: type, requirements: requirements)
             },
-            cacheAnalysisResponse: { requirements, response, recommendedDocuments in
+            cacheAnalysisResponse: { _, _, _ in
                 // Implementation similar to other cache services
             },
-            getCachedAnalysisResponse: { requirements in
+            getCachedAnalysisResponse: { _ in
                 // Implementation similar to other cache services
-                return nil
+                nil
             },
             clearCache: {
                 let storage = try await getStorage()
@@ -687,7 +687,7 @@ extension UnifiedDocumentCacheService: DependencyKey {
             },
             exportEncryptedBackup: {
                 // Implementation for backup
-                return Data()
+                Data()
             },
             importEncryptedBackup: { _ in
                 // Implementation for restore
@@ -697,7 +697,7 @@ extension UnifiedDocumentCacheService: DependencyKey {
                 await storage.adjustCacheLimits()
             },
             getAdaptiveMetrics: {
-                guard let storage = try? await getStorage() else { 
+                guard let storage = try? await getStorage() else {
                     return AdaptiveMetrics(
                         currentCacheSizeLimit: 50,
                         currentMemoryLimit: 100 * 1024 * 1024,
@@ -728,14 +728,14 @@ extension UnifiedDocumentCacheService: DependencyKey {
             },
             getCurrentConfiguration: {
                 // Return current configuration
-                return .standard
+                .standard
             }
         )
     }
 }
 
-extension DependencyValues {
-    public var unifiedDocumentCache: UnifiedDocumentCacheService {
+public extension DependencyValues {
+    var unifiedDocumentCache: UnifiedDocumentCacheService {
         get { self[UnifiedDocumentCacheService.self] }
         set { self[UnifiedDocumentCacheService.self] = newValue }
     }

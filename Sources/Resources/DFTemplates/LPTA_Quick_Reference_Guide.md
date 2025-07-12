@@ -65,7 +65,7 @@ Before using this template, ensure you have:
 - Use subjective evaluation criteria
 - Assume LPTA without proper analysis
 
-✅ **Do:**
+ **Do:**
 - Ensure requirements are truly well-defined
 - Conduct thorough market research
 - Document clear cost/benefit rationale

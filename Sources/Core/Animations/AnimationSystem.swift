@@ -1,29 +1,29 @@
-import SwiftUI
 import Combine
+import SwiftUI
 
 // MARK: - Animation System
 
-struct AnimationSystem {
+enum AnimationSystem {
     // MARK: - Spring Animations
-    
-    struct Spring {
+
+    enum Spring {
         static let bouncy = Animation.spring(response: 0.4, dampingFraction: 0.6)
         static let smooth = Animation.spring(response: 0.5, dampingFraction: 0.8)
         static let snappy = Animation.spring(response: 0.3, dampingFraction: 0.7)
         static let gentle = Animation.spring(response: 0.6, dampingFraction: 0.9)
     }
-    
+
     // MARK: - Timing Curves
-    
-    struct Curve {
+
+    enum Curve {
         static let easeInOutQuart = Animation.timingCurve(0.77, 0, 0.175, 1, duration: 0.5)
         static let easeOutBack = Animation.timingCurve(0.34, 1.56, 0.64, 1, duration: 0.4)
         static let easeInOutExpo = Animation.timingCurve(0.87, 0, 0.13, 1, duration: 0.6)
         static let materialEase = Animation.timingCurve(0.4, 0.0, 0.2, 1, duration: 0.3)
     }
-    
+
     // MARK: - Micro Interactions
-    
+
     static let microBounce = Animation.spring(response: 0.2, dampingFraction: 0.5)
     static let microFade = Animation.easeOut(duration: 0.15)
     static let microScale = Animation.easeInOut(duration: 0.1)
@@ -34,23 +34,23 @@ struct AnimationSystem {
 struct AnimatedButton<Label: View>: View {
     let action: () -> Void
     let label: () -> Label
-    
+
     @State private var isPressed = false
     @State private var showRipple = false
     @Environment(\.isEnabled) private var isEnabled
-    
+
     var body: some View {
         Button(action: {
             // Trigger ripple effect
             withAnimation(.easeOut(duration: 0.6)) {
                 showRipple = true
             }
-            
+
             // Reset ripple
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                 showRipple = false
             }
-            
+
             action()
         }) {
             label()
@@ -72,8 +72,7 @@ struct AnimatedButton<Label: View>: View {
                 )
         }
         .buttonStyle(.plain)
-        .onLongPressGesture(minimumDuration: .infinity, maximumDistance: .infinity) {
-        } onPressingChanged: { pressing in
+        .onLongPressGesture(minimumDuration: .infinity, maximumDistance: .infinity) {} onPressingChanged: { pressing in
             withAnimation(AnimationSystem.microScale) {
                 isPressed = pressing
             }
@@ -89,7 +88,7 @@ struct ShimmerModifier: ViewModifier {
     @State private var phase: CGFloat = 0
     let duration: Double
     let bounce: Bool
-    
+
     func body(content: Content) -> some View {
         content
             .overlay(
@@ -98,7 +97,7 @@ struct ShimmerModifier: ViewModifier {
                         colors: [
                             Color.white.opacity(0),
                             Color.white.opacity(0.3),
-                            Color.white.opacity(0)
+                            Color.white.opacity(0),
                         ],
                         startPoint: .leading,
                         endPoint: .trailing
@@ -132,7 +131,7 @@ struct PulseModifier: ViewModifier {
     @State private var isPulsing = false
     let duration: Double
     let scale: CGFloat
-    
+
     func body(content: Content) -> some View {
         content
             .scaleEffect(isPulsing ? scale : 1.0)
@@ -160,12 +159,12 @@ struct BounceModifier: ViewModifier {
     @State private var bounceOffset: CGFloat = 0
     let trigger: Bool
     let distance: CGFloat
-    
+
     func body(content: Content) -> some View {
         if #available(macOS 14.0, iOS 17.0, *) {
             content
                 .offset(y: bounceOffset)
-                .onChange(of: trigger) { oldValue, newValue in
+                .onChange(of: trigger) { _, newValue in
                     if newValue {
                         performBounce()
                     }
@@ -174,18 +173,18 @@ struct BounceModifier: ViewModifier {
             content
                 .offset(y: bounceOffset)
                 .onReceive(Just(trigger)) { newValue in
-                    if newValue && bounceOffset == 0 {
+                    if newValue, bounceOffset == 0 {
                         performBounce()
                     }
                 }
         }
     }
-    
+
     private func performBounce() {
         withAnimation(AnimationSystem.Spring.bouncy) {
             bounceOffset = -distance
         }
-        
+
         withAnimation(AnimationSystem.Spring.bouncy.delay(0.1)) {
             bounceOffset = 0
         }
@@ -204,12 +203,12 @@ struct ShakeModifier: ViewModifier {
     @State private var shakeOffset: CGFloat = 0
     let trigger: Bool
     let intensity: CGFloat
-    
+
     func body(content: Content) -> some View {
         if #available(macOS 14.0, iOS 17.0, *) {
             content
                 .offset(x: shakeOffset)
-                .onChange(of: trigger) { oldValue, newValue in
+                .onChange(of: trigger) { _, newValue in
                     if newValue {
                         performShake()
                     }
@@ -218,24 +217,24 @@ struct ShakeModifier: ViewModifier {
             content
                 .offset(x: shakeOffset)
                 .onReceive(Just(trigger)) { newValue in
-                    if newValue && shakeOffset == 0 {
+                    if newValue, shakeOffset == 0 {
                         performShake()
                     }
                 }
         }
     }
-    
+
     private func performShake() {
         let animation = Animation.linear(duration: 0.05)
-        
-        for i in 0..<6 {
+
+        for i in 0 ..< 6 {
             DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.05) {
                 withAnimation(animation) {
                     shakeOffset = (i % 2 == 0) ? intensity : -intensity
                 }
             }
         }
-        
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             withAnimation(animation) {
                 shakeOffset = 0
@@ -256,15 +255,15 @@ struct LoadingDotsView: View {
     @State private var animatingDots = [false, false, false]
     let dotSize: CGFloat
     let color: Color
-    
+
     init(dotSize: CGFloat = 10, color: Color = .accentColor) {
         self.dotSize = dotSize
         self.color = color
     }
-    
+
     var body: some View {
         HStack(spacing: dotSize / 2) {
-            ForEach(0..<3) { index in
+            ForEach(0 ..< 3) { index in
                 Circle()
                     .fill(color)
                     .frame(width: dotSize, height: dotSize)
@@ -278,7 +277,7 @@ struct LoadingDotsView: View {
             }
         }
         .onAppear {
-            for index in 0..<3 {
+            for index in 0 ..< 3 {
                 animatingDots[index] = true
             }
         }
@@ -291,15 +290,15 @@ struct AnimatedCheckmark: View {
     @State private var trimEnd: CGFloat = 0
     @State private var rotation: Double = 0
     @State private var scale: CGFloat = 0
-    
+
     let size: CGFloat
     let color: Color
-    
+
     init(size: CGFloat = 50, color: Color = .green) {
         self.size = size
         self.color = color
     }
-    
+
     var body: some View {
         ZStack {
             // Circle background
@@ -307,7 +306,7 @@ struct AnimatedCheckmark: View {
                 .fill(color.opacity(0.1))
                 .frame(width: size, height: size)
                 .scaleEffect(scale)
-            
+
             // Checkmark
             Path { path in
                 path.move(to: CGPoint(x: size * 0.25, y: size * 0.5))
@@ -323,7 +322,7 @@ struct AnimatedCheckmark: View {
             withAnimation(AnimationSystem.Spring.bouncy) {
                 scale = 1.0
             }
-            
+
             withAnimation(AnimationSystem.Curve.easeInOutQuart.delay(0.2)) {
                 trimEnd = 1.0
                 rotation = 360
@@ -339,15 +338,15 @@ struct AnimatedErrorCross: View {
     @State private var secondLineTrim: CGFloat = 0
     @State private var scale: CGFloat = 0
     @State private var shake = false
-    
+
     let size: CGFloat
     let color: Color
-    
+
     init(size: CGFloat = 50, color: Color = .red) {
         self.size = size
         self.color = color
     }
-    
+
     var body: some View {
         ZStack {
             // Circle background
@@ -355,7 +354,7 @@ struct AnimatedErrorCross: View {
                 .fill(color.opacity(0.1))
                 .frame(width: size, height: size)
                 .scaleEffect(scale)
-            
+
             // First line of X
             Path { path in
                 path.move(to: CGPoint(x: size * 0.3, y: size * 0.3))
@@ -363,7 +362,7 @@ struct AnimatedErrorCross: View {
             }
             .trim(from: 0, to: firstLineTrim)
             .stroke(color, style: StrokeStyle(lineWidth: size * 0.08, lineCap: .round))
-            
+
             // Second line of X
             Path { path in
                 path.move(to: CGPoint(x: size * 0.7, y: size * 0.3))
@@ -379,17 +378,17 @@ struct AnimatedErrorCross: View {
             withAnimation(AnimationSystem.Spring.bouncy) {
                 scale = 1.0
             }
-            
+
             // Draw first line
             withAnimation(Animation.easeOut(duration: 0.2).delay(0.2)) {
                 firstLineTrim = 1.0
             }
-            
+
             // Draw second line
             withAnimation(Animation.easeOut(duration: 0.2).delay(0.3)) {
                 secondLineTrim = 1.0
             }
-            
+
             // Shake
             withAnimation(
                 Animation.easeInOut(duration: 0.1)
@@ -407,7 +406,7 @@ struct AnimatedErrorCross: View {
 struct PageTransition: ViewModifier {
     let isActive: Bool
     let edge: Edge
-    
+
     func body(content: Content) -> some View {
         content
             .transition(
@@ -423,10 +422,10 @@ struct PageTransition: ViewModifier {
 extension Edge {
     var opposite: Edge {
         switch self {
-        case .top: return .bottom
-        case .bottom: return .top
-        case .leading: return .trailing
-        case .trailing: return .leading
+        case .top: .bottom
+        case .bottom: .top
+        case .leading: .trailing
+        case .trailing: .leading
         }
     }
 }

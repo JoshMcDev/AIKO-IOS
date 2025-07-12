@@ -5,7 +5,7 @@ import SwiftUI
 struct BlurEffect: ViewModifier {
     let radius: CGFloat
     let opaque: Bool
-    
+
     func body(content: Content) -> some View {
         content
             .blur(radius: radius, opaque: opaque)
@@ -16,30 +16,30 @@ struct VariableBlur: View {
     let startRadius: CGFloat
     let endRadius: CGFloat
     let direction: Axis
-    
+
     @State private var gradientMask = LinearGradient(
         colors: [.clear, .black],
         startPoint: .leading,
         endPoint: .trailing
     )
-    
+
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                ForEach(0..<10) { index in
+                ForEach(0 ..< 10) { index in
                     blurSegment(index: index, geometry: geometry)
                 }
             }
         }
     }
-    
+
     @ViewBuilder
     private func blurSegment(index: Int, geometry: GeometryProxy) -> some View {
         let segmentWidth = direction == .horizontal ? geometry.size.width / 10 : geometry.size.width
         let segmentHeight = direction == .vertical ? geometry.size.height / 10 : geometry.size.height
         let xOffset = direction == .horizontal ? CGFloat(index) * geometry.size.width / 10 : 0
         let yOffset = direction == .vertical ? CGFloat(index) * geometry.size.height / 10 : 0
-        
+
         Rectangle()
             .fill(Color.clear)
             .background(BlurredBackground(radius: radius(for: index)))
@@ -50,7 +50,7 @@ struct VariableBlur: View {
                     .offset(x: xOffset, y: yOffset)
             )
     }
-    
+
     private func radius(for index: Int) -> CGFloat {
         let progress = CGFloat(index) / 9.0
         return startRadius + (endRadius - startRadius) * progress
@@ -60,34 +60,34 @@ struct VariableBlur: View {
 // Cross-platform blur effect
 struct BlurredBackground: View {
     let radius: CGFloat
-    
+
     var body: some View {
         #if os(iOS)
-        BlurredBackgroundUIKit(radius: radius)
+            BlurredBackgroundUIKit(radius: radius)
         #else
-        // macOS fallback using standard blur
-        Rectangle()
-            .fill(Material.ultraThin)
-            .blur(radius: radius * 0.3) // Adjusted for visual similarity
+            // macOS fallback using standard blur
+            Rectangle()
+                .fill(Material.ultraThin)
+                .blur(radius: radius * 0.3) // Adjusted for visual similarity
         #endif
     }
 }
 
 #if os(iOS)
-struct BlurredBackgroundUIKit: UIViewRepresentable {
-    let radius: CGFloat
-    
-    func makeUIView(context: Context) -> UIVisualEffectView {
-        let view = UIVisualEffectView()
-        updateUIView(view, context: context)
-        return view
+    struct BlurredBackgroundUIKit: UIViewRepresentable {
+        let radius: CGFloat
+
+        func makeUIView(context: Context) -> UIVisualEffectView {
+            let view = UIVisualEffectView()
+            updateUIView(view, context: context)
+            return view
+        }
+
+        func updateUIView(_ uiView: UIVisualEffectView, context _: Context) {
+            let blur = UIBlurEffect(style: .systemUltraThinMaterial)
+            uiView.effect = blur
+        }
     }
-    
-    func updateUIView(_ uiView: UIVisualEffectView, context: Context) {
-        let blur = UIBlurEffect(style: .systemUltraThinMaterial)
-        uiView.effect = blur
-    }
-}
 #endif
 
 // MARK: - Glassmorphism View
@@ -97,9 +97,9 @@ struct GlassmorphicView<Content: View>: View {
     var blurRadius: CGFloat = 10
     var opacity: Double = 0.6
     var cornerRadius: CGFloat = Theme.CornerRadius.lg
-    
+
     @Environment(\.colorScheme) private var colorScheme
-    
+
     var body: some View {
         ZStack {
             // Background blur
@@ -110,18 +110,18 @@ struct GlassmorphicView<Content: View>: View {
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .fill(Material.ultraThin)
             }
-            
+
             // Content with background
             content()
                 .background(
                     LinearGradient(
                         colors: [
-                            colorScheme == .dark ? 
-                                Color.white.opacity(0.05) : 
+                            colorScheme == .dark ?
+                                Color.white.opacity(0.05) :
                                 Color.black.opacity(0.05),
-                            colorScheme == .dark ? 
-                                Color.white.opacity(0.02) : 
-                                Color.black.opacity(0.02)
+                            colorScheme == .dark ?
+                                Color.white.opacity(0.02) :
+                                Color.black.opacity(0.02),
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -135,7 +135,7 @@ struct GlassmorphicView<Content: View>: View {
                     LinearGradient(
                         colors: [
                             Color.white.opacity(0.3),
-                            Color.white.opacity(0.1)
+                            Color.white.opacity(0.1),
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -159,7 +159,7 @@ struct GradientOverlay: ViewModifier {
     let startPoint: UnitPoint
     let endPoint: UnitPoint
     let blendMode: BlendMode
-    
+
     func body(content: Content) -> some View {
         content
             .overlay(
@@ -195,9 +195,9 @@ extension View {
 struct NeumorphicModifier: ViewModifier {
     let isPressed: Bool
     let shape: RoundedRectangle
-    
+
     @Environment(\.colorScheme) private var colorScheme
-    
+
     func body(content: Content) -> some View {
         content
             .background(
@@ -228,15 +228,15 @@ struct NeumorphicModifier: ViewModifier {
                 }
             )
     }
-    
+
     private var backgroundColor: Color {
         colorScheme == .dark ? Color(white: 0.13) : Color(white: 0.93)
     }
-    
+
     private var darkShadow: Color {
         colorScheme == .dark ? Color.black : Color.black.opacity(0.2)
     }
-    
+
     private var lightShadow: Color {
         colorScheme == .dark ? Color.white.opacity(0.1) : Color.white
     }
@@ -257,31 +257,31 @@ struct FloatingActionButton: View {
     let icon: String
     let action: () -> Void
     var style: FABStyle = .primary
-    
+
     @State private var isPressed = false
     @State private var isAnimating = false
-    
+
     enum FABStyle {
         case primary
         case secondary
         case destructive
-        
+
         var backgroundColor: Color {
             switch self {
-            case .primary: return .blue
-            case .secondary: return .gray
-            case .destructive: return .red
+            case .primary: .blue
+            case .secondary: .gray
+            case .destructive: .red
             }
         }
-        
+
         var foregroundColor: Color {
             switch self {
-            case .primary, .destructive: return .white
-            case .secondary: return .blue
+            case .primary, .destructive: .white
+            case .secondary: .blue
             }
         }
     }
-    
+
     var body: some View {
         Button(action: {
             HapticManager.shared.impact(.medium)
@@ -289,7 +289,7 @@ struct FloatingActionButton: View {
                 isAnimating = true
             }
             action()
-            
+
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 isAnimating = false
             }
@@ -301,21 +301,21 @@ struct FloatingActionButton: View {
                     .frame(width: 56, height: 56)
                     .blur(radius: isPressed ? 5 : 10)
                     .offset(y: isPressed ? 2 : 5)
-                
+
                 // Main button
                 Circle()
                     .fill(
                         LinearGradient(
                             colors: [
                                 style.backgroundColor,
-                                style.backgroundColor.opacity(0.8)
+                                style.backgroundColor.opacity(0.8),
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
                     )
                     .frame(width: 56, height: 56)
-                
+
                 // Icon
                 Image(systemName: icon)
                     .font(.system(size: 24, weight: .medium))
@@ -326,8 +326,7 @@ struct FloatingActionButton: View {
         }
         .buttonStyle(.plain)
         .scaleEffect(isPressed ? 0.95 : 1.0)
-        .onLongPressGesture(minimumDuration: .infinity) {
-        } onPressingChanged: { pressing in
+        .onLongPressGesture(minimumDuration: .infinity) {} onPressingChanged: { pressing in
             withAnimation(AnimationSystem.microScale) {
                 isPressed = pressing
             }
@@ -345,10 +344,10 @@ struct EmptyStateView: View {
     let message: String
     var actionTitle: String? = nil
     var action: (() -> Void)? = nil
-    
+
     @State private var iconRotation = 0.0
     @State private var iconScale = 1.0
-    
+
     var body: some View {
         VStack(spacing: Theme.Spacing.lg) {
             // Animated icon
@@ -358,7 +357,7 @@ struct EmptyStateView: View {
                         LinearGradient(
                             colors: [
                                 Color.blue.opacity(0.1),
-                                Color.blue.opacity(0.05)
+                                Color.blue.opacity(0.05),
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
@@ -366,7 +365,7 @@ struct EmptyStateView: View {
                     )
                     .frame(width: 120, height: 120)
                     .blur(radius: 20)
-                
+
                 Image(systemName: icon)
                     .font(.system(size: 50, weight: .light))
                     .foregroundColor(.blue)
@@ -383,19 +382,19 @@ struct EmptyStateView: View {
                     }
             }
             .frame(height: 150)
-            
+
             // Title
             ResponsiveText(content: title, style: .title2)
                 .multilineTextAlignment(.center)
-            
+
             // Message
             ResponsiveText(content: message, style: .body)
                 .multilineTextAlignment(.center)
                 .foregroundColor(.secondary)
                 .frame(maxWidth: 300)
-            
+
             // Action button
-            if let actionTitle = actionTitle, let action = action {
+            if let actionTitle, let action {
                 AnimatedButton(action: action) {
                     HStack {
                         Text(actionTitle)
@@ -426,15 +425,15 @@ struct EmptyStateView: View {
 struct CustomProgressIndicator: View {
     let progress: Double
     let style: ProgressStyle
-    
+
     @State private var isAnimating = false
-    
+
     enum ProgressStyle {
         case linear
         case circular
         case wave
     }
-    
+
     var body: some View {
         switch style {
         case .linear:
@@ -449,12 +448,12 @@ struct CustomProgressIndicator: View {
 
 struct CircularProgressView: View {
     let progress: Double
-    
+
     var body: some View {
         ZStack {
             Circle()
                 .stroke(Color.gray.opacity(0.2), lineWidth: 4)
-            
+
             Circle()
                 .trim(from: 0, to: CGFloat(min(progress, 1.0)))
                 .stroke(Color.blue, style: StrokeStyle(lineWidth: 4, lineCap: .round))
@@ -467,7 +466,7 @@ struct CircularProgressView: View {
 
 struct LinearProgressIndicator: View {
     let progress: Double
-    
+
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .leading) {
@@ -475,7 +474,7 @@ struct LinearProgressIndicator: View {
                 RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
                     .fill(Color.gray.opacity(0.2))
                     .frame(height: 8)
-                
+
                 // Progress
                 RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
                     .fill(
@@ -487,9 +486,9 @@ struct LinearProgressIndicator: View {
                     )
                     .frame(width: geometry.size.width * progress, height: 8)
                     .animation(AnimationSystem.Spring.smooth, value: progress)
-                
+
                 // Shimmer effect
-                if progress > 0 && progress < 1 {
+                if progress > 0, progress < 1 {
                     RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
                         .fill(Color.white.opacity(0.4))
                         .frame(width: 30, height: 8)

@@ -1,21 +1,19 @@
-import Foundation
 import CoreData
+import Foundation
 
-extension MetricComparisonEntity {
-    
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<MetricComparisonEntity> {
-        return NSFetchRequest<MetricComparisonEntity>(entityName: "MetricComparison")
+public extension MetricComparisonEntity {
+    @nonobjc class func fetchRequest() -> NSFetchRequest<MetricComparisonEntity> {
+        NSFetchRequest<MetricComparisonEntity>(entityName: "MetricComparison")
     }
-    
-    @NSManaged public var id: UUID?
-    @NSManaged public var type: String?
-    @NSManaged public var difference: Double
-    @NSManaged public var percentageChange: Double
-    @NSManaged public var interpretation: String?
-    @NSManaged public var baseline: MetricMeasurementEntity?
-    @NSManaged public var comparison: MetricMeasurementEntity?
-    @NSManaged public var report: MetricsReportEntity?
+
+    @NSManaged var id: UUID?
+    @NSManaged var type: String?
+    @NSManaged var difference: Double
+    @NSManaged var percentageChange: Double
+    @NSManaged var interpretation: String?
+    @NSManaged var baseline: MetricMeasurementEntity?
+    @NSManaged var comparison: MetricMeasurementEntity?
+    @NSManaged var report: MetricsReportEntity?
 }
 
-extension MetricComparisonEntity : Identifiable {
-}
+extension MetricComparisonEntity: Identifiable {}

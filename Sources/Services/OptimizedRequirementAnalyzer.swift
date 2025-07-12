@@ -1,6 +1,6 @@
+import ComposableArchitecture
 import Foundation
 import SwiftAnthropic
-import ComposableArchitecture
 
 /// Optimized RequirementAnalyzer with batching and enhanced caching
 public struct OptimizedRequirementAnalyzer {
@@ -8,7 +8,7 @@ public struct OptimizedRequirementAnalyzer {
     public var analyzeDocumentContent: (Data, String) async throws -> (response: String, recommendedDocuments: [DocumentType])
     public var enhancePrompt: (String) async throws -> String
     public var batchAnalyzeRequirements: ([String]) async throws -> [(response: String, recommendedDocuments: [DocumentType])]
-    
+
     public init(
         analyzeRequirements: @escaping (String) async throws -> (response: String, recommendedDocuments: [DocumentType]),
         analyzeDocumentContent: @escaping (Data, String) async throws -> (response: String, recommendedDocuments: [DocumentType]),
@@ -29,11 +29,11 @@ actor APIRequestBatcher {
     private var batchTimer: Task<Void, Never>?
     private let batchSize = 5
     private let batchDelay: Duration = .milliseconds(100)
-    
+
     func addRequest(_ requirements: String) async throws -> (response: String, recommendedDocuments: [DocumentType]) {
-        return try await withCheckedThrowingContinuation { continuation in
+        try await withCheckedThrowingContinuation { continuation in
             pendingRequests.append((requirements, continuation))
-            
+
             if pendingRequests.count >= batchSize {
                 Task {
                     await processBatch()
@@ -46,19 +46,19 @@ actor APIRequestBatcher {
             }
         }
     }
-    
+
     private func processBatch() async {
         guard !pendingRequests.isEmpty else { return }
-        
+
         let batch = pendingRequests
         pendingRequests.removeAll()
         batchTimer = nil
-        
-        let requirements = batch.map { $0.0 }
-        
+
+        let requirements = batch.map(\.0)
+
         do {
             let results = try await batchAnalyze(requirements: requirements)
-            
+
             for (index, result) in results.enumerated() {
                 if index < batch.count {
                     batch[index].1.resume(returning: result)
@@ -71,21 +71,21 @@ actor APIRequestBatcher {
             }
         }
     }
-    
+
     func batchAnalyze(requirements: [String]) async throws -> [(response: String, recommendedDocuments: [DocumentType])] {
         let anthropicService = AnthropicServiceFactory.service(
             apiKey: APIConfiguration.getAnthropicKey(),
             betaHeaders: nil
         )
-        
+
         // Create a batch prompt that analyzes multiple requirements
         let batchPrompt = """
         Analyze the following \(requirements.count) acquisition requirements separately:
-        
+
         \(requirements.enumerated().map { index, req in
             "### Requirement \(index + 1):\n\(req)\n"
         }.joined(separator: "\n"))
-        
+
         For EACH requirement above, provide a comprehensive acquisition analysis with:
         1. REQUIREMENTS ANALYSIS
         2. REGULATORY COMPLIANCE
@@ -93,17 +93,17 @@ actor APIRequestBatcher {
         4. MISSING INFORMATION
         5. RISK ASSESSMENT
         6. RECOMMENDATIONS
-        
+
         Separate each analysis with "---NEXT---"
         """
-        
+
         let messages = [
             MessageParameter.Message(
                 role: .user,
                 content: .text(batchPrompt)
-            )
+            ),
         ]
-        
+
         let parameters = MessageParameter(
             model: .other("claude-sonnet-4-20250514"),
             messages: messages,
@@ -118,20 +118,20 @@ actor APIRequestBatcher {
             tools: nil,
             toolChoice: nil
         )
-        
+
         let result = try await anthropicService.createMessage(parameters)
-        
+
         let content: String
         switch result.content.first {
-        case .text(let text, _):
+        case let .text(text, _):
             content = text
         default:
             throw RequirementAnalyzerError.noResponse
         }
-        
+
         // Split responses
         let responses = content.components(separatedBy: "---NEXT---")
-        
+
         return responses.enumerated().compactMap { index, response in
             guard index < requirements.count else { return nil }
             let recommendedTypes = OptimizedRequirementAnalyzer.parseRecommendations(from: response)
@@ -146,60 +146,58 @@ extension OptimizedRequirementAnalyzer: DependencyKey {
     public static var liveValue: OptimizedRequirementAnalyzer {
         let batcher = APIRequestBatcher()
         @Dependency(\.documentCacheService) var cacheService
-        
+
         return OptimizedRequirementAnalyzer(
             analyzeRequirements: { requirements in
                 // Check cache first
                 if let cached = await cacheService.getCachedAnalysisResponse(requirements) {
                     return cached
                 }
-                
+
                 // Use batcher for API calls
                 let result = try await batcher.addRequest(requirements)
-                
+
                 // Cache the result
                 try await cacheService.cacheAnalysisResponse(
                     requirements,
                     result.response,
                     result.recommendedDocuments
                 )
-                
+
                 return result
             },
             analyzeDocumentContent: { documentData, fileName in
                 // Create a cache key from file data
                 let cacheKey = "\(fileName)_\(documentData.hashValue)"
-                
+
                 // Check cache first
                 if let cached = await cacheService.getCachedAnalysisResponse(cacheKey) {
                     return cached
                 }
-                
+
                 // Parse document content first
                 let parser = DocumentParser()
-                let documentContent: String
-                
-                if fileName.lowercased().hasSuffix(".pdf") {
-                    documentContent = try await parser.parseDocument(documentData, type: .pdf)
+                let documentContent: String = if fileName.lowercased().hasSuffix(".pdf") {
+                    try await parser.parseDocument(documentData, type: .pdf)
                 } else if fileName.lowercased().hasSuffix(".txt") || fileName.lowercased().hasSuffix(".docx") {
-                    documentContent = try await parser.parseDocument(documentData, type: .plainText)
+                    try await parser.parseDocument(documentData, type: .plainText)
                 } else {
-                    documentContent = try await parser.parseImage(documentData)
+                    try await parser.parseImage(documentData)
                 }
-                
+
                 // Use batcher for analysis
                 let truncatedContent = String(documentContent.prefix(2000))
                 let analysisRequirements = "Document: \(fileName)\nContent: \(truncatedContent)"
-                
+
                 let result = try await batcher.addRequest(analysisRequirements)
-                
+
                 // Cache the result
                 try await cacheService.cacheAnalysisResponse(
                     cacheKey,
                     result.response,
                     result.recommendedDocuments
                 )
-                
+
                 return result
             },
             enhancePrompt: { prompt in
@@ -208,25 +206,25 @@ extension OptimizedRequirementAnalyzer: DependencyKey {
                 if let cached = await cacheService.getCachedAnalysisResponse(cacheKey) {
                     return cached.response
                 }
-                
+
                 let anthropicService = AnthropicServiceFactory.service(
                     apiKey: APIConfiguration.getAnthropicKey(),
                     betaHeaders: nil
                 )
-                
+
                 let messages = [
                     MessageParameter.Message(
                         role: .user,
                         content: .text("""
                         Please enhance and improve the following acquisition requirements prompt to make it more specific, comprehensive, and actionable for generating government contract documents. Keep the enhanced version clear and concise:
-                        
+
                         Original prompt: \(prompt)
-                        
+
                         Enhanced prompt:
                         """)
-                    )
+                    ),
                 ]
-                
+
                 let parameters = MessageParameter(
                     model: .other("claude-sonnet-4-20250514"),
                     messages: messages,
@@ -241,16 +239,16 @@ extension OptimizedRequirementAnalyzer: DependencyKey {
                     tools: nil,
                     toolChoice: nil
                 )
-                
+
                 let result = try await anthropicService.createMessage(parameters)
-                
+
                 switch result.content.first {
-                case .text(let text, _):
+                case let .text(text, _):
                     let enhanced = text.trimmingCharacters(in: .whitespacesAndNewlines)
-                    
+
                     // Cache the enhancement
                     try? await cacheService.cacheAnalysisResponse(cacheKey, enhanced, [])
-                    
+
                     return enhanced
                 default:
                     throw RequirementAnalyzerError.noResponse
@@ -260,7 +258,7 @@ extension OptimizedRequirementAnalyzer: DependencyKey {
                 // Check cache for each requirement
                 var cachedResults: [(Int, (response: String, recommendedDocuments: [DocumentType]))] = []
                 var uncachedRequirements: [(Int, String)] = []
-                
+
                 for (index, req) in requirements.enumerated() {
                     if let cached = await cacheService.getCachedAnalysisResponse(req) {
                         cachedResults.append((index, cached))
@@ -268,19 +266,19 @@ extension OptimizedRequirementAnalyzer: DependencyKey {
                         uncachedRequirements.append((index, req))
                     }
                 }
-                
+
                 // Process uncached requirements
                 var apiResults: [(Int, (response: String, recommendedDocuments: [DocumentType]))] = []
-                
+
                 if !uncachedRequirements.isEmpty {
-                    let requirementsToAnalyze = uncachedRequirements.map { $0.1 }
+                    let requirementsToAnalyze = uncachedRequirements.map(\.1)
                     let results = try await batcher.batchAnalyze(requirements: requirementsToAnalyze)
-                    
+
                     for (i, result) in results.enumerated() {
                         if i < uncachedRequirements.count {
                             let originalIndex = uncachedRequirements[i].0
                             apiResults.append((originalIndex, result))
-                            
+
                             // Cache the result
                             try? await cacheService.cacheAnalysisResponse(
                                 uncachedRequirements[i].1,
@@ -290,37 +288,37 @@ extension OptimizedRequirementAnalyzer: DependencyKey {
                         }
                     }
                 }
-                
+
                 // Combine and sort results
                 let allResults = (cachedResults + apiResults).sorted { $0.0 < $1.0 }
-                return allResults.map { $0.1 }
+                return allResults.map(\.1)
             }
         )
     }
-    
+
     public static var testValue: OptimizedRequirementAnalyzer {
         OptimizedRequirementAnalyzer(
             analyzeRequirements: RequirementAnalyzer.testValue.analyzeRequirements,
             analyzeDocumentContent: RequirementAnalyzer.testValue.analyzeDocumentContent,
             enhancePrompt: RequirementAnalyzer.testValue.enhancePrompt,
             batchAnalyzeRequirements: { requirements in
-                return requirements.map { req in
+                requirements.map { req in
                     (response: "Batch analysis for: \(req)", recommendedDocuments: [.sow, .pws])
                 }
             }
         )
     }
-    
+
     static func parseRecommendations(from content: String) -> [DocumentType] {
         let lowercaseContent = content.lowercased()
         var recommendations: [DocumentType] = []
-        
+
         // Parse recommendations section
         if let recommendationsRange = content.range(of: "RECOMMENDATIONS:", options: .caseInsensitive) {
             let recommendationsText = String(content[recommendationsRange.upperBound...])
             let lines = recommendationsText.components(separatedBy: .newlines)
             let firstLine = lines.first ?? ""
-            
+
             // Extract document type abbreviations
             if firstLine.contains("SOW") || lowercaseContent.contains("statement of work") {
                 recommendations.append(.sow)
@@ -338,18 +336,18 @@ extension OptimizedRequirementAnalyzer: DependencyKey {
                 recommendations.append(.costEstimate)
             }
         }
-        
+
         // Fallback: Always recommend basic documents if none found
         if recommendations.isEmpty {
             recommendations = [.sow, .pws]
         }
-        
+
         return recommendations
     }
 }
 
-extension DependencyValues {
-    public var optimizedRequirementAnalyzer: OptimizedRequirementAnalyzer {
+public extension DependencyValues {
+    var optimizedRequirementAnalyzer: OptimizedRequirementAnalyzer {
         get { self[OptimizedRequirementAnalyzer.self] }
         set { self[OptimizedRequirementAnalyzer.self] = newValue }
     }
@@ -357,9 +355,9 @@ extension DependencyValues {
 
 // MARK: - Migration Helper
 
-extension RequirementAnalyzer {
+public extension RequirementAnalyzer {
     /// Creates an optimized version of the requirement analyzer
-    public var optimized: OptimizedRequirementAnalyzer {
-        return OptimizedRequirementAnalyzer.liveValue
+    var optimized: OptimizedRequirementAnalyzer {
+        OptimizedRequirementAnalyzer.liveValue
     }
 }

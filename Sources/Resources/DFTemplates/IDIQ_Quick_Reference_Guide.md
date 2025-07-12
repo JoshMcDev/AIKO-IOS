@@ -126,7 +126,7 @@ Before using this template, ensure you have:
 - Fail to plan for contract administration complexity
 - Overlook small business participation opportunities
 
-✅ **Do:**
+ **Do:**
 - Establish realistic quantity parameters
 - Design efficient ordering procedures
 - Plan for fair opportunity in task order competition

@@ -144,7 +144,7 @@ Before using this template, ensure you have:
 - Approve indefinite or unreasonable extension periods
 - Fail to document decision rationale
 
-✅ **Do:**
+ **Do:**
 - Conduct thorough delay causation analysis
 - Assess responsibility for delays accurately
 - Evaluate all alternatives to extension

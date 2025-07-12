@@ -3,74 +3,74 @@ import Foundation
 /// Represents different types of objects that can be handled by the adaptive intelligence system
 public enum ObjectType: String, CaseIterable, Codable {
     // Document-related objects
-    case document = "document"
+    case document
     case documentTemplate = "document_template"
     case documentDraft = "document_draft"
     case documentSection = "document_section"
-    
+
     // Acquisition-related objects
-    case acquisition = "acquisition"
-    case requirement = "requirement"
-    case vendor = "vendor"
-    case contract = "contract"
-    
+    case acquisition
+    case requirement
+    case vendor
+    case contract
+
     // Workflow-related objects
-    case workflow = "workflow"
+    case workflow
     case workflowStep = "workflow_step"
-    case approval = "approval"
-    case task = "task"
-    
+    case approval
+    case task
+
     // Data-related objects
     case dataField = "data_field"
-    case regulation = "regulation"
-    case compliance = "compliance"
-    case metric = "metric"
-    
+    case regulation
+    case compliance
+    case metric
+
     // User-related objects
     case userQuery = "user_query"
     case userPreference = "user_preference"
     case userHistory = "user_history"
-    
+
     // System objects
     case systemConfiguration = "system_configuration"
     case integrationEndpoint = "integration_endpoint"
-    case notification = "notification"
-    
+    case notification
+
     public var category: ObjectCategory {
         switch self {
         case .document, .documentTemplate, .documentDraft, .documentSection:
-            return .document
+            .document
         case .acquisition, .requirement, .vendor, .contract:
-            return .acquisition
+            .acquisition
         case .workflow, .workflowStep, .approval, .task:
-            return .workflow
+            .workflow
         case .dataField, .regulation, .compliance, .metric:
-            return .data
+            .data
         case .userQuery, .userPreference, .userHistory:
-            return .user
+            .user
         case .systemConfiguration, .integrationEndpoint, .notification:
-            return .system
+            .system
         }
     }
-    
+
     public var supportedActions: [ActionType] {
         switch self {
         case .document:
-            return [.create, .read, .update, .delete, .analyze, .generate, .validate, .export]
+            [.create, .read, .update, .delete, .analyze, .generate, .validate, .export]
         case .documentTemplate:
-            return [.read, .apply, .customize, .validate]
+            [.read, .apply, .customize, .validate]
         case .acquisition:
-            return [.create, .read, .update, .analyze, .track, .report]
+            [.create, .read, .update, .analyze, .track, .report]
         case .workflow:
-            return [.start, .pause, .resume, .complete, .analyze, .optimize]
+            [.start, .pause, .resume, .complete, .analyze, .optimize]
         case .task:
-            return [.assign, .execute, .complete, .prioritize, .schedule]
+            [.assign, .execute, .complete, .prioritize, .schedule]
         case .userQuery:
-            return [.parse, .analyze, .respond, .learn]
+            [.parse, .analyze, .respond, .learn]
         case .metric:
-            return [.record, .calculate, .analyze, .visualize, .report]
+            [.record, .calculate, .analyze, .visualize, .report]
         default:
-            return [.read, .update]
+            [.read, .update]
         }
     }
 }
@@ -90,14 +90,14 @@ public enum ActionType: String, CaseIterable, Codable {
     case read
     case update
     case delete
-    
+
     // Document operations
     case generate
     case analyze
     case validate
     case export
     case `import`
-    
+
     // Workflow operations
     case start
     case pause
@@ -105,26 +105,26 @@ public enum ActionType: String, CaseIterable, Codable {
     case complete
     case approve
     case reject
-    
+
     // Task operations
     case assign
     case execute
     case schedule
     case prioritize
-    
+
     // Data operations
     case parse
     case transform
     case calculate
     case aggregate
     case record
-    
+
     // Learning operations
     case learn
     case adapt
     case optimize
     case predict
-    
+
     // Utility operations
     case track
     case report
@@ -146,7 +146,7 @@ public struct ObjectAction: Identifiable, Equatable, Codable {
     public let priority: ActionPriority
     public let estimatedDuration: TimeInterval
     public let requiredCapabilities: Set<Capability>
-    
+
     public init(
         id: UUID = UUID(),
         type: ActionType,
@@ -168,13 +168,13 @@ public struct ObjectAction: Identifiable, Equatable, Codable {
         self.estimatedDuration = estimatedDuration
         self.requiredCapabilities = requiredCapabilities
     }
-    
+
     // Codable conformance for parameters dictionary
     enum CodingKeys: String, CodingKey {
         case id, type, objectType, objectId, context, priority, estimatedDuration, requiredCapabilities
         case parameters
     }
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(UUID.self, forKey: .id)
@@ -185,16 +185,17 @@ public struct ObjectAction: Identifiable, Equatable, Codable {
         priority = try container.decode(ActionPriority.self, forKey: .priority)
         estimatedDuration = try container.decode(TimeInterval.self, forKey: .estimatedDuration)
         requiredCapabilities = try container.decode(Set<Capability>.self, forKey: .requiredCapabilities)
-        
+
         // Decode parameters as JSON
         if let parametersData = try? container.decode(Data.self, forKey: .parameters),
-           let params = try? JSONSerialization.jsonObject(with: parametersData) as? [String: Any] {
+           let params = try? JSONSerialization.jsonObject(with: parametersData) as? [String: Any]
+        {
             parameters = params
         } else {
             parameters = [:]
         }
     }
-    
+
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
@@ -205,13 +206,13 @@ public struct ObjectAction: Identifiable, Equatable, Codable {
         try container.encode(priority, forKey: .priority)
         try container.encode(estimatedDuration, forKey: .estimatedDuration)
         try container.encode(requiredCapabilities, forKey: .requiredCapabilities)
-        
+
         // Encode parameters as JSON
         if let parametersData = try? JSONSerialization.data(withJSONObject: parameters) {
             try container.encode(parametersData, forKey: .parameters)
         }
     }
-    
+
     public static func == (lhs: ObjectAction, rhs: ObjectAction) -> Bool {
         lhs.id == rhs.id
     }
@@ -223,7 +224,7 @@ public struct ActionContext: Equatable, Codable {
     public let timestamp: Date
     public let environment: Environment
     public let metadata: [String: String]
-    
+
     public init(
         userId: String,
         sessionId: String,
@@ -237,7 +238,7 @@ public struct ActionContext: Equatable, Codable {
         self.environment = environment
         self.metadata = metadata
     }
-    
+
     public enum Environment: String, Codable {
         case development
         case staging
@@ -250,7 +251,7 @@ public enum ActionPriority: Int, Codable, Comparable {
     case normal = 1
     case high = 2
     case critical = 3
-    
+
     public static func < (lhs: ActionPriority, rhs: ActionPriority) -> Bool {
         lhs.rawValue < rhs.rawValue
     }
@@ -277,7 +278,7 @@ public struct ActionResult: Equatable, Codable, Sendable {
     public let metrics: ActionMetrics
     public let errors: [ActionError]
     public let learningInsights: [LearningInsight]
-    
+
     public init(
         actionId: UUID,
         status: ActionStatus,
@@ -308,13 +309,13 @@ public struct ActionOutput: Equatable, Codable, Sendable {
     public let type: OutputType
     public let data: Data
     public let metadata: [String: String]
-    
+
     public init(type: OutputType, data: Data, metadata: [String: String] = [:]) {
         self.type = type
         self.data = data
         self.metadata = metadata
     }
-    
+
     public enum OutputType: String, Codable, Sendable {
         case text
         case json
@@ -334,7 +335,7 @@ public struct ActionMetrics: Equatable, Codable, Sendable {
     public let successRate: Double
     public let performanceScore: Double // MOP: 0-1
     public let effectivenessScore: Double // MOE: 0-1
-    
+
     public init(
         startTime: Date,
         endTime: Date,
@@ -346,7 +347,7 @@ public struct ActionMetrics: Equatable, Codable, Sendable {
     ) {
         self.startTime = startTime
         self.endTime = endTime
-        self.duration = endTime.timeIntervalSince(startTime)
+        duration = endTime.timeIntervalSince(startTime)
         self.cpuUsage = cpuUsage
         self.memoryUsage = memoryUsage
         self.successRate = successRate
@@ -361,7 +362,7 @@ public struct ActionError: Equatable, Codable, Sendable {
     public let timestamp: Date
     public let severity: ErrorSeverity
     public let recoverable: Bool
-    
+
     public init(
         code: String,
         message: String,
@@ -375,7 +376,7 @@ public struct ActionError: Equatable, Codable, Sendable {
         self.severity = severity
         self.recoverable = recoverable
     }
-    
+
     public enum ErrorSeverity: String, Codable, Sendable {
         case warning
         case error
@@ -390,7 +391,7 @@ public struct LearningInsight: Equatable, Codable, Sendable {
     public let confidence: Double
     public let actionableRecommendation: String?
     public let impact: ImpactLevel
-    
+
     public init(
         id: UUID = UUID(),
         type: InsightType,
@@ -406,7 +407,7 @@ public struct LearningInsight: Equatable, Codable, Sendable {
         self.actionableRecommendation = actionableRecommendation
         self.impact = impact
     }
-    
+
     public enum InsightType: String, Codable, Sendable {
         case pattern
         case anomaly
@@ -414,7 +415,7 @@ public struct LearningInsight: Equatable, Codable, Sendable {
         case prediction
         case recommendation
     }
-    
+
     public enum ImpactLevel: String, Codable, Sendable {
         case low
         case medium

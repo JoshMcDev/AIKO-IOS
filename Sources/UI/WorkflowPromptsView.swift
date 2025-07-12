@@ -1,9 +1,9 @@
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
 struct WorkflowPromptsView: View {
     let store: StoreOf<DocumentAnalysisFeature>
-    
+
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             VStack(alignment: .leading, spacing: Theme.Spacing.md) {
@@ -14,7 +14,7 @@ struct WorkflowPromptsView: View {
                         automationEnabled: context.automationSettings.enabled
                     )
                 }
-                
+
                 // Pending Approvals
                 if !viewStore.pendingApprovals.isEmpty {
                     PendingApprovalsSection(
@@ -27,7 +27,7 @@ struct WorkflowPromptsView: View {
                         }
                     )
                 }
-                
+
                 // Suggested Prompts
                 if !viewStore.suggestedPrompts.isEmpty {
                     SuggestedPromptsSection(
@@ -37,7 +37,7 @@ struct WorkflowPromptsView: View {
                         }
                     )
                 }
-                
+
                 // Automation Controls
                 AutomationControlsSection(
                     settings: viewStore.automationSettings,
@@ -59,29 +59,30 @@ struct WorkflowPromptsView: View {
 }
 
 // MARK: - Workflow State Header
+
 struct WorkflowStateHeader: View {
     let currentState: WorkflowState
     let automationEnabled: Bool
-    
+
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Workflow Status")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                
+
                 Text(currentState.displayName)
                     .font(.headline)
                     .foregroundColor(.white)
             }
-            
+
             Spacer()
-            
+
             HStack(spacing: 4) {
                 Circle()
                     .fill(automationEnabled ? Color.green : Color.orange)
                     .frame(width: 8, height: 8)
-                
+
                 Text(automationEnabled ? "Automated" : "Manual")
                     .font(.caption)
                     .foregroundColor(automationEnabled ? .green : .orange)
@@ -97,18 +98,19 @@ struct WorkflowStateHeader: View {
 }
 
 // MARK: - Pending Approvals Section
+
 struct PendingApprovalsSection: View {
     let approvals: [WorkflowStep]
     let onApprove: (WorkflowStep.ID) -> Void
     let onReject: (WorkflowStep.ID) -> Void
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
             Text("Pending Approvals")
                 .font(.subheadline)
                 .fontWeight(.semibold)
                 .foregroundColor(.white)
-            
+
             ForEach(approvals) { step in
                 ApprovalCard(
                     step: step,
@@ -121,24 +123,25 @@ struct PendingApprovalsSection: View {
 }
 
 // MARK: - Approval Card
+
 struct ApprovalCard: View {
     let step: WorkflowStep
     let onApprove: () -> Void
     let onReject: () -> Void
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
             Text(step.action)
                 .font(.subheadline)
                 .foregroundColor(.white)
-            
+
             if let prompt = step.llmPrompt {
                 Text(prompt)
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .lineLimit(2)
             }
-            
+
             HStack {
                 Button(action: onReject) {
                     Label("Reject", systemImage: "xmark.circle")
@@ -146,9 +149,9 @@ struct ApprovalCard: View {
                         .foregroundColor(.red)
                 }
                 .buttonStyle(BorderlessButtonStyle())
-                
+
                 Spacer()
-                
+
                 Button(action: onApprove) {
                     Label("Approve", systemImage: "checkmark.circle")
                         .font(.caption)
@@ -170,17 +173,18 @@ struct ApprovalCard: View {
 }
 
 // MARK: - Suggested Prompts Section
+
 struct SuggestedPromptsSection: View {
     let prompts: [SuggestedPrompt]
     let onSelectPrompt: (SuggestedPrompt) -> Void
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
             Text("Suggested Next Steps")
                 .font(.subheadline)
                 .fontWeight(.semibold)
                 .foregroundColor(.white)
-            
+
             ForEach(prompts.sorted(by: { $0.priority.rawValue > $1.priority.rawValue })) { prompt in
                 PromptCard(
                     prompt: prompt,
@@ -192,29 +196,30 @@ struct SuggestedPromptsSection: View {
 }
 
 // MARK: - Prompt Card
+
 struct PromptCard: View {
     let prompt: SuggestedPrompt
     let onSelect: () -> Void
-    
+
     var priorityColor: Color {
         switch prompt.priority {
-        case .critical: return .red
-        case .high: return .orange
-        case .medium: return .blue
-        case .low: return .gray
+        case .critical: .red
+        case .high: .orange
+        case .medium: .blue
+        case .low: .gray
         }
     }
-    
+
     var categoryIcon: String {
         switch prompt.category {
-        case .dataCollection: return "doc.text"
-        case .clarification: return "questionmark.circle"
-        case .documentSelection: return "doc.badge.plus"
-        case .approval: return "checkmark.shield"
-        case .nextStep: return "arrow.right.circle"
+        case .dataCollection: "doc.text"
+        case .clarification: "questionmark.circle"
+        case .documentSelection: "doc.badge.plus"
+        case .approval: "checkmark.shield"
+        case .nextStep: "arrow.right.circle"
         }
     }
-    
+
     var body: some View {
         Button(action: onSelect) {
             HStack(spacing: Theme.Spacing.md) {
@@ -222,14 +227,14 @@ struct PromptCard: View {
                     .font(.body)
                     .foregroundColor(priorityColor)
                     .frame(width: 24)
-                
+
                 Text(prompt.prompt)
                     .font(.subheadline)
                     .foregroundColor(.white)
                     .multilineTextAlignment(.leading)
-                
+
                 Spacer()
-                
+
                 Image(systemName: "chevron.right")
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -245,11 +250,12 @@ struct PromptCard: View {
 }
 
 // MARK: - Automation Controls Section
+
 struct AutomationControlsSection: View {
     let settings: AutomationSettings
     let onToggleAutomation: (Bool) -> Void
     let onShowSettings: () -> Void
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
             HStack {
@@ -257,9 +263,9 @@ struct AutomationControlsSection: View {
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundColor(.white)
-                
+
                 Spacer()
-                
+
                 Toggle("", isOn: .init(
                     get: { settings.enabled },
                     set: onToggleAutomation
@@ -267,7 +273,7 @@ struct AutomationControlsSection: View {
                 .labelsHidden()
                 .tint(Color(red: 0.6, green: 0.4, blue: 1.0))
             }
-            
+
             if settings.enabled {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack(spacing: 4) {
@@ -277,7 +283,7 @@ struct AutomationControlsSection: View {
                             .font(.caption)
                     }
                     .foregroundColor(.secondary)
-                    
+
                     HStack(spacing: 4) {
                         Image(systemName: settings.autoSuggestNextSteps ? "checkmark.square" : "square")
                             .font(.caption2)
@@ -286,7 +292,7 @@ struct AutomationControlsSection: View {
                     }
                     .foregroundColor(.secondary)
                 }
-                
+
                 Button(action: onShowSettings) {
                     Text("Configure Automation")
                         .font(.caption)
@@ -299,10 +305,11 @@ struct AutomationControlsSection: View {
 }
 
 // MARK: - Automation Settings Sheet
+
 struct AutomationSettingsSheet: View {
     @Binding var settings: AutomationSettings
     let onDismiss: () -> Void
-    
+
     var body: some View {
         SwiftUI.NavigationView {
             Form {
@@ -311,7 +318,7 @@ struct AutomationSettingsSheet: View {
                     Toggle("Data Collection", isOn: $settings.requireApprovalForDataCollection)
                     Toggle("Workflow Transitions", isOn: $settings.requireApprovalForWorkflowTransitions)
                 }
-                
+
                 Section("Automation Features") {
                     Toggle("Auto-suggest Next Steps", isOn: $settings.autoSuggestNextSteps)
                     Toggle("Auto-fill from Profile", isOn: $settings.autoFillFromProfile)
@@ -320,19 +327,19 @@ struct AutomationSettingsSheet: View {
             }
             .navigationTitle("Automation Settings")
             #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
+                .navigationBarTitleDisplayMode(.inline)
             #endif
-            .toolbar {
-                #if os(iOS)
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done", action: onDismiss)
+                .toolbar {
+                    #if os(iOS)
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Done", action: onDismiss)
+                        }
+                    #else
+                        ToolbarItem(placement: .automatic) {
+                            Button("Done", action: onDismiss)
+                        }
+                    #endif
                 }
-                #else
-                ToolbarItem(placement: .automatic) {
-                    Button("Done", action: onDismiss)
-                }
-                #endif
-            }
         }
     }
 }

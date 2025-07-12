@@ -1,106 +1,107 @@
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 #if os(iOS)
-import UIKit
-import UniformTypeIdentifiers
-import VisionKit
+    import UIKit
+    import UniformTypeIdentifiers
+    import VisionKit
 #elseif os(macOS)
-import AppKit
+    import AppKit
 #endif
 
 // App Icon View Component
 struct AppIconView: View {
     var body: some View {
         #if os(iOS)
-        if let data = try? Data(contentsOf: URL(fileURLWithPath: "/Users/J/Documents/GitHub/AIKO-IOS/Sources/Resources/AppIcon.png")),
-           let uiImage = UIImage(data: data) {
-            Image(uiImage: uiImage)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .clipShape(RoundedRectangle(cornerRadius: 11))
-                .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
-        } else {
-            // Show the actual design if PNG not found
-            ZStack {
-                RoundedRectangle(cornerRadius: 11)
-                    .fill(
-                        LinearGradient(
-                            gradient: Gradient(colors: [
-                                Color(red: 1.0, green: 0.5, blue: 0.2),
-                                Color(red: 0.2, green: 0.4, blue: 0.8)
-                            ]),
-                            startPoint: .bottomLeading,
-                            endPoint: .topTrailing
-                        )
-                    )
-                
-                // Scroll and quill design
+            if let data = try? Data(contentsOf: URL(fileURLWithPath: "/Users/J/Documents/GitHub/AIKO-IOS/Sources/Resources/AppIcon.png")),
+               let uiImage = UIImage(data: data)
+            {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .clipShape(RoundedRectangle(cornerRadius: 11))
+                    .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+            } else {
+                // Show the actual design if PNG not found
                 ZStack {
-                    Image(systemName: "scroll")
-                        .font(.system(size: 20, weight: .medium))
-                        .foregroundColor(.cyan)
-                    
-                    Image(systemName: "pencil")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.cyan)
-                        .rotationEffect(.degrees(-45))
-                        .offset(x: 8, y: -8)
+                    RoundedRectangle(cornerRadius: 11)
+                        .fill(
+                            LinearGradient(
+                                gradient: Gradient(colors: [
+                                    Color(red: 1.0, green: 0.5, blue: 0.2),
+                                    Color(red: 0.2, green: 0.4, blue: 0.8),
+                                ]),
+                                startPoint: .bottomLeading,
+                                endPoint: .topTrailing
+                            )
+                        )
+
+                    // Scroll and quill design
+                    ZStack {
+                        Image(systemName: "scroll")
+                            .font(.system(size: 20, weight: .medium))
+                            .foregroundColor(.cyan)
+
+                        Image(systemName: "pencil")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.cyan)
+                            .rotationEffect(.degrees(-45))
+                            .offset(x: 8, y: -8)
+                    }
                 }
+                .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
             }
-            .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
-        }
         #else
-        // macOS version
-        RoundedRectangle(cornerRadius: 11)
-            .fill(Color.blue)
-            .overlay(
-                Image(systemName: "scroll")
-                    .font(.system(size: 20))
-                    .foregroundColor(.white)
-            )
-            .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+            // macOS version
+            RoundedRectangle(cornerRadius: 11)
+                .fill(Color.blue)
+                .overlay(
+                    Image(systemName: "scroll")
+                        .font(.system(size: 20))
+                        .foregroundColor(.white)
+                )
+                .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
         #endif
     }
 }
 
 public struct AppView: View {
     let store: StoreOf<AppFeature>
-    
+
     public init(store: StoreOf<AppFeature>) {
         self.store = store
     }
-    
+
     public var body: some View {
         #if os(iOS)
-        if #available(iOS 16.0, *) {
-            NavigationStack {
-                contentView
+            if #available(iOS 16.0, *) {
+                NavigationStack {
+                    contentView
                     #if os(iOS)
                     .navigationBarHidden(true)
                     #endif
+                }
+                .preferredColorScheme(.dark)
+                .tint(.white)
+            } else {
+                SwiftUI.NavigationView {
+                    contentView
+                    #if os(iOS)
+                    .navigationBarHidden(true)
+                    #endif
+                }
+                #if os(iOS)
+                .navigationViewStyle(StackNavigationViewStyle())
+                #endif
+                .preferredColorScheme(.dark)
             }
-            .preferredColorScheme(.dark)
-            .tint(.white)
-        } else {
+        #else
             SwiftUI.NavigationView {
                 contentView
-                    #if os(iOS)
-                    .navigationBarHidden(true)
-                    #endif
             }
-            #if os(iOS)
-            .navigationViewStyle(StackNavigationViewStyle())
-            #endif
             .preferredColorScheme(.dark)
-        }
-        #else
-        SwiftUI.NavigationView {
-            contentView
-        }
-        .preferredColorScheme(.dark)
         #endif
     }
-    
+
     @ViewBuilder
     private var contentView: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
@@ -119,7 +120,7 @@ public struct AppView: View {
             store: store.scope(state: \.$errorAlert, action: \.errorAlert)
         )
     }
-    
+
     private var onboardingView: some View {
         OnboardingView(
             store: store.scope(
@@ -129,7 +130,7 @@ public struct AppView: View {
         )
         .transition(.opacity)
     }
-    
+
     private func authenticationView(viewStore: ViewStore<AppFeature.State, AppFeature.Action>) -> some View {
         FaceIDAuthenticationView(
             isAuthenticating: viewStore.isAuthenticating,
@@ -138,14 +139,14 @@ public struct AppView: View {
         )
         .transition(.opacity)
     }
-    
+
     @ViewBuilder
     private func mainContentView(viewStore: ViewStore<AppFeature.State, AppFeature.Action>) -> some View {
         ZStack(alignment: .trailing) {
             // Background that extends to safe area
             Color.black
                 .ignoresSafeArea()
-            
+
             VStack(spacing: 0) {
                 // Header
                 HeaderView(
@@ -166,7 +167,7 @@ public struct AppView: View {
                         viewStore.send(.executeAllDocuments)
                     }
                 )
-                
+
                 // Main Content
                 DocumentGenerationView(
                     store: store.scope(
@@ -181,146 +182,146 @@ public struct AppView: View {
             .modifier(NavigationBarHiddenModifier())
             .preferredColorScheme(.dark)
             .ignoresSafeArea(.keyboard) // Allow keyboard to overlay content
-                    
-                    // Menu overlay
-                    if viewStore.showingMenu {
-                        MenuView(
-                            store: store,
-                            isShowing: .init(
-                                get: { viewStore.showingMenu },
-                                set: { viewStore.send(.toggleMenu($0)) }
-                            ),
-                            selectedMenuItem: .init(
-                                get: { viewStore.selectedMenuItem },
-                                set: { viewStore.send(.selectMenuItem($0)) }
-                            )
-                        )
-                        .transition(.move(edge: .trailing))
-                        .zIndex(1)
-                        .allowsHitTesting(true) // Ensure menu is interactive
-                    }
-                }
-            .onAppear {
-                viewStore.send(.onAppear)
+
+            // Menu overlay
+            if viewStore.showingMenu {
+                MenuView(
+                    store: store,
+                    isShowing: .init(
+                        get: { viewStore.showingMenu },
+                        set: { viewStore.send(.toggleMenu($0)) }
+                    ),
+                    selectedMenuItem: .init(
+                        get: { viewStore.selectedMenuItem },
+                        set: { viewStore.send(.selectMenuItem($0)) }
+                    )
+                )
+                .transition(.move(edge: .trailing))
+                .zIndex(1)
+                .allowsHitTesting(true) // Ensure menu is interactive
             }
-            .sheet(isPresented: .init(
-                    get: { viewStore.showingProfile },
-                    set: { viewStore.send(.showProfile($0)) }
-                )) {
-                    SwiftUI.NavigationView {
-                        ProfileView(
-                            store: store.scope(
-                                state: \.profile,
-                                action: \.profile
-                            )
-                        )
-                    }
-                    .aikoSheet()
-                }
-                .sheet(isPresented: .init(
-                    get: { viewStore.showingAcquisitions },
-                    set: { viewStore.send(.showAcquisitions($0)) }
-                )) {
-                    SwiftUI.NavigationView {
-                        AcquisitionsListView(
-                            store: store.scope(
-                                state: \.acquisitionsList,
-                                action: \.acquisitionsList
-                            )
-                        )
-                    }
-                    .aikoSheet()
-                }
-                .sheet(isPresented: .init(
-                    get: { viewStore.showingUserGuide },
-                    set: { viewStore.send(.showUserGuide($0)) }
-                )) {
-                    SwiftUI.NavigationView {
-                        UserGuideView()
-                    }
-                    .aikoSheet()
-                }
-                .sheet(isPresented: .init(
-                    get: { viewStore.showingSearchTemplates },
-                    set: { viewStore.send(.showSearchTemplates($0)) }
-                )) {
-                    SearchDocumentTemplatesView()
-                        .aikoSheet()
-                }
-                .sheet(isPresented: .init(
-                    get: { viewStore.showingSettings },
-                    set: { viewStore.send(.showSettings($0)) }
-                )) {
-                    SettingsView(
-                        store: store.scope(
-                            state: \.settings,
-                            action: \.settings
-                        )
-                    )
-                    .aikoSheet()
-                }
-                .sheet(isPresented: .init(
-                    get: { viewStore.showingDownloadOptions },
-                    set: { _ in viewStore.send(.hideDownloadOptions) }
-                )) {
-                    if let acquisition = viewStore.downloadTargetAcquisition {
-                        DownloadOptionsSheet(
-                            acquisition: acquisition,
-                            onDismiss: { viewStore.send(.hideDownloadOptions) }
-                        )
-                    }
-                }
-                .sheet(isPresented: .init(
-                    get: { viewStore.showingAcquisitionChat },
-                    set: { viewStore.send(.showAcquisitionChat($0)) }
-                )) {
-                    AcquisitionChatView(
-                        store: store.scope(
-                            state: \.acquisitionChat,
-                            action: \.acquisitionChat
-                        )
-                    )
-                    .aikoSheet()
-                    .interactiveDismissDisabled()
-                }
-                .sheet(isPresented: .init(
-                    get: { viewStore.showingSAMGovLookup },
-                    set: { viewStore.send(.showSAMGovLookup($0)) }
-                )) {
-                    SAMGovLookupView()
-                        .presentationDetents([.large])
-                        .presentationDragIndicator(.visible)
-                        .aikoSheet()
-                }
-                .sheet(isPresented: .init(
-                    get: { viewStore.showingDocumentSelection },
-                    set: { _ in viewStore.send(.hideDocumentSelection) }
-                )) {
-                    DocumentSelectionSheet(
-                        acquisitionId: viewStore.shareTargetAcquisitionId,
-                        selectedDocuments: viewStore.selectedDocumentsForShare,
-                        onToggleDocument: { docId in
-                            viewStore.send(.toggleDocumentForShare(docId))
-                        },
-                        onConfirm: {
-                            viewStore.send(.confirmShareSelection)
-                        },
-                        onCancel: {
-                            viewStore.send(.hideDocumentSelection)
-                        }
-                    )
-                    .aikoSheet()
-                }
-                #if os(iOS)
-                .sheet(isPresented: .init(
-                    get: { viewStore.showingShareSheet },
-                    set: { _ in viewStore.send(.dismissShareSheet) }
-                )) {
-                    ShareSheetView(items: viewStore.shareItems)
-                }
-                #endif
         }
+        .onAppear {
+            viewStore.send(.onAppear)
+        }
+        .sheet(isPresented: .init(
+            get: { viewStore.showingProfile },
+            set: { viewStore.send(.showProfile($0)) }
+        )) {
+            SwiftUI.NavigationView {
+                ProfileView(
+                    store: store.scope(
+                        state: \.profile,
+                        action: \.profile
+                    )
+                )
+            }
+            .aikoSheet()
+        }
+        .sheet(isPresented: .init(
+            get: { viewStore.showingAcquisitions },
+            set: { viewStore.send(.showAcquisitions($0)) }
+        )) {
+            SwiftUI.NavigationView {
+                AcquisitionsListView(
+                    store: store.scope(
+                        state: \.acquisitionsList,
+                        action: \.acquisitionsList
+                    )
+                )
+            }
+            .aikoSheet()
+        }
+        .sheet(isPresented: .init(
+            get: { viewStore.showingUserGuide },
+            set: { viewStore.send(.showUserGuide($0)) }
+        )) {
+            SwiftUI.NavigationView {
+                UserGuideView()
+            }
+            .aikoSheet()
+        }
+        .sheet(isPresented: .init(
+            get: { viewStore.showingSearchTemplates },
+            set: { viewStore.send(.showSearchTemplates($0)) }
+        )) {
+            SearchDocumentTemplatesView()
+                .aikoSheet()
+        }
+        .sheet(isPresented: .init(
+            get: { viewStore.showingSettings },
+            set: { viewStore.send(.showSettings($0)) }
+        )) {
+            SettingsView(
+                store: store.scope(
+                    state: \.settings,
+                    action: \.settings
+                )
+            )
+            .aikoSheet()
+        }
+        .sheet(isPresented: .init(
+            get: { viewStore.showingDownloadOptions },
+            set: { _ in viewStore.send(.hideDownloadOptions) }
+        )) {
+            if let acquisition = viewStore.downloadTargetAcquisition {
+                DownloadOptionsSheet(
+                    acquisition: acquisition,
+                    onDismiss: { viewStore.send(.hideDownloadOptions) }
+                )
+            }
+        }
+        .sheet(isPresented: .init(
+            get: { viewStore.showingAcquisitionChat },
+            set: { viewStore.send(.showAcquisitionChat($0)) }
+        )) {
+            AcquisitionChatView(
+                store: store.scope(
+                    state: \.acquisitionChat,
+                    action: \.acquisitionChat
+                )
+            )
+            .aikoSheet()
+            .interactiveDismissDisabled()
+        }
+        .sheet(isPresented: .init(
+            get: { viewStore.showingSAMGovLookup },
+            set: { viewStore.send(.showSAMGovLookup($0)) }
+        )) {
+            SAMGovLookupView()
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+                .aikoSheet()
+        }
+        .sheet(isPresented: .init(
+            get: { viewStore.showingDocumentSelection },
+            set: { _ in viewStore.send(.hideDocumentSelection) }
+        )) {
+            DocumentSelectionSheet(
+                acquisitionId: viewStore.shareTargetAcquisitionId,
+                selectedDocuments: viewStore.selectedDocumentsForShare,
+                onToggleDocument: { docId in
+                    viewStore.send(.toggleDocumentForShare(docId))
+                },
+                onConfirm: {
+                    viewStore.send(.confirmShareSelection)
+                },
+                onCancel: {
+                    viewStore.send(.hideDocumentSelection)
+                }
+            )
+            .aikoSheet()
+        }
+        #if os(iOS)
+        .sheet(isPresented: .init(
+            get: { viewStore.showingShareSheet },
+            set: { _ in viewStore.send(.dismissShareSheet) }
+        )) {
+            ShareSheetView(items: viewStore.shareItems)
+        }
+        #endif
     }
+}
 
 struct HeaderView: View {
     @Binding var showMenu: Bool
@@ -330,38 +331,38 @@ struct HeaderView: View {
     let onNewAcquisition: () -> Void
     let onSAMGovLookup: () -> Void
     let onExecuteAll: () -> Void
-    
+
     private func loadSAMIcon() -> Image? {
         // For Swift Package, load from module bundle
         guard let url = Bundle.module.url(forResource: "SAMIcon", withExtension: "png") else {
             return nil
         }
-        
+
         guard let data = try? Data(contentsOf: url) else {
             return nil
         }
-        
+
         #if os(iOS)
-        if let uiImage = UIImage(data: data) {
-            return Image(uiImage: uiImage)
-        }
+            if let uiImage = UIImage(data: data) {
+                return Image(uiImage: uiImage)
+            }
         #elseif os(macOS)
-        if let nsImage = NSImage(data: data) {
-            return Image(nsImage: nsImage)
-        }
+            if let nsImage = NSImage(data: data) {
+                return Image(nsImage: nsImage)
+            }
         #endif
-        
+
         return nil
     }
-    
+
     var body: some View {
         HStack(spacing: Theme.Spacing.lg) {
             // App Icon on the left - same as AppIconPreview
             AppIconView()
                 .frame(width: 50, height: 50)
-            
+
             Spacer()
-            
+
             // Icon buttons evenly spaced
             HStack(spacing: Theme.Spacing.lg) {
                 // SAM.gov lookup button (moved to left)
@@ -389,7 +390,7 @@ struct HeaderView: View {
                             )
                     }
                 }
-                
+
                 // Execute all button
                 Button(action: onExecuteAll) {
                     Image(systemName: hasSelectedDocuments ? "play.fill" : "play")
@@ -403,7 +404,7 @@ struct HeaderView: View {
                         )
                 }
                 .disabled(!hasSelectedDocuments)
-                
+
                 // New acquisition button
                 Button(action: onNewAcquisition) {
                     Image(systemName: "plus")
@@ -416,7 +417,7 @@ struct HeaderView: View {
                                 .stroke(Theme.Colors.aikoPrimary, lineWidth: 2)
                         )
                 }
-                
+
                 // Menu button
                 Button(action: { showMenu.toggle() }) {
                     Image(systemName: "line.horizontal.3")
@@ -442,14 +443,14 @@ public struct DocumentGenerationView: View {
     let isChatMode: Bool
     let loadedAcquisition: Acquisition?
     let loadedAcquisitionDisplayName: String?
-    
+
     public init(store: StoreOf<DocumentGenerationFeature>, isChatMode: Bool = false, loadedAcquisition: Acquisition? = nil, loadedAcquisitionDisplayName: String? = nil) {
         self.store = store
         self.isChatMode = isChatMode
         self.loadedAcquisition = loadedAcquisition
         self.loadedAcquisitionDisplayName = loadedAcquisitionDisplayName
     }
-    
+
     public var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             VStack(spacing: 0) {
@@ -457,13 +458,13 @@ public struct DocumentGenerationView: View {
                 ScrollView(.vertical, showsIndicators: true) {
                     VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
                         // Chat History (if in chat mode with acquisition)
-                        if isChatMode && loadedAcquisition != nil && !viewStore.analysis.conversationHistory.isEmpty {
+                        if isChatMode, loadedAcquisition != nil, !viewStore.analysis.conversationHistory.isEmpty {
                             ChatHistoryView(
                                 messages: viewStore.analysis.conversationHistory,
                                 isLoading: viewStore.analysis.isAnalyzingRequirements
                             )
                         }
-                        
+
                         // Workflow Prompts Section (if workflow is active)
                         if viewStore.analysis.workflowContext != nil {
                             WorkflowPromptsView(
@@ -473,7 +474,7 @@ public struct DocumentGenerationView: View {
                                 )
                             )
                         }
-                        
+
                         // Document Chain View (if chain exists)
                         if viewStore.analysis.documentChain != nil {
                             DocumentChainView(
@@ -485,7 +486,7 @@ public struct DocumentGenerationView: View {
                                 }
                             )
                         }
-                        
+
                         // Document Types Section
                         DocumentTypesSection(
                             documentTypes: DocumentType.allCases,
@@ -504,7 +505,7 @@ public struct DocumentGenerationView: View {
                                 viewStore.send(.executeCategory(category))
                             }
                         )
-                        
+
                         Spacer(minLength: 100)
                     }
                     .padding(Theme.Spacing.lg)
@@ -512,7 +513,7 @@ public struct DocumentGenerationView: View {
                 .background(Theme.Colors.aikoBackground)
                 .scrollContentBackground(.hidden) // iOS 16+
                 .scrollDismissesKeyboard(.interactively) // iOS 16+
-                
+
                 // Input Area
                 InputArea(
                     requirements: viewStore.requirements,
@@ -617,13 +618,13 @@ struct DocumentTypesSection: View {
     let onTypeToggled: (DocumentType) -> Void
     let onDFTypeToggled: (DFDocumentType) -> Void
     let onExecuteCategory: (DocumentCategory) -> Void
-    
+
     @State private var expandedCategories: Set<DocumentCategory> = []
-    
+
     func filteredDocumentTypes(for category: DocumentCategory) -> [DocumentType] {
-        return category.documentTypes
+        category.documentTypes
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
             // Acquisition name if loaded - centered
@@ -639,14 +640,14 @@ struct DocumentTypesSection: View {
                     Spacer()
                 }
             }
-            
+
             // Header with search
             HStack(spacing: Theme.Spacing.sm) {
                 Label("Document Types", systemImage: "folder")
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(Theme.Colors.aikoPrimary)
-                
+
                 // Status indicator - moved after Document Types
                 Circle()
                     .fill(hasAcquisition ? Color.green : Color.red)
@@ -656,7 +657,7 @@ struct DocumentTypesSection: View {
                             .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                     )
             }
-            
+
             // Category folders
             VStack(spacing: Theme.Spacing.md) {
                 ForEach(DocumentCategory.allCases, id: \.self) { category in
@@ -701,19 +702,19 @@ struct DocumentCategoryFolder: View {
     let onTypeToggled: (DocumentType) -> Void
     let onDFTypeToggled: (DFDocumentType) -> Void
     let onExecute: () -> Void
-    
+
     var selectedCount: Int {
         if category == .determinationFindings {
-            return selectedDFTypes.count
+            selectedDFTypes.count
         } else {
-            return documentTypes.filter { selectedTypes.contains($0) }.count
+            documentTypes.filter { selectedTypes.contains($0) }.count
         }
     }
-    
+
     var readyCount: Int {
         documentTypes.filter { documentStatus[$0] == .ready }.count
     }
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // Folder header
@@ -724,16 +725,16 @@ struct DocumentCategoryFolder: View {
                         .font(.title2)
                         .foregroundColor(Theme.Colors.aikoPrimary)
                         .frame(width: 32, height: 32)
-                    
+
                     // Category info
                     VStack(alignment: .leading, spacing: 4) {
                         HStack {
                             Text(category.rawValue)
                                 .font(.headline)
                                 .foregroundColor(.white)
-                            
+
                             Spacer()
-                            
+
                             // Status badges
                             if selectedCount > 0 {
                                 Text("\(selectedCount) selected")
@@ -744,7 +745,7 @@ struct DocumentCategoryFolder: View {
                                     .background(Theme.Colors.aikoPrimary)
                                     .cornerRadius(8)
                             }
-                            
+
                             if readyCount > 0 {
                                 Text("\(readyCount) ready")
                                     .font(.caption2)
@@ -754,7 +755,7 @@ struct DocumentCategoryFolder: View {
                                     .background(Color.green)
                                     .cornerRadius(8)
                             }
-                            
+
                             // Execute button (only show if documents are selected)
                             if selectedCount > 0 {
                                 Button(action: onExecute) {
@@ -764,19 +765,19 @@ struct DocumentCategoryFolder: View {
                                 }
                                 .buttonStyle(.plain)
                             }
-                            
+
                             // Expand/collapse arrow
                             Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                                 .rotationEffect(.degrees(isExpanded ? 0 : 0))
                         }
-                        
+
                         Text(category.description)
                             .font(.caption)
                             .foregroundColor(.white.opacity(0.8))
                             .lineLimit(1)
-                        
+
                         // Document count
                         if category == .determinationFindings {
                             Text("\(DFDocumentType.allCases.count) document types")
@@ -800,7 +801,7 @@ struct DocumentCategoryFolder: View {
                 )
             }
             .buttonStyle(.plain)
-            
+
             // Expanded content
             if isExpanded {
                 if category == .determinationFindings {
@@ -844,14 +845,14 @@ struct DocumentCategoryFolder: View {
 struct ChatHistoryView: View {
     let messages: [String]
     let isLoading: Bool
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
             Text("Chat History")
                 .font(.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(.white)
-            
+
             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                 ForEach(Array(messages.enumerated()), id: \.offset) { index, message in
                     ChatMessageBubble(
@@ -860,8 +861,8 @@ struct ChatHistoryView: View {
                         isLoading: isLoading && index == messages.count - 1
                     )
                 }
-                
-                if isLoading && !messages.isEmpty && !messages.last!.hasPrefix("User:") {
+
+                if isLoading, !messages.isEmpty, !messages.last!.hasPrefix("User:") {
                     HStack(spacing: Theme.Spacing.sm) {
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .blue))
@@ -887,22 +888,22 @@ struct ChatMessageBubble: View {
     let message: String
     let isUser: Bool
     let isLoading: Bool
-    
+
     var cleanMessage: String {
         if isUser {
-            return message.replacingOccurrences(of: "User: ", with: "")
+            message.replacingOccurrences(of: "User: ", with: "")
         } else {
-            return message.replacingOccurrences(of: "AIKO: ", with: "")
+            message.replacingOccurrences(of: "AIKO: ", with: "")
         }
     }
-    
+
     var body: some View {
         HStack(alignment: .top, spacing: Theme.Spacing.sm) {
             VStack(alignment: isUser ? .trailing : .leading, spacing: 4) {
                 Text(isUser ? "You" : "AIKO")
                     .font(.caption2)
                     .foregroundColor(.secondary)
-                
+
                 DocumentRichTextView(content: cleanMessage)
                     .padding(.horizontal, Theme.Spacing.md)
                     .padding(.vertical, Theme.Spacing.sm)
@@ -913,7 +914,7 @@ struct ChatMessageBubble: View {
                     .frame(maxWidth: .infinity, alignment: isUser ? .trailing : .leading)
             }
             .frame(maxWidth: .infinity, alignment: isUser ? .trailing : .leading)
-            
+
             if isUser {
                 Image(systemName: "person.circle.fill")
                     .font(.caption)
@@ -926,44 +927,44 @@ struct ChatMessageBubble: View {
 
 struct QuickActionsSection: View {
     let onQuickAction: (QuickAction) -> Void
-    
+
     enum QuickAction: String, CaseIterable {
         case startNewProject = "Start New Project"
         case fullPackage = "Generate Full Package"
         case quickAnalysis = "Quick Analysis"
-        
+
         var icon: String {
             switch self {
-            case .startNewProject: return "plus.circle.fill"
-            case .fullPackage: return "doc.on.doc.fill"
-            case .quickAnalysis: return "bolt.fill"
+            case .startNewProject: "plus.circle.fill"
+            case .fullPackage: "doc.on.doc.fill"
+            case .quickAnalysis: "bolt.fill"
             }
         }
-        
+
         var description: String {
             switch self {
-            case .startNewProject: return "Begin with requirements gathering"
-            case .fullPackage: return "Generate all recommended documents"
-            case .quickAnalysis: return "Quick market & competition check"
+            case .startNewProject: "Begin with requirements gathering"
+            case .fullPackage: "Generate all recommended documents"
+            case .quickAnalysis: "Quick market & competition check"
             }
         }
-        
+
         var color: Color {
             switch self {
-            case .startNewProject: return .blue
-            case .fullPackage: return .green
-            case .quickAnalysis: return .orange
+            case .startNewProject: .blue
+            case .fullPackage: .green
+            case .quickAnalysis: .orange
             }
         }
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
             Text("Quick Actions")
                 .font(.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(.white)
-            
+
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: Theme.Spacing.md) {
                     ForEach(QuickAction.allCases, id: \.self) { action in
@@ -981,7 +982,7 @@ struct QuickActionsSection: View {
 struct QuickActionCard: View {
     let action: QuickActionsSection.QuickAction
     let onTap: () -> Void
-    
+
     var body: some View {
         Button(action: onTap) {
             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
@@ -991,12 +992,12 @@ struct QuickActionCard: View {
                         .foregroundColor(action.color)
                     Spacer()
                 }
-                
+
                 Text(action.rawValue)
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundColor(.white)
-                
+
                 Text(action.description)
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -1022,7 +1023,7 @@ struct DFDocumentTypeCard: View {
     let isSelected: Bool
     let hasAcquisition: Bool
     let onToggle: () -> Void
-    
+
     var body: some View {
         Button(action: onToggle) {
             HStack(spacing: Theme.Spacing.md) {
@@ -1030,27 +1031,27 @@ struct DFDocumentTypeCard: View {
                 Circle()
                     .fill(hasAcquisition ? Color.green : Color.red)
                     .frame(width: 8, height: 8)
-                
+
                 // Icon
                 Image(systemName: dfDocumentType.icon)
                     .font(.body)
                     .foregroundColor(.blue)
                     .frame(width: 20, height: 20)
-                
+
                 // Document name only
                 Text(dfDocumentType.shortName)
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(.white)
                     .lineLimit(1)
-                
+
                 Spacer()
-                
+
                 // FAR Reference
                 Text(dfDocumentType.farReference)
                     .font(.caption2)
                     .foregroundColor(.secondary)
-                
+
                 // Checkmark
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .foregroundColor(isSelected ? .green : .secondary)
@@ -1082,23 +1083,23 @@ struct DocumentTypeCard: View {
     let isAvailable: Bool
     let status: DocumentStatusFeature.DocumentStatus
     let onToggle: () -> Void
-    
+
     var statusColor: Color {
         switch status {
-        case .notReady: return .red
-        case .needsMoreInfo: return .yellow
-        case .ready: return .green
+        case .notReady: .red
+        case .needsMoreInfo: .yellow
+        case .ready: .green
         }
     }
-    
+
     func statusText(for status: DocumentStatusFeature.DocumentStatus) -> String {
         switch status {
-        case .notReady: return "Not Ready"
-        case .needsMoreInfo: return "Needs Info"
-        case .ready: return "Ready"
+        case .notReady: "Not Ready"
+        case .needsMoreInfo: "Needs Info"
+        case .ready: "Ready"
         }
     }
-    
+
     var body: some View {
         Button(action: onToggle) {
             HStack(spacing: Theme.Spacing.md) {
@@ -1106,27 +1107,27 @@ struct DocumentTypeCard: View {
                 Circle()
                     .fill(statusColor)
                     .frame(width: 8, height: 8)
-                
+
                 // Icon
                 Image(systemName: documentType.icon)
                     .font(.body)
                     .foregroundColor(isAvailable ? .blue : .secondary)
                     .frame(width: 20, height: 20)
-                
+
                 // Document name only
                 Text(documentType.shortName)
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(.white)
                     .lineLimit(1)
-                
+
                 Spacer()
-                
+
                 // FAR Reference
                 Text(documentType.farReference)
                     .font(.caption2)
                     .foregroundColor(.secondary)
-                
+
                 // Checkmark
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .foregroundColor(isSelected ? .green : .secondary)
@@ -1156,25 +1157,25 @@ struct DocumentTypeCard: View {
 struct UploadedDocumentCard: View {
     let document: UploadedDocument
     let onRemove: () -> Void
-    
+
     var body: some View {
         HStack(spacing: Theme.Spacing.sm) {
             Image(systemName: fileIcon(for: document.fileName))
                 .font(.title3)
                 .foregroundColor(.blue)
-            
+
             VStack(alignment: .leading, spacing: 2) {
                 Text(document.fileName)
                     .font(.caption)
                     .fontWeight(.medium)
                     .foregroundColor(.white)
                     .lineLimit(1)
-                
+
                 Text(formattedFileSize(document.data.count))
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }
-            
+
             Button(action: onRemove) {
                 Image(systemName: "xmark.circle.fill")
                     .font(.caption)
@@ -1188,7 +1189,7 @@ struct UploadedDocumentCard: View {
                 .fill(Theme.Colors.aikoSecondary)
         )
     }
-    
+
     func fileIcon(for fileName: String) -> String {
         let ext = (fileName as NSString).pathExtension.lowercased()
         switch ext {
@@ -1198,7 +1199,7 @@ struct UploadedDocumentCard: View {
         default: return "doc.fill"
         }
     }
-    
+
     func formattedFileSize(_ bytes: Int) -> String {
         let formatter = ByteCountFormatter()
         formatter.countStyle = .file
@@ -1220,21 +1221,21 @@ struct InputArea: View {
     let onShowDocumentPicker: () -> Void
     let onShowImagePicker: () -> Void
     let onRemoveDocument: (UploadedDocument.ID) -> Void
-    
+
     @State private var showingUploadOptions = false
     @State private var chatMessages: [ChatMessage] = []
-    
+
     struct ChatMessage: Identifiable {
         let id = UUID()
         let text: String
         let isUser: Bool
-        let timestamp: Date = Date()
+        let timestamp: Date = .init()
     }
-    
+
     var body: some View {
         VStack(spacing: 0) {
             Divider()
-            
+
             VStack(spacing: Theme.Spacing.md) {
                 // Uploaded Documents
                 if !uploadedDocuments.isEmpty {
@@ -1255,23 +1256,22 @@ struct InputArea: View {
                 HStack(spacing: 0) {
                     // Text input field with custom placeholder
                     ZStack(alignment: .leading) {
-                        
                         TextField("", text: .init(
                             get: { requirements },
                             set: onRequirementsChanged
                         ), prompt: Text("...").foregroundColor(.gray), axis: .vertical)
-                        .textFieldStyle(PlainTextFieldStyle())
-                        .foregroundColor(.white)
-                        .padding(.leading, Theme.Spacing.lg)
-                        .padding(.vertical, Theme.Spacing.md)
-                        .padding(.trailing, Theme.Spacing.sm)
-                        .lineLimit(1...4)
+                            .textFieldStyle(PlainTextFieldStyle())
+                            .foregroundColor(.white)
+                            .padding(.leading, Theme.Spacing.lg)
+                            .padding(.vertical, Theme.Spacing.md)
+                            .padding(.trailing, Theme.Spacing.sm)
+                            .lineLimit(1 ... 4)
                     }
-                    
+
                     // Action buttons
                     HStack(spacing: Theme.Spacing.sm) {
                         // Enhance prompt button
-                        Button(action: { 
+                        Button(action: {
                             if !requirements.isEmpty {
                                 onEnhancePrompt()
                             }
@@ -1284,7 +1284,7 @@ struct InputArea: View {
                                 .animation(.easeInOut(duration: 0.2), value: requirements.isEmpty)
                         }
                         .disabled(requirements.isEmpty || isGenerating)
-                        
+
                         // Upload options
                         Button(action: { showingUploadOptions.toggle() }) {
                             Image(systemName: "plus")
@@ -1293,19 +1293,19 @@ struct InputArea: View {
                                 .frame(width: 32, height: 32)
                         }
                         .confirmationDialog("Add Content", isPresented: $showingUploadOptions) {
-                            Button("📄 Upload Documents") {
+                            Button(" Upload Documents") {
                                 onShowDocumentPicker()
                             }
                             #if os(iOS)
-                            Button("📷 Scan Document") {
-                                onShowImagePicker()
-                            }
+                                Button("📷 Scan Document") {
+                                    onShowImagePicker()
+                                }
                             #endif
                             Button("Cancel", role: .cancel) {}
                         }
-                        
+
                         // Voice input
-                        Button(action: { 
+                        Button(action: {
                             if isRecording {
                                 onStopRecording()
                             } else {
@@ -1320,7 +1320,7 @@ struct InputArea: View {
                                 .animation(.easeInOut(duration: 0.2), value: isRecording)
                         }
                         .disabled(isGenerating && !isRecording)
-                        
+
                         // Analyze button
                         Button(action: onAnalyzeRequirements) {
                             if isGenerating {
@@ -1336,7 +1336,7 @@ struct InputArea: View {
                         }
                         .background(
                             Group {
-                                if (!requirements.isEmpty || !uploadedDocuments.isEmpty) && !isGenerating {
+                                if !requirements.isEmpty || !uploadedDocuments.isEmpty, !isGenerating {
                                     Circle()
                                         .fill(Theme.Colors.aikoPrimary)
                                 } else {
@@ -1372,7 +1372,7 @@ struct InputArea: View {
 
 struct DocumentPickerView: View {
     let store: StoreOf<DocumentGenerationFeature>
-    
+
     var body: some View {
         DocumentPicker { documents in
             ViewStore(store, observe: { $0 }).send(.analysis(.uploadDocuments(documents)))
@@ -1382,200 +1382,201 @@ struct DocumentPickerView: View {
 
 struct ImagePickerView: View {
     let store: StoreOf<DocumentGenerationFeature>
-    
+
     var body: some View {
         #if os(iOS)
-        if #available(iOS 16.0, *) {
-            DocumentScanner { scannedDocuments in
-                ViewStore(store, observe: { $0 }).send(.analysis(.uploadDocuments(scannedDocuments)))
+            if #available(iOS 16.0, *) {
+                DocumentScanner { scannedDocuments in
+                    ViewStore(store, observe: { $0 }).send(.analysis(.uploadDocuments(scannedDocuments)))
+                }
+            } else {
+                // Fallback for older iOS versions - single image capture
+                ImagePicker { imageData in
+                    let documents = [(imageData, "Scanned_Document.jpg")]
+                    ViewStore(store, observe: { $0 }).send(.analysis(.uploadDocuments(documents)))
+                }
             }
-        } else {
-            // Fallback for older iOS versions - single image capture
-            ImagePicker { imageData in
-                let documents = [(imageData, "Scanned_Document.jpg")]
-                ViewStore(store, observe: { $0 }).send(.analysis(.uploadDocuments(documents)))
-            }
-        }
         #else
-        Text("Document scanning not available on macOS")
+            Text("Document scanning not available on macOS")
         #endif
     }
 }
 
 #if os(iOS)
-struct DocumentPicker: UIViewControllerRepresentable {
-    let onDocumentsPicked: ([(Data, String)]) -> Void
-    
-    func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
-        let picker = UIDocumentPickerViewController(forOpeningContentTypes: [
-            .pdf,
-            .plainText,
-            .rtf,
-            UTType("com.microsoft.word.doc") ?? .data,
-            UTType("org.openxmlformats.wordprocessingml.document") ?? .data
-        ])
-        picker.delegate = context.coordinator
-        picker.allowsMultipleSelection = true
-        return picker
-    }
-    
-    func updateUIViewController(_ uiViewController: UIDocumentPickerViewController, context: Context) {}
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-    
-    class Coordinator: NSObject, UIDocumentPickerDelegate {
-        let parent: DocumentPicker
-        
-        init(_ parent: DocumentPicker) {
-            self.parent = parent
-        }
-        
-        func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-            var documents: [(Data, String)] = []
-            
-            for url in urls {
-                do {
-                    // Start accessing the security-scoped resource
-                    guard url.startAccessingSecurityScopedResource() else {
-                        print("Failed to access security-scoped resource")
-                        continue
-                    }
-                    
-                    defer {
-                        url.stopAccessingSecurityScopedResource()
-                    }
-                    
-                    let data = try Data(contentsOf: url)
-                    let fileName = url.lastPathComponent
-                    documents.append((data, fileName))
-                } catch {
-                    print("Error reading document \(url.lastPathComponent): \(error)")
-                }
-            }
-            
-            if !documents.isEmpty {
-                DispatchQueue.main.async {
-                    self.parent.onDocumentsPicked(documents)
-                }
-            }
-        }
-    }
-}
+    struct DocumentPicker: UIViewControllerRepresentable {
+        let onDocumentsPicked: ([(Data, String)]) -> Void
 
-@available(iOS 16.0, *)
-struct DocumentScanner: UIViewControllerRepresentable {
-    let onDocumentsScanned: ([(Data, String)]) -> Void
-    
-    func makeUIViewController(context: Context) -> VNDocumentCameraViewController {
-        let scannerViewController = VNDocumentCameraViewController()
-        scannerViewController.delegate = context.coordinator
-        return scannerViewController
-    }
-    
-    func updateUIViewController(_ uiViewController: VNDocumentCameraViewController, context: Context) {}
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-    
-    class Coordinator: NSObject, VNDocumentCameraViewControllerDelegate {
-        let parent: DocumentScanner
-        
-        init(_ parent: DocumentScanner) {
-            self.parent = parent
+        func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
+            let picker = UIDocumentPickerViewController(forOpeningContentTypes: [
+                .pdf,
+                .plainText,
+                .rtf,
+                UTType("com.microsoft.word.doc") ?? .data,
+                UTType("org.openxmlformats.wordprocessingml.document") ?? .data,
+            ])
+            picker.delegate = context.coordinator
+            picker.allowsMultipleSelection = true
+            return picker
         }
-        
-        func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
-            var documents: [(Data, String)] = []
-            
-            for pageIndex in 0..<scan.pageCount {
-                let scannedImage = scan.imageOfPage(at: pageIndex)
-                if let imageData = scannedImage.jpegData(compressionQuality: 0.8) {
-                    let fileName = "Scanned_Document_\(pageIndex + 1).jpg"
-                    documents.append((imageData, fileName))
-                }
-            }
-            
-            if !documents.isEmpty {
-                DispatchQueue.main.async {
-                    self.parent.onDocumentsScanned(documents)
-                }
-            }
-            
-            controller.dismiss(animated: true)
-        }
-        
-        func documentCameraViewControllerDidCancel(_ controller: VNDocumentCameraViewController) {
-            controller.dismiss(animated: true)
-        }
-        
-        func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFailWithError error: Error) {
-            print("Document scanning failed: \(error)")
-            controller.dismiss(animated: true)
-        }
-    }
-}
 
-// Fallback for older iOS versions
-struct ImagePicker: UIViewControllerRepresentable {
-    let onImagePicked: (Data) -> Void
-    
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-        let picker = UIImagePickerController()
-        picker.delegate = context.coordinator
-        picker.sourceType = .camera
-        picker.allowsEditing = false
-        return picker
-    }
-    
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-    
-    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-        let parent: ImagePicker
-        
-        init(_ parent: ImagePicker) {
-            self.parent = parent
+        func updateUIViewController(_: UIDocumentPickerViewController, context _: Context) {}
+
+        func makeCoordinator() -> Coordinator {
+            Coordinator(self)
         }
-        
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            if let image = info[.originalImage] as? UIImage,
-               let imageData = image.jpegData(compressionQuality: 0.8) {
-                DispatchQueue.main.async {
-                    self.parent.onImagePicked(imageData)
+
+        class Coordinator: NSObject, UIDocumentPickerDelegate {
+            let parent: DocumentPicker
+
+            init(_ parent: DocumentPicker) {
+                self.parent = parent
+            }
+
+            func documentPicker(_: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+                var documents: [(Data, String)] = []
+
+                for url in urls {
+                    do {
+                        // Start accessing the security-scoped resource
+                        guard url.startAccessingSecurityScopedResource() else {
+                            print("Failed to access security-scoped resource")
+                            continue
+                        }
+
+                        defer {
+                            url.stopAccessingSecurityScopedResource()
+                        }
+
+                        let data = try Data(contentsOf: url)
+                        let fileName = url.lastPathComponent
+                        documents.append((data, fileName))
+                    } catch {
+                        print("Error reading document \(url.lastPathComponent): \(error)")
+                    }
+                }
+
+                if !documents.isEmpty {
+                    DispatchQueue.main.async {
+                        self.parent.onDocumentsPicked(documents)
+                    }
                 }
             }
-            picker.dismiss(animated: true)
-        }
-        
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            picker.dismiss(animated: true)
         }
     }
-}
+
+    @available(iOS 16.0, *)
+    struct DocumentScanner: UIViewControllerRepresentable {
+        let onDocumentsScanned: ([(Data, String)]) -> Void
+
+        func makeUIViewController(context: Context) -> VNDocumentCameraViewController {
+            let scannerViewController = VNDocumentCameraViewController()
+            scannerViewController.delegate = context.coordinator
+            return scannerViewController
+        }
+
+        func updateUIViewController(_: VNDocumentCameraViewController, context _: Context) {}
+
+        func makeCoordinator() -> Coordinator {
+            Coordinator(self)
+        }
+
+        class Coordinator: NSObject, VNDocumentCameraViewControllerDelegate {
+            let parent: DocumentScanner
+
+            init(_ parent: DocumentScanner) {
+                self.parent = parent
+            }
+
+            func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
+                var documents: [(Data, String)] = []
+
+                for pageIndex in 0 ..< scan.pageCount {
+                    let scannedImage = scan.imageOfPage(at: pageIndex)
+                    if let imageData = scannedImage.jpegData(compressionQuality: 0.8) {
+                        let fileName = "Scanned_Document_\(pageIndex + 1).jpg"
+                        documents.append((imageData, fileName))
+                    }
+                }
+
+                if !documents.isEmpty {
+                    DispatchQueue.main.async {
+                        self.parent.onDocumentsScanned(documents)
+                    }
+                }
+
+                controller.dismiss(animated: true)
+            }
+
+            func documentCameraViewControllerDidCancel(_ controller: VNDocumentCameraViewController) {
+                controller.dismiss(animated: true)
+            }
+
+            func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFailWithError error: Error) {
+                print("Document scanning failed: \(error)")
+                controller.dismiss(animated: true)
+            }
+        }
+    }
+
+    // Fallback for older iOS versions
+    struct ImagePicker: UIViewControllerRepresentable {
+        let onImagePicked: (Data) -> Void
+
+        func makeUIViewController(context: Context) -> UIImagePickerController {
+            let picker = UIImagePickerController()
+            picker.delegate = context.coordinator
+            picker.sourceType = .camera
+            picker.allowsEditing = false
+            return picker
+        }
+
+        func updateUIViewController(_: UIImagePickerController, context _: Context) {}
+
+        func makeCoordinator() -> Coordinator {
+            Coordinator(self)
+        }
+
+        class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+            let parent: ImagePicker
+
+            init(_ parent: ImagePicker) {
+                self.parent = parent
+            }
+
+            func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+                if let image = info[.originalImage] as? UIImage,
+                   let imageData = image.jpegData(compressionQuality: 0.8)
+                {
+                    DispatchQueue.main.async {
+                        self.parent.onImagePicked(imageData)
+                    }
+                }
+                picker.dismiss(animated: true)
+            }
+
+            func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+                picker.dismiss(animated: true)
+            }
+        }
+    }
 
 #else
-// macOS implementations
-struct DocumentPicker: View {
-    let onDocumentsPicked: ([(Data, String)]) -> Void
-    
-    var body: some View {
-        Text("Document picking not yet implemented for macOS")
-    }
-}
+    // macOS implementations
+    struct DocumentPicker: View {
+        let onDocumentsPicked: ([(Data, String)]) -> Void
 
-struct ImagePicker: View {
-    let onImagePicked: (Data) -> Void
-    
-    var body: some View {
-        Text("Image picking not yet implemented for macOS")
+        var body: some View {
+            Text("Document picking not yet implemented for macOS")
+        }
     }
-}
+
+    struct ImagePicker: View {
+        let onImagePicked: (Data) -> Void
+
+        var body: some View {
+            Text("Image picking not yet implemented for macOS")
+        }
+    }
 #endif
 
 // MARK: - Menu View
@@ -1584,15 +1585,15 @@ struct MenuView: View {
     let store: StoreOf<AppFeature>
     @Binding var isShowing: Bool
     @Binding var selectedMenuItem: AppFeature.MenuItem?
-    
+
     #if os(iOS)
-    @State private var profileImage: UIImage?
-    @State private var showingImagePicker = false
+        @State private var profileImage: UIImage?
+        @State private var showingImagePicker = false
     #else
-    @State private var profileImage: NSImage?
+        @State private var profileImage: NSImage?
     #endif
     @State private var showingImageSourceDialog = false
-    
+
     // Extract profile button into computed property
     @ViewBuilder
     private var profileButton: some View {
@@ -1606,30 +1607,30 @@ struct MenuView: View {
             photoSourceButtons
         }
     }
-    
+
     @ViewBuilder
     private var profileImageView: some View {
         if let image = profileImage {
             #if os(iOS)
-            Image(uiImage: image)
-                .resizable()
-                .scaledToFill()
-                .frame(width: 60, height: 60)
-                .clipShape(Circle())
-                .overlay(
-                    Circle()
-                        .stroke(Theme.Colors.aikoPrimary, lineWidth: 2)
-                )
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 60, height: 60)
+                    .clipShape(Circle())
+                    .overlay(
+                        Circle()
+                            .stroke(Theme.Colors.aikoPrimary, lineWidth: 2)
+                    )
             #else
-            Image(nsImage: image)
-                .resizable()
-                .scaledToFill()
-                .frame(width: 60, height: 60)
-                .clipShape(Circle())
-                .overlay(
-                    Circle()
-                        .stroke(Theme.Colors.aikoPrimary, lineWidth: 2)
-                )
+                Image(nsImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 60, height: 60)
+                    .clipShape(Circle())
+                    .overlay(
+                        Circle()
+                            .stroke(Theme.Colors.aikoPrimary, lineWidth: 2)
+                    )
             #endif
         } else {
             Circle()
@@ -1646,7 +1647,7 @@ struct MenuView: View {
                 )
         }
     }
-    
+
     private var cameraIconOverlay: some View {
         Circle()
             .fill(Theme.Colors.aikoPrimary)
@@ -1658,13 +1659,13 @@ struct MenuView: View {
             )
             .offset(x: 20, y: 20)
     }
-    
+
     @ViewBuilder
     private var photoSourceButtons: some View {
         #if os(iOS)
-        Button("Select Photo") {
-            showingImagePicker = true
-        }
+            Button("Select Photo") {
+                showingImagePicker = true
+            }
         #endif
         if profileImage != nil {
             Button("Remove Photo", role: .destructive) {
@@ -1673,26 +1674,26 @@ struct MenuView: View {
         }
         Button("Cancel", role: .cancel) {}
     }
-    
+
     private var profileSection: some View {
         HStack(spacing: Theme.Spacing.md) {
             profileButton
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text("Welcome")
                     .font(.headline)
                     .foregroundColor(.white)
-                
+
                 Text("AIKO User")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
-            
+
             Spacer()
         }
         .padding(Theme.Spacing.lg)
     }
-    
+
     @ViewBuilder
     private var menuContent: some View {
         GeometryReader { geometry in
@@ -1701,25 +1702,25 @@ struct MenuView: View {
                 Color.black
                     .frame(height: geometry.safeAreaInsets.top)
                     .ignoresSafeArea(edges: .top)
-                
+
                 profileSection
-                
+
                 Divider()
                     .background(Color.gray.opacity(0.3))
-                
+
                 menuItemsList
-                
+
                 Spacer()
-                
+
                 // Footer
                 VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                     Divider()
                         .background(Color.gray.opacity(0.3))
-                    
+
                     Text("AIKO v1.0.0")
                         .font(.caption2)
                         .foregroundColor(.secondary)
-                    
+
                     Text("AI Contract Intelligence Officer")
                         .font(.caption2)
                         .foregroundColor(.secondary)
@@ -1735,7 +1736,7 @@ struct MenuView: View {
                         LinearGradient(
                             gradient: Gradient(colors: [
                                 Color.white.opacity(0.05),
-                                Color.clear
+                                Color.clear,
                             ]),
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
@@ -1746,7 +1747,7 @@ struct MenuView: View {
         }
         .frame(width: 300)
     }
-    
+
     @ViewBuilder
     private var menuItemsList: some View {
         ScrollView {
@@ -1764,12 +1765,12 @@ struct MenuView: View {
             .padding(Theme.Spacing.md)
         }
     }
-    
+
     @ViewBuilder
     private func quickReferencesSection(viewStore: ViewStore<AppFeature.State, AppFeature.Action>, item: AppFeature.MenuItem) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             quickReferencesButton(viewStore: viewStore, item: item)
-            
+
             if viewStore.showingQuickReferences {
                 quickReferencesSubmenu(viewStore: viewStore)
                     .transition(.opacity.combined(with: .move(edge: .top)))
@@ -1777,7 +1778,7 @@ struct MenuView: View {
         }
         .animation(.easeInOut(duration: 0.2), value: viewStore.showingQuickReferences)
     }
-    
+
     private func quickReferencesButton(viewStore: ViewStore<AppFeature.State, AppFeature.Action>, item: AppFeature.MenuItem) -> some View {
         Button(action: {
             viewStore.send(.toggleQuickReferences(!viewStore.showingQuickReferences))
@@ -1787,21 +1788,21 @@ struct MenuView: View {
                     .font(.title3)
                     .foregroundColor(Theme.Colors.aikoPrimary)
                     .frame(width: 24)
-                
+
                 VStack(alignment: .leading, spacing: 2) {
                     Text(item.rawValue)
                         .font(.subheadline)
                         .fontWeight(viewStore.showingQuickReferences ? .semibold : .regular)
                         .foregroundColor(.white)
-                    
+
                     Text(item.description)
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .lineLimit(1)
                 }
-                
+
                 Spacer()
-                
+
                 Image(systemName: viewStore.showingQuickReferences ? "chevron.down" : "chevron.right")
                     .font(.caption)
                     .foregroundColor(.blue)
@@ -1815,7 +1816,7 @@ struct MenuView: View {
         }
         .buttonStyle(.plain)
     }
-    
+
     private func quickReferencesSubmenu(viewStore: ViewStore<AppFeature.State, AppFeature.Action>) -> some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
             ForEach(AppFeature.QuickReference.allCases, id: \.self) { reference in
@@ -1823,7 +1824,7 @@ struct MenuView: View {
             }
         }
     }
-    
+
     private func quickReferenceButton(reference: AppFeature.QuickReference, viewStore: ViewStore<AppFeature.State, AppFeature.Action>) -> some View {
         Button(action: {
             viewStore.send(.selectQuickReference(reference))
@@ -1833,19 +1834,19 @@ struct MenuView: View {
                     .font(.body)
                     .foregroundColor(.blue)
                     .frame(width: 20)
-                
+
                 VStack(alignment: .leading, spacing: 2) {
                     Text(reference.rawValue)
                         .font(.subheadline)
                         .foregroundColor(.white)
-                    
+
                     Text(reference.description)
                         .font(.caption2)
                         .foregroundColor(.secondary)
                 }
-                
+
                 Spacer()
-                
+
                 Image(systemName: "arrow.up.right.square")
                     .font(.caption)
                     .foregroundColor(.blue.opacity(0.6))
@@ -1860,7 +1861,7 @@ struct MenuView: View {
         }
         .buttonStyle(.plain)
     }
-    
+
     private func regularMenuItem(item: AppFeature.MenuItem) -> some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             MenuItemRow(
@@ -1875,7 +1876,7 @@ struct MenuView: View {
             )
         }
     }
-    
+
     var body: some View {
         HStack(spacing: 0) {
             // Tap outside to close
@@ -1886,7 +1887,7 @@ struct MenuView: View {
                     }
                 }
                 .frame(width: 100)
-            
+
             // Menu content
             menuContent
         }
@@ -1908,7 +1909,7 @@ struct MenuItemRow: View {
     let item: AppFeature.MenuItem
     let isSelected: Bool
     let action: () -> Void
-    
+
     @ViewBuilder
     var rowContent: some View {
         HStack(spacing: Theme.Spacing.md) {
@@ -1916,21 +1917,21 @@ struct MenuItemRow: View {
                 .font(.title3)
                 .foregroundColor(Theme.Colors.aikoPrimary)
                 .frame(width: 24)
-            
+
             VStack(alignment: .leading, spacing: 2) {
                 Text(item.rawValue)
                     .font(.subheadline)
                     .fontWeight(isSelected ? .semibold : .regular)
                     .foregroundColor(.white)
-                
+
                 Text(item.description)
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .lineLimit(1)
             }
-            
+
             Spacer()
-            
+
             if isSelected {
                 Image(systemName: "chevron.right")
                     .font(.caption)
@@ -1944,7 +1945,7 @@ struct MenuItemRow: View {
                 .fill(isSelected ? Color.blue.opacity(0.1) : Color.clear)
         )
     }
-    
+
     var body: some View {
         Button(action: action) {
             rowContent
@@ -1956,6 +1957,7 @@ struct MenuItemRow: View {
 // ProfileImagePicker is imported from ProfileComponents
 
 // MARK: - Download Options Sheet
+
 struct DownloadOptionsSheet: View {
     let acquisition: Acquisition
     let onDismiss: () -> Void
@@ -1963,11 +1965,11 @@ struct DownloadOptionsSheet: View {
     @State private var selectedDocuments: Set<UUID> = []
     @State private var isDownloading = false
     @State private var downloadError: String?
-    
+
     var generatedFiles: [GeneratedFile] {
         acquisition.generatedFilesArray
     }
-    
+
     var body: some View {
         SwiftUI.NavigationView {
             VStack(spacing: 0) {
@@ -1997,7 +1999,7 @@ struct DownloadOptionsSheet: View {
                                     if selectedDocuments.count == generatedFiles.count {
                                         selectedDocuments.removeAll()
                                     } else {
-                                        selectedDocuments = Set(generatedFiles.compactMap { $0.id })
+                                        selectedDocuments = Set(generatedFiles.compactMap(\.id))
                                     }
                                 }
                                 .font(.caption)
@@ -2009,7 +2011,7 @@ struct DownloadOptionsSheet: View {
                     #else
                     .listStyle(PlainListStyle())
                     #endif
-                    
+
                     // Download buttons
                     VStack(spacing: Theme.Spacing.md) {
                         if !selectedDocuments.isEmpty {
@@ -2025,7 +2027,7 @@ struct DownloadOptionsSheet: View {
                                 .cornerRadius(Theme.CornerRadius.md)
                             }
                         }
-                        
+
                         Button(action: downloadAll) {
                             Label("Download All Documents", systemImage: "arrow.down.doc.fill")
                                 .frame(maxWidth: .infinity)
@@ -2040,92 +2042,93 @@ struct DownloadOptionsSheet: View {
             }
             .navigationTitle("Download Documents")
             #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
+                .navigationBarTitleDisplayMode(.inline)
             #endif
-            .toolbar {
-                ToolbarItem(placement: .automatic) {
-                    Button("Done") {
-                        dismiss()
+                .toolbar {
+                    ToolbarItem(placement: .automatic) {
+                        Button("Done") {
+                            dismiss()
+                        }
                     }
                 }
-            }
-            .alert("Download Error", isPresented: .init(
-                get: { downloadError != nil },
-                set: { _ in downloadError = nil }
-            )) {
-                Button("OK") {}
-            } message: {
-                if let error = downloadError {
-                    Text(error)
+                .alert("Download Error", isPresented: .init(
+                    get: { downloadError != nil },
+                    set: { _ in downloadError = nil }
+                )) {
+                    Button("OK") {}
+                } message: {
+                    if let error = downloadError {
+                        Text(error)
+                    }
                 }
-            }
-            .overlay {
-                if isDownloading {
-                    Color.black.opacity(0.5)
-                        .ignoresSafeArea()
-                        .overlay {
-                            ProgressView("Downloading...")
-                                .padding()
-                                .background(Color.black)
-                                .cornerRadius(Theme.CornerRadius.md)
-                        }
+                .overlay {
+                    if isDownloading {
+                        Color.black.opacity(0.5)
+                            .ignoresSafeArea()
+                            .overlay {
+                                ProgressView("Downloading...")
+                                    .padding()
+                                    .background(Color.black)
+                                    .cornerRadius(Theme.CornerRadius.md)
+                            }
+                    }
                 }
-            }
         }
     }
-    
+
     private func downloadSelected() {
         let filesToDownload = generatedFiles.filter { file in
             selectedDocuments.contains(file.id!)
         }
         downloadDocuments(filesToDownload)
     }
-    
+
     private func downloadAll() {
         downloadDocuments(generatedFiles)
     }
-    
+
     private func downloadDocuments(_ documents: [GeneratedFile]) {
         isDownloading = true
-        
+
         #if os(iOS)
-        // Create a temporary directory for the documents
-        let tempDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-        
-        do {
-            try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
-            
-            // Write each document to the temp directory
-            for document in documents {
-                guard let data = document.content,
-                      let fileName = document.fileName else { continue }
-                
-                let fileURL = tempDir.appendingPathComponent(fileName)
-                try data.write(to: fileURL)
-            }
-            
-            // Present the share sheet
-            let activityVC = UIActivityViewController(
-                activityItems: documents.count == 1 
-                    ? [tempDir.appendingPathComponent(documents[0].fileName!)]
-                    : [tempDir],
-                applicationActivities: nil
-            )
-            
-            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-               let window = windowScene.windows.first,
-               let rootVC = window.rootViewController {
-                rootVC.present(activityVC, animated: true) {
-                    isDownloading = false
+            // Create a temporary directory for the documents
+            let tempDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+
+            do {
+                try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+
+                // Write each document to the temp directory
+                for document in documents {
+                    guard let data = document.content,
+                          let fileName = document.fileName else { continue }
+
+                    let fileURL = tempDir.appendingPathComponent(fileName)
+                    try data.write(to: fileURL)
                 }
+
+                // Present the share sheet
+                let activityVC = UIActivityViewController(
+                    activityItems: documents.count == 1
+                        ? [tempDir.appendingPathComponent(documents[0].fileName!)]
+                        : [tempDir],
+                    applicationActivities: nil
+                )
+
+                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                   let window = windowScene.windows.first,
+                   let rootVC = window.rootViewController
+                {
+                    rootVC.present(activityVC, animated: true) {
+                        isDownloading = false
+                    }
+                }
+            } catch {
+                downloadError = "Failed to prepare documents: \(error.localizedDescription)"
+                isDownloading = false
             }
-        } catch {
-            downloadError = "Failed to prepare documents: \(error.localizedDescription)"
-            isDownloading = false
-        }
         #else
-        // macOS implementation would use NSSavePanel
-        isDownloading = false
+            // macOS implementation would use NSSavePanel
+            isDownloading = false
         #endif
     }
 }
@@ -2134,7 +2137,7 @@ struct DocumentDownloadRow: View {
     let file: GeneratedFile
     let isSelected: Bool
     let onToggle: () -> Void
-    
+
     var body: some View {
         HStack {
             Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
@@ -2143,19 +2146,19 @@ struct DocumentDownloadRow: View {
                 .onTapGesture {
                     onToggle()
                 }
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(file.fileName ?? "Untitled Document")
                     .font(.subheadline)
                     .foregroundColor(.primary)
-                
+
                 HStack {
                     Text(file.fileType ?? "Unknown Type")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     Spacer()
-                    
+
                     if let size = file.content?.count {
                         Text(formatFileSize(size))
                             .font(.caption)
@@ -2163,7 +2166,7 @@ struct DocumentDownloadRow: View {
                     }
                 }
             }
-            
+
             Spacer()
         }
         .contentShape(Rectangle())
@@ -2171,7 +2174,7 @@ struct DocumentDownloadRow: View {
             onToggle()
         }
     }
-    
+
     private func formatFileSize(_ bytes: Int) -> String {
         let formatter = ByteCountFormatter()
         formatter.countStyle = .file
@@ -2183,46 +2186,46 @@ struct DocumentsEmptyStateView: View {
     var body: some View {
         VStack(spacing: Theme.Spacing.lg) {
             Spacer()
-            
+
             Image(systemName: "doc.text.magnifyingglass")
                 .font(.system(size: 64))
                 .foregroundColor(.secondary)
-            
+
             Text("No Documents Available")
                 .font(.headline)
                 .foregroundColor(.primary)
-            
+
             Text("This acquisition doesn't have any generated documents yet.")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, Theme.Spacing.xl)
-            
+
             Spacer()
         }
     }
 }
 
-
 // MARK: - Document Selection Sheet
+
 struct DocumentSelectionSheet: View {
     let acquisitionId: UUID?
     let selectedDocuments: Set<UUID>
     let onToggleDocument: (UUID) -> Void
     let onConfirm: () -> Void
     let onCancel: () -> Void
-    
+
     @Dependency(\.acquisitionService) var acquisitionService
     @State private var acquisition: Acquisition?
     @State private var isLoading = true
-    
+
     var body: some View {
         SwiftUI.NavigationView {
             VStack {
                 if isLoading {
                     ProgressView("Loading documents...")
                         .frame(maxHeight: .infinity)
-                } else if let acquisition = acquisition {
+                } else if let acquisition {
                     VStack(alignment: .leading, spacing: 0) {
                         // Header
                         Text("Select Documents to Share")
@@ -2230,13 +2233,13 @@ struct DocumentSelectionSheet: View {
                             .foregroundColor(.secondary)
                             .padding(.horizontal)
                             .padding(.top)
-                        
+
                         Text(acquisition.title ?? "Untitled Acquisition")
                             .font(.title2)
                             .bold()
                             .padding(.horizontal)
                             .padding(.bottom)
-                        
+
                         // Document list
                         if acquisition.documentsArray.isEmpty {
                             VStack(spacing: 20) {
@@ -2266,20 +2269,20 @@ struct DocumentSelectionSheet: View {
                                 .padding()
                             }
                         }
-                        
+
                         // Bottom actions
                         HStack(spacing: 16) {
                             Button("Cancel") {
                                 onCancel()
                             }
                             .foregroundColor(.red)
-                            
+
                             Spacer()
-                            
+
                             Text("\(selectedDocuments.count) selected")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-                            
+
                             Button("Share") {
                                 onConfirm()
                             }
@@ -2303,13 +2306,13 @@ struct DocumentSelectionSheet: View {
             }
         }
     }
-    
+
     private func loadAcquisition() async {
-        guard let acquisitionId = acquisitionId else {
+        guard let acquisitionId else {
             isLoading = false
             return
         }
-        
+
         do {
             acquisition = try await acquisitionService.fetchAcquisition(acquisitionId)
             isLoading = false
@@ -2324,24 +2327,24 @@ struct DocumentSelectionRow: View {
     let document: AcquisitionDocument
     let isSelected: Bool
     let onToggle: () -> Void
-    
+
     var body: some View {
         Button(action: onToggle) {
             HStack(spacing: 16) {
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.title2)
                     .foregroundColor(isSelected ? Theme.Colors.aikoPrimary : .gray)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text(document.documentType ?? "Untitled Document")
                         .font(.headline)
                         .foregroundColor(.white)
-                    
+
                     HStack {
                         Text(document.documentType ?? "Unknown Type")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        
+
                         if let date = document.createdDate {
                             Text("•")
                                 .foregroundColor(.secondary)
@@ -2351,9 +2354,9 @@ struct DocumentSelectionRow: View {
                         }
                     }
                 }
-                
+
                 Spacer()
-                
+
                 Image(systemName: "chevron.right")
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -2369,34 +2372,34 @@ struct DocumentSelectionRow: View {
 }
 
 #if os(iOS)
-struct ShareSheetView: UIViewControllerRepresentable {
-    let items: [Any]
-    
-    func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: items, applicationActivities: nil)
+    struct ShareSheetView: UIViewControllerRepresentable {
+        let items: [Any]
+
+        func makeUIViewController(context _: Context) -> UIActivityViewController {
+            UIActivityViewController(activityItems: items, applicationActivities: nil)
+        }
+
+        func updateUIViewController(_: UIActivityViewController, context _: Context) {}
     }
-    
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
-}
 #endif
 
 #if DEBUG
-struct AppView_Previews: PreviewProvider {
-    static var previews: some View {
-        var state = AppFeature.State()
-        state.isOnboardingCompleted = true
-        state.isAuthenticated = true
-        
-        return AppView(
-            store: Store(
-                initialState: state
-            ) {
-                AppFeature()
-                    .dependency(\.biometricAuthenticationService, .previewValue)
-                    .dependency(\.settingsManager, .previewValue)
-            }
-        )
-        .preferredColorScheme(.dark)
+    struct AppView_Previews: PreviewProvider {
+        static var previews: some View {
+            var state = AppFeature.State()
+            state.isOnboardingCompleted = true
+            state.isAuthenticated = true
+
+            return AppView(
+                store: Store(
+                    initialState: state
+                ) {
+                    AppFeature()
+                        .dependency(\.biometricAuthenticationService, .previewValue)
+                        .dependency(\.settingsManager, .previewValue)
+                }
+            )
+            .preferredColorScheme(.dark)
+        }
     }
-}
 #endif

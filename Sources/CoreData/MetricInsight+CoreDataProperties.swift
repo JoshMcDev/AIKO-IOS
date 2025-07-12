@@ -1,38 +1,36 @@
-import Foundation
 import CoreData
+import Foundation
 
-extension MetricInsightEntity {
-    
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<MetricInsightEntity> {
-        return NSFetchRequest<MetricInsightEntity>(entityName: "MetricInsight")
+public extension MetricInsightEntity {
+    @nonobjc class func fetchRequest() -> NSFetchRequest<MetricInsightEntity> {
+        NSFetchRequest<MetricInsightEntity>(entityName: "MetricInsight")
     }
-    
-    @NSManaged public var id: UUID?
-    @NSManaged public var type: String?
-    @NSManaged public var severity: String?
-    @NSManaged public var message: String?
-    @NSManaged public var affectedMetricsData: Data?
-    @NSManaged public var confidence: Double
-    @NSManaged public var timestamp: Date?
-    @NSManaged public var measurements: NSSet?
-    @NSManaged public var summary: MetricsSummaryEntity?
+
+    @NSManaged var id: UUID?
+    @NSManaged var type: String?
+    @NSManaged var severity: String?
+    @NSManaged var message: String?
+    @NSManaged var affectedMetricsData: Data?
+    @NSManaged var confidence: Double
+    @NSManaged var timestamp: Date?
+    @NSManaged var measurements: NSSet?
+    @NSManaged var summary: MetricsSummaryEntity?
 }
 
 // MARK: Generated accessors for measurements
-extension MetricInsightEntity {
-    
+
+public extension MetricInsightEntity {
     @objc(addMeasurementsObject:)
-    @NSManaged public func addToMeasurements(_ value: MetricMeasurementEntity)
-    
+    @NSManaged func addToMeasurements(_ value: MetricMeasurementEntity)
+
     @objc(removeMeasurementsObject:)
-    @NSManaged public func removeFromMeasurements(_ value: MetricMeasurementEntity)
-    
+    @NSManaged func removeFromMeasurements(_ value: MetricMeasurementEntity)
+
     @objc(addMeasurements:)
-    @NSManaged public func addToMeasurements(_ values: NSSet)
-    
+    @NSManaged func addToMeasurements(_ values: NSSet)
+
     @objc(removeMeasurements:)
-    @NSManaged public func removeFromMeasurements(_ values: NSSet)
+    @NSManaged func removeFromMeasurements(_ values: NSSet)
 }
 
-extension MetricInsightEntity : Identifiable {
-}
+extension MetricInsightEntity: Identifiable {}

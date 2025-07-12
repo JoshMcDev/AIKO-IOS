@@ -1,12 +1,12 @@
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 public struct UserProfileService {
     public var loadProfile: () async throws -> UserProfile?
     public var saveProfile: (UserProfile) async throws -> Void
     public var deleteProfile: () async throws -> Void
     public var hasProfile: () async -> Bool
-    
+
     public init(
         loadProfile: @escaping () async throws -> UserProfile?,
         saveProfile: @escaping (UserProfile) async throws -> Void,
@@ -24,13 +24,13 @@ extension UserProfileService: DependencyKey {
     public static var liveValue: UserProfileService {
         let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let profileURL = documentsDirectory.appendingPathComponent("userProfile.json")
-        
+
         return UserProfileService(
             loadProfile: {
                 guard FileManager.default.fileExists(atPath: profileURL.path) else {
                     return nil
                 }
-                
+
                 let data = try Data(contentsOf: profileURL)
                 let decoder = JSONDecoder()
                 return try decoder.decode(UserProfile.self, from: data)
@@ -38,11 +38,11 @@ extension UserProfileService: DependencyKey {
             saveProfile: { profile in
                 var updatedProfile = profile
                 updatedProfile.updatedAt = Date()
-                
+
                 let encoder = JSONEncoder()
                 encoder.outputFormatting = .prettyPrinted
                 let data = try encoder.encode(updatedProfile)
-                
+
                 try data.write(to: profileURL, options: .atomicWrite)
             },
             deleteProfile: {
@@ -55,10 +55,10 @@ extension UserProfileService: DependencyKey {
             }
         )
     }
-    
+
     public static var testValue: UserProfileService {
         var savedProfile: UserProfile?
-        
+
         return UserProfileService(
             loadProfile: { savedProfile },
             saveProfile: { profile in savedProfile = profile },
@@ -68,8 +68,8 @@ extension UserProfileService: DependencyKey {
     }
 }
 
-extension DependencyValues {
-    public var userProfileService: UserProfileService {
+public extension DependencyValues {
+    var userProfileService: UserProfileService {
         get { self[UserProfileService.self] }
         set { self[UserProfileService.self] = newValue }
     }

@@ -133,7 +133,7 @@ Before using this template, ensure you have:
 - Fail to consider small business participation opportunities
 - Avoid proper documentation of SAP decisions
 
-✅ **Do:**
+ **Do:**
 - Maximize use of commercial sources and practices
 - Seek competition to maximum extent practicable
 - Streamline requirements and evaluation procedures
