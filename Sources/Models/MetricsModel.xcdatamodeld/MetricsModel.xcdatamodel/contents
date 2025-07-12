@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21754" systemVersion="22G120" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    
+    <!-- MetricMeasurement Entity -->
+    <entity name="MetricMeasurement" representedClassName="MetricMeasurementEntity" syncable="YES">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="metricType" optional="YES" attributeType="String"/>
+        <attribute name="mopType" optional="YES" attributeType="String"/>
+        <attribute name="moeType" optional="YES" attributeType="String"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="aggregatedValue" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="score" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="contextData" optional="YES" attributeType="Binary"/>
+        <relationship name="metricValues" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="MetricValue" inverseName="measurement" inverseEntity="MetricValue"/>
+        <relationship name="insights" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MetricInsight" inverseName="measurements" inverseEntity="MetricInsight"/>
+        <relationship name="report" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MetricsReport" inverseName="detailedMeasurements" inverseEntity="MetricsReport"/>
+        <relationship name="baselineComparisons" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MetricComparison" inverseName="baseline" inverseEntity="MetricComparison"/>
+        <relationship name="comparisonComparisons" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MetricComparison" inverseName="comparison" inverseEntity="MetricComparison"/>
+    </entity>
+    
+    <!-- MetricValue Entity -->
+    <entity name="MetricValue" representedClassName="MetricValueEntity" syncable="YES">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="value" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="unit" optional="YES" attributeType="String"/>
+        <attribute name="metadataData" optional="YES" attributeType="Binary"/>
+        <relationship name="measurement" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MetricMeasurement" inverseName="metricValues" inverseEntity="MetricMeasurement"/>
+    </entity>
+    
+    <!-- MetricInsight Entity -->
+    <entity name="MetricInsight" representedClassName="MetricInsightEntity" syncable="YES">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
+        <attribute name="severity" optional="YES" attributeType="String"/>
+        <attribute name="message" optional="YES" attributeType="String"/>
+        <attribute name="affectedMetricsData" optional="YES" attributeType="Binary"/>
+        <attribute name="confidence" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="measurements" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MetricMeasurement" inverseName="insights" inverseEntity="MetricMeasurement"/>
+        <relationship name="summary" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MetricsSummary" inverseName="insights" inverseEntity="MetricsSummary"/>
+    </entity>
+    
+    <!-- MetricsReport Entity -->
+    <entity name="MetricsReport" representedClassName="MetricsReportEntity" syncable="YES">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+        <attribute name="periodStart" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="periodEnd" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="generatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="executiveSummary" optional="YES" attributeType="String"/>
+        <relationship name="summary" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="MetricsSummary" inverseName="report" inverseEntity="MetricsSummary"/>
+        <relationship name="detailedMeasurements" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="MetricMeasurement" inverseName="report" inverseEntity="MetricMeasurement"/>
+        <relationship name="trends" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="MetricTrend" inverseName="report" inverseEntity="MetricTrend"/>
+        <relationship name="comparisons" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="MetricComparison" inverseName="report" inverseEntity="MetricComparison"/>
+    </entity>
+    
+    <!-- MetricsSummary Entity -->
+    <entity name="MetricsSummary" representedClassName="MetricsSummaryEntity" syncable="YES">
+        <attribute name="periodStart" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="periodEnd" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="mopScoresData" optional="YES" attributeType="Binary"/>
+        <attribute name="moeScoresData" optional="YES" attributeType="Binary"/>
+        <attribute name="overallMOPScore" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="overallMOEScore" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="combinedScore" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="insights" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="MetricInsight" inverseName="summary" inverseEntity="MetricInsight"/>
+        <relationship name="recommendations" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="MetricRecommendation" inverseName="summary" inverseEntity="MetricRecommendation"/>
+        <relationship name="report" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MetricsReport" inverseName="summary" inverseEntity="MetricsReport"/>
+    </entity>
+    
+    <!-- MetricRecommendation Entity -->
+    <entity name="MetricRecommendation" representedClassName="MetricRecommendationEntity" syncable="YES">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="priority" optional="YES" attributeType="String"/>
+        <attribute name="category" optional="YES" attributeType="String"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+        <attribute name="desc" optional="YES" attributeType="String"/>
+        <attribute name="expectedImpactData" optional="YES" attributeType="Binary"/>
+        <attribute name="timeToImpact" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="impactConfidence" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="requiredActionsData" optional="YES" attributeType="Binary"/>
+        <attribute name="relatedMetricsData" optional="YES" attributeType="Binary"/>
+        <relationship name="summary" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MetricsSummary" inverseName="recommendations" inverseEntity="MetricsSummary"/>
+    </entity>
+    
+    <!-- MetricTrend Entity -->
+    <entity name="MetricTrend" representedClassName="MetricTrendEntity" syncable="YES">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="metricName" optional="YES" attributeType="String"/>
+        <attribute name="direction" optional="YES" attributeType="String"/>
+        <attribute name="magnitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="significance" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="report" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MetricsReport" inverseName="trends" inverseEntity="MetricsReport"/>
+        <relationship name="trendDataPoints" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="TrendDataPoint" inverseName="trend" inverseEntity="TrendDataPoint"/>
+    </entity>
+    
+    <!-- TrendDataPoint Entity -->
+    <entity name="TrendDataPoint" representedClassName="TrendDataPointEntity" syncable="YES">
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="value" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="trend" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MetricTrend" inverseName="trendDataPoints" inverseEntity="MetricTrend"/>
+    </entity>
+    
+    <!-- MetricComparison Entity -->
+    <entity name="MetricComparison" representedClassName="MetricComparisonEntity" syncable="YES">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
+        <attribute name="difference" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="percentageChange" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="interpretation" optional="YES" attributeType="String"/>
+        <relationship name="baseline" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="MetricMeasurement" inverseName="baselineComparisons" inverseEntity="MetricMeasurement"/>
+        <relationship name="comparison" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="MetricMeasurement" inverseName="comparisonComparisons" inverseEntity="MetricMeasurement"/>
+        <relationship name="report" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MetricsReport" inverseName="comparisons" inverseEntity="MetricsReport"/>
+    </entity>
+    
+</model>
