@@ -147,6 +147,18 @@ public struct ProfileView: View {
                             error: viewStore.validationErrors.first(where: { $0.field == "DODAAC" })?.message
                         )
                         
+                        ProfileTextField(
+                            title: "Agency/Department/Service",
+                            text: .init(
+                                get: { viewStore.profile.agencyDepartmentService },
+                                set: { viewStore.send(.updateAgencyDepartmentService($0)) }
+                            ),
+                            isEditing: viewStore.isEditing,
+                            isRequired: false,
+                            placeholder: "e.g. SOCOM, NASA, VA, USAF",
+                            helpText: "Used to determine applicable regulations (FAR, DFARS, agency supplements)"
+                        )
+                        
                         // Organization Logo
                         OrganizationLogoView(
                             logoData: viewStore.profile.organizationLogoData,

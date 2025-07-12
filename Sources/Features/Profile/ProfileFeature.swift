@@ -58,6 +58,7 @@ public struct ProfileFeature {
         case updateAlternatePhoneNumber(String)
         case updateOrganizationName(String)
         case updateOrganizationalDODAAC(String)
+        case updateAgencyDepartmentService(String)
         
         // Address actions
         case updateAddress(State.AddressType, Address)
@@ -160,6 +161,10 @@ public struct ProfileFeature {
                 
             case let .updateOrganizationalDODAAC(dodaac):
                 state.profile.organizationalDODAAC = dodaac
+                return .none
+                
+            case let .updateAgencyDepartmentService(agency):
+                state.profile.agencyDepartmentService = agency
                 return .none
                 
             case let .updateAddress(type, address):

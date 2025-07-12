@@ -40,7 +40,48 @@ This project follows the Production-Ready MVP-First Strategy Framework v2.0:
 
 ---
 
-## 🎯 Current MVP: Core SAM.gov Integration
+## 🎯 Current MVP: Adaptive LLM-Driven Acquisition Assistant
+
+### Core MVP Features
+The system provides an intelligent LLM assistant that guides users through the acquisition process with minimal effort:
+
+1. **Intelligent Requirement Gathering with Auto-Fill**
+   - LLM prompts users to define requirements through natural conversation
+   - **Learns from previous acquisitions to auto-fill fields**:
+     - Recognizes similar requirements from past projects
+     - Suggests values based on historical data
+     - Auto-populates vendor info, pricing, terms from previous contracts
+     - Adapts to user's common patterns and preferences
+   - Accepts multiple input methods:
+     - Upload documents (quotes, specs, scanned docs)
+     - Text input or voice transcription
+     - Natural chat interface
+     - Import from existing "My Acquisitions"
+   - Uses follow-up prompting to extract essential data with minimal questions
+   - Predicts and infers data fields to reduce user burden
+
+2. **Automated Document Chain Generation**
+   - Reviews knowledge base and regulations (FAR/DFAR)
+   - Determines all required documentation automatically
+   - Builds complete document chain based on requirement type
+   - **Leverages historical data throughout generation**:
+     - Reuses successful language from past documents
+     - Applies lessons learned from previous acquisitions
+     - Maintains consistency with organization's standards
+   - Offers one-click automation of entire documentation process
+   - Continuously expands context through research and generation
+
+3. **Adaptive User Control**
+   - User can insert review/approval points anywhere in process
+   - Edit capabilities at any stage
+   - Preview documents before finalization
+   - Choose automation level (full auto vs. step-by-step)
+   
+4. **Intelligent Delivery**
+   - Download all generated documents
+   - Email complete package to user
+   - Export to contract management systems
+   - Save to "My Acquisitions" for future reference
 
 ### Production Acceptance Criteria
 - [x] All features fully functional in production environment

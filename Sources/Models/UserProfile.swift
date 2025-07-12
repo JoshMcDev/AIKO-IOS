@@ -11,6 +11,7 @@ public struct UserProfile: Equatable, Codable {
     public var alternatePhoneNumber: String
     public var organizationName: String
     public var organizationalDODAAC: String
+    public var agencyDepartmentService: String
     public var defaultAdministeredByAddress: Address
     public var defaultPaymentAddress: Address
     public var defaultDeliveryAddress: Address
@@ -30,6 +31,7 @@ public struct UserProfile: Equatable, Codable {
         alternatePhoneNumber: String = "",
         organizationName: String = "",
         organizationalDODAAC: String = "",
+        agencyDepartmentService: String = "",
         defaultAdministeredByAddress: Address = Address(),
         defaultPaymentAddress: Address = Address(),
         defaultDeliveryAddress: Address = Address(),
@@ -48,6 +50,7 @@ public struct UserProfile: Equatable, Codable {
         self.alternatePhoneNumber = alternatePhoneNumber
         self.organizationName = organizationName
         self.organizationalDODAAC = organizationalDODAAC
+        self.agencyDepartmentService = agencyDepartmentService
         self.defaultAdministeredByAddress = defaultAdministeredByAddress
         self.defaultPaymentAddress = defaultPaymentAddress
         self.defaultDeliveryAddress = defaultDeliveryAddress
@@ -179,6 +182,7 @@ extension UserProfile {
         // Organization Information
         variables["ORGANIZATION_NAME"] = organizationName
         variables["ORGANIZATION_DODAAC"] = organizationalDODAAC
+        variables["AGENCY_DEPARTMENT_SERVICE"] = agencyDepartmentService
         
         // Addresses
         variables["ADMINISTERED_BY_ADDRESS"] = defaultAdministeredByAddress.formatted
