@@ -1,27 +1,29 @@
 # AIKO Task Management Protocol
 
-> Comprehensive guide for managing tasks through the 7-stage pipeline with multi-agent support
+> Comprehensive guide for managing tasks through the 9-stage pipeline with multi-agent support
 
 ## Overview
 
-The AIKO project follows a structured task management protocol that ensures quality delivery through systematic progression of tasks from planning to production. This protocol integrates with Task Master AI for tracking and utilizes a 7-stage pipeline for quality assurance.
+The AIKO project follows a structured task management protocol that ensures quality delivery through systematic progression of tasks from planning to deployment. This protocol integrates with Task Master AI for tracking and utilizes a 9-stage pipeline (stages 0-9) for quality assurance.
 
 ## File Structure
 
 ```
 Todo/
-├── 00_Phased_Deployment_Plan.md     # 6-phase deployment strategy
-├── 01_Current_Phase_Reference.md    # Current phase status and quick commands
-├── 02_Working_Tasks.md              # Current phase tasks in planning/development
-├── 03_Working_SubTasks.md           # Detailed subtask breakdown
-├── 04_Parallel_Tasks.md             # Tasks distributed for multi-agent processing
-├── 05_Completed_Tasks.md            # Code-complete tasks
-├── 06_Tested_Tasks.md               # Tasks passing all tests
-├── 07_Verified_Tasks.md             # Tasks scoring ≥95/100
-├── 08_Certified_Tasks.md            # Production-ready tasks
-├── 09_Production_Tasks.md           # Live operational tasks
-├── 10_Deployed_Tasks.md             # Beta deployments with version tracking
-└── README.md                        # Pipeline overview
+├── Todo_00_CurrentWorking_TodoList.md  # Persistent task memory across sessions
+├── 00_Phased_Deployment_Plan.md        # 6-phase deployment strategy
+├── 01_Current_Phase_Reference.md       # Current phase status and quick commands
+├── 02_Working_Tasks.md                 # Current phase tasks in planning/development
+├── 03_Working_SubTasks.md              # Detailed subtask breakdown
+├── 04_Parallel_Tasks.md                # Tasks distributed for multi-agent processing
+├── 05_Completed_Tasks.md               # Code-complete tasks
+├── 06_Tested_Tasks.md                  # Tasks passing all tests
+├── 07_Verified_Tasks.md                # Tasks scoring ≥95/100, ready for simulation
+├── 08_Certified_Tasks.md               # Passed simulation, production-ready
+├── 09_Deployed_Tasks.md                # Beta deployments with version tracking
+├── AIKO_Task_Management_Protocol.md    # This file
+├── README.md                           # Pipeline overview
+└── Archive/                            # Completed task documentation
 ```
 
 ## Task Master AI Integration
@@ -70,15 +72,16 @@ Each task must pass through ALL stages:
 
 | Stage | File | Criteria | Command |
 |-------|------|----------|---------|
+| Phased Plan | 00_Phased_Deployment_Plan.md | Strategy defined | Define phases |
+| Current Phase | 01_Current_Phase_Reference.md | Phase selected | Track progress |
 | Working | 02_Working_Tasks.md | Planning complete | Start development |
 | SubTasks | 03_Working_SubTasks.md | Detailed breakdown | Define sub-subtasks |
 | Parallel | 04_Parallel_Tasks.md | Active development | Multi-agent work |
 | Completed | 05_Completed_Tasks.md | Code complete | Move when done |
 | Tested | 06_Tested_Tasks.md | 0 errors, 0 warnings | Run test suite |
-| Verified | 07_Verified_Tasks.md | Score ≥ 95/100 | Quality check |
-| Certified | 08_Certified_Tasks.md | Production ready | Final review |
-| Production | 09_Production_Tasks.md | Live & operational | Deploy to prod |
-| Deployed | 10_Deployed_Tasks.md | Beta version released | Track version |
+| Verified | 07_Verified_Tasks.md | Score ≥ 95/100, simulation ready | Quality check |
+| Certified | 08_Certified_Tasks.md | Passed simulation, production ready | Final review |
+| Deployed | 09_Deployed_Tasks.md | Beta version released | Track version |
 
 ### 5. Task Movement Commands
 ```bash

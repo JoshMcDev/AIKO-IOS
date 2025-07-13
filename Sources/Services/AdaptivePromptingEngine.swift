@@ -374,10 +374,10 @@ public struct APELineItem: Identifiable, Equatable {
 }
 
 public struct ExtractedDates: Equatable {
-    public let quoteDate: Date?
-    public let validUntil: Date?
-    public let deliveryDate: Date?
-    public let performancePeriod: DateInterval?
+    public var quoteDate: Date?
+    public var validUntil: Date?
+    public var deliveryDate: Date?
+    public var performancePeriod: DateInterval?
     
     public init(
         quoteDate: Date? = nil,
@@ -455,7 +455,7 @@ public struct HistoricalAcquisition {
     }
 }
 
-public enum AcquisitionType {
+public enum AcquisitionType: String, Codable {
     case supplies
     case services
     case construction

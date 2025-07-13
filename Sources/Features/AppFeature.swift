@@ -107,7 +107,7 @@ public struct AppFeature {
     public enum MenuItem: String, CaseIterable, Equatable {
         case myProfile = "My Profile"
         case myAcquisitions = "My Acquisitions"
-        case quickReferences = "Quick References"
+        case quickReferences = "Quick Links"
         case searchTemplates = "Search Document Templates"
         case userGuide = "User Guide"
         case settings = "Settings"
@@ -127,7 +127,7 @@ public struct AppFeature {
             switch self {
             case .myProfile: "Your profile information"
             case .myAcquisitions: "View your requirement history"
-            case .quickReferences: "Access external resources"
+            case .quickReferences: "Access useful acquisition resources"
             case .searchTemplates: "Browse all document templates"
             case .userGuide: "Learn how to use AIKO"
             case .settings: "App preferences and configuration"
@@ -139,6 +139,10 @@ public struct AppFeature {
         case acquisitionGov = "Acquisition.gov"
         case samGov = "SAM.gov"
         case fpdsNG = "FPDS-NG"
+        case forms = "Forms"
+        case acqGatewayDocs = "ACQ Gateway Docs"
+        case gsaSPBASamples = "GSA SPBA Samples"
+        case gsaTemplates = "GSA Templates"
         case customLink = "Custom Link"
 
         public var url: String {
@@ -146,6 +150,10 @@ public struct AppFeature {
             case .acquisitionGov: "https://www.acquisition.gov/browse/index/far"
             case .samGov: "https://sam.gov/"
             case .fpdsNG: "https://www.fpds.gov/fpdsng_cms/index.php/en/"
+            case .forms: "https://www.gsa.gov/forms"
+            case .acqGatewayDocs: "https://acquisitiongateway.gov/documents"
+            case .gsaSPBASamples: "https://buy.gsa.gov/spba-resource-library?sort_by=title&sort_order=asc&page=1"
+            case .gsaTemplates: "https://buy.gsa.gov/find-samples-templates-tips?sort_by=title&sort_order=asc&page=1"
             case .customLink: ""
             }
         }
@@ -155,6 +163,10 @@ public struct AppFeature {
             case .acquisitionGov: "book.circle.fill"
             case .samGov: "building.columns.circle.fill"
             case .fpdsNG: "chart.bar.doc.horizontal.fill"
+            case .forms: "doc.text.fill"
+            case .acqGatewayDocs: "doc.richtext.fill"
+            case .gsaSPBASamples: "doc.on.doc.fill"
+            case .gsaTemplates: "doc.badge.plus"
             case .customLink: "plus.circle.fill"
             }
         }
@@ -164,6 +176,10 @@ public struct AppFeature {
             case .acquisitionGov: "Federal Acquisition Regulation"
             case .samGov: "System for Award Management"
             case .fpdsNG: "Federal Procurement Data System"
+            case .forms: "GSA Forms Library"
+            case .acqGatewayDocs: "Acquisition Gateway Documents"
+            case .gsaSPBASamples: "Strategic Partnership Agreement Samples"
+            case .gsaTemplates: "GSA Contract Templates & Tips"
             case .customLink: "Add your own reference link"
             }
         }

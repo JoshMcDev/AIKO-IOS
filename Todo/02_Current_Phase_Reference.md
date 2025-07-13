@@ -32,13 +32,16 @@
 
 ## Pipeline Stages for Each Task
 
-1. ☐ **Working** - Design and planning
-2. ☐ **In-Progress** - Active development
-3. ☐ **Completed** - Code complete
-4. ☐ **Tested** - 0 errors/warnings
-5. ☐ **Verified** - Score ≥ 95/100
-6. ☐ **Certified** - Production ready
-7. ☐ **Production** - Live & operational
+0. ☐ **Phased Plan** - Strategy defined
+1. ☐ **Current Phase** - Phase activated
+2. ☐ **Working** - Design and planning
+3. ☐ **SubTasks** - Detailed breakdown
+4. ☐ **Parallel** - Multi-agent development
+5. ☐ **Completed** - Code complete
+6. ☐ **Tested** - 0 errors/warnings
+7. ☐ **Verified** - Score ≥ 95/100, simulation ready
+8. ☐ **Certified** - Passed simulation, production ready
+9. ☐ **Deployed** - Beta version released
 
 ## Daily Checklist
 

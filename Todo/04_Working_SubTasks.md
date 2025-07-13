@@ -47,7 +47,7 @@
 - [ ] 1.5.4: Create retry mechanisms
 - [ ] 1.5.5: Log errors for debugging
 
-### Task 32: Create main document category 'Resources and Tools'
+### Task 14: Create main document category 'Resources and Tools' ✅ (COMPLETED)
 
 #### 32.1: Add ResourcesTools to DocumentCategory enum
 ##### SubTasks:

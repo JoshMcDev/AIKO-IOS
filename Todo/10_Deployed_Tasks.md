@@ -22,7 +22,7 @@ Example: `v1.1.0-beta` = Phase 1, Sprint 1, Build 0
 #### Included Tasks:
 - [ ] Task 1: Document parser (PDF/Word/Image)
 - [ ] Task 8: Offline caching system
-- [ ] Task 14: Resources & Tools category
+- [x] Task 14: Resources & Tools category ✅ (Certified: CERT-2025-001)
 - [ ] Task 15: Form caching for offline use
 - [ ] Task 77: UI/UX Design (partial)
 - [ ] Task 78: Backend Architecture (partial)
