@@ -284,7 +284,7 @@ extension AdaptiveDataExtractor {
     public func demonstrateQuoteLearning() async throws {
         // After processing the MTO quote, the system would learn:
         
-        let mtoQuotePattern = LearnedPattern(
+        let _ = LearnedPattern(
             id: UUID(),
             patternName: "Government_Technical_Equipment_Quote",
             fieldMappings: [

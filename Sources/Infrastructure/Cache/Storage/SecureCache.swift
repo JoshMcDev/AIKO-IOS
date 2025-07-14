@@ -17,6 +17,7 @@ actor SecureCache: OfflineCacheProtocol {
     
     /// Service identifier for keychain
     private let keychainService = "com.aiko.securecache"
+    let serviceName = "com.aiko.securecache"
     
     /// Cache configuration
     private let configuration: OfflineCacheConfiguration
@@ -228,7 +229,7 @@ actor SecureCache: OfflineCacheProtocol {
     }
     
     /// Remove expired entries
-    func removeExpiredEntries() async {
+    private func removeExpiredEntries() async {
         let expiredKeys = metadata.compactMap { key, meta in
             meta.isExpired ? key : nil
         }

@@ -142,6 +142,8 @@ struct SettingsDetailView: View {
                     DataPrivacySettingsView(store: store)
                 case .advanced:
                     AdvancedSettingsView(store: store)
+                case .performance:
+                    PerformanceMonitorView()
                 }
             }
             .padding()

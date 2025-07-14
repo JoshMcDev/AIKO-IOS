@@ -21,6 +21,9 @@ extension AIDocumentGenerator: DependencyKey {
             generateDocuments: { requirements, documentTypes in
                 @Dependency(\.standardTemplateService) var templateService
                 @Dependency(\.userProfileService) var userProfileService
+                @Dependency(\.documentGenerationCache) var cache
+                @Dependency(\.spellCheckService) var spellCheckService
+                
                 let anthropicService = AnthropicServiceFactory.service(
                     apiKey: APIConfiguration.getAnthropicKey(),
                     betaHeaders: nil
@@ -31,10 +34,31 @@ extension AIDocumentGenerator: DependencyKey {
                 let profile = try? await userProfileService.loadProfile()
 
                 for documentType in documentTypes {
-                    // Pro features check removed - all features available
+                    // Check cache first
+                    if let cachedContent = await cache.getCachedDocument(
+                        for: documentType,
+                        requirements: requirements,
+                        profile: profile
+                    ) {
+                        let document = GeneratedDocument(
+                            title: "\(documentType.shortName) - \(Date().formatted(date: .abbreviated, time: .omitted))",
+                            documentType: documentType,
+                            content: cachedContent
+                        )
+                        generatedDocuments.append(document)
+                        continue
+                    }
 
-                    // Try to load template if available
-                    let template = try? await templateService.loadTemplate(documentType)
+                    // Try to load template from cache or service
+                    let template: String?
+                    if let cachedTemplate = await cache.getCachedTemplate(for: documentType) {
+                        template = cachedTemplate
+                    } else if let loadedTemplate = try? await templateService.loadTemplate(documentType) {
+                        await cache.cacheTemplate(loadedTemplate, for: documentType)
+                        template = loadedTemplate
+                    } else {
+                        template = nil
+                    }
 
                     let prompt: String
                     if let template {
@@ -65,11 +89,20 @@ extension AIDocumentGenerator: DependencyKey {
                         ),
                     ]
 
+                    // Get system prompt (with caching)
+                    let systemPrompt: String
+                    if let cachedPrompt = await cache.getCachedSystemPrompt(for: documentType) {
+                        systemPrompt = cachedPrompt
+                    } else {
+                        systemPrompt = getSystemPrompt(for: documentType)
+                        await cache.cacheSystemPrompt(systemPrompt, for: documentType)
+                    }
+
                     let parameters = MessageParameter(
                         model: .other("claude-sonnet-4-20250514"),
                         messages: messages,
                         maxTokens: 4096,
-                        system: .text(getSystemPrompt(for: documentType)),
+                        system: .text(systemPrompt),
                         metadata: nil,
                         stopSequences: nil,
                         stream: false,
@@ -91,8 +124,15 @@ extension AIDocumentGenerator: DependencyKey {
                     }
 
                     // Spell check and correct the content
-                    @Dependency(\.spellCheckService) var spellCheckService
                     let correctedContent = await spellCheckService.checkAndCorrect(content)
+
+                    // Cache the generated document
+                    await cache.cacheDocument(
+                        correctedContent,
+                        for: documentType,
+                        requirements: requirements,
+                        profile: profile
+                    )
 
                     let document = GeneratedDocument(
                         title: "\(documentType.shortName) - \(Date().formatted(date: .abbreviated, time: .omitted))",
@@ -108,6 +148,9 @@ extension AIDocumentGenerator: DependencyKey {
             generateDFDocuments: { requirements, dfDocumentTypes in
                 @Dependency(\.dfTemplateService) var dfTemplateService
                 @Dependency(\.userProfileService) var userProfileService
+                @Dependency(\.documentGenerationCache) var cache
+                @Dependency(\.spellCheckService) var spellCheckService
+                
                 let anthropicService = AnthropicServiceFactory.service(
                     apiKey: APIConfiguration.getAnthropicKey(),
                     betaHeaders: nil
@@ -118,8 +161,20 @@ extension AIDocumentGenerator: DependencyKey {
                 let profile = try? await userProfileService.loadProfile()
 
                 for dfDocumentType in dfDocumentTypes {
-                    // All D&F documents are pro features
-                    // Pro features check removed - all features available
+                    // Check cache first
+                    if let cachedContent = await cache.getCachedDocument(
+                        for: dfDocumentType,
+                        requirements: requirements,
+                        profile: profile
+                    ) {
+                        let document = GeneratedDocument(
+                            title: "\(dfDocumentType.shortName) D&F - \(Date().formatted(date: .abbreviated, time: .omitted))",
+                            dfDocumentType: dfDocumentType,
+                            content: cachedContent
+                        )
+                        generatedDocuments.append(document)
+                        continue
+                    }
 
                     // Load the template and quick reference guide
                     let dfTemplate = try await dfTemplateService.loadTemplate(dfDocumentType)
@@ -147,11 +202,20 @@ extension AIDocumentGenerator: DependencyKey {
                         ),
                     ]
 
+                    // Get system prompt (with caching)
+                    let systemPrompt: String
+                    if let cachedPrompt = await cache.getCachedSystemPrompt(for: dfDocumentType) {
+                        systemPrompt = cachedPrompt
+                    } else {
+                        systemPrompt = getDFSystemPrompt(for: dfDocumentType)
+                        await cache.cacheSystemPrompt(systemPrompt, for: dfDocumentType)
+                    }
+
                     let parameters = MessageParameter(
                         model: .other("claude-sonnet-4-20250514"),
                         messages: messages,
                         maxTokens: 4096,
-                        system: .text(getDFSystemPrompt(for: dfDocumentType)),
+                        system: .text(systemPrompt),
                         metadata: nil,
                         stopSequences: nil,
                         stream: false,
@@ -173,8 +237,15 @@ extension AIDocumentGenerator: DependencyKey {
                     }
 
                     // Spell check and correct the content
-                    @Dependency(\.spellCheckService) var spellCheckService
                     let correctedContent = await spellCheckService.checkAndCorrect(content)
+
+                    // Cache the generated document
+                    await cache.cacheDocument(
+                        correctedContent,
+                        for: dfDocumentType,
+                        requirements: requirements,
+                        profile: profile
+                    )
 
                     let document = GeneratedDocument(
                         title: "\(dfDocumentType.shortName) D&F - \(Date().formatted(date: .abbreviated, time: .omitted))",
@@ -213,7 +284,7 @@ extension AIDocumentGenerator: DependencyKey {
         )
     }
 
-    private static func createPrompt(for documentType: DocumentType, requirements: String, profile: UserProfile?) -> String {
+    public static func createPrompt(for documentType: DocumentType, requirements: String, profile: UserProfile?) -> String {
         // Build the requirements with user profile if available
         var fullRequirements = requirements
 
@@ -235,7 +306,7 @@ extension AIDocumentGenerator: DependencyKey {
         return GovernmentAcquisitionPrompts.promptForDocumentType(documentType, requirements: fullRequirements)
     }
 
-    private static func getSystemPrompt(for _: DocumentType) -> String {
+    public static func getSystemPrompt(for _: DocumentType) -> String {
         // Use the government acquisition expert prompts
         GovernmentAcquisitionPrompts.systemPrompt + "\n\n" + GovernmentAcquisitionPrompts.contextPrompt
     }
@@ -729,7 +800,7 @@ extension AIDocumentGenerator: DependencyKey {
         }
     }
 
-    private static func createDFPrompt(for dfDocumentType: DFDocumentType, requirements: String, template: String, quickReference: String, profile _: UserProfile?) -> String {
+    public static func createDFPrompt(for dfDocumentType: DFDocumentType, requirements: String, template: String, quickReference: String, profile _: UserProfile?) -> String {
         """
         You are creating a Determination and Findings (D&F) document for: \(dfDocumentType.rawValue)
 
@@ -754,7 +825,7 @@ extension AIDocumentGenerator: DependencyKey {
         """
     }
 
-    private static func getDFSystemPrompt(for dfDocumentType: DFDocumentType) -> String {
+    public static func getDFSystemPrompt(for dfDocumentType: DFDocumentType) -> String {
         let formattingInstructions = """
 
         FORMATTING INSTRUCTIONS:
@@ -776,7 +847,7 @@ extension AIDocumentGenerator: DependencyKey {
         """
     }
 
-    private static func createTemplateBasedPrompt(
+    public static func createTemplateBasedPrompt(
         for documentType: DocumentType,
         requirements: String,
         template: String,

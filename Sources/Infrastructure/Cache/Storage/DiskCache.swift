@@ -14,7 +14,7 @@ actor DiskCache: OfflineCacheProtocol {
     private let logger = Logger(subsystem: "com.aiko.cache", category: "DiskCache")
     
     /// Cache directory URL
-    private let cacheDirectory: URL
+    let cacheDirectory: URL
     
     /// Cache configuration
     private let configuration: OfflineCacheConfiguration
@@ -188,7 +188,7 @@ actor DiskCache: OfflineCacheProtocol {
     }
     
     /// Remove expired entries
-    func removeExpiredEntries() async {
+    private func removeExpiredEntries() async {
         let expiredKeys = metadata.compactMap { key, entry in
             entry.isExpired ? key : nil
         }

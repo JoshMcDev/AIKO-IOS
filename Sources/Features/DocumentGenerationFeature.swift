@@ -64,8 +64,10 @@ public struct DocumentGenerationFeature {
     }
 
     @Dependency(\.aiDocumentGenerator) var aiDocumentGenerator
+    @Dependency(\.parallelDocumentGenerator) var parallelDocumentGenerator
     @Dependency(\.userProfileService) var userProfileService
     @Dependency(\.objectActionHandler) var objectActionHandler
+    @Dependency(\.documentGenerationPerformanceMonitor) var performanceMonitor
 
     public init() {}
 
@@ -129,8 +131,11 @@ public struct DocumentGenerationFeature {
                                documentTypes = state.selectedDocumentTypes,
                                dfDocumentTypes = state.status.selectedDFDocumentTypes,
                                userProfileService = self.userProfileService,
-                               objectActionHandler = self.objectActionHandler] send in
+                               objectActionHandler = self.objectActionHandler,
+                               performanceMonitor = self.performanceMonitor] send in
                         do {
+                            // Start performance monitoring session
+                            let _ = await performanceMonitor.startSession()
                             var documents: [GeneratedDocument] = []
                             let context = await ActionContext(
                                 userId: (try? userProfileService.loadProfile())?.id.uuidString ?? "anonymous",
@@ -186,21 +191,39 @@ public struct DocumentGenerationFeature {
                                 }
                             }
 
-                            // Generate standard documents
-                            if !documentTypes.isEmpty {
-                                let standardDocs = try await aiDocumentGenerator.generateDocuments(requirements, documentTypes)
-                                documents.append(contentsOf: standardDocs)
-                            }
-
-                            // Generate D&F documents
-                            if !dfDocumentTypes.isEmpty {
-                                let dfDocs = try await aiDocumentGenerator.generateDFDocuments(requirements, dfDocumentTypes)
-                                documents.append(contentsOf: dfDocs)
-                            }
+                            // Load profile once before generation
+                            let profile = try? await userProfileService.loadProfile()
+                            
+                            // Generate standard and D&F documents in parallel
+                            async let standardDocsTask = documentTypes.isEmpty ? [] :
+                                try await parallelDocumentGenerator.generateDocumentsParallel(
+                                    requirements: requirements,
+                                    documentTypes: documentTypes,
+                                    profile: profile
+                                )
+                            
+                            async let dfDocsTask = dfDocumentTypes.isEmpty ? [] :
+                                try await parallelDocumentGenerator.generateDFDocumentsParallel(
+                                    requirements: requirements,
+                                    dfDocumentTypes: dfDocumentTypes,
+                                    profile: profile
+                                )
+                            
+                            // Await both results
+                            let (standardDocs, dfDocs) = try await (standardDocsTask, dfDocsTask)
+                            
+                            documents.append(contentsOf: standardDocs)
+                            documents.append(contentsOf: dfDocs)
 
                             await send(.documentsGenerated(documents))
+                            
+                            // End performance monitoring session
+                            await performanceMonitor.endSession()
                         } catch {
                             await send(.generationFailed(error.localizedDescription))
+                            
+                            // End performance monitoring session even on failure
+                            await performanceMonitor.endSession()
                         }
                 }
 

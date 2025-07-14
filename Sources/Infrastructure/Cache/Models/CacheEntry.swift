@@ -42,10 +42,19 @@ struct CacheEntry: Codable {
     /// Optional metadata associated with the entry
     var metadata: [String: String]?
     
+    /// Sync metadata for this entry
+    var syncMetadata: SyncMetadata?
+    
     /// Check if the entry has expired
     var isExpired: Bool {
         guard let expiresAt = expiresAt else { return false }
         return Date() > expiresAt
+    }
+    
+    /// Check if the entry needs sync
+    var needsSync: Bool {
+        guard let sync = syncMetadata else { return false }
+        return sync.syncState == .pending || sync.syncState == .error
     }
     
     /// Initialize a new cache entry
@@ -68,6 +77,10 @@ struct CacheEntry: Codable {
         self.contentType = contentType
         self.isSecure = isSecure
         self.metadata = metadata
+        
+        // Initialize sync metadata
+        let dataHash = data.base64EncodedString().data(using: .utf8)?.base64EncodedString() ?? ""
+        self.syncMetadata = SyncMetadata(dataHash: dataHash)
     }
 }
 
@@ -114,6 +127,24 @@ struct OfflineCacheStatistics: Codable {
     /// Last cleanup date
     var lastCleanup: Date?
     
+    /// Average retrieval time
+    var averageRetrievalTime: TimeInterval
+    
+    /// Average storage time
+    var averageStorageTime: TimeInterval
+    
+    /// Last synchronization date
+    var lastSync: Date?
+    
+    /// Number of pending changes
+    var pendingChanges: Int
+    
+    /// Whether currently syncing
+    var isSyncing: Bool
+    
+    /// Sync errors
+    var syncErrors: [String]
+    
     /// Initialize statistics
     init() {
         self.entryCount = 0
@@ -121,11 +152,60 @@ struct OfflineCacheStatistics: Codable {
         self.hitCount = 0
         self.missCount = 0
         self.lastCleanup = nil
+        self.averageRetrievalTime = 0
+        self.averageStorageTime = 0
+        self.lastSync = nil
+        self.pendingChanges = 0
+        self.isSyncing = false
+        self.syncErrors = []
     }
 }
 
 /// Cache metadata for management
 struct OfflineCacheMetadata: Codable {
+    /// Cache key
+    let key: String
+    
+    /// Size in bytes
+    let size: Int64
+    
+    /// Content type
+    let contentType: CacheContentType
+    
+    /// When the cache was created
+    let createdAt: Date
+    
+    /// Last accessed date
+    let lastAccessed: Date
+    
+    /// Access count
+    let accessCount: Int
+    
+    /// Expiration date
+    let expiresAt: Date?
+    
+    /// Initialize metadata for a cache entry
+    init(
+        key: String,
+        size: Int64,
+        contentType: CacheContentType,
+        createdAt: Date,
+        lastAccessed: Date,
+        accessCount: Int,
+        expiresAt: Date?
+    ) {
+        self.key = key
+        self.size = size
+        self.contentType = contentType
+        self.createdAt = createdAt
+        self.lastAccessed = lastAccessed
+        self.accessCount = accessCount
+        self.expiresAt = expiresAt
+    }
+}
+
+/// Cache configuration metadata for management
+struct CacheConfigurationMetadata: Codable {
     /// Cache version for migration purposes
     let version: String
     

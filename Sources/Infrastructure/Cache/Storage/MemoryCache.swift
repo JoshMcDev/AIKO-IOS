@@ -14,10 +14,10 @@ actor MemoryCache: OfflineCacheProtocol {
     private let logger = Logger(subsystem: "com.aiko.cache", category: "MemoryCache")
     
     /// Cache storage
-    private var storage: [String: CacheEntry] = [:]
+    var storage: [String: CacheEntry] = [:]
     
     /// Cache configuration
-    private let configuration: OfflineCacheConfiguration
+    let configuration: OfflineCacheConfiguration
     
     /// Current cache size
     private var currentSize: Int64 = 0

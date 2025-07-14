@@ -25,7 +25,7 @@ public enum DocumentCategory: String, CaseIterable {
 
     public var description: String {
         switch self {
-        case .requirements: "Define and refine acquisition requirements"
+        case .requirements: "Define and refine specifications"
         case .marketIntelligence: "Research market and analyze competition"
         case .planning: "Strategic acquisition planning documents"
         case .determinationFindings: "Justify acquisition decisions and approvals"

@@ -15,22 +15,25 @@ final class OfflineCacheManager: ObservableObject {
     static let shared = OfflineCacheManager()
     
     /// Logger for cache operations
-    private let logger = Logger(subsystem: "com.aiko.cache", category: "OfflineCacheManager")
+    let logger = Logger(subsystem: "com.aiko.cache", category: "OfflineCacheManager")
     
     /// Memory cache for fast access
-    private let memoryCache: MemoryCache
+    let memoryCache: MemoryCache
     
     /// Disk cache for persistent storage
-    private let diskCache: DiskCache
+    let diskCache: DiskCache
     
     /// Secure cache for sensitive data
-    private let secureCache: SecureCache
+    let secureCache: SecureCache
     
     /// Cache configuration
-    private let configuration: OfflineCacheConfiguration
+    let configuration: OfflineCacheConfiguration
     
     /// Cache statistics
-    @Published private(set) var statistics = OfflineCacheStatistics()
+    @Published var statistics = OfflineCacheStatistics()
+    
+    /// Sync engine for offline synchronization
+    private var syncEngine: SyncEngine?
     
     /// Private initializer
     private init(configuration: OfflineCacheConfiguration = .default) {
@@ -40,6 +43,28 @@ final class OfflineCacheManager: ObservableObject {
         self.secureCache = SecureCache(configuration: configuration)
         
         logger.info("OfflineCacheManager initialized with max size: \(configuration.maxSize)")
+        
+        // Initialize sync engine
+        Task {
+            await initializeSyncEngine()
+        }
+    }
+    
+    /// Initialize the sync engine
+    private func initializeSyncEngine() async {
+        // Get OpenRouter API key from environment or configuration
+        let apiKey = ProcessInfo.processInfo.environment["OPENROUTER_API_KEY"]
+        
+        syncEngine = SyncEngine(
+            cacheManager: self,
+            openRouterApiKey: apiKey
+        )
+        
+        if apiKey != nil {
+            logger.info("SyncEngine initialized with OpenRouter support")
+        } else {
+            logger.warning("SyncEngine initialized without OpenRouter API key")
+        }
     }
     
     /// Store an object in the appropriate cache
@@ -69,6 +94,19 @@ final class OfflineCacheManager: ObservableObject {
         
         // Update statistics
         await updateStatistics()
+        
+        // Queue for sync
+        if let syncEngine = syncEngine {
+            let encoder = JSONEncoder()
+            if let data = try? encoder.encode(object) {
+                await syncEngine.queueChange(
+                    key: key,
+                    operation: .create,
+                    data: data,
+                    contentType: type
+                )
+            }
+        }
     }
     
     /// Retrieve an object from cache
@@ -216,7 +254,7 @@ final class OfflineCacheManager: ObservableObject {
     }
     
     /// Get all cache keys
-    private func getAllKeys() async -> Set<String> {
+    func getAllKeys() async -> Set<String> {
         let memoryKeys = await memoryCache.allKeys()
         let diskKeys = await diskCache.allKeys()
         let secureKeys = await secureCache.allKeys()
@@ -229,9 +267,9 @@ final class OfflineCacheManager: ObservableObject {
         logger.debug("Removing expired entries")
         
         // Each cache implementation handles its own expiration
-        await memoryCache.removeExpiredEntries()
-        await diskCache.removeExpiredEntries()
-        await secureCache.removeExpiredEntries()
+        await memoryCache.removeExpiredMemoryEntries()
+        await diskCache.removeExpiredDiskEntries()
+        await secureCache.removeExpiredSecureEntries()
     }
     
     /// Enforce size limits
@@ -271,6 +309,50 @@ final class OfflineCacheManager: ObservableObject {
     private func evictFirstInFirstOut() async {
         // Implementation depends on creation date tracking
         logger.debug("Evicting oldest items")
+    }
+}
+
+// MARK: - Synchronization
+extension OfflineCacheManager {
+    /// Manually trigger synchronization
+    @discardableResult
+    func synchronize() async -> SyncResult? {
+        guard let syncEngine = syncEngine else {
+            logger.warning("SyncEngine not initialized")
+            return nil
+        }
+        
+        logger.info("Manually triggering synchronization")
+        return await syncEngine.performSync()
+    }
+    
+    /// Get pending changes count
+    func pendingChangesCount() async -> Int {
+        guard let syncEngine = syncEngine else { return 0 }
+        return await syncEngine.pendingChangesCount()
+    }
+    
+    /// Clear all pending changes
+    func clearPendingChanges() async {
+        guard let syncEngine = syncEngine else { return }
+        await syncEngine.clearPendingChanges()
+    }
+    
+    /// Cancel active sync
+    func cancelSync() async {
+        guard let syncEngine = syncEngine else { return }
+        await syncEngine.cancelSync()
+    }
+    
+    /// Execute VanillaIce consensus operation
+    func executeVanillaIceOperation(_ operation: VanillaIceOperation) async throws -> VanillaIceResult? {
+        guard let syncEngine = syncEngine else {
+            logger.error("SyncEngine not initialized for VanillaIce operation")
+            return nil
+        }
+        
+        logger.info("Executing VanillaIce operation")
+        return try await syncEngine.executeVanillaIceConsensus(operation: operation)
     }
 }
 

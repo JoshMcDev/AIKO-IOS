@@ -63,6 +63,24 @@
 **Priority**: High
 **Note**: Similar to Scanner Pro v.8.27.2.1384 functionality
 
+### Task 32: Object/Document Handling Integration
+- [ ] 32.1: Define handling rules and categorization system
+- [ ] 32.2: Integrate with existing document parser
+- [ ] 32.3: Enable manual object uploads with validation
+**Status**: Not Started
+**Complexity**: Medium (5/10)
+**Dependencies**: Task 1 (Document parser)
+**Priority**: High (Phase 1 requirement)
+
+### Task 33: Platform Compatibility - iPad Support
+- [ ] 33.1: Optimize UI for iPad form factors
+- [ ] 33.2: Implement touch-optimized interactions
+- [ ] 33.3: Ensure responsive layout for tablet screens
+**Status**: Not Started
+**Complexity**: Medium (5/10)
+**Dependencies**: Task 77 (UI/UX Design system)
+**Priority**: High (Phase 1 requirement)
+
 ## Phase 1 Vendor Management Tasks (High Priority)
 
 ### Task 16: Implement Vendor Quote Email Integration System
@@ -97,7 +115,7 @@
 - [ ] 27.5: Add retry mechanisms for transient failures
 **Status**: Not Started
 **Complexity**: High (7/10)
-**Priority**: High
+**Priority**: Medium (Changed from High - Performance optimization is priority)
 **Dependencies**: None (foundational task)
 
 ### Task 28: Create Modular Architecture for Plugin System
@@ -169,7 +187,7 @@
 
 ## Phase 2 Performance Optimization Tasks
 
-### Task 21: Optimize LLM Response Times
+### Task 21: Optimize LLM Response Times (AI Document Generator Performance)
 - [ ] 21.1: Profile current LLM request latencies
 - [ ] 21.2: Implement request caching strategies
 - [ ] 21.3: Add response streaming capabilities
@@ -177,10 +195,11 @@
 - [ ] 21.5: Build performance monitoring dashboard
 **Status**: Not Started
 **Complexity**: High (7/10)
-**Priority**: High
+**Priority**: High (Performance optimization priority)
 **Dependencies**: Task 2 (Adaptive prompting engine)
+**Note**: Part of 4.2x performance improvement strategy
 
-### Task 22: Implement Smart Caching Layer
+### Task 22: Implement Smart Caching Layer (Object Action Handler Optimization)
 - [ ] 22.1: Design multi-tier caching architecture
 - [ ] 22.2: Build intelligent cache invalidation
 - [ ] 22.3: Implement distributed caching system
@@ -188,8 +207,9 @@
 - [ ] 22.5: Create cache performance analytics
 **Status**: Not Started
 **Complexity**: Medium (6/10)
-**Priority**: High
+**Priority**: High (Performance optimization priority)
 **Dependencies**: Task 38 (Form caching)
+**Note**: Part of 4.2x performance improvement strategy
 
 ## Phase 2 Extensibility Tasks
 
@@ -228,7 +248,7 @@
 **Priority**: Medium
 **Dependencies**: Task 77 (UI/UX Design system)
 
-### Task 26: Create Interactive Onboarding System
+### Task 26: Create Interactive Onboarding System (Error Handling Enhancement)
 - [ ] 26.1: Design guided tour framework
 - [ ] 26.2: Build interactive tutorials
 - [ ] 26.3: Create progress tracking system
@@ -236,8 +256,129 @@
 - [ ] 26.5: Add onboarding analytics
 **Status**: Not Started
 **Complexity**: Medium (5/10)
-**Priority**: Medium
+**Priority**: Medium (Changed from High - Performance optimization is priority)
 **Dependencies**: Task 8 (User preference learning)
+
+### Task 31: Implement Currency Conversion System with Location-Based Detection
+- [ ] 31.1: Implement Location-Based Currency Detection Service
+- [ ] 31.2: Integrate Exchange Rate API Client
+- [ ] 31.3: Develop Currency Data Models and Storage
+- [ ] 31.4: Build Currency Selection UI Component
+- [ ] 31.5: Implement Core Currency Conversion Service
+- [ ] 31.6: Update Price Display Components
+- [ ] 31.7: Develop User Currency Preferences Management
+- [ ] 31.8: Build Standalone Currency Converter Tool
+- [ ] 31.9: Implement Offline Support and Background Synchronization
+**Status**: Not Started
+**Complexity**: High (8/10)
+**Priority**: High
+**Dependencies**: Task 8 (Offline caching), Task 10 (Core data models), Task 15 (Form caching), Task 26 (User preferences)
+**Note**: Auto-detect currency based on location, user override capability, real-time rates, USD default
+
+---
+
+# Integration Tasks - Performance Optimization Focus
+
+> Better-Auth + n8n + LiquidMetal Integration
+> 10 Performance-Optimized n8n Workflows for 4.2x improvement
+
+## Integration Performance Tasks (Priority: HIGH)
+
+### Task 46: Design 10 Performance-Optimized n8n Workflows
+**Status**: Planning (VanillaIce consensus obtained)
+**Complexity**: High (9/10)
+**Priority**: HIGH (Performance optimization focus)
+**Target**: 4.2x overall performance improvement
+
+#### The 10 Performance-Optimized Workflows:
+
+1. **Real-time API Batching Workflow**
+   - Performance Impact: 40% fewer API queries
+   - Implementation: Batch API calls, parallel processing
+
+2. **Auto Cache Invalidation Workflow**
+   - Performance Impact: 5x faster repeated reads
+   - Implementation: Event-driven cache management
+
+3. **Log Aggregation & Anomaly Detection Workflow**
+   - Performance Impact: 30% less downtime
+   - Implementation: Proactive issue detection
+
+4. **Auto-scaling Triggers Workflow**
+   - Performance Impact: Instant scaling
+   - Implementation: Metric-based triggers
+
+5. **DB Index Optimization Workflow**
+   - Performance Impact: 7x faster queries
+   - Implementation: Query pattern analysis
+
+6. **Rate-limiting Enforcement Workflow**
+   - Performance Impact: 99.9% uptime
+   - Implementation: Token bucket algorithm
+
+7. **Health-check Monitoring Workflow**
+   - Performance Impact: 80% faster recovery
+   - Implementation: Multi-region monitoring
+
+8. **Static Asset Preloading Workflow**
+   - Performance Impact: 60% faster initial loads
+   - Implementation: Predictive preloading
+
+9. **JWT Token Rotation Workflow**
+   - Performance Impact: 85ms auth time
+   - Implementation: Background rotation
+
+10. **Distributed Tracing Workflow**
+    - Performance Impact: 4x faster debugging
+    - Implementation: OpenTelemetry integration
+
+### Task 44: Authentication System Integration Analysis
+- [ ] 44.1: Analyze Better-Auth capabilities
+- [ ] 44.2: Design integration architecture
+- [ ] 44.3: Performance benchmarking
+**Status**: Planning
+**Complexity**: High (8/10)
+**Priority**: HIGH
+
+### Task 45: VanillaIce Multi-Model Consensus
+- [☒] 45.1: Execute consensus analysis
+- [☒] 45.2: Document recommendations
+- [☒] 45.3: Update token limits (3x increase)
+**Status**: Completed
+**Complexity**: Medium (6/10)
+**Priority**: HIGH
+
+### Task 47: LiquidMetal Architecture Analysis
+- [ ] 47.1: Analyze Raindrop serverless capabilities
+- [ ] 47.2: Design edge computing strategy
+- [ ] 47.3: Integration patterns
+**Status**: Planning
+**Complexity**: High (8/10)
+**Priority**: HIGH
+
+### Task 48: Create Integration Plan
+- [ ] 48.1: 12-week implementation timeline
+- [ ] 48.2: Resource allocation
+- [ ] 48.3: Risk mitigation strategies
+**Status**: Planning
+**Complexity**: Medium (7/10)
+**Priority**: HIGH
+
+### Task 49: Performance Benchmarking
+- [ ] 49.1: Baseline measurements
+- [ ] 49.2: Performance targets (4.2x)
+- [ ] 49.3: Monitoring setup
+**Status**: Planning
+**Complexity**: High (8/10)
+**Priority**: HIGH
+
+### Task 50: Documentation Updates
+- [☒] 50.1: Update PERFORMANCE-COMPARISON-ANALYSIS.md
+- [☒] 50.2: Update STACK-ENHANCEMENT-EXECUTIVE-SUMMARY.md
+- [ ] 50.3: Create integration guide
+**Status**: In Progress
+**Complexity**: Medium (5/10)
+**Priority**: HIGH
 
 ---
 

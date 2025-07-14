@@ -6,6 +6,10 @@ let package = Package(
     platforms: [.iOS(.v16), .macOS(.v13)],
     products: [
         .library(name: "AIKO", targets: ["AIKO"]),
+        .executable(name: "CacheInvalidationDemo", targets: ["CacheInvalidationDemo"]),
+        .executable(name: "DistributedCacheDemo", targets: ["DistributedCacheDemo"]),
+        .executable(name: "CacheWarmingDemo", targets: ["CacheWarmingDemo"]),
+        .executable(name: "CachePerformanceAnalyticsDemo", targets: ["CachePerformanceAnalyticsDemo"]),
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.8.0"),
@@ -26,7 +30,12 @@ let package = Package(
             exclude: [
                 "Infrastructure/MIGRATION_GUIDE.md",
                 "Infrastructure/DEVELOPMENT_PROTOCOL.md",
-                "Models/CoreData/FORM_MIGRATION_GUIDE.md"
+                "Models/CoreData/FORM_MIGRATION_GUIDE.md",
+                "Resources/Regulations",  // Exclude HTML regulation files
+                "Resources/Clauses/clauseSelectionEngine.ts",
+                "Resources/Clauses/ClauseSelectionEngine.md",
+                "Resources/Clauses/ClauseDatabase.json",
+                "Resources/Clauses/ClauseSelection_QuickReference.md"
             ],
             resources: [
                 .copy("Resources/DFTemplates"),
@@ -56,8 +65,53 @@ let package = Package(
                 "Test_Documentation/TestDoc_02_ComprehensiveTestReport.md",
                 "Test_Documentation/TestDoc_03_MCPTestFramework.md",
                 "Test_Documentation/TestDoc_04_TestResultsTemplate.md",
-                "Test_Documentation/TestDoc_05_TestScenarios.md"
+                "Test_Documentation/TestDoc_05_TestScenarios.md",
+                "OCRValidation"  // Exclude OCR validation markdown files
             ]
+        ),
+        .executableTarget(
+            name: "CacheInvalidationDemo",
+            dependencies: ["AIKO"],
+            path: "DemoExecutables",
+            exclude: [
+                "DistributedCacheDemoRunner.swift",
+                "CacheWarmingDemoRunner.swift",
+                "CachePerformanceAnalyticsDemoRunner.swift"
+            ],
+            sources: ["CacheInvalidationDemoRunner.swift"]
+        ),
+        .executableTarget(
+            name: "DistributedCacheDemo",
+            dependencies: ["AIKO"],
+            path: "DemoExecutables",
+            exclude: [
+                "CacheInvalidationDemoRunner.swift",
+                "CacheWarmingDemoRunner.swift",
+                "CachePerformanceAnalyticsDemoRunner.swift"
+            ],
+            sources: ["DistributedCacheDemoRunner.swift"]
+        ),
+        .executableTarget(
+            name: "CacheWarmingDemo",
+            dependencies: ["AIKO"],
+            path: "DemoExecutables",
+            exclude: [
+                "CacheInvalidationDemoRunner.swift",
+                "DistributedCacheDemoRunner.swift",
+                "CachePerformanceAnalyticsDemoRunner.swift"
+            ],
+            sources: ["CacheWarmingDemoRunner.swift"]
+        ),
+        .executableTarget(
+            name: "CachePerformanceAnalyticsDemo",
+            dependencies: ["AIKO"],
+            path: "DemoExecutables",
+            exclude: [
+                "CacheInvalidationDemoRunner.swift",
+                "DistributedCacheDemoRunner.swift",
+                "CacheWarmingDemoRunner.swift"
+            ],
+            sources: ["CachePerformanceAnalyticsDemoRunner.swift"]
         ),
     ]
 )

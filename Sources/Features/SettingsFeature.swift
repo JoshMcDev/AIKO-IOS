@@ -46,6 +46,7 @@ public struct SettingsFeature {
         case notifications = "Notifications"
         case dataPrivacy = "Data & Privacy"
         case advanced = "Advanced"
+        case performance = "Performance"
 
         var icon: String {
             switch self {
@@ -55,6 +56,7 @@ public struct SettingsFeature {
             case .notifications: "bell"
             case .dataPrivacy: "lock.shield"
             case .advanced: "wrench.and.screwdriver"
+            case .performance: "speedometer"
             }
         }
     }

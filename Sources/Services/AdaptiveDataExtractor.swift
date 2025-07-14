@@ -77,6 +77,7 @@ public struct LearnedPattern: Codable {
 }
 
 /// Adaptive data extractor that learns from patterns
+@MainActor
 public class AdaptiveDataExtractor {
     private let coreDataManager: CoreDataManager
     private let patternLearner: PatternLearner
@@ -378,7 +379,7 @@ public class AdaptiveDataExtractor {
         var mappings: [DatabaseMapping] = []
         
         // Group related objects
-        let documentData = DocumentData(context: await coreDataManager.viewContext)
+        let documentData = DocumentData(context: coreDataManager.viewContext)
         documentData.id = UUID()
         documentData.timestamp = Date()
         
@@ -407,7 +408,7 @@ public class AdaptiveDataExtractor {
         
         // Create searchable attributes
         for object in objects {
-            let attribute = DocumentAttribute(context: await coreDataManager.viewContext)
+            let attribute = DocumentAttribute(context: coreDataManager.viewContext)
             attribute.id = UUID()
             attribute.fieldName = object.fieldName
             attribute.fieldValue = object.value
@@ -423,7 +424,7 @@ public class AdaptiveDataExtractor {
             ))
         }
         
-        try await coreDataManager.viewContext.save()
+        try coreDataManager.viewContext.save()
         
         return mappings
     }

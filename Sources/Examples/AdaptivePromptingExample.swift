@@ -29,7 +29,7 @@ public class AdaptivePromptingExample {
             let extractedContext = try await promptingEngine.extractContextFromDocuments([parsedDocument])
             
             if let vendor = extractedContext.vendorInfo {
-                print("   ✓ Found vendor: \(vendor.name)")
+                print("   ✓ Found vendor: \(vendor.name ?? "Unknown")")
                 if let uei = vendor.uei {
                     print("   - UEI: \(uei)")
                 }
@@ -59,7 +59,7 @@ public class AdaptivePromptingExample {
             // Show how pre-filled data reduces questions
             print("\n4. Pre-filled data from document:")
             if let vendorInfo = session.collectedData.vendorInfo {
-                print("   - Vendor: \(vendorInfo.name)")
+                print("   - Vendor: \(vendorInfo.name ?? "Unknown")")
             }
             if let value = session.collectedData.estimatedValue {
                 print("   - Estimated value: $\(value)")
@@ -67,7 +67,7 @@ public class AdaptivePromptingExample {
             
             // Simulate user responses
             print("\n5. Simulating user interaction...")
-            var currentSession = session
+            let currentSession = session
             
             // Answer first question
             if let firstQuestion = currentSession.remainingQuestions.first {
