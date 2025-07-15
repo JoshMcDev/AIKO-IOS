@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import UniformTypeIdentifiers
 
 // MARK: - Core Protocol
 
@@ -480,6 +481,7 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
     private let documentParser: DocumentParserEnhanced
     private let learningEngine: UserPatternLearningEngine
     private let contextExtractor: DocumentContextExtractor
+    private var unifiedExtractor: UnifiedDocumentContextExtractor?
     private let questionGenerator: DynamicQuestionGenerator
     
     public init() {
@@ -487,6 +489,11 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
         self.learningEngine = UserPatternLearningEngine()
         self.contextExtractor = DocumentContextExtractor()
         self.questionGenerator = DynamicQuestionGenerator()
+        
+        // UnifiedDocumentContextExtractor must be initialized on MainActor
+        Task { @MainActor in
+            self.unifiedExtractor = UnifiedDocumentContextExtractor()
+        }
     }
     
     public func startConversation(with context: ConversationContext) async -> ConversationSession {
@@ -557,6 +564,42 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
     
     public func extractContextFromDocuments(_ documents: [ParsedDocument]) async throws -> ExtractedContext {
         try await contextExtractor.extract(from: documents)
+    }
+    
+    /// Enhanced document context extraction using unified extractor
+    /// This method handles raw document data and performs comprehensive extraction
+    public func extractContextFromRawDocuments(
+        _ documentData: [(data: Data, type: UTType)],
+        withHints: [String: Any]? = nil
+    ) async throws -> ExtractedContext {
+        // Ensure unifiedExtractor is initialized
+        if unifiedExtractor == nil {
+            await MainActor.run {
+                self.unifiedExtractor = UnifiedDocumentContextExtractor()
+            }
+        }
+        
+        guard let extractor = unifiedExtractor else {
+            throw DocumentParserError.unsupportedFormat
+        }
+        
+        let comprehensiveContext = try await extractor.extractComprehensiveContext(
+            from: documentData,
+            withHints: withHints
+        )
+        
+        // Log extraction summary for debugging
+        print("Document extraction completed: \(comprehensiveContext.summary)")
+        
+        // Store parsed documents for future reference
+        // This could be used for learning patterns
+        for result in comprehensiveContext.adaptiveResults {
+            for pattern in result.appliedPatterns {
+                print("Applied pattern: \(pattern)")
+            }
+        }
+        
+        return comprehensiveContext.extractedContext
     }
     
     public func learnFromInteraction(_ interaction: APEUserInteraction) async {
