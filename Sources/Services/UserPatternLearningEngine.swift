@@ -5,16 +5,48 @@ import CoreML
 
 /// Advanced pattern learning engine that uses ML to predict user preferences
 /// and reduce the number of questions needed during data collection
-public class UserPatternLearningEngine {
+public final class UserPatternLearningEngine: @unchecked Sendable {
     
     // MARK: - Properties
     
-    private var patternHistory: [RequirementField: [PatternData]] = [:]
-    private var userDefaults: [RequirementField: FieldDefault] = [:]
-    private var contextualPatterns: [ContextualPattern] = []
-    private var fieldRelationships: [FieldRelationship] = []
-    private var temporalPatterns: [TemporalPattern] = []
-    private var confidenceThresholds: [RequirementField: Float] = [:]
+    private let queue = DispatchQueue(label: "com.aiko.pattern.learning.sync", attributes: .concurrent)
+    private var _patternHistory: [RequirementField: [PatternData]] = [:]
+    private var _userDefaults: [RequirementField: FieldDefault] = [:]
+    private var _contextualPatterns: [ContextualPattern] = []
+    private var _fieldRelationships: [FieldRelationship] = []
+    private var _temporalPatterns: [TemporalPattern] = []
+    private var _confidenceThresholds: [RequirementField: Float] = [:]
+    
+    // Thread-safe accessors
+    private var patternHistory: [RequirementField: [PatternData]] {
+        get { queue.sync { _patternHistory } }
+        set { queue.async(flags: .barrier) { self._patternHistory = newValue } }
+    }
+    
+    private var userDefaults: [RequirementField: FieldDefault] {
+        get { queue.sync { _userDefaults } }
+        set { queue.async(flags: .barrier) { self._userDefaults = newValue } }
+    }
+    
+    private var contextualPatterns: [ContextualPattern] {
+        get { queue.sync { _contextualPatterns } }
+        set { queue.async(flags: .barrier) { self._contextualPatterns = newValue } }
+    }
+    
+    private var fieldRelationships: [FieldRelationship] {
+        get { queue.sync { _fieldRelationships } }
+        set { queue.async(flags: .barrier) { self._fieldRelationships = newValue } }
+    }
+    
+    private var temporalPatterns: [TemporalPattern] {
+        get { queue.sync { _temporalPatterns } }
+        set { queue.async(flags: .barrier) { self._temporalPatterns = newValue } }
+    }
+    
+    private var confidenceThresholds: [RequirementField: Float] {
+        get { queue.sync { _confidenceThresholds } }
+        set { queue.async(flags: .barrier) { self._confidenceThresholds = newValue } }
+    }
     
     private let persistenceKey = "UserPatternLearningEngine.patterns"
     private let contextPersistenceKey = "UserPatternLearningEngine.contextual"
@@ -42,6 +74,7 @@ public class UserPatternLearningEngine {
     public func learn(from interaction: APEUserInteraction) async {
         // Store pattern data with enhanced context
         var patterns = patternHistory[interaction.field] ?? []
+        
         let patternData = PatternData(
             value: String(describing: interaction.finalValue),
             timestamp: Date(),
@@ -63,8 +96,8 @@ public class UserPatternLearningEngine {
         // Update ML model if sufficient data
         if shouldUpdateModel(for: interaction.field) {
             let field = interaction.field
-            modelUpdateQueue.async { [weak self] in
-                self?.updatePredictionModel(for: field)
+            Task {
+                await updatePredictionModel(for: field)
             }
         }
         
@@ -236,7 +269,7 @@ public class UserPatternLearningEngine {
     
     // MARK: - ML Model Methods
     
-    private func updatePredictionModel(for field: RequirementField) {
+    private func updatePredictionModel(for field: RequirementField) async {
         guard let patterns = patternHistory[field],
               patterns.count >= 20 else { return }
         
