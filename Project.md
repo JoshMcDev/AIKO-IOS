@@ -20,10 +20,11 @@ Build an intelligent iOS/macOS application that revolutionizes government contra
 
 ### Core Technologies
 - **Frontend**: SwiftUI + The Composable Architecture (TCA)
+- **Authentication**: Better-Auth (Government Compliance - FISMA, FedRAMP)
 - **Persistence**: Core Data + CloudKit
-- **AI Integration**: Claude API + Local Pattern Learning
+- **AI Integration**: Multi-Provider LLM Support (Claude, OpenAI, Gemini) + Local Pattern Learning + Future Raindrop LNN
 - **Document Processing**: Vision Framework + Custom OCR
-- **Workflow Automation**: Hybrid n8n + Native iOS
+- **Workflow Automation**: n8n (Performance-First Backend) + Native iOS (Thin Client)
 
 ### Architecture Decisions
 

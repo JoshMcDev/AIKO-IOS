@@ -50,14 +50,16 @@ Build an intelligent iOS/macOS application that revolutionizes government contra
   - Create contextual default values
   - Build confidence-based auto-fill
   
-- **2.5** Integrate with Claude API for natural conversation & document generation 📅
-  - Set up Claude API client
-  - Implement conversation state management
-  - Create response parsing system
-  - Build error handling and retry logic
-  - Implement Letter of Justification generation prompts
-  - Create document generation templates
-  - Build context-aware content generation
+- **2.5** Implement Multi-Provider LLM Integration (API Key Agnostic) 📅
+  - Design LLMProviderProtocol for vendor-agnostic architecture
+  - Build secure API key storage using Keychain Services
+  - Create provider adapters (Claude, OpenAI, Google Gemini)
+  - Implement graceful fallback system between providers
+  - Build provider selection UI with capabilities display
+  - Create unified conversation state management
+  - Implement Letter of Justification generation (provider-agnostic)
+  - Build context-aware document generation templates
+  - Add provider-specific feature handling
 
 ### Phase 3: Document Processing & Compliance Core 📅
 
