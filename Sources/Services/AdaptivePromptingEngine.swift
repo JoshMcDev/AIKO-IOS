@@ -294,6 +294,7 @@ public enum RequirementField: String, CaseIterable, Equatable, Sendable {
     case paymentTerms
     case warrantyRequirements
     case attachments
+    case pointOfContact
 }
 
 public struct ValidationRule: Equatable {
@@ -973,6 +974,7 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
         case .paymentTerms: return false // Not in current data model
         case .warrantyRequirements: return false // Not in current data model
         case .attachments: return !data.attachments.isEmpty
+        case .pointOfContact: return false // Not in current data model
         }
     }
     
@@ -1031,6 +1033,9 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
             break
         case .attachments:
             // Attachments are handled differently
+            break
+        case .pointOfContact:
+            // Point of contact not yet in data model
             break
         }
     }

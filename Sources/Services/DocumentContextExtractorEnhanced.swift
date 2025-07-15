@@ -3,8 +3,9 @@ import Foundation
 // MARK: - Enhanced Document Context Extractor
 
 /// Enhanced version that integrates with AdaptiveDataExtractor for better pattern learning
-@MainActor
-public class DocumentContextExtractorEnhanced {
+public class DocumentContextExtractorEnhanced: @unchecked Sendable {
+    public static let shared = DocumentContextExtractorEnhanced()
+    
     private let adaptiveExtractor: AdaptiveDataExtractor
     private let baseExtractor: DocumentContextExtractor
     

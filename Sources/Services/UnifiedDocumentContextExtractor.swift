@@ -7,6 +7,17 @@ import UniformTypeIdentifiers
 /// Unified service that orchestrates all document extraction components
 /// for the Adaptive Prompting Engine
 public class UnifiedDocumentContextExtractor {
+    /// Shared instance for non-MainActor contexts
+    @MainActor
+    public static let shared = UnifiedDocumentContextExtractor()
+    
+    /// Non-MainActor shared instance for dependency injection
+    public static let sharedNonMainActor = UnifiedDocumentContextExtractor(
+        documentParser: DocumentParserEnhanced(),
+        contextExtractor: DocumentContextExtractorEnhanced.shared,
+        adaptiveExtractor: AdaptiveDataExtractor.shared
+    )
+    
     private let documentParser: DocumentParserEnhanced
     private let contextExtractor: DocumentContextExtractorEnhanced
     private let adaptiveExtractor: AdaptiveDataExtractor
@@ -16,6 +27,16 @@ public class UnifiedDocumentContextExtractor {
         self.documentParser = DocumentParserEnhanced()
         self.contextExtractor = DocumentContextExtractorEnhanced()
         self.adaptiveExtractor = AdaptiveDataExtractor()
+    }
+    
+    public init(
+        documentParser: DocumentParserEnhanced,
+        contextExtractor: DocumentContextExtractorEnhanced,
+        adaptiveExtractor: AdaptiveDataExtractor
+    ) {
+        self.documentParser = documentParser
+        self.contextExtractor = contextExtractor
+        self.adaptiveExtractor = adaptiveExtractor
     }
     
     /// Main entry point for document context extraction

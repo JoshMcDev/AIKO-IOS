@@ -447,6 +447,7 @@ extension RequirementField {
         case .paymentTerms: return "Payment Terms"
         case .warrantyRequirements: return "Warranty Requirements"
         case .attachments: return "Attachments"
+        case .pointOfContact: return "Point of Contact"
         }
     }
 }

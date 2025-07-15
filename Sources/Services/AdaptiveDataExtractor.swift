@@ -77,9 +77,9 @@ public struct LearnedPattern: Codable {
 }
 
 /// Adaptive data extractor that learns from patterns
-@MainActor
-public class AdaptiveDataExtractor {
-    private let coreDataManager: CoreDataManager
+public class AdaptiveDataExtractor: @unchecked Sendable {
+    public static let shared = AdaptiveDataExtractor()
+    
     private let patternLearner: PatternLearner
     private let fieldNormalizer: FieldNormalizer
     
@@ -88,11 +88,12 @@ public class AdaptiveDataExtractor {
     private let patternUpdateSubject = PassthroughSubject<LearnedPattern, Never>()
     
     public init() {
-        self.coreDataManager = CoreDataManager.shared
         self.patternLearner = PatternLearner()
         self.fieldNormalizer = FieldNormalizer()
         
-        loadLearnedPatterns()
+        Task { @MainActor in
+            loadLearnedPatterns()
+        }
     }
     
     // MARK: - Main Extraction Method
@@ -375,11 +376,12 @@ public class AdaptiveDataExtractor {
     
     // MARK: - Database Mapping
     
+    @MainActor
     private func mapToDatabase(_ objects: [DynamicValueObject]) async throws -> [DatabaseMapping] {
         var mappings: [DatabaseMapping] = []
         
         // Group related objects
-        let documentData = DocumentData(context: coreDataManager.viewContext)
+        let documentData = DocumentData(context: CoreDataManager.shared.viewContext)
         documentData.id = UUID()
         documentData.timestamp = Date()
         
@@ -408,7 +410,7 @@ public class AdaptiveDataExtractor {
         
         // Create searchable attributes
         for object in objects {
-            let attribute = DocumentAttribute(context: coreDataManager.viewContext)
+            let attribute = DocumentAttribute(context: CoreDataManager.shared.viewContext)
             attribute.id = UUID()
             attribute.fieldName = object.fieldName
             attribute.fieldValue = object.value
@@ -424,7 +426,7 @@ public class AdaptiveDataExtractor {
             ))
         }
         
-        try coreDataManager.viewContext.save()
+        try CoreDataManager.shared.viewContext.save()
         
         return mappings
     }

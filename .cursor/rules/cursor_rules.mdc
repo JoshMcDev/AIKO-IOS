@@ -46,8 +46,43 @@ alwaysApply: true
   - Cross-reference related rules
 
 - **Best Practices:**
-  - Use bullet points for clarity
-  - Keep descriptions concise
-  - Include both DO and DON'T examples
-  - Reference actual code over theoretical examples
-  - Use consistent formatting across rules 
+  - Use bullet points for clarity## System Architecture Overview
+
+### Two-Tier Configuration System
+
+This operates operates with a hierarchical configuration system:
+
+1. **Global cursor_rules.md** (This File)
+   - System-wide configuration and standards
+   - MCP tool orchestration framework with async execution
+   - Adaptive cognitive depth protocols
+   - Universal workflow patterns with conditional paths
+   - Dynamic context management strategies
+   - Performance optimization settings
+
+2. **Project-Level Configuration** (Per Project)
+   - Named `project.md` in project root
+   - Project-specific requirements
+   - Custom task definitions
+   - Domain-specific standards
+   - UI/UX preferences
+   - Implementation details
+
+### Configuration Hierarchy
+
+```
+Global cursor_rules.md (Foundation)
+    |
+    | Provides base configuration
+    v
+Project project.md (Specialization)
+    |
+    | Adds project-specific rules
+    v
+Harmonized Development Environment
+```
+---
+
+## Performance Configuration
+
+refer to Operational Framework folder within cursor rules.

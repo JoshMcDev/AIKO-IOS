@@ -51,6 +51,17 @@ public final class SmartDefaultsEngine: @unchecked Sendable {
         )
     }
     
+    // Non-MainActor factory method for dependency injection
+    public static func createForDependency() -> SmartDefaultsEngine {
+        let patternEngine = UserPatternLearningEngine()
+        return SmartDefaultsEngine(
+            smartDefaultsProvider: SmartDefaultsProvider.shared,
+            patternLearningEngine: patternEngine,
+            contextExtractor: UnifiedDocumentContextExtractor.sharedNonMainActor,
+            contextualDefaultsProvider: EnhancedContextualDefaultsProvider()
+        )
+    }
+    
     // MARK: - Public Methods
     
     /// Get intelligent default for a specific field with unified confidence scoring
@@ -529,7 +540,7 @@ public final class SmartDefaultsEngine: @unchecked Sendable {
 
 // MARK: - Supporting Types
 
-public struct SmartDefaultContext {
+public struct SmartDefaultContext: Equatable {
     public let sessionId: UUID
     public let userId: String
     public let organizationUnit: String

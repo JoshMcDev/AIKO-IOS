@@ -560,7 +560,7 @@ extension RequirementsData {
         case .justification: return businessJustification
         case .fundingSource, .requisitionNumber, .costCenter, .accountingCode,
              .qualityRequirements, .deliveryInstructions, .packagingRequirements,
-             .inspectionRequirements, .paymentTerms, .warrantyRequirements:
+             .inspectionRequirements, .paymentTerms, .warrantyRequirements, .pointOfContact:
             return nil // These fields are not yet in the data model
         case .attachments: return attachments
         }
