@@ -83,12 +83,13 @@ Build an intelligent iOS/macOS application that revolutionizes government contra
 
 ### Phase 4: Form Intelligence & Automation 📅
 
-#### Task 5: Build Context-aware Prompting for Form Fields
-- **5.1** Create system that provides intelligent suggestions based on field context
-- **5.2** Implement dynamic prompting based on document type
-- **5.3** Build user history integration for personalized suggestions
-- **5.4** Create confidence-based auto-completion
-- **5.5** Implement real-time validation with helpful prompts
+#### Task 5: Implement Better-Auth for Government Security Compliance 🚧
+- **5.1** Week 1-2: Assessment and Planning - Evaluate Better-Auth features and compliance certifications
+- **5.2** Week 3-4: SDK Integration - Integrate Better-Auth API/SDK with SwiftUI/TCA architecture
+- **5.3** Week 5-6: Multi-tenant & Offline Auth - Implement data isolation and offline authentication
+- **5.4** Week 7-8: Security Testing & Compliance Verification - Conduct extensive testing and audits
+- **5.5** Week 9-10: Finalization and Deployment - Deploy with biometric auth and MFA support
+**Timeline**: 10-12 weeks | **Priority**: CRITICAL for government compliance
 
 #### Task 6: Implement One-click Document Chain Automation
 - **6.1** Design document chain workflow engine for acquisition sequences
@@ -181,19 +182,21 @@ Build an intelligent iOS/macOS application that revolutionizes government contra
 - **31.5** Build performance testing suite
 
 #### Task 12: n8n Workflow Automation (Performance-First Strategy) 🚧
-> **Note**: Following a performance-first architecture to ensure enterprise-scale reliability before implementing business logic. See `/Users/J/Desktop/n8n aiko/` for detailed documentation and completed workflows.
+> **Note**: Following a performance-first architecture to ensure enterprise-scale reliability before implementing business logic. iOS app acts as "thin client" with n8n as backend workhorse. See `/Users/J/Desktop/n8n aiko/` for detailed documentation and completed workflows.
 
-##### Phase 1: Performance Foundation (Weeks 1-6) - 20% Complete
+##### Phase 1: Performance Foundation (3-6 months) - 20% Complete
 - **12.1.1** Real-time API Batching (40% fewer queries) ✅
 - **12.1.2** Auto Cache Invalidation (5x faster reads) ✅
-- **12.1.3** Log Aggregation & Anomaly Detection (30% less downtime) 📅
-- **12.1.4** Auto-scaling Triggers (instant scaling) 📅
-- **12.1.5** DB Index Optimization (7x faster queries) 📅
-- **12.1.6** Rate-limiting (99.9% uptime) 📅
-- **12.1.7** Health Monitoring (80% faster recovery) 📅
-- **12.1.8** Asset Preloading (60% faster loads) 📅
-- **12.1.9** JWT Rotation (85ms auth time) 📅
-- **12.1.10** Distributed Tracing (4x debug speed) 📅
+- **12.1.3** Secure API Gateway - Intermediary layer between iOS and n8n 🚧
+- **12.1.4** Asynchronous Fire-and-Forget Triggers - Instant UI feedback 🚧
+- **12.1.5** Log Aggregation & Anomaly Detection (30% less downtime) 📅
+- **12.1.6** Auto-scaling Triggers (instant scaling) 📅
+- **12.1.7** DB Index Optimization (7x faster queries) 📅
+- **12.1.8** Rate-limiting (99.9% uptime) 📅
+- **12.1.9** Health Monitoring (80% faster recovery) 📅
+- **12.1.10** Asset Preloading (60% faster loads) 📅
+- **12.1.11** JWT Rotation (85ms auth time) - TO BE REPLACED BY Better-Auth 📅
+- **12.1.12** Distributed Tracing (4x debug speed) 📅
 
 ##### Phase 2: Business Process Automation (Weeks 7-12) - Pending
 - **12.2.1** Intelligent Requirement Intake 📅
@@ -531,12 +534,15 @@ Build an intelligent iOS/macOS application that revolutionizes government contra
 
 ### Phase 16: Future Enhancements
 
-#### Task 22: Raindrop (liquid.ai) Integration
-- **22.1** Research liquid neural networks
-- **22.2** Design adaptive AI architecture
-- **22.3** Implement continuous learning
-- **22.4** Build real-time adaptation
-- **22.5** Create performance benchmarks
+#### Task 22: Raindrop (liquid.ai) Integration - Future Enhancement 📅
+> **Note**: Implement after core adaptive engine (Tasks 2.3-2.5) is complete. Provides continuous learning without app updates.
+
+- **22.1** Phase 1 (Weeks 1-4): On-device LNN prototype - Validate real-time adaptation and privacy compliance
+- **22.2** Phase 2 (Weeks 5-8): Hybrid deployment - On-device inference + cloud federated learning
+- **22.3** Phase 3 (Weeks 9-12): Full integration - Replace static DNNs with LNNs where beneficial
+- **22.4** Implement OTA model sync for seamless updates without app store releases
+- **22.5** Create performance benchmarks - Test on iPhone 14+ and M1 Mac
+**Timeline**: 12 weeks | **Priority**: LOW - Future enhancement after core features
 
 #### Task 23: Advanced AI Features
 - **23.1** Multi-modal document understanding
@@ -570,12 +576,30 @@ Build an intelligent iOS/macOS application that revolutionizes government contra
 
 ## 🎯 Current Sprint Focus
 
-**Sprint**: Adaptive Intelligence Foundation  
-**Duration**: 2 weeks  
+**Sprint**: Adaptive Intelligence Foundation + Critical Security  
+**Duration**: 2-4 weeks  
 **Goals**:
 1. Complete Task 2.3: User Pattern Learning Module
 2. Complete Task 2.4: Smart Defaults System
 3. Begin Task 2.5: Claude API Integration
+4. **CRITICAL**: Start Task 5: Better-Auth Implementation for Government Compliance
+
+## 🔐 Critical Integration Priorities (Based on VanillaIce Consensus)
+
+1. **Better-Auth** (10-12 weeks) - **IMMEDIATE PRIORITY**
+   - Required for government security compliance (FISMA, FedRAMP, NIST)
+   - Replaces current JWT rotation with secure token management
+   - Enables biometric auth, multi-tenant isolation, offline-first
+
+2. **n8n Workflows** (Phase 1: 3-6 months) - **ONGOING**
+   - Continue performance foundation (8 workflows remaining)
+   - iOS as "thin client", n8n as backend workhorse
+   - API Gateway and async triggers are next priorities
+
+3. **Raindrop LNN** (12 weeks) - **FUTURE ENHANCEMENT**
+   - Implement after core adaptive engine is complete
+   - Provides continuous learning without app updates
+   - Hybrid on-device/cloud approach with federated learning
 
 ---
 
