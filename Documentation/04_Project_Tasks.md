@@ -107,9 +107,8 @@ Build an intelligent iOS/macOS application that revolutionizes government contra
 
 #### Task 9: External System Integration
 - **9.1** SAM.gov API integration
-- **9.2** FBO/Contract Opportunities integration    SHOULD BE FPDS-NG/OTHERS SEARCH CONTRACTS INFO
-- **9.3** Document management system integration
-- **9.4** Email and calendar integration
+- **9.2** Document management system integration
+- **9.3** Email and calendar integration
 
 #### Task 10: Better_Auth Implementation
 - **10.1** Set up authentication infrastructure
@@ -226,15 +225,15 @@ Build an intelligent iOS/macOS application that revolutionizes government contra
 
 ## 📊 Progress Overview
 
-### Completed Tasks: 8/98 (8.2%)
+### Completed Tasks: 8/97 (8.2%)
 - ✅ Tasks 1.1-1.6 (Foundation)
 - ✅ Tasks 2.1-2.2 (Adaptive Engine basics)
 
-### In Progress: 2/98 (2%)
+### In Progress: 2/97 (2.1%)
 - 🚧 Task 2 (Adaptive Prompting Engine)
 - 🚧 Task 2.3 (User Pattern Learning)
 
-### Pending: 88/98 (89.8%)
+### Pending: 87/97 (89.7%)
 - 📅 Remaining tasks across all phases
 
 ---
