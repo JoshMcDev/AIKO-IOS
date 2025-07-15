@@ -4,8 +4,10 @@ import ComposableArchitecture
 // MARK: - Smart Defaults Provider
 
 /// Provides intelligent default values for forms based on context and learned patterns
-@MainActor
-public class SmartDefaultsProvider {
+public class SmartDefaultsProvider: @unchecked Sendable {
+    
+    /// Shared instance
+    public static let shared = SmartDefaultsProvider()
     
     // MARK: - Types
     
@@ -50,7 +52,7 @@ public class SmartDefaultsProvider {
         public let daysUntilFYEnd: Int
     }
     
-    public struct OrganizationalRule {
+    public struct OrganizationalRule: Equatable {
         public let field: String
         public let condition: String
         public let value: String

@@ -65,6 +65,8 @@ public struct NavigationFeature {
                     state.currentView = .acquisitionChat
                 case .samGovLookup:
                     state.currentView = .samGovLookup
+                case .smartDefaultsDemo:
+                    state.currentView = .smartDefaultsDemo
                 case let .view(appView):
                     state.currentView = appView
                 }
@@ -135,6 +137,7 @@ public enum NavigationDestination: Equatable {
     case settings
     case acquisitionChat
     case samGovLookup
+    case smartDefaultsDemo
     case view(NavigationView)
 }
 
@@ -147,6 +150,7 @@ public enum NavigationView: String, CaseIterable, Equatable {
     case settings = "Settings"
     case samGovLookup = "SAM.gov Lookup"
     case acquisitionChat = "Acquisition Chat"
+    case smartDefaultsDemo = "Smart Defaults Demo"
     case loading = "Loading"
 
     public var iconName: String {
@@ -167,6 +171,8 @@ public enum NavigationView: String, CaseIterable, Equatable {
             "building.2"
         case .acquisitionChat:
             "message"
+        case .smartDefaultsDemo:
+            "wand.and.stars"
         case .loading:
             "hourglass"
         }
@@ -192,6 +198,7 @@ public struct MenuItem: Equatable, Identifiable {
         MenuItem(id: "chat", title: "Acquisition Chat", icon: "message", destination: .acquisitionChat),
         MenuItem(id: "templates", title: "Search Templates", icon: "magnifyingglass", destination: .searchTemplates),
         MenuItem(id: "sam", title: "SAM.gov Lookup", icon: "building.2", destination: .samGovLookup),
+        MenuItem(id: "smartDefaults", title: "Smart Defaults Demo", icon: "wand.and.stars", destination: .smartDefaultsDemo),
         MenuItem(id: "guide", title: "User Guide", icon: "book", destination: .userGuide),
         MenuItem(id: "settings", title: "Settings", icon: "gear", destination: .settings),
     ]
