@@ -12,9 +12,7 @@ import SwiftUI
 struct AppIconView: View {
     var body: some View {
         #if os(iOS)
-            if let data = try? Data(contentsOf: URL(fileURLWithPath: "/Users/J/Documents/GitHub/AIKO-IOS/Sources/Resources/AppIcon.png")),
-               let uiImage = UIImage(data: data)
-            {
+            if let uiImage = UIImage(named: "AppIcon", in: Bundle.main, compatibleWith: nil) {
                 Image(uiImage: uiImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -52,14 +50,22 @@ struct AppIconView: View {
             }
         #else
             // macOS version
-            RoundedRectangle(cornerRadius: 11)
-                .fill(Color.blue)
-                .overlay(
-                    Image(systemName: "scroll")
-                        .font(.system(size: 20))
-                        .foregroundColor(.white)
-                )
-                .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+            if let nsImage = NSImage(named: "AppIcon") {
+                Image(nsImage: nsImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .clipShape(RoundedRectangle(cornerRadius: 11))
+                    .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+            } else {
+                RoundedRectangle(cornerRadius: 11)
+                    .fill(Color.blue)
+                    .overlay(
+                        Image(systemName: "scroll")
+                            .font(.system(size: 20))
+                            .foregroundColor(.white)
+                    )
+                    .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+            }
         #endif
     }
 }
