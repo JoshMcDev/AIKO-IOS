@@ -405,7 +405,7 @@ public struct ExtractedDates: Equatable {
     }
 }
 
-public struct APEUserInteraction: Sendable {
+public struct APEUserInteraction {
     public let sessionId: UUID
     public let field: RequirementField
     public let suggestedValue: Any?

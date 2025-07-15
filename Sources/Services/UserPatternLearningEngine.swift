@@ -433,7 +433,7 @@ private struct TimeContext: Codable {
 private struct FieldRelationship: Codable {
     let primaryField: RequirementField
     let relatedField: RequirementField
-    let relationshipStrength: Float
+    var relationshipStrength: Float
     let relationshipType: RelationshipType
     
     enum RelationshipType: String, Codable {
