@@ -42,6 +42,7 @@ public struct ConversationSession: Identifiable, Equatable {
     public var remainingQuestions: [DynamicQuestion]
     public var confidence: ConfidenceLevel
     public var suggestedAnswers: [RequirementField: Any]?
+    public var autoFillResult: ConfidenceBasedAutoFillEngine.AutoFillResult?
     
     public init(
         state: ConversationState = .starting,
@@ -49,7 +50,8 @@ public struct ConversationSession: Identifiable, Equatable {
         questionHistory: [AskedQuestion] = [],
         remainingQuestions: [DynamicQuestion] = [],
         confidence: ConfidenceLevel = .low,
-        suggestedAnswers: [RequirementField: Any]? = nil
+        suggestedAnswers: [RequirementField: Any]? = nil,
+        autoFillResult: ConfidenceBasedAutoFillEngine.AutoFillResult? = nil
     ) {
         self.state = state
         self.collectedData = collectedData
@@ -57,6 +59,7 @@ public struct ConversationSession: Identifiable, Equatable {
         self.remainingQuestions = remainingQuestions
         self.confidence = confidence
         self.suggestedAnswers = suggestedAnswers
+        self.autoFillResult = autoFillResult
     }
     
     public static func == (lhs: ConversationSession, rhs: ConversationSession) -> Bool {
@@ -561,6 +564,7 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
     private let contextExtractor: DocumentContextExtractor
     private var unifiedExtractor: UnifiedDocumentContextExtractor?
     private let questionGenerator: DynamicQuestionGenerator
+    private let autoFillEngine: ConfidenceBasedAutoFillEngine
     
     public init() {
         self.documentParser = DocumentParserEnhanced()
@@ -576,6 +580,17 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
             smartDefaultsProvider: SmartDefaultsProvider(),
             patternLearningEngine: self.learningEngine,
             contextExtractor: self.unifiedExtractor!
+        )
+        
+        // Initialize ConfidenceBasedAutoFillEngine
+        self.autoFillEngine = ConfidenceBasedAutoFillEngine(
+            configuration: ConfidenceBasedAutoFillEngine.AutoFillConfiguration(
+                autoFillThreshold: 0.85,
+                suggestionThreshold: 0.65,
+                autoFillCriticalFields: false,
+                maxAutoFillFields: 20
+            ),
+            smartDefaultsEngine: self.smartDefaultsEngine
         )
     }
     
@@ -604,10 +619,10 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
             autoFillThreshold: 0.8
         )
         
-        // Get minimal questioning results
+        // Get confidence-based auto-fill results
         let allFields = questions.map { $0.field }
-        let minimalResults = await smartDefaultsEngine.getMinimalQuestioningDefaults(
-            for: allFields,
+        let autoFillResult = await autoFillEngine.analyzeFieldsForAutoFill(
+            fields: allFields,
             context: defaultsContext
         )
         
@@ -615,21 +630,23 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
         var session = ConversationSession(
             state: .gatheringBasicInfo,
             remainingQuestions: questions.filter { question in
-                minimalResults.mustAskFields.contains(question.field)
+                !autoFillResult.autoFilledFields.keys.contains(question.field)
             }.sorted { $0.priority < $1.priority }
         )
         
-        // Pre-fill data from multiple sources
-        session.collectedData = prefillDataFromMultipleSources(
+        // Pre-fill data from auto-fill results
+        session.collectedData = prefillDataFromAutoFillResults(
             extractedContext: extractedContext,
-            autoFillDefaults: minimalResults.autoFillFields,
-            suggestedDefaults: minimalResults.suggestedFields
+            autoFillResult: autoFillResult
         )
         
-        // Calculate confidence based on how much we could pre-fill
+        // Store auto-fill result for UI display
+        session.autoFillResult = autoFillResult
+        
+        // Calculate confidence based on auto-fill results
         let totalFields = Float(allFields.count)
-        let filledFields = Float(minimalResults.autoFillFields.count)
-        let suggestedFields = Float(minimalResults.suggestedFields.count)
+        let filledFields = Float(autoFillResult.summary.autoFilledCount)
+        let suggestedFields = Float(autoFillResult.summary.suggestedCount)
         let confidenceScore = (filledFields + suggestedFields * 0.5) / totalFields
         
         session.confidence = confidenceScore > 0.7 ? .high : 
@@ -1016,6 +1033,59 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
             // Attachments are handled differently
             break
         }
+    }
+    
+    private func prefillDataFromAutoFillResults(
+        extractedContext: ExtractedContext?,
+        autoFillResult: ConfidenceBasedAutoFillEngine.AutoFillResult
+    ) -> RequirementsData {
+        var data = RequirementsData()
+        
+        // First, apply extracted context
+        if let context = extractedContext {
+            data = prefillData(from: context)
+        }
+        
+        // Then apply auto-filled values
+        for (field, value) in autoFillResult.autoFilledFields {
+            applyDefaultToData(&data, field: field, value: value)
+        }
+        
+        // Note: Suggested fields are not automatically applied
+        // They will be shown in the UI for user confirmation
+        
+        return data
+    }
+    
+    /// Process user feedback on auto-filled values
+    public func processAutoFillFeedback(
+        field: RequirementField,
+        autoFilledValue: Any,
+        userValue: Any,
+        wasAccepted: Bool,
+        session: ConversationSession
+    ) async {
+        // Build context
+        let context = SmartDefaultContext(
+            sessionId: session.id,
+            userId: "", // Would come from user profile
+            organizationUnit: "", // Would come from user profile
+            autoFillThreshold: 0.85
+        )
+        
+        // Process feedback
+        await autoFillEngine.processUserFeedback(
+            field: field,
+            autoFilledValue: autoFilledValue,
+            userValue: userValue,
+            wasAccepted: wasAccepted,
+            context: context
+        )
+    }
+    
+    /// Get auto-fill metrics
+    public func getAutoFillMetrics() -> ConfidenceBasedAutoFillEngine.AutoFillMetrics {
+        return autoFillEngine.getMetrics()
     }
 }
 
