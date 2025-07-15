@@ -49,7 +49,7 @@ This directory contains the complete set of Federal Acquisition Regulations (FAR
 
 ## Total Files
 - **Total Regulation Files**: 10,887 HTML files
-- **Last Updated**: January 12, 2025
+- **Last Updated**: July 14, 2025
 
 ## File Naming Convention
 Files follow the pattern: `[PART].[SECTION]-[SUBSECTION].html`

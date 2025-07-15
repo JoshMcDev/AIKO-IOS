@@ -16,13 +16,13 @@ public protocol AdaptivePromptingEngineProtocol {
 public struct ConversationContext {
     public let acquisitionType: AcquisitionType
     public let uploadedDocuments: [ParsedDocument]
-    public let userProfile: UserProfile?
+    public let userProfile: ConversationUserProfile?
     public let historicalData: [HistoricalAcquisition]
     
     public init(
         acquisitionType: AcquisitionType,
         uploadedDocuments: [ParsedDocument] = [],
-        userProfile: UserProfile? = nil,
+        userProfile: ConversationUserProfile? = nil,
         historicalData: [HistoricalAcquisition] = []
     ) {
         self.acquisitionType = acquisitionType
@@ -251,7 +251,7 @@ public struct DynamicQuestion: Identifiable, Equatable {
     }
 }
 
-public enum RequirementField: String, CaseIterable, Equatable {
+public enum RequirementField: String, CaseIterable, Equatable, Sendable {
     case projectTitle
     case description
     case estimatedValue
@@ -264,6 +264,18 @@ public enum RequirementField: String, CaseIterable, Equatable {
     case contractType
     case setAsideType
     case specialConditions
+    case justification
+    case fundingSource
+    case requisitionNumber
+    case costCenter
+    case accountingCode
+    case qualityRequirements
+    case deliveryInstructions
+    case packagingRequirements
+    case inspectionRequirements
+    case paymentTerms
+    case warrantyRequirements
+    case attachments
 }
 
 public struct ValidationRule: Equatable {
@@ -609,7 +621,24 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
         case .requiredDate: return data.requiredDate != nil
         case .vendorName: return data.vendorInfo?.name != nil
         case .vendorUEI: return data.vendorInfo?.uei != nil
-        default: return false
+        case .vendorCAGE: return data.vendorInfo?.cage != nil
+        case .technicalSpecs: return !data.technicalRequirements.isEmpty
+        case .performanceLocation: return data.placeOfPerformance != nil
+        case .contractType: return data.acquisitionType != nil
+        case .setAsideType: return data.setAsideType != nil
+        case .specialConditions: return !data.specialConditions.isEmpty
+        case .justification: return data.businessJustification != nil
+        case .fundingSource: return false // Not in current data model
+        case .requisitionNumber: return false // Not in current data model
+        case .costCenter: return false // Not in current data model
+        case .accountingCode: return false // Not in current data model
+        case .qualityRequirements: return false // Not in current data model
+        case .deliveryInstructions: return false // Not in current data model
+        case .packagingRequirements: return false // Not in current data model
+        case .inspectionRequirements: return false // Not in current data model
+        case .paymentTerms: return false // Not in current data model
+        case .warrantyRequirements: return false // Not in current data model
+        case .attachments: return !data.attachments.isEmpty
         }
     }
     
@@ -629,13 +658,43 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
             data.requiredDate = value as? Date
         case .vendorName:
             if data.vendorInfo == nil {
-                data.vendorInfo = APEVendorInfo(name: value as? String ?? "")
+                data.vendorInfo = APEVendorInfo()
             }
+            data.vendorInfo?.name = value as? String
+        case .vendorUEI:
+            if data.vendorInfo == nil {
+                data.vendorInfo = APEVendorInfo()
+            }
+            data.vendorInfo?.uei = value as? String
+        case .vendorCAGE:
+            if data.vendorInfo == nil {
+                data.vendorInfo = APEVendorInfo()
+            }
+            data.vendorInfo?.cage = value as? String
         case .technicalSpecs:
             if let specs = value as? String {
                 data.technicalRequirements.append(specs)
             }
-        default:
+        case .performanceLocation:
+            data.placeOfPerformance = value as? String
+        case .contractType:
+            data.acquisitionType = value as? String
+        case .setAsideType:
+            data.setAsideType = value as? String
+        case .specialConditions:
+            if let condition = value as? String {
+                data.specialConditions.append(condition)
+            }
+        case .justification:
+            data.businessJustification = value as? String
+        case .fundingSource, .requisitionNumber, .costCenter, .accountingCode,
+             .qualityRequirements, .deliveryInstructions, .packagingRequirements,
+             .inspectionRequirements, .paymentTerms, .warrantyRequirements:
+            // These fields are not yet in the data model
+            // Would need to extend RequirementsData to support them
+            break
+        case .attachments:
+            // Attachments are handled differently
             break
         }
     }

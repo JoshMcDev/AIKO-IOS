@@ -6,10 +6,6 @@ let package = Package(
     platforms: [.iOS(.v16), .macOS(.v13)],
     products: [
         .library(name: "AIKO", targets: ["AIKO"]),
-        .executable(name: "CacheInvalidationDemo", targets: ["CacheInvalidationDemo"]),
-        .executable(name: "DistributedCacheDemo", targets: ["DistributedCacheDemo"]),
-        .executable(name: "CacheWarmingDemo", targets: ["CacheWarmingDemo"]),
-        .executable(name: "CachePerformanceAnalyticsDemo", targets: ["CachePerformanceAnalyticsDemo"]),
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.8.0"),
@@ -28,8 +24,6 @@ let package = Package(
             ],
             path: "Sources",
             exclude: [
-                "Infrastructure/MIGRATION_GUIDE.md",
-                "Infrastructure/DEVELOPMENT_PROTOCOL.md",
                 "Models/CoreData/FORM_MIGRATION_GUIDE.md",
                 "Resources/Regulations",  // Exclude HTML regulation files
                 "Resources/Clauses/clauseSelectionEngine.ts",
@@ -45,13 +39,13 @@ let package = Package(
                 .copy("Models/AIKO_Updated.xcdatamodeld"),
                 .process("Resources/AppIcon.png"),
                 .process("Resources/SAMIcon.png"),
-                .copy("KnowledgeBase/Forms/SF1449_Form.md"),
-                .copy("KnowledgeBase/Forms/SF33_Form.md"),
-                .copy("KnowledgeBase/Forms/SF30_Form.md"),
-                .copy("KnowledgeBase/Forms/SF18_Form.md"),
-                .copy("KnowledgeBase/Forms/SF26_Form.md"),
-                .copy("KnowledgeBase/Forms/SF44_Form.md"),
-                .copy("KnowledgeBase/Forms/DD1155_Form.md")
+                .copy("Resources/Forms/SF1449_Form.md"),
+                .copy("Resources/Forms/SF33_Form.md"),
+                .copy("Resources/Forms/SF30_Form.md"),
+                .copy("Resources/Forms/SF18_Form.md"),
+                .copy("Resources/Forms/SF26_Form.md"),
+                .copy("Resources/Forms/SF44_Form.md"),
+                .copy("Resources/Forms/DD1155_Form.md")
             ]
         ),
         .testTarget(
@@ -68,50 +62,6 @@ let package = Package(
                 "Test_Documentation/TestDoc_05_TestScenarios.md",
                 "OCRValidation"  // Exclude OCR validation markdown files
             ]
-        ),
-        .executableTarget(
-            name: "CacheInvalidationDemo",
-            dependencies: ["AIKO"],
-            path: "DemoExecutables",
-            exclude: [
-                "DistributedCacheDemoRunner.swift",
-                "CacheWarmingDemoRunner.swift",
-                "CachePerformanceAnalyticsDemoRunner.swift"
-            ],
-            sources: ["CacheInvalidationDemoRunner.swift"]
-        ),
-        .executableTarget(
-            name: "DistributedCacheDemo",
-            dependencies: ["AIKO"],
-            path: "DemoExecutables",
-            exclude: [
-                "CacheInvalidationDemoRunner.swift",
-                "CacheWarmingDemoRunner.swift",
-                "CachePerformanceAnalyticsDemoRunner.swift"
-            ],
-            sources: ["DistributedCacheDemoRunner.swift"]
-        ),
-        .executableTarget(
-            name: "CacheWarmingDemo",
-            dependencies: ["AIKO"],
-            path: "DemoExecutables",
-            exclude: [
-                "CacheInvalidationDemoRunner.swift",
-                "DistributedCacheDemoRunner.swift",
-                "CachePerformanceAnalyticsDemoRunner.swift"
-            ],
-            sources: ["CacheWarmingDemoRunner.swift"]
-        ),
-        .executableTarget(
-            name: "CachePerformanceAnalyticsDemo",
-            dependencies: ["AIKO"],
-            path: "DemoExecutables",
-            exclude: [
-                "CacheInvalidationDemoRunner.swift",
-                "DistributedCacheDemoRunner.swift",
-                "CacheWarmingDemoRunner.swift"
-            ],
-            sources: ["CachePerformanceAnalyticsDemoRunner.swift"]
         ),
     ]
 )

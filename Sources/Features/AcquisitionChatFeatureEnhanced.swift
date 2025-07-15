@@ -554,6 +554,12 @@ extension RequirementsData {
         case .technicalSpecs: return technicalRequirements
         case .requiredDate: return requiredDate
         case .specialConditions: return specialConditions
+        case .justification: return businessJustification
+        case .fundingSource, .requisitionNumber, .costCenter, .accountingCode,
+             .qualityRequirements, .deliveryInstructions, .packagingRequirements,
+             .inspectionRequirements, .paymentTerms, .warrantyRequirements:
+            return nil // These fields are not yet in the data model
+        case .attachments: return attachments
         }
     }
 }
