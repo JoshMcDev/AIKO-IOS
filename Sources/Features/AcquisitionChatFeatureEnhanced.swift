@@ -530,7 +530,10 @@ extension DependencyValues {
 }
 
 private enum AdaptivePromptingEngineKey: DependencyKey {
-    static let liveValue = AdaptivePromptingEngine()
+    @MainActor
+    static var liveValue: AdaptivePromptingEngine {
+        AdaptivePromptingEngine()
+    }
 }
 
 private enum DocumentParserEnhancedKey: DependencyKey {

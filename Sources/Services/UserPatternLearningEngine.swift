@@ -121,6 +121,119 @@ public final class UserPatternLearningEngine: @unchecked Sendable {
         return ensembleResult
     }
     
+    /// Get sequence-aware prediction based on field order patterns
+    public func getSequenceAwarePrediction(
+        for field: RequirementField,
+        previousFields: [RequirementField: Any]
+    ) async -> FieldDefault? {
+        // Find patterns that match the current sequence
+        let sequencePatterns = findSequencePatterns(
+            targetField: field,
+            previousFields: previousFields
+        )
+        
+        guard !sequencePatterns.isEmpty else {
+            return await getDefault(for: field)
+        }
+        
+        // Weight patterns by sequence similarity
+        let weightedPrediction = calculateSequenceWeightedPrediction(
+            patterns: sequencePatterns,
+            previousFields: previousFields
+        )
+        
+        return weightedPrediction
+    }
+    
+    /// Get time-aware prediction based on temporal patterns
+    public func getTimeAwarePrediction(for field: RequirementField) async -> FieldDefault? {
+        let currentTime = captureTimeContext()
+        
+        // Find all temporal patterns for this field
+        let relevantPatterns = temporalPatterns.filter { $0.field == field.rawValue }
+        
+        // Score each pattern based on current time match
+        let scoredPatterns = relevantPatterns.compactMap { pattern -> (pattern: TemporalPattern, score: Float)? in
+            let score = calculateTimeMatchScore(pattern: pattern.timePattern, current: currentTime)
+            return score > 0 ? (pattern, score) : nil
+        }
+        
+        guard !scoredPatterns.isEmpty else {
+            return await getDefault(for: field)
+        }
+        
+        // Weight predictions by time match score
+        let weightedValues = Dictionary(grouping: scoredPatterns, by: { $0.pattern.typicalValue })
+            .mapValues { group in
+                group.map { $0.score }.reduce(0, +) / Float(group.count)
+            }
+        
+        if let best = weightedValues.max(by: { $0.value < $1.value }) {
+            return FieldDefault(
+                value: best.key,
+                confidence: best.value * 0.9, // Slightly reduce confidence for time-based predictions
+                source: .userPattern
+            )
+        }
+        
+        return nil
+    }
+    
+    /// Get cohort-based prediction by analyzing similar users/sessions
+    public func getCohortPrediction(
+        for field: RequirementField,
+        userProfile: ConversationUserProfile?
+    ) async -> FieldDefault? {
+        // Group historical patterns by user characteristics
+        let cohortPatterns = findCohortPatterns(
+            field: field,
+            profile: userProfile
+        )
+        
+        guard cohortPatterns.count >= 3 else {
+            return nil // Need minimum cohort size
+        }
+        
+        // Analyze cohort preferences
+        let cohortPreference = analyzeCohortPreferences(patterns: cohortPatterns)
+        
+        return cohortPreference
+    }
+    
+    /// Predict multiple fields at once based on common patterns
+    public func batchPredict(
+        fields: [RequirementField],
+        context: ConversationContext
+    ) async -> [RequirementField: FieldDefault] {
+        var predictions: [RequirementField: FieldDefault] = [:]
+        
+        // Identify field clusters that are often filled together
+        let fieldClusters = identifyFieldClusters(from: fields)
+        
+        for cluster in fieldClusters {
+            // Find historical patterns where these fields were filled together
+            let clusterPatterns = findClusterPatterns(fields: cluster)
+            
+            // Generate predictions for the entire cluster
+            let clusterPredictions = generateClusterPredictions(
+                fields: cluster,
+                patterns: clusterPatterns,
+                context: context
+            )
+            
+            predictions.merge(clusterPredictions) { _, new in new }
+        }
+        
+        // Fill in any missing predictions
+        for field in fields where predictions[field] == nil {
+            if let prediction = await getDefault(for: field) {
+                predictions[field] = prediction
+            }
+        }
+        
+        return predictions
+    }
+    
     /// Get related fields that should be asked together
     public func getRelatedFields(for field: RequirementField) -> [RequirementField] {
         fieldRelationships
@@ -274,13 +387,215 @@ public final class UserPatternLearningEngine: @unchecked Sendable {
               patterns.count >= 20 else { return }
         
         // Prepare training data
-        let _ = prepareTrainingData(from: patterns)
+        let trainingData = prepareTrainingData(from: patterns)
         
-        // Train or update model
-        // In a real implementation, this would use CreateML or CoreML
-        // For now, we'll use statistical methods
+        // Update field-specific prediction model
+        await trainFieldPredictionModel(field: field, data: trainingData)
+        
+        // Update cross-field relationships
+        await updateCrossFieldPredictions(for: field)
         
         print("[PatternLearning] Model updated for field: \(field.rawValue)")
+    }
+    
+    /// Train field-specific prediction model
+    private func trainFieldPredictionModel(field: RequirementField, data: [(features: [String: Any], label: String)]) async {
+        // Group patterns by context
+        let contextualGroups = groupPatternsByContext(data)
+        
+        // Build prediction rules for each context
+        for (context, patterns) in contextualGroups {
+            let prediction = buildPredictionRule(context: context, patterns: patterns)
+            
+            // Store the prediction rule
+            let contextPattern = ContextualPattern(
+                id: UUID(),
+                field: field.rawValue,
+                context: context,
+                predictedValue: prediction.value,
+                occurrences: patterns.count,
+                accuracy: prediction.confidence,
+                lastSeen: Date()
+            )
+            
+            // Update or add to contextual patterns
+            updateContextualPattern(contextPattern)
+        }
+    }
+    
+    /// Update cross-field prediction models
+    private func updateCrossFieldPredictions(for field: RequirementField) async {
+        // Analyze how this field relates to others
+        let relatedFields = getStronglyRelatedFields(for: field)
+        
+        for relatedField in relatedFields {
+            if let patterns = patternHistory[relatedField] {
+                // Build conditional probability model
+                let conditionalModel = buildConditionalModel(
+                    primaryField: field,
+                    dependentField: relatedField,
+                    patterns: patterns
+                )
+                
+                // Store the model
+                updateFieldRelationship(conditionalModel)
+            }
+        }
+    }
+    
+    /// Get strongly related fields based on historical patterns
+    private func getStronglyRelatedFields(for field: RequirementField) -> [RequirementField] {
+        fieldRelationships
+            .filter { 
+                ($0.primaryField == field || $0.relatedField == field) &&
+                $0.relationshipStrength > 0.6
+            }
+            .flatMap { [$0.primaryField, $0.relatedField] }
+            .filter { $0 != field }
+            .removingDuplicates()
+    }
+    
+    /// Build conditional probability model for field relationships
+    private func buildConditionalModel(
+        primaryField: RequirementField,
+        dependentField: RequirementField,
+        patterns: [PatternData]
+    ) -> FieldRelationship {
+        // Calculate conditional probabilities
+        let primaryPatterns = patternHistory[primaryField] ?? []
+        let jointPatterns = findJointPatterns(primary: primaryPatterns, dependent: patterns)
+        
+        let relationshipStrength = Float(jointPatterns.count) / Float(max(primaryPatterns.count, 1))
+        
+        return FieldRelationship(
+            primaryField: primaryField,
+            relatedField: dependentField,
+            relationshipStrength: relationshipStrength,
+            relationshipType: determineRelationshipType(jointPatterns)
+        )
+    }
+    
+    /// Find patterns that occur together
+    private func findJointPatterns(primary: [PatternData], dependent: [PatternData]) -> [(PatternData, PatternData)] {
+        var jointPatterns: [(PatternData, PatternData)] = []
+        
+        for primaryPattern in primary {
+            // Find dependent patterns within same time window (5 minutes)
+            let timeWindow: TimeInterval = 300
+            let matchingPatterns = dependent.filter { dependentPattern in
+                abs(primaryPattern.timestamp.timeIntervalSince(dependentPattern.timestamp)) < timeWindow
+            }
+            
+            for match in matchingPatterns {
+                jointPatterns.append((primaryPattern, match))
+            }
+        }
+        
+        return jointPatterns
+    }
+    
+    /// Determine the type of relationship between fields
+    private func determineRelationshipType(_ jointPatterns: [(PatternData, PatternData)]) -> FieldRelationship.RelationshipType {
+        guard !jointPatterns.isEmpty else { return .correlated }
+        
+        // Analyze timing patterns
+        let timeDifferences = jointPatterns.map { pair in
+            pair.1.timestamp.timeIntervalSince(pair.0.timestamp)
+        }
+        
+        let avgTimeDiff = timeDifferences.reduce(0, +) / Double(timeDifferences.count)
+        
+        if abs(avgTimeDiff) < 60 {
+            return .correlated // Filled at same time
+        } else if avgTimeDiff > 0 {
+            return .sequential // Second field filled after first
+        } else {
+            return .dependent // Complex dependency
+        }
+    }
+    
+    /// Group patterns by their context
+    private func groupPatternsByContext(_ data: [(features: [String: Any], label: String)]) -> [PatternContext: [(features: [String: Any], label: String)]] {
+        var groups: [PatternContext: [(features: [String: Any], label: String)]] = [:]
+        
+        for item in data {
+            let context = extractContext(from: item.features)
+            groups[context, default: []].append(item)
+        }
+        
+        return groups
+    }
+    
+    /// Extract pattern context from features
+    private func extractContext(from features: [String: Any]) -> PatternContext {
+        PatternContext(
+            precedingFields: [], // Would extract from actual data
+            acquisitionType: features["acquisitionType"] as? String,
+            hasDocuments: features["hasDocuments"] as? Bool ?? false,
+            timeContext: TimeContext(
+                hourOfDay: features["timeOfDay"] as? Int,
+                dayOfWeek: features["dayOfWeek"] as? Int,
+                isEndOfMonth: features["isEndOfMonth"] as? Bool ?? false,
+                isEndOfQuarter: features["isEndOfQuarter"] as? Bool ?? false
+            )
+        )
+    }
+    
+    /// Build prediction rule from patterns
+    private func buildPredictionRule(context: PatternContext, patterns: [(features: [String: Any], label: String)]) -> (value: String, confidence: Float) {
+        // Count occurrences of each value
+        let valueCounts = Dictionary(grouping: patterns, by: { $0.label })
+            .mapValues { $0.count }
+        
+        // Find most common value
+        if let mostCommon = valueCounts.max(by: { $0.value < $1.value }) {
+            let confidence = Float(mostCommon.value) / Float(patterns.count)
+            return (mostCommon.key, confidence)
+        }
+        
+        return ("", 0)
+    }
+    
+    /// Update or add contextual pattern
+    private func updateContextualPattern(_ newPattern: ContextualPattern) {
+        if let existingIndex = contextualPatterns.firstIndex(where: {
+            $0.field == newPattern.field &&
+            $0.context.precedingFields == newPattern.context.precedingFields &&
+            $0.context.acquisitionType == newPattern.context.acquisitionType
+        }) {
+            // Update existing pattern
+            let existing = contextualPatterns[existingIndex]
+            let totalOccurrences = existing.occurrences + newPattern.occurrences
+            let weightedAccuracy = (existing.accuracy * Float(existing.occurrences) + 
+                                   newPattern.accuracy * Float(newPattern.occurrences)) / Float(totalOccurrences)
+            
+            contextualPatterns[existingIndex] = ContextualPattern(
+                id: existing.id,
+                field: existing.field,
+                context: existing.context,
+                predictedValue: newPattern.predictedValue,
+                occurrences: totalOccurrences,
+                accuracy: weightedAccuracy,
+                lastSeen: Date()
+            )
+        } else {
+            // Add new pattern
+            contextualPatterns.append(newPattern)
+        }
+    }
+    
+    /// Update field relationship with new data
+    private func updateFieldRelationship(_ newRelationship: FieldRelationship) {
+        if let existingIndex = fieldRelationships.firstIndex(where: {
+            $0.primaryField == newRelationship.primaryField &&
+            $0.relatedField == newRelationship.relatedField
+        }) {
+            // Update existing relationship
+            fieldRelationships[existingIndex] = newRelationship
+        } else {
+            // Add new relationship
+            fieldRelationships.append(newRelationship)
+        }
     }
     
     private func gatherPredictions(for field: RequirementField) async -> [FieldDefault] {
@@ -448,14 +763,14 @@ private struct ContextualPattern: Codable {
     }
 }
 
-private struct PatternContext: Codable {
+private struct PatternContext: Codable, Hashable {
     let precedingFields: [String]
     let acquisitionType: String?
     let hasDocuments: Bool
     let timeContext: TimeContext?
 }
 
-private struct TimeContext: Codable {
+private struct TimeContext: Codable, Hashable {
     let hourOfDay: Int?
     let dayOfWeek: Int?
     let isEndOfMonth: Bool
@@ -1016,6 +1331,275 @@ private struct ValueCluster {
     let confidence: Float
 }
 
+// MARK: - Helper Methods for Enhanced Predictions
+
+extension UserPatternLearningEngine {
+    
+    /// Find patterns that match a sequence of previously filled fields
+    private func findSequencePatterns(
+        targetField: RequirementField,
+        previousFields: [RequirementField: Any]
+    ) -> [PatternData] {
+        guard let patterns = patternHistory[targetField] else { return [] }
+        
+        // Convert previous fields to ordered list
+        let previousFieldNames = previousFields.keys.map { $0.rawValue }
+        
+        // Find patterns with matching sequences
+        return patterns.filter { pattern in
+            guard let context = pattern.sessionContext else { return false }
+            
+            // Check if the previous fields match
+            let contextFields = context.previousFields
+            return contextFields.hasSuffix(previousFieldNames) ||
+                   previousFieldNames.allSatisfy { contextFields.contains($0) }
+        }
+    }
+    
+    /// Calculate weighted prediction based on sequence similarity
+    private func calculateSequenceWeightedPrediction(
+        patterns: [PatternData],
+        previousFields: [RequirementField: Any]
+    ) -> FieldDefault? {
+        guard !patterns.isEmpty else { return nil }
+        
+        // Weight each pattern by sequence similarity
+        let weightedPatterns = patterns.map { pattern -> (pattern: PatternData, weight: Float) in
+            let weight = calculateSequenceSimilarity(
+                pattern: pattern,
+                previousFields: previousFields
+            )
+            return (pattern, weight)
+        }
+        
+        // Group by value and sum weights
+        let valueWeights = Dictionary(grouping: weightedPatterns, by: { $0.pattern.value })
+            .mapValues { group in
+                group.map { $0.weight }.reduce(0, +)
+            }
+        
+        // Find best value
+        if let best = valueWeights.max(by: { $0.value < $1.value }) {
+            let totalWeight = valueWeights.values.reduce(0, +)
+            let confidence = best.value / totalWeight
+            
+            return FieldDefault(
+                value: best.key,
+                confidence: confidence,
+                source: .userPattern
+            )
+        }
+        
+        return nil
+    }
+    
+    /// Calculate how similar a pattern's sequence is to current sequence
+    private func calculateSequenceSimilarity(
+        pattern: PatternData,
+        previousFields: [RequirementField: Any]
+    ) -> Float {
+        guard let context = pattern.sessionContext else { return 0.5 }
+        
+        let previousFieldNames = Set(previousFields.keys.map { $0.rawValue })
+        let patternFieldNames = Set(context.previousFields)
+        
+        let intersection = previousFieldNames.intersection(patternFieldNames)
+        let union = previousFieldNames.union(patternFieldNames)
+        
+        guard !union.isEmpty else { return 0.5 }
+        
+        // Jaccard similarity
+        return Float(intersection.count) / Float(union.count)
+    }
+    
+    /// Calculate time match score between pattern and current context
+    private func calculateTimeMatchScore(pattern: TemporalPattern.TimePattern, current: TimeContext) -> Float {
+        switch pattern {
+        case .endOfMonth:
+            return current.isEndOfMonth ? 1.0 : 0.0
+        case .endOfQuarter:
+            return current.isEndOfQuarter ? 1.0 : 0.0
+        case .businessHours:
+            if let hour = current.hourOfDay {
+                return (hour >= 9 && hour <= 17) ? 0.9 : 0.0
+            }
+            return 0.0
+        case .afterHours:
+            if let hour = current.hourOfDay {
+                return (hour < 9 || hour > 17) ? 0.9 : 0.0
+            }
+            return 0.0
+        case .mondayMorning:
+            return (current.dayOfWeek == 2 && (current.hourOfDay ?? 0) < 12) ? 1.0 : 0.0
+        case .fridayAfternoon:
+            return (current.dayOfWeek == 6 && (current.hourOfDay ?? 0) >= 12) ? 1.0 : 0.0
+        }
+    }
+    
+    /// Find patterns from similar user cohorts
+    private func findCohortPatterns(
+        field: RequirementField,
+        profile: ConversationUserProfile?
+    ) -> [PatternData] {
+        guard let patterns = patternHistory[field] else { return [] }
+        
+        // For now, return all patterns
+        // In a real implementation, this would filter based on user characteristics
+        return patterns
+    }
+    
+    /// Analyze preferences within a cohort
+    private func analyzeCohortPreferences(patterns: [PatternData]) -> FieldDefault? {
+        guard !patterns.isEmpty else { return nil }
+        
+        // Group by value and calculate popularity
+        let valueCounts = Dictionary(grouping: patterns, by: { $0.value })
+            .mapValues { $0.count }
+        
+        if let mostPopular = valueCounts.max(by: { $0.value < $1.value }) {
+            let confidence = Float(mostPopular.value) / Float(patterns.count) * 0.8 // Reduce confidence for cohort predictions
+            
+            return FieldDefault(
+                value: mostPopular.key,
+                confidence: confidence,
+                source: .userPattern
+            )
+        }
+        
+        return nil
+    }
+    
+    /// Identify clusters of fields that are often filled together
+    private func identifyFieldClusters(from fields: [RequirementField]) -> [[RequirementField]] {
+        var clusters: [[RequirementField]] = []
+        var processed: Set<RequirementField> = []
+        
+        for field in fields {
+            guard !processed.contains(field) else { continue }
+            
+            // Find strongly related fields
+            let cluster = buildFieldCluster(starting: field, available: fields, processed: &processed)
+            if cluster.count > 1 {
+                clusters.append(cluster)
+            } else {
+                // Single field cluster
+                clusters.append([field])
+            }
+        }
+        
+        return clusters
+    }
+    
+    /// Build a cluster of related fields
+    private func buildFieldCluster(
+        starting: RequirementField,
+        available: [RequirementField],
+        processed: inout Set<RequirementField>
+    ) -> [RequirementField] {
+        var cluster = [starting]
+        processed.insert(starting)
+        
+        // Find fields strongly related to starting field
+        let relatedFields = fieldRelationships
+            .filter {
+                ($0.primaryField == starting || $0.relatedField == starting) &&
+                $0.relationshipStrength > 0.7
+            }
+            .flatMap { [$0.primaryField, $0.relatedField] }
+            .filter { available.contains($0) && !processed.contains($0) }
+        
+        for field in relatedFields {
+            processed.insert(field)
+            cluster.append(field)
+        }
+        
+        return cluster
+    }
+    
+    /// Find patterns where cluster fields were filled together
+    private func findClusterPatterns(fields: [RequirementField]) -> [ClusterPattern] {
+        var clusterPatterns: [ClusterPattern] = []
+        
+        // For each field, get its patterns
+        let fieldPatterns = fields.compactMap { field -> (field: RequirementField, patterns: [PatternData])? in
+            guard let patterns = patternHistory[field] else { return nil }
+            return (field, patterns)
+        }
+        
+        guard !fieldPatterns.isEmpty else { return [] }
+        
+        // Find patterns within same time window
+        let timeWindow: TimeInterval = 600 // 10 minutes
+        
+        for i in 0..<fieldPatterns[0].patterns.count {
+            var clusterData: [RequirementField: String] = [:]
+            let referenceTime = fieldPatterns[0].patterns[i].timestamp
+            
+            // Check if all fields have patterns near this time
+            var allFieldsPresent = true
+            for (field, patterns) in fieldPatterns {
+                if let matchingPattern = patterns.first(where: {
+                    abs($0.timestamp.timeIntervalSince(referenceTime)) < timeWindow
+                }) {
+                    clusterData[field] = matchingPattern.value
+                } else {
+                    allFieldsPresent = false
+                    break
+                }
+            }
+            
+            if allFieldsPresent && !clusterData.isEmpty {
+                clusterPatterns.append(ClusterPattern(
+                    fields: clusterData,
+                    timestamp: referenceTime,
+                    confidence: 0.8
+                ))
+            }
+        }
+        
+        return clusterPatterns
+    }
+    
+    /// Generate predictions for a cluster of fields
+    private func generateClusterPredictions(
+        fields: [RequirementField],
+        patterns: [ClusterPattern],
+        context: ConversationContext
+    ) -> [RequirementField: FieldDefault] {
+        var predictions: [RequirementField: FieldDefault] = [:]
+        
+        guard !patterns.isEmpty else { return predictions }
+        
+        // Find most common pattern combination
+        let patternGroups = Dictionary(grouping: patterns) { pattern in
+            pattern.fields.values.sorted().joined(separator: "|")
+        }
+        
+        if let mostCommon = patternGroups.max(by: { $0.value.count < $1.value.count }) {
+            let pattern = mostCommon.value[0]
+            let confidence = Float(mostCommon.value.count) / Float(patterns.count)
+            
+            for (field, value) in pattern.fields {
+                predictions[field] = FieldDefault(
+                    value: value,
+                    confidence: confidence,
+                    source: .userPattern
+                )
+            }
+        }
+        
+        return predictions
+    }
+}
+
+// MARK: - Additional Supporting Types for Enhanced Predictions
+
+private struct ClusterPattern {
+    let fields: [RequirementField: String]
+    let timestamp: Date
+    let confidence: Float
+}
+
 // MARK: - Helper Extensions
 
 extension Array where Element: Equatable {
@@ -1027,5 +1611,13 @@ extension Array where Element: Equatable {
             }
         }
         return result
+    }
+}
+
+extension Array where Element == String {
+    func hasSuffix(_ suffix: [String]) -> Bool {
+        guard suffix.count <= self.count else { return false }
+        let startIndex = self.count - suffix.count
+        return Array(self[startIndex...]) == suffix
     }
 }

@@ -41,19 +41,33 @@ public struct ConversationSession: Identifiable, Equatable {
     public var questionHistory: [AskedQuestion]
     public var remainingQuestions: [DynamicQuestion]
     public var confidence: ConfidenceLevel
+    public var suggestedAnswers: [RequirementField: Any]?
     
     public init(
         state: ConversationState = .starting,
         collectedData: RequirementsData = RequirementsData(),
         questionHistory: [AskedQuestion] = [],
         remainingQuestions: [DynamicQuestion] = [],
-        confidence: ConfidenceLevel = .low
+        confidence: ConfidenceLevel = .low,
+        suggestedAnswers: [RequirementField: Any]? = nil
     ) {
         self.state = state
         self.collectedData = collectedData
         self.questionHistory = questionHistory
         self.remainingQuestions = remainingQuestions
         self.confidence = confidence
+        self.suggestedAnswers = suggestedAnswers
+    }
+    
+    public static func == (lhs: ConversationSession, rhs: ConversationSession) -> Bool {
+        lhs.id == rhs.id &&
+        lhs.startTime == rhs.startTime &&
+        lhs.state == rhs.state &&
+        lhs.collectedData == rhs.collectedData &&
+        lhs.questionHistory == rhs.questionHistory &&
+        lhs.remainingQuestions == rhs.remainingQuestions &&
+        lhs.confidence == rhs.confidence
+        // Note: suggestedAnswers is not compared due to Any type
     }
 }
 
@@ -443,6 +457,7 @@ public struct FieldDefault {
         case userPattern
         case documentContext
         case systemDefault
+        case contextual  // Advanced context-aware defaults
     }
     
     public init(value: Any, confidence: Float, source: DefaultSource) {
@@ -475,11 +490,74 @@ public enum AcquisitionType: String, Codable {
     case researchAndDevelopment
 }
 
+// MARK: - Extensions
+
+extension ExtractedContext {
+    func toFieldMapping() -> [String: String] {
+        var mapping: [String: String] = [:]
+        
+        // Add vendor info
+        if let vendor = vendorInfo {
+            if let name = vendor.name { mapping["vendorName"] = name }
+            if let uei = vendor.uei { mapping["vendorUEI"] = uei }
+            if let cage = vendor.cage { mapping["vendorCAGE"] = cage }
+            if let email = vendor.email { mapping["vendorEmail"] = email }
+            if let phone = vendor.phone { mapping["vendorPhone"] = phone }
+            if let address = vendor.address { mapping["vendorAddress"] = address }
+        }
+        
+        // Add pricing info
+        if let pricing = pricing {
+            if let total = pricing.totalPrice {
+                mapping["estimatedValue"] = String(describing: total)
+            }
+        }
+        
+        // Add dates
+        if let dates = dates {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "MM/dd/yyyy"
+            
+            if let quoteDate = dates.quoteDate {
+                mapping["quoteDate"] = formatter.string(from: quoteDate)
+            }
+            if let validUntil = dates.validUntil {
+                mapping["validUntil"] = formatter.string(from: validUntil)
+            }
+            if let deliveryDate = dates.deliveryDate {
+                mapping["deliveryDate"] = formatter.string(from: deliveryDate)
+                mapping["requiredDate"] = formatter.string(from: deliveryDate)
+            }
+        }
+        
+        // Add technical details
+        if !technicalDetails.isEmpty {
+            mapping["technicalSpecs"] = technicalDetails.joined(separator: "; ")
+        }
+        
+        // Add special terms
+        if !specialTerms.isEmpty {
+            mapping["specialConditions"] = specialTerms.joined(separator: "; ")
+        }
+        
+        return mapping
+    }
+}
+
+extension ConversationUserProfile {
+    var organizationUnit: String {
+        // Default organization unit - could be extended later
+        return "Default Organization"
+    }
+}
+
 // MARK: - Main Implementation
 
+@MainActor
 public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
     private let documentParser: DocumentParserEnhanced
     private let learningEngine: UserPatternLearningEngine
+    private let smartDefaultsEngine: SmartDefaultsEngine
     private let contextExtractor: DocumentContextExtractor
     private var unifiedExtractor: UnifiedDocumentContextExtractor?
     private let questionGenerator: DynamicQuestionGenerator
@@ -490,10 +568,15 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
         self.contextExtractor = DocumentContextExtractor()
         self.questionGenerator = DynamicQuestionGenerator()
         
-        // UnifiedDocumentContextExtractor must be initialized on MainActor
-        Task { @MainActor in
-            self.unifiedExtractor = UnifiedDocumentContextExtractor()
-        }
+        // Initialize UnifiedDocumentContextExtractor
+        self.unifiedExtractor = UnifiedDocumentContextExtractor()
+        
+        // Initialize SmartDefaultsEngine with all dependencies
+        self.smartDefaultsEngine = SmartDefaultsEngine(
+            smartDefaultsProvider: SmartDefaultsProvider(),
+            patternLearningEngine: self.learningEngine,
+            contextExtractor: self.unifiedExtractor!
+        )
     }
     
     public func startConversation(with context: ConversationContext) async -> ConversationSession {
@@ -507,17 +590,50 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
             historicalData: context.historicalData
         )
         
-        // Create session with smart ordering of questions
-        var session = ConversationSession(
-            state: .gatheringBasicInfo,
-            remainingQuestions: questions.sorted { $0.priority < $1.priority }
+        // Build smart defaults context
+        let defaultsContext = SmartDefaultContext(
+            sessionId: UUID(),
+            userId: context.userProfile?.id.uuidString ?? "",
+            organizationUnit: context.userProfile?.organizationUnit ?? "",
+            acquisitionType: context.acquisitionType,
+            extractedData: extractedContext?.toFieldMapping() ?? [:],
+            fiscalYear: String(Calendar.current.component(.year, from: Date())),
+            fiscalQuarter: getCurrentFiscalQuarter(),
+            isEndOfFiscalYear: isEndOfFiscalYear(),
+            daysUntilFYEnd: daysUntilFiscalYearEnd(),
+            autoFillThreshold: 0.8
         )
         
-        // Pre-fill any data we extracted with high confidence
-        if let extracted = extractedContext {
-            session.collectedData = prefillData(from: extracted)
-            session.confidence = calculateOverallConfidence(extracted.confidence)
-        }
+        // Get minimal questioning results
+        let allFields = questions.map { $0.field }
+        let minimalResults = await smartDefaultsEngine.getMinimalQuestioningDefaults(
+            for: allFields,
+            context: defaultsContext
+        )
+        
+        // Create session with only the questions we must ask
+        var session = ConversationSession(
+            state: .gatheringBasicInfo,
+            remainingQuestions: questions.filter { question in
+                minimalResults.mustAskFields.contains(question.field)
+            }.sorted { $0.priority < $1.priority }
+        )
+        
+        // Pre-fill data from multiple sources
+        session.collectedData = prefillDataFromMultipleSources(
+            extractedContext: extractedContext,
+            autoFillDefaults: minimalResults.autoFillFields,
+            suggestedDefaults: minimalResults.suggestedFields
+        )
+        
+        // Calculate confidence based on how much we could pre-fill
+        let totalFields = Float(allFields.count)
+        let filledFields = Float(minimalResults.autoFillFields.count)
+        let suggestedFields = Float(minimalResults.suggestedFields.count)
+        let confidenceScore = (filledFields + suggestedFields * 0.5) / totalFields
+        
+        session.confidence = confidenceScore > 0.7 ? .high : 
+                           confidenceScore > 0.4 ? .medium : .low
         
         return session
     }
@@ -535,11 +651,15 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
             updateCollectedData(&updatedSession.collectedData, field: question.field, value: response.value)
             
             // Learn from this interaction
+            let suggestedValue = session.suggestedAnswers?[question.field]
+            let acceptedSuggestion = suggestedValue != nil && 
+                String(describing: suggestedValue!) == String(describing: response.value)
+            
             let interaction = APEUserInteraction(
                 sessionId: session.id,
                 field: question.field,
-                suggestedValue: nil, // TODO: Track if we suggested something
-                acceptedSuggestion: false,
+                suggestedValue: suggestedValue,
+                acceptedSuggestion: acceptedSuggestion,
                 finalValue: response.value,
                 timeToRespond: Date().timeIntervalSince(response.timestamp),
                 documentContext: !session.collectedData.attachments.isEmpty
@@ -550,11 +670,19 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
         // Determine next question or complete
         if let nextQuestion = selectNextQuestion(from: updatedSession) {
             let suggestion = await getSmartDefaults(for: nextQuestion.field)
+            
+            // Store suggestion for learning
+            if updatedSession.suggestedAnswers == nil {
+                updatedSession.suggestedAnswers = [:]
+            }
+            updatedSession.suggestedAnswers?[nextQuestion.field] = suggestion?.value
+            
             return NextPrompt(
                 question: nextQuestion,
                 suggestedAnswer: suggestion?.value,
                 confidenceInSuggestion: suggestion?.confidence ?? 0,
-                isRequired: nextQuestion.priority == .critical
+                isRequired: nextQuestion.priority == .critical,
+                helpText: generateHelpText(for: nextQuestion.field, suggestion: suggestion)
             )
         } else {
             updatedSession.state = .complete
@@ -572,13 +700,6 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
         _ documentData: [(data: Data, type: UTType)],
         withHints: [String: Any]? = nil
     ) async throws -> ExtractedContext {
-        // Ensure unifiedExtractor is initialized
-        if unifiedExtractor == nil {
-            await MainActor.run {
-                self.unifiedExtractor = UnifiedDocumentContextExtractor()
-            }
-        }
-        
         guard let extractor = unifiedExtractor else {
             throw DocumentParserError.unsupportedFormat
         }
@@ -607,10 +728,163 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
     }
     
     public func getSmartDefaults(for field: RequirementField) async -> FieldDefault? {
-        await learningEngine.getDefault(for: field)
+        // Build context for smart defaults
+        let context = SmartDefaultContext(
+            fiscalYear: String(Calendar.current.component(.year, from: Date())),
+            fiscalQuarter: getCurrentFiscalQuarter(),
+            isEndOfFiscalYear: isEndOfFiscalYear(),
+            daysUntilFYEnd: daysUntilFiscalYearEnd()
+        )
+        
+        return await smartDefaultsEngine.getSmartDefault(for: field, context: context)
+    }
+    
+    // MARK: - Helper Methods for Fiscal Context
+    
+    private func getCurrentFiscalQuarter() -> String {
+        let month = Calendar.current.component(.month, from: Date())
+        switch month {
+        case 10...12: return "Q1"
+        case 1...3: return "Q2"
+        case 4...6: return "Q3"
+        default: return "Q4"
+        }
+    }
+    
+    private func isEndOfFiscalYear() -> Bool {
+        let month = Calendar.current.component(.month, from: Date())
+        return month >= 8 && month <= 9
+    }
+    
+    private func daysUntilFiscalYearEnd() -> Int {
+        let calendar = Calendar.current
+        let now = Date()
+        let currentYear = calendar.component(.year, from: now)
+        
+        // Federal fiscal year ends September 30
+        var components = DateComponents()
+        components.year = currentYear
+        components.month = 9
+        components.day = 30
+        
+        // If we're past September, next FY end is next year
+        if calendar.component(.month, from: now) >= 10 {
+            components.year = currentYear + 1
+        }
+        
+        if let fyEnd = calendar.date(from: components) {
+            return calendar.dateComponents([.day], from: now, to: fyEnd).day ?? 0
+        }
+        
+        return 0
     }
     
     // MARK: - Private Helpers
+    
+    private func prefillDataFromMultipleSources(
+        extractedContext: ExtractedContext?,
+        autoFillDefaults: [RequirementField: FieldDefault],
+        suggestedDefaults: [RequirementField: FieldDefault]
+    ) -> RequirementsData {
+        var data = RequirementsData()
+        
+        // First, apply extracted context
+        if let context = extractedContext {
+            data = prefillData(from: context)
+        }
+        
+        // Then apply auto-fill defaults
+        for (field, defaultValue) in autoFillDefaults {
+            applyDefaultToData(&data, field: field, value: defaultValue.value)
+        }
+        
+        // Store suggested defaults separately (not applied automatically)
+        // These will be shown as suggestions in the UI
+        
+        return data
+    }
+    
+    private func applyDefaultToData(_ data: inout RequirementsData, field: RequirementField, value: Any) {
+        switch field {
+        case .projectTitle:
+            data.projectTitle = value as? String
+        case .description:
+            data.description = value as? String
+        case .estimatedValue:
+            if let decimal = value as? Decimal {
+                data.estimatedValue = decimal
+            } else if let string = value as? String,
+                      let double = Double(string.replacingOccurrences(of: "$", with: "").replacingOccurrences(of: ",", with: "")) {
+                data.estimatedValue = Decimal(double)
+            }
+        case .requiredDate:
+            if let date = value as? Date {
+                data.requiredDate = date
+            } else if let string = value as? String {
+                data.requiredDate = DateFormatter.mmddyyyy.date(from: string)
+            }
+        case .vendorName:
+            if data.vendorInfo == nil {
+                data.vendorInfo = APEVendorInfo(name: value as? String)
+            } else {
+                data.vendorInfo?.name = value as? String
+            }
+        case .performanceLocation:
+            data.placeOfPerformance = value as? String
+        case .contractType:
+            data.acquisitionType = value as? String
+        case .setAsideType:
+            data.setAsideType = value as? String
+        case .specialConditions:
+            if let conditions = value as? [String] {
+                data.specialConditions = conditions
+            } else if let condition = value as? String {
+                data.specialConditions.append(condition)
+            }
+        case .justification:
+            data.businessJustification = value as? String
+        default:
+            // Fields not in current data model are ignored
+            break
+        }
+    }
+    
+    private func generateHelpText(for field: RequirementField, suggestion: FieldDefault?) -> String? {
+        var helpTexts: [String] = []
+        
+        // Add field-specific help
+        switch field {
+        case .estimatedValue:
+            helpTexts.append("Enter the total estimated value including all options")
+        case .requiredDate:
+            helpTexts.append("When do you need the goods/services delivered?")
+        case .vendorName:
+            helpTexts.append("Preferred vendor or 'Open Competition' if none")
+        case .fundingSource:
+            helpTexts.append("Budget line or appropriation code")
+        default:
+            break
+        }
+        
+        // Add suggestion confidence info
+        if let suggestion = suggestion {
+            let confidence = Int(suggestion.confidence * 100)
+            switch suggestion.source {
+            case .documentContext:
+                helpTexts.append("Extracted from your document (\(confidence)% confidence)")
+            case .userPattern:
+                helpTexts.append("Based on your previous selections (\(confidence)% confidence)")
+            case .historical:
+                helpTexts.append("Based on historical data (\(confidence)% confidence)")
+            case .systemDefault:
+                helpTexts.append("Recommended value (\(confidence)% confidence)")
+            case .contextual:
+                helpTexts.append("Based on contextual analysis (\(confidence)% confidence)")
+            }
+        }
+        
+        return helpTexts.isEmpty ? nil : helpTexts.joined(separator: ". ")
+    }
     
     private func prefillData(from context: ExtractedContext) -> RequirementsData {
         var data = RequirementsData()
@@ -721,7 +995,9 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
         case .performanceLocation:
             data.placeOfPerformance = value as? String
         case .contractType:
-            data.acquisitionType = value as? String
+            if let string = value as? String {
+                data.acquisitionType = string
+            }
         case .setAsideType:
             data.setAsideType = value as? String
         case .specialConditions:
