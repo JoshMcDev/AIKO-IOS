@@ -5,15 +5,15 @@ import Foundation
 // MARK: - Document Chain Manager
 
 public struct DocumentChainManager {
-    public var createChain: (UUID, [DocumentType]) async throws -> DocumentChain
-    public var updateChainProgress: (UUID, DocumentType, GeneratedDocument) async throws -> DocumentChain
+    public var createChain: (UUID, [DocumentType]) async throws -> DocumentChainProgress
+    public var updateChainProgress: (UUID, DocumentType, GeneratedDocument) async throws -> DocumentChainProgress
     public var getNextInChain: (UUID) async throws -> DocumentType?
     public var extractAndPropagate: (UUID, GeneratedDocument) async throws -> CollectedData
     public var validateChain: (UUID) async throws -> ChainValidation
 
     public init(
-        createChain: @escaping (UUID, [DocumentType]) async throws -> DocumentChain,
-        updateChainProgress: @escaping (UUID, DocumentType, GeneratedDocument) async throws -> DocumentChain,
+        createChain: @escaping (UUID, [DocumentType]) async throws -> DocumentChainProgress,
+        updateChainProgress: @escaping (UUID, DocumentType, GeneratedDocument) async throws -> DocumentChainProgress,
         getNextInChain: @escaping (UUID) async throws -> DocumentType?,
         extractAndPropagate: @escaping (UUID, GeneratedDocument) async throws -> CollectedData,
         validateChain: @escaping (UUID) async throws -> ChainValidation
@@ -26,9 +26,9 @@ public struct DocumentChainManager {
     }
 }
 
-// MARK: - Document Chain Model
+// MARK: - Document Chain Progress Model
 
-public struct DocumentChain: Equatable, Codable {
+public struct DocumentChainProgress: Equatable, Codable {
     public let id: UUID
     public let acquisitionId: UUID
     public let plannedDocuments: [DocumentType]
@@ -163,13 +163,19 @@ extension DocumentChainManager: DependencyKey {
         _ = AcquisitionService.liveValue
 
         // In-memory storage for chains (would be persisted in real implementation)
-        var chains: [UUID: DocumentChain] = [:]
+        var chains: [UUID: DocumentChainProgress] = [:]
 
         return DocumentChainManager(
             createChain: { acquisitionId, plannedDocuments in
-                let chain = DocumentChain(
+                let chain = DocumentChainProgress(
+                    id: UUID(),
                     acquisitionId: acquisitionId,
-                    plannedDocuments: plannedDocuments
+                    plannedDocuments: plannedDocuments,
+                    completedDocuments: [:],
+                    propagatedData: CollectedData(),
+                    currentIndex: 0,
+                    createdAt: Date(),
+                    updatedAt: Date()
                 )
                 chains[acquisitionId] = chain
 
@@ -208,7 +214,7 @@ extension DocumentChainManager: DependencyKey {
                 let nextIndex = chain.currentIndex + 1
 
                 // Create updated chain
-                let updatedChain = DocumentChain(
+                let updatedChain = DocumentChainProgress(
                     id: chain.id,
                     acquisitionId: chain.acquisitionId,
                     plannedDocuments: chain.plannedDocuments,

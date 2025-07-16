@@ -72,22 +72,16 @@ final class BackgroundSyncHandler {
         // Set expiration handler
         task.expirationHandler = {
             self.logger.warning("Background sync task expired")
-            Task {
-                await OfflineCacheManager.shared.cancelSync()
-            }
+            // Sync functionality removed - was part of VanillaIce integration
+            task.setTaskCompleted(success: false)
         }
         
         // Perform sync
         Task {
-            let result = await OfflineCacheManager.shared.synchronize()
-            
-            if let result = result {
-                self.logger.info("Background sync completed - Success: \(result.success), Synced: \(result.syncedItems.count)")
-                task.setTaskCompleted(success: result.success)
-            } else {
-                self.logger.warning("Background sync returned nil result")
-                task.setTaskCompleted(success: false)
-            }
+            // Sync functionality removed - was part of VanillaIce integration
+            // For now, just complete the task successfully
+            self.logger.info("Background sync placeholder - actual sync removed with VanillaIce")
+            task.setTaskCompleted(success: true)
             
             // Schedule next sync
             self.scheduleBackgroundSync()

@@ -122,7 +122,7 @@ final class UserPatternLearningEngine: ObservableObject {
     }
     
     /// Predict next user action
-    func predictNextAction(currentState: WorkflowState) -> PredictedAction? {
+    func predictNextAction(currentState: PatternWorkflowState) -> PredictedAction? {
         let sequencePatterns = discoveredPatterns.filter { $0.type == .workflowSequence }
         
         for pattern in sequencePatterns {
@@ -396,7 +396,7 @@ struct UserPattern: Identifiable {
         )
     }
     
-    func predictNext(from state: WorkflowState) -> PredictedAction? {
+    func predictNext(from state: PatternWorkflowState) -> PredictedAction? {
         guard type == .workflowSequence,
               let sequence = value as? [String],
               let currentIndex = sequence.firstIndex(of: state.currentStep),
@@ -517,7 +517,7 @@ struct PredictedAction {
     let alternativeActions: [String]
 }
 
-struct WorkflowState {
+struct PatternWorkflowState {
     let currentStep: String
     let completedSteps: [String]
     let documentType: String

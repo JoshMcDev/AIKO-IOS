@@ -513,7 +513,7 @@ public struct DocumentGenerationView: View {
                         // Document Chain View (if chain exists)
                         if viewStore.analysis.documentChain != nil {
                             DocumentChainView(
-                                chain: viewStore.analysis.documentChain,
+                                chainProgress: viewStore.analysis.documentChain,
                                 validation: viewStore.analysis.chainValidation,
                                 onSelectDocument: { documentType in
                                     // Add document to selected types

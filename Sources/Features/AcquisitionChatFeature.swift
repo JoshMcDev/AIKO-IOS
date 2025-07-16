@@ -29,6 +29,12 @@ public struct AcquisitionChatFeature {
         public var activeTasks: [AgentTask] = []
         public var messageCards: [UUID: MessageCard] = [:]
         public var approvalRequests: [UUID: ApprovalRequest] = [:]
+        
+        // Follow-on Action properties
+        public var suggestedActions: FollowOnActionSet?
+        public var completedActionIds: Set<UUID> = []
+        public var executingActionIds: Set<UUID> = []
+        public var showingActionSelector: Bool = false
 
         // Document picker state
         public var showingDocumentPicker: Bool = false
@@ -132,6 +138,47 @@ public struct AcquisitionChatFeature {
                 !performancePeriod.isEmpty &&
                 !businessNeed.isEmpty
         }
+        
+        // Convert to global RequirementsData type for use with services
+        public func toGlobalRequirementsData() -> AIKO.RequirementsData {
+            // Parse estimated value to Decimal
+            let cleanedValue = estimatedValue.replacingOccurrences(of: "$", with: "")
+                .replacingOccurrences(of: ",", with: "")
+            let decimalValue = Decimal(string: cleanedValue)
+            
+            // Parse technical requirements (split by newlines)
+            let techReqs = technicalRequirements.isEmpty ? [] : technicalRequirements
+                .components(separatedBy: .newlines)
+                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                .filter { !$0.isEmpty }
+            
+            // Parse evaluation criteria (split by newlines)
+            let evalCriteria = evaluationCriteria.isEmpty ? [] : evaluationCriteria
+                .components(separatedBy: .newlines)
+                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                .filter { !$0.isEmpty }
+            
+            // Parse special conditions from specialConsiderations
+            let specialConds = specialConsiderations.isEmpty ? [] : [specialConsiderations]
+            
+            return AIKO.RequirementsData(
+                projectTitle: projectTitle.isEmpty ? nil : projectTitle,
+                description: productOrService.isEmpty ? nil : productOrService,
+                estimatedValue: decimalValue,
+                requiredDate: nil, // Not captured in this form
+                technicalRequirements: techReqs,
+                vendorInfo: nil, // Not captured in this form
+                specialConditions: specialConds,
+                attachments: [], // Not captured in this form
+                performancePeriod: nil, // Could parse performancePeriod string to DateInterval
+                placeOfPerformance: nil, // Not captured in this form
+                businessJustification: businessNeed.isEmpty ? nil : businessNeed,
+                acquisitionType: requirementType.isEmpty ? nil : requirementType,
+                competitionMethod: nil, // Not captured in this form
+                setAsideType: nil, // Not captured in this form
+                evaluationCriteria: evalCriteria
+            )
+        }
     }
 
     public struct ChatMessage: Equatable, Identifiable {
@@ -195,6 +242,14 @@ public struct AcquisitionChatFeature {
         case agentRequestsApproval(ApprovalRequest)
         case approveAction(UUID)
         case rejectAction(UUID)
+        
+        // Follow-on Action actions
+        case generateFollowOnActions
+        case followOnActionsGenerated(FollowOnActionSet)
+        case executeFollowOnAction(FollowOnAction)
+        case followOnActionCompleted(UUID, ActionExecutionResult)
+        case showActionSelector(Bool)
+        case refreshFollowOnActions
     }
 
     @Dependency(\.aiDocumentGenerator) var aiDocumentGenerator
@@ -202,6 +257,7 @@ public struct AcquisitionChatFeature {
     @Dependency(\.continuousClock) var clock
     @Dependency(\.uuid) var uuid
     @Dependency(\.voiceRecordingService) var voiceRecordingService
+    @Dependency(\.followOnActionService) var followOnActionService
 
     public init() {}
 
@@ -284,7 +340,8 @@ public struct AcquisitionChatFeature {
 
             case let .phaseChanged(phase):
                 state.currentPhase = phase
-                return .none
+                // Generate follow-on actions for the new phase
+                return .send(.generateFollowOnActions)
 
             case let .confirmClose(show):
                 state.showingCloseConfirmation = show
@@ -652,6 +709,122 @@ public struct AcquisitionChatFeature {
                 )
                 state.messages.append(message)
                 return .none
+                
+            // Follow-on Action handlers
+            case .generateFollowOnActions:
+                return .run { [state] send in
+                    do {
+                        // Build context for action generation
+                        let context = FollowOnActionContext(
+                            currentPhase: state.currentPhase.toAcquisitionPhase(),
+                            completedActions: [],
+                            pendingTasks: state.activeTasks,
+                            requirements: state.gatheredRequirements.toGlobalRequirementsData(),
+                            documentChain: nil, // Will implement document chain later
+                            reviewMode: .iterative,
+                            conversationHistory: state.messages.map { msg in
+                                LLMMessage(
+                                    role: msg.role == .user ? .user : .assistant,
+                                    content: msg.content
+                                )
+                            }
+                        )
+                        
+                        let actionSet = try await followOnActionService.generateFollowOnActions(for: state.acquisitionId ?? UUID(), context: context)
+                        await send(.followOnActionsGenerated(actionSet))
+                    } catch {
+                        print("Failed to generate follow-on actions: \(error)")
+                    }
+                }
+                
+            case let .followOnActionsGenerated(actionSet):
+                state.suggestedActions = actionSet
+                
+                // Add a message about available actions
+                if !actionSet.actions.isEmpty {
+                    let availableActions = actionSet.availableActions(completedActionIds: state.completedActionIds)
+                    if !availableActions.isEmpty {
+                        let message = ChatMessage(
+                            role: .assistant,
+                            content: """
+                            💡 **Suggested Next Steps:**
+                            
+                            \(availableActions.prefix(3).enumerated().map { index, action in
+                                "\(index + 1). \(action.title) - \(action.description)"
+                            }.joined(separator: "\n"))
+                            
+                            Would you like me to help with any of these actions?
+                            """
+                        )
+                        state.messages.append(message)
+                    }
+                }
+                return .none
+                
+            case let .executeFollowOnAction(action):
+                state.executingActionIds.insert(action.id)
+                
+                return .run { [state] send in
+                    do {
+                        let result = try await followOnActionService.executeAction(
+                            action,
+                            for: state.acquisitionId ?? UUID()
+                        )
+                        await send(.followOnActionCompleted(action.id, result))
+                    } catch {
+                        let failedResult = ActionExecutionResult(
+                            actionId: action.id,
+                            status: .failed,
+                            output: error.localizedDescription
+                        )
+                        await send(.followOnActionCompleted(action.id, failedResult))
+                    }
+                }
+                
+            case let .followOnActionCompleted(actionId, result):
+                state.executingActionIds.remove(actionId)
+                state.completedActionIds.insert(actionId)
+                
+                // Add completion message
+                let statusEmoji = result.status == .completed ? "✅" : "❌"
+                let message = ChatMessage(
+                    role: .assistant,
+                    content: "\(statusEmoji) \(result.output ?? "Action completed")"
+                )
+                state.messages.append(message)
+                
+                // If there are new actions from the result, add them
+                if let newActions = result.nextActions, !newActions.isEmpty {
+                    if let currentSet = state.suggestedActions {
+                        // Create a new action set with combined actions
+                        let combinedActions = currentSet.actions + newActions
+                        state.suggestedActions = FollowOnActionSet(
+                            id: currentSet.id,
+                            context: currentSet.context,
+                            actions: combinedActions,
+                            recommendedPath: currentSet.recommendedPath,
+                            expiresAt: currentSet.expiresAt
+                        )
+                    }
+                }
+                
+                // Refresh available actions
+                return .send(.refreshFollowOnActions)
+                
+            case let .showActionSelector(show):
+                state.showingActionSelector = show
+                return .none
+                
+            case .refreshFollowOnActions:
+                // Check if we should generate new actions
+                if let actionSet = state.suggestedActions {
+                    let availableActions = actionSet.availableActions(completedActionIds: state.completedActionIds)
+                    if availableActions.isEmpty && state.completedActionIds.count > 0 {
+                        // All current actions completed, generate new ones
+                        return .send(.generateFollowOnActions)
+                    }
+                }
+                return .none
             }
         }
     }
@@ -812,7 +985,7 @@ public struct AcquisitionChatFeature {
 
         return (responseMessage, requirements, readiness, recommended, nextPhase)
     }
-
+    
     private func processUserResponseWithAI(
         input: String,
         currentRequirements: RequirementsData,
@@ -1027,5 +1200,19 @@ public struct AcquisitionChatFeature {
 
         // Return enhanced response with predictions
         return (aiResponse, requirements, readiness, recommended, nextPhase, predictedValues)
+    }
+}
+
+// Helper extension to convert ChatPhase to AcquisitionPhase
+private extension AcquisitionChatFeature.ChatPhase {
+    func toAcquisitionPhase() -> AcquisitionPhase {
+        switch self {
+        case .initial, .gatheringBasics, .gatheringDetails:
+            return .planning
+        case .analyzingRequirements:
+            return .requirementsDevelopment
+        case .confirmingPredictions, .readyToGenerate:
+            return .planning
+        }
     }
 }

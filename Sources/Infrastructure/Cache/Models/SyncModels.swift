@@ -89,17 +89,13 @@ struct OutboxItem: Codable, Identifiable {
     /// Error from last sync attempt
     var lastError: String?
     
-    /// OpenRouter model role for this sync operation
-    var syncRole: String?
-    
     /// Initialize a new outbox item
     init(
         cacheKey: String,
         operation: SyncOperation,
         data: Data?,
         contentType: CacheContentType,
-        priority: SyncPriority = .normal,
-        syncRole: String? = nil
+        priority: SyncPriority = .normal
     ) {
         self.id = UUID().uuidString
         self.cacheKey = cacheKey
@@ -111,7 +107,6 @@ struct OutboxItem: Codable, Identifiable {
         self.nextRetryAt = Date()
         self.priority = priority
         self.lastError = nil
-        self.syncRole = syncRole
     }
 }
 
@@ -120,7 +115,6 @@ enum SyncOperation: String, Codable {
     case create
     case update
     case delete
-    case query  // For OpenRouter model queries
 }
 
 /// Priority for sync operations

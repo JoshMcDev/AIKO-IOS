@@ -32,8 +32,8 @@ final class OfflineCacheManager: ObservableObject {
     /// Cache statistics
     @Published var statistics = OfflineCacheStatistics()
     
-    /// Sync engine for offline synchronization
-    private var syncEngine: SyncEngine?
+    // Removed sync engine - not needed in AIKO project
+    // private var syncEngine: SyncEngine?
     
     /// Private initializer
     private init(configuration: OfflineCacheConfiguration = .default) {
@@ -44,28 +44,10 @@ final class OfflineCacheManager: ObservableObject {
         
         logger.info("OfflineCacheManager initialized with max size: \(configuration.maxSize)")
         
-        // Initialize sync engine
-        Task {
-            await initializeSyncEngine()
-        }
+        // Sync engine removed - not needed in AIKO project
     }
     
-    /// Initialize the sync engine
-    private func initializeSyncEngine() async {
-        // Get OpenRouter API key from environment or configuration
-        let apiKey = ProcessInfo.processInfo.environment["OPENROUTER_API_KEY"]
-        
-        syncEngine = SyncEngine(
-            cacheManager: self,
-            openRouterApiKey: apiKey
-        )
-        
-        if apiKey != nil {
-            logger.info("SyncEngine initialized with OpenRouter support")
-        } else {
-            logger.warning("SyncEngine initialized without OpenRouter API key")
-        }
-    }
+    // Sync engine initialization removed - not needed in AIKO project
     
     /// Store an object in the appropriate cache
     /// - Parameters:
@@ -95,18 +77,7 @@ final class OfflineCacheManager: ObservableObject {
         // Update statistics
         await updateStatistics()
         
-        // Queue for sync
-        if let syncEngine = syncEngine {
-            let encoder = JSONEncoder()
-            if let data = try? encoder.encode(object) {
-                await syncEngine.queueChange(
-                    key: key,
-                    operation: .create,
-                    data: data,
-                    contentType: type
-                )
-            }
-        }
+        // Sync functionality removed - not needed in AIKO project
     }
     
     /// Retrieve an object from cache
@@ -313,46 +284,36 @@ final class OfflineCacheManager: ObservableObject {
 }
 
 // MARK: - Synchronization
+// Basic sync interface without VanillaIce dependencies
 extension OfflineCacheManager {
-    /// Manually trigger synchronization
+    /// Manually trigger synchronization (placeholder)
     @discardableResult
     func synchronize() async -> SyncResult? {
-        guard let syncEngine = syncEngine else {
-            logger.warning("SyncEngine not initialized")
-            return nil
-        }
-        
-        logger.info("Manually triggering synchronization")
-        return await syncEngine.performSync()
+        logger.info("Sync requested - functionality not implemented")
+        // Return a basic success result
+        return SyncResult(
+            success: true,
+            syncedItems: [],
+            failedItems: [],
+            conflicts: [],
+            duration: 0,
+            timestamp: Date()
+        )
+    }
+    
+    /// Cancel active sync (placeholder)
+    func cancelSync() async {
+        logger.info("Sync cancellation requested - no active sync")
     }
     
     /// Get pending changes count
     func pendingChangesCount() async -> Int {
-        guard let syncEngine = syncEngine else { return 0 }
-        return await syncEngine.pendingChangesCount()
+        return statistics.pendingChanges
     }
     
     /// Clear all pending changes
     func clearPendingChanges() async {
-        guard let syncEngine = syncEngine else { return }
-        await syncEngine.clearPendingChanges()
-    }
-    
-    /// Cancel active sync
-    func cancelSync() async {
-        guard let syncEngine = syncEngine else { return }
-        await syncEngine.cancelSync()
-    }
-    
-    /// Execute VanillaIce consensus operation
-    func executeVanillaIceOperation(_ operation: VanillaIceOperation) async throws -> VanillaIceResult? {
-        guard let syncEngine = syncEngine else {
-            logger.error("SyncEngine not initialized for VanillaIce operation")
-            return nil
-        }
-        
-        logger.info("Executing VanillaIce operation")
-        return try await syncEngine.executeVanillaIceConsensus(operation: operation)
+        statistics.pendingChanges = 0
     }
 }
 

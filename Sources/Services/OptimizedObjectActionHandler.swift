@@ -246,7 +246,7 @@ private func discoverActionsOptimized(for objectType: ObjectType, in context: Ac
     // Parallel action creation
     await withTaskGroup(of: ObjectAction?.self) { group in
         for actionType in supportedActionTypes {
-            group.addTask {
+            group.addTask { () -> ObjectAction? in
                 guard await isActionAvailableOptimized(actionType, for: objectType, in: context) else {
                     return nil
                 }
@@ -849,7 +849,7 @@ private struct ParameterDefaults {
 }
 
 private struct PriorityCalculator {
-    static func calculate(_ actionType: ActionType, context: ActionContext) -> ActionPriority {
+    static func calculate(_ actionType: ActionType, context: ActionContext) -> ObjectActionPriority {
         // Critical actions
         if [.validate, .approve, .reject].contains(actionType) {
             return .critical

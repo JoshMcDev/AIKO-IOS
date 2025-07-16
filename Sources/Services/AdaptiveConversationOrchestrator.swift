@@ -62,7 +62,7 @@ public class AdaptiveConversationOrchestrator: ObservableObject {
         
         // Build conversation context
         let context = ConversationContext(
-            acquisitionType: type,
+            acquisitionType: convertToAPEAcquisitionType(type),
             uploadedDocuments: documents,
             userProfile: userProfile,
             historicalData: await loadHistoricalData(for: userProfile)
@@ -275,6 +275,21 @@ public class AdaptiveConversationOrchestrator: ObservableObject {
         currentSession = nil
         currentFlow = nil
         currentPrompt = nil
+    }
+    
+    private func convertToAPEAcquisitionType(_ type: AcquisitionType) -> APEAcquisitionType {
+        switch type {
+        case .simplifiedAcquisition, .commercialItem:
+            return .supplies
+        case .nonCommercialService:
+            return .services
+        case .constructionProject:
+            return .construction
+        case .researchDevelopment, .otherTransaction:
+            return .researchAndDevelopment
+        case .majorSystem:
+            return .services // Major systems are typically services
+        }
     }
     
     private func loadHistoricalData(for profile: ConversationUserProfile?) async -> [HistoricalAcquisition] {

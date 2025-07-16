@@ -19,7 +19,7 @@ struct SmartDefaultsDemoFeature {
                 sessionId: UUID(),
                 userId: "john.doe@agency.gov",
                 organizationUnit: "Contracting Division",
-                acquisitionType: .supplies,
+                acquisitionType: .commercialItem,
                 documentType: .requestForQuote,
                 extractedData: [:],
                 organizationalRules: [],

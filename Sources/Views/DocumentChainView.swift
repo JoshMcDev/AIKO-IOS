@@ -3,7 +3,7 @@ import SwiftUI
 // MARK: - Document Chain View
 
 struct DocumentChainView: View {
-    let chain: DocumentChain?
+    let chainProgress: DocumentChainProgress?
     let validation: ChainValidation?
     let onSelectDocument: (DocumentType) -> Void
 
@@ -17,29 +17,29 @@ struct DocumentChainView: View {
 
                 Spacer()
 
-                if let chain {
-                    Text("\(Int(chain.progress * 100))% Complete")
+                if let chainProgress {
+                    Text("\(Int(chainProgress.progress * 100))% Complete")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
             }
 
-            if let chain {
+            if let chainProgress {
                 // Chain visualization
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: Theme.Spacing.sm) {
-                        ForEach(Array(chain.plannedDocuments.enumerated()), id: \.offset) { index, document in
+                        ForEach(Array(chainProgress.plannedDocuments.enumerated()), id: \.offset) { index, document in
                             DocumentChainNode(
                                 document: document,
-                                isCompleted: chain.completedDocuments[document] != nil,
-                                isCurrent: index == chain.currentIndex,
+                                isCompleted: chainProgress.completedDocuments[document] != nil,
+                                isCurrent: index == chainProgress.currentIndex,
                                 hasError: validation?.missingData[document] != nil,
                                 onTap: { onSelectDocument(document) }
                             )
 
-                            if index < chain.plannedDocuments.count - 1 {
+                            if index < chainProgress.plannedDocuments.count - 1 {
                                 ChainConnector(
-                                    isActive: chain.completedDocuments[document] != nil
+                                    isActive: chainProgress.completedDocuments[document] != nil
                                 )
                             }
                         }
@@ -170,7 +170,7 @@ struct ChainConnector: View {
 // MARK: - Document Chain Progress Bar
 
 struct DocumentChainProgressBar: View {
-    let chain: DocumentChain
+    let chainProgress: DocumentChainProgress
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
@@ -181,7 +181,7 @@ struct DocumentChainProgressBar: View {
 
                 Spacer()
 
-                Text("\(chain.completedDocuments.count) of \(chain.plannedDocuments.count)")
+                Text("\(chainProgress.completedDocuments.count) of \(chainProgress.plannedDocuments.count)")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -201,8 +201,8 @@ struct DocumentChainProgressBar: View {
                             startPoint: .leading,
                             endPoint: .trailing
                         ))
-                        .frame(width: geometry.size.width * CGFloat(chain.progress), height: 8)
-                        .animation(.easeInOut, value: chain.progress)
+                        .frame(width: geometry.size.width * CGFloat(chainProgress.progress), height: 8)
+                        .animation(.easeInOut, value: chainProgress.progress)
                 }
             }
             .frame(height: 8)

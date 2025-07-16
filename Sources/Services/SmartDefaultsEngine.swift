@@ -635,11 +635,26 @@ extension SmartDefaultsEngine {
         }
         
         // Order must-ask fields by priority
+        // Convert AcquisitionType to APEAcquisitionType
+        let apeAcquisitionType: APEAcquisitionType = {
+            guard let acqType = context.acquisitionType else { return .supplies }
+            switch acqType {
+            case .commercialItem, .simplifiedAcquisition:
+                return .supplies
+            case .nonCommercialService, .majorSystem:
+                return .services
+            case .constructionProject:
+                return .construction
+            case .researchDevelopment, .otherTransaction:
+                return .researchAndDevelopment
+            }
+        }()
+        
         let orderedMustAsk = patternLearningEngine.predictNextQuestion(
             answered: Set(autoFill.keys),
             remaining: Set(mustAsk),
             context: ConversationContext(
-                acquisitionType: context.acquisitionType ?? .supplies,
+                acquisitionType: apeAcquisitionType,
                 uploadedDocuments: [],
                 userProfile: nil,
                 historicalData: []

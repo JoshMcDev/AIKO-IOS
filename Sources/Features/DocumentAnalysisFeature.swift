@@ -49,7 +49,7 @@ public struct DocumentAnalysisFeature {
         public var isLoadingAcquisition = false
 
         // Document chain tracking
-        public var documentChain: DocumentChain?
+        public var documentChain: DocumentChainProgress?
         public var chainValidation: ChainValidation?
 
         // Voice recording state
@@ -101,7 +101,7 @@ public struct DocumentAnalysisFeature {
 
         // Document chain actions
         case createDocumentChain([DocumentType])
-        case documentChainCreated(DocumentChain)
+        case documentChainCreated(DocumentChainProgress)
         case validateDocumentChain
         case chainValidated(ChainValidation)
         case documentGeneratedInChain(GeneratedDocument)

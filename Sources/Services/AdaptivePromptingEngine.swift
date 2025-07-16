@@ -15,13 +15,13 @@ public protocol AdaptivePromptingEngineProtocol {
 // MARK: - Data Models
 
 public struct ConversationContext {
-    public let acquisitionType: AcquisitionType
+    public let acquisitionType: APEAcquisitionType
     public let uploadedDocuments: [ParsedDocument]
     public let userProfile: ConversationUserProfile?
     public let historicalData: [HistoricalAcquisition]
     
     public init(
-        acquisitionType: AcquisitionType,
+        acquisitionType: APEAcquisitionType,
         uploadedDocuments: [ParsedDocument] = [],
         userProfile: ConversationUserProfile? = nil,
         historicalData: [HistoricalAcquisition] = []
@@ -474,11 +474,11 @@ public struct FieldDefault {
 public struct HistoricalAcquisition {
     public let id: UUID
     public let date: Date
-    public let type: AcquisitionType
+    public let type: APEAcquisitionType
     public let data: RequirementsData
     public let vendor: APEVendorInfo?
     
-    public init(id: UUID = UUID(), date: Date, type: AcquisitionType, data: RequirementsData, vendor: APEVendorInfo? = nil) {
+    public init(id: UUID = UUID(), date: Date, type: APEAcquisitionType, data: RequirementsData, vendor: APEVendorInfo? = nil) {
         self.id = id
         self.date = date
         self.type = type
@@ -487,7 +487,7 @@ public struct HistoricalAcquisition {
     }
 }
 
-public enum AcquisitionType: String, Codable {
+public enum APEAcquisitionType: String, Codable {
     case supplies
     case services
     case construction
@@ -611,7 +611,7 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
             sessionId: UUID(),
             userId: context.userProfile?.id.uuidString ?? "",
             organizationUnit: context.userProfile?.organizationUnit ?? "",
-            acquisitionType: context.acquisitionType,
+            acquisitionType: convertToAcquisitionType(context.acquisitionType),
             extractedData: extractedContext?.toFieldMapping() ?? [:],
             fiscalYear: String(Calendar.current.component(.year, from: Date())),
             fiscalQuarter: getCurrentFiscalQuarter(),
@@ -1091,6 +1091,19 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
     /// Get auto-fill metrics
     public func getAutoFillMetrics() -> ConfidenceBasedAutoFillEngine.AutoFillMetrics {
         return autoFillEngine.getMetrics()
+    }
+    
+    private func convertToAcquisitionType(_ type: APEAcquisitionType) -> AcquisitionType? {
+        switch type {
+        case .supplies:
+            return .commercialItem
+        case .services:
+            return .nonCommercialService
+        case .construction:
+            return .constructionProject
+        case .researchAndDevelopment:
+            return .researchDevelopment
+        }
     }
 }
 

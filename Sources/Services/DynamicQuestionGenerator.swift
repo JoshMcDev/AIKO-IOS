@@ -7,7 +7,7 @@ public class DynamicQuestionGenerator {
     public init() {}
     
     public func generateQuestions(
-        for type: AcquisitionType,
+        for type: APEAcquisitionType,
         with context: ExtractedContext?,
         historicalData: [HistoricalAcquisition]
     ) async -> [DynamicQuestion] {
@@ -35,7 +35,7 @@ public class DynamicQuestionGenerator {
     
     // MARK: - Private Methods
     
-    private func getCriticalQuestions(for type: AcquisitionType) -> [DynamicQuestion] {
+    private func getCriticalQuestions(for type: APEAcquisitionType) -> [DynamicQuestion] {
         var questions: [DynamicQuestion] = []
         
         // Project title is always critical
@@ -113,7 +113,7 @@ public class DynamicQuestionGenerator {
         return questions
     }
     
-    private func getGapFillingQuestions(context: ExtractedContext, type: AcquisitionType) -> [DynamicQuestion] {
+    private func getGapFillingQuestions(context: ExtractedContext, type: APEAcquisitionType) -> [DynamicQuestion] {
         var questions: [DynamicQuestion] = []
         let confidence = context.confidence
         
@@ -182,7 +182,7 @@ public class DynamicQuestionGenerator {
         return questions
     }
     
-    private func getStandardQuestions(for type: AcquisitionType) -> [DynamicQuestion] {
+    private func getStandardQuestions(for type: APEAcquisitionType) -> [DynamicQuestion] {
         var questions: [DynamicQuestion] = []
         
         // Common questions for all types

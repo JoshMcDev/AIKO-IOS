@@ -143,7 +143,7 @@ public struct ObjectAction: Identifiable, Equatable, Codable {
     public let objectId: String
     public let parameters: [String: Any]
     public let context: ActionContext
-    public let priority: ActionPriority
+    public let priority: ObjectActionPriority
     public let estimatedDuration: TimeInterval
     public let requiredCapabilities: Set<Capability>
 
@@ -154,7 +154,7 @@ public struct ObjectAction: Identifiable, Equatable, Codable {
         objectId: String,
         parameters: [String: Any] = [:],
         context: ActionContext,
-        priority: ActionPriority = .normal,
+        priority: ObjectActionPriority = .normal,
         estimatedDuration: TimeInterval = 0,
         requiredCapabilities: Set<Capability> = []
     ) {
@@ -182,7 +182,7 @@ public struct ObjectAction: Identifiable, Equatable, Codable {
         objectType = try container.decode(ObjectType.self, forKey: .objectType)
         objectId = try container.decode(String.self, forKey: .objectId)
         context = try container.decode(ActionContext.self, forKey: .context)
-        priority = try container.decode(ActionPriority.self, forKey: .priority)
+        priority = try container.decode(ObjectActionPriority.self, forKey: .priority)
         estimatedDuration = try container.decode(TimeInterval.self, forKey: .estimatedDuration)
         requiredCapabilities = try container.decode(Set<Capability>.self, forKey: .requiredCapabilities)
 
@@ -246,13 +246,13 @@ public struct ActionContext: Equatable, Codable {
     }
 }
 
-public enum ActionPriority: Int, Codable, Comparable {
+public enum ObjectActionPriority: Int, Codable, Comparable {
     case low = 0
     case normal = 1
     case high = 2
     case critical = 3
 
-    public static func < (lhs: ActionPriority, rhs: ActionPriority) -> Bool {
+    public static func < (lhs: ObjectActionPriority, rhs: ObjectActionPriority) -> Bool {
         lhs.rawValue < rhs.rawValue
     }
 }

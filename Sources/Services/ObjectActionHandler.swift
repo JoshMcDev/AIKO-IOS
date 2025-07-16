@@ -274,7 +274,7 @@ private func getDefaultParameters(for actionType: ActionType, objectType _: Obje
     return params
 }
 
-private func determinePriority(_ actionType: ActionType, context _: ActionContext) -> ActionPriority {
+private func determinePriority(_ actionType: ActionType, context _: ActionContext) -> ObjectActionPriority {
     // Critical actions
     if [.validate, .approve, .reject].contains(actionType) {
         return .critical

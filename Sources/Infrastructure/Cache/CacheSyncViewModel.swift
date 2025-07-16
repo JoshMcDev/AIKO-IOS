@@ -27,8 +27,8 @@ final class CacheSyncViewModel: ObservableObject {
     /// Network connectivity status
     @Published var isConnected = true
     
-    /// Last sync result
-    @Published var lastSyncResult: SyncResult?
+    // Sync functionality removed - not needed in AIKO project
+    // @Published var lastSyncResult: SyncResult?
     
     /// Show sync error alert
     @Published var showSyncError = false
@@ -75,11 +75,11 @@ final class CacheSyncViewModel: ObservableObject {
         pendingChanges = stats.pendingChanges
         syncErrors = stats.syncErrors
         
-        // Get additional pending count
-        let pendingCount = await cacheManager.pendingChangesCount()
-        if pendingCount != pendingChanges {
-            pendingChanges = pendingCount
-        }
+        // Sync functionality removed - not needed in AIKO project
+        // let pendingCount = await cacheManager.pendingChangesCount()
+        // if pendingCount != pendingChanges {
+        //     pendingChanges = pendingCount
+        // }
     }
     
     /// Manually trigger sync
@@ -92,16 +92,17 @@ final class CacheSyncViewModel: ObservableObject {
         Task {
             isSyncing = true
             
-            if let result = await cacheManager.synchronize() {
-                lastSyncResult = result
-                
-                if !result.success {
-                    syncErrors = result.failedItems.map { $0.error }
-                    showSyncError = true
-                }
-                
-                logger.info("Manual sync completed - Success: \(result.success)")
-            }
+            // Sync functionality removed - not needed in AIKO project
+            // if let result = await cacheManager.synchronize() {
+            //     lastSyncResult = result
+            //     
+            //     if !result.success {
+            //         syncErrors = result.failedItems.map { $0.error }
+            //         showSyncError = true
+            //     }
+            //     
+            //     logger.info("Manual sync completed - Success: \(result.success)")
+            // }
             
             await updateSyncStatus()
             isSyncing = false
@@ -111,7 +112,8 @@ final class CacheSyncViewModel: ObservableObject {
     /// Clear pending changes
     func clearPendingChanges() {
         Task {
-            await cacheManager.clearPendingChanges()
+            // Sync functionality removed - not needed in AIKO project
+            // await cacheManager.clearPendingChanges()
             await updateSyncStatus()
             logger.info("Cleared all pending changes")
         }

@@ -7,103 +7,191 @@
 ## 🎯 Project Overview
 
 **Project**: AIKO (Adaptive Intelligence for Kontract Optimization)  
-**Version**: 2.0.0  
-**Type**: iOS/macOS Application  
+**Version**: 5.0 (LLM-Powered iOS)  
+**Type**: iOS Application  
 **Domain**: Government Contracting  
 
 ### Project Vision
-Build an intelligent iOS/macOS application that revolutionizes government contracting by learning from user patterns, minimizing questions, and automating document processing through adaptive AI.
+Build a focused iOS productivity tool that revolutionizes government contracting by leveraging user-chosen LLM providers for all intelligence features. No backend services, no cloud complexity - just powerful automation through a simple native interface.
+
+**Core Philosophy**: Let LLMs handle intelligence. Let iOS handle the interface. Let users achieve more with less effort.
 
 ---
 
 ## 🏗️ Project Architecture
 
 ### Core Technologies
-- **Frontend**: SwiftUI + The Composable Architecture (TCA)
-- **Authentication**: Better-Auth (Government Compliance - FISMA, FedRAMP)
-- **Persistence**: Core Data + CloudKit
-- **AI Integration**: Multi-Provider LLM Support (Claude, OpenAI, Gemini) + Local Pattern Learning + Future Raindrop LNN
-- **Document Processing**: Vision Framework + Custom OCR
-- **Workflow Automation**: n8n (Performance-First Backend) + Native iOS (Thin Client)
+- **Frontend**: SwiftUI + The Composable Architecture (TCA) ✅
+- **Storage**: Core Data (local only) + CfA audit trails
+- **LLM Integration**: Universal multi-provider system with dynamic discovery ✅
+- **Document Processing**: VisionKit Scanner + OCR + Smart Filing
+- **Intelligence Layer**: All via user's LLM API keys
+- **Security**: Keychain Services + LocalAuthentication (Face ID/Touch ID)
+- **Integrations**: iOS Native (Mail, Calendar, Reminders) + Google Maps
 
-### Architecture Decisions
+### Simplified Architecture
 
-#### Hybrid n8n + Native iOS Architecture (3 Async Workflows)
-
-Based on /vanillaIce consensus analysis, the architecture has been optimized to:
-
-1. **n8n Workflows** (Backend Processing):
-   - Document Processing Pipeline
-   - Compliance & Audit Pipeline  
-   - Background Intelligence
-
-2. **Native iOS Implementation** (Real-time Operations):
-   - Cache/Sync via Swift actors + CloudKit
-   - Real-time updates with WebSocket/SSE
-   - Core Data with offline sync queue
-   - Sub-100ms sync operations
-
-**Critical Decision**: Cache/Sync operations moved from n8n to native iOS due to latency requirements identified by consensus analysis.
+```
+AIKO iOS App (Simple Native UI)
+├── UI Layer (SwiftUI) ✅
+│   ├── Dashboard ✅
+│   ├── Document Categories ✅
+│   ├── Chat Interface ✅
+│   ├── Scanner View (Phase 4)
+│   ├── Intelligence Cards (Phase 6)
+│   └── Provider Setup Wizard (Phase 5)
+├── Services (Thin Client Layer)
+│   ├── LLMService.swift ✅ (Enhanced)
+│   ├── DocumentService.swift ✅
+│   ├── ScannerService.swift (Phase 4)
+│   ├── PromptOptimizationService.swift (Phase 5)
+│   ├── GraphRAGService.swift (Phase 6)
+│   ├── CaseForAnalysisService.swift (Phase 6)
+│   └── ProviderDiscoveryService.swift (Phase 5)
+└── LLM Intelligence (via User's API Keys)
+    ├── Prompt Optimization Engine
+    ├── GraphRAG Regulatory Knowledge
+    ├── CASE FOR ANALYSIS Framework
+    ├── Follow-On Action Generator
+    └── Document Chain Orchestrator
+```
 
 ---
 
 ## 📋 Project-Specific Tasks
 
 ### Current Sprint Focus
-**Sprint**: Adaptive Intelligence Foundation  
+**Sprint**: Phase 4 - Document Scanner & Capture  
 **Duration**: 2 weeks  
+**Start Date**: January 17, 2025  
+
 **Goals**:
-1. Complete Task 2.3: User Pattern Learning Module
-2. Complete Task 2.4: Smart Defaults System
-3. Begin Task 2.5: Claude API Integration
+1. Implement VisionKit scanner with edge detection
+2. Build multi-page scanning workflow
+3. Integrate OCR for text extraction
+4. Create smart filing system
 
 ### Key Implementation Details
 
-#### Task 7.1: Hybrid Architecture Implementation
-**Status**: 📅 Scheduled  
-**Duration**: 6-7 weeks (reduced from 8-10 weeks)
+#### Phase 4: Document Scanner (In Progress)
+**Status**: 🚧 Starting  
+**Duration**: 2 weeks
 
-**Implementation Timeline**:
-- Weeks 1-3: n8n infrastructure + Document Pipeline
-- Weeks 4-5: Compliance & Background Intelligence
-- Week 6: Native iOS sync implementation
-- Week 7: Integration testing + optimization
+**Implementation Plan**:
+- **Week 1**: Core scanner implementation
+  - VisionKit document scanner
+  - Multi-page support
+  - OCR integration
+- **Week 2**: UI/UX and smart features
+  - One-tap scanning
+  - Auto-populate forms
+  - Smart filing
 
 **Performance Targets**:
-- Document processing: 90% faster than manual
-- Autofill accuracy: 85%+ confidence threshold
-- Sync latency: <100ms for critical operations
-- User time saved: 15 minutes per acquisition
+- Scanner accuracy: > 95%
+- OCR processing: < 2 seconds per page
+- Auto-populate accuracy: > 90%
+- User satisfaction: One-tap simplicity
 
-#### Task 12: n8n Performance Workflows
-**Status**: 20% Complete
+---
 
-**Completed**:
-- ✅ Real-time API Batching (40% fewer queries)
-- ✅ Auto Cache Invalidation (5x faster reads)
+## 🤖 LLM-Powered Intelligence Features
 
-**Pending Performance Optimizations**:
-- Log Aggregation & Anomaly Detection (30% less downtime)
-- Auto-scaling Triggers (instant scaling)
-- DB Index Optimization (7x faster queries)
-- Rate-limiting (99.9% uptime)
-- Health Monitoring (80% faster recovery)
-- Asset Preloading (60% faster loads)
-- JWT Rotation (85ms auth time)
-- Distributed Tracing (4x debug speed)
+### 1. Prompt Optimization Engine (Phase 5)
+**One-tap prompt enhancement with 15+ patterns**
+
+```swift
+struct PromptOptimizationEngine {
+    let patterns: [PromptPattern] = [
+        // Instruction patterns
+        .plain,              // Simple direct instruction
+        .rolePersona,        // "Act as a contracting officer..."
+        .outputFormat,       // "Respond in JSON format..."
+        
+        // Example-based patterns
+        .fewShot,           // Multiple examples
+        .oneShot,           // Single example template
+        
+        // Reasoning boosters
+        .chainOfThought,    // "Think step by step..."
+        .selfConsistency,   // Multiple reasoning paths
+        .treeOfThought,     // Explore alternatives
+        
+        // Knowledge injection
+        .rag,               // Retrieval augmented generation
+        .react,             // Reason + Act pattern
+        .pal                // Program-aided language model
+    ]
+}
+```
+
+### 2. GraphRAG Regulatory Intelligence (Phase 6)
+**Deep FAR/DFARS analysis with knowledge graphs**
+
+- Relationship mapping between clauses
+- Conflict detection and resolution
+- Dependency tracking
+- Confidence-scored citations
+- Visual graph exploration
+
+### 3. CASE FOR ANALYSIS Framework (Phase 6)
+**Automatic justification for every AI decision**
+
+```swift
+struct CaseForAnalysis {
+    let context: String      // Situation overview
+    let authority: [String]  // FAR/DFARS citations
+    let situation: String    // Specific analysis
+    let evidence: [String]   // Supporting data
+    let confidence: Double   // Decision confidence
+    
+    // Automatic generation with every recommendation
+    // Collapsible UI cards for transparency
+    // JSON export for audit trails
+}
+```
+
+### 4. Universal Provider Support (Phase 5)
+**Support any LLM with automatic discovery**
+
+```swift
+struct ProviderDiscoveryService {
+    func discoverAPI(endpoint: URL, apiKey: String) async -> ProviderAdapter? {
+        // Test connection
+        // Analyze API structure
+        // Generate dynamic adapter
+        // Store configuration securely
+    }
+}
+```
+
+### 5. Follow-On Actions & Document Chains (Phase 6)
+**Intelligent workflow automation**
+
+- LLM-suggested next steps
+- Dependency management
+- Parallel execution (up to 3 tasks)
+- Review modes (iterative vs batch)
+- Progress visualization
 
 ---
 
 ## 🚀 Project-Specific Workflows
 
-### Document Generation System
+### Document Scanner Workflow
+1. **Capture**: VisionKit edge detection
+2. **Process**: OCR text extraction
+3. **Analyze**: Form field detection
+4. **File**: Smart categorization
+5. **Use**: Auto-populate forms
 
-#### Requirement Studio Central Workspace
-- Document card system for visual workflow
-- Letter of Justification prominent placement
-- Quick-action buttons for document generation
-- Real-time status indicators for all documents
-- Intuitive navigation between requirements and documents
+### LLM Intelligence Workflow
+1. **Input**: User query or document
+2. **Optimize**: Enhance prompt automatically
+3. **Process**: Send to user's LLM provider
+4. **Analyze**: Generate CfA justification
+5. **Suggest**: Follow-on actions
+6. **Execute**: With user approval
 
 ### Confidence-Based AutoFill System
 
@@ -153,56 +241,78 @@ self.autoFillEngine = ConfidenceBasedAutoFillEngine(
 ## 📚 Project Documentation
 
 ### Key Documentation Files
-- `/Users/J/aiko/Documentation/01_Project_Overview.md`
-- `/Users/J/aiko/Documentation/02_Architecture_Decisions.md`
-- `/Users/J/aiko/Documentation/03_Implementation_Guide.md`
-- `/Users/J/aiko/Documentation/04_Project_Tasks.md`
+- `/Users/J/aiko/README.md` - Project overview and features
+- `/Users/J/aiko/Documentation/Project_Tasks.md` - 7-phase implementation plan
+- `/Users/J/aiko/Documentation/Phased_Deployment_Plan.md` - Deployment strategy
+- `/Users/J/aiko/Stategy.md` - Simplification strategy
 
-### n8n Workflow References
-- **Documentation**: `/Users/J/.claude/n8n-workflow-reference.md`
-- **Implementation Guide**: `/Users/J/.claude/n8n_workflows_implementation_guide.md`
-- **Workflow Templates**: `/Users/J/.claude/n8n-workflows/`
-- **Completed Workflows**: `/Users/J/Desktop/n8n aiko/`
+### Architecture References
+- **LLM Integration**: Multi-provider system with dynamic discovery
+- **Intelligence Features**: Prompt Optimization, GraphRAG, CfA, Follow-On Actions
+- **iOS Native**: VisionKit, LocalAuthentication, EventKit, MFMailComposeViewController
+- **Privacy First**: Direct API calls, no AIKO backend services
 
 ---
 
 ## 🎯 Business Value Metrics
 
-### Financial Impact (Validated by Consensus)
-- **Annual Profit**: $40,000
-- **Payback Period**: 9 months
-- **5-Year NPV**: $127,000
-- **ROI**: 317%
+### Development Efficiency (Simplified Approach)
+- **Timeline**: 7.5 weeks vs 12+ months
+- **Complexity**: 95% reduction
+- **Maintenance**: 90% lower burden
+- **App Size**: < 50MB target
 
-### Efficiency Gains
+### User Impact
 - **Time Saved**: 15 minutes per acquisition
-- **Question Reduction**: 70% fewer manual inputs
-- **Processing Speed**: 90% faster document generation
-- **Error Reduction**: 45% fewer compliance issues
+- **Prompt Enhancement**: < 3 seconds
+- **Decision Transparency**: 100% with CfA
+- **Provider Flexibility**: Any LLM works
+- **Scanner Accuracy**: > 95%
+- **Citation Accuracy**: > 95% with GraphRAG
+
+### Competitive Advantages
+- **Privacy First**: No AIKO backend, direct API calls
+- **User Control**: Choose any LLM provider
+- **Advanced Intelligence**: Prompt Optimization, GraphRAG, CfA
+- **iOS Native**: Fast, reliable, familiar
 
 ---
 
 ## 📊 Progress Tracking
 
-### Completed Features
-- ✅ Task 1: Foundation & Architecture
-- ✅ Task 2.1: Conversational Flow Architecture
-- ✅ Task 2.2: Context Extraction from Documents
-- ✅ Task 2.4: Smart Defaults System
+### Completed Phases (3/7 - 43%)
+- ✅ Phase 1: Foundation & Architecture
+- ✅ Phase 2: Resources & Templates (44 document templates)
+- ✅ Phase 3: LLM Integration (Multi-provider system)
 
-### In Progress
-- 🚧 Task 2.3: User Pattern Learning Module
-- 🚧 Task 12: n8n Performance Workflows (20%)
+### Current Phase
+- 🚧 Phase 4: Document Scanner & Capture (Starting Jan 17, 2025)
 
-### Upcoming Priorities
-1. Complete adaptive prompting engine
-2. Implement n8n document processing pipeline
-3. Build native iOS sync architecture
-4. Create compliance automation workflows
+### Upcoming Phases
+- 📅 Phase 5: Smart Integrations & Provider Flexibility (1.5 weeks)
+- 📅 Phase 6: LLM Intelligence & Compliance Automation (2 weeks)
+- 📅 Phase 7: Polish & App Store Release (2 weeks)
+
+### Key Deliverables by Phase
+1. **Phase 4**: Professional scanner with OCR
+2. **Phase 5**: Prompt Optimization + Universal Provider Support
+3. **Phase 6**: CfA + GraphRAG + Follow-On Actions
+4. **Phase 7**: App Store release
 
 ---
 
 ## 🔄 Version History
+
+- **v2.0** (2025-01-16) - Simplified LLM-Powered iOS Focus
+  - Removed all backend services (n8n, Better-Auth, Raindrop)
+  - Transformed from 16 phases to 7 phases
+  - Added LLM-powered intelligence features:
+    - Prompt Optimization Engine (15+ patterns)
+    - GraphRAG for regulatory intelligence
+    - CASE FOR ANALYSIS framework
+    - Universal Provider Support
+  - Updated terminology: "Cloud Intelligence" → "LLM Intelligence"
+  - Aligned with 7.5-week timeline
 
 - **v1.0** (2025-01-15) - Initial project configuration
   - Extracted from global CLAUDE.md v5.1
@@ -212,6 +322,6 @@ self.autoFillEngine = ConfidenceBasedAutoFillEngine(
 
 ---
 
-**Last Updated**: 2025-01-15  
+**Last Updated**: 2025-01-16  
 **Project Lead**: Mr. Joshua  
 **Configuration Type**: Project-Specific (AIKO)

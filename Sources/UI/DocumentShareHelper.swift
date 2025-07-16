@@ -59,7 +59,7 @@ enum DocumentShareHelper {
     }
 
     // Generate text content for Document Chain
-    static func generateDocumentChainText(_ chain: DocumentChain) -> String {
+    static func generateDocumentChainText(_ chain: DocumentChainProgress) -> String {
         var content = """
         Document Chain Report
         Generated: \(Date().formatted())

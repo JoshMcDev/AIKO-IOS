@@ -332,13 +332,13 @@ public class SmartDefaultsProvider: @unchecked Sendable {
         var confidence: Double
         
         switch context.acquisitionType {
-        case .supplies:
+        case .commercialItem, .simplifiedAcquisition:
             fundingSource = "O&M \(context.timeContext.fiscalYear)"
             confidence = 0.8
-        case .services:
+        case .nonCommercialService, .majorSystem:
             fundingSource = "Services \(context.timeContext.fiscalYear)"
             confidence = 0.75
-        case .construction:
+        case .constructionProject:
             fundingSource = "MILCON \(context.timeContext.fiscalYear)"
             confidence = 0.7
         default:
