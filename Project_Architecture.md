@@ -1,7 +1,15 @@
 # AIKO Architecture Guide
 
-**Date**: July 14, 2025  
-**Version**: 2.0.0
+**Date**: January 16, 2025  
+**Version**: 2.1.0 (Clean Architecture)
+
+## Recent Changes (January 16, 2025)
+
+### VanillaIce Infrastructure Removal
+- **Complete Separation**: Removed all VanillaIce global command infrastructure that was incorrectly integrated
+- **Clean Architecture**: AIKO now has a pure iOS-focused architecture without external command dependencies
+- **Cache Infrastructure**: Maintained legitimate offline caching for iOS app functionality
+- **Fixed Compilation**: Resolved all errors and warnings for clean builds
 
 ## Overview
 

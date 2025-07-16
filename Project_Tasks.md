@@ -1,9 +1,9 @@
 # AIKO Project Tasks - Simplified 7-Phase Plan
 
 **Project**: AIKO (Adaptive Intelligence for Kontract Optimization)  
-**Version**: 5.0 (LLM-Powered iOS)  
+**Version**: 5.1 (Clean Architecture)  
 **Date**: January 16, 2025  
-**Status**: In Progress (Phases 1-3 Complete)  
+**Status**: In Progress (Phases 1-3 Complete, Architecture Cleanup Complete)  
 
 ---
 
@@ -12,6 +12,17 @@
 Build a focused iOS productivity tool that revolutionizes government contracting by leveraging user-chosen LLM providers for all intelligence features. No backend services, no cloud complexity - just powerful automation through a simple native interface.
 
 **Core Philosophy**: Let LLMs handle intelligence. Let iOS handle the interface. Let users achieve more with less effort.
+
+---
+
+## 🔧 Recent Architecture Cleanup (January 16, 2025)
+
+### Completed Tasks ✅
+- **Remove VanillaIce Infrastructure**: Deleted all global command code (TokenGuardrails, OpenRouterSyncAdapter)
+- **Fix Compilation Errors**: Resolved all errors in FollowOnActionService and BackgroundSyncHandler
+- **Fix Build Warnings**: Cleaned up unused variables and immutable values in UnifiedChatFeature
+- **Verify Cache System**: Ensured offline caching works correctly without VanillaIce dependencies
+- **Clean Build**: Project now compiles without errors or warnings
 
 ---
 
@@ -165,6 +176,7 @@ Build a focused iOS productivity tool that revolutionizes government contracting
   - Dependency management
   - Priority indicators
   - Parallel task execution (up to 3)
+  - **TODO**: Integrate parallel workflow capabilities from AgenticChatFeature
 
 #### Task 10: Document Chain Orchestration
 - **10.1** Chain Builder
@@ -172,8 +184,10 @@ Build a focused iOS productivity tool that revolutionizes government contracting
   - Critical path optimization
   - Visual progress tracking
   - Automatic sequencing
+  - **TODO**: Implement Document Chain Strategy builder
   
 - **10.2** Review Modes
+  - **TODO**: Implement iterative vs batch review modes
   - User-selectable preferences:
     * Iterative: Review each as generated
     * Batch: Generate all, then review

@@ -1,9 +1,26 @@
 # AIKO (Adaptive Intelligence for Kontract Optimization)
 
 **Date**: January 16, 2025  
-**Version**: 4.1 (Simplified Native iOS)  
+**Version**: 4.2 (VanillaIce Infrastructure Removed)  
 **Platform**: iOS 17.0+  
 **Architecture**: SwiftUI + The Composable Architecture (TCA)
+
+## Recent Updates (January 16, 2025)
+
+### Version 4.2 - Architecture Cleanup
+- **Removed VanillaIce Infrastructure**: Completely removed all VanillaIce-related code and dependencies
+  - Deleted TokenGuardrails.swift (global command infrastructure)
+  - Deleted OpenRouterSyncAdapter.swift (global command infrastructure)
+  - Cleaned up SyncModels.swift to remove OpenRouter references
+  - Updated BackgroundSyncHandler to remove sync calls
+  - Fixed FollowOnActionService compilation errors
+- **Fixed All Compilation Warnings**: 
+  - Resolved unused variable warnings in UnifiedChatFeature
+  - Fixed immutable value warnings
+- **Maintained Core Functionality**:
+  - Offline cache infrastructure remains intact for legitimate iOS offline support
+  - Background task scheduling continues to work for cache cleanup
+  - All document processing and LLM integrations functioning normally
 
 ## Overview
 
