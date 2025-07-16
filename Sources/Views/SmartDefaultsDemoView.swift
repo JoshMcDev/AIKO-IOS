@@ -76,10 +76,10 @@ struct SmartDefaultsDemoView: View {
             }
         }
         .padding()
-        #if os(iOS)
-        .background(Color(UIColor.secondarySystemBackground))
-        #else
+        #if os(macOS)
         .background(Color(NSColor.windowBackgroundColor))
+        #else
+        .background(Color(UIColor.secondarySystemBackground))
         #endif
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
@@ -102,10 +102,10 @@ struct SmartDefaultsDemoView: View {
             }
         }
         .padding()
-        #if os(iOS)
-        .background(Color(UIColor.secondarySystemBackground))
-        #else
+        #if os(macOS)
         .background(Color(NSColor.windowBackgroundColor))
+        #else
+        .background(Color(UIColor.secondarySystemBackground))
         #endif
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
@@ -155,10 +155,10 @@ struct SmartDefaultsDemoView: View {
             }
         }
         .padding()
-        #if os(iOS)
-        .background(Color(UIColor.secondarySystemBackground))
-        #else
+        #if os(macOS)
         .background(Color(NSColor.windowBackgroundColor))
+        #else
+        .background(Color(UIColor.secondarySystemBackground))
         #endif
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)

@@ -444,11 +444,8 @@ public struct ChatMessage: Equatable, Identifiable {
     }
 }
 
-public enum MessageRole {
-    case user
-    case assistant
-    case system
-}
+// MessageRole is imported from LLMProviderProtocol
+// It includes: system, user, assistant, function cases
 
 public struct MessageCard: Equatable {
     public let type: CardType

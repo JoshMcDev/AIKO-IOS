@@ -415,6 +415,78 @@ struct OrganizationLogoView: View {
     }
 }
 
+// MARK: - Profile Section View
+
+struct ProfileSectionView<Content: View>: View {
+    let title: String
+    let icon: String
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+            Label(title, systemImage: icon)
+                .font(.headline)
+                .foregroundColor(.white)
+
+            VStack(spacing: Theme.Spacing.md) {
+                content()
+            }
+            .padding(Theme.Spacing.lg)
+            .background(
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+                    .fill(Theme.Colors.aikoSecondary)
+            )
+        }
+    }
+}
+
+// MARK: - Profile Completion View
+
+struct ProfileCompletionView: View {
+    let profile: UserProfile
+
+    var body: some View {
+        VStack(spacing: Theme.Spacing.md) {
+            HStack {
+                Text("Profile Completion")
+                    .font(.headline)
+                    .foregroundColor(.white)
+
+                Spacer()
+
+                Text("\(Int(profile.completionPercentage * 100))%")
+                    .font(.headline)
+                    .foregroundColor(profile.isComplete ? .green : .orange)
+            }
+
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(height: 12)
+
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(profile.isComplete ? Color.green : Color.orange)
+                        .frame(width: geometry.size.width * profile.completionPercentage, height: 12)
+                        .animation(.easeInOut(duration: 0.3), value: profile.completionPercentage)
+                }
+            }
+            .frame(height: 12)
+
+            if !profile.isComplete {
+                Text("Complete your profile to unlock all features")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(Theme.Spacing.lg)
+        .background(
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+                .fill(Theme.Colors.aikoSecondary)
+        )
+    }
+}
+
 // MARK: - Profile Image Picker
 
 #if os(iOS)
