@@ -3,7 +3,7 @@ import Foundation
 // MARK: - Local Model Provider
 
 /// Local model provider for offline/air-gapped environments (using llama.cpp or similar)
-public final class LocalModelProvider: LLMProviderProtocol {
+public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable {
     
     // MARK: - Properties
     

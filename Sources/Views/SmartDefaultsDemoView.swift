@@ -6,6 +6,18 @@ import UIKit
 import AppKit
 #endif
 
+// MARK: - Platform-specific Colors
+
+private extension Color {
+    static var windowBackground: Color {
+        #if os(macOS)
+        return Color(NSColor.windowBackgroundColor)
+        #else
+        return Color(UIColor.secondarySystemBackground)
+        #endif
+    }
+}
+
 // MARK: - Smart Defaults Demo View
 
 struct SmartDefaultsDemoView: View {
@@ -76,11 +88,7 @@ struct SmartDefaultsDemoView: View {
             }
         }
         .padding()
-        #if os(macOS)
-        .background(Color(NSColor.windowBackgroundColor))
-        #else
-        .background(Color(UIColor.secondarySystemBackground))
-        #endif
+        .background(Color.windowBackground)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
     }
@@ -102,11 +110,7 @@ struct SmartDefaultsDemoView: View {
             }
         }
         .padding()
-        #if os(macOS)
-        .background(Color(NSColor.windowBackgroundColor))
-        #else
-        .background(Color(UIColor.secondarySystemBackground))
-        #endif
+        .background(Color.windowBackground)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
     }
@@ -155,11 +159,7 @@ struct SmartDefaultsDemoView: View {
             }
         }
         .padding()
-        #if os(macOS)
-        .background(Color(NSColor.windowBackgroundColor))
-        #else
-        .background(Color(UIColor.secondarySystemBackground))
-        #endif
+        .background(Color.windowBackground)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
     }

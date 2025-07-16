@@ -5,6 +5,18 @@ import UIKit
 import AppKit
 #endif
 
+// MARK: - Platform-specific Colors
+
+private extension Color {
+    static var controlBackground: Color {
+        #if os(macOS)
+        return Color(NSColor.controlBackgroundColor)
+        #else
+        return Color(UIColor.systemBackground)
+        #endif
+    }
+}
+
 struct FARUpdatesView: View {
     @StateObject private var updateService = FARUpdateService()
     @State private var isChecking = false
@@ -124,11 +136,7 @@ struct FARUpdatesView: View {
             }
         }
         .padding()
-        #if os(iOS)
-        .background(Color(UIColor.systemBackground))
-        #else
-        .background(Color(NSColor.controlBackgroundColor))
-        #endif
+        .background(Color.controlBackground)
         .cornerRadius(12)
         .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
     }

@@ -1,0 +1,1008 @@
+Fetching https://github.com/jamesrochabrun/SwiftAnthropic from cache
+Fetched https://github.com/jamesrochabrun/SwiftAnthropic from cache (0.29s)
+Fetching https://github.com/pointfreeco/swift-custom-dump from cache
+Fetching https://github.com/pointfreeco/combine-schedulers from cache
+Fetching https://github.com/apple/swift-nio.git from cache
+Fetching https://github.com/pointfreeco/swift-navigation from cache
+Fetching https://github.com/pointfreeco/swift-concurrency-extras from cache
+Fetching https://github.com/pointfreeco/swift-clocks from cache
+Fetching https://github.com/pointfreeco/swift-composable-architecture from cache
+Fetched https://github.com/pointfreeco/combine-schedulers from cache (0.29s)
+Fetched https://github.com/pointfreeco/swift-concurrency-extras from cache (0.30s)
+Fetched https://github.com/pointfreeco/swift-custom-dump from cache (0.30s)
+Fetched https://github.com/pointfreeco/swift-clocks from cache (0.30s)
+Fetching https://github.com/pointfreeco/swift-perception from cache
+Fetched https://github.com/pointfreeco/swift-navigation from cache (0.30s)
+Fetching https://github.com/pointfreeco/xctest-dynamic-overlay from cache
+Fetching https://github.com/pointfreeco/swift-case-paths from cache
+Fetching https://github.com/apple/swift-system.git from cache
+Fetching https://github.com/pointfreeco/swift-sharing from cache
+Fetched https://github.com/pointfreeco/swift-perception from cache (0.29s)
+Fetched https://github.com/pointfreeco/swift-case-paths from cache (0.29s)
+Fetched https://github.com/pointfreeco/xctest-dynamic-overlay from cache (0.29s)
+Fetching https://github.com/vapor/multipart-kit from cache
+Fetching https://github.com/swiftlang/swift-syntax from cache
+Fetching https://github.com/apple/swift-atomics.git from cache
+Fetched https://github.com/apple/swift-atomics.git from cache (0.28s)
+Fetched https://github.com/apple/swift-system.git from cache (0.30s)
+Fetched https://github.com/pointfreeco/swift-sharing from cache (0.30s)
+Fetching https://github.com/pointfreeco/swift-dependencies from cache
+Fetching https://github.com/apple/swift-collections from cache
+Fetching https://github.com/pointfreeco/swift-identified-collections from cache
+Fetched https://github.com/pointfreeco/swift-dependencies from cache (0.31s)
+Fetched https://github.com/pointfreeco/swift-identified-collections from cache (0.31s)
+Fetched https://github.com/apple/swift-collections from cache (0.31s)
+Fetched https://github.com/vapor/multipart-kit from cache (0.71s)
+Fetched https://github.com/swiftlang/swift-syntax from cache (3.42s)
+Fetched https://github.com/apple/swift-nio.git from cache (9.83s)
+Fetched https://github.com/pointfreeco/swift-composable-architecture from cache (26.30s)
+Computing version for https://github.com/vapor/multipart-kit
+Computed https://github.com/vapor/multipart-kit at 4.7.1 (26.63s)
+Computing version for https://github.com/apple/swift-collections
+Computed https://github.com/apple/swift-collections at 1.2.0 (0.36s)
+Computing version for https://github.com/pointfreeco/swift-composable-architecture
+Computed https://github.com/pointfreeco/swift-composable-architecture at 1.20.2 (0.35s)
+Computing version for https://github.com/apple/swift-nio.git
+Computed https://github.com/apple/swift-nio.git at 2.84.0 (0.55s)
+Computing version for https://github.com/swiftlang/swift-syntax
+Computed https://github.com/swiftlang/swift-syntax at 601.0.1 (0.45s)
+Computing version for https://github.com/pointfreeco/xctest-dynamic-overlay
+Computed https://github.com/pointfreeco/xctest-dynamic-overlay at 1.5.2 (0.32s)
+Computing version for https://github.com/pointfreeco/swift-sharing
+Computed https://github.com/pointfreeco/swift-sharing at 2.5.2 (0.32s)
+Computing version for https://github.com/pointfreeco/swift-perception
+Computed https://github.com/pointfreeco/swift-perception at 1.6.0 (0.32s)
+Computing version for https://github.com/pointfreeco/swift-navigation
+Computed https://github.com/pointfreeco/swift-navigation at 2.3.1 (0.32s)
+Computing version for https://github.com/pointfreeco/swift-identified-collections
+Computed https://github.com/pointfreeco/swift-identified-collections at 1.1.1 (0.32s)
+Computing version for https://github.com/pointfreeco/swift-dependencies
+Computed https://github.com/pointfreeco/swift-dependencies at 1.9.2 (0.33s)
+Computing version for https://github.com/pointfreeco/swift-custom-dump
+Computed https://github.com/pointfreeco/swift-custom-dump at 1.3.3 (0.32s)
+Computing version for https://github.com/pointfreeco/swift-concurrency-extras
+Computed https://github.com/pointfreeco/swift-concurrency-extras at 1.3.1 (0.39s)
+Computing version for https://github.com/pointfreeco/swift-case-paths
+Computed https://github.com/pointfreeco/swift-case-paths at 1.7.1 (0.45s)
+Computing version for https://github.com/pointfreeco/combine-schedulers
+Computed https://github.com/pointfreeco/combine-schedulers at 1.0.3 (0.32s)
+Computing version for https://github.com/apple/swift-system.git
+Computed https://github.com/apple/swift-system.git at 1.5.0 (0.31s)
+Computing version for https://github.com/apple/swift-atomics.git
+Computed https://github.com/apple/swift-atomics.git at 1.3.0 (0.32s)
+Computing version for https://github.com/pointfreeco/swift-clocks
+Computed https://github.com/pointfreeco/swift-clocks at 1.0.6 (0.32s)
+Creating working copy for https://github.com/pointfreeco/swift-navigation
+Working copy of https://github.com/pointfreeco/swift-navigation resolved at 2.3.1
+Creating working copy for https://github.com/pointfreeco/swift-concurrency-extras
+Working copy of https://github.com/pointfreeco/swift-concurrency-extras resolved at 1.3.1
+Creating working copy for https://github.com/vapor/multipart-kit
+Working copy of https://github.com/vapor/multipart-kit resolved at 4.7.1
+Creating working copy for https://github.com/swiftlang/swift-syntax
+Working copy of https://github.com/swiftlang/swift-syntax resolved at 601.0.1
+Creating working copy for https://github.com/pointfreeco/swift-composable-architecture
+Working copy of https://github.com/pointfreeco/swift-composable-architecture resolved at 1.20.2
+Creating working copy for https://github.com/pointfreeco/swift-identified-collections
+Working copy of https://github.com/pointfreeco/swift-identified-collections resolved at 1.1.1
+Creating working copy for https://github.com/pointfreeco/swift-clocks
+Working copy of https://github.com/pointfreeco/swift-clocks resolved at 1.0.6
+Creating working copy for https://github.com/apple/swift-system.git
+Working copy of https://github.com/apple/swift-system.git resolved at 1.5.0
+Creating working copy for https://github.com/apple/swift-nio.git
+Working copy of https://github.com/apple/swift-nio.git resolved at 2.84.0
+Creating working copy for https://github.com/pointfreeco/swift-dependencies
+Working copy of https://github.com/pointfreeco/swift-dependencies resolved at 1.9.2
+Creating working copy for https://github.com/pointfreeco/swift-case-paths
+Working copy of https://github.com/pointfreeco/swift-case-paths resolved at 1.7.1
+Creating working copy for https://github.com/apple/swift-collections
+Working copy of https://github.com/apple/swift-collections resolved at 1.2.0
+Creating working copy for https://github.com/pointfreeco/swift-custom-dump
+Working copy of https://github.com/pointfreeco/swift-custom-dump resolved at 1.3.3
+Creating working copy for https://github.com/apple/swift-atomics.git
+Working copy of https://github.com/apple/swift-atomics.git resolved at 1.3.0
+Creating working copy for https://github.com/pointfreeco/swift-perception
+Working copy of https://github.com/pointfreeco/swift-perception resolved at 1.6.0
+Creating working copy for https://github.com/jamesrochabrun/SwiftAnthropic
+Working copy of https://github.com/jamesrochabrun/SwiftAnthropic resolved at main (c069979)
+Creating working copy for https://github.com/pointfreeco/combine-schedulers
+Working copy of https://github.com/pointfreeco/combine-schedulers resolved at 1.0.3
+Creating working copy for https://github.com/pointfreeco/xctest-dynamic-overlay
+Working copy of https://github.com/pointfreeco/xctest-dynamic-overlay resolved at 1.5.2
+Creating working copy for https://github.com/pointfreeco/swift-sharing
+Working copy of https://github.com/pointfreeco/swift-sharing resolved at 2.5.2
+Building for debugging...
+[0/99] Write sources
+[0/99] Copying SF33_Form.md
+[0/99] Copying SF30_Form.md
+[0/99] Write sources
+[0/99] Copying PrivacyInfo.xcprivacy
+[0/99] Write sources
+[17/99] Copying PrivacyInfo.xcprivacy
+[17/99] Write sources
+[19/99] Copying SF44_Form.md
+[19/99] Write sources
+[19/99] Copying PrivacyInfo.xcprivacy
+[19/99] Write sources
+[62/99] Compiling CNIOWindows shim.c
+[63/99] Compiling _SwiftSyntaxCShims dummy.c
+[63/99] Compiling CNIOWindows WSAStartup.c
+[65/99] Compiling CNIOWASI CNIOWASI.c
+[66/99] Compiling CNIOLinux liburing_shims.c
+[67/99] Compiling CNIOLinux shim.c
+[67/99] Write sources
+[70/99] Compiling UIKitNavigationShim shim.m
+[71/99] Copying SF26_Form.md
+[71/99] Copying SF18_Form.md
+[71/99] Copying SF1449_Form.md
+[71/99] Copying SAMIcon.png
+[71/99] Copying MetricsModel.xcdatamodeld
+[71/99] Copying DFTemplates
+[71/99] Copying DD1155_Form.md
+[71/99] Copying AppIcon.png
+[71/99] Copying AIKO_Updated.xcdatamodeld
+[80/99] Copying AIKO.xcdatamodeld
+[80/99] Write sources
+[82/99] Copying Templates
+[83/99] Compiling _AtomicsShims.c
+[84/99] Write swift-version--1AB21518FC5DEDBE.txt
+[85/99] Compiling CNIOLLHTTP c_nio_http.c
+[86/99] Compiling CNIOLLHTTP c_nio_api.c
+[87/111] Compiling CNIOLLHTTP c_nio_llhttp.c
+[88/134] Compiling CNIODarwin shim.c
+[89/136] Compiling c-nioatomics.c
+[90/136] Compiling c-atomics.c
+[92/157] Emitting module Sharing1
+[93/157] Emitting module SwiftSyntax509
+[94/157] Compiling Sharing1 Empty.swift
+[95/157] Compiling SwiftSyntax509 Empty.swift
+[96/157] Emitting module SwiftSyntax600
+[97/157] Compiling SwiftSyntax600 Empty.swift
+[98/157] Emitting module SwiftSyntax601
+[99/157] Compiling SwiftSyntax601 Empty.swift
+[100/157] Emitting module Sharing2
+[101/157] Compiling Sharing2 Empty.swift
+[102/157] Emitting module SwiftSyntax510
+[103/157] Compiling SwiftSyntax510 Empty.swift
+[104/207] Compiling _NIOBase64 Base64.swift
+[105/207] Emitting module _NIOBase64
+[106/273] Compiling InternalCollectionsUtilities _UniqueCollection.swift
+[107/274] Compiling SwiftSyntax SyntaxKind.swift
+[108/274] Compiling SwiftSyntax SyntaxRewriter.swift
+[109/274] Compiling InternalCollectionsUtilities Descriptions.swift
+[110/274] Compiling InternalCollectionsUtilities Debugging.swift
+[111/274] Compiling InternalCollectionsUtilities RandomAccessCollection+Offsets.swift
+[112/274] Compiling InternalCollectionsUtilities UnsafeBufferPointer+Extras.swift
+[113/274] Compiling SwiftSyntax RawSyntaxTokenView.swift
+[114/274] Compiling SwiftSyntax RawSyntaxNodesJKLMN.swift
+[115/274] Compiling SwiftSyntax RawSyntaxNodesOP.swift
+[116/274] Compiling SwiftSyntax RawSyntaxNodesQRS.swift
+[117/274] Compiling SwiftSyntax RawSyntaxLayoutView.swift
+[118/274] Compiling SwiftSyntax RawSyntaxNodeProtocol.swift
+[119/275] Compiling SwiftSyntax MissingNodeInitializers.swift
+[120/275] Compiling SwiftSyntax RawSyntax.swift
+[121/275] Compiling InternalCollectionsUtilities UnsafeMutableBufferPointer+Extras.swift
+[122/275] Compiling SwiftSyntax SyntaxCollections.swift
+[123/275] Compiling SwiftSyntax SyntaxEnum.swift
+[124/275] Compiling Atomics Unmanaged extensions.swift
+[125/275] Compiling SwiftSyntax TokenKind.swift
+[126/275] Compiling SwiftSyntax EditorPlaceholder.swift
+[127/275] Compiling SwiftSyntax Identifier.swift
+[128/275] Compiling SwiftSyntax MemoryLayout.swift
+[129/275] Emitting module InternalCollectionsUtilities
+[132/275] Compiling SwiftSyntax SyntaxTraits.swift
+[133/275] Compiling SwiftSyntax SyntaxVisitor.swift
+[134/408] Compiling HeapModule _HeapNode.swift
+[135/408] Compiling _RopeModule BigString+Chunk+Breaks.swift
+[136/408] Compiling _RopeModule BigString+Chunk+Counts.swift
+[137/408] Compiling _RopeModule BigString+Chunk+Description.swift
+[138/408] Compiling _RopeModule BigString+Chunk+Indexing by Characters.swift
+[139/408] Compiling _RopeModule BigString+Chunk+Indexing by UTF16.swift
+[140/408] Compiling _RopeModule BigString+Insert.swift
+[141/414] Compiling HeapModule Heap.swift
+[142/414] Compiling HeapModule Heap+UnsafeHandle.swift
+[143/414] Compiling HeapModule Heap+Descriptions.swift
+[144/414] Compiling HeapModule Heap+Invariants.swift
+[145/414] Compiling HeapModule Heap+ExpressibleByArrayLiteral.swift
+[146/414] Emitting module HeapModule
+[147/414] Compiling _RopeModule Rope+Find.swift
+[148/414] Compiling _RopeModule Rope+ForEachWhile.swift
+[149/414] Compiling _RopeModule Rope+Insert.swift
+[150/414] Compiling _RopeModule Rope+Join.swift
+[151/414] Compiling _RopeModule Rope+MutatingForEach.swift
+[152/414] Compiling _RopeModule BigString+Chunk+RopeElement.swift
+[153/414] Compiling _RopeModule _RopeVersion.swift
+[154/414] Compiling _RopeModule Rope+Collection.swift
+[155/414] Compiling _RopeModule Rope+Index.swift
+[156/414] Compiling _RopeModule Rope+Sequence.swift
+[157/414] Compiling _RopeModule Rope+Append.swift
+[158/414] Compiling _RopeModule Rope+Extract.swift
+[159/414] Emitting module _NIODataStructures
+[160/414] Compiling _RopeModule BigString+ExpressibleByStringLiteral.swift
+[161/414] Compiling _RopeModule BigString+Hashing.swift
+[162/414] Compiling _RopeModule BigString+LosslessStringConvertible.swift
+[163/414] Compiling _RopeModule BigString+RangeReplaceableCollection.swift
+[164/414] Compiling _RopeModule BigString+Sequence.swift
+[165/414] Compiling _RopeModule BigString+TextOutputStream.swift
+[166/414] Compiling _NIODataStructures PriorityQueue.swift
+[167/414] Compiling _NIODataStructures _TinyArray.swift
+[168/492] Emitting module NIOConcurrencyHelpers
+[169/492] Compiling NIOConcurrencyHelpers lock.swift
+[170/492] Compiling NIOConcurrencyHelpers NIOAtomic.swift
+[171/492] Compiling NIOConcurrencyHelpers NIOLock.swift
+[172/492] Compiling _NIODataStructures Heap.swift
+[173/492] Compiling NIOConcurrencyHelpers NIOLockedValueBox.swift
+[174/492] Compiling NIOConcurrencyHelpers atomics.swift
+[175/508] Compiling DequeModule Deque+Collection.swift
+[176/508] Compiling DequeModule Deque+Equatable.swift
+[177/508] Compiling DequeModule Deque+ExpressibleByArrayLiteral.swift
+[178/508] Compiling HashTreeCollections TreeSet+Filter.swift
+[179/508] Compiling HashTreeCollections TreeSet+Hashable.swift
+[180/508] Compiling HashTreeCollections TreeSet+Sendable.swift
+[181/508] Compiling HashTreeCollections TreeSet+Sequence.swift
+[182/508] Compiling HashTreeCollections TreeSet+SetAlgebra Initializers.swift
+[183/516] Emitting module Atomics
+[184/516] Compiling HashTreeCollections TreeDictionary+Keys.swift
+[185/516] Compiling HashTreeCollections TreeDictionary+MapValues.swift
+[186/516] Compiling HashTreeCollections TreeDictionary+Merge.swift
+[187/516] Compiling HashTreeCollections TreeDictionary+Sendable.swift
+[188/516] Compiling HashTreeCollections _HashNode+Lookups.swift
+[189/516] Compiling HashTreeCollections _HashNode+Primitive Insertions.swift
+[190/516] Compiling HashTreeCollections _HashNode+Primitive Removals.swift
+[191/578] Compiling DequeModule _DequeSlot.swift
+[192/579] Compiling HashTreeCollections _HashNode+Structural mapValues.swift
+[193/579] Compiling HashTreeCollections _HashNode+Structural merge.swift
+[194/579] Compiling HashTreeCollections _HashNode+Structural subtracting.swift
+[195/579] Compiling HashTreeCollections _HashNode+Structural symmetricDifference.swift
+[196/579] Compiling HashTreeCollections _HashNode+Structural union.swift
+[197/579] Compiling HashTreeCollections _HashNode+Subtree Insertions.swift
+[198/579] Compiling HashTreeCollections _HashNode+Subtree Modify.swift
+[199/579] Compiling HashTreeCollections _HashNode+Primitive Replacement.swift
+[200/579] Compiling HashTreeCollections _HashNode+Storage.swift
+[201/579] Compiling HashTreeCollections _HashNode+Structural compactMapValues.swift
+[202/579] Compiling HashTreeCollections _HashNode+Structural filter.swift
+[203/579] Compiling HashTreeCollections _HashNode+Structural intersection.swift
+[204/579] Compiling HashTreeCollections _HashNode+Structural isDisjoint.swift
+[205/579] Compiling HashTreeCollections _HashNode+Structural isEqualSet.swift
+[206/579] Compiling HashTreeCollections _HashNode+Structural isSubset.swift
+[207/579] Compiling DequeModule _DequeBufferHeader.swift
+[208/579] Compiling DequeModule _DequeBuffer.swift
+[215/579] Compiling DequeModule _UnsafeWrappedBuffer.swift
+[216/579] Compiling BitCollections BitSet+CustomDebugStringConvertible.swift
+[217/579] Compiling BitCollections BitSet+CustomReflectable.swift
+[218/579] Compiling BitCollections BitSet+CustomStringConvertible.swift
+[219/579] Compiling BitCollections BitSet+Equatable.swift
+[220/579] Compiling BitCollections BitSet+ExpressibleByArrayLiteral.swift
+[221/579] Compiling BitCollections BitSet+Extras.swift
+[222/579] Compiling BitCollections BitArray+Hashable.swift
+[223/579] Compiling BitCollections BitArray+Initializers.swift
+[224/579] Compiling BitCollections BitArray+Invariants.swift
+[225/579] Compiling BitCollections BitArray+LosslessStringConvertible.swift
+[226/579] Compiling BitCollections BitArray+RandomBits.swift
+[227/579] Compiling BitCollections BitArray+RangeReplaceableCollection.swift
+[228/579] Compiling BitCollections BitSet+SetAlgebra isStrictSubset.swift
+[229/579] Compiling BitCollections BitArray+Shifts.swift
+[230/579] Compiling BitCollections BitArray+Testing.swift
+[231/579] Compiling BitCollections BitArray._UnsafeHandle.swift
+[232/579] Compiling BitCollections BitArray.swift
+[233/579] Compiling BitCollections BitSet+BidirectionalCollection.swift
+[234/579] Compiling BitCollections BitSet+Codable.swift
+[235/579] Compiling HashTreeCollections TreeSet+SetAlgebra isStrictSuperset.swift
+[236/579] Compiling HashTreeCollections TreeSet+SetAlgebra isSubset.swift
+[237/579] Compiling HashTreeCollections TreeSet+SetAlgebra isSuperset.swift
+[238/579] Compiling HashTreeCollections TreeSet+SetAlgebra subtract.swift
+[239/579] Compiling HashTreeCollections TreeSet+SetAlgebra subtracting.swift
+[240/579] Compiling HashTreeCollections TreeSet+SetAlgebra symmetricDifference.swift
+[241/579] Compiling HashTreeCollections TreeSet+SetAlgebra union.swift
+[242/579] Compiling HashTreeCollections TreeSet.swift
+[249/579] Emitting module BitCollections
+[250/584] Emitting module OrderedCollections
+[251/584] Compiling BitCollections BitSet+SetAlgebra formSymmetricDifference.swift
+[252/584] Compiling BitCollections BitSet+SetAlgebra formUnion.swift
+[253/584] Compiling BitCollections BitSet+SetAlgebra intersection.swift
+[254/584] Compiling BitCollections BitSet+SetAlgebra isDisjoint.swift
+[255/584] Compiling BitCollections BitSet+SetAlgebra isEqualSet.swift
+[256/584] Compiling BitCollections BitArray+Descriptions.swift
+[257/584] Compiling BitCollections BitSet+SetAlgebra union.swift
+[258/584] Compiling BitCollections BitSet+Sorted Collection APIs.swift
+[259/584] Compiling BitCollections BitSet.Counted.swift
+[260/584] Compiling BitCollections BitSet.Index.swift
+[261/584] Compiling BitCollections BitSet._UnsafeHandle.swift
+[262/584] Compiling BitCollections BitArray+BitwiseOperations.swift
+[263/584] Compiling BitCollections BitArray+Equatable.swift
+[264/584] Compiling BitCollections BitArray+ExpressibleByArrayLiteral.swift
+[265/584] Compiling BitCollections BitArray+ExpressibleByStringLiteral.swift
+[266/584] Compiling BitCollections BitArray+Extras.swift
+[267/584] Compiling BitCollections BitArray+Fill.swift
+[268/584] Compiling BitCollections BitSet+SetAlgebra symmetricDifference.swift
+[269/603] Compiling IdentifiedCollections IdentifiedArray+CustomReflectable.swift
+[271/603] Compiling BitCollections BitSet+SetAlgebra isStrictSuperset.swift
+[272/603] Compiling BitCollections BitSet+SetAlgebra isSubset.swift
+[273/603] Compiling BitCollections BitSet+SetAlgebra isSuperset.swift
+[274/603] Compiling BitCollections BitSet+SetAlgebra subtract.swift
+[275/603] Compiling BitCollections BitSet+SetAlgebra subtracting.swift
+[276/603] Compiling BitCollections BitSet+SetAlgebra formIntersection.swift
+[277/603] Compiling IdentifiedCollections IdentifiedArray+ExpressibleByArrayLiteral.swift
+[278/603] Compiling IdentifiedCollections IdentifiedArray+Hashable.swift
+[279/603] Compiling IdentifiedCollections IdentifiedArray+Collection.swift
+[280/603] Compiling IdentifiedCollections IdentifiedArray+CollectionAlgorithms.swift
+[281/603] Compiling IdentifiedCollections IdentifiedArray+IdentifiedCollection.swift
+[282/603] Compiling IdentifiedCollections IdentifiedArray+Initializers.swift
+[283/603] Compiling IdentifiedCollections Identified.swift
+[284/603] Compiling IdentifiedCollections IdentifiedArray+Codable.swift
+[285/603] Compiling IdentifiedCollections IdentifiedArray+CustomStringConvertible.swift
+[286/603] Compiling IdentifiedCollections IdentifiedArray+Equatable.swift
+[287/603] Compiling IdentifiedCollections IdentifiedArray+Sendable.swift
+[288/603] Compiling IdentifiedCollections IdentifiedArray.swift
+[298/603] Emitting module DequeModule
+[305/603] Compiling BitCollections BitSet+Hashable.swift
+[306/603] Compiling BitCollections BitSet+Initializers.swift
+[307/603] Compiling BitCollections BitSet+Invariants.swift
+[308/603] Compiling BitCollections BitSet+Random.swift
+[309/603] Compiling BitCollections BitSet+SetAlgebra basics.swift
+[310/603] Compiling BitCollections BitSet+SetAlgebra conformance.swift
+[312/603] Compiling BitCollections BitArray+ChunkedBitsIterators.swift
+[313/603] Compiling BitCollections BitArray+Codable.swift
+[314/603] Compiling BitCollections BitArray+Collection.swift
+[315/603] Compiling BitCollections BitArray+Copy.swift
+[316/603] Compiling BitCollections BitArray+CustomReflectable.swift
+[317/603] Compiling IdentifiedCollections IdentifiedArray+RandomAccessCollection.swift
+[318/603] Compiling IdentifiedCollections IdentifiedArray+RangeReplaceableCollection.swift
+[319/603] Compiling IdentifiedCollections IdentifiedArray+Insertions.swift
+[320/603] Compiling IdentifiedCollections IdentifiedArray+MutableCollection.swift
+[321/603] Compiling IdentifiedCollections IdentifiedArray+CustomDebugStringConvertible.swift
+[347/603] Compiling BitCollections BitSet.swift
+[348/603] Compiling BitCollections Range+Utilities.swift
+[349/603] Compiling BitCollections Slice+Utilities.swift
+[350/603] Compiling BitCollections UInt+Tricks.swift
+[351/603] Compiling BitCollections _Word.swift
+[352/666] Compiling _RopeModule Rope+Remove.swift
+[353/666] Compiling _RopeModule Rope+RemoveSubrange.swift
+[354/666] Compiling _RopeModule Rope+Split.swift
+[355/666] Compiling _RopeModule Optional Utilities.swift
+[356/666] Compiling _RopeModule String Utilities.swift
+[357/666] Compiling _RopeModule String.Index+ABI.swift
+[358/666] Compiling _RopeModule _CharacterRecognizer.swift
+[359/666] Compiling NIOCore ByteBuffer-int.swift
+[360/666] Compiling NIOCore ByteBuffer-lengthPrefix.swift
+[361/666] Compiling NIOCore ByteBuffer-multi-int.swift
+[362/666] Compiling NIOCore ByteBuffer-quicBinaryEncodingStrategy.swift
+[363/666] Compiling NIOCore ByteBuffer-views.swift
+[364/666] Compiling NIOCore Linux.swift
+[365/666] Compiling NIOCore MarkedCircularBuffer.swift
+[366/666] Compiling NIOCore MulticastChannel.swift
+[367/666] Compiling NIOCore ChannelHandler.swift
+[368/666] Compiling NIOCore ChannelHandlers.swift
+[369/666] Compiling NIOCore ChannelInvoker.swift
+[370/666] Compiling NIOCore ChannelOption.swift
+[371/666] Compiling NIOCore ChannelPipeline.swift
+[372/666] Compiling NIOCore CircularBuffer.swift
+[373/666] Compiling NIOCore ByteBuffer-core.swift
+[374/666] Compiling NIOCore ByteBuffer-hex.swift
+[375/666] Compiling NIOCore GlobalSingletons.swift
+[376/666] Compiling NIOCore IO.swift
+[377/666] Compiling NIOCore IOData.swift
+[378/666] Compiling NIOCore IPProtocol.swift
+[379/666] Compiling NIOCore IntegerBitPacking.swift
+[380/666] Compiling NIOCore IntegerTypes.swift
+[381/666] Compiling NIOCore Interfaces.swift
+[382/666] Compiling NIOCore Channel.swift
+[383/666] Emitting module _RopeModule
+[384/666] Compiling NIOCore NIOAny.swift
+[385/666] Compiling NIOCore NIOCloseOnErrorHandler.swift
+[386/666] Compiling NIOCore NIOCoreSendableMetatype.swift
+[387/666] Compiling NIOCore NIOLoopBound.swift
+[388/666] Compiling NIOCore NIOPooledRecvBufferAllocator.swift
+[389/666] Compiling NIOCore NIOScheduledCallback.swift
+[390/666] Compiling NIOCore NIOSendable.swift
+[391/666] Compiling NIOCore RecvByteBufferAllocator.swift
+[392/666] Compiling NIOCore SingleStepByteToMessageDecoder.swift
+[393/666] Compiling NIOCore SocketAddresses.swift
+[394/666] Compiling NIOCore EventLoopFuture+AssumeIsolated.swift
+[395/666] Compiling NIOCore EventLoopFuture+Deprecated.swift
+[396/666] Compiling NIOCore EventLoopFuture+WithEventLoop.swift
+[397/666] Compiling NIOCore EventLoopFuture.swift
+[398/666] Compiling NIOCore FileDescriptor.swift
+[399/666] Compiling NIOCore FileHandle.swift
+[400/666] Compiling NIOCore FileRegion.swift
+[401/666] Compiling NIOCore AddressedEnvelope.swift
+[402/666] Compiling NIOCore AsyncAwaitSupport.swift
+[403/666] Compiling NIOCore AsyncChannel.swift
+[404/666] Compiling NIOCore AsyncChannelHandler.swift
+[405/666] Compiling NIOCore AsyncChannelInboundStream.swift
+[406/666] Compiling NIOCore AsyncChannelOutboundWriter.swift
+[411/666] Compiling NIOCore NIOAsyncSequenceProducer.swift
+[412/666] Compiling NIOCore NIOAsyncSequenceProducerStrategies.swift
+[413/666] Compiling NIOCore NIOAsyncWriter.swift
+[414/666] Compiling NIOCore NIOThrowingAsyncSequenceProducer.swift
+[431/666] Compiling HashTreeCollections TreeSet+Descriptions.swift
+[432/666] Compiling NIOCore BSDSocketAPI.swift
+[433/666] Compiling NIOCore ByteBuffer-aux.swift
+[434/666] Compiling NIOCore ByteBuffer-binaryEncodedLengthPrefix.swift
+[435/666] Compiling NIOCore ByteBuffer-conversions.swift
+[436/666] Compiling NIOCore Codec.swift
+[437/666] Compiling NIOCore ConvenienceOptionSupport.swift
+[438/666] Compiling NIOCore DeadChannel.swift
+[439/666] Compiling NIOCore DispatchQueue+WithFuture.swift
+[440/666] Compiling NIOCore EventLoop+Deprecated.swift
+[441/666] Compiling NIOCore EventLoop+SerialExecutor.swift
+[442/666] Compiling NIOCore EventLoop.swift
+[481/673] Emitting module HashTreeCollections
+[482/675] Emitting module Collections
+[483/675] Compiling Collections Collections.swift
+[498/681] Compiling NIOCore SocketOptionProvider.swift
+[499/681] Compiling NIOCore SystemCallHelpers.swift
+[500/681] Compiling NIOCore TimeAmount+Duration.swift
+[501/681] Compiling NIOCore TypeAssistedChannelHandler.swift
+[502/681] Compiling NIOCore UniversalBootstrapSupport.swift
+[503/681] Compiling NIOCore Utilities.swift
+[552/681] Emitting module NIOCore
+[553/734] Emitting module NIOEmbedded
+[554/734] Compiling NIOEmbedded AsyncTestingChannel.swift
+[555/734] Compiling NIOEmbedded AsyncTestingEventLoop.swift
+[556/734] Compiling NIOEmbedded Embedded.swift
+[557/734] Compiling NIOPosix BSDSocketAPICommon.swift
+[558/734] Compiling NIOPosix BSDSocketAPIPosix.swift
+[559/734] Compiling NIOPosix BSDSocketAPIWindows.swift
+[560/734] Compiling NIOPosix BaseSocket.swift
+[561/734] Compiling NIOPosix BaseSocketChannel+SocketOptionProvider.swift
+[562/734] Compiling NIOPosix BaseSocketChannel.swift
+[563/734] Compiling NIOPosix BaseStreamSocketChannel.swift
+[564/734] Compiling NIOPosix LinuxCPUSet.swift
+[565/734] Compiling NIOPosix LinuxUring.swift
+[566/734] Compiling NIOPosix MultiThreadedEventLoopGroup.swift
+[567/734] Compiling NIOPosix NIOPosixSendableMetatype.swift
+[568/734] Compiling NIOPosix NIOThreadPool.swift
+[569/739] Compiling NIOPosix GetaddrinfoResolver.swift
+[570/739] Compiling NIOPosix HappyEyeballs.swift
+[571/739] Compiling NIOPosix IO.swift
+[572/739] Compiling NIOPosix IntegerBitPacking.swift
+[573/739] Compiling NIOPosix IntegerTypes.swift
+[574/739] Compiling NIOPosix Linux.swift
+[577/741] Compiling NIOPosix SocketProtocols.swift
+[578/741] Compiling NIOPosix System.swift
+[579/741] Compiling NIOPosix Thread.swift
+[580/741] Compiling NIOPosix ThreadPosix.swift
+[581/741] Compiling NIOPosix ThreadWindows.swift
+[582/741] Compiling NIOPosix Pool.swift
+[583/741] Compiling NIOPosix PosixSingletons+ConcurrencyTakeOver.swift
+[584/741] Compiling NIOPosix PosixSingletons.swift
+[585/741] Compiling NIOPosix RawSocketBootstrap.swift
+[586/741] Compiling NIOPosix Resolver.swift
+[587/741] Compiling NIOPosix Selectable.swift
+[588/741] Compiling NIOPosix SelectableChannel.swift
+[589/741] Compiling NIOPosix SelectableEventLoop.swift
+[590/741] Compiling NIOPosix SelectorEpoll.swift
+[591/741] Compiling NIOPosix SelectorGeneric.swift
+[596/741] Compiling NIOPosix Errors+Any.swift
+[597/741] Compiling NIOPosix FileDescriptor.swift
+[600/742] Compiling IdentifiedCollections IdentifiedCollection.swift
+[601/742] Emitting module NIOPosix
+[602/742] Compiling IssueReporting WithExpectedIssue.swift
+[603/742] Compiling IssueReporting WithIssueContext.swift
+[604/742] Compiling NIOPosix SelectorKqueue.swift
+[605/742] Compiling NIOPosix SelectorUring.swift
+[606/742] Compiling NIOPosix ServerSocket.swift
+[607/742] Compiling NIOPosix Socket.swift
+[608/742] Compiling NIOPosix SocketChannel.swift
+[609/742] Compiling ConcurrencyExtras MainSerialExecutor.swift
+[610/742] Compiling ConcurrencyExtras AsyncThrowingStream.swift
+[611/742] Compiling ConcurrencyExtras Result.swift
+[612/742] Compiling ConcurrencyExtras UncheckedBox.swift
+[613/742] Compiling ConcurrencyExtras Locking.swift
+[614/742] Compiling ConcurrencyExtras LockIsolated.swift
+[615/742] Emitting module ConcurrencyExtras
+[616/742] Compiling ConcurrencyExtras AsyncStream.swift
+[619/742] Compiling ConcurrencyExtras Task.swift
+[620/743] Emitting module SwiftAnthropic
+[621/745] Emitting module IssueReporting
+[622/745] Compiling ConcurrencyExtras UncheckedSendable.swift
+[623/745] Compiling SwiftAnthropic AnthropicServiceFactory.swift
+[624/745] Compiling SwiftAnthropic DefaultAnthropicService.swift
+[626/745] Compiling NIOPosix Bootstrap.swift
+[627/745] Compiling NIOPosix ControlMessage.swift
+[628/745] Compiling NIOPosix DatagramVectorReadManager.swift
+[653/782] Compiling XCTestDynamicOverlay Exports.swift
+[654/782] Compiling NIOPosix NonBlockingFileIO.swift
+[655/782] Compiling NIOPosix PendingDatagramWritesManager.swift
+[656/782] Compiling NIOPosix PendingWritesManager.swift
+[657/782] Compiling NIOPosix PipeChannel.swift
+[658/782] Compiling NIOPosix PipePair.swift
+[659/782] Compiling NIOPosix UnsafeTransfer.swift
+[660/782] Compiling NIOPosix Utilities.swift
+[661/782] Compiling NIOPosix VsockAddress.swift
+[662/782] Compiling NIOPosix VsockChannelEvents.swift
+[663/782] Compiling NIOPosix resource_bundle_accessor.swift
+[673/784] Compiling CombineSchedulers Deprecations.swift
+[674/784] Compiling PerceptionCore BetaChecking.swift
+[675/784] Compiling CombineSchedulers AnyScheduler.swift
+[676/784] Compiling CombineSchedulers Concurrency.swift
+[677/784] Compiling CombineSchedulers ImmediateScheduler.swift
+[680/784] Compiling PerceptionCore Exports.swift
+[684/784] Compiling XCTestDynamicOverlay Deprecations.swift
+[685/784] Emitting module XCTestDynamicOverlay
+[694/784] Emitting module IdentifiedCollections
+[697/784] Emitting module NIO
+[698/784] Compiling NIO Exports.swift
+[699/839] Compiling CasePathsCore CasePathIterable.swift
+[700/840] Emitting module CasePathsCore
+[701/840] Compiling CasePathsCore AnyCasePath.swift
+[702/840] Compiling CasePathsCore Never+CasePathable.swift
+[703/840] Compiling CasePathsCore KeyPath+Sendable.swift
+[704/840] Compiling CasePathsCore Optional+CasePathable.swift
+[705/840] Compiling CasePathsCore UncheckedSendable.swift
+[706/840] Compiling CasePathsCore TypeName.swift
+[707/840] Compiling CasePathsCore CasePathReflectable.swift
+[708/840] Compiling CasePathsCore CasePathable.swift
+[709/840] Compiling CasePathsCore Result+CasePathable.swift
+[710/840] Compiling NIOHTTP1 NIOTypedHTTPServerUpgradeHandler.swift
+[711/840] Compiling NIOHTTP1 NIOTypedHTTPClientUpgraderStateMachine.swift
+[719/841] Compiling CustomDump UserNotifications.swift
+[720/841] Compiling CustomDump UserNotificationsUI.swift
+[721/841] Compiling CustomDump CustomDumpReflectable.swift
+[722/841] Compiling CustomDump Swift.swift
+[723/841] Compiling CustomDump SwiftUI.swift
+[724/841] Compiling CustomDump UIKit.swift
+[725/841] Compiling CustomDump Dump.swift
+[726/841] Compiling CustomDump ExpectDifference.swift
+[727/841] Compiling CustomDump ExpectNoDifference.swift
+[728/841] Compiling CustomDump Foundation.swift
+[729/841] Compiling CustomDump GameKit.swift
+[730/841] Compiling CustomDump KeyPath.swift
+[741/841] Emitting module SwiftSyntax
+[749/841] Compiling NIOHTTP1 NIOHTTPObjectAggregator.swift
+[750/841] Compiling NIOHTTP1 NIOTypedHTTPClientUpgradeHandler.swift
+[751/841] Compiling NIOHTTP1 NIOTypedHTTPServerUpgraderStateMachine.swift
+[752/841] Compiling NIOHTTP1 ByteCollectionUtils.swift
+[753/841] Compiling NIOHTTP1 HTTPDecoder.swift
+[754/841] Compiling NIOHTTP1 HTTPServerPipelineHandler.swift
+[755/841] Compiling NIOHTTP1 HTTPServerProtocolErrorHandler.swift
+[756/841] Compiling NIOHTTP1 HTTPHeaders+Validation.swift
+[757/841] Compiling NIOHTTP1 HTTPPipelineSetup.swift
+[758/841] Compiling NIOHTTP1 HTTPServerUpgradeHandler.swift
+[759/841] Compiling NIOHTTP1 HTTPTypedPipelineSetup.swift
+[760/841] Emitting module NIOHTTP1
+[761/841] Compiling NIOHTTP1 HTTPEncoder.swift
+[762/841] Compiling NIOHTTP1 HTTPHeaderValidator.swift
+[763/841] Compiling NIOHTTP1 HTTPTypes.swift
+[764/841] Compiling NIOHTTP1 NIOHTTPClientUpgradeHandler.swift
+[768/860] Compiling SwiftSyntax SyntaxNodesJKLMN.swift
+[769/860] Compiling SwiftSyntax SyntaxNodesOP.swift
+[770/860] Compiling SwiftSyntax SyntaxNodesQRS.swift
+[771/860] Compiling SwiftSyntax SyntaxNodesTUVWXYZ.swift
+[772/860] Compiling MultipartKit MultipartPart.swift
+[773/860] Compiling MultipartKit MultipartPartConvertible.swift
+[774/860] Compiling MultipartKit FormDataDecoder.UnkeyedContainer.swift
+[775/860] Compiling MultipartKit FormDataDecoder.swift
+[776/860] Compiling MultipartKit FormDataEncoder.SingleValueContainer.swift
+[777/860] Compiling MultipartKit FormDataEncoder.UnkeyedContainer.swift
+[778/860] Compiling MultipartKit BasicCodingKey.swift
+[779/860] Compiling MultipartKit MultipartError.swift
+[780/860] Compiling MultipartKit MultipartFormData.swift
+[781/860] Compiling MultipartKit MultipartParser.swift
+[782/860] Compiling MultipartKit FormDataEncoder.Encoder.swift
+[783/860] Compiling MultipartKit FormDataEncoder.KeyedContainer.swift
+[784/860] Compiling MultipartKit FormDataEncoder.swift
+[785/860] Compiling MultipartKit Storage.swift
+[786/888] Compiling SwiftParser ExpressionInterpretedAsVersionTuple.swift
+[787/888] Compiling SwiftParser Expressions.swift
+[788/888] Compiling SwiftParser Attributes.swift
+[789/888] Compiling SwiftParser Availability.swift
+[790/888] Emitting module MultipartKit
+[791/921] Compiling SwiftBasicFormat SyntaxProtocol+Formatted.swift
+[792/921] Compiling SwiftParser Modifiers.swift
+[793/921] Compiling SwiftParser Names.swift
+[794/921] Compiling SwiftDiagnostics DiagnosticDecorator.swift
+[795/922] Emitting module SwiftDiagnostics
+[796/922] Compiling SwiftDiagnostics Message.swift
+[797/922] Compiling SwiftDiagnostics BasicDiagnosticDecorator.swift
+[798/922] Compiling SwiftDiagnostics ANSIDiagnosticDecorator.swift
+[799/922] Compiling SwiftBasicFormat Trivia+FormatExtensions.swift
+[800/922] Compiling SwiftDiagnostics Diagnostic.swift
+[801/922] Compiling SwiftDiagnostics Convenience.swift
+[802/922] Compiling SwiftDiagnostics Note.swift
+[803/922] Compiling SwiftDiagnostics FixIt.swift
+[804/922] Compiling SwiftDiagnostics GroupedDiagnostics.swift
+[805/922] Compiling SwiftDiagnostics DiagnosticsFormatter.swift
+[806/922] Compiling SwiftBasicFormat Indenter.swift
+[807/922] Compiling SwiftBasicFormat InferIndentation.swift
+[808/922] Compiling SwiftBasicFormat BasicFormat.swift
+[809/922] Emitting module SwiftBasicFormat
+[810/922] Compiling SwiftBasicFormat Syntax+Extensions.swift
+[811/922] Compiling SwiftParser TopLevel.swift
+[812/922] Compiling SwiftParser TriviaParser.swift
+[813/922] Compiling SwiftParser Types.swift
+[814/922] Compiling SwiftParser ExperimentalFeatures.swift
+[815/922] Compiling SwiftParser StringLiterals.swift
+[816/922] Compiling SwiftParser SwiftParserCompatibility.swift
+[817/922] Compiling SwiftParser SwiftVersion.swift
+[818/922] Compiling SwiftParser SyntaxUtils.swift
+[819/922] Compiling SwiftParser TokenConsumer.swift
+[820/922] Compiling SwiftParser TokenPrecedence.swift
+[821/922] Compiling SwiftParser TokenSpec.swift
+[822/922] Compiling SwiftParser TokenSpecSet.swift
+[823/926] Compiling SwiftParser UnicodeScalarExtensions.swift
+[824/926] Compiling SwiftParser Lookahead.swift
+[825/926] Compiling SwiftParser LoopProgressCondition.swift
+[828/926] Compiling SwiftParser Nominals.swift
+[829/926] Compiling SwiftParser Parameters.swift
+[830/926] Compiling SwiftParser ParseSourceFile.swift
+[831/926] Compiling SwiftParser Parser.swift
+[832/926] Compiling SwiftParser Patterns.swift
+[833/926] Emitting module SwiftParser
+[834/926] Compiling SwiftParser Recovery.swift
+[835/926] Compiling SwiftParser Specifiers.swift
+[836/926] Compiling SwiftParser Statements.swift
+[837/926] Compiling SwiftParser StringLiteralRepresentedLiteralValue.swift
+[838/926] Compiling SwiftParser Cursor.swift
+[839/926] Compiling SwiftParser Lexeme.swift
+[840/926] Compiling SwiftParser LexemeSequence.swift
+[841/926] Compiling SwiftParser Lexer.swift
+[842/926] Compiling SwiftParser RegexLiteralLexer.swift
+[843/926] Compiling SwiftParser Directives.swift
+[846/926] Compiling SwiftParser IncrementalParseTransition.swift
+[847/926] Compiling SwiftParser IsValidIdentifier.swift
+[850/926] Compiling SwiftParser CharacterInfo.swift
+[851/926] Compiling SwiftParser CollectionNodes+Parsable.swift
+[852/926] Compiling SwiftParser Declarations.swift
+[853/926] Compiling SwiftParser IsLexerClassified.swift
+[854/926] Compiling SwiftParser LayoutNodes+Parsable.swift
+[855/926] Compiling SwiftParser Parser+TokenSpecSet.swift
+[856/926] Compiling SwiftParser TokenSpecStaticMembers.swift
+[857/949] Compiling SwiftParserDiagnostics SyntaxKindNameForDiagnostics.swift
+[858/950] Compiling SwiftParserDiagnostics SyntaxExtensions.swift
+[859/950] Compiling SwiftParserDiagnostics TokenNameForDiagnostics.swift
+[860/950] Compiling SwiftParserDiagnostics PresenceUtils.swift
+[861/950] Compiling SwiftOperators PrecedenceGraph.swift
+[862/950] Compiling SwiftOperators PrecedenceGroup.swift
+[863/950] Compiling SwiftOperators OperatorTable.swift
+[864/950] Compiling SwiftOperators OperatorTable+Semantics.swift
+[865/950] Compiling SwiftOperators Operator.swift
+[866/950] Compiling SwiftOperators OperatorError+Diagnostics.swift
+[867/950] Compiling SwiftOperators OperatorTable+Defaults.swift
+[868/950] Compiling SwiftOperators OperatorError.swift
+[869/950] Emitting module SwiftOperators
+[870/950] Compiling SwiftOperators OperatorTable+Folding.swift
+[871/951] Compiling SwiftOperators SyntaxSynthesis.swift
+[872/951] Compiling SwiftParserDiagnostics Utils.swift
+[873/951] Compiling SwiftParserDiagnostics ChildNameForDiagnostics.swift
+[874/951] Compiling SwiftParserDiagnostics ParserDiagnosticMessages.swift
+[875/951] Emitting module SwiftParserDiagnostics
+[876/951] Compiling SwiftParserDiagnostics MissingNodesError.swift
+[877/951] Compiling SwiftParserDiagnostics MissingTokenError.swift
+[878/951] Compiling SwiftParserDiagnostics DiagnosticExtensions.swift
+[879/951] Compiling SwiftParserDiagnostics LexerDiagnosticMessages.swift
+[880/951] Compiling SwiftParserDiagnostics MultiLineStringLiteralDiagnosticsGenerator.swift
+[881/951] Compiling SwiftParserDiagnostics ParseDiagnosticsGenerator.swift
+[882/966] Compiling SwiftSyntaxBuilder SyntaxParsable+ExpressibleByStringInterpolation.swift
+[883/966] Compiling SwiftSyntaxBuilder ValidatingSyntaxNodes.swift
+[884/967] Compiling SwiftSyntaxBuilder ResultBuilderExtensions.swift
+[885/967] Compiling SwiftSyntaxBuilder SwiftSyntaxBuilderCompatibility.swift
+[886/967] Compiling SwiftSyntaxBuilder RenamedChildrenBuilderCompatibility.swift
+[887/967] Compiling SwiftSyntaxBuilder SyntaxExpressibleByStringInterpolationConformances.swift
+[888/967] Compiling SwiftSyntaxBuilder ResultBuilders.swift
+[889/967] Compiling SwiftSyntaxBuilder Indenter.swift
+[890/967] Compiling SwiftSyntaxBuilder ListBuilder.swift
+[891/967] Compiling SwiftSyntaxBuilder WithTrailingCommaSyntax+EnsuringTrailingComma.swift
+[892/967] Compiling SwiftSyntaxBuilder BuildableNodes.swift
+[893/967] Compiling SwiftSyntaxBuilder ConvenienceInitializers.swift
+[894/967] Compiling SwiftSyntaxBuilder DeclSyntaxParseable.swift
+[895/967] Emitting module SwiftSyntaxBuilder
+[896/967] Compiling SwiftSyntaxBuilder Syntax+StringInterpolation.swift
+[897/967] Compiling SwiftSyntaxBuilder SyntaxNodeWithBody.swift
+[898/985] Compiling SwiftSyntaxMacros ExpressionMacro.swift
+[899/985] Compiling SwiftSyntaxMacros ExtensionMacro.swift
+[900/985] Compiling SwiftSyntaxMacros AttachedMacro.swift
+[901/985] Compiling SwiftSyntaxMacros BodyMacro.swift
+[902/985] Compiling SwiftSyntaxMacros PreambleMacro.swift
+[903/985] Compiling SwiftSyntaxMacros CodeItemMacro.swift
+[904/985] Compiling SwiftSyntaxMacros DeclarationMacro.swift
+[905/986] Compiling SwiftSyntaxMacros MacroExpansionDiagnosticMessages.swift
+[906/986] Compiling SwiftSyntaxMacros AccessorMacro.swift
+[907/986] Emitting module SwiftSyntaxMacros
+[908/986] Compiling SwiftSyntaxMacros MemberMacro.swift
+[909/986] Compiling SwiftSyntaxMacros PeerMacro.swift
+[910/986] Compiling SwiftSyntaxMacros FreestandingMacro.swift
+[911/986] Compiling SwiftSyntaxMacros Macro+Format.swift
+[912/986] Compiling SwiftSyntaxMacros Macro.swift
+[913/986] Compiling SwiftSyntaxMacros MemberAttributeMacro.swift
+[914/986] Compiling SwiftSyntaxMacros AbstractSourceLocation.swift
+[915/986] Compiling SwiftSyntaxMacros MacroExpansionContext.swift
+[916/986] Compiling SwiftSyntaxMacros Syntax+LexicalContext.swift
+[917/996] Compiling SwiftSyntaxMacroExpansion MacroReplacement.swift
+[918/996] Compiling SwiftSyntaxMacroExpansion BasicMacroExpansionContext.swift
+[919/996] Compiling SwiftSyntaxMacroExpansion MacroExpansion.swift
+[920/996] Compiling SwiftSyntaxMacroExpansion MacroExpansionDiagnosticMessages.swift
+[921/996] Compiling SwiftSyntaxMacroExpansion FunctionParameterUtils.swift
+[922/996] Compiling SwiftSyntaxMacroExpansion IndentationUtils.swift
+[923/996] Compiling SwiftSyntaxMacroExpansion MacroArgument.swift
+[924/996] Emitting module SwiftSyntaxMacroExpansion
+[925/996] Compiling SwiftSyntaxMacroExpansion MacroSystem.swift
+[926/996] Compiling SwiftSyntaxMacroExpansion MacroSpec.swift
+[927/1008] Compiling SwiftCompilerPluginMessageHandling PluginMessageCompatibility.swift
+[928/1008] Compiling SwiftCompilerPluginMessageHandling CodingUtilities.swift
+[929/1008] Compiling SwiftCompilerPluginMessageHandling JSON.swift
+[930/1009] Compiling SwiftCompilerPluginMessageHandling Macros.swift
+[931/1009] Emitting module SwiftCompilerPluginMessageHandling
+[932/1009] Compiling SwiftCompilerPluginMessageHandling StandardIOMessageConnection.swift
+[933/1009] Compiling SwiftCompilerPluginMessageHandling PluginMacroExpansionContext.swift
+[934/1009] Compiling SwiftCompilerPluginMessageHandling LRUCache.swift
+[935/1009] Compiling SwiftCompilerPluginMessageHandling JSONEncoding.swift
+[936/1009] Compiling SwiftCompilerPluginMessageHandling CompilerPluginMessageHandler.swift
+[937/1009] Compiling SwiftCompilerPluginMessageHandling Diagnostics.swift
+[938/1009] Compiling SwiftCompilerPluginMessageHandling PluginMessages.swift
+[939/1009] Compiling SwiftCompilerPluginMessageHandling JSONDecoding.swift
+[940/1011] Emitting module SwiftCompilerPlugin
+[941/1011] Compiling SwiftCompilerPlugin CompilerPlugin.swift
+[942/1032] Compiling PerceptionMacros Plugins.swift
+[943/1032] Compiling CasePathsMacros Plugin.swift
+[944/1032] Emitting module ComposableArchitectureMacros
+[945/1032] Compiling ComposableArchitectureMacros Availability.swift
+[946/1032] Compiling ComposableArchitectureMacros Extensions.swift
+[947/1032] Compiling PerceptionMacros Extensions.swift
+[948/1032] Compiling PerceptionMacros Availability.swift
+[949/1032] Emitting module PerceptionMacros
+[950/1032] Compiling PerceptionMacros PerceptibleMacro.swift
+[950/1032] Write Objects.LinkFileList
+[952/1032] Compiling ComposableArchitectureMacros ViewActionMacro.swift
+[953/1032] Compiling DependenciesMacrosPlugin Support.swift
+[954/1032] Compiling DependenciesMacrosPlugin Plugins.swift
+[955/1032] Emitting module DependenciesMacrosPlugin
+[956/1032] Compiling DependenciesMacrosPlugin DependencyEndpointMacro.swift
+[957/1032] Compiling DependenciesMacrosPlugin DependencyClientMacro.swift
+[957/1032] Write Objects.LinkFileList
+[959/1032] Compiling ComposableArchitectureMacros ObservableStateMacro.swift
+[960/1032] Emitting module CasePathsMacros
+[961/1032] Compiling CasePathsMacros CasePathableMacro.swift
+[961/1032] Write Objects.LinkFileList
+[966/1034] Compiling CombineSchedulers Timer.swift
+[967/1034] Compiling CombineSchedulers UIScheduler.swift
+[968/1034] Compiling CombineSchedulers TestScheduler.swift
+[969/1034] Compiling CombineSchedulers NSRecursiveLock.swift
+[970/1034] Compiling CombineSchedulers UIKit.swift
+[971/1035] Compiling Clocks TestClock.swift
+[972/1035] Compiling Clocks Timer.swift
+[973/1035] Compiling Clocks AnyClock.swift
+[974/1035] Compiling CustomDump XCTAssertDifference.swift
+[975/1035] Compiling CustomDump XCTAssertNoDifference.swift
+[976/1035] Compiling CombineSchedulers UnimplementedScheduler.swift
+[977/1035] Emitting module CustomDump
+[981/1035] Compiling ComposableArchitectureMacros PresentsMacro.swift
+[982/1035] Compiling ComposableArchitectureMacros Plugins.swift
+[983/1035] Compiling ComposableArchitectureMacros ReducerMacro.swift
+[989/1035] Write Objects.LinkFileList
+[990/1035] Linking PerceptionMacros-tool
+[991/1035] Linking DependenciesMacrosPlugin-tool
+[992/1035] Linking CasePathsMacros-tool
+[994/1045] Compiling Clocks ImmediateClock.swift
+[995/1045] Compiling Clocks UnimplementedClock.swift
+[996/1045] Compiling Clocks _AsyncTimerSequence.swift
+[997/1045] Compiling Clocks Lock.swift
+[998/1045] Compiling Clocks SwiftUI.swift
+[999/1045] Emitting module Clocks
+[1017/1045] Compiling CombineSchedulers Lock.swift
+[1020/1045] Emitting module CombineSchedulers
+[1021/1045] Compiling CombineSchedulers SwiftUI.swift
+[1022/1045] Compiling DependenciesMacros Exports.swift
+[1023/1045] Emitting module DependenciesMacros
+[1024/1045] Compiling DependenciesMacros Macros.swift
+[1025/1069] Compiling CasePaths Macros.swift
+[1026/1069] Compiling CasePaths Exports.swift
+[1027/1069] Compiling CasePaths EnumReflection.swift
+[1028/1069] Compiling CasePaths XCTestSupport.swift
+[1029/1069] Compiling CasePaths LockIsolated.swift
+[1030/1069] Compiling CasePaths Deprecations.swift
+[1031/1069] Emitting module CasePaths
+[1031/1069] Linking ComposableArchitectureMacros-tool
+[1033/1069] Compiling Dependencies WithRandomNumberGenerator.swift
+[1034/1069] Compiling Dependencies AppEntryPoint.swift
+[1035/1071] Compiling Dependencies Clocks.swift
+[1036/1071] Compiling Dependencies Context.swift
+[1037/1071] Compiling Dependencies Date.swift
+[1038/1071] Compiling Dependencies Dependency.swift
+[1039/1071] Compiling Dependencies DependencyContext.swift
+[1040/1071] Compiling Dependencies DependencyKey.swift
+[1041/1071] Emitting module Dependencies
+[1042/1071] Compiling Dependencies TypeName.swift
+[1043/1071] Compiling Dependencies PreviewTrait.swift
+[1044/1071] Compiling Dependencies URLSession.swift
+[1045/1071] Compiling Dependencies UUID.swift
+[1046/1071] Compiling Dependencies Deprecations.swift
+[1047/1071] Compiling Dependencies Exports.swift
+[1048/1071] Compiling Dependencies FireAndForget.swift
+[1049/1071] Compiling Dependencies Locale.swift
+[1050/1071] Compiling Dependencies MainQueue.swift
+[1051/1071] Compiling Dependencies MainRunLoop.swift
+[1052/1071] Compiling Dependencies OpenURL.swift
+[1053/1071] Compiling Dependencies TimeZone.swift
+[1054/1071] Compiling Dependencies DependencyValues.swift
+[1055/1071] Compiling Dependencies Assert.swift
+[1056/1071] Compiling Dependencies Calendar.swift
+[1057/1071] Compiling Dependencies TestTrait.swift
+[1058/1071] Compiling Dependencies WithDependencies.swift
+[1059/1071] Compiling PerceptionCore _PerceptionRegistrar.swift
+[1062/1071] Emitting module PerceptionCore
+[1067/1071] Compiling PerceptionCore Perceptible.swift
+[1068/1071] Compiling PerceptionCore PerceptionRegistrar.swift
+[1069/1071] Compiling PerceptionCore Unchecked.swift
+[1070/1071] Compiling PerceptionCore PerceptionTracking.swift
+[1071/1071] Compiling PerceptionCore PerceptionChecking.swift
+[1072/1072] Compiling PerceptionCore WithPerceptionTracking.swift
+[1073/1097] Compiling Perception Exports.swift
+[1074/1097] Compiling Perception Macros.swift
+[1075/1097] Emitting module Perception
+[1076/1097] Emitting module Sharing
+[1077/1099] Compiling Sharing Shared.swift
+[1078/1099] Compiling Sharing SharedBinding.swift
+[1079/1099] Compiling Sharing Deprecations.swift
+[1080/1099] Compiling Sharing KeyPath+Sendable.swift
+[1081/1099] Compiling Sharing MutexBackport.swift
+[1082/1119] Compiling SwiftNavigation ConfirmationDialogState.swift
+[1083/1119] Compiling SwiftNavigation HashableObject.swift
+[1084/1119] Compiling SwiftNavigation ErrorMechanism.swift
+[1085/1119] Compiling SwiftNavigation Exports.swift
+[1086/1119] Compiling Sharing SwiftUIStateSharing.swift
+[1087/1119] Compiling Sharing resource_bundle_accessor.swift
+[1088/1119] Compiling Sharing SharedKey.swift
+[1089/1119] Compiling Sharing AppStorageKey.swift
+[1090/1119] Compiling SwiftNavigation ToOptionalUnit.swift
+[1091/1119] Compiling SwiftNavigation NSObject+Observe.swift
+[1092/1119] Compiling SwiftNavigation HashableStaticString.swift
+[1093/1119] Compiling SwiftNavigation AssumeIsolated.swift
+[1094/1119] Compiling SwiftNavigation Deprecations.swift
+[1095/1119] Compiling SwiftNavigation KeyPath+Sendable.swift
+[1096/1119] Compiling SwiftNavigation Observe.swift
+[1097/1119] Compiling SwiftNavigation TextState.swift
+[1098/1119] Compiling SwiftNavigation UIBindable.swift
+[1099/1119] Compiling SwiftNavigation UIBinding.swift
+[1100/1119] Compiling SwiftNavigation AlertState.swift
+[1101/1119] Compiling SwiftNavigation Bind.swift
+[1102/1119] Compiling SwiftNavigation Binding.swift
+[1103/1121] Emitting module SwiftNavigation
+[1104/1121] Compiling SwiftNavigation ButtonState.swift
+[1105/1121] Compiling SwiftNavigation ButtonStateBuilder.swift
+[1120/1121] Compiling SwiftNavigation UINavigationPath.swift
+[1121/1121] Compiling SwiftNavigation UITransaction.swift
+[1122/1141] Compiling UIKitNavigation Representable.swift
+[1123/1141] Compiling UIKitNavigation UIBinding.swift
+[1124/1141] Emitting module UIKitNavigation
+[1125/1141] Compiling UIKitNavigation UITextField.swift
+[1126/1141] Compiling UIKitNavigation Exports.swift
+[1127/1141] Compiling UIKitNavigation PopFromViewController.swift
+[1128/1141] Compiling UIKitNavigation Dismiss.swift
+[1129/1141] Compiling UIKitNavigation UIPageControl.swift
+[1130/1141] Compiling UIKitNavigation UISegmentedControl.swift
+[1131/1141] Compiling UIKitNavigation Push.swift
+[1132/1141] Compiling UIKitNavigation UIAlertController.swift
+[1133/1141] Compiling UIKitNavigation UISlider.swift
+[1134/1141] Compiling UIKitNavigation UIStepper.swift
+[1135/1141] Compiling UIKitNavigation NavigationStackController.swift
+[1136/1141] Compiling UIKitNavigation Presentation.swift
+[1137/1141] Compiling UIKitNavigation UIColorWell.swift
+[1138/1141] Compiling UIKitNavigation UIControl.swift
+[1139/1141] Compiling UIKitNavigation UIDatePicker.swift
+[1140/1141] Compiling UIKitNavigation UISwitch.swift
+[1141/1141] Compiling UIKitNavigation UITabBarController.swift
+[1142/1143] Compiling UIKitNavigation UIKitAnimation.swift
+[1143/1143] Compiling UIKitNavigation UITransaction.swift
+[1144/1155] Compiling SwiftUINavigation NavigationDestination.swift
+[1145/1155] Compiling SwiftUINavigation NavigationLink.swift
+[1146/1155] Compiling SwiftUINavigation Popover.swift
+[1147/1155] Compiling SwiftUINavigation Sheet.swift
+[1148/1156] Compiling SwiftUINavigation Identified.swift
+[1149/1156] Compiling SwiftUINavigation Binding+Internal.swift
+[1150/1156] Compiling SwiftUINavigation Exports.swift
+[1151/1156] Compiling SwiftUINavigation ConfirmationDialog.swift
+[1152/1156] Compiling SwiftUINavigation FullScreenCover.swift
+[1153/1156] Emitting module SwiftUINavigation
+[1154/1156] Compiling SwiftUINavigation Alert.swift
+[1155/1156] Compiling SwiftUINavigation Binding.swift
+[1156/1156] Compiling SwiftUINavigation WithState.swift
+[1157/1233] Compiling ComposableArchitecture NavigationID.swift
+[1158/1233] Compiling ComposableArchitecture NotificationName.swift
+[1159/1233] Compiling ComposableArchitecture OpenExistential.swift
+[1160/1233] Compiling ComposableArchitecture PresentationID.swift
+[1161/1233] Compiling ComposableArchitecture ReturningLastNonNilValue.swift
+[1162/1233] Compiling ComposableArchitecture RuntimeWarnings.swift
+[1163/1233] Compiling ComposableArchitecture StackIDGenerator.swift
+[1164/1233] Compiling ComposableArchitecture Macros.swift
+[1165/1233] Compiling ComposableArchitecture Alert+Observation.swift
+[1166/1241] Compiling ComposableArchitecture CaseReducer.swift
+[1167/1241] Compiling ComposableArchitecture Core.swift
+[1168/1241] Compiling ComposableArchitecture Dismiss.swift
+[1169/1241] Compiling ComposableArchitecture IsPresented.swift
+[1170/1241] Compiling ComposableArchitecture Effect.swift
+[1171/1241] Compiling ComposableArchitecture Animation.swift
+[1172/1241] Compiling ComposableArchitecture Cancellation.swift
+[1173/1241] Compiling ComposableArchitecture Debounce.swift
+[1174/1241] Compiling ComposableArchitecture Publisher.swift
+[1175/1241] Emitting module ComposableArchitecture
+[1176/1241] Compiling ComposableArchitecture Binding+Observation.swift
+[1177/1241] Compiling ComposableArchitecture IdentifiedArray+Observation.swift
+[1178/1241] Compiling ComposableArchitecture NavigationStack+Observation.swift
+[1179/1241] Compiling ComposableArchitecture ObservableState.swift
+[1180/1241] Compiling ComposableArchitecture ObservationStateRegistrar.swift
+[1181/1241] Compiling ComposableArchitecture Store+Observation.swift
+[1182/1241] Compiling ComposableArchitecture ViewAction.swift
+[1183/1241] Compiling ComposableArchitecture Reducer.swift
+[1184/1241] Compiling ComposableArchitecture TaskResult.swift
+[1185/1241] Compiling ComposableArchitecture Throttle.swift
+[1186/1241] Compiling ComposableArchitecture AreOrderedSetsDuplicates.swift
+[1187/1241] Compiling ComposableArchitecture AssumeIsolated.swift
+[1188/1241] Compiling ComposableArchitecture Box.swift
+[1189/1241] Compiling ComposableArchitecture Create.swift
+[1190/1241] Compiling ComposableArchitecture CurrentValueRelay.swift
+[1191/1241] Compiling ComposableArchitecture Debug.swift
+[1192/1241] Compiling ComposableArchitecture DefaultSubscript.swift
+[1193/1241] Compiling ComposableArchitecture Deprecations.swift
+[1194/1241] Compiling ComposableArchitecture DispatchQueue.swift
+[1195/1241] Compiling ComposableArchitecture EffectActions.swift
+[1196/1241] Compiling ComposableArchitecture EphemeralState.swift
+[1197/1241] Compiling ComposableArchitecture Exports.swift
+[1198/1241] Compiling ComposableArchitecture HashableStaticString.swift
+[1199/1241] Compiling ComposableArchitecture KeyPath+Sendable.swift
+[1200/1241] Compiling ComposableArchitecture Locking.swift
+[1201/1241] Compiling ComposableArchitecture Logger.swift
+[1202/1241] Compiling ComposableArchitecture IfLetReducer.swift
+[1203/1241] Compiling ComposableArchitecture OnChange.swift
+[1204/1241] Compiling ComposableArchitecture Optional.swift
+[1205/1241] Compiling ComposableArchitecture PresentationReducer.swift
+[1206/1241] Compiling ComposableArchitecture Reduce.swift
+[1207/1241] Compiling ComposableArchitecture Scope.swift
+[1208/1241] Compiling ComposableArchitecture SignpostReducer.swift
+[1209/1241] Compiling ComposableArchitecture StackReducer.swift
+[1210/1241] Compiling ComposableArchitecture ReducerBuilder.swift
+[1211/1241] Compiling ComposableArchitecture BindingReducer.swift
+[1212/1241] Compiling ComposableArchitecture CombineReducers.swift
+[1213/1241] Compiling ComposableArchitecture DebugReducer.swift
+[1214/1241] Compiling ComposableArchitecture DependencyKeyWritingReducer.swift
+[1215/1241] Compiling ComposableArchitecture EmptyReducer.swift
+[1216/1241] Compiling ComposableArchitecture ForEachReducer.swift
+[1217/1241] Compiling ComposableArchitecture IfCaseLetReducer.swift
+[1218/1241] Compiling ComposableArchitecture ForEachStore.swift
+[1219/1241] Compiling ComposableArchitecture FullScreenCover.swift
+[1220/1241] Compiling ComposableArchitecture IfLetStore.swift
+[1221/1241] Compiling ComposableArchitecture NavigationDestination.swift
+[1222/1241] Compiling ComposableArchitecture NavigationStackStore.swift
+[1223/1241] Compiling ComposableArchitecture Popover.swift
+[1224/1241] Compiling ComposableArchitecture PresentationModifier.swift
+[1225/1241] Compiling ComposableArchitecture Sheet.swift
+[1226/1241] Compiling ComposableArchitecture AppStorageKeyPathKey.swift
+[1227/1241] Compiling ComposableArchitecture Store.swift
+[1228/1241] Compiling ComposableArchitecture Alert.swift
+[1229/1241] Compiling ComposableArchitecture Binding.swift
+[1230/1241] Compiling ComposableArchitecture ConfirmationDialog.swift
+[1231/1241] Compiling ComposableArchitecture ActionSheet.swift
+[1232/1241] Compiling ComposableArchitecture LegacyAlert.swift
+[1233/1241] Compiling ComposableArchitecture NavigationLinkStore.swift
+[1234/1241] Compiling ComposableArchitecture SwitchStore.swift
+[1235/1241] Compiling ComposableArchitecture WithViewStore.swift
+[1236/1241] Compiling ComposableArchitecture TestStore.swift
+[1237/1241] Compiling ComposableArchitecture AlertStateUIKit.swift
+[1238/1241] Compiling ComposableArchitecture IfLetUIKit.swift
+[1239/1241] Compiling ComposableArchitecture NavigationStackControllerUIKit.swift
+[1240/1241] Compiling ComposableArchitecture ViewStore.swift
+[1241/1241] Compiling ComposableArchitecture resource_bundle_accessor.swift
+[1242/1453] Compiling AIKO AnimationSystem.swift
+[1243/1453] Compiling AIKO EnhancedCard.swift
+[1244/1453] Compiling AIKO VisualEffects.swift
+[1245/1453] Compiling AIKO APIConfiguration.swift
+[1246/1453] Compiling AIKO EnhancedAPIConfiguration.swift
+[1247/1453] Compiling AIKO DynamicType.swift
+[1248/1453] Compiling AIKO Accessibility+Extensions.swift
+[1249/1453] Compiling AIKO HapticManager.swift
+[1250/1453] Compiling AIKO MetricComparison+CoreDataClass.swift
+[1251/1453] Compiling AIKO MetricComparison+CoreDataProperties.swift
+[1252/1453] Compiling AIKO MetricInsight+CoreDataClass.swift
+[1253/1453] Compiling AIKO MetricInsight+CoreDataProperties.swift
+[1254/1453] Compiling AIKO MetricMeasurement+CoreDataClass.swift
+[1255/1453] Compiling AIKO MetricMeasurement+CoreDataProperties.swift
+[1256/1453] Compiling AIKO MetricRecommendation+CoreDataClass.swift
+[1257/1453] Compiling AIKO MetricRecommendation+CoreDataProperties.swift
+[1258/1453] Compiling AIKO MetricTrend+CoreDataClass.swift
+[1259/1453] Compiling AIKO MetricTrend+CoreDataProperties.swift
+[1260/1453] Compiling AIKO MetricValue+CoreDataClass.swift
+[1261/1453] Compiling AIKO MetricValue+CoreDataProperties.swift
+[1262/1453] Compiling AIKO MetricsReport+CoreDataClass.swift
+[1263/1453] Compiling AIKO MetricsReport+CoreDataProperties.swift
+[1264/1453] Compiling AIKO MetricsSummary+CoreDataClass.swift
+[1265/1453] Compiling AIKO MetricsSummary+CoreDataProperties.swift

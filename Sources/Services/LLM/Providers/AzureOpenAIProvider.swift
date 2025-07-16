@@ -3,7 +3,7 @@ import Foundation
 // MARK: - Azure OpenAI Provider
 
 /// Azure OpenAI Service provider implementation (for government compliance)
-public final class AzureOpenAIProvider: LLMProviderProtocol {
+public final class AzureOpenAIProvider: LLMProviderProtocol, @unchecked Sendable {
     
     // MARK: - Properties
     

@@ -61,7 +61,7 @@ struct LLMProviderSettingsView: View {
             .sheet(
                 store: self.store.scope(
                     state: \.$configurationSheet,
-                    action: { .configurationSheet($0) }
+                    action: \.configurationSheet
                 )
             ) { configStore in
                 NavigationStack {
@@ -71,7 +71,7 @@ struct LLMProviderSettingsView: View {
             .alert(
                 store: self.store.scope(
                     state: \.$alert,
-                    action: { .alert($0) }
+                    action: \.alert
                 )
             )
             .onAppear {

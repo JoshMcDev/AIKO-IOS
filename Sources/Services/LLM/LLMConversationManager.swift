@@ -144,7 +144,7 @@ public final class LLMConversationManager: ObservableObject {
                         fullResponse += chunk.delta
                         continuation.yield(chunk.delta)
                         
-                        if let finishReason = chunk.finishReason {
+                        if chunk.finishReason != nil {
                             // Add complete assistant message
                             let assistantMessage = LLMMessage(role: .assistant, content: fullResponse)
                             addMessage(assistantMessage, to: conversation)
@@ -393,5 +393,9 @@ extension DependencyValues {
 }
 
 private enum ConversationManagerKey: DependencyKey {
-    static let liveValue = LLMConversationManager.shared
+    static var liveValue: LLMConversationManager {
+        MainActor.assumeIsolated {
+            LLMConversationManager.shared
+        }
+    }
 }

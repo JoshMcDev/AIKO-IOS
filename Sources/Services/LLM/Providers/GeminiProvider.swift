@@ -3,7 +3,7 @@ import Foundation
 // MARK: - Google Gemini Provider
 
 /// Google Gemini API provider implementation
-public final class GeminiProvider: LLMProviderProtocol {
+public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
     
     // MARK: - Properties
     
@@ -86,7 +86,7 @@ public final class GeminiProvider: LLMProviderProtocol {
     }
     
     public func validateCredentials() async throws -> Bool {
-        guard let config = try configManager.loadConfiguration(for: id) else {
+        guard try configManager.loadConfiguration(for: id) != nil else {
             throw LLMProviderError.notConfigured
         }
         

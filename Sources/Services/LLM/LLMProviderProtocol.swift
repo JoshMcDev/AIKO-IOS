@@ -165,7 +165,7 @@ public enum MessageRole: String, Equatable, Sendable, Codable {
 }
 
 /// Function definition for function calling
-public struct LLMFunction: Equatable, Sendable {
+public struct LLMFunction: Equatable {
     public let name: String
     public let description: String
     public let parameters: [String: Any]
@@ -180,6 +180,9 @@ public struct LLMFunction: Equatable, Sendable {
         lhs.name == rhs.name && lhs.description == rhs.description
     }
 }
+
+// Mark as @unchecked Sendable since parameters are immutable and only used for JSON serialization
+extension LLMFunction: @unchecked Sendable {}
 
 /// Function call structure
 public struct FunctionCall: Equatable, Sendable, Codable {

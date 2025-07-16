@@ -297,5 +297,9 @@ extension DependencyValues {
 }
 
 private enum LLMManagerKey: DependencyKey {
-    static let liveValue = LLMManager.shared
+    static var liveValue: LLMManager {
+        MainActor.assumeIsolated {
+            LLMManager.shared
+        }
+    }
 }
