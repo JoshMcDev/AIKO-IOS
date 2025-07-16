@@ -112,7 +112,12 @@ actor PatternRecognitionAlgorithm {
                     timeOfDay: nil
                 ),
                 occurrences: sequence.support,
-                confidence: calculateConfidence(support: sequence.support, total: similarInteractions.count),
+                confidence: calculateConfidence(
+                    support: sequence.support,
+                    total: similarInteractions.count,
+                    interactions: similarInteractions,
+                    currentTime: interaction.timestamp
+                ),
                 lastOccurrence: Date(),
                 metadata: ["formType": formType]
             )
@@ -134,9 +139,11 @@ actor PatternRecognitionAlgorithm {
         var patterns: [UserPattern] = []
         
         // Get recent workflow steps
-        let recentSteps = history
+        let workflowInteractions = history
             .filter { $0.type == "workflow_step" }
             .prefix(sequenceWindowSize)
+        
+        let recentSteps = workflowInteractions
             .map { $0.metadata["stepName"] as? String ?? "" }
         
         // Analyze step sequences
@@ -158,7 +165,12 @@ actor PatternRecognitionAlgorithm {
                     timeOfDay: nil
                 ),
                 occurrences: seq.occurrences,
-                confidence: Double(seq.occurrences) / Double(recentSteps.count),
+                confidence: calculateConfidence(
+                    support: seq.occurrences,
+                    total: recentSteps.count,
+                    interactions: Array(workflowInteractions),
+                    currentTime: interaction.timestamp
+                ),
                 lastOccurrence: Date(),
                 metadata: ["sequenceLength": seq.sequence.count]
             )
@@ -200,7 +212,8 @@ actor PatternRecognitionAlgorithm {
                     ),
                     occurrences: interactions.count,
                     confidence: temporalAnalyzer.calculateTemporalConfidence(
-                        occurrences: interactions.count,
+                        interactions: interactions,
+                        currentTime: interaction.timestamp,
                         timeWindow: timeWindowSize,
                         totalHistory: history.count
                     ),
@@ -389,15 +402,82 @@ actor PatternRecognitionAlgorithm {
         return sequences
     }
     
-    private func calculateConfidence(support: Int, total: Int) -> Double {
+    private func calculateConfidence(
+        support: Int,
+        total: Int,
+        interactions: [UserInteraction],
+        currentTime: Date
+    ) -> Double {
         guard total > 0 else { return 0 }
         
         let frequency = Double(support) / Double(total)
-        let recency = 1.0 // TODO: Implement recency calculation
-        let consistency = 1.0 // TODO: Implement consistency calculation
+        let recency = calculateRecency(interactions: interactions, currentTime: currentTime)
+        let consistency = calculateConsistency(interactions: interactions)
         
         // Weighted confidence score
         return (frequency * 0.5) + (recency * 0.3) + (consistency * 0.2)
+    }
+    
+    private func calculateRecency(interactions: [UserInteraction], currentTime: Date) -> Double {
+        guard !interactions.isEmpty else { return 0 }
+        
+        // Sort interactions by timestamp (most recent first)
+        let sortedInteractions = interactions.sorted { $0.timestamp > $1.timestamp }
+        
+        // Calculate recency score based on exponential decay
+        var recencyScore = 0.0
+        let decayFactor = 0.95 // Decay factor for older interactions
+        let maxAge: TimeInterval = 30 * 24 * 3600 // 30 days in seconds
+        
+        for (index, interaction) in sortedInteractions.enumerated() {
+            let age = currentTime.timeIntervalSince(interaction.timestamp)
+            if age > maxAge { continue }
+            
+            // Normalize age to [0, 1] where 0 is current time and 1 is maxAge
+            let normalizedAge = min(age / maxAge, 1.0)
+            
+            // Apply exponential decay based on position and age
+            let positionWeight = pow(decayFactor, Double(index))
+            let ageWeight = 1.0 - normalizedAge
+            
+            recencyScore += positionWeight * ageWeight
+        }
+        
+        // Normalize the score to [0, 1]
+        let maxPossibleScore = (1.0 - pow(decayFactor, Double(interactions.count))) / (1.0 - decayFactor)
+        return min(recencyScore / maxPossibleScore, 1.0)
+    }
+    
+    private func calculateConsistency(interactions: [UserInteraction]) -> Double {
+        guard interactions.count > 1 else { return 1.0 }
+        
+        // Sort interactions by timestamp
+        let sortedInteractions = interactions.sorted { $0.timestamp < $1.timestamp }
+        
+        // Calculate time intervals between consecutive interactions
+        var intervals: [TimeInterval] = []
+        for i in 1..<sortedInteractions.count {
+            let interval = sortedInteractions[i].timestamp.timeIntervalSince(sortedInteractions[i-1].timestamp)
+            intervals.append(interval)
+        }
+        
+        guard !intervals.isEmpty else { return 1.0 }
+        
+        // Calculate mean and standard deviation of intervals
+        let mean = intervals.reduce(0, +) / Double(intervals.count)
+        let variance = intervals.map { pow($0 - mean, 2) }.reduce(0, +) / Double(intervals.count)
+        let standardDeviation = sqrt(variance)
+        
+        // Calculate coefficient of variation (CV)
+        // Lower CV means more consistent timing
+        let cv = mean > 0 ? standardDeviation / mean : 0
+        
+        // Convert CV to consistency score (inverse relationship)
+        // CV of 0 = perfect consistency (score 1.0)
+        // CV of 1 or higher = low consistency (score approaches 0)
+        let consistencyScore = exp(-cv) // Exponential decay based on CV
+        
+        return consistencyScore
     }
     
     private func filterAndRankPatterns(_ patterns: [UserPattern]) -> [UserPattern] {
@@ -495,19 +575,73 @@ struct SequenceAnalyzer {
 
 struct TemporalPatternAnalyzer {
     func calculateTemporalConfidence(
-        occurrences: Int,
+        interactions: [UserInteraction],
+        currentTime: Date,
         timeWindow: TimeInterval,
         totalHistory: Int
     ) -> Double {
         
+        guard !interactions.isEmpty else { return 0 }
+        
         // Base confidence from occurrence frequency
-        let frequencyScore = min(Double(occurrences) / 10.0, 1.0)
+        let frequencyScore = min(Double(interactions.count) / 10.0, 1.0)
         
-        // Temporal consistency score
-        let consistencyScore = 0.8 // TODO: Calculate actual consistency
+        // Calculate temporal consistency
+        let consistencyScore = calculateTemporalConsistency(interactions: interactions)
         
-        // Combined score
-        return (frequencyScore * 0.6) + (consistencyScore * 0.4)
+        // Calculate recency bonus
+        let recencyBonus = calculateRecencyBonus(interactions: interactions, currentTime: currentTime)
+        
+        // Combined score with weights
+        return (frequencyScore * 0.4) + (consistencyScore * 0.4) + (recencyBonus * 0.2)
+    }
+    
+    private func calculateTemporalConsistency(interactions: [UserInteraction]) -> Double {
+        guard interactions.count > 1 else { return 1.0 }
+        
+        // Sort by timestamp
+        let sorted = interactions.sorted { $0.timestamp < $1.timestamp }
+        
+        // Group by day to check daily consistency
+        let calendar = Calendar.current
+        let dayGroups = Dictionary(grouping: sorted) { interaction in
+            calendar.startOfDay(for: interaction.timestamp)
+        }
+        
+        // Calculate how many consecutive days have interactions
+        let sortedDays = dayGroups.keys.sorted()
+        var consecutiveStreaks: [Int] = []
+        var currentStreak = 1
+        
+        for i in 1..<sortedDays.count {
+            let dayDiff = calendar.dateComponents([.day], from: sortedDays[i-1], to: sortedDays[i]).day ?? 0
+            if dayDiff == 1 {
+                currentStreak += 1
+            } else {
+                consecutiveStreaks.append(currentStreak)
+                currentStreak = 1
+            }
+        }
+        consecutiveStreaks.append(currentStreak)
+        
+        // Calculate consistency score based on streak lengths
+        let maxStreak = consecutiveStreaks.max() ?? 1
+        let avgStreak = Double(consecutiveStreaks.reduce(0, +)) / Double(consecutiveStreaks.count)
+        
+        // Normalize to [0, 1] - longer streaks mean better consistency
+        let maxStreakScore = min(Double(maxStreak) / 7.0, 1.0) // 7 days = perfect score
+        let avgStreakScore = min(avgStreak / 5.0, 1.0) // 5 days average = perfect score
+        
+        return (maxStreakScore * 0.6) + (avgStreakScore * 0.4)
+    }
+    
+    private func calculateRecencyBonus(interactions: [UserInteraction], currentTime: Date) -> Double {
+        guard let mostRecent = interactions.max(by: { $0.timestamp < $1.timestamp }) else { return 0 }
+        
+        let daysSinceLastInteraction = currentTime.timeIntervalSince(mostRecent.timestamp) / (24 * 3600)
+        
+        // Exponential decay - interaction today = 1.0, 7 days ago = ~0.5, 30 days ago = ~0
+        return exp(-daysSinceLastInteraction / 7.0)
     }
 }
 
