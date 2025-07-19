@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import AppCore
 
 public enum DFTemplateError: Error {
     case bundleNotFound

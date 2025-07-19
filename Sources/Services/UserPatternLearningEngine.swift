@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 import CoreML
 
 // MARK: - User Pattern Learning Engine

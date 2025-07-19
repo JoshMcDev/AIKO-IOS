@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 import CoreData
 
 /// Repository for document management with domain-driven design

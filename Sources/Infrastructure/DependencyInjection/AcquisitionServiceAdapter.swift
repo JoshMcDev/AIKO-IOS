@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import CoreData
 import Foundation
+import AppCore
 
 /// Adapter that bridges the TCA AcquisitionService dependency with the new AcquisitionRepository
 /// This allows gradual migration of UI features from AcquisitionService to AcquisitionRepository

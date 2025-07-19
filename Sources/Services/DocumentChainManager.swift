@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import CoreData
 import Foundation
+import AppCore
 
 // MARK: - Document Chain Manager
 

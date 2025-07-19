@@ -9,15 +9,16 @@ import Foundation
 import Security
 import CryptoKit
 import os.log
+import AppCore
 
 /// Secure cache implementation using Keychain and encryption
-actor SecureCache: OfflineCacheProtocol {
+public actor SecureCache: OfflineCacheProtocol {
     /// Logger
     private let logger = Logger(subsystem: "com.aiko.cache", category: "SecureCache")
     
     /// Service identifier for keychain
     private let keychainService = "com.aiko.securecache"
-    let serviceName = "com.aiko.securecache"
+    public let serviceName = "com.aiko.securecache"
     
     /// Cache configuration
     private let configuration: OfflineCacheConfiguration
@@ -29,7 +30,7 @@ actor SecureCache: OfflineCacheProtocol {
     private let encryptionKey: SymmetricKey
     
     /// Initialize with configuration
-    init(configuration: OfflineCacheConfiguration) {
+    public init(configuration: OfflineCacheConfiguration) {
         self.configuration = configuration
         
         // Generate or retrieve encryption key
@@ -46,20 +47,20 @@ actor SecureCache: OfflineCacheProtocol {
         }
     }
     
-    func store<T: Codable>(_ object: T, forKey key: String) async throws {
+    public func store<T: Codable>(_ object: T, forKey key: String) async throws {
         let encoder = JSONEncoder()
         let data = try encoder.encode(object)
         try await storeData(data, forKey: key)
     }
     
-    func retrieve<T: Codable>(_ type: T.Type, forKey key: String) async throws -> T? {
+    public func retrieve<T: Codable>(_ type: T.Type, forKey key: String) async throws -> T? {
         guard let data = try await retrieveData(forKey: key) else { return nil }
         
         let decoder = JSONDecoder()
         return try decoder.decode(type, from: data)
     }
     
-    func storeData(_ data: Data, forKey key: String) async throws {
+    public func storeData(_ data: Data, forKey key: String) async throws {
         // Check metadata for expiration
         if let meta = metadata[key], meta.isExpired {
             try await remove(forKey: key)
@@ -107,7 +108,7 @@ actor SecureCache: OfflineCacheProtocol {
         }
     }
     
-    func retrieveData(forKey key: String) async throws -> Data? {
+    public func retrieveData(forKey key: String) async throws -> Data? {
         // Check metadata
         guard var meta = metadata[key] else {
             logger.debug("No metadata for key: \(key)")
@@ -161,7 +162,7 @@ actor SecureCache: OfflineCacheProtocol {
         }
     }
     
-    func remove(forKey key: String) async throws {
+    public func remove(forKey key: String) async throws {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: keychainService,
@@ -180,7 +181,7 @@ actor SecureCache: OfflineCacheProtocol {
         }
     }
     
-    func clearAll() async throws {
+    public func clearAll() async throws {
         // Clear all items with our service
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -195,11 +196,11 @@ actor SecureCache: OfflineCacheProtocol {
         logger.info("Cleared all secure cache")
     }
     
-    func size() async -> Int64 {
+    public func size() async -> Int64 {
         return metadata.values.reduce(0) { $0 + $1.size }
     }
     
-    func exists(forKey key: String) async -> Bool {
+    public func exists(forKey key: String) async -> Bool {
         guard let meta = metadata[key], !meta.isExpired else { return false }
         
         // Verify keychain entry exists
@@ -214,11 +215,11 @@ actor SecureCache: OfflineCacheProtocol {
         return status == errSecSuccess
     }
     
-    func allKeys() async -> [String] {
+    public func allKeys() async -> [String] {
         return Array(metadata.keys)
     }
     
-    func setExpiration(_ duration: TimeInterval, forKey key: String) async throws {
+    public func setExpiration(_ duration: TimeInterval, forKey key: String) async throws {
         guard var meta = metadata[key] else {
             throw OfflineCacheError.keyNotFound
         }

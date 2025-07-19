@@ -127,12 +127,16 @@ public enum DocumentType: String, CaseIterable, Identifiable, Codable {
 
     /// Get comprehensive FAR reference information
     public var comprehensiveFARReference: ComprehensiveFARReference? {
-        FARReferenceService.getFARReference(for: rawValue)
+        // Platform implementations will provide actual FAR reference service
+        // For now, return nil - this will be overridden in platform-specific code
+        nil
     }
 
     /// Get formatted FAR/DFAR references for display
     public var formattedFARReferences: String {
-        FARReferenceService.formatFARReferences(for: rawValue)
+        // Platform implementations will provide actual FAR reference formatting
+        // For now, return the basic farReference
+        farReference
     }
 
     public var farReference: String {
@@ -207,43 +211,14 @@ public enum DocumentCategoryType: Equatable, Hashable, Codable {
     }
 }
 
+// GeneratedDocument - Platform-agnostic version for AppCore
+// Platform-specific RTF formatting is handled in platform implementations
 public struct GeneratedDocument: Identifiable, Equatable, Codable {
     public let id: UUID
     public let title: String
     public let documentCategory: DocumentCategoryType
     public let content: String
-    public let rtfContent: String
-    public let attributedContent: NSAttributedString
     public let createdAt: Date
-
-    // Custom Codable implementation
-    private enum CodingKeys: String, CodingKey {
-        case id, title, documentCategory, content, rtfContent, createdAt
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(UUID.self, forKey: .id)
-        title = try container.decode(String.self, forKey: .title)
-        documentCategory = try container.decode(DocumentCategoryType.self, forKey: .documentCategory)
-        content = try container.decode(String.self, forKey: .content)
-        rtfContent = try container.decode(String.self, forKey: .rtfContent)
-        createdAt = try container.decode(Date.self, forKey: .createdAt)
-
-        // Recreate NSAttributedString from RTF content
-        let (_, attributed) = RTFFormatter.convertToRTF(content)
-        attributedContent = attributed
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(id, forKey: .id)
-        try container.encode(title, forKey: .title)
-        try container.encode(documentCategory, forKey: .documentCategory)
-        try container.encode(content, forKey: .content)
-        try container.encode(rtfContent, forKey: .rtfContent)
-        try container.encode(createdAt, forKey: .createdAt)
-    }
 
     // Keep backward compatibility
     public var documentType: DocumentType? {
@@ -265,12 +240,6 @@ public struct GeneratedDocument: Identifiable, Equatable, Codable {
         self.title = title
         documentCategory = .standard(documentType)
         self.content = content
-
-        // Generate RTF content
-        let (rtf, attributed) = RTFFormatter.convertToRTF(content)
-        rtfContent = rtf
-        attributedContent = attributed
-
         self.createdAt = createdAt
     }
 
@@ -279,12 +248,6 @@ public struct GeneratedDocument: Identifiable, Equatable, Codable {
         self.title = title
         documentCategory = .determinationFinding(dfDocumentType)
         self.content = content
-
-        // Generate RTF content
-        let (rtf, attributed) = RTFFormatter.convertToRTF(content)
-        rtfContent = rtf
-        attributedContent = attributed
-
         self.createdAt = createdAt
     }
 }

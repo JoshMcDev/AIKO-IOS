@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 
 /// Service responsible for transforming template data to form data
 final class DataTransformationService {

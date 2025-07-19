@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+import AppCore
 
 /// Service responsible for mapping AIKO templates to official government forms
 public final class FormMappingService: ObservableObject {

@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 import CoreData
 // No need to import AIKO as we're part of it
 

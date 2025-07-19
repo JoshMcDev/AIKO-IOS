@@ -38,6 +38,39 @@ public protocol LLMProviderProtocol: Sendable {
 
 // MARK: - Supporting Types
 
+/// LLM Provider enum
+public enum LLMProvider: String, CaseIterable, Identifiable, Codable, Sendable {
+    case claude = "claude"
+    case openAI = "openai"
+    case chatGPT = "chatgpt"
+    case gemini = "gemini"
+    case azureOpenAI = "azure-openai"
+    case local = "local"
+    case custom = "custom"
+    
+    public var id: String { rawValue }
+    
+    /// Human-readable name for the provider
+    public var name: String {
+        switch self {
+        case .claude:
+            return "Claude (Anthropic)"
+        case .openAI:
+            return "OpenAI"
+        case .chatGPT:
+            return "ChatGPT"
+        case .gemini:
+            return "Google Gemini"
+        case .azureOpenAI:
+            return "Azure OpenAI"
+        case .local:
+            return "Local Model"
+        case .custom:
+            return "Custom Provider"
+        }
+    }
+}
+
 /// Capabilities that a provider supports
 public struct LLMProviderCapabilities: Equatable, Sendable {
     public let supportsStreaming: Bool
@@ -286,6 +319,132 @@ public struct LLMProviderSettings: Equatable, Sendable {
         self.customHeaders = customHeaders
         self.timeout = timeout
         self.retryCount = retryCount
+    }
+}
+
+// MARK: - Provider Configuration
+
+/// Configuration for LLM provider
+public struct LLMProviderConfig: Codable, Equatable, Sendable {
+    public let provider: String
+    public let providerId: String // Add providerId for compatibility
+    public let model: String
+    public let apiKey: String? // Not stored directly, reference to keychain
+    public let organizationId: String? // Organization ID for providers that support it
+    public let customEndpoint: String?
+    public let customHeaders: [String: String]?
+    public let temperature: Double
+    public let maxTokens: Int?
+    public let topP: Double?
+    public let frequencyPenalty: Double?
+    public let presencePenalty: Double?
+    public let stopSequences: [String]?
+    
+    public init(
+        provider: String,
+        providerId: String? = nil,
+        model: String,
+        apiKey: String? = nil,
+        organizationId: String? = nil,
+        customEndpoint: String? = nil,
+        customHeaders: [String: String]? = nil,
+        temperature: Double = 0.7,
+        maxTokens: Int? = nil,
+        topP: Double? = nil,
+        frequencyPenalty: Double? = nil,
+        presencePenalty: Double? = nil,
+        stopSequences: [String]? = nil
+    ) {
+        self.provider = provider
+        self.providerId = providerId ?? provider // Use provider as default providerId
+        self.model = model
+        self.apiKey = apiKey
+        self.organizationId = organizationId
+        self.customEndpoint = customEndpoint
+        self.customHeaders = customHeaders
+        self.temperature = temperature
+        self.maxTokens = maxTokens
+        self.topP = topP
+        self.frequencyPenalty = frequencyPenalty
+        self.presencePenalty = presencePenalty
+        self.stopSequences = stopSequences
+    }
+    
+    // Add convenience initializer that takes LLMProvider enum
+    public init(
+        provider: LLMProvider,
+        model: String,
+        apiKey: String? = nil,
+        organizationId: String? = nil,
+        customEndpoint: String? = nil,
+        customHeaders: [String: String]? = nil,
+        temperature: Double = 0.7,
+        maxTokens: Int? = nil,
+        topP: Double? = nil,
+        frequencyPenalty: Double? = nil,
+        presencePenalty: Double? = nil,
+        stopSequences: [String]? = nil
+    ) {
+        self.init(
+            provider: provider.rawValue,
+            providerId: provider.id,
+            model: model,
+            apiKey: apiKey,
+            organizationId: organizationId,
+            customEndpoint: customEndpoint,
+            customHeaders: customHeaders,
+            temperature: temperature,
+            maxTokens: maxTokens,
+            topP: topP,
+            frequencyPenalty: frequencyPenalty,
+            presencePenalty: presencePenalty,
+            stopSequences: stopSequences
+        )
+    }
+}
+
+// MARK: - Provider Priority
+
+/// Defines provider priority for fallback behavior
+public struct LLMProviderPriority: Codable, Equatable, Sendable {
+    public let providers: [LLMProvider]
+    public let fallbackBehavior: FallbackBehavior
+    
+    public init(providers: [LLMProvider], fallbackBehavior: FallbackBehavior = .sequential) {
+        self.providers = providers
+        self.fallbackBehavior = fallbackBehavior
+    }
+    
+    public enum FallbackBehavior: String, Codable, Sendable {
+        case sequential // Try providers in order
+        case random // Try providers randomly
+        case loadBalanced // Distribute load across providers
+    }
+}
+
+// MARK: - LLM Error
+
+/// Common errors for LLM operations
+public enum LLMError: LocalizedError {
+    case invalidAPIKey(provider: LLMProvider)
+    case providerUnavailable(provider: LLMProvider)
+    case noAPIKey(provider: LLMProvider)
+    case configurationError(String)
+    case keychainError(String)
+    
+    public var errorDescription: String? {
+        switch self {
+        case .invalidAPIKey(let provider):
+            return "Invalid API key format for \(provider.name)"
+        case .providerUnavailable(let provider):
+            return "Provider \(provider.name) is not available"
+        case .noAPIKey(let provider):
+            return "No API key found for \(provider.name)"
+        case .configurationError(let message):
+            return "Configuration error: \(message)"
+        case .keychainError(let message):
+            return "Keychain error: \(message)"
+        }
     }
 }
 

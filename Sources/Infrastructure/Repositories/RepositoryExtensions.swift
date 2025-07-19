@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 import CoreData
 
 // Make CoreDataRepository conform to our internal protocol

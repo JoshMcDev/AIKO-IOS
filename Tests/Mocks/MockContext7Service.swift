@@ -1,8 +1,27 @@
 import ComposableArchitecture
 import Foundation
+import AppCore
 
-/// Context7 MCP Service for real-time federal regulation updates and compliance monitoring
-public struct Context7Service {
+/// Mock Context7 Service for testing purposes
+/// 
+/// This mock service simulates Context7 MCP Server functionality for:
+/// - Federal regulation updates and compliance monitoring
+/// - User behavior insights
+/// - Security policy updates
+/// - Regulation search capabilities
+///
+/// Note: This is a test mock implementation. In production, the actual Context7
+/// MCP server would provide real-time federal regulation data.
+///
+/// Usage:
+/// ```swift
+/// // In tests
+/// let mockService = MockContext7Service.testValue
+/// 
+/// // For integration testing with delayed responses
+/// let integrationService = MockContext7Service.integrationValue
+/// ```
+public struct MockContext7Service {
     // Core Context7 capabilities
     public var getRegulationUpdates: (Context7RegulationCategory) async throws -> [Context7RegulationUpdate]
     public var validateCompliance: (DocumentType, String) async throws -> Context7ComplianceResult
@@ -25,7 +44,7 @@ public struct Context7Service {
     }
 }
 
-// MARK: - Models
+// MARK: - Mock Models (Used only for testing)
 
 public enum Context7RegulationCategory: String, CaseIterable {
     case far = "Federal Acquisition Regulation"
@@ -133,17 +152,47 @@ public struct SecurityPolicy: Identifiable, Equatable {
     }
 }
 
-// Note: Context7SearchResult is now imported from Models module to avoid duplication
+// MARK: - Mock Implementations
 
-// MARK: - Dependency Implementation
+extension MockContext7Service {
+    /// Test value with immediate responses and minimal data
+    public static var testValue: MockContext7Service {
+        MockContext7Service(
+            getRegulationUpdates: { _ in [] },
+            validateCompliance: { _, _ in
+                Context7ComplianceResult(
+                    isCompliant: true,
+                    complianceScore: 1.0,
+                    regulationMatches: [],
+                    recommendations: [],
+                    lastUpdated: Date()
+                )
+            },
+            getUserBehaviorInsights: {
+                UserBehaviorInsights(
+                    mostUsedDocumentTypes: [],
+                    averageCompletionTime: 0,
+                    commonRequirementPatterns: [],
+                    recommendedWorkflows: [],
+                    usageStatistics: .init(
+                        totalDocumentsGenerated: 0,
+                        successRate: 0,
+                        averageDocumentQuality: 0,
+                        peakUsageHours: []
+                    )
+                )
+            },
+            getSecurityPolicyUpdates: { [] },
+            searchRegulations: { _ in [] }
+        )
+    }
 
-extension Context7Service: DependencyKey {
-    public static var liveValue: Context7Service {
-        Context7Service(
+    /// Integration test value with simulated delays and realistic mock data
+    public static var integrationValue: MockContext7Service {
+        MockContext7Service(
             getRegulationUpdates: { category in
-                // In production, this would connect to the actual Context7 MCP Server
-                // For now, return mock data for development
-                try await Task.sleep(nanoseconds: 500_000_000) // Simulate network delay
+                // Simulate network delay
+                try await Task.sleep(nanoseconds: 500_000_000)
 
                 return [
                     Context7RegulationUpdate(
@@ -170,7 +219,8 @@ extension Context7Service: DependencyKey {
             },
 
             validateCompliance: { _, _ in
-                try await Task.sleep(nanoseconds: 750_000_000) // Simulate analysis
+                // Simulate analysis delay
+                try await Task.sleep(nanoseconds: 750_000_000)
 
                 return Context7ComplianceResult(
                     isCompliant: true,
@@ -260,41 +310,65 @@ extension Context7Service: DependencyKey {
         )
     }
 
-    public static var testValue: Context7Service {
-        Context7Service(
-            getRegulationUpdates: { _ in [] },
+    /// Failing test value for error handling tests
+    public static var failingValue: MockContext7Service {
+        MockContext7Service(
+            getRegulationUpdates: { _ in
+                throw MockError.networkError
+            },
             validateCompliance: { _, _ in
-                Context7ComplianceResult(
-                    isCompliant: true,
-                    complianceScore: 1.0,
-                    regulationMatches: [],
-                    recommendations: [],
-                    lastUpdated: Date()
-                )
+                throw MockError.validationError
             },
             getUserBehaviorInsights: {
-                UserBehaviorInsights(
-                    mostUsedDocumentTypes: [],
-                    averageCompletionTime: 0,
-                    commonRequirementPatterns: [],
-                    recommendedWorkflows: [],
-                    usageStatistics: .init(
-                        totalDocumentsGenerated: 0,
-                        successRate: 0,
-                        averageDocumentQuality: 0,
-                        peakUsageHours: []
-                    )
-                )
+                throw MockError.dataError
             },
-            getSecurityPolicyUpdates: { [] },
-            searchRegulations: { _ in [] }
+            getSecurityPolicyUpdates: {
+                throw MockError.authenticationError
+            },
+            searchRegulations: { _ in
+                throw MockError.searchError
+            }
         )
     }
 }
 
+// MARK: - Mock Errors
+
+public enum MockError: LocalizedError {
+    case networkError
+    case validationError
+    case dataError
+    case authenticationError
+    case searchError
+
+    public var errorDescription: String? {
+        switch self {
+        case .networkError:
+            return "Mock network connection error"
+        case .validationError:
+            return "Mock validation failed"
+        case .dataError:
+            return "Mock data retrieval error"
+        case .authenticationError:
+            return "Mock authentication failed"
+        case .searchError:
+            return "Mock search error"
+        }
+    }
+}
+
+// MARK: - Dependency Support (Optional - for TCA integration in tests)
+
+extension MockContext7Service: DependencyKey {
+    public static var liveValue: MockContext7Service {
+        // For tests, use the integration value as "live"
+        integrationValue
+    }
+}
+
 public extension DependencyValues {
-    var context7Service: Context7Service {
-        get { self[Context7Service.self] }
-        set { self[Context7Service.self] = newValue }
+    var mockContext7Service: MockContext7Service {
+        get { self[MockContext7Service.self] }
+        set { self[MockContext7Service.self] = newValue }
     }
 }

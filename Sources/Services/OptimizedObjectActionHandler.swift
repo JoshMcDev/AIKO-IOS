@@ -1,6 +1,7 @@
 import Combine
 import ComposableArchitecture
 import Foundation
+import AppCore
 
 /// Optimized Object Action Handler with smart caching and performance improvements
 public struct OptimizedObjectActionHandler {

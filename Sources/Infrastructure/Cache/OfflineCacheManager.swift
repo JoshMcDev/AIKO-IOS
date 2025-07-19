@@ -7,6 +7,7 @@
 
 import Foundation
 import os.log
+import AppCore
 
 /// Main cache manager that orchestrates different cache implementations
 @MainActor

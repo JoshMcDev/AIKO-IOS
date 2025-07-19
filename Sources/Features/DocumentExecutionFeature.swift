@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import AppCore
 import SwiftUI
 #if os(macOS)
     import AppKit
@@ -275,7 +276,8 @@ public struct DocumentExecutionFeature {
                         let fileURL = documentsPath.appendingPathComponent(fileName)
 
                         do {
-                            if let rtfData = document.rtfContent.data(using: .utf8) {
+                            let (rtfString, _) = RTFFormatter.convertToRTF(document.content)
+                            if let rtfData = rtfString.data(using: .utf8) {
                                 try rtfData.write(to: fileURL)
                                 // File saved successfully - would need to present activity controller in the view
                                 state.downloadedFileURL = fileURL
@@ -292,7 +294,8 @@ public struct DocumentExecutionFeature {
                     savePanel.nameFieldStringValue = fileName
                     savePanel.begin { result in
                         if result == .OK, let url = savePanel.url {
-                            if let rtfData = document.rtfContent.data(using: .utf8) {
+                            let (rtfString, _) = RTFFormatter.convertToRTF(document.content)
+                            if let rtfData = rtfString.data(using: .utf8) {
                                 try? rtfData.write(to: url)
                             }
                         }
@@ -324,7 +327,8 @@ public struct DocumentExecutionFeature {
                     // On macOS, use NSSharingService
                     let documentName = document.documentType?.rawValue ?? document.title
 
-                    if let rtfData = document.rtfContent.data(using: .utf8) {
+                    let (rtfString, _) = RTFFormatter.convertToRTF(document.content)
+                    if let rtfData = rtfString.data(using: .utf8) {
                         let tempURL = FileManager.default.temporaryDirectory
                             .appendingPathComponent("\(documentName.replacingOccurrences(of: " ", with: "_")).rtf")
 

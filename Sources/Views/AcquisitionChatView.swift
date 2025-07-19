@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import AppCore
 
 struct AcquisitionChatView: View {
     let store: StoreOf<AcquisitionChatFeature>

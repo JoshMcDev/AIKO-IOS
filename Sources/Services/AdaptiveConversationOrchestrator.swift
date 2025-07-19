@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 import SwiftUI
 
 // MARK: - Adaptive Conversation Orchestrator

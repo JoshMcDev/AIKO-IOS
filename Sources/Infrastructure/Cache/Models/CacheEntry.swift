@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import AppCore
 
 /// Model representing a cached item with metadata
 struct CacheEntry: Codable {

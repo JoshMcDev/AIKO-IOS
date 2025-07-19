@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import CoreData
 import Foundation
+import AppCore
 
 public struct AcquisitionService {
     public var createAcquisition: (String, String, [UploadedDocument]) async throws -> Acquisition

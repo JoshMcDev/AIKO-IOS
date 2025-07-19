@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 import CoreData
 
 /// Rich domain model for Acquisition aggregate root

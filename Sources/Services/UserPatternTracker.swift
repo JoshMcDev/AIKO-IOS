@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import AppCore
 
 // MARK: - User Pattern Tracker
 

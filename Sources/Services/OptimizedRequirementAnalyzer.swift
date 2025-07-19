@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import Foundation
 import SwiftAnthropic
+import AppCore
 
 /// Optimized RequirementAnalyzer with batching and enhanced caching
 public struct OptimizedRequirementAnalyzer {

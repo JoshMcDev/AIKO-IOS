@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+import AppCore
 
 // MARK: - User Pattern Learning Module
 

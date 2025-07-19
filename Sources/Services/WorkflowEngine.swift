@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import CoreData
 import Foundation
+import AppCore
 
 public struct WorkflowEngine {
     public var startWorkflow: (UUID) async throws -> WorkflowContext

@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import AppCore
 
 // Helper to generate shareable content from various document types
 enum DocumentShareHelper {

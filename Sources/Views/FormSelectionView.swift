@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import AppCore
 
 public struct FormSelectionView: View {
     @ObservedObject private var formMappingService = FormMappingService.shared

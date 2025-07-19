@@ -1,6 +1,7 @@
 import Combine
 import ComposableArchitecture
 import Foundation
+import AppCore
 
 /// Service responsible for handling actions on different object types in the adaptive intelligence system
 public struct ObjectActionHandler {

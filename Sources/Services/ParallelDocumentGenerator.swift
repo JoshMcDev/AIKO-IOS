@@ -1,6 +1,7 @@
 import Foundation
 import ComposableArchitecture
 import SwiftAnthropic
+import AppCore
 
 /// Parallel document generation service that processes multiple documents concurrently
 public struct ParallelDocumentGenerator {

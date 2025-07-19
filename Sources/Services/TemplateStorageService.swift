@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import AppCore
 
 /// Service for managing custom template storage
 public struct TemplateStorageService {

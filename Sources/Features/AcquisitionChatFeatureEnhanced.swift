@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import AppCore
 import SwiftAnthropic
 
 // MARK: - Enhanced Acquisition Chat Feature with Adaptive Prompting

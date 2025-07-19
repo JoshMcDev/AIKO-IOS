@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import AppCore
 
 // MARK: - Cache Migration Extensions
 

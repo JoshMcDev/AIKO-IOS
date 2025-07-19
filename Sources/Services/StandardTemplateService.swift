@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import AppCore
 
 /// Service for loading standard document templates
 public struct StandardTemplateService {

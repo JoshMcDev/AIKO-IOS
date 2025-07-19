@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import AppCore
 
 /// Unified FAR Compliance Manager consolidating all FAR-related functionality
 public struct FARComplianceManager {

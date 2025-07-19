@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import CryptoKit
 import Foundation
+import AppCore
 
 /// Adaptive Document Cache Service with dynamic memory management
 public struct AdaptiveDocumentCache {

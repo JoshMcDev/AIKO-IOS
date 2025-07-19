@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 import ComposableArchitecture
 
 // MARK: - LLM Manager
@@ -102,30 +103,33 @@ public final class LLMManager: ObservableObject {
     }
     
     /// Configure a provider
-    public func configureProvider(_ config: LLMProviderConfiguration) async throws {
-        guard let provider = providerInstances[config.providerId] else {
+    public func configureProvider(_ config: LLMProviderConfig) async throws {
+        guard let providerInstance = providerInstances[config.providerId] else {
             throw LLMManagerError.providerNotFound(config.providerId)
         }
         
-        try configManager.saveConfiguration(config)
+        guard let providerEnum = LLMProvider(rawValue: config.providerId) else {
+            throw LLMManagerError.providerNotFound(config.providerId)
+        }
+        try configManager.configureProvider(providerEnum, apiKey: config.apiKey ?? "", config: config)
         
         // Validate the configuration
-        let isValid = try await provider.validateCredentials()
+        let isValid = try await providerInstance.validateCredentials()
         if !isValid {
-            try configManager.deleteConfiguration(for: config.providerId)
+            try configManager.removeProvider(LLMProvider(rawValue: config.providerId) ?? .custom)
             throw LLMProviderError.invalidCredentials
         }
         
         // Set as active if no active provider
         if activeProvider == nil {
-            activeProvider = provider
+            activeProvider = providerInstance
             isConfigured = true
         }
     }
     
     /// Remove provider configuration
     public func removeProviderConfiguration(_ providerId: String) throws {
-        try configManager.deleteConfiguration(for: providerId)
+        try configManager.removeProvider(LLMProvider(rawValue: providerId) ?? .custom)
         
         // If this was the active provider, find a new one
         if activeProvider?.id == providerId {

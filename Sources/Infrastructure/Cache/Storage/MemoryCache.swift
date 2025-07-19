@@ -7,6 +7,7 @@
 
 import Foundation
 import os.log
+import AppCore
 
 /// In-memory cache implementation for fast access
 actor MemoryCache: OfflineCacheProtocol {

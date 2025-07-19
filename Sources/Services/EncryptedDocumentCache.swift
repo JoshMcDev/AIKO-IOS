@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import CryptoKit
 import Foundation
+import AppCore
 
 /// Encrypted Document Cache Service with AES-256 encryption
 public struct EncryptedDocumentCache {

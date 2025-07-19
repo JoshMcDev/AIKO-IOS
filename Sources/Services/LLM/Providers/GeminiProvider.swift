@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 
 // MARK: - Google Gemini Provider
 
@@ -66,7 +67,6 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
     private let baseURL = "https://generativelanguage.googleapis.com/v1beta"
     private var apiKey: String?
     private let session: URLSession
-    private let configManager = LLMConfigurationManager.shared
     
     // MARK: - Initialization
     
@@ -81,12 +81,12 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
     
     public var isConfigured: Bool {
         get async {
-            configManager.isProviderConfigured(id)
+            await LLMConfigurationManager.shared.isProviderConfigured(id)
         }
     }
     
     public func validateCredentials() async throws -> Bool {
-        guard try configManager.loadConfiguration(for: id) != nil else {
+        guard try await LLMConfigurationManager.shared.loadConfiguration(for: id) != nil else {
             throw LLMProviderError.notConfigured
         }
         
@@ -109,7 +109,7 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
     }
     
     public func chatCompletion(_ request: LLMChatRequest) async throws -> LLMChatResponse {
-        guard let config = try configManager.loadConfiguration(for: id) else {
+        guard let config = try await LLMConfigurationManager.shared.loadConfiguration(for: id) else {
             throw LLMProviderError.notConfigured
         }
         
@@ -145,7 +145,7 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
         }
         
         // Make API request
-        let endpoint = "\(baseURL)/models/\(request.model):generateContent?key=\(config.apiKey)"
+        let endpoint = "\(baseURL)/models/\(request.model):generateContent?key=\(config.apiKey ?? "")"
         var urlRequest = URLRequest(url: URL(string: endpoint)!)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -216,7 +216,7 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
         AsyncThrowingStream { continuation in
             Task {
                 do {
-                    guard let config = try configManager.loadConfiguration(for: id) else {
+                    guard let config = try await LLMConfigurationManager.shared.loadConfiguration(for: id) else {
                         throw LLMProviderError.notConfigured
                     }
                     
@@ -245,7 +245,7 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
                     }
                     
                     // Make streaming request
-                    let endpoint = "\(baseURL)/models/\(request.model):streamGenerateContent?alt=sse&key=\(config.apiKey)"
+                    let endpoint = "\(baseURL)/models/\(request.model):streamGenerateContent?alt=sse&key=\(config.apiKey ?? "")"
                     var urlRequest = URLRequest(url: URL(string: endpoint)!)
                     urlRequest.httpMethod = "POST"
                     urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -297,7 +297,7 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
     }
     
     public func generateEmbeddings(_ text: String) async throws -> [Float] {
-        guard let config = try configManager.loadConfiguration(for: id) else {
+        guard let config = try await LLMConfigurationManager.shared.loadConfiguration(for: id) else {
             throw LLMProviderError.notConfigured
         }
         
@@ -306,7 +306,7 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
             "content": ["parts": [["text": text]]]
         ]
         
-        let endpoint = "\(baseURL)/models/embedding-001:embedContent?key=\(config.apiKey)"
+        let endpoint = "\(baseURL)/models/embedding-001:embedContent?key=\(config.apiKey ?? "")"
         var urlRequest = URLRequest(url: URL(string: endpoint)!)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -329,7 +329,7 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
     }
     
     public func tokenCount(for text: String) async throws -> Int {
-        guard let config = try configManager.loadConfiguration(for: id) else {
+        guard let config = try await LLMConfigurationManager.shared.loadConfiguration(for: id) else {
             throw LLMProviderError.notConfigured
         }
         
@@ -337,7 +337,7 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
             "contents": [["parts": [["text": text]]]]
         ]
         
-        let endpoint = "\(baseURL)/models/gemini-pro:countTokens?key=\(config.apiKey)"
+        let endpoint = "\(baseURL)/models/gemini-pro:countTokens?key=\(config.apiKey ?? "")"
         var urlRequest = URLRequest(url: URL(string: endpoint)!)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")

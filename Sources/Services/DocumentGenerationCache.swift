@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 import ComposableArchitecture
 
 /// Multi-level caching system for AI Document Generation

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import AppCore
 
 /// Simple test to verify cache compilation
 @MainActor

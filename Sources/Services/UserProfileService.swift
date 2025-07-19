@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import AppCore
 
 public struct UserProfileService {
     public var loadProfile: () async throws -> UserProfile?

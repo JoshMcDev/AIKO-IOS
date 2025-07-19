@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 
 // MARK: - Local Model Provider
 
@@ -60,7 +61,6 @@ public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable 
     
     private var serverURL: String = "http://localhost:8080"
     private let session: URLSession
-    private let configManager = LLMConfigurationManager.shared
     
     // MARK: - Initialization
     
@@ -76,7 +76,7 @@ public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable 
     public var isConfigured: Bool {
         get async {
             // Check if local server is running
-            if let config = try? configManager.loadConfiguration(for: id),
+            if let config = try? await LLMConfigurationManager.shared.loadConfiguration(for: id),
                let customEndpoint = config.customEndpoint {
                 self.serverURL = customEndpoint
             }
@@ -106,7 +106,7 @@ public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable 
     
     public func chatCompletion(_ request: LLMChatRequest) async throws -> LLMChatResponse {
         // Update server URL if custom endpoint is configured
-        if let config = try? configManager.loadConfiguration(for: id),
+        if let config = try? await LLMConfigurationManager.shared.loadConfiguration(for: id),
            let customEndpoint = config.customEndpoint {
             self.serverURL = customEndpoint
         }
@@ -188,7 +188,7 @@ public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable 
             Task {
                 do {
                     // Update server URL if custom endpoint is configured
-                    if let config = try? configManager.loadConfiguration(for: id),
+                    if let config = try? await LLMConfigurationManager.shared.loadConfiguration(for: id),
                        let customEndpoint = config.customEndpoint {
                         self.serverURL = customEndpoint
                     }
@@ -270,7 +270,7 @@ public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable 
     
     public func tokenCount(for text: String) async throws -> Int {
         // Update server URL if custom endpoint is configured
-        if let config = try? configManager.loadConfiguration(for: id),
+        if let config = try? await LLMConfigurationManager.shared.loadConfiguration(for: id),
            let customEndpoint = config.customEndpoint {
             self.serverURL = customEndpoint
         }

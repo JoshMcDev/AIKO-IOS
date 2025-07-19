@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 
 public enum DocumentCategory: String, CaseIterable {
     case requirements = "Requirements Studio"

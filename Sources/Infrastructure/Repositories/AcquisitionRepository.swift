@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 import CoreData
 
 /// Repository for Acquisition domain aggregate

@@ -8,7 +8,7 @@
 import Foundation
 
 /// Protocol defining the interface for all cache implementations
-protocol OfflineCacheProtocol {
+public protocol OfflineCacheProtocol {
     /// Store a codable object in the cache
     /// - Parameters:
     ///   - object: The object to store
@@ -69,7 +69,7 @@ protocol OfflineCacheProtocol {
 }
 
 /// Errors that can occur during cache operations
-enum OfflineCacheError: LocalizedError {
+public enum OfflineCacheError: LocalizedError {
     case storageFailure(String)
     case retrievalFailure(String)
     case dataCorrupted
@@ -78,7 +78,7 @@ enum OfflineCacheError: LocalizedError {
     case unauthorized
     case quotaExceeded
     
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .storageFailure(let message):
             return "Failed to store item: \(message)"
@@ -99,21 +99,34 @@ enum OfflineCacheError: LocalizedError {
 }
 
 /// Cache configuration options
-struct OfflineCacheConfiguration: Codable {
+public struct OfflineCacheConfiguration: Codable {
     /// Maximum cache size in bytes
-    let maxSize: Int64
+    public let maxSize: Int64
     
     /// Default expiration time for cached items
-    let defaultExpiration: TimeInterval
+    public let defaultExpiration: TimeInterval
     
     /// Whether to use encryption for sensitive data
-    let useEncryption: Bool
+    public let useEncryption: Bool
     
     /// Cache eviction policy
-    let evictionPolicy: CacheEvictionPolicy
+    public let evictionPolicy: CacheEvictionPolicy
+    
+    /// Initialize cache configuration
+    public init(
+        maxSize: Int64,
+        defaultExpiration: TimeInterval,
+        useEncryption: Bool,
+        evictionPolicy: CacheEvictionPolicy
+    ) {
+        self.maxSize = maxSize
+        self.defaultExpiration = defaultExpiration
+        self.useEncryption = useEncryption
+        self.evictionPolicy = evictionPolicy
+    }
     
     /// Default configuration
-    static let `default` = OfflineCacheConfiguration(
+    public static let `default` = OfflineCacheConfiguration(
         maxSize: 100_000_000, // 100 MB
         defaultExpiration: 86400, // 24 hours
         useEncryption: false,
@@ -121,7 +134,7 @@ struct OfflineCacheConfiguration: Codable {
     )
     
     /// Configuration for sensitive data
-    static let secure = OfflineCacheConfiguration(
+    public static let secure = OfflineCacheConfiguration(
         maxSize: 50_000_000, // 50 MB
         defaultExpiration: 3600, // 1 hour
         useEncryption: true,
@@ -130,7 +143,7 @@ struct OfflineCacheConfiguration: Codable {
 }
 
 /// Cache eviction policies
-enum CacheEvictionPolicy: String, Codable {
+public enum CacheEvictionPolicy: String, Codable {
     case leastRecentlyUsed
     case leastFrequentlyUsed
     case firstInFirstOut

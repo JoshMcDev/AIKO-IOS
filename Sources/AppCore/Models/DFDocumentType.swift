@@ -206,12 +206,16 @@ public enum DFDocumentType: String, CaseIterable, Identifiable, Codable {
 
     /// Get comprehensive FAR reference information
     public var comprehensiveFARReference: ComprehensiveFARReference? {
-        FARReferenceService.getFARReference(for: rawValue)
+        // Platform implementations will provide actual FAR reference service
+        // For now, return nil - this will be overridden in platform-specific code
+        nil
     }
 
     /// Get formatted FAR/DFAR references for display
     public var formattedFARReferences: String {
-        FARReferenceService.formatFARReferences(for: rawValue)
+        // Platform implementations will provide actual FAR reference formatting
+        // For now, return the basic farReference
+        farReference
     }
 }
 

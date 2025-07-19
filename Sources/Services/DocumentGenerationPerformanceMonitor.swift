@@ -1,5 +1,6 @@
 import Foundation
 import ComposableArchitecture
+import AppCore
 
 /// Performance monitoring system for document generation
 public actor DocumentGenerationPerformanceMonitor {

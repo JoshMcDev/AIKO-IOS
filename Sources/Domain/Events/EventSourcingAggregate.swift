@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 import CoreData
 
 /// Protocol for event-sourced aggregates

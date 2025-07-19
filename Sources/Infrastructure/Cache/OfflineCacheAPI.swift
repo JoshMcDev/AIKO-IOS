@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import os.log
+import AppCore
 
 /// Extended API for cache management operations
 extension OfflineCacheManager {

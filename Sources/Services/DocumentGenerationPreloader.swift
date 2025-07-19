@@ -1,5 +1,6 @@
 import Foundation
 import ComposableArchitecture
+import AppCore
 
 /// Pre-loads templates, system prompts, and user profile in parallel to optimize document generation
 public struct DocumentGenerationPreloader {

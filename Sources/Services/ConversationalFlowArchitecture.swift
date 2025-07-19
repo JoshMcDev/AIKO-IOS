@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 
 // MARK: - Conversational Flow Architecture
 // This architecture defines how the adaptive prompting engine minimizes user questions

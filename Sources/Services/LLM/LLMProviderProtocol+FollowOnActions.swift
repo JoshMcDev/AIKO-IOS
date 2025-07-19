@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 import ComposableArchitecture
 
 // MARK: - LLM Provider Follow-On Action Extension

@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -650,8 +651,8 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
         let suggestedFields = Float(autoFillResult.summary.suggestedCount)
         let confidenceScore = (filledFields + suggestedFields * 0.5) / totalFields
         
-        session.confidence = confidenceScore > 0.7 ? .high : 
-                           confidenceScore > 0.4 ? .medium : .low
+        session.confidence = confidenceScore > 0.7 ? ConfidenceLevel.high : 
+                           confidenceScore > 0.4 ? ConfidenceLevel.medium : ConfidenceLevel.low
         
         return session
     }

@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import Foundation
 import SwiftUI
+import AppCore
 #if os(iOS)
     import UIKit
 #else
@@ -17,6 +18,7 @@ public struct AppFeature {
         public var acquisitionsList = AcquisitionsListFeature.State()
         public var acquisitionChat = AcquisitionChatFeature.State()
         public var settings = SettingsFeature.State()
+        public var documentScanner = DocumentScannerFeature.State()
         public var isOnboardingCompleted: Bool = false
         public var hasProfile: Bool = false
         public var showingMenu: Bool = false
@@ -29,6 +31,7 @@ public struct AppFeature {
         public var showingSearchTemplates: Bool = false
         public var showingSettings: Bool = false
         public var showingAcquisitionChat: Bool = false
+        public var showingDocumentScanner: Bool = false
         public var loadedAcquisition: Acquisition?
         public var loadedAcquisitionDisplayName: String?
         public var isChatMode: Bool = false
@@ -228,6 +231,10 @@ public struct AppFeature {
         case acquisitionChatCompleted(UUID, Set<DocumentType>)
         case showSAMGovLookup(Bool)
 
+        // Document Scanner actions
+        case showDocumentScanner(Bool)
+        case documentScanner(DocumentScannerFeature.Action)
+
         // Face ID authentication actions
         case checkFaceIDAuthentication
         case authenticateWithFaceID
@@ -273,6 +280,10 @@ public struct AppFeature {
 
         Scope(state: \.settings, action: \.settings) {
             SettingsFeature()
+        }
+
+        Scope(state: \.documentScanner, action: \.documentScanner) {
+            DocumentScannerFeature()
         }
 
         Reduce { state, action in
@@ -852,6 +863,26 @@ public struct AppFeature {
                 for docType in recommendedDocuments {
                     state.documentGeneration.status.documentReadinessStatus[docType] = .ready
                 }
+                return .none
+
+            // MARK: Document Scanner
+            
+            case let .showDocumentScanner(show):
+                state.showingDocumentScanner = show
+                return .none
+                
+            case .documentScanner(.dismissScanner):
+                state.showingDocumentScanner = false
+                return .none
+                
+            case .documentScanner(.documentSaved):
+                // Scanner successfully saved document to pipeline
+                state.showingDocumentScanner = false
+                // Optionally refresh acquisition data or show success
+                return .none
+                
+            case .documentScanner:
+                // Other scanner actions are handled by the child reducer
                 return .none
 
             case .errorAlert:

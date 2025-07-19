@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 
 /// Engine responsible for mapping template fields to form fields
 final class MappingEngine {

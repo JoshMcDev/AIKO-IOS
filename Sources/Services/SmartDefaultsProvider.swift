@@ -1,5 +1,6 @@
 import Foundation
 import ComposableArchitecture
+import AppCore
 
 // MARK: - Smart Defaults Provider
 

@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import AppCore
 import PDFKit
 
 #if os(iOS)

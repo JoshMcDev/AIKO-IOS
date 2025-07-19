@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import CoreML
 import Foundation
+import AppCore
 import NaturalLanguage
 
 // MARK: - Adaptive Intelligence Service

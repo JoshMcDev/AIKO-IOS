@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import AppCore
 
 // MARK: - LLM Provider Settings Feature
 
@@ -261,12 +262,15 @@ struct LLMProviderConfigurationFeature {
                         additionalSettings["deploymentName"] = state.deploymentName
                     }
                     
-                    let config = LLMProviderConfiguration(
+                    let config = LLMProviderConfig(
+                        provider: state.provider.id,
                         providerId: state.provider.id,
+                        model: state.provider.capabilities.supportedModels.first?.id ?? "",
                         apiKey: state.apiKey,
                         organizationId: state.organizationId.isEmpty ? nil : state.organizationId,
                         customEndpoint: state.customEndpoint.isEmpty ? nil : state.customEndpoint,
-                        additionalSettings: additionalSettings
+                        customHeaders: additionalSettings.isEmpty ? nil : additionalSettings,
+                        temperature: 0.7
                     )
                     
                     do {

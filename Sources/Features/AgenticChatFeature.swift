@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import AppCore
 import SwiftUI
 
 // NSAttributedString already conforms to Equatable in Foundation

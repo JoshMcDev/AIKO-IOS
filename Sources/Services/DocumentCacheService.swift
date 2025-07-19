@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import AppCore
 
 /// Document Cache Service for performance optimization
 /// Implements LRU (Least Recently Used) caching strategy for documents and LLM responses

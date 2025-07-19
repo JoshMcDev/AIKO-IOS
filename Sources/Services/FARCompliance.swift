@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Foundation
+import AppCore
 
 public struct FARComplianceService {
     public var getRecommendedDocuments: (String, ProjectCategory) async throws -> [DocumentRecommendation]

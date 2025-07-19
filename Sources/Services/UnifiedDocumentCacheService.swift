@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import CryptoKit
 import Foundation
+import AppCore
 
 /// Unified Document Cache Service combining standard, encrypted, and adaptive caching
 public struct UnifiedDocumentCacheService {

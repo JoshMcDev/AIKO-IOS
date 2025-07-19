@@ -1,5 +1,6 @@
 import Foundation
 import ComposableArchitecture
+import AppCore
 
 /// Multi-tier caching system for Object Action Handler optimization
 public actor ObjectActionCache {

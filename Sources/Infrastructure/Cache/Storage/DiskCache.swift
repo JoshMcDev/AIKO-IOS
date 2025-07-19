@@ -7,6 +7,7 @@
 
 import Foundation
 import os.log
+import AppCore
 
 /// Disk-based cache implementation for persistent storage
 actor DiskCache: OfflineCacheProtocol {

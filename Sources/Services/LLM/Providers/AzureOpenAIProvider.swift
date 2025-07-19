@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 
 // MARK: - Azure OpenAI Provider
 
@@ -68,7 +69,6 @@ public final class AzureOpenAIProvider: LLMProviderProtocol, @unchecked Sendable
     private let apiVersion = "2024-02-01"
     private var apiKey: String?
     private let session: URLSession
-    private let configManager = LLMConfigurationManager.shared
     
     // MARK: - Initialization
     
@@ -83,21 +83,21 @@ public final class AzureOpenAIProvider: LLMProviderProtocol, @unchecked Sendable
     
     public var isConfigured: Bool {
         get async {
-            guard configManager.isProviderConfigured(id) else { return false }
+            guard await LLMConfigurationManager.shared.isProviderConfigured(id) else { return false }
             
             // Check if Azure-specific settings are configured
-            if let config = try? configManager.loadConfiguration(for: id) {
+            if let config = try? await LLMConfigurationManager.shared.loadConfiguration(for: id) {
                 return config.customEndpoint != nil && 
-                       config.additionalSettings["deploymentName"] != nil
+                       config.customHeaders?["X-Azure-Deployment-Name"] != nil
             }
             return false
         }
     }
     
     public func validateCredentials() async throws -> Bool {
-        guard let config = try configManager.loadConfiguration(for: id),
+        guard let config = try await LLMConfigurationManager.shared.loadConfiguration(for: id),
               let endpoint = config.customEndpoint,
-              let deployment = config.additionalSettings["deploymentName"] else {
+              let deployment = config.customHeaders?["X-Azure-Deployment-Name"] else {
             throw LLMProviderError.notConfigured
         }
         
@@ -123,9 +123,9 @@ public final class AzureOpenAIProvider: LLMProviderProtocol, @unchecked Sendable
     }
     
     public func chatCompletion(_ request: LLMChatRequest) async throws -> LLMChatResponse {
-        guard let config = try configManager.loadConfiguration(for: id),
+        guard let config = try await LLMConfigurationManager.shared.loadConfiguration(for: id),
               let endpoint = config.customEndpoint,
-              let deployment = config.additionalSettings["deploymentName"] else {
+              let deployment = config.customHeaders?["X-Azure-Deployment-Name"] else {
             throw LLMProviderError.notConfigured
         }
         
@@ -237,9 +237,9 @@ public final class AzureOpenAIProvider: LLMProviderProtocol, @unchecked Sendable
         AsyncThrowingStream { continuation in
             Task {
                 do {
-                    guard let config = try configManager.loadConfiguration(for: id),
+                    guard let config = try await LLMConfigurationManager.shared.loadConfiguration(for: id),
                           let endpoint = config.customEndpoint,
-                          let deployment = config.additionalSettings["deploymentName"] else {
+                          let deployment = config.customHeaders?["X-Azure-Deployment-Name"] else {
                         throw LLMProviderError.notConfigured
                     }
                     
@@ -326,9 +326,9 @@ public final class AzureOpenAIProvider: LLMProviderProtocol, @unchecked Sendable
     }
     
     public func generateEmbeddings(_ text: String) async throws -> [Float] {
-        guard let config = try configManager.loadConfiguration(for: id),
+        guard let config = try await LLMConfigurationManager.shared.loadConfiguration(for: id),
               let endpoint = config.customEndpoint,
-              let embeddingDeployment = config.additionalSettings["embeddingDeploymentName"] else {
+              let embeddingDeployment = config.customHeaders?["X-Azure-Embedding-Deployment-Name"] else {
             throw LLMProviderError.notConfigured
         }
         

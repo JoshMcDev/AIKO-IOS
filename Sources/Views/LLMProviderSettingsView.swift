@@ -1,5 +1,6 @@
 import SwiftUI
 import ComposableArchitecture
+import AppCore
 
 // MARK: - LLM Provider Settings View
 

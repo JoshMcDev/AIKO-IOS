@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 
 // MARK: - OpenAI Provider
 
@@ -86,7 +87,6 @@ public final class OpenAIProvider: LLMProviderProtocol, @unchecked Sendable {
     private let baseURL = "https://api.openai.com/v1"
     private var apiKey: String?
     private let session: URLSession
-    private let configManager = LLMConfigurationManager.shared
     
     // MARK: - Initialization
     
@@ -101,12 +101,12 @@ public final class OpenAIProvider: LLMProviderProtocol, @unchecked Sendable {
     
     public var isConfigured: Bool {
         get async {
-            configManager.isProviderConfigured(id)
+            await LLMConfigurationManager.shared.isProviderConfigured(id)
         }
     }
     
     public func validateCredentials() async throws -> Bool {
-        guard try configManager.loadConfiguration(for: id) != nil else {
+        guard try await LLMConfigurationManager.shared.loadConfiguration(for: id) != nil else {
             throw LLMProviderError.notConfigured
         }
         
@@ -129,7 +129,7 @@ public final class OpenAIProvider: LLMProviderProtocol, @unchecked Sendable {
     }
     
     public func chatCompletion(_ request: LLMChatRequest) async throws -> LLMChatResponse {
-        guard let config = try configManager.loadConfiguration(for: id) else {
+        guard let config = try await LLMConfigurationManager.shared.loadConfiguration(for: id) else {
             throw LLMProviderError.notConfigured
         }
         
@@ -189,7 +189,7 @@ public final class OpenAIProvider: LLMProviderProtocol, @unchecked Sendable {
         var urlRequest = URLRequest(url: URL(string: "\(baseURL)/chat/completions")!)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        urlRequest.setValue("Bearer \(config.apiKey)", forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("Bearer \(config.apiKey ?? "")", forHTTPHeaderField: "Authorization")
         
         if let orgId = config.organizationId {
             urlRequest.setValue(orgId, forHTTPHeaderField: "OpenAI-Organization")
@@ -269,7 +269,7 @@ public final class OpenAIProvider: LLMProviderProtocol, @unchecked Sendable {
         AsyncThrowingStream { continuation in
             Task {
                 do {
-                    guard let config = try configManager.loadConfiguration(for: id) else {
+                    guard let config = try await LLMConfigurationManager.shared.loadConfiguration(for: id) else {
                         throw LLMProviderError.notConfigured
                     }
                     
@@ -300,7 +300,7 @@ public final class OpenAIProvider: LLMProviderProtocol, @unchecked Sendable {
                     var urlRequest = URLRequest(url: URL(string: "\(baseURL)/chat/completions")!)
                     urlRequest.httpMethod = "POST"
                     urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                    urlRequest.setValue("Bearer \(config.apiKey)", forHTTPHeaderField: "Authorization")
+                    urlRequest.setValue("Bearer \(config.apiKey ?? "")", forHTTPHeaderField: "Authorization")
                     
                     if let orgId = config.organizationId {
                         urlRequest.setValue(orgId, forHTTPHeaderField: "OpenAI-Organization")
@@ -356,7 +356,7 @@ public final class OpenAIProvider: LLMProviderProtocol, @unchecked Sendable {
     }
     
     public func generateEmbeddings(_ text: String) async throws -> [Float] {
-        guard let config = try configManager.loadConfiguration(for: id) else {
+        guard let config = try await LLMConfigurationManager.shared.loadConfiguration(for: id) else {
             throw LLMProviderError.notConfigured
         }
         
@@ -368,7 +368,7 @@ public final class OpenAIProvider: LLMProviderProtocol, @unchecked Sendable {
         var urlRequest = URLRequest(url: URL(string: "\(baseURL)/embeddings")!)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        urlRequest.setValue("Bearer \(config.apiKey)", forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("Bearer \(config.apiKey ?? "")", forHTTPHeaderField: "Authorization")
         urlRequest.httpBody = try JSONSerialization.data(withJSONObject: body)
         
         let (data, response) = try await session.data(for: urlRequest)

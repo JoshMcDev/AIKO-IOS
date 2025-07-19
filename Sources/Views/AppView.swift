@@ -1,11 +1,14 @@
 import ComposableArchitecture
 import SwiftUI
+import AppCore
 #if os(iOS)
     import UIKit
     import UniformTypeIdentifiers
     import VisionKit
+    import AIKOiOS
 #elseif os(macOS)
     import AppKit
+    import AIKOmacOS
 #endif
 
 // App Icon View Component
@@ -211,7 +214,10 @@ public struct AppView: View {
                     ),
                     isChatMode: viewStore.isChatMode,
                     loadedAcquisition: viewStore.loadedAcquisition,
-                    loadedAcquisitionDisplayName: viewStore.loadedAcquisitionDisplayName
+                    loadedAcquisitionDisplayName: viewStore.loadedAcquisitionDisplayName,
+                    onShowDocumentScanner: {
+                        viewStore.send(.showDocumentScanner(true))
+                    }
                 )
             }
             .modifier(NavigationBarHiddenModifier())
@@ -327,6 +333,26 @@ public struct AppView: View {
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
                 .aikoSheet()
+        }
+        .sheet(isPresented: .init(
+            get: { viewStore.showingDocumentScanner },
+            set: { viewStore.send(.showDocumentScanner($0)) }
+        )) {
+            #if os(iOS)
+            DocumentScannerView(
+                store: store.scope(
+                    state: \.documentScanner,
+                    action: \.documentScanner
+                )
+            )
+            .aikoSheet()
+            #else
+            Text("Document scanning is not available on macOS")
+                .font(.title)
+                .foregroundColor(.secondary)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .aikoSheet()
+            #endif
         }
         .sheet(isPresented: .init(
             get: { viewStore.showingDocumentSelection },
@@ -478,17 +504,31 @@ public struct DocumentGenerationView: View {
     let isChatMode: Bool
     let loadedAcquisition: Acquisition?
     let loadedAcquisitionDisplayName: String?
+    let onShowDocumentScanner: () -> Void
 
-    public init(store: StoreOf<DocumentGenerationFeature>, isChatMode: Bool = false, loadedAcquisition: Acquisition? = nil, loadedAcquisitionDisplayName: String? = nil) {
+    public init(
+        store: StoreOf<DocumentGenerationFeature>, 
+        isChatMode: Bool = false, 
+        loadedAcquisition: Acquisition? = nil, 
+        loadedAcquisitionDisplayName: String? = nil,
+        onShowDocumentScanner: @escaping () -> Void = {}
+    ) {
         self.store = store
         self.isChatMode = isChatMode
         self.loadedAcquisition = loadedAcquisition
         self.loadedAcquisitionDisplayName = loadedAcquisitionDisplayName
+        self.onShowDocumentScanner = onShowDocumentScanner
     }
-
+    
     public var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            VStack(spacing: 0) {
+            mainContent(viewStore)
+        }
+    }
+
+    @ViewBuilder
+    private func mainContent(_ viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> some View {
+        VStack(spacing: 0) {
                 // Main Content Area
                 ScrollView(.vertical, showsIndicators: true) {
                     VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
@@ -575,7 +615,7 @@ public struct DocumentGenerationView: View {
                         viewStore.send(.analysis(.showDocumentPicker(true)))
                     },
                     onShowImagePicker: {
-                        viewStore.send(.analysis(.showImagePicker(true)))
+                        onShowDocumentScanner()
                     },
                     onRemoveDocument: { documentId in
                         viewStore.send(.analysis(.removeUploadedDocument(documentId)))
@@ -647,7 +687,6 @@ public struct DocumentGenerationView: View {
             }
         }
     }
-}
 
 struct DocumentTypesSection: View {
     let documentTypes: [DocumentType]

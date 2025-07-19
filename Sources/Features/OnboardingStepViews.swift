@@ -1,4 +1,5 @@
 import SwiftUI
+import AppCore
 #if os(iOS)
     import UIKit
 #else
