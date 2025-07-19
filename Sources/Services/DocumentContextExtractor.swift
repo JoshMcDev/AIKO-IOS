@@ -1,5 +1,6 @@
 import Foundation
 import NaturalLanguage
+import AppCore
 
 // MARK: - Document Context Extractor
 

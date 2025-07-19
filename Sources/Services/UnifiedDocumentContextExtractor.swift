@@ -1,6 +1,7 @@
 import Foundation
 import Vision
 import UniformTypeIdentifiers
+import AppCore
 
 // MARK: - Unified Document Context Extractor
 
@@ -88,6 +89,78 @@ public class UnifiedDocumentContextExtractor {
         // Step 5: Calculate overall confidence
         let confidence = calculateOverallConfidence(
             context: consolidatedContext,
+            adaptiveResults: adaptiveResults
+        )
+        
+        return ComprehensiveDocumentContext(
+            extractedContext: consolidatedContext,
+            parsedDocuments: parsedDocuments,
+            adaptiveResults: adaptiveResults,
+            confidence: confidence,
+            extractionDate: Date()
+        )
+    }
+    
+    /// Extract comprehensive context directly from OCR results
+    /// Optimized pathway for Phase 4.2 enhanced OCR integration
+    public func extractComprehensiveContext(
+        from ocrResults: [OCRResult],
+        pageImageData: [Data] = [],
+        withHints: [String: Any]? = nil
+    ) async throws -> ComprehensiveDocumentContext {
+        
+        guard !ocrResults.isEmpty else {
+            throw DocumentExtractionError.noDocumentsParsed
+        }
+        
+        // Step 1: Convert OCR results to ParsedDocument format for compatibility
+        var parsedDocuments: [ParsedDocument] = []
+        
+        for (index, ocrResult) in ocrResults.enumerated() {
+            let parsedDoc = ParsedDocument(
+                id: UUID(),
+                sourceType: .ocr,
+                extractedText: ocrResult.fullText,
+                metadata: ParsedDocumentMetadata(
+                    fileName: "OCR Document \(index + 1)",
+                    fileSize: ocrResult.fullText.data(using: .utf8)?.count ?? 0,
+                    pageCount: 1
+                ),
+                extractedData: convertOCRToExtractedDataForParser(ocrResult),
+                confidence: ocrResult.confidence
+            )
+            parsedDocuments.append(parsedDoc)
+        }
+        
+        // Step 2: Extract context using enhanced OCR data
+        let extractedContext = try await extractContextFromOCRResults(ocrResults)
+        
+        // Step 3: Apply adaptive learning if we have image data
+        var adaptiveResults: [AdaptiveExtractionResult] = []
+        
+        if !pageImageData.isEmpty {
+            for (index, _) in pageImageData.enumerated() {
+                guard index < parsedDocuments.count else { break }
+                
+                let adaptiveResult = try await adaptiveExtractor.extractAdaptively(
+                    from: parsedDocuments[index],
+                    withHints: withHints
+                )
+                adaptiveResults.append(adaptiveResult)
+            }
+        }
+        
+        // Step 4: Merge OCR-based context with adaptive results
+        let consolidatedContext = consolidateOCRResults(
+            ocrContext: extractedContext,
+            adaptiveResults: adaptiveResults,
+            ocrResults: ocrResults
+        )
+        
+        // Step 5: Calculate confidence based on OCR and adaptive results
+        let confidence = calculateOCRBasedConfidence(
+            context: consolidatedContext,
+            ocrResults: ocrResults,
             adaptiveResults: adaptiveResults
         )
         
@@ -430,6 +503,576 @@ public class UnifiedDocumentContextExtractor {
         for formatter in formatters.dropFirst() {
             if let formatter = formatter as? DateFormatter,
                let date = formatter.date(from: dateString) {
+                return date
+            }
+        }
+        
+        return nil
+    }
+    
+    // MARK: - OCR-Based Extraction Methods
+    
+    private func convertOCRToExtractedDataForParser(_ ocrResult: OCRResult) -> ExtractedData {
+        // Convert OCRResult to DocumentParserEnhanced's ExtractedData format
+        var entities: [ExtractedEntity] = []
+        let relationships: [ExtractedRelationship] = []
+        var tables: [ExtractedTable] = []
+        
+        // Convert form fields to entities
+        for field in ocrResult.recognizedFields {
+            let entityType: ExtractedEntity.EntityType = {
+                switch field.fieldType {
+                case .email: return .email
+                case .phone: return .phone
+                case .address: return .address
+                case .currency, .number: return .price
+                case .date: return .date
+                default: return .unknown
+                }
+            }()
+            
+            entities.append(ExtractedEntity(
+                type: entityType,
+                value: field.value,
+                confidence: field.confidence,
+                location: ExtractedLocation(
+                    pageNumber: 1,
+                    boundingBox: field.boundingBox
+                )
+            ))
+        }
+        
+        // Convert extracted metadata to entities
+        for currency in ocrResult.extractedMetadata.currencies {
+            entities.append(ExtractedEntity(
+                type: .price,
+                value: currency.originalText,
+                confidence: currency.confidence
+            ))
+        }
+        
+        for date in ocrResult.extractedMetadata.dates {
+            entities.append(ExtractedEntity(
+                type: .date,
+                value: date.originalText,
+                confidence: date.confidence
+            ))
+        }
+        
+        for email in ocrResult.extractedMetadata.emailAddresses {
+            entities.append(ExtractedEntity(
+                type: .email,
+                value: email,
+                confidence: 0.9
+            ))
+        }
+        
+        for phone in ocrResult.extractedMetadata.phoneNumbers {
+            entities.append(ExtractedEntity(
+                type: .phone,
+                value: phone,
+                confidence: 0.9
+            ))
+        }
+        
+        // Convert tables from document structure
+        for table in ocrResult.documentStructure.tables {
+            let headers = table.rows.first?.map { $0.content } ?? []
+            let dataRows = Array(table.rows.dropFirst()).map { row in
+                row.map { $0.content }
+            }
+            
+            tables.append(ExtractedTable(
+                headers: headers,
+                rows: dataRows,
+                confidence: table.confidence
+            ))
+        }
+        
+        return ExtractedData(
+            entities: entities,
+            relationships: relationships,
+            tables: tables,
+            summary: ocrResult.fullText.count > 500 ? String(ocrResult.fullText.prefix(500)) + "..." : nil
+        )
+    }
+    
+    private func convertOCRToExtractedData(_ ocrResult: OCRResult) -> [String: Any] {
+        var extractedData: [String: Any] = [:]
+        
+        // Add form fields
+        var formFields: [[String: Any]] = []
+        for field in ocrResult.recognizedFields {
+            formFields.append([
+                "label": field.label,
+                "value": field.value,
+                "confidence": field.confidence,
+                "type": field.fieldType.rawValue,
+                "bounds": [
+                    "x": field.boundingBox.origin.x,
+                    "y": field.boundingBox.origin.y,
+                    "width": field.boundingBox.size.width,
+                    "height": field.boundingBox.size.height
+                ]
+            ])
+        }
+        extractedData["form_fields"] = formFields
+        
+        // Add document structure
+        extractedData["layout_type"] = ocrResult.documentStructure.layout.rawValue
+        extractedData["paragraph_count"] = ocrResult.documentStructure.paragraphs.count
+        extractedData["table_count"] = ocrResult.documentStructure.tables.count
+        extractedData["list_count"] = ocrResult.documentStructure.lists.count
+        extractedData["header_count"] = ocrResult.documentStructure.headers.count
+        
+        // Add extracted metadata
+        extractedData["dates"] = ocrResult.extractedMetadata.dates.map { date in
+            [
+                "date": date.date.timeIntervalSince1970,
+                "original_text": date.originalText,
+                "confidence": date.confidence,
+                "context": date.context ?? ""
+            ]
+        }
+        
+        extractedData["currencies"] = ocrResult.extractedMetadata.currencies.map { currency in
+            [
+                "amount": currency.amount.description,
+                "currency": currency.currency,
+                "original_text": currency.originalText,
+                "confidence": currency.confidence
+            ]
+        }
+        
+        extractedData["phone_numbers"] = ocrResult.extractedMetadata.phoneNumbers
+        extractedData["email_addresses"] = ocrResult.extractedMetadata.emailAddresses
+        extractedData["urls"] = ocrResult.extractedMetadata.urls
+        
+        return extractedData
+    }
+    
+    private func extractContextFromOCRResults(_ ocrResults: [OCRResult]) async throws -> ExtractedContext {
+        // Use the existing helper functions from DocumentScannerFeature but make them more sophisticated
+        let vendorInfo = extractEnhancedVendorInfoFromOCR(ocrResults)
+        let pricing = extractEnhancedPricingFromOCR(ocrResults)
+        let technicalDetails = extractEnhancedTechnicalDetailsFromOCR(ocrResults)
+        let dates = extractEnhancedDatesFromOCR(ocrResults)
+        let specialTerms = extractEnhancedSpecialTermsFromOCR(ocrResults)
+        let confidence = calculateEnhancedConfidenceFromOCR(ocrResults)
+        
+        return ExtractedContext(
+            vendorInfo: vendorInfo,
+            pricing: pricing,
+            technicalDetails: technicalDetails,
+            dates: dates,
+            specialTerms: specialTerms,
+            confidence: confidence
+        )
+    }
+    
+    private func consolidateOCRResults(
+        ocrContext: ExtractedContext,
+        adaptiveResults: [AdaptiveExtractionResult],
+        ocrResults: [OCRResult]
+    ) -> ExtractedContext {
+        // Start with OCR-based context
+        var consolidatedVendorInfo = ocrContext.vendorInfo
+        var consolidatedPricing = ocrContext.pricing
+        var consolidatedDates = ocrContext.dates
+        var consolidatedTechnicalDetails = ocrContext.technicalDetails
+        var consolidatedSpecialTerms = ocrContext.specialTerms
+        var consolidatedConfidence = ocrContext.confidence
+        
+        // Enhance with adaptive extraction results (using existing logic)
+        for result in adaptiveResults {
+            if let vendorInfo = extractVendorInfoFromAdaptive(result) {
+                consolidatedVendorInfo = mergeVendorInfo(
+                    existing: consolidatedVendorInfo,
+                    new: vendorInfo,
+                    confidence: result.confidence
+                )
+            }
+            
+            if let pricing = extractPricingFromAdaptive(result) {
+                consolidatedPricing = mergePricing(
+                    existing: consolidatedPricing,
+                    new: pricing,
+                    confidence: result.confidence
+                )
+            }
+            
+            if let dates = extractDatesFromAdaptive(result) {
+                consolidatedDates = mergeDates(
+                    existing: consolidatedDates,
+                    new: dates,
+                    confidence: result.confidence
+                )
+            }
+            
+            let technicalDetails = extractTechnicalDetailsFromAdaptive(result)
+            consolidatedTechnicalDetails.append(contentsOf: technicalDetails)
+            
+            let specialTerms = extractSpecialTermsFromAdaptive(result)
+            consolidatedSpecialTerms.append(contentsOf: specialTerms)
+            
+            updateConfidenceScores(&consolidatedConfidence, from: result)
+        }
+        
+        // Remove duplicates
+        consolidatedTechnicalDetails = Array(Set(consolidatedTechnicalDetails))
+        consolidatedSpecialTerms = Array(Set(consolidatedSpecialTerms))
+        
+        return ExtractedContext(
+            vendorInfo: consolidatedVendorInfo,
+            pricing: consolidatedPricing,
+            technicalDetails: consolidatedTechnicalDetails,
+            dates: consolidatedDates,
+            specialTerms: consolidatedSpecialTerms,
+            confidence: consolidatedConfidence
+        )
+    }
+    
+    private func calculateOCRBasedConfidence(
+        context: ExtractedContext,
+        ocrResults: [OCRResult],
+        adaptiveResults: [AdaptiveExtractionResult]
+    ) -> Double {
+        var scores: [Double] = []
+        
+        // Add OCR confidence scores
+        scores.append(contentsOf: ocrResults.map { $0.confidence })
+        
+        // Add context extraction confidence
+        scores.append(contentsOf: context.confidence.values.map { Double($0) })
+        
+        // Add adaptive extraction confidence
+        scores.append(contentsOf: adaptiveResults.map { $0.confidence })
+        
+        guard !scores.isEmpty else { return 0.0 }
+        let average = scores.reduce(0.0, +) / Double(scores.count)
+        
+        // Boost confidence if we have multiple high-quality sources
+        let qualityBonus = (ocrResults.count > 1 && !adaptiveResults.isEmpty) ? 0.15 : 0.05
+        
+        return min(average + qualityBonus, 1.0)
+    }
+    
+    // Enhanced extraction methods that leverage the structured OCR data
+    
+    private func extractEnhancedVendorInfoFromOCR(_ ocrResults: [OCRResult]) -> APEVendorInfo? {
+        var vendorInfo = APEVendorInfo()
+        var hasData = false
+        
+        for result in ocrResults {
+            // Check form fields with higher precision
+            for field in result.recognizedFields where field.confidence > 0.7 {
+                switch field.label.lowercased() {
+                case let label where label.contains("vendor") || label.contains("company") || label.contains("supplier"):
+                    if field.fieldType == .text && !field.value.isEmpty {
+                        vendorInfo.name = field.value
+                        hasData = true
+                    }
+                case let label where label.contains("email"):
+                    if field.fieldType == .email {
+                        vendorInfo.email = field.value
+                        hasData = true
+                    }
+                case let label where label.contains("phone"):
+                    if field.fieldType == .phone {
+                        vendorInfo.phone = field.value
+                        hasData = true
+                    }
+                case let label where label.contains("address"):
+                    if field.fieldType == .address {
+                        vendorInfo.address = field.value
+                        hasData = true
+                    }
+                case let label where label.contains("uei"):
+                    vendorInfo.uei = field.value
+                    hasData = true
+                case let label where label.contains("cage"):
+                    vendorInfo.cage = field.value
+                    hasData = true
+                default:
+                    break
+                }
+            }
+            
+            // Check metadata with pattern matching
+            for address in result.extractedMetadata.addresses where address.confidence > 0.8 {
+                if vendorInfo.address == nil {
+                    vendorInfo.address = address.fullAddress
+                    hasData = true
+                }
+            }
+            
+            for email in result.extractedMetadata.emailAddresses {
+                if vendorInfo.email == nil {
+                    vendorInfo.email = email
+                    hasData = true
+                }
+            }
+            
+            for phone in result.extractedMetadata.phoneNumbers {
+                if vendorInfo.phone == nil {
+                    vendorInfo.phone = phone
+                    hasData = true
+                }
+            }
+        }
+        
+        return hasData ? vendorInfo : nil
+    }
+    
+    private func extractEnhancedPricingFromOCR(_ ocrResults: [OCRResult]) -> PricingInfo? {
+        var totalPrice: Decimal?
+        var lineItems: [APELineItem] = []
+        
+        for result in ocrResults {
+            // Check form fields for pricing with higher confidence threshold
+            for field in result.recognizedFields where field.confidence > 0.8 {
+                if field.fieldType == .currency {
+                    let cleanValue = field.value.replacingOccurrences(of: "$", with: "")
+                        .replacingOccurrences(of: ",", with: "")
+                        .trimmingCharacters(in: .whitespaces)
+                    
+                    if let price = Decimal(string: cleanValue) {
+                        if field.label.lowercased().contains("total") || 
+                           field.label.lowercased().contains("amount") {
+                            totalPrice = price
+                        } else {
+                            lineItems.append(APELineItem(
+                                description: field.label,
+                                quantity: 1,
+                                unitPrice: price,
+                                totalPrice: price
+                            ))
+                        }
+                    }
+                }
+            }
+            
+            // Process currency metadata with context analysis
+            for currency in result.extractedMetadata.currencies where currency.confidence > 0.9 {
+                if totalPrice == nil {
+                    // Look for "total" context in surrounding text
+                    let fullText = result.fullText.lowercased()
+                    let currencyIndex = fullText.range(of: currency.originalText.lowercased())
+                    
+                    if let index = currencyIndex {
+                        let startIndex = max(fullText.startIndex, 
+                                            fullText.index(index.lowerBound, offsetBy: -50, limitedBy: fullText.startIndex) ?? fullText.startIndex)
+                        let endIndex = min(fullText.endIndex,
+                                         fullText.index(index.upperBound, offsetBy: 50, limitedBy: fullText.endIndex) ?? fullText.endIndex)
+                        let surroundingRange = startIndex..<endIndex
+                        let context = String(fullText[surroundingRange])
+                        
+                        if context.contains("total") || context.contains("amount due") {
+                            totalPrice = currency.amount
+                        } else {
+                            lineItems.append(APELineItem(
+                                description: "Item",
+                                quantity: 1,
+                                unitPrice: currency.amount,
+                                totalPrice: currency.amount
+                            ))
+                        }
+                    }
+                }
+            }
+        }
+        
+        if totalPrice != nil || !lineItems.isEmpty {
+            return PricingInfo(totalPrice: totalPrice, unitPrices: lineItems)
+        }
+        
+        return nil
+    }
+    
+    private func extractEnhancedTechnicalDetailsFromOCR(_ ocrResults: [OCRResult]) -> [String] {
+        var technicalDetails: [String] = []
+        
+        for result in ocrResults {
+            // Extract from form fields
+            for field in result.recognizedFields where field.confidence > 0.7 {
+                let label = field.label.lowercased()
+                if label.contains("spec") || label.contains("technical") || 
+                   label.contains("feature") || label.contains("requirement") {
+                    if field.value.count > 20 {
+                        technicalDetails.append(field.value)
+                    }
+                }
+            }
+            
+            // Extract from document structure
+            for paragraph in result.documentStructure.paragraphs where paragraph.confidence > 0.8 {
+                let text = paragraph.text.lowercased()
+                if text.contains("specification") || text.contains("technical") ||
+                   text.contains("requirements") || text.contains("performance") {
+                    if paragraph.text.count > 50 {
+                        technicalDetails.append(paragraph.text)
+                    }
+                }
+            }
+            
+            // Extract from lists that might contain technical specs
+            for list in result.documentStructure.lists {
+                for item in list.items where item.confidence > 0.8 {
+                    let text = item.text.lowercased()
+                    if text.contains("spec") || text.contains("feature") || text.contains("requirement") {
+                        technicalDetails.append(item.text)
+                    }
+                }
+            }
+        }
+        
+        return Array(Set(technicalDetails))
+    }
+    
+    private func extractEnhancedDatesFromOCR(_ ocrResults: [OCRResult]) -> ExtractedDates? {
+        var dates = ExtractedDates()
+        var hasData = false
+        
+        for result in ocrResults {
+            // Check form fields for dates
+            for field in result.recognizedFields where field.confidence > 0.8 {
+                if field.fieldType == .date {
+                    if let date = parseAdvancedDate(field.value) {
+                        let label = field.label.lowercased()
+                        if label.contains("quote") || label.contains("date") {
+                            dates.quoteDate = date
+                            hasData = true
+                        } else if label.contains("valid") || label.contains("expir") {
+                            dates.validUntil = date
+                            hasData = true
+                        } else if label.contains("delivery") || label.contains("due") {
+                            dates.deliveryDate = date
+                            hasData = true
+                        }
+                    }
+                }
+            }
+            
+            // Check extracted metadata dates with context
+            for extractedDate in result.extractedMetadata.dates where extractedDate.confidence > 0.8 {
+                if let context = extractedDate.context?.lowercased() {
+                    if context.contains("quote") && dates.quoteDate == nil {
+                        dates.quoteDate = extractedDate.date
+                        hasData = true
+                    } else if context.contains("delivery") && dates.deliveryDate == nil {
+                        dates.deliveryDate = extractedDate.date
+                        hasData = true
+                    } else if context.contains("valid") && dates.validUntil == nil {
+                        dates.validUntil = extractedDate.date
+                        hasData = true
+                    }
+                } else {
+                    // Assign to first available slot
+                    if dates.quoteDate == nil {
+                        dates.quoteDate = extractedDate.date
+                        hasData = true
+                    } else if dates.deliveryDate == nil {
+                        dates.deliveryDate = extractedDate.date
+                        hasData = true
+                    }
+                }
+            }
+        }
+        
+        return hasData ? dates : nil
+    }
+    
+    private func extractEnhancedSpecialTermsFromOCR(_ ocrResults: [OCRResult]) -> [String] {
+        var specialTerms: [String] = []
+        
+        for result in ocrResults {
+            // Extract from form fields
+            for field in result.recognizedFields where field.confidence > 0.7 {
+                let label = field.label.lowercased()
+                if label.contains("term") || label.contains("condition") || 
+                   label.contains("requirement") || label.contains("clause") {
+                    if field.value.count > 10 {
+                        specialTerms.append(field.value)
+                    }
+                }
+            }
+            
+            // Extract from lists that contain terms
+            for list in result.documentStructure.lists {
+                for item in list.items where item.confidence > 0.8 {
+                    let text = item.text.lowercased()
+                    if text.contains("term") || text.contains("condition") || 
+                       text.contains("shall") || text.contains("must") {
+                        specialTerms.append(item.text)
+                    }
+                }
+            }
+        }
+        
+        return Array(Set(specialTerms))
+    }
+    
+    private func calculateEnhancedConfidenceFromOCR(_ ocrResults: [OCRResult]) -> [RequirementField: Float] {
+        var confidence: [RequirementField: Float] = [:]
+        
+        let overallConfidence = ocrResults.isEmpty ? 0.0 : 
+            ocrResults.map { $0.confidence }.reduce(0, +) / Double(ocrResults.count)
+        
+        // Calculate field-specific confidence based on detection
+        var fieldConfidences: [RequirementField: [Double]] = [:]
+        
+        for result in ocrResults {
+            for field in result.recognizedFields {
+                let label = field.label.lowercased()
+                if label.contains("vendor") {
+                    fieldConfidences[.vendorName, default: []].append(field.confidence)
+                }
+                if label.contains("price") || label.contains("cost") {
+                    fieldConfidences[.estimatedValue, default: []].append(field.confidence)
+                }
+                if label.contains("date") {
+                    fieldConfidences[.requiredDate, default: []].append(field.confidence)
+                }
+                if label.contains("technical") || label.contains("spec") {
+                    fieldConfidences[.technicalSpecs, default: []].append(field.confidence)
+                }
+            }
+        }
+        
+        // Calculate averages for detected fields
+        for (field, confidences) in fieldConfidences {
+            confidence[field] = Float(confidences.reduce(0, +) / Double(confidences.count))
+        }
+        
+        // Fill in missing fields with overall confidence
+        let allFields: [RequirementField] = [.vendorName, .vendorUEI, .vendorCAGE, .estimatedValue, .requiredDate, .technicalSpecs, .specialConditions]
+        for field in allFields {
+            if confidence[field] == nil {
+                confidence[field] = Float(overallConfidence * 0.8) // Slightly lower for undetected fields
+            }
+        }
+        
+        return confidence
+    }
+    
+    private func parseAdvancedDate(_ dateString: String) -> Date? {
+        let formatters = [
+            "MM/dd/yyyy",
+            "MM-dd-yyyy",
+            "dd/MM/yyyy",
+            "dd-MM-yyyy",
+            "yyyy-MM-dd",
+            "MMMM dd, yyyy",
+            "MMM dd, yyyy",
+            "dd MMMM yyyy",
+            "dd MMM yyyy"
+        ]
+        
+        for format in formatters {
+            let formatter = DateFormatter()
+            formatter.dateFormat = format
+            formatter.locale = Locale(identifier: "en_US_POSIX")
+            if let date = formatter.date(from: dateString) {
                 return date
             }
         }

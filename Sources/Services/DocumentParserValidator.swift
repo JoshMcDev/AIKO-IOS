@@ -1,5 +1,6 @@
 import Foundation
 import UniformTypeIdentifiers
+import AppCore
 
 /// Validates documents and extracted data for the document parser
 public final class DocumentParserValidator {

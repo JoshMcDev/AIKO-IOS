@@ -25,7 +25,7 @@ public struct DownloadOptionsSheet: View {
     
     @ViewBuilder
     private var documentList: some View {
-        List {
+        SwiftUI.List {
             Section {
                 // TODO: Restore when GeneratedFile is available
                 EmptyView()

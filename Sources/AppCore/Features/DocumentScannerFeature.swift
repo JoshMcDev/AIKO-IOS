@@ -31,6 +31,20 @@ public struct DocumentScannerFeature {
         public var enableOCR: Bool = true
         public var scanQuality: ScanQuality = .high
         
+        // Phase 4.1: Advanced Processing Features
+        public var processingMode: ProcessingMode = .basic
+        public var showProcessingProgress: Bool = false
+        public var pageProcessingProgress: PageProcessingProgress?
+        public var showEnhancementPreview: Bool = false
+        public var enhancementPreviewPageId: ScannedPage.ID?
+        public var pageProcessingTimes: [ScannedPage.ID: ProcessingTime] = [:]
+        
+        // Phase 4.2: Enhanced OCR Features
+        public var useEnhancedOCR: Bool = true
+        public var autoExtractContext: Bool = true
+        public var extractedDocumentContext: ComprehensiveDocumentContext?
+        public var isExtractingContext: Bool = false
+        
         public init() {}
         
         // Computed properties
@@ -48,6 +62,28 @@ public struct DocumentScannerFeature {
         
         public var totalPagesCount: Int {
             scannedPages.count
+        }
+        
+        // Phase 4.1: Advanced Processing Computed Properties
+        public var estimatedProcessingTime: TimeInterval {
+            let unprocessedPages = scannedPages.filter { 
+                $0.processingState == .pending || $0.processingState.isFailed 
+            }
+            
+            let baseTimePerPage: TimeInterval = processingMode == .enhanced ? 8.0 : 3.0
+            let ocrMultiplier: TimeInterval = enableOCR ? 1.5 : 1.0
+            
+            return Double(unprocessedPages.count) * baseTimePerPage * ocrMultiplier
+        }
+        
+        public var averageQualityScore: Double {
+            let pagesWithQuality = scannedPages.compactMap { $0.qualityScore }
+            guard !pagesWithQuality.isEmpty else { return 0.0 }
+            return pagesWithQuality.reduce(0, +) / Double(pagesWithQuality.count)
+        }
+        
+        public var canReprocessWithEnhanced: Bool {
+            processingMode == .basic && hasScannedPages
         }
     }
     
@@ -76,6 +112,7 @@ public struct DocumentScannerFeature {
         case processPage(ScannedPage.ID)
         case pageEnhancementCompleted(ScannedPage.ID, Result<Data, Error>)
         case pageOCRCompleted(ScannedPage.ID, Result<String, Error>)
+        case pageEnhancedOCRCompleted(ScannedPage.ID, Result<OCRResult, Error>)
         case processAllPages
         case retryPageProcessing(ScannedPage.ID)
         
@@ -89,6 +126,22 @@ public struct DocumentScannerFeature {
         case toggleImageEnhancement(Bool)
         case toggleOCR(Bool)
         case updateScanQuality(ScanQuality)
+        
+        // Phase 4.1: Advanced Processing Actions
+        case updateProcessingMode(ProcessingMode)
+        case startProcessingProgress(ScannedPage.ID)
+        case updateProcessingProgress(PageProcessingProgress)
+        case finishProcessingProgress(ScannedPage.ID, ProcessingTime)
+        case showEnhancementPreview(ScannedPage.ID)
+        case hideEnhancementPreview
+        case reprocessWithEnhanced([ScannedPage.ID])
+        case reprocessAllWithEnhanced
+        
+        // Phase 4.2: Enhanced OCR Actions
+        case toggleEnhancedOCR(Bool)
+        case toggleAutoExtractContext(Bool)
+        case extractDocumentContext
+        case documentContextExtracted(Result<ComprehensiveDocumentContext, Error>)
         
         // Error handling
         case showError(String)
@@ -107,6 +160,7 @@ public struct DocumentScannerFeature {
     @Dependency(\.documentScanner) var scannerClient
     @Dependency(\.dismiss) var dismiss
     @Dependency(\.uuid) var uuid
+    @Dependency(\.documentContextExtractor) var contextExtractor
     
     // MARK: - Initializer
     
@@ -237,7 +291,7 @@ public struct DocumentScannerFeature {
                 let pageImageData = page.imageData
                 let pageEnhancedImageData = page.enhancedImageData
                 
-                return .run { [enableEnhancement = state.enableImageEnhancement, enableOCR = state.enableOCR] send in
+                return .run { [enableEnhancement = state.enableImageEnhancement, enableOCR = state.enableOCR, useEnhancedOCR = state.useEnhancedOCR] send in
                     // Enhancement
                     if enableEnhancement {
                         await send(.pageEnhancementCompleted(
@@ -248,15 +302,26 @@ public struct DocumentScannerFeature {
                         ))
                     }
                     
-                    // OCR
+                    // OCR - Use enhanced OCR if enabled
                     if enableOCR {
                         let imageForOCR = pageEnhancedImageData ?? pageImageData
-                        await send(.pageOCRCompleted(
-                            pageId,
-                            await Result {
-                                try await scannerClient.performOCR(imageForOCR)
-                            }
-                        ))
+                        
+                        if useEnhancedOCR {
+                            await send(.pageEnhancedOCRCompleted(
+                                pageId,
+                                await Result {
+                                    try await scannerClient.performEnhancedOCR(imageForOCR)
+                                }
+                            ))
+                        } else {
+                            // Fallback to legacy OCR
+                            await send(.pageOCRCompleted(
+                                pageId,
+                                await Result {
+                                    try await scannerClient.performOCR(imageForOCR)
+                                }
+                            ))
+                        }
                     }
                     
                     // Mark as completed if no processing was needed
@@ -299,6 +364,32 @@ public struct DocumentScannerFeature {
                 return .none
                 
             case let .pageOCRCompleted(pageId, .failure(error)):
+                state.scannedPages[id: pageId]?.processingState = .failed(error.localizedDescription)
+                if state.currentProcessingPage == pageId {
+                    state.currentProcessingPage = nil
+                }
+                return .none
+                
+            case let .pageEnhancedOCRCompleted(pageId, .success(ocrResult)):
+                state.scannedPages[id: pageId]?.ocrText = ocrResult.fullText
+                state.scannedPages[id: pageId]?.ocrResult = ocrResult
+                
+                // Check if all processing is complete for this page
+                if !state.enableImageEnhancement || state.scannedPages[id: pageId]?.enhancedImageData != nil {
+                    state.scannedPages[id: pageId]?.processingState = .completed
+                    if state.currentProcessingPage == pageId {
+                        state.currentProcessingPage = nil
+                    }
+                }
+                
+                // Auto-extract document context if enabled and all pages are processed
+                if state.autoExtractContext && state.processedPagesCount == state.totalPagesCount {
+                    return .send(.extractDocumentContext)
+                }
+                
+                return .none
+                
+            case let .pageEnhancedOCRCompleted(pageId, .failure(error)):
                 state.scannedPages[id: pageId]?.processingState = .failed(error.localizedDescription)
                 if state.currentProcessingPage == pageId {
                     state.currentProcessingPage = nil
@@ -369,6 +460,116 @@ public struct DocumentScannerFeature {
                 state.scanQuality = quality
                 return .none
                 
+            // MARK: Phase 4.1 Advanced Processing
+                
+            case let .updateProcessingMode(mode):
+                state.processingMode = mode
+                return .none
+                
+            case let .startProcessingProgress(pageId):
+                state.showProcessingProgress = true
+                state.pageProcessingProgress = PageProcessingProgress(
+                    pageId: pageId,
+                    processingProgress: ProcessingProgress(
+                        currentStep: .preprocessing,
+                        stepProgress: 0.0,
+                        overallProgress: 0.0
+                    ),
+                    startTime: Date()
+                )
+                return .none
+                
+            case let .updateProcessingProgress(progress):
+                state.pageProcessingProgress = progress
+                return .none
+                
+            case let .finishProcessingProgress(pageId, processingTime):
+                state.showProcessingProgress = false
+                state.pageProcessingProgress = nil
+                state.pageProcessingTimes[pageId] = processingTime
+                return .none
+                
+            case let .showEnhancementPreview(pageId):
+                state.showEnhancementPreview = true
+                state.enhancementPreviewPageId = pageId
+                return .none
+                
+            case .hideEnhancementPreview:
+                state.showEnhancementPreview = false
+                state.enhancementPreviewPageId = nil
+                return .none
+                
+            case let .reprocessWithEnhanced(pageIds):
+                _ = state.processingMode
+                state.processingMode = .enhanced
+                
+                return .run { send in
+                    for pageId in pageIds {
+                        await send(.processPage(pageId))
+                    }
+                }
+                
+            case .reprocessAllWithEnhanced:
+                _ = state.processingMode
+                state.processingMode = .enhanced
+                
+                let pageIds = state.scannedPages.map { $0.id }
+                
+                return .run { send in
+                    for pageId in pageIds {
+                        await send(.processPage(pageId))
+                    }
+                }
+                
+            // MARK: Phase 4.2 Enhanced OCR
+                
+            case let .toggleEnhancedOCR(enabled):
+                state.useEnhancedOCR = enabled
+                return .none
+                
+            case let .toggleAutoExtractContext(enabled):
+                state.autoExtractContext = enabled
+                return .none
+                
+            case .extractDocumentContext:
+                state.isExtractingContext = true
+                
+                // Collect all OCR results from processed pages
+                let ocrResults = state.scannedPages.compactMap { page in
+                    page.ocrResult
+                }
+                
+                // Collect enhanced image data for adaptive learning
+                let pageImageData = state.scannedPages.compactMap { page in
+                    page.enhancedImageData ?? page.imageData
+                }
+                
+                return .run { [contextExtractor = self.contextExtractor] send in
+                    await send(.documentContextExtracted(
+                        await Result {
+                            // Use the DocumentContextExtractionService for Phase 4.2 integration
+                            try await contextExtractor.extractComprehensiveContext(
+                                from: ocrResults,
+                                pageImageData: pageImageData,
+                                withHints: [
+                                    "document_scanner": true,
+                                    "enhanced_ocr": true,
+                                    "processing_mode": "scanner_integration"
+                                ]
+                            )
+                        }
+                    ))
+                }
+                
+            case let .documentContextExtracted(.success(context)):
+                state.isExtractingContext = false
+                state.extractedDocumentContext = context
+                return .none
+                
+            case let .documentContextExtracted(.failure(error)):
+                state.isExtractingContext = false
+                return .send(.showError("Context extraction failed: \(error.localizedDescription)"))
+                
             // MARK: Error Handling
                 
             case let .showError(message):
@@ -416,6 +617,50 @@ public struct DocumentScannerFeature {
             case .low: return 0.5
             case .medium: return 0.7
             case .high: return 0.9
+            }
+        }
+    }
+    
+    // MARK: - Phase 4.1 Supporting Types
+    
+    public struct PageProcessingProgress: Equatable {
+        public let pageId: ScannedPage.ID
+        public let processingProgress: ProcessingProgress
+        public let startTime: Date
+        
+        public init(pageId: ScannedPage.ID, processingProgress: ProcessingProgress, startTime: Date) {
+            self.pageId = pageId
+            self.processingProgress = processingProgress
+            self.startTime = startTime
+        }
+        
+        public var elapsedTime: TimeInterval {
+            Date().timeIntervalSince(startTime)
+        }
+        
+        public var estimatedRemainingTime: TimeInterval {
+            processingProgress.estimatedTimeRemaining ?? 0
+        }
+    }
+    
+    public struct ProcessingTime: Equatable {
+        public let totalTime: TimeInterval
+        public let enhancementTime: TimeInterval?
+        public let ocrTime: TimeInterval?
+        public let qualityAnalysisTime: TimeInterval?
+        
+        public init(totalTime: TimeInterval, enhancementTime: TimeInterval? = nil, ocrTime: TimeInterval? = nil, qualityAnalysisTime: TimeInterval? = nil) {
+            self.totalTime = totalTime
+            self.enhancementTime = enhancementTime
+            self.ocrTime = ocrTime
+            self.qualityAnalysisTime = qualityAnalysisTime
+        }
+        
+        public var formattedTotalTime: String {
+            if totalTime < 1.0 {
+                return String(format: "%.1fs", totalTime)
+            } else {
+                return String(format: "%.0fs", totalTime)
             }
         }
     }
@@ -541,4 +786,11 @@ extension DocumentScannerFeature.Action: Equatable {
             return false
         }
     }
+}
+
+// MARK: - Phase 4.2 Helper Functions
+
+extension DocumentScannerFeature {
+    // Helper functions have been moved to UnifiedDocumentContextExtractor
+    // for enhanced integration and sophisticated analysis capabilities
 }

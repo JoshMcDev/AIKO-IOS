@@ -13,6 +13,7 @@ public enum ParsedDocumentType: String, Codable, CaseIterable {
     case jpg
     case jpeg
     case heic
+    case ocr // Phase 4.2: OCR-processed document
     case unknown
     
     public init(from mimeType: String) {

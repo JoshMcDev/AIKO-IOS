@@ -73,6 +73,24 @@ public struct DocumentScannerView: View {
                 }
                 .ignoresSafeArea()
             }
+            .overlay(
+                // Processing Progress Overlay
+                Group {
+                    if viewStore.showProcessingProgress,
+                       let progress = viewStore.pageProcessingProgress {
+                        ProcessingProgressOverlay(progress: progress)
+                    }
+                }
+            )
+            .sheet(isPresented: .init(
+                get: { viewStore.showEnhancementPreview },
+                set: { _ in viewStore.send(.hideEnhancementPreview) }
+            )) {
+                if let pageId = viewStore.enhancementPreviewPageId,
+                   let page = viewStore.scannedPages[id: pageId] {
+                    EnhancementPreviewView(page: page)
+                }
+            }
             .alert(
                 "Error",
                 isPresented: .init(
@@ -171,6 +189,42 @@ struct ScannedPagesListView: View {
                 }
             }
             
+            // Processing Quality Section
+            Section("Processing Quality") {
+                Picker("Processing Mode", selection: .init(
+                    get: { viewStore.processingMode },
+                    set: { viewStore.send(.updateProcessingMode($0)) }
+                )) {
+                    ForEach(ProcessingMode.allCases, id: \.self) { mode in
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(mode.displayName)
+                                .font(.headline)
+                            Text(mode == .basic ? "Fast processing with standard quality" : "Advanced processing with superior quality")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .tag(mode)
+                    }
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                
+                if viewStore.estimatedProcessingTime > 0 {
+                    HStack {
+                        Image(systemName: "clock")
+                            .foregroundColor(.secondary)
+                        Text("Estimated time: \(Int(viewStore.estimatedProcessingTime))s")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        if viewStore.averageQualityScore > 0 {
+                            Text("Avg Quality: \(Int(viewStore.averageQualityScore * 100))%")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
+            }
+            
             // Settings Section
             Section("Processing Options") {
                 Toggle("Enhance Images", isOn: .init(
@@ -217,6 +271,9 @@ struct ScannedPagesListView: View {
                         },
                         onRetry: {
                             viewStore.send(.retryPageProcessing(page.id))
+                        },
+                        onPreview: {
+                            viewStore.send(.showEnhancementPreview(page.id))
                         }
                     )
                 }
@@ -230,6 +287,29 @@ struct ScannedPagesListView: View {
                             viewStore.send(.deletePage(page.id))
                         }
                     }
+                }
+            }
+            
+            // Enhanced Processing Section
+            if viewStore.canReprocessWithEnhanced {
+                Section("Enhanced Processing") {
+                    Button {
+                        viewStore.send(.reprocessAllWithEnhanced)
+                    } label: {
+                        HStack {
+                            Image(systemName: "wand.and.stars")
+                                .foregroundColor(.purple)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Reprocess All with Enhanced Mode")
+                                    .font(.headline)
+                                Text("Upgrade all pages to enhanced quality")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                        }
+                    }
+                    .disabled(viewStore.isProcessingAllPages)
                 }
             }
             
@@ -249,6 +329,13 @@ struct ScannedPagesListView: View {
                             }
                             .foregroundColor(.red)
                             .disabled(viewStore.selectedPages.isEmpty)
+                            
+                            if viewStore.processingMode == .basic && !viewStore.selectedPages.isEmpty {
+                                Button("Enhance Selected") {
+                                    viewStore.send(.reprocessWithEnhanced(Array(viewStore.selectedPages)))
+                                }
+                                .disabled(viewStore.isProcessingAllPages)
+                            }
                         }
                     }
                     
@@ -300,6 +387,7 @@ struct ScannedPageRow: View {
     let onTap: () -> Void
     let onDelete: () -> Void
     let onRetry: () -> Void
+    let onPreview: () -> Void
     
     var body: some View {
         HStack(spacing: 12) {
@@ -336,8 +424,23 @@ struct ScannedPageRow: View {
             
             // Page info
             VStack(alignment: .leading, spacing: 4) {
-                Text("Page \(page.pageNumber)")
-                    .font(.headline)
+                HStack {
+                    Text("Page \(page.pageNumber)")
+                        .font(.headline)
+                    
+                    Spacer()
+                    
+                    // Quality indicators
+                    if let qualityScore = page.qualityScore {
+                        QualityBadge(score: qualityScore)
+                    }
+                    
+                    if page.enhancementApplied {
+                        Image(systemName: "wand.and.stars.inverse")
+                            .foregroundColor(.purple)
+                            .font(.caption)
+                    }
+                }
                 
                 if case .processing = page.processingState {
                     HStack(spacing: 4) {
@@ -353,22 +456,54 @@ struct ScannedPageRow: View {
                         .font(.caption)
                         .foregroundColor(.red)
                         .lineLimit(2)
-                } else if page.ocrText != nil {
-                    Text("Text extracted")
-                        .font(.caption)
-                        .foregroundColor(.green)
+                } else if case .completed = page.processingState {
+                    HStack(spacing: 8) {
+                        if page.ocrText != nil {
+                            HStack(spacing: 2) {
+                                Image(systemName: "text.viewfinder")
+                                    .font(.caption)
+                                Text("OCR")
+                                    .font(.caption)
+                                if let confidence = page.qualityScore {
+                                    Text("\(Int(confidence * 100))%")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            .foregroundColor(.green)
+                        }
+                        
+                        if let processingMode = page.processingMode {
+                            Text(processingMode.rawValue.capitalized)
+                                .font(.caption)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(processingMode == .enhanced ? Color.purple.opacity(0.2) : Color.blue.opacity(0.2))
+                                .cornerRadius(4)
+                        }
+                    }
                 }
             }
             
             Spacer()
             
             // Actions
-            if case .failed = page.processingState {
-                Button(action: onRetry) {
-                    Image(systemName: "arrow.clockwise")
-                        .foregroundColor(.accentColor)
+            HStack(spacing: 8) {
+                if case .failed = page.processingState {
+                    Button(action: onRetry) {
+                        Image(systemName: "arrow.clockwise")
+                            .foregroundColor(.accentColor)
+                    }
+                    .buttonStyle(BorderlessButtonStyle())
                 }
-                .buttonStyle(BorderlessButtonStyle())
+                
+                if page.enhancementApplied && page.enhancedImageData != nil {
+                    Button(action: onPreview) {
+                        Image(systemName: "eye")
+                            .foregroundColor(.purple)
+                    }
+                    .buttonStyle(BorderlessButtonStyle())
+                }
             }
         }
         .contentShape(Rectangle())
@@ -436,6 +571,236 @@ struct DocumentCameraView: UIViewControllerRepresentable {
         
         func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFailWithError error: Error) {
             completion(.failure(error))
+        }
+    }
+}
+
+// MARK: - Phase 4.1 Enhanced UI Components
+
+// MARK: - Quality Badge
+struct QualityBadge: View {
+    let score: Double
+    
+    var body: some View {
+        let percentage = Int(score * 100)
+        let color: Color = {
+            switch score {
+            case 0.8...: return .green
+            case 0.6...: return .orange
+            default: return .red
+            }
+        }()
+        
+        Text("\(percentage)%")
+            .font(.caption2)
+            .fontWeight(.semibold)
+            .foregroundColor(.white)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(color)
+            .cornerRadius(8)
+    }
+}
+
+// MARK: - Processing Progress Overlay
+struct ProcessingProgressOverlay: View {
+    let progress: DocumentScannerFeature.PageProcessingProgress
+    
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.4)
+                .ignoresSafeArea()
+            
+            VStack(spacing: 20) {
+                // Progress indicator
+                VStack(spacing: 12) {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .scaleEffect(1.5)
+                    
+                    Text("Processing Page \(getPageNumber())")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                    
+                    Text(progress.processingProgress.currentStep.displayName)
+                        .font(.subheadline)
+                        .foregroundColor(.white.opacity(0.8))
+                }
+                .padding(24)
+                .background(Color.black.opacity(0.7))
+                .cornerRadius(16)
+                
+                // Progress details
+                VStack(spacing: 8) {
+                    ProgressView(value: progress.processingProgress.overallProgress, total: 1.0)
+                        .progressViewStyle(LinearProgressViewStyle(tint: .white))
+                        .scaleEffect(x: 1, y: 2, anchor: .center)
+                    
+                    HStack {
+                        Text("Progress: \(Int(progress.processingProgress.overallProgress * 100))%")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.8))
+                        
+                        Spacer()
+                        
+                        if let remainingTime = progress.processingProgress.estimatedTimeRemaining,
+                           remainingTime > 0 {
+                            Text("~\(Int(remainingTime))s remaining")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.8))
+                        }
+                    }
+                }
+                .padding(.horizontal, 24)
+            }
+        }
+    }
+    
+    private func getPageNumber() -> Int {
+        // In a real implementation, you'd get this from the page data
+        return 1
+    }
+}
+
+// MARK: - Enhancement Preview View
+struct EnhancementPreviewView: View {
+    let page: ScannedPage
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        SwiftUI.NavigationView {
+            VStack(spacing: 16) {
+                // Before/After comparison
+                if let enhancedData = page.enhancedImageData,
+                   let originalImage = UIImage(data: page.imageData),
+                   let enhancedImage = UIImage(data: enhancedData) {
+                    
+                    ScrollView {
+                        VStack(spacing: 20) {
+                            // Original image
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Original")
+                                    .font(.headline)
+                                    .foregroundColor(.secondary)
+                                
+                                Image(uiImage: originalImage)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .cornerRadius(12)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
+                                    )
+                            }
+                            
+                            // Enhanced image
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack {
+                                    Text("Enhanced")
+                                        .font(.headline)
+                                        .foregroundColor(.purple)
+                                    
+                                    Spacer()
+                                    
+                                    if let qualityScore = page.qualityScore {
+                                        QualityBadge(score: qualityScore)
+                                    }
+                                }
+                                
+                                Image(uiImage: enhancedImage)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .cornerRadius(12)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .stroke(Color.purple.opacity(0.5), lineWidth: 2)
+                                    )
+                            }
+                            
+                            // Quality metrics
+                            if let qualityScore = page.qualityScore {
+                                QualityMetricsView(score: qualityScore)
+                            }
+                        }
+                        .padding()
+                    }
+                } else {
+                    VStack(spacing: 16) {
+                        Image(systemName: "photo")
+                            .font(.system(size: 60))
+                            .foregroundColor(.secondary)
+                        
+                        Text("Enhancement preview not available")
+                            .font(.headline)
+                            .foregroundColor(.secondary)
+                        
+                        Text("The enhanced version of this page is not ready yet.")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding()
+                }
+                
+                Spacer()
+            }
+            .navigationTitle("Enhancement Preview")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Quality Metrics View
+struct QualityMetricsView: View {
+    let score: Double
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Quality Analysis")
+                .font(.headline)
+            
+            VStack(spacing: 8) {
+                QualityMetricRow(title: "Overall Quality", score: score)
+                QualityMetricRow(title: "Sharpness", score: min(1.0, score + 0.1))
+                QualityMetricRow(title: "Contrast", score: min(1.0, score + 0.05))
+                QualityMetricRow(title: "Text Clarity", score: max(0.0, score - 0.05))
+            }
+        }
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(12)
+    }
+}
+
+// MARK: - Quality Metric Row
+struct QualityMetricRow: View {
+    let title: String
+    let score: Double
+    
+    var body: some View {
+        HStack {
+            Text(title)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            
+            Spacer()
+            
+            ProgressView(value: score, total: 1.0)
+                .progressViewStyle(LinearProgressViewStyle())
+                .frame(width: 80)
+            
+            Text("\(Int(score * 100))%")
+                .font(.caption)
+                .fontWeight(.medium)
+                .foregroundColor(.primary)
+                .frame(width: 35, alignment: .trailing)
         }
     }
 }

@@ -33,8 +33,15 @@ public struct ScannedPage: Equatable, Sendable, Identifiable {
     public var thumbnailData: Data?
     public var enhancedImageData: Data?
     public var ocrText: String?
+    public var ocrResult: OCRResult?
     public var pageNumber: Int
     public var processingState: ProcessingState
+    
+    // Phase 4.1: Quality and Processing Tracking
+    public var qualityMetrics: QualityMetrics?
+    public var enhancementApplied: Bool = false
+    public var processingMode: ProcessingMode?
+    public var processingResult: ProcessingResult?
     
     public init(
         id: UUID = UUID(),
@@ -42,16 +49,36 @@ public struct ScannedPage: Equatable, Sendable, Identifiable {
         thumbnailData: Data? = nil,
         enhancedImageData: Data? = nil,
         ocrText: String? = nil,
+        ocrResult: OCRResult? = nil,
         pageNumber: Int,
-        processingState: ProcessingState = .pending
+        processingState: ProcessingState = .pending,
+        qualityMetrics: QualityMetrics? = nil,
+        enhancementApplied: Bool = false,
+        processingMode: ProcessingMode? = nil,
+        processingResult: ProcessingResult? = nil
     ) {
         self.id = id
         self.imageData = imageData
         self.thumbnailData = thumbnailData
         self.enhancedImageData = enhancedImageData
         self.ocrText = ocrText
+        self.ocrResult = ocrResult
         self.pageNumber = pageNumber
         self.processingState = processingState
+        self.qualityMetrics = qualityMetrics
+        self.enhancementApplied = enhancementApplied
+        self.processingMode = processingMode
+        self.processingResult = processingResult
+    }
+    
+    /// Quality score computed from processing result or OCR result
+    public var qualityScore: Double? {
+        if let result = processingResult {
+            return result.qualityMetrics.overallConfidence
+        } else if let ocrResult = ocrResult {
+            return ocrResult.confidence
+        }
+        return nil
     }
     
     public enum ProcessingState: Equatable, Sendable {
@@ -97,8 +124,14 @@ public struct DocumentScannerClient: Sendable {
     /// Enhances a scanned image (contrast, brightness, etc.)
     public var enhanceImage: @Sendable (Data) async throws -> Data
     
-    /// Performs Optical Character Recognition on image data
+    /// Enhances a scanned image with advanced processing modes and progress callbacks
+    public var enhanceImageAdvanced: @Sendable (Data, ProcessingMode, ProcessingOptions) async throws -> ProcessingResult
+    
+    /// Performs Optical Character Recognition on image data (legacy)
     public var performOCR: @Sendable (Data) async throws -> String
+    
+    /// Performs enhanced OCR with structured results and metadata extraction
+    public var performEnhancedOCR: @Sendable (Data) async throws -> OCRResult
     
     /// Generates a thumbnail from image data
     public var generateThumbnail: @Sendable (Data, CGSize) async throws -> Data
@@ -108,6 +141,12 @@ public struct DocumentScannerClient: Sendable {
     
     /// Checks if scanning is available on the current platform
     public var isScanningAvailable: @Sendable () -> Bool = { false }
+    
+    /// Estimates processing time for given image and mode
+    public var estimateProcessingTime: @Sendable (Data, ProcessingMode) async throws -> TimeInterval = { _, _ in 1.0 }
+    
+    /// Checks if a processing mode is available
+    public var isProcessingModeAvailable: @Sendable (ProcessingMode) -> Bool = { _ in false }
 }
 
 // MARK: - Dependency Registration
@@ -128,10 +167,55 @@ extension DocumentScannerClient: DependencyKey {
             )
         },
         enhanceImage: { data in data },
+        enhanceImageAdvanced: { data, mode, options in
+            ProcessingResult(
+                processedImageData: data,
+                qualityMetrics: QualityMetrics(
+                    overallConfidence: 0.85,
+                    sharpnessScore: 0.8,
+                    contrastScore: 0.9,
+                    noiseLevel: 0.2,
+                    textClarity: 0.85,
+                    recommendedForOCR: true
+                ),
+                processingTime: 0.1,
+                appliedFilters: ["test"]
+            )
+        },
         performOCR: { _ in "Test OCR Text" },
+        performEnhancedOCR: { _ in
+            OCRResult(
+                fullText: "Test OCR Text",
+                confidence: 0.85,
+                recognizedFields: [
+                    FormField(
+                        label: "Test Field",
+                        value: "Test Value",
+                        confidence: 0.9,
+                        boundingBox: CGRect(x: 0, y: 0, width: 100, height: 20),
+                        fieldType: .text
+                    )
+                ],
+                documentStructure: DocumentStructure(
+                    paragraphs: [
+                        TextRegion(
+                            text: "Test paragraph",
+                            boundingBox: CGRect(x: 0, y: 0, width: 200, height: 40),
+                            confidence: 0.85,
+                            textType: .body
+                        )
+                    ],
+                    layout: .document
+                ),
+                extractedMetadata: ExtractedMetadata(),
+                processingTime: 0.1
+            )
+        },
         generateThumbnail: { data, _ in data },
         saveToDocumentPipeline: { _ in },
-        isScanningAvailable: { true }
+        isScanningAvailable: { true },
+        estimateProcessingTime: { _, _ in 1.0 },
+        isProcessingModeAvailable: { _ in true }
     )
 }
 
@@ -139,6 +223,345 @@ extension DependencyValues {
     public var documentScanner: DocumentScannerClient {
         get { self[DocumentScannerClient.self] }
         set { self[DocumentScannerClient.self] = newValue }
+    }
+}
+
+// MARK: - OCR Enhancement Types
+
+/// Structured OCR result with confidence scoring and document analysis
+public struct OCRResult: Equatable, Sendable {
+    public let fullText: String
+    public let confidence: Double // Overall OCR confidence 0.0 to 1.0
+    public let recognizedFields: [FormField]
+    public let documentStructure: DocumentStructure
+    public let extractedMetadata: ExtractedMetadata
+    public let processingTime: TimeInterval
+    
+    public init(
+        fullText: String,
+        confidence: Double,
+        recognizedFields: [FormField] = [],
+        documentStructure: DocumentStructure = DocumentStructure(),
+        extractedMetadata: ExtractedMetadata = ExtractedMetadata(),
+        processingTime: TimeInterval = 0
+    ) {
+        self.fullText = fullText
+        self.confidence = confidence
+        self.recognizedFields = recognizedFields
+        self.documentStructure = documentStructure
+        self.extractedMetadata = extractedMetadata
+        self.processingTime = processingTime
+    }
+}
+
+/// Detected form field with position and confidence
+public struct FormField: Equatable, Sendable {
+    public let label: String
+    public let value: String
+    public let confidence: Double
+    public let boundingBox: CGRect
+    public let fieldType: FieldType
+    
+    public init(
+        label: String,
+        value: String,
+        confidence: Double,
+        boundingBox: CGRect,
+        fieldType: FieldType = .text
+    ) {
+        self.label = label
+        self.value = value
+        self.confidence = confidence
+        self.boundingBox = boundingBox
+        self.fieldType = fieldType
+    }
+    
+    public enum FieldType: String, CaseIterable, Sendable {
+        case text = "text"
+        case number = "number"
+        case date = "date"
+        case currency = "currency"
+        case email = "email"
+        case phone = "phone"
+        case address = "address"
+        case checkbox = "checkbox"
+        case signature = "signature"
+    }
+}
+
+/// Document structure analysis
+public struct DocumentStructure: Equatable, Sendable {
+    public let paragraphs: [TextRegion]
+    public let tables: [Table]
+    public let lists: [List]
+    public let headers: [TextRegion]
+    public let layout: LayoutType
+    
+    public init(
+        paragraphs: [TextRegion] = [],
+        tables: [Table] = [],
+        lists: [List] = [],
+        headers: [TextRegion] = [],
+        layout: LayoutType = .document
+    ) {
+        self.paragraphs = paragraphs
+        self.tables = tables
+        self.lists = lists
+        self.headers = headers
+        self.layout = layout
+    }
+    
+    public enum LayoutType: String, CaseIterable, Sendable {
+        case document = "document"
+        case form = "form"
+        case table = "table"
+        case receipt = "receipt"
+        case invoice = "invoice"
+        case letter = "letter"
+        case unknown = "unknown"
+    }
+}
+
+/// Text region with position and confidence
+public struct TextRegion: Equatable, Sendable {
+    public let text: String
+    public let boundingBox: CGRect
+    public let confidence: Double
+    public let textType: TextType
+    
+    public init(
+        text: String,
+        boundingBox: CGRect,
+        confidence: Double,
+        textType: TextType = .body
+    ) {
+        self.text = text
+        self.boundingBox = boundingBox
+        self.confidence = confidence
+        self.textType = textType
+    }
+    
+    public enum TextType: String, CaseIterable, Sendable {
+        case title = "title"
+        case header = "header"
+        case body = "body"
+        case footer = "footer"
+        case caption = "caption"
+    }
+}
+
+/// Table structure with cells
+public struct Table: Equatable, Sendable {
+    public let rows: [[TableCell]]
+    public let boundingBox: CGRect
+    public let confidence: Double
+    
+    public init(
+        rows: [[TableCell]],
+        boundingBox: CGRect,
+        confidence: Double
+    ) {
+        self.rows = rows
+        self.boundingBox = boundingBox
+        self.confidence = confidence
+    }
+}
+
+/// Table cell with content
+public struct TableCell: Equatable, Sendable {
+    public let content: String
+    public let boundingBox: CGRect
+    public let confidence: Double
+    public let isHeader: Bool
+    
+    public init(
+        content: String,
+        boundingBox: CGRect,
+        confidence: Double,
+        isHeader: Bool = false
+    ) {
+        self.content = content
+        self.boundingBox = boundingBox
+        self.confidence = confidence
+        self.isHeader = isHeader
+    }
+}
+
+/// List structure
+public struct List: Equatable, Sendable {
+    public let items: [ListItem]
+    public let boundingBox: CGRect
+    public let listType: ListType
+    
+    public init(
+        items: [ListItem],
+        boundingBox: CGRect,
+        listType: ListType = .unordered
+    ) {
+        self.items = items
+        self.boundingBox = boundingBox
+        self.listType = listType
+    }
+    
+    public enum ListType: String, CaseIterable, Sendable {
+        case ordered = "ordered"
+        case unordered = "unordered"
+    }
+}
+
+/// List item
+public struct ListItem: Equatable, Sendable {
+    public let text: String
+    public let boundingBox: CGRect
+    public let confidence: Double
+    public let level: Int // Indentation level
+    
+    public init(
+        text: String,
+        boundingBox: CGRect,
+        confidence: Double,
+        level: Int = 0
+    ) {
+        self.text = text
+        self.boundingBox = boundingBox
+        self.confidence = confidence
+        self.level = level
+    }
+}
+
+/// Extracted metadata from OCR
+public struct ExtractedMetadata: Equatable, Sendable {
+    public let dates: [ExtractedDate]
+    public let numbers: [ExtractedNumber]
+    public let addresses: [ExtractedAddress]
+    public let phoneNumbers: [String]
+    public let emailAddresses: [String]
+    public let urls: [String]
+    public let currencies: [ExtractedCurrency]
+    
+    public init(
+        dates: [ExtractedDate] = [],
+        numbers: [ExtractedNumber] = [],
+        addresses: [ExtractedAddress] = [],
+        phoneNumbers: [String] = [],
+        emailAddresses: [String] = [],
+        urls: [String] = [],
+        currencies: [ExtractedCurrency] = []
+    ) {
+        self.dates = dates
+        self.numbers = numbers
+        self.addresses = addresses
+        self.phoneNumbers = phoneNumbers
+        self.emailAddresses = emailAddresses
+        self.urls = urls
+        self.currencies = currencies
+    }
+}
+
+/// Extracted date with context
+public struct ExtractedDate: Equatable, Sendable {
+    public let date: Date
+    public let originalText: String
+    public let confidence: Double
+    public let context: String? // Surrounding text for context
+    
+    public init(
+        date: Date,
+        originalText: String,
+        confidence: Double,
+        context: String? = nil
+    ) {
+        self.date = date
+        self.originalText = originalText
+        self.confidence = confidence
+        self.context = context
+    }
+}
+
+/// Extracted number with type
+public struct ExtractedNumber: Equatable, Sendable {
+    public let value: Double
+    public let originalText: String
+    public let numberType: NumberType
+    public let confidence: Double
+    
+    public init(
+        value: Double,
+        originalText: String,
+        numberType: NumberType,
+        confidence: Double
+    ) {
+        self.value = value
+        self.originalText = originalText
+        self.numberType = numberType
+        self.confidence = confidence
+    }
+    
+    public enum NumberType: String, CaseIterable, Sendable {
+        case integer = "integer"
+        case decimal = "decimal"
+        case percentage = "percentage"
+        case identifier = "identifier" // Like ID numbers
+    }
+}
+
+/// Extracted address
+public struct ExtractedAddress: Equatable, Sendable {
+    public let fullAddress: String
+    public let components: AddressComponents
+    public let confidence: Double
+    
+    public init(
+        fullAddress: String,
+        components: AddressComponents = AddressComponents(),
+        confidence: Double
+    ) {
+        self.fullAddress = fullAddress
+        self.components = components
+        self.confidence = confidence
+    }
+}
+
+/// Address components
+public struct AddressComponents: Equatable, Sendable {
+    public let street: String?
+    public let city: String?
+    public let state: String?
+    public let zipCode: String?
+    public let country: String?
+    
+    public init(
+        street: String? = nil,
+        city: String? = nil,
+        state: String? = nil,
+        zipCode: String? = nil,
+        country: String? = nil
+    ) {
+        self.street = street
+        self.city = city
+        self.state = state
+        self.zipCode = zipCode
+        self.country = country
+    }
+}
+
+/// Extracted currency value
+public struct ExtractedCurrency: Equatable, Sendable {
+    public let amount: Decimal
+    public let currency: String // Currency code like "USD"
+    public let originalText: String
+    public let confidence: Double
+    
+    public init(
+        amount: Decimal,
+        currency: String,
+        originalText: String,
+        confidence: Double
+    ) {
+        self.amount = amount
+        self.currency = currency
+        self.originalText = originalText
+        self.confidence = confidence
     }
 }
 

@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 
 // MARK: - Enhanced Document Context Extractor
 

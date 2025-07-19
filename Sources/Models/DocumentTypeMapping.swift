@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 
 // MARK: - Document Type Mapping
 
@@ -22,6 +23,7 @@ extension ParsedDocumentType {
         case .rtf: return .rtf
         case .png, .jpg, .jpeg, .heic: return .image
         case .excel: return .excel
+        case .ocr: return .image // OCR documents are treated as images for validation
         case .unknown: return .unknown
         }
     }
