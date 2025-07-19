@@ -40,7 +40,11 @@ public struct TextFieldModifier: ViewModifier {
             return .default
         case .email:
             return .emailAddress
+        case .emailAddress:
+            return .emailAddress
         case .number:
+            return .numberPad
+        case .numberPad:
             return .numberPad
         case .phone:
             return .phonePad

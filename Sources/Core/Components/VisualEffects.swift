@@ -2,6 +2,12 @@ import SwiftUI
 import AppCore
 import ComposableArchitecture
 
+#if os(iOS)
+import AIKOiOS
+#elseif os(macOS)
+import AIKOmacOS
+#endif
+
 // MARK: - Blur Effect System
 
 struct BlurEffect: ViewModifier {
@@ -62,35 +68,12 @@ struct VariableBlur: View {
 // Cross-platform blur effect
 struct BlurredBackground: View {
     let radius: CGFloat
+    @Dependency(\.blurEffectService) var blurEffectService
 
     var body: some View {
-        #if os(iOS)
-            BlurredBackgroundUIKit(radius: radius)
-        #else
-            // macOS fallback using standard blur
-            Rectangle()
-                .fill(Material.ultraThin)
-                .blur(radius: radius * 0.3) // Adjusted for visual similarity
-        #endif
+        blurEffectService.createBlurredBackground(radius: radius)
     }
 }
-
-#if os(iOS)
-    struct BlurredBackgroundUIKit: UIViewRepresentable {
-        let radius: CGFloat
-
-        func makeUIView(context: Context) -> UIVisualEffectView {
-            let view = UIVisualEffectView()
-            updateUIView(view, context: context)
-            return view
-        }
-
-        func updateUIView(_ uiView: UIVisualEffectView, context _: Context) {
-            let blur = UIBlurEffect(style: .systemUltraThinMaterial)
-            uiView.effect = blur
-        }
-    }
-#endif
 
 // MARK: - Glassmorphism View
 

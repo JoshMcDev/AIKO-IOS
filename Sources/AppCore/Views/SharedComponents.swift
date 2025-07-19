@@ -4,12 +4,12 @@ import ComposableArchitecture
 // MARK: - Navigation Bar Hidden Modifier
 
 public struct NavigationBarHiddenModifier: ViewModifier {
+    @Dependency(\.themeService) var themeService
+    
+    public init() {}
+    
     public func body(content: Content) -> some View {
-        #if os(iOS)
-        content.navigationBarHidden(true)
-        #else
-        content
-        #endif
+        themeService.applyNavigationBarHidden(to: AnyView(content))
     }
 }
 

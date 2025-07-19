@@ -1,10 +1,12 @@
 import ComposableArchitecture
 import SwiftUI
+import AppCore
 
 // MARK: - Enhanced LLM Decision Dialog
 
 public struct EnhancedLLMDialog: View {
     let store: StoreOf<DocumentGenerationFeature>
+    @Dependency(\.navigationService) var navigationService
 
     public init(store: StoreOf<DocumentGenerationFeature>) {
         self.store = store
@@ -345,17 +347,12 @@ public struct RequirementsRefinementDialog: View {
                 }
                 .background(Theme.Colors.aikoBackground)
                 .navigationTitle("Refine Requirements")
-                #if os(iOS)
-                    .navigationBarTitleDisplayMode(.inline)
-                #endif
+                .navigationConfiguration(
+                    displayMode: .inline,
+                    supportsNavigationBarDisplayMode: true
+                )
                     .toolbar {
-                        ToolbarItem(placement: {
-                            #if os(iOS)
-                                return .navigationBarTrailing
-                            #else
-                                return .automatic
-                            #endif
-                        }()) {
+                        ToolbarItem(placement: .automatic) {
                             Button("Skip") {
                                 // TODO: Handle skip refinement
                                 viewStore.send(.analysis(.showDocumentPicker(true)))
@@ -503,6 +500,7 @@ struct RefinementQuestion {
 struct QuestionInputView: View {
     let question: RefinementQuestion
     @Binding var answer: String
+    @Dependency(\.keyboardService) var keyboardService
 
     var body: some View {
         switch question.inputType {
@@ -518,9 +516,7 @@ struct QuestionInputView: View {
                 Text("$")
                     .font(.title3)
                 TextField("0", text: $answer)
-                #if os(iOS)
-                    .keyboardType(.numberPad)
-                #endif
+                    .keyboardConfiguration(.numberPad, supportsTypes: keyboardService.supportsKeyboardTypes())
                     .font(.title3)
             }
             .padding()

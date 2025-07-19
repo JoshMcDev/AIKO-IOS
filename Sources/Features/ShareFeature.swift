@@ -2,6 +2,12 @@ import ComposableArchitecture
 import Foundation
 import SwiftUI
 
+#if os(iOS)
+import AIKOiOS
+#elseif os(macOS)
+import AIKOmacOS
+#endif
+
 /// Handles document sharing functionality
 @Reducer
 public struct ShareFeature {
@@ -272,15 +278,16 @@ public struct ShareSheetModifier: ViewModifier {
     @Binding var isPresented: Bool
     let items: [Any]
     let onCompletion: () -> Void
+    @Dependency(\.shareService) var shareService
 
     public func body(content: Content) -> some View {
         content
-            .sheet(isPresented: $isPresented) {
-                if !items.isEmpty {
-                    ShareSheet(items: items)
-                        .onDisappear {
-                            onCompletion()
-                        }
+            .task(id: isPresented) {
+                if isPresented && !items.isEmpty {
+                    // Use the share service instead of direct ShareSheet
+                    _ = await shareService.share(items)
+                    isPresented = false
+                    onCompletion()
                 }
             }
     }

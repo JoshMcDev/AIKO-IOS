@@ -9,6 +9,8 @@ public struct ImageLoaderClient: Sendable {
     public var loadImageFromData: @Sendable (Data) -> Image? = { _ in nil }
     public var createImage: @Sendable (PlatformImage) -> Image = { _ in Image(systemName: "photo") }
     public var loadImageFromBundle: @Sendable (String, String, Bundle) -> Image? = { _, _, _ in nil }
+    public var loadImageFromFile: @Sendable (String) -> PlatformImage? = { _ in nil }
+    public var convertToSwiftUIImage: @Sendable (PlatformImage) -> Image = { _ in Image(systemName: "photo") }
 }
 
 extension ImageLoaderClient: DependencyKey {

@@ -1,4 +1,6 @@
 import SwiftUI
+import AppCore
+import ComposableArchitecture
 
 // MARK: - Accessibility Extensions
 
@@ -62,42 +64,11 @@ enum HeaderLevel {
 // MARK: - Accessibility Announcements
 
 enum AccessibilityAnnouncement {
+    @Dependency(\.accessibilityService) private static var accessibilityService
+    
     static func announce(_ message: String, priority: AnnouncementPriority = .high) {
-        let announcement = AttributedString(message)
-
-        #if os(iOS)
-            if #available(iOS 17.0, *) {
-                switch priority {
-                case .high:
-                    AccessibilityNotification.Announcement(announcement)
-                        .post()
-                case .low:
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        AccessibilityNotification.Announcement(announcement)
-                            .post()
-                    }
-                }
-            } else {
-                // Fallback for iOS 16.0 - use UIAccessibility
-                UIAccessibility.post(notification: .announcement, argument: message)
-            }
-        #elseif os(macOS)
-            if #available(macOS 14.0, *) {
-                switch priority {
-                case .high:
-                    AccessibilityNotification.Announcement(announcement)
-                        .post()
-                case .low:
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        AccessibilityNotification.Announcement(announcement)
-                            .post()
-                    }
-                }
-            } else {
-                // Fallback for older macOS versions
-                print("Accessibility Announcement: \(message)")
-            }
-        #endif
+        let servicePriority: AccessibilityAnnouncementPriority = priority == .high ? .high : .low
+        accessibilityService.announceNotification(message, priority: servicePriority)
     }
 
     enum AnnouncementPriority {
@@ -188,6 +159,7 @@ extension View {
 
 struct VoiceOverDetector: ViewModifier {
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+    @Dependency(\.accessibilityService) var accessibilityService
     let onVoiceOverChange: (Bool) -> Void
 
     func body(content: Content) -> some View {
@@ -195,6 +167,7 @@ struct VoiceOverDetector: ViewModifier {
             content
                 .onChange(of: voiceOverEnabled) { _, newValue in
                     onVoiceOverChange(newValue)
+                    accessibilityService.notifyVoiceOverStatusChange()
                 }
                 .onAppear {
                     onVoiceOverChange(voiceOverEnabled)
@@ -205,11 +178,19 @@ struct VoiceOverDetector: ViewModifier {
                 .onAppear {
                     onVoiceOverChange(voiceOverEnabled)
                 }
-            #if os(iOS)
-                .onReceive(NotificationCenter.default.publisher(for: UIAccessibility.voiceOverStatusDidChangeNotification)) { _ in
+                .onReceive(voiceOverNotificationPublisher()) { _ in
                     onVoiceOverChange(voiceOverEnabled)
+                    accessibilityService.notifyVoiceOverStatusChange()
                 }
-            #endif
+        }
+    }
+    
+    private func voiceOverNotificationPublisher() -> NotificationCenter.Publisher {
+        if accessibilityService.hasVoiceOverStatusNotifications() {
+            return NotificationCenter.default.publisher(for: accessibilityService.voiceOverStatusChangeNotificationName())
+        } else {
+            // Platform doesn't have VoiceOver notifications, return a never-publishing publisher
+            return NotificationCenter.default.publisher(for: Notification.Name("com.aiko.never"))
         }
     }
 }

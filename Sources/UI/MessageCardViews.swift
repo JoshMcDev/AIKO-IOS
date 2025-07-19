@@ -1,8 +1,5 @@
 import Charts
 import SwiftUI
-#if os(iOS)
-    import UIKit
-#endif
 
 // MARK: - Message Card Container
 

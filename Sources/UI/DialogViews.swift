@@ -366,7 +366,7 @@ public struct DeliveryOptionsDialog: View {
 
                     // Generated Documents Summary
                     VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                        let documents = viewStore.delivery.generatedDocuments
+                        let documents = viewStore.generatedDocuments
                         let documentCount = documents.count
                         Text("Generated Documents (\(documentCount))")
                             .font(.headline)
@@ -439,6 +439,7 @@ public struct DeliveryOptionsDialog: View {
 
 public struct EmailConfirmationDialog: View {
     let store: StoreOf<DocumentGenerationFeature>
+    @Dependency(\.textFieldService) var textFieldService
 
     public init(store: StoreOf<DocumentGenerationFeature>) {
         self.store = store
@@ -446,7 +447,7 @@ public struct EmailConfirmationDialog: View {
 
     public var body: some View {
         SwiftUI.NavigationView {
-            WithViewStore(store, observe: { $0 }) { viewStore in
+            WithViewStore(store, observe: \.delivery) { viewStore in
                 VStack(spacing: Theme.Spacing.xl) {
                     // Header
                     VStack(spacing: Theme.Spacing.md) {
@@ -468,42 +469,43 @@ public struct EmailConfirmationDialog: View {
                     // Email Options
                     VStack(spacing: Theme.Spacing.md) {
                         // Profile Email Option (if available)
-                        if !viewStore.delivery.userProfileEmail.isEmpty {
+                        if !viewStore.userProfileEmail.isEmpty {
                             EmailOptionButton(
                                 title: "Use Profile Email",
-                                subtitle: viewStore.delivery.userProfileEmail,
-                                isSelected: viewStore.delivery.selectedEmailOption == .profile,
+                                subtitle: viewStore.userProfileEmail,
+                                isSelected: viewStore.selectedEmailOption == .profile,
                                 action: { viewStore.send(.delivery(.updateEmailOption(.profile))) }
                             )
                         }
 
                         // Different Email Option
                         EmailOptionButton(
-                            title: viewStore.delivery.userProfileEmail.isEmpty ? "Enter Email Address" : "Different Email Address",
+                            title: viewStore.userProfileEmail.isEmpty ? "Enter Email Address" : "Different Email Address",
                             subtitle: "Specify a different email address",
-                            isSelected: viewStore.delivery.selectedEmailOption == (viewStore.delivery.userProfileEmail.isEmpty ? .noProfile : .different),
+                            isSelected: viewStore.selectedEmailOption == (viewStore.userProfileEmail.isEmpty ? .noProfile : .different),
                             action: {
-                                viewStore.send(.delivery(.updateEmailOption(viewStore.delivery.userProfileEmail.isEmpty ? .noProfile : .different)))
+                                viewStore.send(.delivery(.updateEmailOption(viewStore.userProfileEmail.isEmpty ? .noProfile : .different)))
                             }
                         )
 
                         // Custom Email Input
-                        if viewStore.delivery.selectedEmailOption == .different || viewStore.delivery.selectedEmailOption == .noProfile {
+                        if viewStore.selectedEmailOption == .different || viewStore.selectedEmailOption == .noProfile {
                             VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                                 Text("Email Address")
                                     .font(.subheadline)
                                     .fontWeight(.semibold)
 
                                 TextField("Enter email address", text: .init(
-                                    get: { viewStore.delivery.customEmailAddress },
+                                    get: { viewStore.customEmailAddress },
                                     set: { viewStore.send(.delivery(.updateCustomEmail($0))) }
                                 ))
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
-                                #if os(iOS)
-                                    .keyboardType(.emailAddress)
-                                    .autocapitalization(.none)
-                                    .disableAutocorrection(true)
-                                #endif
+                                .textFieldConfiguration(
+                                    disableAutocapitalization: true,
+                                    keyboardType: .emailAddress,
+                                    supportsAutocapitalization: textFieldService.supportsAutocapitalization(),
+                                    supportsKeyboardTypes: textFieldService.supportsKeyboardTypes()
+                                )
                             }
                             .aikoCard()
                         }
@@ -538,12 +540,12 @@ public struct EmailConfirmationDialog: View {
         }
     }
 
-    private func canSendEmail(_ viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> Bool {
-        switch viewStore.delivery.selectedEmailOption {
+    private func canSendEmail(_ viewStore: ViewStore<DocumentDeliveryFeature.State, DocumentGenerationFeature.Action>) -> Bool {
+        switch viewStore.selectedEmailOption {
         case .profile:
-            !viewStore.delivery.userProfileEmail.isEmpty
+            !viewStore.userProfileEmail.isEmpty
         case .different, .noProfile:
-            !viewStore.delivery.customEmailAddress.isEmpty && viewStore.delivery.customEmailAddress.contains("@")
+            !viewStore.customEmailAddress.isEmpty && viewStore.customEmailAddress.contains("@")
         }
     }
 }

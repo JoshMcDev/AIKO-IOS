@@ -1,31 +1,28 @@
 import SwiftUI
-
-#if canImport(UIKit)
-    import UIKit
-#elseif canImport(AppKit)
-    import AppKit
-#endif
+import AppCore
+import ComposableArchitecture
 
 public enum Theme {
     // MARK: - Colors
 
     public enum Colors {
-        #if canImport(UIKit)
-            public static let aikoBackground = Color.black
-            public static let aikoCard = Color(UIColor.systemGray6)
-            public static let aikoSecondary = Color(UIColor.systemGray6)
-            public static let aikoTertiary = Color(UIColor.systemGray5)
-        #elseif canImport(AppKit)
-            public static let aikoBackground = Color(NSColor.controlBackgroundColor)
-            public static let aikoCard = Color(NSColor.controlColor)
-            public static let aikoSecondary = Color(NSColor.controlBackgroundColor)
-            public static let aikoTertiary = Color(NSColor.separatorColor)
-        #else
-            public static let aikoBackground = Color.primary
-            public static let aikoCard = Color.secondary
-            public static let aikoSecondary = Color.gray
-            public static let aikoTertiary = Color.gray
-        #endif
+        @Dependency(\.themeService) private static var themeService
+        
+        public static var aikoBackground: Color {
+            themeService.backgroundColor()
+        }
+        
+        public static var aikoCard: Color {
+            themeService.cardColor()
+        }
+        
+        public static var aikoSecondary: Color {
+            themeService.secondaryColor()
+        }
+        
+        public static var aikoTertiary: Color {
+            themeService.tertiaryColor()
+        }
 
         public static let aikoPrimary = Color.blue
         public static let aikoPrimaryGradientStart = Color.blue
@@ -230,35 +227,30 @@ public struct AIKOLoadingView: View {
 // MARK: - Navigation Bar Hidden Modifier
 
 public struct NavigationBarHiddenModifier: ViewModifier {
+    @Dependency(\.themeService) var themeService
+    
     public func body(content: Content) -> some View {
-        #if os(iOS)
-            content.navigationBarHidden(true)
-        #else
-            content
-        #endif
+        themeService.applyNavigationBarHidden(to: AnyView(content))
     }
 }
 
 // MARK: - Dark Navigation Bar Modifier
 
 public struct DarkNavigationBarModifier: ViewModifier {
+    @Dependency(\.themeService) var themeService
+    
     public func body(content: Content) -> some View {
-        #if os(iOS)
-            content
-                .onAppear {
-                    let appearance = UINavigationBarAppearance()
-                    appearance.configureWithOpaqueBackground()
-                    appearance.backgroundColor = .black
-                    appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
-                    appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+        themeService.applyDarkNavigationBar(to: AnyView(content))
+    }
+}
 
-                    UINavigationBar.appearance().standardAppearance = appearance
-                    UINavigationBar.appearance().compactAppearance = appearance
-                    UINavigationBar.appearance().scrollEdgeAppearance = appearance
-                }
-        #else
-            content
-        #endif
+// MARK: - Sheet Modifier
+
+public struct AIKOSheetModifier: ViewModifier {
+    @Dependency(\.themeService) var themeService
+    
+    public func body(content: Content) -> some View {
+        themeService.applySheet(to: AnyView(content))
     }
 }
 
@@ -273,24 +265,7 @@ public extension View {
         buttonStyle(AIKOButtonStyle(variant: variant, size: size))
     }
 
-    @ViewBuilder
     func aikoSheet() -> some View {
-        #if os(iOS)
-            if #available(iOS 16.4, *) {
-                self
-                    .preferredColorScheme(.dark)
-                    .environment(\.colorScheme, .dark)
-                    .presentationBackground(Color.black)
-                    .modifier(DarkNavigationBarModifier())
-            } else {
-                preferredColorScheme(.dark)
-                    .environment(\.colorScheme, .dark)
-                    .modifier(DarkNavigationBarModifier())
-            }
-        #else
-            preferredColorScheme(.dark)
-                .environment(\.colorScheme, .dark)
-                .modifier(DarkNavigationBarModifier())
-        #endif
+        modifier(AIKOSheetModifier())
     }
 }

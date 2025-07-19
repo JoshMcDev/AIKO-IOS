@@ -20,6 +20,16 @@ public protocol ImageLoaderProtocol: Sendable {
     ///   - bundle: The bundle containing the resource (defaults to Bundle.module)
     /// - Returns: A SwiftUI Image if successful, nil otherwise
     func loadImage(named name: String, withExtension ext: String, in bundle: Bundle) -> Image?
+    
+    /// Loads a PlatformImage from a file path
+    /// - Parameter path: The file path to load from
+    /// - Returns: A PlatformImage if successful, nil otherwise
+    func loadImageFromFile(_ path: String) -> PlatformImage?
+    
+    /// Converts a PlatformImage to a SwiftUI Image
+    /// - Parameter platformImage: The platform image to convert
+    /// - Returns: A SwiftUI Image
+    func convertToSwiftUIImage(_ platformImage: PlatformImage) -> Image
 }
 
 // Default implementation for bundle loading

@@ -1,27 +1,13 @@
 import SwiftUI
-#if os(iOS)
-import UIKit
-#else
-import AppKit
-#endif
-
-// MARK: - Platform-specific Colors
-
-private extension Color {
-    static var controlBackground: Color {
-        #if os(macOS)
-        return Color(NSColor.controlBackgroundColor)
-        #else
-        return Color(UIColor.systemBackground)
-        #endif
-    }
-}
+import ComposableArchitecture
 
 struct FARUpdatesView: View {
     @StateObject private var updateService = FARUpdateService()
     @State private var isChecking = false
     @State private var showingShareSheet = false
     @State private var summaryText = ""
+    @Dependency(\.shareService) var shareService
+    @Dependency(\.themeService) var themeService
     
     var body: some View {
         NavigationStack {
@@ -40,7 +26,7 @@ struct FARUpdatesView: View {
                 }
             }
             .navigationTitle("FAR Updates")
-            .toolbar {
+            .toolbar(content: {
                 ToolbarItem(placement: .automatic) {
                     Button(action: shareReport) {
                         Image(systemName: "square.and.arrow.up")
@@ -49,13 +35,19 @@ struct FARUpdatesView: View {
                     }
                     .disabled(updateService.updateStatus.completedUpdates.isEmpty)
                 }
-            }
+            })
         }
         .task {
             await checkForUpdates()
         }
-        .sheet(isPresented: $showingShareSheet) {
-            ShareSheet(items: [summaryText])
+        .task(id: showingShareSheet) {
+            if showingShareSheet {
+                let fileName = "FAR_Updates_\(Date().formatted(date: .abbreviated, time: .omitted)).txt"
+                if let url = try? await shareService.createShareableFile(summaryText, fileName) {
+                    _ = await shareService.share([url])
+                }
+                showingShareSheet = false
+            }
         }
     }
     
@@ -136,7 +128,7 @@ struct FARUpdatesView: View {
             }
         }
         .padding()
-        .background(Color.controlBackground)
+        .background(themeService.cardColor())
         .cornerRadius(12)
         .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
     }

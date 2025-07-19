@@ -18,6 +18,12 @@ extension ImageLoaderClient {
         },
         loadImageFromBundle: { name, ext, bundle in
             imageLoader.loadImage(named: name, withExtension: ext, in: bundle)
+        },
+        loadImageFromFile: { path in
+            imageLoader.loadImageFromFile(path)
+        },
+        convertToSwiftUIImage: { platformImage in
+            imageLoader.convertToSwiftUIImage(platformImage)
         }
     )
 }

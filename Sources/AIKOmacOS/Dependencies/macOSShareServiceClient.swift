@@ -14,6 +14,16 @@ extension ShareServiceClient {
         },
         createShareableFile: { text, fileName in
             try macOSShareService().createShareableFile(from: text, fileName: fileName)
+        },
+        shareContent: { content, fileName in
+            let service = macOSShareService()
+            if let url = try? service.createShareableFile(from: content, fileName: fileName) {
+                _ = await withCheckedContinuation { continuation in
+                    service.share(items: [url]) { _ in
+                        continuation.resume()
+                    }
+                }
+            }
         }
     )
 }

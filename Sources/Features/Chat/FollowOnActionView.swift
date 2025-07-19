@@ -1,9 +1,11 @@
 import SwiftUI
 import ComposableArchitecture
+import AppCore
+
 #if os(iOS)
-import UIKit
+import AIKOiOS
 #elseif os(macOS)
-import AppKit
+import AIKOmacOS
 #endif
 
 // MARK: - Follow-On Action Card View
@@ -12,6 +14,7 @@ struct FollowOnActionCardView: View {
     let action: FollowOnAction
     let isExecuting: Bool
     let onTap: () -> Void
+    @Dependency(\.themeService) var themeService
     
     var body: some View {
         Button(action: onTap) {
@@ -53,7 +56,7 @@ struct FollowOnActionCardView: View {
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(backgroundGroupedSecondaryColor)
+                    .fill(themeService.groupedSecondaryBackground())
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
                             .stroke(isExecuting ? Color.accentColor : Color.clear, lineWidth: 2)
@@ -142,6 +145,7 @@ struct FollowOnActionsListView: View {
     let executingActionIds: Set<UUID>
     let completedActionIds: Set<UUID>
     let onActionTap: (FollowOnAction) -> Void
+    @Dependency(\.themeService) var themeService
     
     var availableActions: [FollowOnAction] {
         actions.filter { action in
@@ -180,7 +184,7 @@ struct FollowOnActionsListView: View {
             }
         }
         .padding(.vertical)
-        .background(backgroundGroupedColor)
+        .background(themeService.groupedBackground())
     }
 }
 
@@ -191,6 +195,7 @@ struct InlineActionSuggestion: View {
     let isExecuting: Bool
     let onAccept: () -> Void
     let onDismiss: () -> Void
+    @Dependency(\.themeService) var themeService
     
     var body: some View {
         HStack(spacing: 12) {
@@ -228,7 +233,7 @@ struct InlineActionSuggestion: View {
                             .frame(width: 28, height: 28)
                             .background(
                                 Circle()
-                                    .fill(backgroundGroupedTertiaryColor)
+                                    .fill(themeService.groupedTertiaryBackground())
                             )
                     }
                     
@@ -248,7 +253,7 @@ struct InlineActionSuggestion: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(backgroundGroupedSecondaryColor)
+                .fill(themeService.groupedSecondaryBackground())
                 .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
         )
         .padding(.horizontal)
@@ -260,6 +265,7 @@ struct InlineActionSuggestion: View {
 struct ActionProgressView: View {
     let action: FollowOnAction
     let progress: Double
+    @Dependency(\.themeService) var themeService
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -286,7 +292,7 @@ struct ActionProgressView: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 8)
-                .fill(backgroundGroupedTertiaryColor)
+                .fill(themeService.groupedTertiaryBackground())
         )
     }
 }

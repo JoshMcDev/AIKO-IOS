@@ -8,6 +8,7 @@ public struct ShareServiceClient: Sendable {
     public var createShareableFile: @Sendable (String, String) async throws -> URL = { _, _ in 
         throw ShareServiceError.notAvailable 
     }
+    public var shareContent: @Sendable (String, String) async -> Void = { _, _ in }
 }
 
 extension ShareServiceClient: DependencyKey {

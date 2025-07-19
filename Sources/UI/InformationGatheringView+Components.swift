@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import AppCore
 
 // Question Display Component
 struct QuestionView: View {
@@ -45,6 +46,7 @@ struct AnswerFieldView: View {
     let question: DocumentExecutionFeature.InformationQuestion
     @Binding var answer: String
     @FocusState var isTextFieldFocused: Bool
+    @Dependency(\.keyboardService) var keyboardService
 
     @ViewBuilder
     var body: some View {
@@ -60,9 +62,7 @@ struct AnswerFieldView: View {
         case .number:
             TextField("", text: $answer, prompt: Text("...").foregroundColor(.gray))
                 .textFieldStyle(CustomTextFieldStyle())
-            #if os(iOS)
-                .keyboardType(.numberPad)
-            #endif
+                .keyboardConfiguration(.numberPad, supportsTypes: keyboardService.supportsKeyboardTypes())
                 .focused($isTextFieldFocused)
                 .onAppear {
                     isTextFieldFocused = true

@@ -1,10 +1,13 @@
 import SwiftUI
+import AppCore
+import ComposableArchitecture
 
 // MARK: - Dynamic Type System
 
 /// Scalable font system that supports Dynamic Type
 struct ScalableFont: ViewModifier {
     @Environment(\.sizeCategory) var sizeCategory
+    @Dependency(\.fontScalingService) var fontScalingService
 
     let textStyle: Font.TextStyle
     let baseSize: CGFloat
@@ -17,35 +20,13 @@ struct ScalableFont: ViewModifier {
     }
 
     private var scaledFont: Font {
-        #if os(iOS)
-            let scaledSize = UIFontMetrics(forTextStyle: uiTextStyle)
-                .scaledValue(for: baseSize)
-            return Font.system(size: scaledSize, weight: weight, design: design)
-        #else
-            // For macOS, use a simpler scaling approach
-            let scaledSize = baseSize * sizeCategory.scaleFactor
-            return Font.system(size: scaledSize, weight: weight, design: design)
-        #endif
+        let scaledSize = fontScalingService.scaledFontSize(
+            for: baseSize,
+            textStyle: textStyle,
+            sizeCategory: sizeCategory
+        )
+        return Font.system(size: scaledSize, weight: weight, design: design)
     }
-
-    #if os(iOS)
-        private var uiTextStyle: UIFont.TextStyle {
-            switch textStyle {
-            case .largeTitle: return .largeTitle
-            case .title: return .title1
-            case .title2: return .title2
-            case .title3: return .title3
-            case .headline: return .headline
-            case .subheadline: return .subheadline
-            case .body: return .body
-            case .callout: return .callout
-            case .footnote: return .footnote
-            case .caption: return .caption1
-            case .caption2: return .caption2
-            @unknown default: return .body
-            }
-        }
-    #endif
 }
 
 // MARK: - Typography Extension
@@ -226,24 +207,6 @@ struct ResponsiveText: View {
 // MARK: - Size Category Extensions
 
 extension ContentSizeCategory {
-    var scaleFactor: CGFloat {
-        switch self {
-        case .extraSmall: return 0.8
-        case .small: return 0.85
-        case .medium: return 0.9
-        case .large: return 1.0
-        case .extraLarge: return 1.1
-        case .extraExtraLarge: return 1.2
-        case .extraExtraExtraLarge: return 1.3
-        case .accessibilityMedium: return 1.4
-        case .accessibilityLarge: return 1.6
-        case .accessibilityExtraLarge: return 1.8
-        case .accessibilityExtraExtraLarge: return 2.0
-        case .accessibilityExtraExtraExtraLarge: return 2.4
-        @unknown default: return 1.0
-        }
-    }
-
     var isAccessibilityCategory: Bool {
         self >= .accessibilityMedium
     }
@@ -287,6 +250,7 @@ struct LineHeightModifier: ViewModifier {
 
     private var lineSpacing: CGFloat {
         let baseSpacing: CGFloat = 4
+        // Use the scale factor from AppCore's ContentSizeCategory extension
         return baseSpacing * multiplier * sizeCategory.scaleFactor
     }
 }

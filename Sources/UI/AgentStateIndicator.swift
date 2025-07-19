@@ -1,7 +1,4 @@
 import SwiftUI
-#if os(iOS)
-    import UIKit
-#endif
 
 // MARK: - Agent State Indicator
 

@@ -28,7 +28,9 @@ public protocol KeyboardServiceProtocol: Sendable {
 public enum PlatformKeyboardType: String, Sendable, CaseIterable {
     case `default` = "default"
     case email = "email"
+    case emailAddress = "emailAddress"
     case number = "number"
+    case numberPad = "numberPad"
     case phone = "phone"
     case url = "url"
     case decimal = "decimal"

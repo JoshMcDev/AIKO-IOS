@@ -1,11 +1,9 @@
 import SwiftUI
-#if os(iOS)
-    import UIKit
-#elseif os(macOS)
-    import AppKit
-#endif
+import ComposableArchitecture
+import AppCore
 
 struct AppIconPreview: View {
+    @Dependency(\.imageLoader) var imageLoader
     var body: some View {
         VStack(spacing: 30) {
             Text("AIKO App Icon")
@@ -43,8 +41,6 @@ struct AppIconPreview: View {
     }
 
     private func loadAppIcon() -> Image? {
-        // For SwiftUI previews, we need to load from file directly
-
         // Try loading from file paths
         let paths = [
             "/Users/J/Documents/GitHub/AIKO-IOS/Sources/Resources/AppIcon.png",
@@ -53,16 +49,8 @@ struct AppIconPreview: View {
         ]
 
         for path in paths {
-            if let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
-                #if os(iOS)
-                    if let uiImage = UIImage(data: data) {
-                        return Image(uiImage: uiImage)
-                    }
-                #elseif os(macOS)
-                    if let nsImage = NSImage(data: data) {
-                        return Image(nsImage: nsImage)
-                    }
-                #endif
+            if let platformImage = imageLoader.loadImageFromFile(path) {
+                return imageLoader.convertToSwiftUIImage(platformImage)
             }
         }
 
@@ -70,13 +58,7 @@ struct AppIconPreview: View {
     }
 
     private var systemBackground: Color {
-        #if os(iOS)
-            return Color(UIColor.systemBackground)
-        #elseif os(macOS)
-            return Color(NSColor.windowBackgroundColor)
-        #else
-            return Color.gray
-        #endif
+        Theme.Colors.aikoBackground
     }
 }
 
