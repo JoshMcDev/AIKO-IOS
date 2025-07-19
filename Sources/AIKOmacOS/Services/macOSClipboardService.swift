@@ -1,3 +1,4 @@
+#if os(macOS)
 import Foundation
 import AppKit
 import AppCore
@@ -26,4 +27,4 @@ public final class macOSClipboardService: ClipboardServiceProtocol {
         let types = NSPasteboard.general.types ?? []
         return types.contains(NSPasteboard.PasteboardType(type))
     }
-}
+}#endif

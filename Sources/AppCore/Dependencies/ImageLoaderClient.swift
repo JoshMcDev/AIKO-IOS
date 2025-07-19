@@ -6,6 +6,8 @@ import SwiftUI
 @DependencyClient
 public struct ImageLoaderClient: Sendable {
     public var loadImage: @Sendable (Data) -> Image? = { _ in nil }
+    public var loadImageFromData: @Sendable (Data) -> Image? = { _ in nil }
+    public var createImage: @Sendable (PlatformImage) -> Image = { _ in Image(systemName: "photo") }
     public var loadImageFromBundle: @Sendable (String, String, Bundle) -> Image? = { _, _, _ in nil }
 }
 

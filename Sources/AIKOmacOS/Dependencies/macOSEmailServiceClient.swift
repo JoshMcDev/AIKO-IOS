@@ -1,3 +1,4 @@
+#if os(macOS)
 import AppCore
 import ComposableArchitecture
 import Foundation
@@ -37,4 +38,4 @@ extension EmailServiceClient {
 // Convenience static accessor
 public enum macOSEmailServiceClient {
     public static let live = EmailServiceClient.macOSLive
-}
+}#endif

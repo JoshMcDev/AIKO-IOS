@@ -4,12 +4,20 @@ import Foundation
 import SwiftUI
 
 extension ImageLoaderClient {
+    private static let imageLoader = iOSImageLoader()
+    
     public static let iOSLive = Self(
         loadImage: { data in
-            iOSImageLoader().loadImage(from: data)
+            imageLoader.loadImage(from: data)
+        },
+        loadImageFromData: { data in
+            imageLoader.loadImage(from: data)
+        },
+        createImage: { platformImage in
+            imageLoader.createImage(from: platformImage)
         },
         loadImageFromBundle: { name, ext, bundle in
-            iOSImageLoader().loadImage(named: name, withExtension: ext, in: bundle)
+            imageLoader.loadImage(named: name, withExtension: ext, in: bundle)
         }
     )
 }

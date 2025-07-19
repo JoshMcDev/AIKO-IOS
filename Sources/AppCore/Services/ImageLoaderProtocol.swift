@@ -8,6 +8,11 @@ public protocol ImageLoaderProtocol: Sendable {
     /// - Returns: A SwiftUI Image if successful, nil otherwise
     func loadImage(from data: Data) -> Image?
     
+    /// Creates a SwiftUI Image from a PlatformImage
+    /// - Parameter platformImage: The platform image to convert
+    /// - Returns: A SwiftUI Image
+    func createImage(from platformImage: PlatformImage) -> Image
+    
     /// Loads an image from a bundle resource
     /// - Parameters:
     ///   - name: The name of the resource
@@ -25,5 +30,11 @@ public extension ImageLoaderProtocol {
             return nil
         }
         return loadImage(from: data)
+    }
+    
+    func createImage(from platformImage: PlatformImage) -> Image {
+        // Default implementation uses loadImage(from:) with the data
+        // If that fails, return a placeholder image
+        loadImage(from: platformImage.data) ?? Image(systemName: "photo")
     }
 }

@@ -1,3 +1,4 @@
+#if os(macOS)
 import Foundation
 import SwiftUI
 import AppKit
@@ -13,4 +14,4 @@ public final class macOSImageLoader: ImageLoaderProtocol {
         }
         return Image(nsImage: nsImage)
     }
-}
+}#endif

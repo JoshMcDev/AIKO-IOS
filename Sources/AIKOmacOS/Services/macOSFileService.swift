@@ -1,3 +1,4 @@
+#if os(macOS)
 import Foundation
 import AppKit
 import AppCore
@@ -76,4 +77,4 @@ public final class macOSFileService: FileServiceProtocol {
             }
         }
     }
-}
+}#endif

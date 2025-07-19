@@ -1,3 +1,4 @@
+#if os(macOS)
 import AppKit
 import CoreHaptics
 import ComposableArchitecture
@@ -246,3 +247,4 @@ private struct HapticPattern {
         }
     }
 }
+#endif

@@ -1,10 +1,6 @@
 import SwiftUI
 import AppCore
-#if os(iOS)
-    import UIKit
-#else
-    import AppKit
-#endif
+import ComposableArchitecture
 
 // MARK: - Welcome Step
 
@@ -101,30 +97,20 @@ struct PersonalInfoStepView: View {
     @State private var fullName: String = ""
     @State private var title: String = ""
     @State private var position: String = ""
+    @Dependency(\.imageLoader) var imageLoader
 
     var body: some View {
         VStack(spacing: Theme.Spacing.xl) {
             // Profile Image
             Button(action: onUpdateProfileImage) {
                 ZStack {
-                    if let imageData = profile.profileImageData {
-                        #if os(iOS)
-                            if let uiImage = UIImage(data: imageData) {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 120, height: 120)
-                                    .clipShape(Circle())
-                            }
-                        #else
-                            if let nsImage = NSImage(data: imageData) {
-                                Image(nsImage: nsImage)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 120, height: 120)
-                                    .clipShape(Circle())
-                            }
-                        #endif
+                    if let imageData = profile.profileImageData,
+                       let image = imageLoader.loadImage(imageData) {
+                        image
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 120, height: 120)
+                            .clipShape(Circle())
                     } else {
                         Circle()
                             .fill(Theme.Colors.aikoSecondary)
@@ -253,6 +239,7 @@ struct OrganizationInfoStepView: View {
 
     @State private var orgName: String = ""
     @State private var dodaac: String = ""
+    @Dependency(\.imageLoader) var imageLoader
 
     var body: some View {
         VStack(spacing: Theme.Spacing.lg) {
@@ -280,24 +267,13 @@ struct OrganizationInfoStepView: View {
                     .foregroundColor(.secondary)
 
                 Button(action: onUpdateLogo) {
-                    if let logoData = profile.organizationLogoData {
-                        #if os(iOS)
-                            if let uiImage = UIImage(data: logoData) {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(height: 80)
-                                    .cornerRadius(Theme.CornerRadius.sm)
-                            }
-                        #else
-                            if let nsImage = NSImage(data: logoData) {
-                                Image(nsImage: nsImage)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(height: 80)
-                                    .cornerRadius(Theme.CornerRadius.sm)
-                            }
-                        #endif
+                    if let logoData = profile.organizationLogoData,
+                       let image = imageLoader.loadImage(logoData) {
+                        image
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 80)
+                            .cornerRadius(Theme.CornerRadius.sm)
                     } else {
                         RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
                             .fill(Theme.Colors.aikoSecondary)
@@ -416,29 +392,19 @@ struct AddressesStepView: View {
 
 struct ReviewStepView: View {
     let profile: UserProfile
+    @Dependency(\.imageLoader) var imageLoader
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
             // Profile summary
             HStack(spacing: Theme.Spacing.lg) {
-                if let imageData = profile.profileImageData {
-                    #if os(iOS)
-                        if let uiImage = UIImage(data: imageData) {
-                            Image(uiImage: uiImage)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 60, height: 60)
-                                .clipShape(Circle())
-                        }
-                    #else
-                        if let nsImage = NSImage(data: imageData) {
-                            Image(nsImage: nsImage)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 60, height: 60)
-                                .clipShape(Circle())
-                        }
-                    #endif
+                if let imageData = profile.profileImageData,
+                   let image = imageLoader.loadImage(imageData) {
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 60, height: 60)
+                        .clipShape(Circle())
                 } else {
                     Circle()
                         .fill(Theme.Colors.aikoSecondary)
@@ -714,35 +680,10 @@ struct OnboardingTextField: View {
     let placeholder: String
     @Binding var text: String
     var isRequired: Bool = false
-    #if os(iOS)
-        var keyboardType: UIKeyboardType = .default
-    #else
-        var keyboardType: String = "default"
-    #endif
+    var keyboardType: PlatformKeyboardType = .default
     var characterLimit: Int? = nil
     let onCommit: (String) -> Void
-
-    #if os(iOS)
-        init(title: String, placeholder: String, text: Binding<String>, isRequired: Bool = false, keyboardType: UIKeyboardType = .default, characterLimit: Int? = nil, onCommit: @escaping (String) -> Void) {
-            self.title = title
-            self.placeholder = placeholder
-            _text = text
-            self.isRequired = isRequired
-            self.keyboardType = keyboardType
-            self.characterLimit = characterLimit
-            self.onCommit = onCommit
-        }
-    #else
-        init(title: String, placeholder: String, text: Binding<String>, isRequired: Bool = false, keyboardType: String = "default", characterLimit: Int? = nil, onCommit: @escaping (String) -> Void) {
-            self.title = title
-            self.placeholder = placeholder
-            _text = text
-            self.isRequired = isRequired
-            self.keyboardType = keyboardType
-            self.characterLimit = characterLimit
-            self.onCommit = onCommit
-        }
-    #endif
+    @Dependency(\.keyboardService) var keyboardService
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -775,11 +716,7 @@ struct OnboardingTextField: View {
                     RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
                         .fill(Theme.Colors.aikoSecondary)
                 )
-            #if os(iOS)
-                .keyboardType(keyboardType)
-                .autocapitalization(keyboardType == .emailAddress ? .none : .sentences)
-                .disableAutocorrection(keyboardType == .emailAddress)
-            #endif
+                .keyboardConfiguration(keyboardType, supportsTypes: keyboardService.supportsKeyboardTypes())
                 .onChange(of: text) { newValue in
                     if let limit = characterLimit, newValue.count > limit {
                         text = String(newValue.prefix(limit))
@@ -914,25 +851,14 @@ struct OnboardingAddressForm: View {
                 onCommit: { _ in updateAddress() }
             )
 
-            #if os(iOS)
-                OnboardingTextField(
-                    title: "Email Address",
-                    placeholder: "Different from profile email",
-                    text: $email,
-                    isRequired: false,
-                    keyboardType: .emailAddress,
-                    onCommit: { _ in updateAddress() }
-                )
-            #else
-                OnboardingTextField(
-                    title: "Email Address",
-                    placeholder: "Different from profile email",
-                    text: $email,
-                    isRequired: false,
-                    keyboardType: "emailAddress",
-                    onCommit: { _ in updateAddress() }
-                )
-            #endif
+            OnboardingTextField(
+                title: "Email Address",
+                placeholder: "Different from profile email",
+                text: $email,
+                isRequired: false,
+                keyboardType: .email,
+                onCommit: { _ in updateAddress() }
+            )
         }
         .onAppear {
             freeText = address.freeText

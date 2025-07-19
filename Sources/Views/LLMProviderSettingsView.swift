@@ -6,6 +6,7 @@ import AppCore
 
 struct LLMProviderSettingsView: View {
     let store: StoreOf<LLMProviderSettingsFeature>
+    @Dependency(\.navigationService) var navigationService
     
     var body: some View {
         WithViewStore(self.store, observe: { $0 }) { store in
@@ -56,9 +57,10 @@ struct LLMProviderSettingsView: View {
                 }
             }
             .navigationTitle("LLM Providers")
-            #if os(iOS)
-            .navigationBarTitleDisplayMode(.large)
-            #endif
+            .navigationConfiguration(
+                displayMode: .large,
+                supportsNavigationBarDisplayMode: navigationService.supportsNavigationBarDisplayMode()
+            )
             .sheet(
                 store: self.store.scope(
                     state: \.$configurationSheet,
@@ -251,6 +253,8 @@ struct ModelRow: View {
 struct LLMProviderConfigurationView: View {
     let store: StoreOf<LLMProviderConfigurationFeature>
     @FocusState private var focusedField: Field?
+    @Dependency(\.navigationService) var navigationService
+    @Dependency(\.textFieldService) var textFieldService
     
     enum Field: Hashable {
         case apiKey
@@ -279,9 +283,11 @@ struct LLMProviderConfigurationView: View {
                         send: { .updateAPIKey($0) }
                     ))
                     .focused($focusedField, equals: .apiKey)
-                    #if os(iOS)
-                    .autocapitalization(.none)
-                    #endif
+                    .textFieldConfiguration(
+                        disableAutocapitalization: true,
+                        supportsAutocapitalization: textFieldService.supportsAutocapitalization(),
+                        supportsKeyboardTypes: textFieldService.supportsKeyboardTypes()
+                    )
                     .disableAutocorrection(true)
                     
                     if viewStore.provider.id == "openai" || viewStore.provider.id == "azure-openai" {
@@ -290,9 +296,11 @@ struct LLMProviderConfigurationView: View {
                             send: { .updateOrganizationId($0) }
                         ))
                         .focused($focusedField, equals: .organizationId)
-                        #if os(iOS)
-                        .autocapitalization(.none)
-                        #endif
+                        .textFieldConfiguration(
+                            disableAutocapitalization: true,
+                            supportsAutocapitalization: textFieldService.supportsAutocapitalization(),
+                            supportsKeyboardTypes: textFieldService.supportsKeyboardTypes()
+                        )
                         .disableAutocorrection(true)
                     }
                     
@@ -302,10 +310,12 @@ struct LLMProviderConfigurationView: View {
                             send: { .updateCustomEndpoint($0) }
                         ))
                         .focused($focusedField, equals: .customEndpoint)
-                        #if os(iOS)
-                        .autocapitalization(.none)
-                        .keyboardType(.URL)
-                        #endif
+                        .textFieldConfiguration(
+                            disableAutocapitalization: true,
+                            keyboardType: .url,
+                            supportsAutocapitalization: textFieldService.supportsAutocapitalization(),
+                            supportsKeyboardTypes: textFieldService.supportsKeyboardTypes()
+                        )
                         .disableAutocorrection(true)
                         
                         TextField("Deployment Name", text: viewStore.binding(
@@ -313,9 +323,11 @@ struct LLMProviderConfigurationView: View {
                             send: { .updateDeploymentName($0) }
                         ))
                         .focused($focusedField, equals: .deploymentName)
-                        #if os(iOS)
-                        .autocapitalization(.none)
-                        #endif
+                        .textFieldConfiguration(
+                            disableAutocapitalization: true,
+                            supportsAutocapitalization: textFieldService.supportsAutocapitalization(),
+                            supportsKeyboardTypes: textFieldService.supportsKeyboardTypes()
+                        )
                         .disableAutocorrection(true)
                     }
                     
@@ -325,10 +337,12 @@ struct LLMProviderConfigurationView: View {
                             send: { .updateCustomEndpoint($0) }
                         ))
                         .focused($focusedField, equals: .customEndpoint)
-                        #if os(iOS)
-                        .autocapitalization(.none)
-                        .keyboardType(.URL)
-                        #endif
+                        .textFieldConfiguration(
+                            disableAutocapitalization: true,
+                            keyboardType: .url,
+                            supportsAutocapitalization: textFieldService.supportsAutocapitalization(),
+                            supportsKeyboardTypes: textFieldService.supportsKeyboardTypes()
+                        )
                         .disableAutocorrection(true)
                     }
                 } header: {
@@ -355,9 +369,10 @@ struct LLMProviderConfigurationView: View {
                 }
             }
             .navigationTitle("Configure \(viewStore.provider.name)")
-            #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
-            #endif
+            .navigationConfiguration(
+                displayMode: .inline,
+                supportsNavigationBarDisplayMode: navigationService.supportsNavigationBarDisplayMode()
+            )
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {

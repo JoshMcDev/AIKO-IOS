@@ -1,3 +1,4 @@
+#if os(macOS)
 import Foundation
 import SwiftUI
 import AppKit
@@ -121,4 +122,4 @@ public struct ShareDialog: View {
             }
         }
     }
-}
+}#endif

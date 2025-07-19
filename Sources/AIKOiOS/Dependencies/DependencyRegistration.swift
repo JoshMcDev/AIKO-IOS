@@ -20,5 +20,9 @@ public enum iOSDependencyRegistration {
         @Dependency(\.fileService) var _: FileServiceClient = iOSFileServiceClient.live
         @Dependency(\.emailService) var _: EmailServiceClient = iOSEmailServiceClient.live
         @Dependency(\.clipboardService) var _: ClipboardServiceClient = iOSClipboardServiceClient.live
+        @Dependency(\.navigationService) var _: NavigationServiceClient = iOSNavigationServiceClient.live
+        @Dependency(\.screenService) var _: ScreenServiceClient = iOSScreenServiceClient.live
+        @Dependency(\.keyboardService) var _: KeyboardServiceClient = iOSKeyboardServiceClient.live
+        @Dependency(\.textFieldService) var _: TextFieldServiceClient = iOSTextFieldServiceClient.live
     }
 }

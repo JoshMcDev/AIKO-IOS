@@ -1,3 +1,4 @@
+#if os(macOS)
 import AppCore
 import ComposableArchitecture
 import Foundation
@@ -22,4 +23,4 @@ extension ClipboardServiceClient {
 // Convenience static accessor
 public enum macOSClipboardServiceClient {
     public static let live = ClipboardServiceClient.macOSLive
-}
+}#endif

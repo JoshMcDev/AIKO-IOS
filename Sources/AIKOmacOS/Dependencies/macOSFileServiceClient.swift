@@ -1,3 +1,4 @@
+#if os(macOS)
 import AppCore
 import ComposableArchitecture
 import Foundation
@@ -28,4 +29,4 @@ extension FileServiceClient {
 // Convenience static accessor
 public enum macOSFileServiceClient {
     public static let live = FileServiceClient.macOSLive
-}
+}#endif

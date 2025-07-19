@@ -1,3 +1,4 @@
+#if os(macOS)
 import AVFoundation
 import Foundation
 import ComposableArchitecture
@@ -89,4 +90,4 @@ private class macOSAudioRecorder: NSObject {
         audioRecorder = nil
         audioFileURL = nil
     }
-}
+}#endif

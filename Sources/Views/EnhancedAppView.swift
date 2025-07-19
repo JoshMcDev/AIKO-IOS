@@ -1,11 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
 import AppCore
-#if os(iOS)
-    import UIKit
-#elseif os(macOS)
-    import AppKit
-#endif
 
 // MARK: - Enhanced App View with UI/UX Improvements
 
@@ -13,6 +8,10 @@ public struct EnhancedAppView: View {
     let store: StoreOf<AppFeature>
 
     @Dependency(\.hapticManager) var hapticManager
+    @Dependency(\.navigationService) var navigationService
+    @Dependency(\.screenService) var screenService
+    @Dependency(\.imageLoader) var imageLoader
+    @Dependency(\.documentScanner) var documentScanner
     @Environment(\.sizeCategory) private var sizeCategory
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -21,30 +20,23 @@ public struct EnhancedAppView: View {
     }
 
     public var body: some View {
-        #if os(iOS)
-            if #available(iOS 16.0, *) {
-                NavigationStack {
-                    contentView
-                        .navigationBarHidden(true)
-                }
-                .preferredColorScheme(.dark)
-                .tint(.white)
-                .dynamicTypeSize(.xSmall ... DynamicTypeSize.accessibility3)
-            } else {
-                SwiftUI.NavigationView {
-                    contentView
-                        .navigationBarHidden(true)
-                }
-                .navigationViewStyle(StackNavigationViewStyle())
-                .preferredColorScheme(.dark)
-                .dynamicTypeSize(.xSmall ... DynamicTypeSize.accessibility3)
+        navigationContent
+            .preferredColorScheme(.dark)
+            .modifier(NavigationBarHiddenModifier())
+    }
+    
+    @ViewBuilder
+    private var navigationContent: some View {
+        if navigationService.supportsNavigationStack() {
+            NavigationStack {
+                contentView
             }
-        #else
+            .tint(.white)
+        } else {
             SwiftUI.NavigationView {
                 contentView
             }
-            .preferredColorScheme(.dark)
-        #endif
+        }
     }
 
     @ViewBuilder
@@ -225,6 +217,8 @@ struct EnhancedHeaderView: View {
     @State private var logoScale: CGFloat = 1.0
     @Environment(\.sizeCategory) private var sizeCategory
 
+    @Dependency(\.imageLoader) var imageLoader
+    
     private func loadSAMIcon() -> Image? {
         // For Swift Package, load from module bundle
         guard let url = Bundle.module.url(forResource: "SAMIcon", withExtension: "png") else {
@@ -235,17 +229,7 @@ struct EnhancedHeaderView: View {
             return nil
         }
 
-        #if os(iOS)
-            if let uiImage = UIImage(data: data) {
-                return Image(uiImage: uiImage)
-            }
-        #elseif os(macOS)
-            if let nsImage = NSImage(data: data) {
-                return Image(nsImage: nsImage)
-            }
-        #endif
-
-        return nil
+        return imageLoader.loadImage(data)
     }
 
     var body: some View {
@@ -1101,6 +1085,7 @@ struct AppEnhancedInputArea: View {
     @State private var showingUploadOptions = false
     @State private var inputFieldHeight: CGFloat = 44
     @FocusState private var isInputFocused: Bool
+    @Dependency(\.documentScanner) var documentScanner
 
     private var hasContent: Bool {
         !requirements.isEmpty || !uploadedDocuments.isEmpty
@@ -1205,11 +1190,11 @@ struct AppEnhancedInputArea: View {
                             Button(" Upload Documents") {
                                 onShowDocumentPicker()
                             }
-                            #if os(iOS)
+                            if documentScanner.isScanningAvailable() {
                                 Button("📷 Scan Document") {
                                     onShowImagePicker()
                                 }
-                            #endif
+                            }
                             Button("Cancel", role: .cancel) {}
                         }
                         .accessibleButton(
@@ -1399,23 +1384,16 @@ struct EnhancedMenuView: View {
     @Binding var isShowing: Bool
     @Binding var selectedMenuItem: AppFeature.MenuItem?
 
-    #if os(iOS)
-        @State private var profileImage: UIImage?
-    #else
-        @State private var profileImage: NSImage?
-    #endif
+    @State private var profileImage: AppCore.PlatformImage?
     @State private var menuOffset: CGFloat = 300
     @Dependency(\.hapticManager) var hapticManager
+    @Dependency(\.screenService) var screenService
 
     var body: some View {
         HStack(spacing: 0) {
             // Backdrop
             Color.clear
-            #if os(iOS)
-                .frame(width: UIScreen.main.bounds.width - 300)
-            #else
-                .frame(width: 1000) // Default width for macOS
-            #endif
+                .frame(width: screenService.mainScreenWidth() - 300)
                 .contentShape(Rectangle())
                 .onTapGesture {
                     withAnimation(AnimationSystem.Spring.smooth) {
@@ -1563,11 +1541,8 @@ extension DocumentStatusFeature.DocumentStatus {
 // MARK: - Enhanced Profile Section
 
 struct EnhancedProfileSection: View {
-    #if os(iOS)
-        @Binding var profileImage: UIImage?
-    #else
-        @Binding var profileImage: NSImage?
-    #endif
+    @Binding var profileImage: AppCore.PlatformImage?
+    @Dependency(\.imageLoader) var imageLoader
 
     var body: some View {
         VStack(spacing: Theme.Spacing.md) {
@@ -1580,19 +1555,11 @@ struct EnhancedProfileSection: View {
                     .frame(width: 80, height: 80)
 
                 if let profileImage {
-                    #if os(iOS)
-                        Image(uiImage: profileImage)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 80, height: 80)
-                            .clipShape(Circle())
-                    #else
-                        Image(nsImage: profileImage)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 80, height: 80)
-                            .clipShape(Circle())
-                    #endif
+                    imageLoader.createImage(profileImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 80, height: 80)
+                        .clipShape(Circle())
                 } else {
                     Image(systemName: "person.circle.fill")
                         .font(.system(size: 40))
