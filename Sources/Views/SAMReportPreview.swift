@@ -1,42 +1,27 @@
 import SwiftUI
 import UniformTypeIdentifiers
-#if os(iOS)
-    import MessageUI
-    import UIKit
-#elseif os(macOS)
-    import AppKit
-#endif
+import AppCore
+import ComposableArchitecture
 
 // Preview showing SAM.gov report with checkmark.circle SF Symbols
 struct SAMReportPreview: View {
     @State private var showShareSheet = false
     @State private var showingSATBotAlert = false
+    
+    // Dependency injection
+    @Dependency(\.imageLoader) var imageLoader
+    @Dependency(\.shareService) var shareService
+    @Dependency(\.fileService) var fileService
+    @Dependency(\.emailService) var emailService
+    @Dependency(\.clipboardService) var clipboardService
 
     // Sample data - in real app this would come from the acquisition
     let acquisitionValue: Double = 150_000 // Example value under SAT
     let companyUEIs: [String] = ["R7TBP9D4VNJ3"] // Example single company
 
     private func loadSAMIcon() -> Image? {
-        // For Swift Package, load from module bundle
-        guard let url = Bundle.module.url(forResource: "SAMIcon", withExtension: "png") else {
-            return nil
-        }
-
-        guard let data = try? Data(contentsOf: url) else {
-            return nil
-        }
-
-        #if os(iOS)
-            if let uiImage = UIImage(data: data) {
-                return Image(uiImage: uiImage)
-            }
-        #elseif os(macOS)
-            if let nsImage = NSImage(data: data) {
-                return Image(nsImage: nsImage)
-            }
-        #endif
-
-        return nil
+        // Use dependency-injected image loader
+        return imageLoader.loadImageFromBundle("SAMIcon", "png", Bundle.module)
     }
 
     var body: some View {
@@ -49,591 +34,386 @@ struct SAMReportPreview: View {
                 VStack(alignment: .leading, spacing: 20) {
                     // Header with share button
                     HStack {
-                        // SAM icon on the left
-                        ZStack {
-                            Color.clear
-                                .frame(width: 50, height: 50)
-
-                            if let samIcon = loadSAMIcon() {
-                                samIcon
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 50, height: 50)
-                            }
-                        }
-
                         Spacer()
-
-                        // Centered SAM.gov text with patriotic gradient
-                        Text("SAM.gov")
-                            .font(.title)
-                            .bold()
-                            .foregroundStyle(
-                                LinearGradient(
-                                    colors: [
-                                        Color(red: 0.698, green: 0.132, blue: 0.203), // Red
-                                        Color.white,
-                                        Color(red: 0.0, green: 0.125, blue: 0.698), // Stronger Blue
-                                    ],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-
-                        Spacer()
-
-                        // Single share button with matching frame
-                        ZStack {
-                            Color.clear
-                                .frame(width: 50, height: 50)
-
-                            Button(action: { showShareSheet = true }) {
-                                Image(systemName: "square.and.arrow.up")
-                                    .font(.title2)
-                                    .foregroundColor(Theme.Colors.aikoPrimary)
-                            }
+                        Button(action: {
+                            showShareSheet = true
+                        }) {
+                            Image(systemName: "square.and.arrow.up")
+                                .foregroundColor(.white)
+                                .padding(8)
+                                .background(Circle().fill(Color.white.opacity(0.1)))
                         }
                     }
                     .padding(.horizontal)
 
-                    VStack(alignment: .leading, spacing: 16) {
-                        // Status Badge (simplified)
-                        // Example of Inactive status - uncomment to see inactive state
-                        /*
-                         HStack {
-                             Image(systemName: "exclamationmark.circle")
-                                 .foregroundColor(.orange)
-                                 .font(.title2)
-                             Text("Inactive")
-                                 .font(.headline)
-                                 .foregroundColor(.orange)
-                             Spacer()
-                             Text("Expired: December 15, 2024")
-                                 .font(.caption)
-                                 .foregroundColor(.gray)
-                         }
-                         .padding()
-                         .background(Color.orange.opacity(0.2))
-                         .cornerRadius(Theme.CornerRadius.sm)
-                         */
-
-                        // Active status example
-
-                        HStack {
-                            Image(systemName: "checkmark.circle")
-                                .foregroundColor(.green)
+                    // Report content
+                    VStack(alignment: .leading, spacing: 15) {
+                        // SAM.gov section
+                        HStack(spacing: 10) {
+                            if let samIcon = loadSAMIcon() {
+                                samIcon
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 30, height: 30)
+                            }
+                            Text("SAM.gov Checks")
                                 .font(.title2)
-                            Text("Active")
-                                .font(.headline)
-                                .foregroundColor(.green)
-                            Spacer()
-                            Text("Expires: January 24, 2026")
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                        }
-                        .padding()
-                        .background(Color.green.opacity(0.2))
-                        .cornerRadius(Theme.CornerRadius.sm)
-
-                        // SAT Bot Button (moved above Company Information)
-                        HStack {
-                            Image(systemName: "envelope")
-                                .foregroundColor(Theme.Colors.aikoPrimary)
-                                .font(.title2)
-                            Text("SAT Bot")
-                                .font(.headline)
+                                .fontWeight(.bold)
                                 .foregroundColor(.white)
-                            Text("Auto send")
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                            Spacer()
-                            Text(acquisitionValue <= 250_000 ? "UnderSATBot" : "OverSATBot")
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                        }
-                        .padding()
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(Theme.CornerRadius.sm)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            sendSATBotEmailInBackground()
                         }
 
-                        // Company Information
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("COMPANY INFORMATION")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .padding(.bottom, 4)
-
-                            VStack(alignment: .leading, spacing: 8) {
-                                ReportInfoRow(label: "Legal Name", value: "Rampart Aviation, LLC.")
-                                ReportInfoRow(label: "DBA", value: "RAMPART AVIATION LLC")
-                                ReportInfoRow(label: "UEI", value: "R7TBP9D4VNJ3")
-                                ReportInfoRow(label: "CAGE", value: "5BHV3")
-                                ReportInfoRow(label: "Status", value: "Active (expires Jan 24, 2026)")
-                                ReportInfoRow(label: "Location", value: "1777 Aviation Way, Colorado Springs, CO 80916")
-                            }
-                        }
-                        .padding()
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(Theme.CornerRadius.sm)
-
-                        // Compliance Status
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("COMPLIANCE STATUS")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .padding(.bottom, 4)
-
-                            ComplianceRow(
-                                icon: "xmark.circle",
-                                iconColor: .red,
-                                title: "Section 889",
-                                status: "Data not found in API response"
+                        // Checks
+                        VStack(alignment: .leading, spacing: 10) {
+                            CheckItem(
+                                icon: "checkmark.circle.fill",
+                                text: "No Active Exclusions",
+                                status: .passed
                             )
-
-                            ComplianceRow(
-                                icon: "checkmark.circle",
-                                iconColor: .green,
-                                title: "Foreign Government Interests",
-                                status: "No foreign government interests reported"
+                            CheckItem(
+                                icon: "checkmark.circle.fill",
+                                text: "All registrations are active",
+                                status: .passed
                             )
-
-                            ComplianceRow(
-                                icon: "checkmark.circle",
-                                iconColor: .green,
-                                title: "Exclusions",
-                                status: "NO Active Exclusions"
-                            )
-
-                            ComplianceRow(
-                                icon: "checkmark.circle",
-                                iconColor: .green,
-                                title: "Financial Responsibility",
-                                status: "No data returned"
-                            )
-
-                            ComplianceRow(
-                                icon: "checkmark.circle",
-                                iconColor: .green,
-                                title: "Integrity (FAPIIS)",
-                                status: "No Integrity Records - Clean"
+                            CheckItem(
+                                icon: "checkmark.circle.fill",
+                                text: "No FAPIIS records found",
+                                status: .passed
                             )
                         }
-                        .padding()
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(Theme.CornerRadius.sm)
 
-                        // Business Certifications
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("BUSINESS CERTIFICATIONS")
+                        Divider()
+                            .background(Color.gray.opacity(0.3))
+
+                        // Contract Opportunities
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Contract Opportunities")
                                 .font(.headline)
                                 .foregroundColor(.white)
-                                .padding(.bottom, 4)
 
-                            VStack(alignment: .leading, spacing: 8) {
-                                CertificationRow(text: "For Profit Organization")
-                                CertificationRow(text: "Veteran-Owned Business")
-                                CertificationRow(text: "Service-Disabled Veteran-Owned Business")
-                                CertificationRow(text: "Limited Liability Company")
-                                CertificationRow(text: "Small Business (for all NAICS codes)")
+                            if acquisitionValue < 250_000 {
+                                HStack(spacing: 5) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.green)
+                                    Text("Eligible for Simplified Acquisition Procedures")
+                                        .foregroundColor(.white.opacity(0.9))
+                                        .font(.subheadline)
+                                }
+                            }
+
+                            HStack(spacing: 5) {
+                                Image(systemName: "info.circle.fill")
+                                    .foregroundColor(.blue)
+                                Text("Value: $\(String(format: "%.0f", acquisitionValue))")
+                                    .foregroundColor(.white.opacity(0.9))
+                                    .font(.subheadline)
                             }
                         }
-                        .padding()
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(Theme.CornerRadius.sm)
 
-                        // NAICS Codes
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("NAICS CODES")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .padding(.bottom, 4)
+                        Divider()
+                            .background(Color.gray.opacity(0.3))
 
-                            // Column headers
-                            HStack(alignment: .top) {
-                                Text("SB")
-                                    .font(.caption2)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(.gray)
-                                    .frame(width: 25, alignment: .center)
-
-                                Text("Code")
-                                    .font(.caption2)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(.gray)
-                                    .frame(width: 60, alignment: .leading)
-
-                                Text("Description")
-                                    .font(.caption2)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(.gray)
-
-                                Spacer()
+                        // SAT Bot Recommendation
+                        VStack(alignment: .leading, spacing: 10) {
+                            HStack {
+                                Image(systemName: "cpu")
+                                    .foregroundColor(.purple)
+                                Text("SAT Bot Analysis")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
                             }
-                            .padding(.bottom, 4)
 
-                            VStack(alignment: .leading, spacing: 8) {
-                                NAICSRow(
-                                    code: "481211",
-                                    description: "Nonscheduled Chartered Passenger Air Transportation",
-                                    isPrimary: true,
-                                    smallBusinessSize: "1,500 employees",
-                                    isSmallBusiness: true
-                                )
-                                NAICSRow(
-                                    code: "488190",
-                                    description: "Other Support Activities for Air Transportation",
-                                    isPrimary: false,
-                                    smallBusinessSize: "$41.5 million",
-                                    isSmallBusiness: true
-                                )
-                                NAICSRow(
-                                    code: "336411",
-                                    description: "Aircraft Manufacturing",
-                                    isPrimary: false,
-                                    smallBusinessSize: "1,500 employees",
-                                    isSmallBusiness: false
-                                )
+                            Text("✨ This acquisition qualifies for simplified procedures under FAR Part 13")
+                                .foregroundColor(.white.opacity(0.9))
+                                .font(.subheadline)
+                                .padding(.vertical, 5)
+
+                            Button(action: {
+                                showingSATBotAlert = true
+                            }) {
+                                Text("View SAT Bot Details")
+                                    .foregroundColor(.purple)
+                                    .font(.caption)
                             }
                         }
-                        .padding()
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(Theme.CornerRadius.sm)
-
-                        // PSC Codes
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("PSC CODES")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .padding(.bottom, 4)
-
-                            VStack(alignment: .leading, spacing: 8) {
-                                PSCRow(code: "V1A1", description: "Air Charter for Things")
-                                PSCRow(code: "V1A2", description: "Air Charter for People")
-                                PSCRow(code: "R425", description: "Engineering Support")
-                                PSCRow(code: "J019", description: "Maintenance and Repair of Aircraft")
-                            }
-                        }
-                        .padding()
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(Theme.CornerRadius.sm)
                     }
                     .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 15)
+                            .fill(Color.gray.opacity(0.1))
+                    )
+                    .padding(.horizontal)
                 }
+                .padding(.vertical)
             }
+            // Platform-agnostic navigation title
+            #if os(iOS)
+            .navigationBarTitle("SAM.gov Report", displayMode: .inline)
+            #else
+            .navigationTitle("SAM.gov Report")
+            #endif
         }
-        .navigationTitle("SAM.gov")
-        #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
-        #endif
-        #if os(iOS)
         .sheet(isPresented: $showShareSheet) {
-            SAMShareSheet(items: generateShareItems())
+            ShareView(reportContent: generateReportContent())
         }
-        #else
-        .sheet(isPresented: $showShareSheet) {
-                    VStack(spacing: 20) {
-                        Text("Share Report")
-                            .font(.headline)
-                        Text(generateReportText())
-                            .font(.system(.body, design: .monospaced))
+        .alert("SAT Bot Intelligence", isPresented: $showingSATBotAlert) {
+            Button("OK") { }
+        } message: {
+            Text(getSATBotMessage())
+        }
+    }
+
+    private func generateReportContent() -> String {
+        """
+        SAM.gov Responsibility Check Report
+        Generated: \(Date().formatted())
+        
+        Company UEIs Checked: \(companyUEIs.joined(separator: ", "))
+        
+        ✅ No Active Exclusions
+        ✅ All registrations are active
+        ✅ No FAPIIS records found
+        
+        Contract Value: $\(String(format: "%.0f", acquisitionValue))
+        
+        Recommendation: This acquisition qualifies for simplified procedures under FAR Part 13.
+        """
+    }
+
+    private func getSATBotMessage() -> String {
+        let message = """
+        Based on the contract value of $\(String(format: "%.0f", acquisitionValue)), this acquisition falls under the Simplified Acquisition Threshold (SAT).
+        
+        Key Benefits:
+        • Streamlined procedures
+        • Reduced documentation
+        • Faster procurement timeline
+        
+        Recommended Actions:
+        1. Use simplified acquisition procedures
+        2. Consider using purchase cards if applicable
+        3. Leverage existing BPAs or IDIQs
+        """
+        
+        // Platform differences handled by service
+        return message
+    }
+}
+
+// Updated ShareView to use dependency injection
+struct ShareView: View {
+    let reportContent: String
+    @Environment(\.dismiss) var dismiss
+    @State private var showingSaveAlert = false
+    @State private var showingEmailAlert = false
+    @State private var saveMessage = ""
+    
+    @Dependency(\.shareService) var shareService
+    @Dependency(\.fileService) var fileService
+    @Dependency(\.emailService) var emailService
+    @Dependency(\.clipboardService) var clipboardService
+    
+    var body: some View {
+        content
+    }
+    
+    @ViewBuilder
+    private var content: some View {
+        VStack(spacing: 20) {
+                Text("Share Report")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .padding(.top)
+                
+                VStack(spacing: 15) {
+                    // Save to Files
+                    Button(action: saveToFiles) {
+                        HStack {
+                            Image(systemName: "folder")
+                                .frame(width: 30)
+                            Text("Save to Files")
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.secondary)
+                        }
+                        .padding()
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(10)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    
+                    // Email
+                    if emailService.canSendEmail() {
+                        Button(action: sendEmail) {
+                            HStack {
+                                Image(systemName: "envelope")
+                                    .frame(width: 30)
+                                Text("Email")
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.secondary)
+                            }
                             .padding()
                             .background(Color.gray.opacity(0.1))
-                            .cornerRadius(8)
+                            .cornerRadius(10)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    }
+                    
+                    // Copy to Clipboard
+                    Button(action: copyToClipboard) {
                         HStack {
-                            Button("Save to File") {
-                                saveReportToFile()
-                            }
-                            Button("Close") {
-                                showShareSheet = false
-                            }
+                            Image(systemName: "doc.on.doc")
+                                .frame(width: 30)
+                            Text("Copy to Clipboard")
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.secondary)
                         }
-                        .buttonStyle(.bordered)
+                        .padding()
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(10)
                     }
-                    .padding()
-                    .frame(width: 500, height: 400)
-                }
-        #endif
-                .alert("SAT Bot", isPresented: $showingSATBotAlert) {
-                    Button("OK") {}
-                } message: {
-                    #if os(iOS)
-                        if MFMailComposeViewController.canSendMail() {
-                            Text("Email queued for \(acquisitionValue <= 250_000 ? "UnderSATBot" : "OverSATBot") with UEI: R7TBP9D4VNJ3")
-                        } else {
-                            Text("Email details copied to clipboard")
+                    .buttonStyle(PlainButtonStyle())
+                    
+                    // System Share Sheet
+                    Button(action: showSystemShare) {
+                        HStack {
+                            Image(systemName: "square.and.arrow.up")
+                                .frame(width: 30)
+                            Text("More Options")
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.secondary)
                         }
-                    #else
-                        Text("Email functionality not available on this platform")
-                    #endif
-                }
-    }
-
-    private func generateShareItems() -> [Any] {
-        let reportText = generateReportText()
-
-        // Create a temporary file with the report
-        let fileName = "SAM_Report_\(Date().formatted(.dateTime.year().month().day())).txt"
-        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
-
-        do {
-            try reportText.write(to: tempURL, atomically: true, encoding: .utf8)
-            // Return both the text and the file URL for maximum compatibility
-            return [reportText, tempURL]
-        } catch {
-            // If file creation fails, just return the text
-            return [reportText]
-        }
-    }
-
-    private func saveReportToFile() {
-        #if os(macOS)
-            let reportText = generateReportText()
-            let savePanel = NSSavePanel()
-            savePanel.allowedContentTypes = [.plainText]
-            savePanel.nameFieldStringValue = "SAM_Report_\(Date().formatted(.dateTime.year().month().day())).txt"
-
-            if savePanel.runModal() == .OK, let url = savePanel.url {
-                do {
-                    try reportText.write(to: url, atomically: true, encoding: .utf8)
-                    print("Report saved to: \(url.path)")
-                } catch {
-                    print("Error saving report: \(error)")
-                }
-            }
-        #endif
-    }
-
-    private func generateReportText() -> String {
-        """
-        SAM.gov
-        Generated: \(Date().formatted())
-
-        COMPANY INFORMATION:
-        - Legal Name: Rampart Aviation, LLC.
-        - DBA: RAMPART AVIATION LLC
-        - UEI: R7TBP9D4VNJ3
-        - CAGE: 5BHV3
-        - Status: Active (expires Jan 24, 2026)
-        - Location: 1777 Aviation Way, Colorado Springs, CO 80916
-
-        COMPLIANCE STATUS:
-        - × Section 889 data not found in the API response
-        - → Foreign Government Interests: No foreign government interests reported
-        - → No Active Exclusions
-        - → Financial Responsibility: No data returned
-        - → No Integrity Records (clean FAPIIS)
-
-        BUSINESS CERTIFICATIONS:
-        - → For Profit Organization
-        - → Veteran-Owned Business
-        - → Service-Disabled Veteran-Owned Business
-        - → Limited Liability Company
-        - → Small Business (for all NAICS codes)
-
-        NAICS CODES:
-        - 481211 [SB: Y]: Nonscheduled Chartered Passenger Air Transportation (PRIMARY)
-          Small Business Size: 1,500 employees
-        - 488190 [SB: Y]: Other Support Activities for Air Transportation
-          Small Business Size: $41.5 million
-        - 336411 [SB: N]: Aircraft Manufacturing
-          Small Business Size: 1,500 employees
-
-        PSC CODES:
-        - V1A1: Air Charter for Things
-        - V1A2: Air Charter for People
-        - R425: Engineering Support
-        - J019: Maintenance and Repair of Aircraft
-        """
-    }
-
-    private func sendSATBotEmailInBackground() {
-        // Automatically send email in background
-        #if os(iOS)
-            if MFMailComposeViewController.canSendMail() {
-                // Prepare email content
-                _ = acquisitionValue <= 250_000 ? "UnderSATBot@outlook.com" : "OverSATBot@outlook.com"
-                _ = "UEI: R7TBP9D4VNJ3" // TODO: Get actual UEI from entity data
-
-                // For iOS, we need to present the mail composer but can't truly send in background
-                // Show success message instead
-                showingSATBotAlert = true
-            } else {
-                // Fallback: copy email details to clipboard
-                #if os(iOS)
-                    let recipient = acquisitionValue <= 250_000 ? "UnderSATBot@outlook.com" : "OverSATBot@outlook.com"
-                    let emailInfo = "To: \(recipient)\nSubject: UEI: R7TBP9D4VNJ3"
-                    UIPasteboard.general.string = emailInfo
-                #endif
-                showingSATBotAlert = true
-            }
-        #endif
-    }
-}
-
-struct ReportInfoRow: View {
-    let label: String
-    let value: String
-
-    var body: some View {
-        HStack(alignment: .top) {
-            Text(label + ":")
-                .font(.caption)
-                .fontWeight(.medium)
-                .foregroundColor(.gray)
-                .frame(width: 80, alignment: .leading)
-            Text(value)
-                .font(.caption)
-                .foregroundColor(.white)
-            Spacer()
-        }
-    }
-}
-
-struct ComplianceRow: View {
-    let icon: String
-    let iconColor: Color
-    let title: String
-    let status: String
-
-    var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            Image(systemName: icon)
-                .foregroundColor(iconColor)
-                .font(.system(size: 20))
-                .frame(width: 24)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundColor(.white)
-                Text(status)
-                    .font(.caption)
-                    .foregroundColor(.gray)
-            }
-
-            Spacer()
-        }
-        .padding(.vertical, 4)
-    }
-}
-
-struct CertificationRow: View {
-    let text: String
-
-    var body: some View {
-        HStack {
-            Image(systemName: "checkmark")
-                .font(.caption)
-                .foregroundColor(.green)
-            Text(text)
-                .font(.caption)
-                .foregroundColor(.white)
-            Spacer()
-        }
-    }
-}
-
-struct NAICSRow: View {
-    let code: String
-    let description: String
-    let isPrimary: Bool
-    let smallBusinessSize: String
-    let isSmallBusiness: Bool
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack(alignment: .top) {
-                // SB column (now first)
-                Text(isSmallBusiness ? "Y" : "N")
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .foregroundColor(isSmallBusiness ? .green : .gray)
-                    .frame(width: 25, alignment: .center)
-
-                Text(code)
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.white)
-                    .frame(width: 60, alignment: .leading)
-
-                VStack(alignment: .leading, spacing: 2) {
-                    HStack {
-                        Text(description)
-                            .font(.caption)
-                            .foregroundColor(.white)
-                        if isPrimary {
-                            Text("PRIMARY")
-                                .font(.caption2)
-                                .fontWeight(.bold)
-                                .foregroundColor(.blue)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(Color.blue.opacity(0.2))
-                                .cornerRadius(4)
-                        }
+                        .padding()
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(10)
                     }
-                    Text("Small Business Size: \(smallBusinessSize)")
-                        .font(.caption2)
-                        .foregroundColor(.gray)
+                    .buttonStyle(PlainButtonStyle())
                 }
-
+                .padding(.horizontal)
+                
                 Spacer()
+                
+                Button("Cancel") {
+                    dismiss()
+                }
+                .padding()
+            }
+            #if os(iOS)
+            .navigationBarHidden(true)
+            #endif
+        .alert("File Saved", isPresented: $showingSaveAlert) {
+            Button("OK") { }
+        } message: {
+            Text(saveMessage)
+        }
+        .alert("Email", isPresented: $showingEmailAlert) {
+            Button("OK") { }
+        } message: {
+            Text("Email functionality is not available on this device")
+        }
+    }
+    
+    private func saveToFiles() {
+        Task {
+            let result = await fileService.saveFile(
+                reportContent,
+                "SAM_Report_\(Date().formatted(.dateTime.year().month().day())).txt",
+                ["txt"]
+            )
+            
+            switch result {
+            case .success(let url):
+                saveMessage = "Report saved to: \(url.lastPathComponent)"
+                showingSaveAlert = true
+            case .failure(let error):
+                saveMessage = "Failed to save: \(error.localizedDescription)"
+                showingSaveAlert = true
+            }
+        }
+    }
+    
+    private func sendEmail() {
+        Task {
+            let result = await emailService.showEmailComposer(
+                [],
+                "SAM.gov Report",
+                reportContent
+            )
+            
+            if case .failed = result {
+                showingEmailAlert = true
+            }
+        }
+    }
+    
+    private func copyToClipboard() {
+        Task {
+            await clipboardService.copyText(reportContent)
+            saveMessage = "Report copied to clipboard"
+            showingSaveAlert = true
+        }
+    }
+    
+    private func showSystemShare() {
+        Task {
+            do {
+                let fileURL = try await shareService.createShareableFile(
+                    reportContent,
+                    "SAM_Report.txt"
+                )
+                let success = await shareService.share([fileURL])
+                if !success {
+                    saveMessage = "Share cancelled"
+                    showingSaveAlert = true
+                }
+            } catch {
+                saveMessage = "Failed to share: \(error.localizedDescription)"
+                showingSaveAlert = true
             }
         }
     }
 }
 
-struct PSCRow: View {
-    let code: String
-    let description: String
+// Helper view for check items
+struct CheckItem: View {
+    let icon: String
+    let text: String
+    let status: CheckStatus
+
+    enum CheckStatus {
+        case passed, failed, warning
+        
+        var color: Color {
+            switch self {
+            case .passed: return .green
+            case .failed: return .red
+            case .warning: return .orange
+            }
+        }
+    }
 
     var body: some View {
-        HStack(alignment: .top) {
-            Text(code)
-                .font(.caption)
-                .fontWeight(.semibold)
-                .foregroundColor(.white)
-                .frame(width: 50, alignment: .leading)
-
-            Text(description)
-                .font(.caption)
-                .foregroundColor(.white)
-
+        HStack(spacing: 10) {
+            Image(systemName: icon)
+                .foregroundColor(status.color)
+                .font(.system(size: 20))
+            
+            Text(text)
+                .foregroundColor(.white.opacity(0.9))
+                .font(.subheadline)
+            
             Spacer()
         }
+        .padding(.vertical, 2)
     }
 }
 
-// Share Sheet for iOS
-#if os(iOS)
-    struct SAMShareSheet: UIViewControllerRepresentable {
-        let items: [Any]
-
-        func makeUIViewController(context _: Context) -> UIActivityViewController {
-            let controller = UIActivityViewController(activityItems: items, applicationActivities: nil)
-
-            // Force dark mode for the share sheet
-            controller.overrideUserInterfaceStyle = .dark
-
-            return controller
-        }
-
-        func updateUIViewController(_ uiViewController: UIActivityViewController, context _: Context) {
-            // Ensure dark mode persists
-            uiViewController.overrideUserInterfaceStyle = .dark
-        }
-    }
-
-#endif
-
+// Preview
 struct SAMReportPreview_Previews: PreviewProvider {
     static var previews: some View {
-        SwiftUI.NavigationView {
-            SAMReportPreview()
-        }
+        SAMReportPreview()
+            .preferredColorScheme(.dark)
     }
 }

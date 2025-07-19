@@ -11,6 +11,13 @@ public enum macOSDependencyRegistration {
         @Dependency(\.voiceRecordingClient) var _: VoiceRecordingClient = VoiceRecordingClient.macOSLive
         @Dependency(\.hapticManager) var _: HapticManagerClient = HapticManagerClient.macOSLive
         
+        // Register new service implementations
+        @Dependency(\.imageLoader) var _: ImageLoaderClient = macOSImageLoaderClient.live
+        @Dependency(\.shareService) var _: ShareServiceClient = macOSShareServiceClient.live
+        @Dependency(\.fileService) var _: FileServiceClient = macOSFileServiceClient.live
+        @Dependency(\.emailService) var _: EmailServiceClient = macOSEmailServiceClient.live
+        @Dependency(\.clipboardService) var _: ClipboardServiceClient = macOSClipboardServiceClient.live
+        
         // TODO: Add other macOS-specific implementations as they are created
         // @Dependency(\.documentScannerClient) var _: DocumentScannerClient = macOSDocumentScannerClient.live
         // @Dependency(\.cameraClient) var _: CameraClient = macOSCameraClient.live

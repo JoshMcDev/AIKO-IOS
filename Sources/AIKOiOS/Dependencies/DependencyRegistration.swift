@@ -13,5 +13,12 @@ public enum iOSDependencyRegistration {
         @Dependency(\.fileSystemClient) var _: FileSystemClient = iOSFileSystemClient.live
         @Dependency(\.voiceRecordingClient) var _: VoiceRecordingClient = VoiceRecordingClient.iOSLive
         @Dependency(\.hapticManager) var _: HapticManagerClient = HapticManagerClient.iOSLive
+        
+        // Register new service implementations
+        @Dependency(\.imageLoader) var _: ImageLoaderClient = iOSImageLoaderClient.live
+        @Dependency(\.shareService) var _: ShareServiceClient = iOSShareServiceClient.live
+        @Dependency(\.fileService) var _: FileServiceClient = iOSFileServiceClient.live
+        @Dependency(\.emailService) var _: EmailServiceClient = iOSEmailServiceClient.live
+        @Dependency(\.clipboardService) var _: ClipboardServiceClient = iOSClipboardServiceClient.live
     }
 }
