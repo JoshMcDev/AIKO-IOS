@@ -106,7 +106,7 @@ public struct DocumentAnalysisFeature {
     @Dependency(\.acquisitionService) var acquisitionService
     @Dependency(\.workflowEngine) var workflowEngine
     @Dependency(\.documentChainManager) var documentChainManager
-    @Dependency(\.voiceRecordingService) var voiceRecordingService
+    @Dependency(\.voiceRecordingClient) var voiceRecordingClient
 
     public init() {}
 
@@ -375,9 +375,9 @@ public struct DocumentAnalysisFeature {
                 return .run { send in
                     do {
                         // Check permissions first
-                        let hasPermissions = voiceRecordingService.checkPermissions()
+                        let hasPermissions = voiceRecordingClient.checkPermissions()
                         if !hasPermissions {
-                            let granted = await voiceRecordingService.requestPermissions()
+                            let granted = await voiceRecordingClient.requestPermissions()
                             if !granted {
                                 await send(.analysisError("Microphone access is required for voice input. Please enable it in Settings."))
                                 await send(.stopVoiceRecording)
@@ -386,7 +386,7 @@ public struct DocumentAnalysisFeature {
                         }
 
                         // Start recording
-                        try await voiceRecordingService.startRecording()
+                        try await voiceRecordingClient.startRecording()
                     } catch {
                         await send(.analysisError("Failed to start voice recording."))
                         await send(.stopVoiceRecording)
@@ -398,7 +398,7 @@ public struct DocumentAnalysisFeature {
 
                 return .run { send in
                     do {
-                        let transcription = try await voiceRecordingService.stopRecording()
+                        let transcription = try await voiceRecordingClient.stopRecording()
                         await send(.voiceTranscriptionReceived(transcription))
                     } catch {
                         await send(.analysisError("Failed to process voice recording."))

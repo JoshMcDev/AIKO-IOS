@@ -1,3 +1,4 @@
+#if os(iOS)
 import SwiftUI
 import ComposableArchitecture
 import AppCore
@@ -15,7 +16,7 @@ public struct DocumentScannerView: View {
     }
     
     public var body: some View {
-        NavigationView {
+        SwiftUI.NavigationView {
             Group {
                 if viewStore.hasScannedPages {
                     ScannedPagesListView(store: store)
@@ -420,8 +421,8 @@ struct DocumentCameraView: UIViewControllerRepresentable {
             let document = ScannedDocument(
                 pages: pages,
                 title: "Scanned Document",
-                metadata: DocumentMetadata(
-                    source: .camera,
+                metadata: AppCore.DocumentMetadata(
+                    source: AppCore.DocumentMetadata.DocumentSource.camera,
                     deviceInfo: UIDevice.current.model
                 )
             )
@@ -439,3 +440,4 @@ struct DocumentCameraView: UIViewControllerRepresentable {
     }
 }
 
+#endif

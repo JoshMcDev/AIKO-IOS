@@ -14,8 +14,12 @@ extension VoiceRecordingClient: TestDependencyKey {
     public static let testValue = Self()
 }
 
+extension VoiceRecordingClient: DependencyKey {
+    public static var liveValue: Self = Self()
+}
+
 public extension DependencyValues {
-    var voiceRecordingService: VoiceRecordingClient {
+    var voiceRecordingClient: VoiceRecordingClient {
         get { self[VoiceRecordingClient.self] }
         set { self[VoiceRecordingClient.self] = newValue }
     }

@@ -257,7 +257,7 @@ public struct AcquisitionChatFeature {
     @Dependency(\.acquisitionService) var acquisitionService
     @Dependency(\.continuousClock) var clock
     @Dependency(\.uuid) var uuid
-    @Dependency(\.voiceRecordingService) var voiceRecordingService
+    @Dependency(\.voiceRecordingClient) var voiceRecordingClient
     @Dependency(\.followOnActionService) var followOnActionService
 
     public init() {}
@@ -394,9 +394,9 @@ public struct AcquisitionChatFeature {
                 return .run { send in
                     do {
                         // Check permissions first
-                        let hasPermissions = voiceRecordingService.checkPermissions()
+                        let hasPermissions = voiceRecordingClient.checkPermissions()
                         if !hasPermissions {
-                            let granted = await voiceRecordingService.requestPermissions()
+                            let granted = await voiceRecordingClient.requestPermissions()
                             if !granted {
                                 await send(.addAssistantMessage("Microphone access is required for voice input. Please enable it in Settings."))
                                 await send(.stopVoiceRecording)
@@ -405,7 +405,7 @@ public struct AcquisitionChatFeature {
                         }
 
                         // Start recording
-                        try await voiceRecordingService.startRecording()
+                        try await voiceRecordingClient.startRecording()
                     } catch {
                         await send(.addAssistantMessage("Failed to start voice recording. Please try typing instead."))
                         await send(.stopVoiceRecording)
@@ -417,7 +417,7 @@ public struct AcquisitionChatFeature {
 
                 return .run { send in
                     do {
-                        let transcription = try await voiceRecordingService.stopRecording()
+                        let transcription = try await voiceRecordingClient.stopRecording()
                         await send(.voiceInputReceived(transcription))
                     } catch {
                         await send(.addAssistantMessage("Failed to process voice recording. Please try again."))

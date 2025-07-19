@@ -1,4 +1,6 @@
 import SwiftUI
+import AppCore
+import ComposableArchitecture
 
 // MARK: - Blur Effect System
 
@@ -260,6 +262,7 @@ struct FloatingActionButton: View {
 
     @State private var isPressed = false
     @State private var isAnimating = false
+    @Dependency(\.hapticManager) var hapticManager
 
     enum FABStyle {
         case primary
@@ -284,7 +287,7 @@ struct FloatingActionButton: View {
 
     var body: some View {
         Button(action: {
-            HapticManager.shared.impact(.medium)
+            hapticManager.impact(.medium)
             withAnimation(AnimationSystem.Spring.bouncy) {
                 isAnimating = true
             }

@@ -12,7 +12,7 @@ import AppCore
 public struct EnhancedAppView: View {
     let store: StoreOf<AppFeature>
 
-    @StateObject private var hapticManager = HapticManager.shared
+    @Dependency(\.hapticManager) var hapticManager
     @Environment(\.sizeCategory) private var sizeCategory
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -103,7 +103,7 @@ public struct EnhancedAppView: View {
             isAuthenticating: viewStore.isAuthenticating,
             error: viewStore.authenticationError,
             onRetry: {
-                HapticManager.shared.impact(.medium)
+                hapticManager.impact(.medium)
                 viewStore.send(.authenticateWithFaceID)
             }
         )
@@ -131,15 +131,15 @@ public struct EnhancedAppView: View {
                     loadedAcquisitionDisplayName: viewStore.loadedAcquisitionDisplayName,
                     hasSelectedDocuments: viewStore.hasSelectedDocuments,
                     onNewAcquisition: {
-                        HapticManager.shared.successAction()
+                        hapticManager.successAction()
                         viewStore.send(.startNewAcquisition)
                     },
                     onSAMGovLookup: {
-                        HapticManager.shared.impact(.light)
+                        hapticManager.impact(.light)
                         viewStore.send(.showSAMGovLookup(true))
                     },
                     onExecuteAll: {
-                        HapticManager.shared.notification(.success)
+                        hapticManager.notification(.success)
                         viewStore.send(.executeAllDocuments)
                     }
                 )
@@ -391,6 +391,7 @@ struct EnhancedDocumentGenerationView: View {
 
     @State private var scrollOffset: CGFloat = 0
     @Environment(\.sizeCategory) private var sizeCategory
+    @Dependency(\.hapticManager) var hapticManager
 
     struct ViewState: Equatable {
         let analysisConversationHistory: [String]
@@ -443,15 +444,15 @@ struct EnhancedDocumentGenerationView: View {
                                 documentStatus: viewStore.documentReadinessStatus,
                                 hasAcquisition: loadedAcquisition != nil,
                                 onTypeToggled: { documentType in
-                                    HapticManager.shared.selection()
+                                    hapticManager.selection()
                                     viewStore.send(.documentTypeToggled(documentType))
                                 },
                                 onDFTypeToggled: { dfDocumentType in
-                                    HapticManager.shared.selection()
+                                    hapticManager.selection()
                                     viewStore.send(.status(.dfDocumentTypeToggled(dfDocumentType)))
                                 },
                                 onExecuteCategory: { category in
-                                    HapticManager.shared.notification(.success)
+                                    hapticManager.notification(.success)
                                     viewStore.send(.executeCategory(category))
                                 }
                             )
@@ -484,31 +485,31 @@ struct EnhancedDocumentGenerationView: View {
                         viewStore.send(.requirementsChanged(requirements))
                     },
                     onAnalyzeRequirements: {
-                        HapticManager.shared.impact(.medium)
+                        hapticManager.impact(.medium)
                         viewStore.send(.analyzeRequirements)
                     },
                     onEnhancePrompt: {
-                        HapticManager.shared.impact(.light)
+                        hapticManager.impact(.light)
                         viewStore.send(.analysis(.enhancePrompt))
                     },
                     onStartRecording: {
-                        HapticManager.shared.impact(.medium)
+                        hapticManager.impact(.medium)
                         viewStore.send(.analysis(.startVoiceRecording))
                     },
                     onStopRecording: {
-                        HapticManager.shared.impact(.light)
+                        hapticManager.impact(.light)
                         viewStore.send(.analysis(.stopVoiceRecording))
                     },
                     onShowDocumentPicker: {
-                        HapticManager.shared.selection()
+                        hapticManager.selection()
                         viewStore.send(.analysis(.showDocumentPicker(true)))
                     },
                     onShowImagePicker: {
-                        HapticManager.shared.selection()
+                        hapticManager.selection()
                         viewStore.send(.analysis(.showImagePicker(true)))
                     },
                     onRemoveDocument: { documentId in
-                        HapticManager.shared.impact(.light)
+                        hapticManager.impact(.light)
                         viewStore.send(.analysis(.removeUploadedDocument(documentId)))
                     }
                 )
@@ -741,6 +742,7 @@ struct EnhancedDocumentCategoryCard: View {
     let onExecute: () -> Void
 
     @State private var isHovered = false
+    @Dependency(\.hapticManager) var hapticManager
 
     var selectedCount: Int {
         if category == .determinationFindings {
@@ -754,7 +756,7 @@ struct EnhancedDocumentCategoryCard: View {
         VStack(spacing: 0) {
             // Enhanced folder header
             Button(action: {
-                HapticManager.shared.selection()
+                hapticManager.selection()
                 onToggleExpanded()
             }) {
                 HStack(spacing: Theme.Spacing.lg) {
@@ -1403,6 +1405,7 @@ struct EnhancedMenuView: View {
         @State private var profileImage: NSImage?
     #endif
     @State private var menuOffset: CGFloat = 300
+    @Dependency(\.hapticManager) var hapticManager
 
     var body: some View {
         HStack(spacing: 0) {
@@ -1439,7 +1442,7 @@ struct EnhancedMenuView: View {
                                         item: item,
                                         isSelected: selectedMenuItem == item,
                                         action: {
-                                            HapticManager.shared.selection()
+                                            hapticManager.selection()
                                             withAnimation(AnimationSystem.Spring.smooth) {
                                                 viewStore.send(.selectMenuItem(item))
                                                 isShowing = false

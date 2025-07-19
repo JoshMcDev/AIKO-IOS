@@ -1,5 +1,6 @@
 import SwiftUI
 import AppCore
+import ComposableArchitecture
 
 // MARK: - Enhanced Card View
 
@@ -13,6 +14,7 @@ struct EnhancedCard<Content: View>: View {
     @State private var isHovered = false
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Dependency(\.hapticManager) var hapticManager
 
     enum CardStyle {
         case flat
@@ -64,7 +66,7 @@ struct EnhancedCard<Content: View>: View {
             )
             .onTapGesture {
                 if isInteractive, let onTap {
-                    HapticManager.shared.impact(.light)
+                    hapticManager.impact(.light)
                     onTap()
                 }
             }

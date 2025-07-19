@@ -11,5 +11,7 @@ public enum iOSDependencyRegistration {
         @Dependency(\.documentScannerClient) var _: DocumentScannerClient = iOSDocumentScannerClient.live
         @Dependency(\.cameraClient) var _: CameraClient = iOSCameraClient.live
         @Dependency(\.fileSystemClient) var _: FileSystemClient = iOSFileSystemClient.live
+        @Dependency(\.voiceRecordingClient) var _: VoiceRecordingClient = VoiceRecordingClient.iOSLive
+        @Dependency(\.hapticManager) var _: HapticManagerClient = HapticManagerClient.iOSLive
     }
 }
