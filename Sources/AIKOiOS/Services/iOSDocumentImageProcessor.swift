@@ -31,7 +31,6 @@
 
     private final class LiveDocumentImageProcessor: Sendable {
         private let context: CIContext
-        private let queue: DispatchQueue
         private let documentProcessingPipeline: DocumentProcessingPipeline
 
         init() {
@@ -41,7 +40,6 @@
             } else {
                 context = CIContext()
             }
-            queue = DispatchQueue(label: "document.image.processor", qos: .userInitiated)
             documentProcessingPipeline = DocumentProcessingPipeline()
         }
 
@@ -57,22 +55,13 @@
 
             let ciImage = CIImage(cgImage: cgImage)
 
-            return try await withCheckedThrowingContinuation { continuation in
-                queue.async {
-                    do {
-                        let result = try self.performProcessing(
-                            ciImage: ciImage,
-                            mode: mode,
-                            options: options,
-                            appliedFilters: &appliedFilters,
-                            startTime: startTime
-                        )
-                        continuation.resume(returning: result)
-                    } catch {
-                        continuation.resume(throwing: error)
-                    }
-                }
-            }
+            return try await performProcessing(
+                ciImage: ciImage,
+                mode: mode,
+                options: options,
+                appliedFilters: &appliedFilters,
+                startTime: startTime
+            )
         }
 
         private func performProcessing(
@@ -81,7 +70,7 @@
             options: ProcessingOptions,
             appliedFilters: inout [String],
             startTime: CFAbsoluteTime
-        ) throws -> ProcessingResult {
+        ) async throws -> ProcessingResult {
             var processedImage = ciImage
             let totalSteps = mode == .documentScanner ? 8 : (mode == .enhanced ? 6 : 3)
             var currentStepIndex = 0

@@ -1,7 +1,7 @@
 import AppCore
 import ComposableArchitecture
 import Foundation
-@preconcurrency import SwiftAnthropic
+import AikoCompat
 
 /// Parallel document generation service that processes multiple documents concurrently
 public struct ParallelDocumentGenerator: Sendable {
@@ -186,10 +186,9 @@ public struct ParallelDocumentGenerator: Sendable {
         profile: UserProfile?,
         preloadedData: DocumentGenerationPreloader.PreloadedData
     ) async throws -> [GeneratedDocument] {
-        let anthropicService = AnthropicServiceFactory.service(
-            apiKey: APIConfiguration.getAnthropicKey(),
-            betaHeaders: nil
-        )
+        guard let aiProvider = await AIProviderFactory.defaultProvider() else {
+            throw ParallelDocumentGeneratorError.noProvider
+        }
 
         // Use preloaded templates
         let templates = preloadedData.templates
@@ -204,7 +203,7 @@ public struct ParallelDocumentGenerator: Sendable {
             let batchDocuments = try await withThrowingTaskGroup(of: GeneratedDocument?.self) { group in
                 for documentType in batchTypes {
                     group.addTask { @Sendable in
-                        nonisolated(unsafe) let service = anthropicService
+                        nonisolated(unsafe) let provider = aiProvider
                         do {
                             return try await generateSingleDocument(
                                 documentType: documentType,
@@ -212,7 +211,7 @@ public struct ParallelDocumentGenerator: Sendable {
                                 template: templates[documentType],
                                 systemPrompt: preloadedData.systemPrompts[documentType],
                                 profile: profile,
-                                anthropicService: service
+                                aiProvider: provider
                             )
                         } catch {
                             // Log error but don't fail the entire batch
@@ -248,10 +247,9 @@ public struct ParallelDocumentGenerator: Sendable {
         profile: UserProfile?,
         preloadedData: DocumentGenerationPreloader.PreloadedData
     ) async throws -> [GeneratedDocument] {
-        let anthropicService = AnthropicServiceFactory.service(
-            apiKey: APIConfiguration.getAnthropicKey(),
-            betaHeaders: nil
-        )
+        guard let aiProvider = await AIProviderFactory.defaultProvider() else {
+            throw ParallelDocumentGeneratorError.noProvider
+        }
 
         // Use preloaded templates
         let templates = preloadedData.dfTemplates
@@ -266,7 +264,7 @@ public struct ParallelDocumentGenerator: Sendable {
             let batchDocuments = try await withThrowingTaskGroup(of: GeneratedDocument?.self) { group in
                 for dfDocumentType in batchTypes {
                     group.addTask { @Sendable in
-                        nonisolated(unsafe) let service = anthropicService
+                        nonisolated(unsafe) let provider = aiProvider
                         do {
                             return try await generateSingleDFDocument(
                                 dfDocumentType: dfDocumentType,
@@ -274,7 +272,7 @@ public struct ParallelDocumentGenerator: Sendable {
                                 template: templates[dfDocumentType],
                                 systemPrompt: preloadedData.dfSystemPrompts[dfDocumentType],
                                 profile: profile,
-                                anthropicService: service
+                                aiProvider: provider
                             )
                         } catch {
                             // Log error but don't fail the entire batch
@@ -365,7 +363,7 @@ public struct ParallelDocumentGenerator: Sendable {
         template: String?,
         systemPrompt: String?,
         profile: UserProfile?,
-        anthropicService: AnthropicService
+        aiProvider: AIProvider
     ) async throws -> GeneratedDocument {
         let totalStartTime = Date()
         let cacheCheckStartTime = Date()
@@ -402,40 +400,23 @@ public struct ParallelDocumentGenerator: Sendable {
 
         // Create messages
         let messages = [
-            MessageParameter.Message(
-                role: .user,
-                content: .text(prompt)
-            ),
+            AIMessage.user(prompt)
         ]
 
-        // Create parameters
-        let parameters = MessageParameter(
-            model: .other("claude-sonnet-4-20250514"),
+        // Create request
+        let request = AICompletionRequest(
             messages: messages,
+            model: "claude-sonnet-4-20250514",
             maxTokens: 4096,
-            system: .text(finalSystemPrompt),
-            metadata: nil,
-            stopSequences: nil,
-            stream: false,
-            temperature: nil,
-            topK: nil,
-            topP: nil,
-            tools: nil,
-            toolChoice: nil
+            systemPrompt: finalSystemPrompt
         )
 
         // Generate content
         let apiStartTime = Date()
-        let result = try await anthropicService.createMessage(parameters)
+        let result = try await aiProvider.complete(request)
         apiCallDuration = Date().timeIntervalSince(apiStartTime)
 
-        let content: String
-        switch result.content.first {
-        case let .text(text, _):
-            content = text
-        default:
-            throw AIDocumentGeneratorError.noContent
-        }
+        let content = result.content
 
         // Spell check
         let spellCheckStartTime = Date()
@@ -479,7 +460,7 @@ public struct ParallelDocumentGenerator: Sendable {
         template: DFTemplate?,
         systemPrompt: String?,
         profile: UserProfile?,
-        anthropicService: AnthropicService
+        aiProvider: AIProvider
     ) async throws -> GeneratedDocument {
         let totalStartTime = Date()
         let cacheCheckStartTime = Date()
@@ -514,40 +495,23 @@ public struct ParallelDocumentGenerator: Sendable {
 
         // Create messages
         let messages = [
-            MessageParameter.Message(
-                role: .user,
-                content: .text(prompt)
-            ),
+            AIMessage.user(prompt)
         ]
 
-        // Create parameters
-        let parameters = MessageParameter(
-            model: .other("claude-sonnet-4-20250514"),
+        // Create request
+        let request = AICompletionRequest(
             messages: messages,
+            model: "claude-sonnet-4-20250514",
             maxTokens: 4096,
-            system: .text(finalSystemPrompt),
-            metadata: nil,
-            stopSequences: nil,
-            stream: false,
-            temperature: nil,
-            topK: nil,
-            topP: nil,
-            tools: nil,
-            toolChoice: nil
+            systemPrompt: finalSystemPrompt
         )
 
         // Generate content
         let apiStartTime = Date()
-        let result = try await anthropicService.createMessage(parameters)
+        let result = try await aiProvider.complete(request)
         apiCallDuration = Date().timeIntervalSince(apiStartTime)
 
-        let content: String
-        switch result.content.first {
-        case let .text(text, _):
-            content = text
-        default:
-            throw AIDocumentGeneratorError.noContent
-        }
+        let content = result.content
 
         // Spell check
         let spellCheckStartTime = Date()
@@ -584,6 +548,10 @@ public struct ParallelDocumentGenerator: Sendable {
             content: correctedContent
         )
     }
+}
+
+public enum ParallelDocumentGeneratorError: Error {
+    case noProvider
 }
 
 // MARK: - Dependency Key

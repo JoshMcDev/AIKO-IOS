@@ -10,17 +10,17 @@
             super.init()
         }
 
-        public var canSendEmail: Bool {
+        nonisolated public var canSendEmail: Bool {
             MFMailComposeViewController.canSendMail()
         }
 
-        public func sendEmail(
+        nonisolated public func sendEmail(
             to recipients: [String],
             subject: String,
             body: String,
             isHTML _: Bool,
             attachments _: [(data: Data, mimeType: String, fileName: String)]?,
-            completion: @escaping (Bool) -> Void
+            completion: @escaping @Sendable (Bool) -> Void
         ) {
             // iOS doesn't support background email sending
             // Show composer instead
@@ -38,11 +38,11 @@
             }
         }
 
-        public func showEmailComposer(
+        nonisolated public func showEmailComposer(
             recipients: [String],
             subject: String,
             body: String,
-            completion: @escaping (EmailComposeResult) -> Void
+            completion: @escaping @Sendable (EmailComposeResult) -> Void
         ) {
             guard canSendEmail else {
                 completion(.failed(EmailServiceError.notAvailable))

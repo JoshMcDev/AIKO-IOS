@@ -1,7 +1,7 @@
 import AppCore
 import ComposableArchitecture
 import Foundation
-@preconcurrency import SwiftAnthropic
+import AikoCompat
 
 /// Optimized RequirementAnalyzer with batching and enhanced caching
 public struct OptimizedRequirementAnalyzer: Sendable {
@@ -74,10 +74,9 @@ actor APIRequestBatcher {
     }
 
     func batchAnalyze(requirements: [String]) async throws -> [(response: String, recommendedDocuments: [DocumentType])] {
-        let anthropicService = AnthropicServiceFactory.service(
-            apiKey: APIConfiguration.getAnthropicKey(),
-            betaHeaders: nil
-        )
+        guard let aiProvider = await AIProviderFactory.defaultProvider() else {
+            throw OptimizedRequirementAnalyzerError.noProvider
+        }
 
         // Create a batch prompt that analyzes multiple requirements
         let batchPrompt = """
@@ -99,36 +98,18 @@ actor APIRequestBatcher {
         """
 
         let messages = [
-            MessageParameter.Message(
-                role: .user,
-                content: .text(batchPrompt)
-            ),
+            AIMessage.user(batchPrompt)
         ]
 
-        let parameters = MessageParameter(
-            model: .other("claude-sonnet-4-20250514"),
+        let request = AICompletionRequest(
             messages: messages,
+            model: "claude-sonnet-4-20250514",
             maxTokens: 4096,
-            system: .text(GovernmentAcquisitionPrompts.generateCompletePrompt(for: batchPrompt)),
-            metadata: nil,
-            stopSequences: nil,
-            stream: false,
-            temperature: nil,
-            topK: nil,
-            topP: nil,
-            tools: nil,
-            toolChoice: nil
+            systemPrompt: GovernmentAcquisitionPrompts.generateCompletePrompt(for: batchPrompt)
         )
 
-        let result = try await anthropicService.createMessage(parameters)
-
-        let content: String
-        switch result.content.first {
-        case let .text(text, _):
-            content = text
-        default:
-            throw RequirementAnalyzerError.noResponse
-        }
+        let result = try await aiProvider.complete(request)
+        let content = result.content
 
         // Split responses
         let responses = content.components(separatedBy: "---NEXT---")
@@ -208,52 +189,36 @@ extension OptimizedRequirementAnalyzer: DependencyKey {
                     return cached.response
                 }
 
-                let anthropicService = AnthropicServiceFactory.service(
-                    apiKey: APIConfiguration.getAnthropicKey(),
-                    betaHeaders: nil
-                )
+                guard let aiProvider = await AIProviderFactory.defaultProvider() else {
+                    throw OptimizedRequirementAnalyzerError.noProvider
+                }
 
                 let messages = [
-                    MessageParameter.Message(
-                        role: .user,
-                        content: .text("""
+                    AIMessage.user("""
                         Please enhance and improve the following acquisition requirements prompt to make it more specific, comprehensive, and actionable for generating government contract documents. Keep the enhanced version clear and concise:
 
                         Original prompt: \(prompt)
 
                         Enhanced prompt:
                         """)
-                    ),
                 ]
 
-                let parameters = MessageParameter(
-                    model: .other("claude-sonnet-4-20250514"),
+                let request = AICompletionRequest(
                     messages: messages,
+                    model: "claude-sonnet-4-20250514",
                     maxTokens: 500,
-                    system: .text("You are an expert at refining government acquisition requirements. Enhance prompts to be more specific about scope, deliverables, timeline, and technical requirements while maintaining clarity."),
-                    metadata: nil,
-                    stopSequences: nil,
-                    stream: false,
                     temperature: 0.3,
-                    topK: nil,
-                    topP: nil,
-                    tools: nil,
-                    toolChoice: nil
+                    systemPrompt: "You are an expert at refining government acquisition requirements. Enhance prompts to be more specific about scope, deliverables, timeline, and technical requirements while maintaining clarity."
                 )
 
-                let result = try await anthropicService.createMessage(parameters)
+                let result = try await aiProvider.complete(request)
 
-                switch result.content.first {
-                case let .text(text, _):
-                    let enhanced = text.trimmingCharacters(in: .whitespacesAndNewlines)
+                let enhanced = result.content.trimmingCharacters(in: .whitespacesAndNewlines)
 
-                    // Cache the enhancement
-                    try? await cacheService.cacheAnalysisResponse(cacheKey, enhanced, [])
+                // Cache the enhancement
+                try? await cacheService.cacheAnalysisResponse(cacheKey, enhanced, [])
 
-                    return enhanced
-                default:
-                    throw RequirementAnalyzerError.noResponse
-                }
+                return enhanced
             },
             batchAnalyzeRequirements: { requirements in
                 // Check cache for each requirement
@@ -352,6 +317,10 @@ public extension DependencyValues {
         get { self[OptimizedRequirementAnalyzer.self] }
         set { self[OptimizedRequirementAnalyzer.self] = newValue }
     }
+}
+
+public enum OptimizedRequirementAnalyzerError: Error {
+    case noProvider
 }
 
 // MARK: - Migration Helper

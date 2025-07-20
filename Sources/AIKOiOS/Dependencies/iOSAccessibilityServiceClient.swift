@@ -44,22 +44,24 @@
 
     public extension AccessibilityServiceClient {
         static let iOS: Self = {
-            let client = iOSAccessibilityServiceClient()
+            let service = iOSAccessibilityService()
             return Self(
                 _announceNotification: { message, priority in
-                    await client.announceNotification(message, priority: priority)
+                    MainActor.assumeIsolated {
+                        service.announceNotification(message, priority: priority)
+                    }
                 },
                 _supportsAccessibilityNotifications: {
-                    await client.supportsAccessibilityNotifications()
+                    service.supportsAccessibilityNotifications()
                 },
                 _notifyVoiceOverStatusChange: {
-                    await client.notifyVoiceOverStatusChange()
+                    service.notifyVoiceOverStatusChange()
                 },
                 _voiceOverStatusChangeNotificationName: {
-                    await client.voiceOverStatusChangeNotificationName()
+                    service.voiceOverStatusChangeNotificationName()
                 },
                 _hasVoiceOverStatusNotifications: {
-                    await client.hasVoiceOverStatusNotifications()
+                    service.hasVoiceOverStatusNotifications()
                 }
             )
         }()

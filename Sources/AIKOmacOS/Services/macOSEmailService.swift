@@ -75,13 +75,9 @@
             Task { @MainActor in
                 if NSWorkspace.shared.open(url) {
                     // We can't know if the email was actually sent on macOS
-                    await MainActor.run {
-                        completion(.sent)
-                    }
+                    completion(.sent)
                 } else {
-                    await MainActor.run {
-                        completion(.failed(EmailServiceError.compositionFailed))
-                    }
+                    completion(.failed(EmailServiceError.compositionFailed))
                 }
             }
         }

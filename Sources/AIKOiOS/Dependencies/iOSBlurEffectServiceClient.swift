@@ -23,7 +23,7 @@
             }
         }
 
-        public func recommendedBlurStyle() async -> UIBlurEffect.Style {
+        public func recommendedBlurStyle() async -> Material {
             await executeMainActorOperation {
                 self.service.recommendedBlurStyle()
             }
@@ -32,16 +32,16 @@
 
     public extension BlurEffectServiceClient {
         static let iOS: Self = {
-            let client = iOSBlurEffectServiceClient()
+            let service = iOSBlurEffectService()
             return Self(
                 _createBlurredBackground: { radius in
-                    await client.createBlurredBackground(radius: radius)
+                    service.createBlurredBackground(radius: radius)
                 },
                 _supportsNativeBlur: {
-                    await client.supportsNativeBlur()
+                    service.supportsNativeBlur()
                 },
                 _recommendedBlurStyle: {
-                    await client.recommendedBlurStyle()
+                    service.recommendedBlurStyle()
                 }
             )
         }()

@@ -1,7 +1,7 @@
 import AppCore
 import ComposableArchitecture
 import Foundation
-import SwiftAnthropic
+import AikoCompat
 
 @Reducer
 public struct AcquisitionChatFeature: Sendable {
@@ -568,49 +568,34 @@ public struct AcquisitionChatFeature: Sendable {
 
                 return .run { [input = state.currentInput] send in
                     do {
-                        // Create AnthropicService directly
-                        let anthropicService = AnthropicServiceFactory.service(
-                            apiKey: APIConfiguration.getAnthropicKey(),
-                            betaHeaders: nil
-                        )
+                        // Get AIProvider
+                        guard let aiProvider = await AIProviderFactory.defaultProvider() else {
+                            throw AcquisitionChatFeatureError.noProvider
+                        }
 
                         // Use AI to enhance the prompt
                         let messages = [
-                            MessageParameter.Message(
-                                role: .user,
-                                content: .text("""
+                            AIMessage.user("""
                                 Please enhance and improve the following prompt to make it clearer, more specific, and more effective for generating government contract documents. Keep the enhanced version concise but comprehensive:
 
                                 Original prompt: \(input)
 
                                 Enhanced prompt:
                                 """)
-                            ),
                         ]
 
-                        let parameters = MessageParameter(
-                            model: .other("claude-sonnet-4-20250514"),
+                        let request = AICompletionRequest(
                             messages: messages,
+                            model: "claude-sonnet-4-20250514",
                             maxTokens: 300,
-                            system: .text("You are an expert at improving prompts for government acquisition document generation. Make prompts clearer, more specific, and actionable while keeping them concise."),
-                            metadata: nil,
-                            stopSequences: nil,
-                            stream: false,
                             temperature: 0.3,
-                            topK: nil,
-                            topP: nil,
-                            tools: nil,
-                            toolChoice: nil
+                            systemPrompt: "You are an expert at improving prompts for government acquisition document generation. Make prompts clearer, more specific, and actionable while keeping them concise."
                         )
 
-                        let result = try await anthropicService.createMessage(parameters)
+                        let result = try await aiProvider.complete(request)
 
-                        if case let .text(enhancedText, _) = result.content.first {
-                            await send(.promptEnhanced(enhancedText.trimmingCharacters(in: .whitespacesAndNewlines)))
-                        } else {
-                            // If enhancement fails, keep the original
-                            await send(.promptEnhanced(input))
-                        }
+                        let enhancedText = result.content.trimmingCharacters(in: .whitespacesAndNewlines)
+                        await send(.promptEnhanced(enhancedText))
                     } catch {
                         // If enhancement fails, keep the original
                         await send(.promptEnhanced(input))
@@ -1029,10 +1014,15 @@ public struct AcquisitionChatFeature: Sendable {
         )
 
         // Call the AI service
+
+        // Get AIProvider
+        guard let aiProvider = await AIProviderFactory.defaultProvider() else {
+            throw AcquisitionChatFeatureError.noProvider
+        }
+
+        // Convert to AICompletionRequest
         let messages = [
-            MessageParameter.Message(
-                role: .user,
-                content: .text("""
+            AIMessage.user("""
                 Based on the current phase of acquisition planning (\(phase)) and the user's input, 
                 provide a response that:
                 1. Acknowledges and processes their input
@@ -1064,40 +1054,21 @@ public struct AcquisitionChatFeature: Sendable {
                 Respond in a conversational but professional manner as a government contracting expert.
                 Format your response using markdown for better readability.
                 """)
-            ),
         ]
 
-        let parameters = MessageParameter(
-            model: .other("claude-sonnet-4-20250514"),
+        let request = AICompletionRequest(
             messages: messages,
+            model: "claude-sonnet-4-20250514",
             maxTokens: 2048,
-            system: .text(systemPrompt),
-            metadata: nil,
-            stopSequences: nil,
-            stream: false,
             temperature: 0.7,
-            topK: nil,
-            topP: nil,
-            tools: nil,
-            toolChoice: nil
+            systemPrompt: systemPrompt
         )
 
-        let anthropicService = AnthropicServiceFactory.service(
-            apiKey: APIConfiguration.getAnthropicKey(),
-            betaHeaders: nil
-        )
+        let result = try await aiProvider.complete(request)
 
-        let result = try await anthropicService.createMessage(parameters)
-
-        let aiResponse: String
-        switch result.content.first {
-        case let .text(text, _): // Ignore citations
-            // Spell check the AI response
-            @Dependency(\.spellCheckService) var spellCheckService
-            aiResponse = await spellCheckService.checkAndCorrect(text)
-        default:
-            throw AIDocumentGeneratorError.noContent
-        }
+        // Spell check the AI response
+        @Dependency(\.spellCheckService) var spellCheckService
+        let aiResponse = await spellCheckService.checkAndCorrect(result.content)
 
         // Parse the AI response and extract updates
         var requirements = currentRequirements
@@ -1216,4 +1187,8 @@ private extension AcquisitionChatFeature.ChatPhase {
             .planning
         }
     }
+}
+
+public enum AcquisitionChatFeatureError: Error {
+    case noProvider
 }

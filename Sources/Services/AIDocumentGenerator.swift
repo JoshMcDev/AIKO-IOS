@@ -1,7 +1,7 @@
 import AppCore
 import ComposableArchitecture
 import Foundation
-import SwiftAnthropic
+import AikoCompat
 
 public struct AIDocumentGenerator: Sendable {
     public var generateDocuments: @Sendable (String, Set<DocumentType>) async throws -> [GeneratedDocument]
@@ -25,10 +25,9 @@ extension AIDocumentGenerator: DependencyKey {
                 @Dependency(\.documentGenerationCache) var cache
                 @Dependency(\.spellCheckService) var spellCheckService
 
-                let anthropicService = AnthropicServiceFactory.service(
-                    apiKey: APIConfiguration.getAnthropicKey(),
-                    betaHeaders: nil
-                )
+                guard let aiProvider = await AIProviderFactory.defaultProvider() else {
+                    throw AIDocumentGeneratorError.noProvider
+                }
                 var generatedDocuments: [GeneratedDocument] = []
 
                 // Load user profile for template variables
@@ -84,10 +83,7 @@ extension AIDocumentGenerator: DependencyKey {
                     }
 
                     let messages = [
-                        MessageParameter.Message(
-                            role: .user,
-                            content: .text(prompt)
-                        ),
+                        AIMessage.user(prompt)
                     ]
 
                     // Get system prompt (with caching)
@@ -99,30 +95,15 @@ extension AIDocumentGenerator: DependencyKey {
                         await cache.cacheSystemPrompt(systemPrompt, for: documentType)
                     }
 
-                    let parameters = MessageParameter(
-                        model: .other("claude-sonnet-4-20250514"),
+                    let request = AICompletionRequest(
                         messages: messages,
+                        model: "claude-sonnet-4-20250514",
                         maxTokens: 4096,
-                        system: .text(systemPrompt),
-                        metadata: nil,
-                        stopSequences: nil,
-                        stream: false,
-                        temperature: nil,
-                        topK: nil,
-                        topP: nil,
-                        tools: nil,
-                        toolChoice: nil
+                        systemPrompt: systemPrompt
                     )
 
-                    let result = try await anthropicService.createMessage(parameters)
-
-                    let content: String
-                    switch result.content.first {
-                    case let .text(text, _): // Ignore citations
-                        content = text
-                    default:
-                        throw AIDocumentGeneratorError.noContent
-                    }
+                    let result = try await aiProvider.complete(request)
+                    let content = result.content
 
                     // Spell check and correct the content
                     let correctedContent = await spellCheckService.checkAndCorrect(content)
@@ -152,10 +133,9 @@ extension AIDocumentGenerator: DependencyKey {
                 @Dependency(\.documentGenerationCache) var cache
                 @Dependency(\.spellCheckService) var spellCheckService
 
-                let anthropicService = AnthropicServiceFactory.service(
-                    apiKey: APIConfiguration.getAnthropicKey(),
-                    betaHeaders: nil
-                )
+                guard let aiProvider = await AIProviderFactory.defaultProvider() else {
+                    throw AIDocumentGeneratorError.noProvider
+                }
                 var generatedDocuments: [GeneratedDocument] = []
 
                 // Load user profile for template variables
@@ -197,10 +177,7 @@ extension AIDocumentGenerator: DependencyKey {
                     )
 
                     let messages = [
-                        MessageParameter.Message(
-                            role: .user,
-                            content: .text(prompt)
-                        ),
+                        AIMessage.user(prompt)
                     ]
 
                     // Get system prompt (with caching)
@@ -212,30 +189,15 @@ extension AIDocumentGenerator: DependencyKey {
                         await cache.cacheSystemPrompt(systemPrompt, for: dfDocumentType)
                     }
 
-                    let parameters = MessageParameter(
-                        model: .other("claude-sonnet-4-20250514"),
+                    let request = AICompletionRequest(
                         messages: messages,
+                        model: "claude-sonnet-4-20250514",
                         maxTokens: 4096,
-                        system: .text(systemPrompt),
-                        metadata: nil,
-                        stopSequences: nil,
-                        stream: false,
-                        temperature: nil,
-                        topK: nil,
-                        topP: nil,
-                        tools: nil,
-                        toolChoice: nil
+                        systemPrompt: systemPrompt
                     )
 
-                    let result = try await anthropicService.createMessage(parameters)
-
-                    let content: String
-                    switch result.content.first {
-                    case let .text(text, _): // Ignore citations
-                        content = text
-                    default:
-                        throw AIDocumentGeneratorError.noContent
-                    }
+                    let result = try await aiProvider.complete(request)
+                    let content = result.content
 
                     // Spell check and correct the content
                     let correctedContent = await spellCheckService.checkAndCorrect(content)
@@ -882,6 +844,7 @@ public enum AIDocumentGeneratorError: Error {
     case invalidResponse
     case rateLimitExceeded
     case insufficientCredits
+    case noProvider
 }
 
 public extension DependencyValues {

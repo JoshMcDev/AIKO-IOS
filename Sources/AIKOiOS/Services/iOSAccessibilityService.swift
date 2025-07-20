@@ -34,7 +34,7 @@
             // This is here for API consistency
         }
 
-        public func voiceOverStatusChangeNotificationName() -> Notification.Name {
+        public func voiceOverStatusChangeNotificationName() -> Notification.Name? {
             UIAccessibility.voiceOverStatusDidChangeNotification
         }
 

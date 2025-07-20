@@ -241,7 +241,7 @@
     @available(*, deprecated, message: "Use VisionKitAdapter.presentDocumentScanner() instead")
     public struct LegacyDocumentScanner {
         public static func scan() async throws -> ScannedDocument {
-            let adapter = VisionKitAdapter()
+            let adapter = await VisionKitAdapter()
             return try await adapter.presentDocumentScanner()
         }
     }

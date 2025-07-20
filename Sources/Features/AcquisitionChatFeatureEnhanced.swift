@@ -1,7 +1,7 @@
 import AppCore
 import ComposableArchitecture
 import Foundation
-import SwiftAnthropic
+import AikoCompat
 
 // MARK: - Enhanced Acquisition Chat Feature with Adaptive Prompting
 

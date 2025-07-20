@@ -6,7 +6,7 @@ public protocol AccessibilityServiceProtocol: Sendable {
     func announceNotification(_ message: String, priority: AccessibilityAnnouncementPriority)
     func supportsAccessibilityNotifications() -> Bool
     func notifyVoiceOverStatusChange()
-    func voiceOverStatusChangeNotificationName() -> Notification.Name
+    func voiceOverStatusChangeNotificationName() -> Notification.Name?
     func hasVoiceOverStatusNotifications() -> Bool
 }
 
@@ -20,7 +20,7 @@ public struct AccessibilityServiceClient: Sendable {
     public var _announceNotification: @Sendable (String, AccessibilityAnnouncementPriority) -> Void = { _, _ in }
     public var _supportsAccessibilityNotifications: @Sendable () -> Bool = { false }
     public var _notifyVoiceOverStatusChange: @Sendable () -> Void = {}
-    public var _voiceOverStatusChangeNotificationName: @Sendable () -> Notification.Name = { Notification.Name("com.aiko.never") }
+    public var _voiceOverStatusChangeNotificationName: @Sendable () -> Notification.Name? = { nil }
     public var _hasVoiceOverStatusNotifications: @Sendable () -> Bool = { false }
 }
 
@@ -38,7 +38,7 @@ extension AccessibilityServiceClient: AccessibilityServiceProtocol {
         _notifyVoiceOverStatusChange()
     }
 
-    public func voiceOverStatusChangeNotificationName() -> Notification.Name {
+    public func voiceOverStatusChangeNotificationName() -> Notification.Name? {
         _voiceOverStatusChangeNotificationName()
     }
 

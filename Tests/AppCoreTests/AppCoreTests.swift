@@ -1,9 +1,9 @@
+import Testing
 @testable import AppCore
-import XCTest
 
-final class AppCoreTests: XCTestCase {
-    func testExample() {
+struct AppCoreTests {
+    @Test func example() {
         // Placeholder test
-        XCTAssert(true)
+        #expect(true)
     }
 }

@@ -30,48 +30,5 @@
 			<integer>4</integer>
 		</dict>
 	</dict>
-	<key>SuppressBuildableAutocreation</key>
-	<dict>
-		<key>AIKO</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>AIKOTests</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>AIKOiOS</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>AIKOiOSTests</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>AIKOmacOS</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>AIKOmacOSTests</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>AppCore</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>AppCoreTests</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-	</dict>
 </dict>
 </plist>

@@ -1,9 +1,9 @@
+import Testing
 @testable import AIKOmacOS
-import XCTest
 
-final class AIKOmacOSTests: XCTestCase {
-    func testExample() {
-        // Placeholder test
-        XCTAssert(true)
+struct AIKOmacOSTests {
+    @Test func example() {
+        // Placeholder test for macOS module
+        #expect(true)
     }
 }

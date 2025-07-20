@@ -14,10 +14,18 @@
             // Initialize with current screen values on the main actor
             // This ensures we capture the screen properties safely at startup
             if Thread.isMainThread {
-                cachedBounds = UIScreen.main.bounds
-                cachedScale = UIScreen.main.scale
-                let idiom = UIDevice.current.userInterfaceIdiom
-                cachedIsCompact = idiom == .phone || (idiom == .pad && UIScreen.main.bounds.width < 768)
+                cachedBounds = MainActor.assumeIsolated {
+                    UIScreen.main.bounds
+                }
+                cachedScale = MainActor.assumeIsolated {
+                    UIScreen.main.scale
+                }
+                let idiom = MainActor.assumeIsolated {
+                    UIDevice.current.userInterfaceIdiom
+                }
+                cachedIsCompact = MainActor.assumeIsolated {
+                    idiom == .phone || (idiom == .pad && UIScreen.main.bounds.width < 768)
+                }
             } else {
                 // Fallback values - should rarely be needed in practice
                 // Most screen services are initialized on the main thread during app startup

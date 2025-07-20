@@ -37,9 +37,9 @@
             // This is here for API consistency
         }
 
-        public func voiceOverStatusChangeNotificationName() -> Notification.Name {
-            // macOS doesn't have an equivalent notification, return a never-publishing notification
-            Notification.Name("com.aiko.never")
+        public func voiceOverStatusChangeNotificationName() -> Notification.Name? {
+            // macOS doesn't have an equivalent notification, return nil
+            nil
         }
 
         public func hasVoiceOverStatusNotifications() -> Bool {

@@ -97,12 +97,12 @@ actor UnifiedCacheStorage {
     private var configuration: CacheConfiguration
 
     // Storage components
-    private nonisolated(unsafe) let standardStorage: StandardCacheComponent
-    private nonisolated(unsafe) let encryptionLayer: EncryptionLayer?
-    private nonisolated(unsafe) let adaptiveEngine: AdaptiveEngine?
+    private let standardStorage: StandardCacheComponent
+    private let encryptionLayer: EncryptionLayer?
+    private let adaptiveEngine: AdaptiveEngine?
 
     // Metrics
-    private nonisolated(unsafe) let metricsCollector: MetricsCollector
+    private let metricsCollector: MetricsCollector
 
     init(configuration: CacheConfiguration) async throws {
         self.configuration = configuration

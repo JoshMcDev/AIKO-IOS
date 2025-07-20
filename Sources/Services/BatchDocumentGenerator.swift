@@ -1,7 +1,7 @@
 import AppCore
 import ComposableArchitecture
 import Foundation
-import SwiftAnthropic
+import AikoCompat
 
 /// Batch document generation service that combines multiple document requests into single API calls
 public struct BatchDocumentGenerator: Sendable {
@@ -234,10 +234,9 @@ public struct BatchDocumentGenerator: Sendable {
         requirements: String,
         profile: UserProfile?
     ) async throws -> [GeneratedDocument] {
-        let anthropicService = AnthropicServiceFactory.service(
-            apiKey: APIConfiguration.getAnthropicKey(),
-            betaHeaders: nil
-        )
+        guard let aiProvider = await AIProviderFactory.defaultProvider() else {
+            throw BatchDocumentGeneratorError.noProvider
+        }
 
         var allDocuments: [GeneratedDocument] = []
 
@@ -251,28 +250,17 @@ public struct BatchDocumentGenerator: Sendable {
             let combinedSystemPrompt = createCombinedSystemPrompt(for: batch)
 
             let messages = [
-                MessageParameter.Message(
-                    role: .user,
-                    content: .text(batchPrompt)
-                ),
+                AIMessage.user(batchPrompt)
             ]
 
-            let parameters = MessageParameter(
-                model: .other("claude-sonnet-4-20250514"),
+            let request = AICompletionRequest(
                 messages: messages,
+                model: "claude-sonnet-4-20250514",
                 maxTokens: maxTokensPerBatch,
-                system: .text(combinedSystemPrompt),
-                metadata: nil,
-                stopSequences: nil,
-                stream: false,
-                temperature: nil,
-                topK: nil,
-                topP: nil,
-                tools: nil,
-                toolChoice: nil
+                systemPrompt: combinedSystemPrompt
             )
 
-            let result = try await anthropicService.createMessage(parameters)
+            let result = try await aiProvider.complete(request)
 
             // Parse batch response
             let documents = try await parseBatchResponse(
@@ -298,10 +286,9 @@ public struct BatchDocumentGenerator: Sendable {
         requirements: String,
         profile: UserProfile?
     ) async throws -> [GeneratedDocument] {
-        let anthropicService = AnthropicServiceFactory.service(
-            apiKey: APIConfiguration.getAnthropicKey(),
-            betaHeaders: nil
-        )
+        guard let aiProvider = await AIProviderFactory.defaultProvider() else {
+            throw BatchDocumentGeneratorError.noProvider
+        }
 
         var allDocuments: [GeneratedDocument] = []
 
@@ -315,28 +302,17 @@ public struct BatchDocumentGenerator: Sendable {
             let combinedSystemPrompt = createDFCombinedSystemPrompt(for: batch)
 
             let messages = [
-                MessageParameter.Message(
-                    role: .user,
-                    content: .text(batchPrompt)
-                ),
+                AIMessage.user(batchPrompt)
             ]
 
-            let parameters = MessageParameter(
-                model: .other("claude-sonnet-4-20250514"),
+            let request = AICompletionRequest(
                 messages: messages,
+                model: "claude-sonnet-4-20250514",
                 maxTokens: maxTokensPerBatch,
-                system: .text(combinedSystemPrompt),
-                metadata: nil,
-                stopSequences: nil,
-                stream: false,
-                temperature: nil,
-                topK: nil,
-                topP: nil,
-                tools: nil,
-                toolChoice: nil
+                systemPrompt: combinedSystemPrompt
             )
 
-            let result = try await anthropicService.createMessage(parameters)
+            let result = try await aiProvider.complete(request)
 
             // Parse batch response
             let documents = try await parseDFBatchResponse(
@@ -487,14 +463,12 @@ public struct BatchDocumentGenerator: Sendable {
     // MARK: - Response Parsing
 
     private func parseBatchResponse(
-        result: MessageResponse,
+        result: AICompletionResponse,
         batch: [BatchRequest],
         requirements: String,
         profile: UserProfile?
     ) async throws -> [GeneratedDocument] {
-        guard case let .text(fullResponse, _) = result.content.first else {
-            throw AIDocumentGeneratorError.noContent
-        }
+        let fullResponse = result.content
 
         var documents: [GeneratedDocument] = []
 
@@ -537,14 +511,12 @@ public struct BatchDocumentGenerator: Sendable {
     }
 
     private func parseDFBatchResponse(
-        result: MessageResponse,
+        result: AICompletionResponse,
         batch: [DFBatchRequest],
         requirements: String,
         profile: UserProfile?
     ) async throws -> [GeneratedDocument] {
-        guard case let .text(fullResponse, _) = result.content.first else {
-            throw AIDocumentGeneratorError.noContent
-        }
+        let fullResponse = result.content
 
         var documents: [GeneratedDocument] = []
 
@@ -585,6 +557,10 @@ public struct BatchDocumentGenerator: Sendable {
 
         return documents
     }
+}
+
+public enum BatchDocumentGeneratorError: Error {
+    case noProvider
 }
 
 // MARK: - Dependency Key

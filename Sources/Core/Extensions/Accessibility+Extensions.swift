@@ -187,7 +187,7 @@ struct VoiceOverDetector: ViewModifier {
 
     private func voiceOverNotificationPublisher() -> NotificationCenter.Publisher {
         if accessibilityService.hasVoiceOverStatusNotifications() {
-            NotificationCenter.default.publisher(for: accessibilityService.voiceOverStatusChangeNotificationName())
+            NotificationCenter.default.publisher(for: accessibilityService.voiceOverStatusChangeNotificationName() ?? Notification.Name("com.aiko.voiceover.fallback"))
         } else {
             // Platform doesn't have VoiceOver notifications, return a never-publishing publisher
             NotificationCenter.default.publisher(for: Notification.Name("com.aiko.never"))

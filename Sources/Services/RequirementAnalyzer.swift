@@ -1,7 +1,7 @@
 import AppCore
 import ComposableArchitecture
 import Foundation
-import SwiftAnthropic
+import AikoCompat
 
 public struct RequirementAnalyzer: Sendable {
     public var analyzeRequirements: @Sendable (String) async throws -> (response: String, recommendedDocuments: [DocumentType])
@@ -23,10 +23,9 @@ extension RequirementAnalyzer: DependencyKey {
     public static var liveValue: RequirementAnalyzer {
         RequirementAnalyzer(
             analyzeRequirements: { requirements in
-                let anthropicService = AnthropicServiceFactory.service(
-                    apiKey: APIConfiguration.getAnthropicKey(),
-                    betaHeaders: nil
-                )
+                guard let aiProvider = await AIProviderFactory.defaultProvider() else {
+                    throw RequirementAnalyzerError.noProvider
+                }
 
                 let analysisPrompt = """
                 Analyze the following acquisition requirements:
@@ -58,36 +57,18 @@ extension RequirementAnalyzer: DependencyKey {
                 """
 
                 let messages = [
-                    MessageParameter.Message(
-                        role: .user,
-                        content: .text(analysisPrompt)
-                    ),
+                    AIMessage.user(analysisPrompt)
                 ]
 
-                let parameters = MessageParameter(
-                    model: .other("claude-sonnet-4-20250514"),
+                let request = AICompletionRequest(
                     messages: messages,
+                    model: "claude-sonnet-4-20250514",
                     maxTokens: 2048,
-                    system: .text(GovernmentAcquisitionPrompts.generateCompletePrompt(for: analysisPrompt)),
-                    metadata: nil,
-                    stopSequences: nil,
-                    stream: false,
-                    temperature: nil,
-                    topK: nil,
-                    topP: nil,
-                    tools: nil,
-                    toolChoice: nil
+                    systemPrompt: GovernmentAcquisitionPrompts.generateCompletePrompt(for: analysisPrompt)
                 )
 
-                let result = try await anthropicService.createMessage(parameters)
-
-                let content: String
-                switch result.content.first {
-                case let .text(text, _): // Ignore citations
-                    content = text
-                default:
-                    throw RequirementAnalyzerError.noResponse
-                }
+                let result = try await aiProvider.complete(request)
+                let content = result.content
 
                 // Parse the response to extract recommendations
                 let recommendedTypes = parseRecommendations(from: content)
@@ -107,10 +88,9 @@ extension RequirementAnalyzer: DependencyKey {
                 }
 
                 // Now analyze the parsed content
-                let anthropicService = AnthropicServiceFactory.service(
-                    apiKey: APIConfiguration.getAnthropicKey(),
-                    betaHeaders: nil
-                )
+                guard let aiProvider = await AIProviderFactory.defaultProvider() else {
+                    throw RequirementAnalyzerError.noProvider
+                }
 
                 let analysisPrompt = """
                 Analyze the following uploaded document for federal acquisition requirements:
@@ -140,36 +120,18 @@ extension RequirementAnalyzer: DependencyKey {
                 """
 
                 let messages = [
-                    MessageParameter.Message(
-                        role: .user,
-                        content: .text(analysisPrompt)
-                    ),
+                    AIMessage.user(analysisPrompt)
                 ]
 
-                let parameters = MessageParameter(
-                    model: .other("claude-sonnet-4-20250514"),
+                let request = AICompletionRequest(
                     messages: messages,
+                    model: "claude-sonnet-4-20250514",
                     maxTokens: 2048,
-                    system: .text(GovernmentAcquisitionPrompts.generateCompletePrompt(for: analysisPrompt)),
-                    metadata: nil,
-                    stopSequences: nil,
-                    stream: false,
-                    temperature: nil,
-                    topK: nil,
-                    topP: nil,
-                    tools: nil,
-                    toolChoice: nil
+                    systemPrompt: GovernmentAcquisitionPrompts.generateCompletePrompt(for: analysisPrompt)
                 )
 
-                let result = try await anthropicService.createMessage(parameters)
-
-                let content: String
-                switch result.content.first {
-                case let .text(text, _): // Ignore citations
-                    content = text
-                default:
-                    throw RequirementAnalyzerError.noResponse
-                }
+                let result = try await aiProvider.complete(request)
+                let content = result.content
 
                 // Parse the response to extract recommendations
                 let recommendedTypes = parseRecommendations(from: content)
@@ -177,47 +139,30 @@ extension RequirementAnalyzer: DependencyKey {
                 return (response: content, recommendedDocuments: recommendedTypes)
             },
             enhancePrompt: { prompt in
-                let anthropicService = AnthropicServiceFactory.service(
-                    apiKey: APIConfiguration.getAnthropicKey(),
-                    betaHeaders: nil
-                )
+                guard let aiProvider = await AIProviderFactory.defaultProvider() else {
+                    throw RequirementAnalyzerError.noProvider
+                }
 
                 let messages = [
-                    MessageParameter.Message(
-                        role: .user,
-                        content: .text("""
+                    AIMessage.user("""
                         Please enhance and improve the following acquisition requirements prompt to make it more specific, comprehensive, and actionable for generating government contract documents. Keep the enhanced version clear and concise:
 
                         Original prompt: \(prompt)
 
                         Enhanced prompt:
                         """)
-                    ),
                 ]
 
-                let parameters = MessageParameter(
-                    model: .other("claude-sonnet-4-20250514"),
+                let request = AICompletionRequest(
                     messages: messages,
+                    model: "claude-sonnet-4-20250514",
                     maxTokens: 500,
-                    system: .text("You are an expert at refining government acquisition requirements. Enhance prompts to be more specific about scope, deliverables, timeline, and technical requirements while maintaining clarity."),
-                    metadata: nil,
-                    stopSequences: nil,
-                    stream: false,
                     temperature: 0.3,
-                    topK: nil,
-                    topP: nil,
-                    tools: nil,
-                    toolChoice: nil
+                    systemPrompt: "You are an expert at refining government acquisition requirements. Enhance prompts to be more specific about scope, deliverables, timeline, and technical requirements while maintaining clarity."
                 )
 
-                let result = try await anthropicService.createMessage(parameters)
-
-                switch result.content.first {
-                case let .text(text, _): // Ignore citations
-                    return text.trimmingCharacters(in: .whitespacesAndNewlines)
-                default:
-                    throw RequirementAnalyzerError.noResponse
-                }
+                let result = try await aiProvider.complete(request)
+                return result.content.trimmingCharacters(in: .whitespacesAndNewlines)
             }
         )
     }
@@ -298,6 +243,7 @@ public enum RequirementAnalyzerError: Error {
     case noResponse
     case invalidResponse
     case analysisError
+    case noProvider
 }
 
 public extension DependencyValues {

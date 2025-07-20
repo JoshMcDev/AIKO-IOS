@@ -167,7 +167,7 @@ let package = Package(
                 "AppCoreTests",
                 "AIKOiOSTests",
                 "AIKOmacOSTests",
-                "Shared",
+                // "Shared", // Re-enabled for proper test utilities
                 // Keep remaining tests that haven't been migrated yet
                 "Integration",
                 "Performance",
