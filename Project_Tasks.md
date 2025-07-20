@@ -235,18 +235,51 @@ Build a focused iOS productivity tool that revolutionizes government contracting
   - Support any OpenAI-compatible API
   - Secure configuration storage
 
-#### Task 8.3: Launch-Time Regulation Fetcher 📅 PLANNED
+#### Task 8.5: File Upload & Document Capture System 📅 CRITICAL
+- **8.5.1** File Input Methods
+  - **Upload file** → Standard file picker integration
+  - **Upload photo** → Photo library access with selection
+  - **Scan document** → Integration with VisionKit document scanner
+  - **Take photo** → Camera capture for documents
+  - **Take screenshot** → Screen capture functionality
+  
+- **8.5.2** Processing Pipeline
+  - **Automatic OCR** → Text extraction from all input types
+  - **Format Detection** → PDF, image, document type recognition
+  - **Quality Enhancement** → Image preprocessing for better OCR
+  - **Metadata Extraction** → Document properties and context
+  
+- **8.5.3** Integration Features
+  - **Direct Chat Input** → Upload and immediately discuss with LLM
+  - **Document Library** → Save and organize captured documents
+  - **Template Population** → Auto-fill forms from captured data
+  - **Workflow Triggers** → Initiate processes based on document type
+
+#### Task 8.3: Launch-Time Regulation Fetcher 📅 CRITICAL
 - **8.3.1** Regulatory Data System
-  - Automatic FAR/DFARS updates on app launch
-  - Delta synchronization for efficient updates
-  - Background refresh capability
-  - Offline fallback with cached regulations
+  - **Launch-time fetch** during onboarding after user profile entry
+  - Support for **cellular & WiFi** connectivity options
+  - **Auto-update every 7 days** with user preference settings
+  - Download comprehensive regulation set:
+    * **FAR** (Federal Acquisition Regulation)
+    * **DFARS** (Defense Federal Acquisition Regulation Supplement)
+    * **DFARS PGI** (Procedures, Guidance, and Information)
+    * **AFARS** (Army Federal Acquisition Regulation Supplement)
+    * **DAFFARS** (Department of Air Force Federal Acquisition Regulation Supplement)
+    * **DAFFARS MP** (Management Procedures)
+    * **SOFARS** (Special Operations Federal Acquisition Regulation Supplement)
+    * **Agency-specific regulations** based on user profile Agency/Dept/Service field
+  - Source: **https://www.acquisition.gov/content/developers-page#github-repositories**
+  - **Local device storage** for offline parsing, lookup, and feature integration
+  - **Testing disclaimer**: Current project resource folder regulations are for testing only, not for app release
   
 - **8.3.2** Smart Update Engine
   - Version comparison and conflict detection
   - User notification for significant changes
   - Optional manual override for critical updates
   - Integration with existing regulation search
+  - **Delta synchronization** for efficient updates
+  - Background refresh capability with offline fallback
   
 - **8.3.3** Performance Optimization
   - Compressed data formats
@@ -254,7 +287,7 @@ Build a focused iOS productivity tool that revolutionizes government contracting
   - Background processing
   - Progress indicators for large updates
 
-#### Task 8.4: iPad Compatibility & Apple Pencil Integration 📅 PLANNED
+#### Task 8.4: iPad Compatibility & Apple Pencil Integration 📅 CRITICAL
 - **8.4.1** iPad UI Enhancements
   - Multi-column layouts for large screens
   - Sidebar navigation optimization
@@ -263,15 +296,18 @@ Build a focused iOS productivity tool that revolutionizes government contracting
   
 - **8.4.2** Apple Pencil Features
   - Document annotation and markup
-  - Signature capture for forms
+  - **Signature capture for generated forms/documents** when applicable as an option
+  - **Professional signature workflow** with capture, review, and embed functionality
   - Handwritten notes integration
   - Sketch-to-requirement conversion
+  - **PencilKit integration** for natural writing experience
   
 - **8.4.3** Enhanced Productivity
   - Drag-and-drop between documents
   - Multiple document windows
   - Enhanced multitasking support
   - Professional document review workflows
+  - **Form completion workflow** with Apple Pencil signature integration
 
 **Timeline**: Week 4 + half of Week 5  
 **Priority**: HIGH - Core functionality
@@ -280,28 +316,43 @@ Build a focused iOS productivity tool that revolutionizes government contracting
 
 ### Phase 6: LLM Intelligence & Compliance Automation 📅 (2 weeks)
 
-#### Task 9: Intelligent Workflow System 📅 ENHANCED
-- **9.1** Advanced Workflow Engine
-  - Event-driven triggers with Smart Listeners
-  - LLM-orchestrated actions with context awareness
-  - Real-time progress tracking with visual indicators
-  - Intelligent error recovery and retry mechanisms
-  - Workflow templates for common scenarios
+#### Task 9: Intelligent Workflow System 📅 CRITICAL - BMAD-METHOD STYLE
+- **9.1** BMAD-Method Workflow Framework
+  - **Background process** of logical acquisition workflow framework
+  - **User + LLM Brainstorming** → requirement gathering until sufficient information
+  - **PRD Creation** → LLM generates Project Requirements Document
+  - **Architecture/Design** → LLM creates acquisition strategy (regulation compliant)
+  - **Document Chain Orchestration** → formulates complete document chain
+  - **Reference Implementation**: https://github.com/bmadcode/BMAD-METHOD.git
   
-- **9.2** Enhanced Follow-On Actions
-  - LLM-suggested next steps with confidence scoring
-  - Interactive action cards with one-tap execution
-  - Smart dependency management and conflict resolution
-  - Dynamic priority indicators based on context
-  - Parallel task execution (up to 5 concurrent tasks)
-  - Integration with UnifiedChatFeature capabilities
+- **9.2** Acquisition Process Epic Management
+  - **Main App View Categories** → Document categories become epics:
+    * **Market Intelligence** epic
+    * **Planning** epic
+    * **Solicitation** epic
+    * **Award** epic
+    * **Post-Award** epic
+    * **Closeout** epic
+  - **Epic Sharding** → Model breaks each epic into manageable "stories"
+  - **Story Breakdown** → Each story divided into phases, tasks, and subtasks
   
-- **9.3** Workflow Intelligence Features
-  - Predictive workflow suggestions
-  - Automatic workflow optimization
-  - Performance analytics and insights
-  - Custom workflow builder with drag-drop interface
-  - Workflow sharing and templates
+- **9.3** Quality Assurance & Testing Framework
+  - **Story Completion** → Testing and QA before moving to next story
+  - **Process Control** → LLM internal process OR user approval (user preference)
+  - **Defined Metrics** through multiple evaluation lenses:
+    * **OCR Recognition/Data Values** → accuracy metrics
+    * **Forms and Documents Generation** → completeness metrics
+    * **Regulation Check** → compliance verification
+  - **MoE** (Measures of Effectiveness)
+  - **MoP** (Measures of Performance)
+  - **DoS** (Definition of Success)
+  - **DoD** (Definition of Done)
+  
+- **9.4** Analytics Integration
+  - **Evaluation Data** → feeds into Analytics category
+  - **User Information** → performance insights
+  - **Workflow Optimization** → continuous improvement based on metrics
+  - **Integration** with existing UnifiedChatFeature capabilities
 
 #### Task 10: Document Chain Orchestration
 - **10.1** Chain Builder
@@ -349,60 +400,97 @@ Build a focused iOS productivity tool that revolutionizes government contracting
   - Cross-reference validation
   - Regulatory updates
 
+#### Task 13: Outcome-Based Contracting Framework 📅 CRITICAL - HARD-CODED DESIGN
+- **13.1** Core OBC Architecture
+  - **Hard-coded acquisition design** → Outcome-based contracting principles embedded in app logic
+  - **Performance-based templates** → Pre-built contract structures focused on results
+  - **Success metrics definition** → Quantifiable outcome measurements built into planning
+  - **Risk assessment engine** → Automatic evaluation of outcome-based approach viability
+  - **Regulatory compliance** → FAR Part 37.6 Performance-Based Acquisition integration
+  
+- **13.2** Acquisition Planning Integration
+  - **Requirements analysis** → LLM converts traditional requirements to outcome statements
+  - **Performance work statements** → Automated PWS generation with outcome focus
+  - **Quality assurance surveillance plans** → Built-in QASP templates for outcomes
+  - **Incentive structure design** → Performance incentives and penalties framework
+  - **Market research guidance** → Outcome-capability vendor assessment tools
+  
+- **13.3** Contract Design & Execution
+  - **Contract type selection** → Intelligent recommendation for outcome-based contract types
+  - **Payment structure** → Performance-based payment schedules and milestones
+  - **Deliverable definitions** → Outcome-focused deliverable specifications
+  - **Evaluation criteria** → Weighted evaluation factors emphasizing outcomes
+  - **Post-award management** → Performance monitoring and outcome tracking tools
+  
+- **13.4** Performance Measurement & Analytics
+  - **KPI dashboard** → Real-time outcome achievement tracking
+  - **Variance analysis** → Automatic detection of outcome gaps
+  - **Corrective action triggers** → Workflow automation for performance issues
+  - **Historical performance** → Vendor outcome-based performance database
+  - **Continuous improvement** → Outcome-based contracting strategy refinement
+  
+- **13.5** Regulatory & Compliance Engine
+  - **FAR/DFARS compliance** → Automated compliance checking for OBC approaches
+  - **Agency-specific guidance** → Tailored OBC implementation based on user profile
+  - **Best practices library** → Curated successful outcome-based contracting examples
+  - **Risk mitigation** → Built-in safeguards and fallback strategies
+  - **Audit trail** → Complete documentation for outcome-based decision rationale
+
 **Timeline**: Weeks 5.5-7.5  
-**Priority**: HIGH - Key differentiators
+**Priority**: CRITICAL - Revolutionary contracting approach  
+**Implementation**: Hard-coded into app's core acquisition logic
 
 ---
 
 ### Phase 7: Polish & App Store Release 📅 (2 weeks)
 
-#### Task 13: Performance Optimization
-- **13.1** Code Cleanup
+#### Task 14: Performance Optimization
+- **14.1** Code Cleanup
   - Remove unused code
   - Optimize app size (< 50MB)
   - Memory management
   - Battery optimization
   
-- **13.2** Performance Tuning
+- **14.2** Performance Tuning
   - Launch time optimization
   - Smooth animations
   - Efficient data handling
   - Background task management
 
-#### Task 14: Quality Assurance
-- **14.1** Testing Suite
+#### Task 15: Quality Assurance
+- **15.1** Testing Suite
   - Unit tests for services
   - UI/UX testing
   - Integration testing
   - Edge case handling
   
-- **14.2** Accessibility
+- **15.2** Accessibility
   - VoiceOver support
   - Dynamic type
   - Color contrast
   - Gesture alternatives
 
-#### Task 15: App Store Preparation
-- **15.1** Store Assets
+#### Task 16: App Store Preparation
+- **16.1** Store Assets
   - Screenshots (all device sizes)
   - App preview video
   - Compelling description
   - Keywords optimization
   
-- **15.2** Documentation
+- **16.2** Documentation
   - Privacy policy (LLM providers)
   - Terms of service
   - Support documentation
   - FAQ section
 
-#### Task 16: Launch Preparation
-- **16.1** Beta Testing
+#### Task 17: Launch Preparation
+- **17.1** Beta Testing
   - TestFlight deployment
   - Feedback collection
   - Critical bug fixes
   - Performance validation
   
-- **16.2** Marketing
+- **17.2** Marketing
   - Launch announcement
   - Feature highlights
   - User testimonials
@@ -415,24 +503,26 @@ Build a focused iOS productivity tool that revolutionizes government contracting
 
 ## 📊 Progress Overview
 
-### Total Tasks: 20 Main Tasks (89 Subtasks)
+### Total Tasks: 21 Main Tasks (94 Subtasks)
 
-### Completed: 5/20 Main Tasks (25%)
+### Completed: 5/21 Main Tasks (24%)
 - ✅ Phase 1: Foundation & Architecture
 - ✅ Phase 2: Resources & Templates  
 - ✅ Phase 3: LLM Integration
 - ✅ Phase 3.5: Triple Architecture Migration
 - ✅ Phase 4.1: Enhanced Image Processing
 
-### In Progress: 1/20 Main Tasks (5%)
+### In Progress: 1/21 Main Tasks (5%)
 - 📅 Phase 4.2: Professional Document Scanner (CURRENT)
 
-### Planned: 14/20 Main Tasks (70%)
+### Planned: 15/21 Main Tasks (71%)
 - 📅 Phase 5: Smart Integrations & Provider Flexibility
   - Including Task 8.3: Launch-Time Regulation Fetcher
   - Including Task 8.4: iPad Compatibility & Apple Pencil Integration
+  - Including Task 8.5: File Upload & Document Capture System
 - 📅 Phase 6: LLM Intelligence & Compliance Automation
-  - Including Task 9: Enhanced Intelligent Workflow System
+  - Including Task 9: Enhanced Intelligent Workflow System (BMAD-Method)
+  - Including Task 13: Outcome-Based Contracting Framework (Hard-coded)
 - 📅 Phase 7: Polish & App Store Release
 
 ---
@@ -455,7 +545,9 @@ Build a focused iOS productivity tool that revolutionizes government contracting
 **Upcoming Integration Tasks**:
 - Launch-Time Regulation Fetcher (Phase 5)
 - iPad Compatibility & Apple Pencil Integration (Phase 5)
-- Enhanced Intelligent Workflow System (Phase 6)
+- File Upload & Document Capture System (Phase 5)
+- Enhanced Intelligent Workflow System - BMAD-Method (Phase 6)
+- Outcome-Based Contracting Framework - Hard-coded (Phase 6)
 
 ---
 
@@ -468,7 +560,7 @@ Build a focused iOS productivity tool that revolutionizes government contracting
 5. **Milestone 5**: Smart Integrations (Phase 5) - February 15, 2025
    - Including Launch-Time Regulation Fetcher
    - Including iPad Compatibility & Apple Pencil Integration
-6. **Milestone 6**: Enhanced Workflow Automation (Phase 6) - March 1, 2025
+6. **Milestone 6**: Enhanced Workflow Automation & Outcome-Based Contracting (Phase 6) - March 1, 2025
 7. **Milestone 7**: App Store Launch (Phase 7) - March 15, 2025
 
 ---
