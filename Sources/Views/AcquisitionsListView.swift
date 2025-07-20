@@ -11,99 +11,16 @@ public struct AcquisitionsListView: View {
 
     public var body: some View {
         WithViewStore(store, observe: \.self) { viewStore in
-            VStack(spacing: 0) {
-                // Search and Filter Bar
-                SearchFilterBar(
-                    searchText: viewStore.binding(
-                        get: \.searchText,
-                        send: AcquisitionsListFeature.Action.searchTextChanged
-                    ),
-                    selectedStatus: viewStore.binding(
-                        get: \.selectedStatus,
-                        send: AcquisitionsListFeature.Action.statusFilterChanged
-                    ),
-                    sortOrder: viewStore.binding(
-                        get: \.sortOrder,
-                        send: AcquisitionsListFeature.Action.sortOrderChanged
-                    )
-                )
-
-                // Content
-                if viewStore.isLoading {
-                    Spacer()
-                    ProgressView("Loading acquisitions...")
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    Spacer()
-                } else if viewStore.filteredAcquisitions.isEmpty {
-                    EmptyAcquisitionsView(hasAcquisitions: !viewStore.acquisitions.isEmpty)
-                } else {
-                    ScrollView {
-                        LazyVStack(spacing: Theme.Spacing.md) {
-                            ForEach(viewStore.filteredAcquisitions, id: \.id) { acquisition in
-                                AcquisitionCard(
-                                    acquisition: acquisition,
-                                    isRenaming: viewStore.renamingAcquisitionId == acquisition.id,
-                                    newName: viewStore.binding(
-                                        get: \.newAcquisitionName,
-                                        send: AcquisitionsListFeature.Action.updateNewAcquisitionName
-                                    ),
-                                    onOpen: {
-                                        if let id = acquisition.id {
-                                            viewStore.send(.openAcquisition(id))
-                                        }
-                                    },
-                                    onDelete: {
-                                        if let id = acquisition.id {
-                                            viewStore.send(.deleteAcquisition(id))
-                                        }
-                                    },
-                                    onShareDocument: {
-                                        if let id = acquisition.id {
-                                            viewStore.send(.shareDocument(id))
-                                        }
-                                    },
-                                    onShareContractFile: {
-                                        if let id = acquisition.id {
-                                            viewStore.send(.shareContractFile(id))
-                                        }
-                                    },
-                                    onRename: {
-                                        if let id = acquisition.id {
-                                            viewStore.send(.renameAcquisition(id))
-                                        }
-                                    },
-                                    onDuplicate: {
-                                        if let id = acquisition.id {
-                                            viewStore.send(.duplicateAcquisition(id))
-                                        }
-                                    },
-                                    onConfirmRename: {
-                                        viewStore.send(.confirmRename)
-                                    },
-                                    onCancelRename: {
-                                        viewStore.send(.cancelRename)
-                                    }
-                                )
-                            }
-                        }
-                        .padding(Theme.Spacing.lg)
-                    }
-                }
-            }
-            .background(Theme.Colors.aikoBackground)
-            .navigationTitle("My Acquisitions")
-            #if os(iOS)
-                .navigationBarTitleDisplayMode(.large)
-            #endif
+            contentView(viewStore: viewStore)
+                .background(Theme.Colors.aikoBackground)
+                .navigationTitle("My Acquisitions")
+                .applyNavigationConfiguration()
                 .onAppear {
                     viewStore.send(.onAppear)
                 }
                 .alert(
                     "Error",
-                    isPresented: viewStore.binding(
-                        get: { $0.error != nil },
-                        send: { _ in .clearError }
-                    ),
+                    isPresented: errorBinding(viewStore: viewStore),
                     presenting: viewStore.error
                 ) { _ in
                     Button("OK") { viewStore.send(.clearError) }
@@ -111,6 +28,160 @@ public struct AcquisitionsListView: View {
                     Text(error)
                 }
         }
+    }
+    
+    // MARK: - Private Helper Views
+    
+    @ViewBuilder
+    private func contentView(viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>) -> some View {
+        VStack(spacing: 0) {
+            searchFilterBar(viewStore: viewStore)
+            mainContent(viewStore: viewStore)
+        }
+    }
+    
+    @ViewBuilder
+    private func searchFilterBar(viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>) -> some View {
+        SearchFilterBar(
+            searchText: viewStore.binding(
+                get: \.searchText,
+                send: AcquisitionsListFeature.Action.searchTextChanged
+            ),
+            selectedStatus: viewStore.binding(
+                get: \.selectedStatus,
+                send: AcquisitionsListFeature.Action.statusFilterChanged
+            ),
+            sortOrder: viewStore.binding(
+                get: \.sortOrder,
+                send: AcquisitionsListFeature.Action.sortOrderChanged
+            )
+        )
+    }
+    
+    @ViewBuilder
+    private func mainContent(viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>) -> some View {
+        if viewStore.isLoading {
+            loadingView
+        } else if viewStore.filteredAcquisitions.isEmpty {
+            EmptyAcquisitionsView(hasAcquisitions: !viewStore.acquisitions.isEmpty)
+        } else {
+            acquisitionsListView(viewStore: viewStore)
+        }
+    }
+    
+    private var loadingView: some View {
+        VStack {
+            Spacer()
+            ProgressView("Loading acquisitions...")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            Spacer()
+        }
+    }
+    
+    @ViewBuilder
+    private func acquisitionsListView(viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>) -> some View {
+        ScrollView {
+            LazyVStack(spacing: Theme.Spacing.md) {
+                ForEach(viewStore.filteredAcquisitions, id: \.id) { acquisition in
+                    acquisitionCard(
+                        acquisition: acquisition,
+                        viewStore: viewStore
+                    )
+                }
+            }
+            .padding(Theme.Spacing.lg)
+        }
+    }
+    
+    @ViewBuilder
+    private func acquisitionCard(
+        acquisition: AppCore.Acquisition,
+        viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>
+    ) -> some View {
+        AcquisitionCard(
+            acquisition: acquisition,
+            isRenaming: viewStore.renamingAcquisitionId == acquisition.id,
+            newName: newNameBinding(viewStore: viewStore),
+            onOpen: { handleOpenAcquisition(acquisition: acquisition, viewStore: viewStore) },
+            onDelete: { handleDeleteAcquisition(acquisition: acquisition, viewStore: viewStore) },
+            onShareDocument: { handleShareDocument(acquisition: acquisition, viewStore: viewStore) },
+            onShareContractFile: { handleShareContractFile(acquisition: acquisition, viewStore: viewStore) },
+            onRename: { handleRenameAcquisition(acquisition: acquisition, viewStore: viewStore) },
+            onDuplicate: { handleDuplicateAcquisition(acquisition: acquisition, viewStore: viewStore) },
+            onConfirmRename: { viewStore.send(.confirmRename) },
+            onCancelRename: { viewStore.send(.cancelRename) }
+        )
+    }
+    
+    // MARK: - Private Helper Methods
+    
+    private func newNameBinding(viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>) -> Binding<String> {
+        viewStore.binding(
+            get: \.newAcquisitionName,
+            send: AcquisitionsListFeature.Action.updateNewAcquisitionName
+        )
+    }
+    
+    private func errorBinding(viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>) -> Binding<Bool> {
+        viewStore.binding(
+            get: { $0.error != nil },
+            send: { _ in .clearError }
+        )
+    }
+    
+    private func handleOpenAcquisition(
+        acquisition: AppCore.Acquisition,
+        viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>
+    ) {
+        viewStore.send(.openAcquisition(acquisition.id))
+    }
+    
+    private func handleDeleteAcquisition(
+        acquisition: AppCore.Acquisition,
+        viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>
+    ) {
+        viewStore.send(.deleteAcquisition(acquisition.id))
+    }
+    
+    private func handleShareDocument(
+        acquisition: AppCore.Acquisition,
+        viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>
+    ) {
+        viewStore.send(.shareDocument(acquisition.id))
+    }
+    
+    private func handleShareContractFile(
+        acquisition: AppCore.Acquisition,
+        viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>
+    ) {
+        viewStore.send(.shareContractFile(acquisition.id))
+    }
+    
+    private func handleRenameAcquisition(
+        acquisition: AppCore.Acquisition,
+        viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>
+    ) {
+        viewStore.send(.renameAcquisition(acquisition.id))
+    }
+    
+    private func handleDuplicateAcquisition(
+        acquisition: AppCore.Acquisition,
+        viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>
+    ) {
+        viewStore.send(.duplicateAcquisition(acquisition.id))
+    }
+}
+
+// MARK: - View Extensions
+
+extension View {
+    @ViewBuilder
+    func applyNavigationConfiguration() -> some View {
+        #if os(iOS)
+        self.navigationBarTitleDisplayMode(.large)
+        #else
+        self
+        #endif
     }
 }
 
@@ -218,7 +289,7 @@ struct FilterChip: View {
 // MARK: - Acquisition Card
 
 struct AcquisitionCard: View {
-    let acquisition: Acquisition
+    let acquisition: AppCore.Acquisition
     let isRenaming: Bool
     @Binding var newName: String
     let onOpen: () -> Void
@@ -292,7 +363,7 @@ struct AcquisitionCard: View {
 
                 Spacer()
 
-                StatusBadge(status: acquisition.statusEnum)
+                StatusBadge(status: acquisition.status)
             }
 
             // Divider
@@ -300,7 +371,7 @@ struct AcquisitionCard: View {
                 .background(Color.gray.opacity(0.3))
 
             // Requirements preview with label
-            if let requirements = acquisition.requirements, !requirements.isEmpty {
+            if !acquisition.requirements.isEmpty {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("ORIGINAL REQUIREMENTS")
                         .font(.caption2)
@@ -308,7 +379,7 @@ struct AcquisitionCard: View {
                         .foregroundColor(.secondary)
                         .tracking(0.5)
 
-                    Text(requirements)
+                    Text(acquisition.requirements)
                         .font(.subheadline)
                         .foregroundColor(.white.opacity(0.7))
                         .lineLimit(2)
@@ -406,15 +477,15 @@ struct AcquisitionCard: View {
         return formatter.string(from: date)
     }
 
-    func getDisplayName(for acquisition: Acquisition) -> String {
+    func getDisplayName(for acquisition: AppCore.Acquisition) -> String {
         // If there's a title, use it
-        if let title = acquisition.title, !title.isEmpty {
-            return title
+        if !acquisition.title.isEmpty {
+            return acquisition.title
         }
 
         // Otherwise, generate a name from requirements
-        if let requirements = acquisition.requirements, !requirements.isEmpty {
-            return generateNameFromRequirements(requirements)
+        if !acquisition.requirements.isEmpty {
+            return generateNameFromRequirements(acquisition.requirements)
         }
 
         // Fallback
@@ -478,7 +549,7 @@ struct AcquisitionCard: View {
 // MARK: - Status Badge
 
 struct StatusBadge: View {
-    let status: Acquisition.Status
+    let status: AcquisitionStatus
 
     var body: some View {
         HStack(spacing: 4) {
@@ -498,7 +569,7 @@ struct StatusBadge: View {
         )
     }
 
-    func color(for status: Acquisition.Status) -> Color {
+    func color(for status: AcquisitionStatus) -> Color {
         switch status.color {
         case "gray": .gray
         case "blue": .blue

@@ -6,7 +6,7 @@ import Foundation
 public actor DocumentGenerationPerformanceMonitor {
     // MARK: - Performance Metrics
 
-    public struct GenerationMetrics {
+    public struct GenerationMetrics: Sendable {
         public let documentType: String
         public let cacheHit: Bool
         public let totalDuration: TimeInterval
@@ -22,7 +22,7 @@ public actor DocumentGenerationPerformanceMonitor {
         }
     }
 
-    public struct BatchMetrics {
+    public struct BatchMetrics: Sendable {
         public let batchSize: Int
         public let totalDuration: TimeInterval
         public let parallelDuration: TimeInterval
@@ -31,7 +31,7 @@ public actor DocumentGenerationPerformanceMonitor {
         public let timestamp: Date
     }
 
-    public struct SessionMetrics {
+    public struct SessionMetrics: Sendable {
         public let sessionId: String
         public let startTime: Date
         public var endTime: Date?
@@ -329,7 +329,7 @@ public actor DocumentGenerationPerformanceMonitor {
 
 // MARK: - Supporting Types
 
-public struct PerformanceReport {
+public struct PerformanceReport: Sendable {
     public let sessionMetrics: DocumentGenerationPerformanceMonitor.SessionMetrics?
     public let averageGenerationTime: TimeInterval
     public let averageCacheHitRate: Double
@@ -342,22 +342,22 @@ public struct PerformanceReport {
     public let recentBatches: [DocumentGenerationPerformanceMonitor.BatchMetrics]
 }
 
-public struct TypePerformance {
+public struct TypePerformance: Sendable {
     public let documentType: String
     public let averageGenerationTime: TimeInterval
     public let cacheHitRate: Double
     public let sampleCount: Int
 }
 
-public struct OptimizationSuggestion {
-    public enum Category {
+public struct OptimizationSuggestion: Sendable {
+    public enum Category: Sendable {
         case caching
         case performance
         case parallelization
         case documentType
     }
 
-    public enum Priority {
+    public enum Priority: Sendable {
         case high
         case medium
         case low
@@ -369,14 +369,14 @@ public struct OptimizationSuggestion {
     public let recommendation: String
 }
 
-public struct BenchmarkResult {
+public struct BenchmarkResult: Sendable {
     public let timestamp: Date
     public let results: [BenchmarkTestResult]
     public let overallSpeedup: Double
     public let recommendation: String
 }
 
-public struct BenchmarkTestResult {
+public struct BenchmarkTestResult: Sendable {
     public let testName: String
     public let duration: TimeInterval
     public let documentsGenerated: Int

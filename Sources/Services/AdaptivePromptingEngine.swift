@@ -5,7 +5,7 @@ import UniformTypeIdentifiers
 
 // MARK: - Core Protocol
 
-public protocol AdaptivePromptingEngineProtocol {
+public protocol AdaptivePromptingEngineProtocol: Sendable {
     func startConversation(with context: ConversationContext) async -> ConversationSession
     func processUserResponse(_ response: UserResponse, in session: ConversationSession) async throws -> NextPrompt?
     func extractContextFromDocuments(_ documents: [ParsedDocument]) async throws -> ExtractedContext

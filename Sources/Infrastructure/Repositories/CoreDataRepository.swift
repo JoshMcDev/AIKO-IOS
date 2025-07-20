@@ -83,14 +83,14 @@ open class CoreDataRepository<Entity: NSManagedObject>: @unchecked Sendable {
     /// Batch delete with predicate
     func batchDelete(predicate: NSPredicate) async throws -> Int {
         // Use nonisolated(unsafe) since predicates are effectively immutable value types
-        nonisolated(unsafe) let safePredicate = predicate
+        nonisolated(unsafe) let safePredicate: NSPredicate? = predicate
         return try await coreDataActor.batchDelete(Entity.self, predicate: safePredicate)
     }
 
     /// Count entities with predicate
     func count(predicate: NSPredicate?) async throws -> Int {
         // Use nonisolated(unsafe) since predicates are effectively immutable value types
-        nonisolated(unsafe) let safePredicate = predicate
+        nonisolated(unsafe) let safePredicate: NSPredicate? = predicate
         return try await coreDataActor.count(Entity.self, predicate: safePredicate)
     }
 

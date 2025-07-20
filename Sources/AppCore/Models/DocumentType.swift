@@ -234,6 +234,16 @@ public struct GeneratedDocument: Identifiable, Equatable, Codable, Sendable {
         }
         return nil
     }
+    
+    /// File type string representation for compatibility with existing code
+    public var fileType: String {
+        switch documentCategory {
+        case let .standard(docType):
+            return docType.rawValue
+        case let .determinationFinding(dfType):
+            return dfType.rawValue
+        }
+    }
 
     public init(id: UUID = UUID(), title: String, documentType: DocumentType, content: String, createdAt: Date = Date()) {
         self.id = id

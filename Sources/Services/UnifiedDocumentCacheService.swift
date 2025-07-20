@@ -6,29 +6,29 @@ import Foundation
 /// Unified Document Cache Service combining standard, encrypted, and adaptive caching
 public struct UnifiedDocumentCacheService: Sendable {
     // Core cache operations
-    public var cacheDocument: (GeneratedDocument) async throws -> Void
-    public var getCachedDocument: (DocumentType, String) async -> GeneratedDocument?
-    public var cacheAnalysisResponse: (String, String, [DocumentType]) async throws -> Void
-    public var getCachedAnalysisResponse: (String) async -> (response: String, recommendedDocuments: [DocumentType])?
-    public var clearCache: () async throws -> Void
-    public var getCacheStatistics: () async -> CacheStatistics
+    public var cacheDocument: @Sendable (GeneratedDocument) async throws -> Void
+    public var getCachedDocument: @Sendable (DocumentType, String) async -> GeneratedDocument?
+    public var cacheAnalysisResponse: @Sendable (String, String, [DocumentType]) async throws -> Void
+    public var getCachedAnalysisResponse: @Sendable (String) async -> (response: String, recommendedDocuments: [DocumentType])?
+    public var clearCache: @Sendable () async throws -> Void
+    public var getCacheStatistics: @Sendable () async -> CacheStatistics
 
     // Performance operations
-    public var preloadFrequentDocuments: () async throws -> Void
-    public var optimizeCacheForMemory: () async throws -> Void
+    public var preloadFrequentDocuments: @Sendable () async throws -> Void
+    public var optimizeCacheForMemory: @Sendable () async throws -> Void
 
     // Security operations (optional)
-    public var rotateEncryptionKey: (() async throws -> Void)?
-    public var exportEncryptedBackup: (() async throws -> Data)?
-    public var importEncryptedBackup: ((Data) async throws -> Void)?
+    public var rotateEncryptionKey: (@Sendable () async throws -> Void)?
+    public var exportEncryptedBackup: (@Sendable () async throws -> Data)?
+    public var importEncryptedBackup: (@Sendable (Data) async throws -> Void)?
 
     // Adaptive operations (optional)
-    public var adjustCacheLimits: (() async -> Void)?
-    public var getAdaptiveMetrics: (() async -> AdaptiveMetrics)?
+    public var adjustCacheLimits: (@Sendable () async -> Void)?
+    public var getAdaptiveMetrics: (@Sendable () async -> AdaptiveMetrics)?
 
     // Configuration
-    public var updateConfiguration: (CacheConfiguration) async throws -> Void
-    public var getCurrentConfiguration: () async -> CacheConfiguration
+    public var updateConfiguration: @Sendable (CacheConfiguration) async throws -> Void
+    public var getCurrentConfiguration: @Sendable () async -> CacheConfiguration
 }
 
 // MARK: - Cache Configuration
@@ -84,7 +84,7 @@ public struct CacheConfiguration: Codable, Equatable, Sendable {
     )
 }
 
-public enum CacheMode: String, Codable, Equatable {
+public enum CacheMode: String, Codable, Equatable, Sendable {
     case standard
     case encrypted
     case adaptive
@@ -97,12 +97,12 @@ actor UnifiedCacheStorage {
     private var configuration: CacheConfiguration
 
     // Storage components
-    private let standardStorage: StandardCacheComponent
-    private let encryptionLayer: EncryptionLayer?
-    private let adaptiveEngine: AdaptiveEngine?
+    private nonisolated(unsafe) let standardStorage: StandardCacheComponent
+    private nonisolated(unsafe) let encryptionLayer: EncryptionLayer?
+    private nonisolated(unsafe) let adaptiveEngine: AdaptiveEngine?
 
     // Metrics
-    private let metricsCollector: MetricsCollector
+    private nonisolated(unsafe) let metricsCollector: MetricsCollector
 
     init(configuration: CacheConfiguration) async throws {
         self.configuration = configuration
@@ -383,7 +383,7 @@ actor UnifiedCacheStorage {
 
 // MARK: - Component Implementations
 
-private final class StandardCacheComponent {
+private actor StandardCacheComponent {
     // Implementation would include basic cache storage logic
     // Similar to DocumentCacheStorage but without encryption/adaptive features
     private var maxCacheSize: Int
@@ -433,7 +433,7 @@ private final class StandardCacheComponent {
     }
 }
 
-private final class EncryptionLayer {
+private final class EncryptionLayer: @unchecked Sendable {
     private var masterKey: SymmetricKey
     private let keychainService = "com.aiko.unified.cache"
 
@@ -471,7 +471,7 @@ private final class EncryptionLayer {
     }
 }
 
-private final class AdaptiveEngine {
+private actor AdaptiveEngine {
     private var baseCacheSize: Int
     private var baseMemorySize: Int64
     private var adjustmentCount: Int = 0
@@ -506,7 +506,7 @@ private final class AdaptiveEngine {
     }
 }
 
-private final class MetricsCollector {
+private actor MetricsCollector {
     private var enabled: Bool
     private var operations: [CacheOperation] = []
 
@@ -575,20 +575,20 @@ private final class MetricsCollector {
 
 // MARK: - Supporting Types
 
-struct CacheMetadata: Codable {
+struct CacheMetadata: Codable, Sendable {
     var isEncrypted: Bool
     var nonce: Data?
     let originalSize: Int
     let checksum: String
 }
 
-struct CachedItem {
+struct CachedItem: Sendable {
     let key: String
     let data: Data
     let metadata: CacheMetadata
 }
 
-struct BaseStatistics {
+struct BaseStatistics: Sendable {
     let documentCount: Int
     let analysisCount: Int
     let totalSize: Int64
@@ -596,7 +596,7 @@ struct BaseStatistics {
     let mostAccessedTypes: [DocumentType]
 }
 
-struct CacheMetrics {
+struct CacheMetrics: Sendable {
     let hitRate: Double
     let evictionRate: Double
     let averageRetrievalTime: TimeInterval

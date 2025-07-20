@@ -20,10 +20,10 @@ public protocol AppViewPlatformServices {
     func makeNavigationStack(@ViewBuilder content: @escaping () -> some View) -> NavigationStack
 
     /// Create a document picker view for the platform
-    func makeDocumentPicker(onDocumentsPicked: @escaping ([(Data, String)]) -> Void) -> DocumentPickerView
+    @MainActor func makeDocumentPicker(onDocumentsPicked: @escaping ([(Data, String)]) -> Void) -> DocumentPickerView
 
     /// Create an image picker/scanner view for the platform
-    func makeImagePicker(onImagePicked: @escaping (Data) -> Void) -> ImagePickerView
+    @MainActor func makeImagePicker(onImagePicked: @escaping (Data) -> Void) -> ImagePickerView
 
     /// Create a share sheet view for the platform
     func makeShareSheet(items: [Any]) -> ShareView?

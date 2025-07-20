@@ -282,7 +282,7 @@ public struct ShareSheetModifier: ViewModifier {
 
     public func body(content: Content) -> some View {
         content
-            .task(id: isPresented) {
+            .task(id: isPresented) { [items] in
                 if isPresented, !items.isEmpty {
                     // Use the share service instead of direct ShareSheet
                     _ = await shareService.share(items)

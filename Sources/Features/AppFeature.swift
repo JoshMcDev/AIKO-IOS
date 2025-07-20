@@ -9,7 +9,7 @@ import SwiftUI
 #endif
 
 @Reducer
-public struct AppFeature {
+public struct AppFeature: Sendable {
     @ObservableState
     public struct State: Equatable {
         public var documentGeneration = DocumentGenerationFeature.State()
@@ -38,7 +38,7 @@ public struct AppFeature {
         public var isChatMode: Bool = false
         public var showingDownloadOptions: Bool = false
         public var downloadTargetAcquisitionId: UUID?
-        public var downloadTargetAcquisition: Acquisition?
+        public var downloadTargetAcquisition: AppCore.Acquisition?
         public var showingSAMGovLookup: Bool = false
 
         // Document sharing state
@@ -49,7 +49,7 @@ public struct AppFeature {
         @ObservationStateIgnored public var shareItems: [Any] = []
         public var showingShareSheet: Bool = false
 
-        public enum ShareMode {
+        public enum ShareMode: Sendable {
             case singleDocument
             case contractFile
         }
@@ -109,7 +109,7 @@ public struct AppFeature {
         }
     }
 
-    public enum MenuItem: String, CaseIterable, Equatable {
+    public enum MenuItem: String, CaseIterable, Equatable, Sendable {
         case myProfile = "My Profile"
         case myAcquisitions = "My Acquisitions"
         case quickReferences = "Quick Links"
@@ -140,7 +140,7 @@ public struct AppFeature {
         }
     }
 
-    public enum QuickReference: String, CaseIterable, Equatable {
+    public enum QuickReference: String, CaseIterable, Equatable, Sendable {
         case acquisitionGov = "Acquisition.gov"
         case samGov = "SAM.gov"
         case fpdsNG = "FPDS-NG"
@@ -249,7 +249,7 @@ public struct AppFeature {
         // Alert actions
         case errorAlert(PresentationAction<Alert>)
 
-        public enum Alert: Equatable {
+        public enum Alert: Equatable, Sendable {
             case dismiss
         }
     }
@@ -546,10 +546,10 @@ public struct AppFeature {
                 state.isChatMode = true
 
                 // Generate a relevant display name based on requirements
-                if let requirements = acquisition.requirements, !requirements.isEmpty {
-                    state.loadedAcquisitionDisplayName = generateRelevantName(from: requirements)
-                } else if let title = acquisition.title, !title.isEmpty {
-                    state.loadedAcquisitionDisplayName = title
+                if !acquisition.requirements.isEmpty {
+                    state.loadedAcquisitionDisplayName = generateRelevantName(from: acquisition.requirements)
+                } else if !acquisition.title.isEmpty {
+                    state.loadedAcquisitionDisplayName = acquisition.title
                 } else {
                     state.loadedAcquisitionDisplayName = "Acquisition \(acquisition.projectNumber ?? "")"
                 }
@@ -564,7 +564,7 @@ public struct AppFeature {
                 // Update document status based on generated files
                 let generatedFiles = acquisition.generatedFilesArray
                 return .concatenate(
-                    .send(.documentGeneration(.analysis(.loadAcquisition(acquisition.id!)))),
+                    .send(.documentGeneration(.analysis(.loadAcquisition(acquisition.id)))),
                     .send(.documentGeneration(.status(.updateStatusFromGeneratedDocuments(generatedFiles))))
                 )
 
@@ -638,39 +638,54 @@ public struct AppFeature {
                 return .send(.shareSelectedDocuments)
 
             case .shareSelectedDocuments:
-                return .run { [state, acquisitionService] send in
-                    guard let acquisitionId = state.shareTargetAcquisitionId else { return }
+                return .run { [shareMode = state.shareMode, shareTargetAcquisitionId = state.shareTargetAcquisitionId, selectedDocumentsForShare = state.selectedDocumentsForShare] send in
+                    guard let acquisitionId = shareTargetAcquisitionId else { return }
 
+                    @Dependency(\.acquisitionService) var acquisitionService
+                    
                     // Get the acquisition
                     guard let acquisition = try await acquisitionService.fetchAcquisition(acquisitionId) else { return }
 
                     // Generate share content based on mode
                     var shareContent = ""
 
-                    if state.shareMode == .contractFile {
+                    if shareMode == .contractFile {
                         // Share all contract files with summary
-                        shareContent = DocumentShareHelper.generateAcquisitionText(acquisition)
+                        shareContent = """
+                        Acquisition Report
+                        Generated: \(Date().formatted())
+
+                        ACQUISITION DETAILS:
+                        - ID: \(acquisition.id.uuidString)
+                        - Title: \(acquisition.title)
+                        - Project Number: \(acquisition.projectNumber ?? "N/A")
+                        - Status: \(acquisition.status.displayName)
+                        - Created: \(acquisition.createdDate.formatted())
+                        - Modified: \(acquisition.lastModifiedDate.formatted())
+
+                        REQUIREMENTS:
+                        \(acquisition.requirements)
+                        """
                         shareContent += "\n\n--- ALL CONTRACT FILES ---\n\n"
 
                         // Add all documents
-                        for document in acquisition.documentsArray {
-                            shareContent += "Document: \(document.documentType ?? "Untitled")\n"
-                            shareContent += "Type: \(document.documentType ?? "Unknown")\n"
-                            shareContent += "Generated: \(document.createdDate?.formatted() ?? "Unknown")\n"
+                        for document in acquisition.generatedFilesArray {
+                            shareContent += "Document: \(document.documentType?.shortName ?? "Untitled")\n"
+                            shareContent += "Type: \(document.documentType?.shortName ?? "Unknown")\n"
+                            shareContent += "Generated: \(document.createdAt.formatted())\n"
                             shareContent += "---\n\n"
                         }
                     } else {
                         // Share selected documents
-                        shareContent = "Selected Documents from Acquisition: \(acquisition.title ?? "Untitled")\n\n"
+                        shareContent = "Selected Documents from Acquisition: \(acquisition.title)\n\n"
 
-                        let selectedDocs = acquisition.documentsArray.filter { doc in
-                            guard let docId = doc.id else { return false }
-                            return state.selectedDocumentsForShare.contains(docId)
+                        let selectedDocs = acquisition.generatedFilesArray.filter { doc in
+                            return selectedDocumentsForShare.contains(doc.id)
                         }
 
                         for document in selectedDocs {
-                            shareContent += "Document: \(document.documentType ?? "Untitled")\n"
-                            shareContent += "Type: \(document.documentType ?? "Unknown")\n"
+                            shareContent += "Document: \(document.documentType?.shortName ?? "Untitled")\n"
+                            shareContent += "Type: \(document.documentType?.shortName ?? "Unknown")\n"
                             shareContent += "---\n\n"
                         }
                     }
@@ -679,30 +694,31 @@ public struct AppFeature {
                     var items: [Any] = [shareContent]
 
                     // Add documents as files if available
-                    if state.shareMode == .contractFile {
+                    if shareMode == .contractFile {
                         // Add all documents
-                        for document in acquisition.documentsArray {
-                            if let content = document.content,
-                               let fileName = document.documentType
+                        for document in acquisition.generatedFilesArray {
+                            if !document.content.isEmpty,
+                               let documentType = document.documentType
                             {
+                                let fileName = documentType.shortName
                                 let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(fileName).txt")
-                                try? content.write(to: url, atomically: true, encoding: .utf8)
+                                try? document.content.write(to: url, atomically: true, encoding: .utf8)
                                 items.append(url)
                             }
                         }
                     } else {
                         // Add selected documents
-                        let selectedDocs = acquisition.documentsArray.filter { doc in
-                            guard let docId = doc.id else { return false }
-                            return state.selectedDocumentsForShare.contains(docId)
+                        let selectedDocs = acquisition.generatedFilesArray.filter { doc in
+                            return selectedDocumentsForShare.contains(doc.id)
                         }
 
                         for document in selectedDocs {
-                            if let content = document.content,
-                               let fileName = document.documentType
+                            if !document.content.isEmpty,
+                               let documentType = document.documentType
                             {
+                                let fileName = documentType.shortName
                                 let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(fileName).txt")
-                                try? content.write(to: url, atomically: true, encoding: .utf8)
+                                try? document.content.write(to: url, atomically: true, encoding: .utf8)
                                 items.append(url)
                             }
                         }

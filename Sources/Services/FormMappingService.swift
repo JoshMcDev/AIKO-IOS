@@ -57,7 +57,8 @@ public actor FormMappingService {
         do {
             // 1. Validate template data
             nonisolated(unsafe) let validator = validationService
-            try await validator.validateTemplateData(templateData)
+            nonisolated(unsafe) let data = templateData
+            try await validator.validateTemplateData(data)
 
             // 2. Get form definition
             guard let formDefinition = availableForms.first(where: { $0.formType == formType }) else {
@@ -67,14 +68,14 @@ public actor FormMappingService {
             // 3. Perform mapping
             nonisolated(unsafe) let engine = mappingEngine
             let mappingRules = try await engine.getMappingRules(
-                from: templateData.documentType,
+                from: data.documentType,
                 to: formType
             )
 
             // 4. Transform data
             nonisolated(unsafe) let transformer = transformationService
             let transformedData = try await transformer.transform(
-                templateData: templateData,
+                templateData: data,
                 using: mappingRules,
                 targetForm: formDefinition
             )

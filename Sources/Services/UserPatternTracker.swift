@@ -5,17 +5,17 @@ import Foundation
 // MARK: - User Pattern Tracker
 
 /// Lightweight service that tracks user patterns for adaptive intelligence
-public struct UserPatternTracker {
-    public var trackAction: (TrackedAction) async -> Void
-    public var getPatterns: () async -> UserPatterns
-    public var getSuggestions: (WorkflowContext) async -> [IntelligentSuggestion]
-    public var learnFromOutcome: (ActionOutcome) async -> Void
+public struct UserPatternTracker: Sendable {
+    public var trackAction: @Sendable (TrackedAction) async -> Void
+    public var getPatterns: @Sendable () async -> UserPatterns
+    public var getSuggestions: @Sendable (WorkflowContext) async -> [IntelligentSuggestion]
+    public var learnFromOutcome: @Sendable (ActionOutcome) async -> Void
 
     public init(
-        trackAction: @escaping (TrackedAction) async -> Void,
-        getPatterns: @escaping () async -> UserPatterns,
-        getSuggestions: @escaping (WorkflowContext) async -> [IntelligentSuggestion],
-        learnFromOutcome: @escaping (ActionOutcome) async -> Void
+        trackAction: @escaping @Sendable (TrackedAction) async -> Void,
+        getPatterns: @escaping @Sendable () async -> UserPatterns,
+        getSuggestions: @escaping @Sendable (WorkflowContext) async -> [IntelligentSuggestion],
+        learnFromOutcome: @escaping @Sendable (ActionOutcome) async -> Void
     ) {
         self.trackAction = trackAction
         self.getPatterns = getPatterns
@@ -26,13 +26,13 @@ public struct UserPatternTracker {
 
 // MARK: - Models
 
-public struct TrackedAction: Equatable, Codable {
+public struct TrackedAction: Equatable, Codable, Sendable {
     public let id: UUID
     public let timestamp: Date
     public let actionType: ActionType
     public let context: ActionContext
 
-    public enum ActionType: String, Codable {
+    public enum ActionType: String, Codable, Sendable {
         case documentSelected
         case documentDeselected
         case requirementEntered
@@ -45,7 +45,7 @@ public struct TrackedAction: Equatable, Codable {
         case automationDisabled
     }
 
-    public struct ActionContext: Equatable, Codable {
+    public struct ActionContext: Equatable, Codable, Sendable {
         public let documentType: String?
         public let workflowState: String?
         public let timeOfDay: Int // Hour of day
@@ -62,7 +62,7 @@ public struct TrackedAction: Equatable, Codable {
     }
 }
 
-public struct UserPatterns: Equatable, Codable {
+public struct UserPatterns: Equatable, Codable, Sendable {
     public var documentSequences: [DocumentSequence] = []
     public var timePatterns: [TimePattern] = []
     public var preferredValues: [String: [String]] = [:] // Field -> Common values
@@ -70,13 +70,13 @@ public struct UserPatterns: Equatable, Codable {
     public var averageTimePerDocument: [String: TimeInterval] = [:]
     public var successRate: Double = 0.0
 
-    public struct DocumentSequence: Equatable, Codable {
+    public struct DocumentSequence: Equatable, Codable, Sendable {
         public let documents: [String]
         public let frequency: Int
         public let successRate: Double
     }
 
-    public struct TimePattern: Equatable, Codable {
+    public struct TimePattern: Equatable, Codable, Sendable {
         public let actionType: String
         public let preferredHour: Int?
         public let preferredDay: Int?
@@ -84,7 +84,7 @@ public struct UserPatterns: Equatable, Codable {
     }
 }
 
-public struct IntelligentSuggestion: Equatable {
+public struct IntelligentSuggestion: Equatable, Sendable {
     public let id = UUID()
     public let type: SuggestionType
     public let title: String
@@ -93,7 +93,7 @@ public struct IntelligentSuggestion: Equatable {
     public let reason: String
     public let action: SuggestedAction
 
-    public enum SuggestionType: String {
+    public enum SuggestionType: String, Sendable {
         case nextDocument
         case automation
         case timeOptimization
@@ -101,7 +101,7 @@ public struct IntelligentSuggestion: Equatable {
         case workflowShortcut
     }
 
-    public enum SuggestedAction: Equatable {
+    public enum SuggestedAction: Equatable, Sendable {
         case selectDocuments([DocumentType])
         case enableAutomation(WorkflowState)
         case preFillValue(field: String, value: String)
@@ -109,7 +109,7 @@ public struct IntelligentSuggestion: Equatable {
     }
 }
 
-public struct ActionOutcome: Equatable {
+public struct ActionOutcome: Equatable, Sendable {
     public let actionId: UUID
     public let success: Bool
     public let timeToComplete: TimeInterval?

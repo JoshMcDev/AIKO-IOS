@@ -347,7 +347,7 @@ public struct AcquisitionChatFeatureEnhanced {
                             [] // No uploaded documents for now
                         )
 
-                        await send(.acquisitionSaved(acquisition.id ?? UUID()))
+                        await send(.acquisitionSaved(acquisition.id))
                     } catch {
                         await send(.error("Failed to save acquisition: \(error.localizedDescription)"))
                     }
@@ -367,7 +367,7 @@ public struct AcquisitionChatFeatureEnhanced {
                                 field: question.question.field,
                                 suggestedValue: nil, // TODO: Track suggestions
                                 acceptedSuggestion: false,
-                                finalValue: collectedData.value(for: question.question.field) as Any,
+                                finalValue: convertAnyToResponseValue(collectedData.value(for: question.question.field) as Any),
                                 timeToRespond: 0, // TODO: Track timing
                                 documentContext: !parsedDocuments.isEmpty
                             )
@@ -516,10 +516,35 @@ public enum EnhancedChatRole: Equatable {
     case assistant
 }
 
+// MARK: - Helper Functions
+
+private func convertAnyToResponseValue(_ value: Any) -> UserResponse.ResponseValue {
+    switch value {
+    case let string as String:
+        return .text(string)
+    case let number as NSNumber:
+        return .numeric(Decimal(number.doubleValue))
+    case let double as Double:
+        return .numeric(Decimal(double))
+    case let int as Int:
+        return .numeric(Decimal(int))
+    case let bool as Bool:
+        return .boolean(bool)
+    case let date as Date:
+        return .date(date)
+    case let decimal as Decimal:
+        return .numeric(decimal)
+    case let uuid as UUID:
+        return .document(uuid)
+    default:
+        return .text(String(describing: value))
+    }
+}
+
 // MARK: - Dependencies
 
 public extension DependencyValues {
-    var adaptivePromptingEngine: AdaptivePromptingEngine {
+    var adaptivePromptingEngine: any AdaptivePromptingEngineProtocol {
         get { self[AdaptivePromptingEngineKey.self] }
         set { self[AdaptivePromptingEngineKey.self] = newValue }
     }
@@ -531,8 +556,38 @@ public extension DependencyValues {
 }
 
 private enum AdaptivePromptingEngineKey: DependencyKey {
-    static var liveValue: AdaptivePromptingEngine {
+    static var liveValue: any AdaptivePromptingEngineProtocol {
+        // Create a mock instance that will be properly initialized when used in @MainActor context
+        // This is a workaround for the synchronous DependencyKey requirement
+        return UnsafeAdaptivePromptingEngineWrapper()
+    }
+}
+
+// Temporary wrapper to handle the @MainActor requirement
+private struct UnsafeAdaptivePromptingEngineWrapper: AdaptivePromptingEngineProtocol {
+    @MainActor
+    private var engine: AdaptivePromptingEngine {
         AdaptivePromptingEngine()
+    }
+    
+    nonisolated func startConversation(with context: ConversationContext) async -> ConversationSession {
+        return await engine.startConversation(with: context)
+    }
+    
+    nonisolated func processUserResponse(_ response: UserResponse, in session: ConversationSession) async throws -> NextPrompt? {
+        return try await engine.processUserResponse(response, in: session)
+    }
+    
+    nonisolated func extractContextFromDocuments(_ documents: [ParsedDocument]) async throws -> ExtractedContext {
+        return try await engine.extractContextFromDocuments(documents)
+    }
+    
+    nonisolated func learnFromInteraction(_ interaction: APEUserInteraction) async {
+        await engine.learnFromInteraction(interaction)
+    }
+    
+    nonisolated func getSmartDefaults(for field: RequirementField) async -> FieldDefault? {
+        return await engine.getSmartDefaults(for: field)
     }
 }
 

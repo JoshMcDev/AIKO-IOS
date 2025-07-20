@@ -98,7 +98,7 @@ public struct DocumentStatusFeature {
         case selectRecommendedDocuments
         case clearAllSelections
         case updateStatusFromCompletenessScore(String, [DocumentType])
-        case updateStatusFromGeneratedDocuments([GeneratedFile])
+        case updateStatusFromGeneratedDocuments([GeneratedDocument])
     }
 
     public init() {}
@@ -175,9 +175,7 @@ public struct DocumentStatusFeature {
             case let .updateStatusFromGeneratedDocuments(generatedFiles):
                 // Mark document types as ready if they have generated files
                 for file in generatedFiles {
-                    if let fileType = file.fileType,
-                       let docType = DocumentType(rawValue: fileType)
-                    {
+                    if let docType = file.documentType {
                         state.documentReadinessStatus[docType] = .ready
                     }
                 }

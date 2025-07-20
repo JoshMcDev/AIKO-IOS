@@ -6,7 +6,7 @@ import Foundation
 // MARK: - Adaptive Data Extraction System
 
 /// Dynamic value object that can represent any extracted data
-public struct DynamicValueObject: Codable, Hashable {
+public struct DynamicValueObject: Codable, Hashable, Sendable {
     let id: UUID
     let fieldName: String
     let value: String
@@ -49,7 +49,7 @@ public struct DynamicValueObject: Codable, Hashable {
 }
 
 /// Context about where the value was found
-public struct DocumentContext: Codable, Hashable {
+public struct DocumentContext: Codable, Hashable, Sendable {
     let documentType: String
     let section: String?
     let lineNumber: Int?
@@ -58,7 +58,7 @@ public struct DocumentContext: Codable, Hashable {
 }
 
 /// Pattern learned from repeated extractions
-public struct LearnedPattern: Codable {
+public struct LearnedPattern: Codable, Sendable {
     let id: UUID
     let patternName: String
     let fieldMappings: [FieldMapping]
@@ -67,7 +67,7 @@ public struct LearnedPattern: Codable {
     let averageConfidence: Double
     let lastSeen: Date
 
-    struct FieldMapping: Codable {
+    struct FieldMapping: Codable, Sendable {
         let standardFieldName: String
         let variations: [String]
         let extractionRegex: String?
@@ -137,8 +137,7 @@ public class AdaptiveDataExtractor: @unchecked Sendable {
         )
 
         // 6. Map to database  
-        nonisolated(unsafe) let objects = extractedObjects
-        let databaseMappings = try await mapToDatabase(objects)
+        let databaseMappings = try await mapToDatabase(extractedObjects)
 
         return AdaptiveExtractionResult(
             valueObjects: extractedObjects,
@@ -609,7 +608,7 @@ public class AdaptiveDataExtractor: @unchecked Sendable {
 
 // MARK: - Supporting Types
 
-public struct AdaptiveExtractionResult {
+public struct AdaptiveExtractionResult: Sendable {
     public let valueObjects: [DynamicValueObject]
     public let documentSignature: String
     public let appliedPatterns: [String]

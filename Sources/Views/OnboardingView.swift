@@ -90,7 +90,11 @@ public struct OnboardingView: View {
                                     onUpdateAPIKey: { viewStore.send(.updateAPIKey($0)) },
                                     onToggleShowAPIKey: { viewStore.send(.toggleShowAPIKey($0)) },
                                     onValidate: { viewStore.send(.validateAPIKey) },
-                                    onToggleFaceID: { viewStore.send(.toggleFaceID($0)) }
+                                    onToggleFaceID: { enabled in
+                                        Task { @MainActor in
+                                            viewStore.send(.toggleFaceID(enabled))
+                                        }
+                                    }
                                 )
 
                             case .review:

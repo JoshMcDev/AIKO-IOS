@@ -1205,7 +1205,7 @@ extension UserPatternLearningEngine {
 
         return best.map { pattern in
             FieldDefault(
-                value: pattern.predictedValue,
+                value: convertToResponseValue(pattern.predictedValue),
                 confidence: pattern.accuracy,
                 source: .documentContext
             )
@@ -1227,7 +1227,7 @@ extension UserPatternLearningEngine {
         let avgConfidence = matching.map(\.confidence).reduce(0, +) / Float(matching.count)
 
         return FieldDefault(
-            value: matching[0].typicalValue,
+            value: convertToResponseValue(matching[0].typicalValue),
             confidence: avgConfidence,
             source: .userPattern
         )
@@ -1425,7 +1425,7 @@ extension UserPatternLearningEngine {
             let confidence = best.value / totalWeight
 
             return FieldDefault(
-                value: best.key,
+                value: convertToResponseValue(best.key),
                 confidence: confidence,
                 source: .userPattern
             )
@@ -1501,7 +1501,7 @@ extension UserPatternLearningEngine {
             let confidence = Float(mostPopular.value) / Float(patterns.count) * 0.8 // Reduce confidence for cohort predictions
 
             return FieldDefault(
-                value: mostPopular.key,
+                value: convertToResponseValue(mostPopular.key),
                 confidence: confidence,
                 source: .userPattern
             )
@@ -1622,7 +1622,7 @@ extension UserPatternLearningEngine {
 
             for (field, value) in pattern.fields {
                 predictions[field] = FieldDefault(
-                    value: value,
+                    value: convertToResponseValue(value),
                     confidence: confidence,
                     source: .userPattern
                 )

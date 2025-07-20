@@ -58,14 +58,36 @@ extension UserProfileService: DependencyKey {
     }
 
     public static var testValue: UserProfileService {
-        var savedProfile: UserProfile?
+        let testStorage = TestProfileStorage()
 
         return UserProfileService(
-            loadProfile: { savedProfile },
-            saveProfile: { profile in savedProfile = profile },
-            deleteProfile: { savedProfile = nil },
-            hasProfile: { savedProfile != nil }
+            loadProfile: { await testStorage.getProfile() },
+            saveProfile: { profile in await testStorage.setProfile(profile) },
+            deleteProfile: { await testStorage.clearProfile() },
+            hasProfile: { await testStorage.hasProfile() }
         )
+    }
+}
+
+// MARK: - Test Storage Actor
+
+private actor TestProfileStorage {
+    private var savedProfile: UserProfile?
+
+    func getProfile() -> UserProfile? {
+        return savedProfile
+    }
+
+    func setProfile(_ profile: UserProfile) {
+        savedProfile = profile
+    }
+
+    func clearProfile() {
+        savedProfile = nil
+    }
+
+    func hasProfile() -> Bool {
+        return savedProfile != nil
     }
 }
 

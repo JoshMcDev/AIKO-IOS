@@ -10,7 +10,7 @@ import SwiftUI
 @Reducer
 public struct AgenticChatFeature {
     @ObservableState
-    public struct State: Equatable {
+    public struct State: Equatable, Sendable {
         var messages: IdentifiedArrayOf<ChatMessage> = []
         var currentIntent: AcquisitionIntent?
         var agentState: AgentState = .idle
@@ -83,6 +83,9 @@ public struct AgenticChatFeature {
                 state.agentState = .thinking
 
                 return .run { [message] send in
+                    @Dependency(\.naturalLanguageProcessor) var nlp
+                    @Dependency(\.agenticEngine) var agenticEngine
+                    
                     // Process user intent
                     let intent = try await nlp.processAcquisitionIntent(message.content)
                     await send(.intentRecognized(intent))
@@ -102,7 +105,7 @@ public struct AgenticChatFeature {
                 state.agentState = .idle
 
                 // Update suggestions based on context
-                return .run { send in
+                return .run { [nlp] send in
                     let suggestions = try await nlp.generateContextualSuggestions(message.content)
                     await send(.suggestionsUpdated(suggestions))
                 }
@@ -207,7 +210,7 @@ public struct AgenticChatFeature {
 
             case let .userApproval(requestId, approved):
                 // Process user approval
-                return .run { _ in
+                return .run { [agenticEngine] _ in
                     if approved {
                         try await agenticEngine.proceedWithApproval(requestId)
                     } else {
@@ -417,7 +420,7 @@ public struct AgenticChatFeature {
 
 // MARK: - Models
 
-public struct ChatMessage: Equatable, Identifiable {
+public struct ChatMessage: Equatable, Identifiable, @unchecked Sendable {
     public let id: UUID
     public let role: MessageRole
     public let content: String
@@ -507,7 +510,7 @@ public struct AcquisitionIntent: Equatable, Sendable {
     public let confidence: Double
     public let requiresExecution: Bool
 
-    public enum IntentType {
+    public enum IntentType: Sendable {
         case createAcquisition
         case reviewDocuments
         case checkStatus
@@ -585,8 +588,8 @@ public struct AgentTask: Equatable, Identifiable, Sendable {
     }
 }
 
-public enum TaskResult: Equatable {
-    case success(Any)
+public enum TaskResult: Equatable, Sendable {
+    case success([String: String])
     case failure(Error)
 
     public static func == (lhs: TaskResult, rhs: TaskResult) -> Bool {
@@ -614,7 +617,7 @@ public struct ApprovalRequest: Equatable, Identifiable, Sendable {
     }
 }
 
-public struct AcquisitionProgress: Equatable, Identifiable {
+public struct AcquisitionProgress: Equatable, Identifiable, Sendable {
     public let id: UUID
     public let title: String
     public let status: Status
@@ -622,7 +625,7 @@ public struct AcquisitionProgress: Equatable, Identifiable {
     public let nextMilestone: String
     public let daysUntilDeadline: Int
 
-    public enum Status {
+    public enum Status: Sendable {
         case planning
         case marketResearch
         case solicitation

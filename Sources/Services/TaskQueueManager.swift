@@ -225,13 +225,13 @@ public enum TaskStatus: Equatable, Sendable {
     }
 }
 
-public struct TaskExecutionResult: Equatable {
+public struct TaskExecutionResult: Equatable, Sendable {
     public let taskId: UUID
     public let result: TaskResult
     public let executionTime: TimeInterval
 }
 
-public struct QueueStatus: Equatable {
+public struct QueueStatus: Equatable, Sendable {
     public let queuedTasks: [QueuedTask]
     public let executingTasks: [QueuedTask]
     public let totalTasks: Int
@@ -247,7 +247,7 @@ public protocol TaskExecutor: Sendable {
 // MARK: - Enhanced Task Queue Feature
 
 public extension AgenticChatFeature {
-    struct TaskQueueState: Equatable {
+    struct TaskQueueState: Equatable, Sendable {
         var queueStatus: QueueStatus
         var lastExecutionResults: [TaskExecutionResult] = []
 
