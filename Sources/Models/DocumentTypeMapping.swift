@@ -1,5 +1,5 @@
-import Foundation
 import AppCore
+import Foundation
 
 // MARK: - Document Type Mapping
 
@@ -17,14 +17,14 @@ public enum DocumentValidationType: String, CaseIterable {
 extension ParsedDocumentType {
     func toDocumentValidationType() -> DocumentValidationType {
         switch self {
-        case .pdf: return .pdf
-        case .word: return .word
-        case .text: return .plainText
-        case .rtf: return .rtf
-        case .png, .jpg, .jpeg, .heic: return .image
-        case .excel: return .excel
-        case .ocr: return .image // OCR documents are treated as images for validation
-        case .unknown: return .unknown
+        case .pdf: .pdf
+        case .word: .word
+        case .text: .plainText
+        case .rtf: .rtf
+        case .png, .jpg, .jpeg, .heic: .image
+        case .excel: .excel
+        case .ocr: .image // OCR documents are treated as images for validation
+        case .unknown: .unknown
         }
     }
 }

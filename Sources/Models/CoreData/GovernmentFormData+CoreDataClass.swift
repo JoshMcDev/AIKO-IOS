@@ -1,11 +1,10 @@
-import Foundation
 import CoreData
+import Foundation
 
 @objc(GovernmentFormData)
 public class GovernmentFormData: NSManagedObject {
-    
     // MARK: - Convenience Methods
-    
+
     /// Create a new GovernmentFormData instance
     static func create(
         formType: String,
@@ -25,32 +24,32 @@ public class GovernmentFormData: NSManagedObject {
         formDataEntity.status = "draft"
         return formDataEntity
     }
-    
+
     /// Update the form data
     func updateFormData(_ data: Data) {
-        self.formData = data
-        self.lastModifiedDate = Date()
+        formData = data
+        lastModifiedDate = Date()
     }
-    
+
     /// Update the status
     func updateStatus(_ status: String) {
         self.status = status
-        self.lastModifiedDate = Date()
+        lastModifiedDate = Date()
     }
-    
+
     /// Decode the form data to a specific form type
     func decodeForm<T: Decodable>(_ type: T.Type) throws -> T {
         guard let data = formData else {
             throw NSError(domain: "GovernmentFormData", code: 1, userInfo: [NSLocalizedDescriptionKey: "No form data available"])
         }
-        
+
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         return try decoder.decode(type, from: data)
     }
-    
+
     /// Encode a form to data
-    static func encodeForm<T: Encodable>(_ form: T) throws -> Data {
+    static func encodeForm(_ form: some Encodable) throws -> Data {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
         encoder.outputFormatting = .prettyPrinted
@@ -59,8 +58,9 @@ public class GovernmentFormData: NSManagedObject {
 }
 
 // MARK: - Form Type Constants
+
 extension GovernmentFormData {
-    struct FormType {
+    enum FormType {
         static let sf1449 = "SF1449"
         static let sf33 = "SF33"
         static let sf30 = "SF30"
@@ -72,8 +72,9 @@ extension GovernmentFormData {
 }
 
 // MARK: - Status Constants
+
 extension GovernmentFormData {
-    struct Status {
+    enum Status {
         static let draft = "draft"
         static let submitted = "submitted"
         static let approved = "approved"

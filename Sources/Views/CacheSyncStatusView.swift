@@ -7,13 +7,13 @@
 
 import SwiftUI
 #if canImport(UIKit)
-import UIKit
+    import UIKit
 #endif
 
 /// View displaying cache sync status and controls
 struct CacheSyncStatusView: View {
     @StateObject private var viewModel = CacheSyncViewModel()
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Sync status header
@@ -22,20 +22,20 @@ struct CacheSyncStatusView: View {
                     .foregroundColor(viewModel.isSyncing ? .orange : .blue)
                     .rotationEffect(.degrees(viewModel.isSyncing ? 360 : 0))
                     .animation(viewModel.isSyncing ? Animation.linear(duration: 2).repeatForever(autoreverses: false) : .default, value: viewModel.isSyncing)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text(viewModel.syncStatusMessage)
                         .font(.headline)
-                    
+
                     if viewModel.lastSyncDate != nil {
                         Text("Last sync: \(viewModel.formattedLastSync)")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
-                
+
                 Spacer()
-                
+
                 // Sync button
                 Button(action: viewModel.triggerSync) {
                     HStack(spacing: 6) {
@@ -54,7 +54,7 @@ struct CacheSyncStatusView: View {
                 }
                 .disabled(viewModel.isSyncDisabled)
             }
-            
+
             // Network status indicator
             if !viewModel.isConnected {
                 HStack(spacing: 8) {
@@ -66,16 +66,16 @@ struct CacheSyncStatusView: View {
                 }
                 .padding(.vertical, 4)
             }
-            
+
             // Pending changes details
-            if viewModel.pendingChanges > 0 && !viewModel.isSyncing {
+            if viewModel.pendingChanges > 0, !viewModel.isSyncing {
                 HStack {
                     Text("\(viewModel.pendingChanges) changes waiting to sync")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     Spacer()
-                    
+
                     Button("Clear") {
                         viewModel.clearPendingChanges()
                     }
@@ -83,7 +83,7 @@ struct CacheSyncStatusView: View {
                     .foregroundColor(.red)
                 }
             }
-            
+
             // Sync errors
             if !viewModel.syncErrors.isEmpty {
                 VStack(alignment: .leading, spacing: 4) {
@@ -91,7 +91,7 @@ struct CacheSyncStatusView: View {
                         .font(.caption)
                         .fontWeight(.semibold)
                         .foregroundColor(.red)
-                    
+
                     ForEach(viewModel.syncErrors, id: \.self) { error in
                         Text("• \(error)")
                             .font(.caption)
@@ -118,7 +118,7 @@ struct CacheSyncStatusView: View {
 /// Compact sync indicator for navigation bar
 struct CacheSyncIndicator: View {
     @StateObject private var viewModel = CacheSyncViewModel()
-    
+
     var body: some View {
         HStack(spacing: 4) {
             if viewModel.isSyncing {
@@ -136,7 +136,7 @@ struct CacheSyncIndicator: View {
             }
         }
         .onTapGesture {
-            if !viewModel.isSyncing && viewModel.pendingChanges > 0 {
+            if !viewModel.isSyncing, viewModel.pendingChanges > 0 {
                 viewModel.triggerSync()
             }
         }

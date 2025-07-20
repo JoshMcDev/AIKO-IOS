@@ -1,10 +1,10 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 import SwiftUI
 
 @Reducer
-public struct OnboardingFeature {
+public struct OnboardingFeature: Sendable {
     @ObservableState
     public struct State: Equatable {
         public var currentStep: Step = .welcome

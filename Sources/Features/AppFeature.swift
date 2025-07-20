@@ -1,7 +1,7 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
 import SwiftUI
-import AppCore
 #if os(iOS)
     import UIKit
 #else
@@ -32,7 +32,8 @@ public struct AppFeature {
         public var showingSettings: Bool = false
         public var showingAcquisitionChat: Bool = false
         public var showingDocumentScanner: Bool = false
-        public var loadedAcquisition: Acquisition?
+        public var showingQuickDocumentScanner: Bool = false
+        public var loadedAcquisition: AppCore.Acquisition?
         public var loadedAcquisitionDisplayName: String?
         public var isChatMode: Bool = false
         public var showingDownloadOptions: Bool = false
@@ -87,6 +88,7 @@ public struct AppFeature {
                 lhs.showingSearchTemplates == rhs.showingSearchTemplates &&
                 lhs.showingSettings == rhs.showingSettings &&
                 lhs.showingAcquisitionChat == rhs.showingAcquisitionChat &&
+                lhs.showingQuickDocumentScanner == rhs.showingQuickDocumentScanner &&
                 lhs.loadedAcquisition == rhs.loadedAcquisition &&
                 lhs.loadedAcquisitionDisplayName == rhs.loadedAcquisitionDisplayName &&
                 lhs.isChatMode == rhs.isChatMode &&
@@ -208,7 +210,7 @@ public struct AppFeature {
         case showSettings(Bool)
         case settings(SettingsFeature.Action)
         case loadAcquisition(UUID)
-        case acquisitionLoaded(Acquisition)
+        case acquisitionLoaded(AppCore.Acquisition)
         case loadAcquisitionError(String)
         case clearLoadedAcquisition
         case showDownloadOptions(UUID)
@@ -233,6 +235,8 @@ public struct AppFeature {
 
         // Document Scanner actions
         case showDocumentScanner(Bool)
+        case showQuickDocumentScanner(Bool)
+        case startQuickScan
         case documentScanner(DocumentScannerFeature.Action)
 
         // Face ID authentication actions
@@ -866,21 +870,31 @@ public struct AppFeature {
                 return .none
 
             // MARK: Document Scanner
-            
+
             case let .showDocumentScanner(show):
                 state.showingDocumentScanner = show
                 return .none
-                
+
+            case let .showQuickDocumentScanner(show):
+                state.showingQuickDocumentScanner = show
+                return .none
+
+            case .startQuickScan:
+                state.showingQuickDocumentScanner = true
+                return .send(.documentScanner(.startQuickScan))
+
             case .documentScanner(.dismissScanner):
                 state.showingDocumentScanner = false
+                state.showingQuickDocumentScanner = false
                 return .none
-                
+
             case .documentScanner(.documentSaved):
                 // Scanner successfully saved document to pipeline
                 state.showingDocumentScanner = false
+                state.showingQuickDocumentScanner = false
                 // Optionally refresh acquisition data or show success
                 return .none
-                
+
             case .documentScanner:
                 // Other scanner actions are handled by the child reducer
                 return .none

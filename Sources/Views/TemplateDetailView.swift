@@ -1,6 +1,6 @@
+import AppCore
 import ComposableArchitecture
 import SwiftUI
-import AppCore
 
 public struct TemplateDetailView: View {
     @Environment(\.dismiss) var dismiss

@@ -1,6 +1,6 @@
+import AppCore
 import ComposableArchitecture
 import SwiftUI
-import AppCore
 
 struct AcquisitionChatView: View {
     let store: StoreOf<AcquisitionChatFeature>
@@ -223,6 +223,7 @@ struct AcquisitionChatView: View {
     }
 }
 
+@MainActor 
 private func generateChatHistoryContent(viewStore: ViewStore<AcquisitionChatFeature.State, AcquisitionChatFeature.Action>) -> String {
     var content = """
     Acquisition Chat History

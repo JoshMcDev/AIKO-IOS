@@ -1,24 +1,30 @@
-import AppCore
-import ComposableArchitecture
-import Foundation
+#if os(iOS)
+    import AppCore
+    import ComposableArchitecture
+    import Foundation
 
-extension NavigationServiceClient {
-    private static let navigationService = iOSNavigationService()
-    
-    public static let iOSLive = Self(
-        supportsNavigationStack: {
-            navigationService.supportsNavigationStack
-        },
-        defaultNavigationStyle: {
-            navigationService.defaultNavigationStyle
-        },
-        supportsNavigationBarDisplayMode: {
-            navigationService.supportsNavigationBarDisplayMode
-        }
-    )
-}
+    public extension NavigationServiceClient {
+        static let iOS = Self(
+            supportsNavigationStack: {
+                // iOS 16+ supports NavigationStack
+                if #available(iOS 16.0, *) {
+                    true
+                } else {
+                    false
+                }
+            },
+            defaultNavigationStyle: {
+                // Use stack navigation for iOS
+                .stack
+            },
+            supportsNavigationBarDisplayMode: {
+                // iOS supports navigation bar display modes
+                true
+            }
+        )
+    }
 
-// Convenience static accessor
-public enum iOSNavigationServiceClient {
-    public static let live = NavigationServiceClient.iOSLive
-}
+    public enum iOSNavigationServiceClient {
+        public static let live = NavigationServiceClient.iOS
+    }
+#endif

@@ -1,5 +1,5 @@
-import Foundation
 import AppCore
+import Foundation
 
 public enum GovernmentAcquisitionPrompts {
     // MARK: - System Prompt

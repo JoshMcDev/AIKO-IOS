@@ -1,10 +1,10 @@
-import Foundation
 import AppCore
+import Foundation
 
 // MARK: - Form Types
 
 /// Government form types supported by the application
-public enum FormType: String, CaseIterable, Identifiable, Codable {
+public enum FormType: String, CaseIterable, Identifiable, Codable, Sendable {
     case sf18 = "SF18"
     case sf1449 = "SF1449"
     case sf30 = "SF30"
@@ -72,7 +72,7 @@ public enum FormType: String, CaseIterable, Identifiable, Codable {
 // MARK: - Form Definition
 
 /// Complete definition of a government form including metadata and requirements
-public struct FormDefinition: Identifiable, Codable {
+public struct FormDefinition: Identifiable, Codable, Sendable {
     public let formType: FormType
     public let formNumber: String
     public let title: String

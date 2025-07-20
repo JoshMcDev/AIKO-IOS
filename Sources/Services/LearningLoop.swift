@@ -4,20 +4,20 @@ import Foundation
 // MARK: - Learning Loop
 
 /// Continuous learning system that improves the app's intelligence over time
-public struct LearningLoop {
+public struct LearningLoop: Sendable {
     // Core learning functions
-    public var startLearning: () async -> Void
-    public var recordEvent: (LearningEvent) async -> Void
-    public var processQueue: () async throws -> ProcessingResult
-    public var generateInsights: () async throws -> [Insight]
-    public var applyLearnings: ([Learning]) async throws -> Void
+    public var startLearning: @Sendable () async -> Void
+    public var recordEvent: @Sendable (LearningEvent) async -> Void
+    public var processQueue: @Sendable () async throws -> ProcessingResult
+    public var generateInsights: @Sendable () async throws -> [Insight]
+    public var applyLearnings: @Sendable ([Learning]) async throws -> Void
 
     public init(
-        startLearning: @escaping () async -> Void,
-        recordEvent: @escaping (LearningEvent) async -> Void,
-        processQueue: @escaping () async throws -> ProcessingResult,
-        generateInsights: @escaping () async throws -> [Insight],
-        applyLearnings: @escaping ([Learning]) async throws -> Void
+        startLearning: @escaping @Sendable () async -> Void,
+        recordEvent: @escaping @Sendable (LearningEvent) async -> Void,
+        processQueue: @escaping @Sendable () async throws -> ProcessingResult,
+        generateInsights: @escaping @Sendable () async throws -> [Insight],
+        applyLearnings: @escaping @Sendable ([Learning]) async throws -> Void
     ) {
         self.startLearning = startLearning
         self.recordEvent = recordEvent
@@ -29,7 +29,7 @@ public struct LearningLoop {
 
 // MARK: - Learning Event
 
-public struct LearningEvent: Equatable, Codable {
+public struct LearningEvent: Equatable, Codable, Sendable {
     public let id: UUID
     public let timestamp: Date
     public let eventType: EventType
@@ -44,7 +44,7 @@ public struct LearningEvent: Equatable, Codable {
         self.outcome = outcome
     }
 
-    public enum EventType: String, Codable {
+    public enum EventType: String, Codable, Sendable {
         // User actions
         case requirementEntered
         case documentSelected
@@ -66,7 +66,7 @@ public struct LearningEvent: Equatable, Codable {
         case successAchieved
     }
 
-    public struct EventContext: Equatable, Codable {
+    public struct EventContext: Equatable, Codable, Sendable {
         public let workflowState: String
         public let acquisitionId: UUID?
         public let documentType: String?
@@ -74,7 +74,7 @@ public struct LearningEvent: Equatable, Codable {
         public let systemData: [String: String]
     }
 
-    public enum EventOutcome: String, Codable {
+    public enum EventOutcome: String, Codable, Sendable {
         case success
         case failure
         case partial
@@ -84,7 +84,7 @@ public struct LearningEvent: Equatable, Codable {
 
 // MARK: - Processing Result
 
-public struct ProcessingResult: Equatable {
+public struct ProcessingResult: Equatable, Sendable {
     public let eventsProcessed: Int
     public let learningsGenerated: [Learning]
     public let patternsDetected: [DetectedPattern]
@@ -93,14 +93,14 @@ public struct ProcessingResult: Equatable {
 
 // MARK: - Learning
 
-public struct Learning: Equatable {
+public struct Learning: Equatable, Sendable {
     public let id = UUID()
     public let type: LearningType
     public let confidence: Double
     public let evidence: [Evidence]
     public let recommendation: Recommendation
 
-    public enum LearningType: String {
+    public enum LearningType: String, Sendable {
         case userPreference
         case workflowOptimization
         case documentImprovement
@@ -108,22 +108,22 @@ public struct Learning: Equatable {
         case errorPrevention
     }
 
-    public struct Evidence: Equatable {
+    public struct Evidence: Equatable, Sendable {
         public let eventId: UUID
         public let description: String
         public let weight: Double
     }
 
-    public struct Recommendation: Equatable {
+    public struct Recommendation: Equatable, Sendable {
         public let action: String
         public let impact: Impact
         public let implementation: Implementation
 
-        public enum Impact: String {
+        public enum Impact: String, Sendable {
             case high, medium, low
         }
 
-        public enum Implementation: String {
+        public enum Implementation: String, Sendable {
             case immediate, scheduled, manual
         }
     }
@@ -131,7 +131,7 @@ public struct Learning: Equatable {
 
 // MARK: - Detected Pattern
 
-public struct DetectedPattern: Equatable {
+public struct DetectedPattern: Equatable, Sendable {
     public let id = UUID()
     public let name: String
     public let description: String
@@ -142,28 +142,28 @@ public struct DetectedPattern: Equatable {
 
 // MARK: - Anomaly
 
-public struct Anomaly: Equatable {
+public struct Anomaly: Equatable, Sendable {
     public let id = UUID()
     public let type: AnomalyType
     public let severity: Severity
     public let description: String
     public let context: [String: String]
 
-    public enum AnomalyType: String {
+    public enum AnomalyType: String, Sendable {
         case unusualSequence
         case performanceIssue
         case dataInconsistency
         case userStruggle
     }
 
-    public enum Severity: String {
+    public enum Severity: String, Sendable {
         case critical, high, medium, low
     }
 }
 
 // MARK: - Insight
 
-public struct Insight: Equatable {
+public struct Insight: Equatable, Sendable {
     public let id = UUID()
     public let category: Category
     public let title: String
@@ -171,7 +171,7 @@ public struct Insight: Equatable {
     public let actionableSteps: [String]
     public let expectedBenefit: String
 
-    public enum Category: String {
+    public enum Category: String, Sendable {
         case efficiency
         case quality
         case userExperience
@@ -183,7 +183,7 @@ public struct Insight: Equatable {
 // MARK: - Implementation
 
 extension LearningLoop: DependencyKey {
-    public static var liveValue: LearningLoop {
+    public nonisolated static var liveValue: LearningLoop {
         let eventQueue = EventQueue()
         let patternDetector = PatternDetector()
         let insightGenerator = InsightGenerator()

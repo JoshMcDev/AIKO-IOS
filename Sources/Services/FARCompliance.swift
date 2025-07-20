@@ -1,14 +1,14 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 
-public struct FARComplianceService {
-    public var getRecommendedDocuments: (String, ProjectCategory) async throws -> [DocumentRecommendation]
-    public var validateCompliance: (DocumentType, String) async throws -> ComplianceResult
+public struct FARComplianceService: Sendable {
+    public var getRecommendedDocuments: @Sendable (String, ProjectCategory) async throws -> [DocumentRecommendation]
+    public var validateCompliance: @Sendable (DocumentType, String) async throws -> ComplianceResult
 
     public init(
-        getRecommendedDocuments: @escaping (String, ProjectCategory) async throws -> [DocumentRecommendation],
-        validateCompliance: @escaping (DocumentType, String) async throws -> ComplianceResult
+        getRecommendedDocuments: @Sendable @escaping (String, ProjectCategory) async throws -> [DocumentRecommendation],
+        validateCompliance: @Sendable @escaping (DocumentType, String) async throws -> ComplianceResult
     ) {
         self.getRecommendedDocuments = getRecommendedDocuments
         self.validateCompliance = validateCompliance
@@ -103,7 +103,7 @@ public struct ComplianceIssue {
 }
 
 extension FARComplianceService: DependencyKey {
-    public static var liveValue: FARComplianceService {
+    public nonisolated static var liveValue: FARComplianceService {
         FARComplianceService(
             getRecommendedDocuments: { requirements, category in
                 // Analyze requirements and category to recommend appropriate documents
@@ -645,7 +645,7 @@ private func validateDocumentContent(documentType: DocumentType, content: String
                 suggestedFix: "Include cost sharing percentages if applicable"
             ))
         }
-        
+
     case .farUpdates:
         // FAR Updates don't require specific compliance validation
         // They are informational documents

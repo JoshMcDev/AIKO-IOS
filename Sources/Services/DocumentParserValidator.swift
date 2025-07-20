@@ -1,17 +1,16 @@
+import AppCore
 import Foundation
 import UniformTypeIdentifiers
-import AppCore
 
 /// Validates documents and extracted data for the document parser
 public final class DocumentParserValidator {
-    
     // MARK: - Constants
-    
+
     private static let maxFileSizeMB = 100
     private static let maxFileSize = maxFileSizeMB * 1024 * 1024
     private static let minTextLength = 10
     private static let maxTextLength = 5_000_000 // 5 million characters
-    
+
     // Supported document types
     private static let supportedTypes: Set<String> = [
         UTType.pdf.identifier,
@@ -24,11 +23,11 @@ public final class DocumentParserValidator {
         "com.microsoft.word.doc",
         "com.microsoft.word.docx",
         "org.openxmlformats.wordprocessingml.document",
-        "com.microsoft.word.wordml"
+        "com.microsoft.word.wordml",
     ]
-    
+
     // MARK: - Public Methods
-    
+
     /// Validates document data before parsing
     public func validateDocument(_ data: Data, type: UTType) throws {
         // Check file size
@@ -38,50 +37,49 @@ public final class DocumentParserValidator {
                 maxSizeMB: Self.maxFileSizeMB
             )
         }
-        
+
         // Check if empty
         guard !data.isEmpty else {
             throw DocumentParserValidationError.emptyDocument
         }
-        
+
         // Check supported type
         guard isSupportedType(type) else {
             throw DocumentParserValidationError.unsupportedDocumentType(type.identifier)
         }
-        
+
         // Type-specific validation
         try validateDocumentStructure(data, type: type)
     }
-    
+
     /// Validates document with expected type
     public func validate(_ data: Data, expectedType: DocumentValidationType) async -> DocumentValidationResult {
         do {
             // Map validation type to UTType for compatibility
-            let utType: UTType
-            switch expectedType {
+            let utType: UTType = switch expectedType {
             case .pdf:
-                utType = .pdf
+                .pdf
             case .word:
-                utType = UTType(filenameExtension: "docx") ?? .data
+                UTType(filenameExtension: "docx") ?? .data
             case .plainText:
-                utType = .plainText
+                .plainText
             case .rtf:
-                utType = .rtf
+                .rtf
             case .image:
-                utType = .image
+                .image
             case .excel:
-                utType = UTType(filenameExtension: "xlsx") ?? .data
+                UTType(filenameExtension: "xlsx") ?? .data
             case .unknown:
-                utType = .data
+                .data
             }
-            
+
             try validateDocument(data, type: utType)
             return DocumentValidationResult(isValid: true, errors: [])
         } catch {
             return DocumentValidationResult(isValid: false, errors: [error.localizedDescription])
         }
     }
-    
+
     /// Validates extracted text
     public func validateExtractedText(_ text: String) throws {
         // Check if empty
@@ -89,7 +87,7 @@ public final class DocumentParserValidator {
         guard !trimmedText.isEmpty else {
             throw DocumentParserValidationError.noTextExtracted
         }
-        
+
         // Check minimum length
         guard trimmedText.count >= Self.minTextLength else {
             throw DocumentParserValidationError.insufficientText(
@@ -97,7 +95,7 @@ public final class DocumentParserValidator {
                 minimum: Self.minTextLength
             )
         }
-        
+
         // Check maximum length
         guard trimmedText.count <= Self.maxTextLength else {
             throw DocumentParserValidationError.textTooLong(
@@ -105,13 +103,13 @@ public final class DocumentParserValidator {
                 maximum: Self.maxTextLength
             )
         }
-        
+
         // Check for meaningful content
         guard containsMeaningfulContent(trimmedText) else {
             throw DocumentParserValidationError.noMeaningfulContent
         }
     }
-    
+
     /// Validates extracted data
     public func validateExtractedData(_ data: ExtractedData) throws {
         // Validate entities based on type
@@ -125,9 +123,9 @@ public final class DocumentParserValidator {
                 try validatePhone(entity.value)
             case .partNumber:
                 // Check if this might be a UEI or CAGE code
-                if entity.value.count == 12 && entity.value.allSatisfy({ $0.isLetter || $0.isNumber }) {
+                if entity.value.count == 12, entity.value.allSatisfy({ $0.isLetter || $0.isNumber }) {
                     try validateUEI(entity.value)
-                } else if entity.value.count == 5 && entity.value.allSatisfy({ $0.isLetter || $0.isNumber }) {
+                } else if entity.value.count == 5, entity.value.allSatisfy({ $0.isLetter || $0.isNumber }) {
                     try validateCAGE(entity.value)
                 }
             case .price:
@@ -143,7 +141,7 @@ public final class DocumentParserValidator {
                 break
             }
         }
-        
+
         // Validate tables that contain line items
         for table in data.tables {
             if table.headers.contains(where: { $0.lowercased().contains("price") || $0.lowercased().contains("amount") }) {
@@ -154,7 +152,8 @@ public final class DocumentParserValidator {
                     if row.count >= 2,
                        let quantity = Double(row[0]),
                        let priceString = row.last?.replacingOccurrences(of: "$", with: "").replacingOccurrences(of: ",", with: ""),
-                       let unitPrice = Decimal(string: priceString) {
+                       let unitPrice = Decimal(string: priceString)
+                    {
                         let lineItem = LineItem(
                             itemNumber: nil,
                             description: row.count > 2 ? row[1] : "Item",
@@ -169,20 +168,20 @@ public final class DocumentParserValidator {
             }
         }
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func isSupportedType(_ type: UTType) -> Bool {
         // Check direct identifier match
         if Self.supportedTypes.contains(type.identifier) {
             return true
         }
-        
+
         // Check conformance to supported types
         if type.conforms(to: .pdf) || type.conforms(to: .text) || type.conforms(to: .image) {
             return true
         }
-        
+
         // Check for Word document types
         let wordExtensions = ["doc", "docx"]
         for ext in wordExtensions {
@@ -190,10 +189,10 @@ public final class DocumentParserValidator {
                 return true
             }
         }
-        
+
         return false
     }
-    
+
     private func validateDocumentStructure(_ data: Data, type: UTType) throws {
         if type == .pdf {
             // Check PDF header
@@ -201,7 +200,7 @@ public final class DocumentParserValidator {
             guard data.count >= 4 else {
                 throw DocumentParserValidationError.corruptedDocument("PDF too small")
             }
-            
+
             let header = Array(data.prefix(4))
             guard header == pdfHeader else {
                 throw DocumentParserValidationError.corruptedDocument("Invalid PDF header")
@@ -212,92 +211,92 @@ public final class DocumentParserValidator {
         }
         // Word documents are validated during parsing
     }
-    
+
     private func containsMeaningfulContent(_ text: String) -> Bool {
         // Check if text contains actual words (not just numbers/symbols)
         let words = text.components(separatedBy: .whitespacesAndNewlines)
             .filter { !$0.isEmpty && $0.rangeOfCharacter(from: .letters) != nil }
-        
+
         return words.count >= 3 // At least 3 words with letters
     }
-    
+
     private func validateVendorName(_ name: String) throws {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else {
             throw DocumentParserValidationError.invalidField("Vendor Name", "cannot be empty")
         }
-        
+
         guard trimmed.count >= 2 else {
             throw DocumentParserValidationError.invalidField("Vendor Name", "too short")
         }
-        
+
         guard trimmed.count <= 200 else {
             throw DocumentParserValidationError.invalidField("Vendor Name", "too long")
         }
     }
-    
+
     private func validateEmail(_ email: String) throws {
         let emailRegex = #"^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,64}$"#
         let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
-        
+
         guard emailPredicate.evaluate(with: email) else {
             throw DocumentParserValidationError.invalidField("Email", "invalid format")
         }
     }
-    
+
     private func validatePhone(_ phone: String) throws {
         // Remove common phone formatting characters
         let cleaned = phone.replacingOccurrences(of: "[^0-9+]", with: "", options: .regularExpression)
-        
+
         guard !cleaned.isEmpty else {
             throw DocumentParserValidationError.invalidField("Phone", "cannot be empty")
         }
-        
+
         // Basic length check (international numbers can vary)
-        guard cleaned.count >= 7 && cleaned.count <= 20 else {
+        guard cleaned.count >= 7, cleaned.count <= 20 else {
             throw DocumentParserValidationError.invalidField("Phone", "invalid length")
         }
     }
-    
+
     private func validateUEI(_ uei: String) throws {
         // UEI should be exactly 12 alphanumeric characters
         let cleaned = uei.trimmingCharacters(in: .whitespacesAndNewlines)
-        
+
         guard cleaned.count == 12 else {
             throw DocumentParserValidationError.invalidField("UEI", "must be 12 characters")
         }
-        
+
         let alphanumericSet = CharacterSet.alphanumerics
         guard cleaned.unicodeScalars.allSatisfy({ alphanumericSet.contains($0) }) else {
             throw DocumentParserValidationError.invalidField("UEI", "must be alphanumeric")
         }
     }
-    
+
     private func validateCAGE(_ cage: String) throws {
         // CAGE code should be 5 alphanumeric characters
         let cleaned = cage.trimmingCharacters(in: .whitespacesAndNewlines)
-        
+
         guard cleaned.count == 5 else {
             throw DocumentParserValidationError.invalidField("CAGE", "must be 5 characters")
         }
-        
+
         let alphanumericSet = CharacterSet.alphanumerics
         guard cleaned.unicodeScalars.allSatisfy({ alphanumericSet.contains($0) }) else {
             throw DocumentParserValidationError.invalidField("CAGE", "must be alphanumeric")
         }
     }
-    
+
     private func validatePrice(_ price: Decimal) throws {
         guard price >= 0 else {
             throw DocumentParserValidationError.invalidField("Price", "cannot be negative")
         }
-        
+
         // Check for reasonable maximum (e.g., $1 billion)
         guard price <= 1_000_000_000 else {
             throw DocumentParserValidationError.invalidField("Price", "exceeds reasonable maximum")
         }
     }
-    
+
     private func validateLineItems(_ items: [LineItem]) throws {
         for (index, item) in items.enumerated() {
             // Validate description
@@ -308,7 +307,7 @@ public final class DocumentParserValidator {
                     "cannot be empty"
                 )
             }
-            
+
             // Validate quantity
             guard item.quantity > 0 else {
                 throw DocumentParserValidationError.invalidField(
@@ -316,7 +315,7 @@ public final class DocumentParserValidator {
                     "must be positive"
                 )
             }
-            
+
             // Validate unit price
             guard item.unitPrice >= 0 else {
                 throw DocumentParserValidationError.invalidField(
@@ -324,7 +323,7 @@ public final class DocumentParserValidator {
                     "cannot be negative"
                 )
             }
-            
+
             // Validate total price
             guard item.totalPrice >= 0 else {
                 throw DocumentParserValidationError.invalidField(
@@ -332,34 +331,36 @@ public final class DocumentParserValidator {
                     "cannot be negative"
                 )
             }
-            
+
             // Verify calculation if possible
             let calculatedTotal = Decimal(item.quantity) * item.unitPrice
             let tolerance: Decimal = 0.01 // Allow for rounding differences
-            
+
             if abs(calculatedTotal - item.totalPrice) > tolerance {
                 // This is a warning, not necessarily an error
                 // Could log this for review
             }
         }
     }
-    
+
     private func validateDate(_ date: Date, field: String) throws {
         let calendar = Calendar.current
         let now = Date()
-        
+
         // Check if date is not too far in the past (e.g., 10 years)
         if let tenYearsAgo = calendar.date(byAdding: .year, value: -10, to: now),
-           date < tenYearsAgo {
+           date < tenYearsAgo
+        {
             throw DocumentParserValidationError.invalidField(
                 field,
                 "date is too far in the past"
             )
         }
-        
+
         // Check if date is not too far in the future (e.g., 5 years)
         if let fiveYearsFromNow = calendar.date(byAdding: .year, value: 5, to: now),
-           date > fiveYearsFromNow {
+           date > fiveYearsFromNow
+        {
             throw DocumentParserValidationError.invalidField(
                 field,
                 "date is too far in the future"
@@ -373,7 +374,7 @@ public final class DocumentParserValidator {
 public struct DocumentValidationResult {
     public let isValid: Bool
     public let errors: [String]
-    
+
     public init(isValid: Bool, errors: [String]) {
         self.isValid = isValid
         self.errors = errors
@@ -393,29 +394,29 @@ public enum DocumentParserValidationError: Error, LocalizedError {
     case noMeaningfulContent
     case invalidField(String, String)
     case invalidDateRange(String)
-    
+
     public var errorDescription: String? {
         switch self {
-        case .fileTooLarge(let sizeMB, let maxSizeMB):
-            return "File too large: \(sizeMB)MB (maximum: \(maxSizeMB)MB)"
+        case let .fileTooLarge(sizeMB, maxSizeMB):
+            "File too large: \(sizeMB)MB (maximum: \(maxSizeMB)MB)"
         case .emptyDocument:
-            return "Document is empty"
-        case .unsupportedDocumentType(let type):
-            return "Unsupported document type: \(type)"
-        case .corruptedDocument(let reason):
-            return "Document appears to be corrupted: \(reason)"
+            "Document is empty"
+        case let .unsupportedDocumentType(type):
+            "Unsupported document type: \(type)"
+        case let .corruptedDocument(reason):
+            "Document appears to be corrupted: \(reason)"
         case .noTextExtracted:
-            return "No text could be extracted from the document"
-        case .insufficientText(let length, let minimum):
-            return "Extracted text too short: \(length) characters (minimum: \(minimum))"
-        case .textTooLong(let length, let maximum):
-            return "Extracted text too long: \(length) characters (maximum: \(maximum))"
+            "No text could be extracted from the document"
+        case let .insufficientText(length, minimum):
+            "Extracted text too short: \(length) characters (minimum: \(minimum))"
+        case let .textTooLong(length, maximum):
+            "Extracted text too long: \(length) characters (maximum: \(maximum))"
         case .noMeaningfulContent:
-            return "Document does not contain meaningful text content"
-        case .invalidField(let field, let reason):
-            return "\(field) is invalid: \(reason)"
-        case .invalidDateRange(let reason):
-            return "Invalid date range: \(reason)"
+            "Document does not contain meaningful text content"
+        case let .invalidField(field, reason):
+            "\(field) is invalid: \(reason)"
+        case let .invalidDateRange(reason):
+            "Invalid date range: \(reason)"
         }
     }
 }

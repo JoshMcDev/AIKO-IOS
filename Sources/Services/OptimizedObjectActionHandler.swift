@@ -1,20 +1,21 @@
+import AppCore
 import Combine
 import ComposableArchitecture
 import Foundation
-import AppCore
 
 /// Optimized Object Action Handler with smart caching and performance improvements
-public struct OptimizedObjectActionHandler {
-    
+public struct OptimizedObjectActionHandler: @unchecked Sendable {
     // MARK: - Core Functions (matching original interface)
+
     public var identifyObjectType: @Sendable (Any) async throws -> ObjectType
     public var getAvailableActions: @Sendable (ObjectType, ActionContext) async throws -> [ObjectAction]
     public var executeAction: @Sendable (ObjectAction) async throws -> ActionResult
     public var validateAction: @Sendable (ObjectAction) async throws -> ObjectActionHandler.ValidationResult
     public var learnFromExecution: @Sendable (ActionResult) async throws -> Void
     public var optimizeActionPlan: @Sendable ([ObjectAction]) async throws -> [ObjectAction]
-    
+
     // MARK: - Performance Features
+
     public var batchExecute: @Sendable ([ObjectAction]) async throws -> [ActionResult]
     public var preloadCache: @Sendable ([ObjectAction]) async throws -> Void
     public var getPerformanceReport: @Sendable () async -> ObjectActionPerformanceReport
@@ -29,122 +30,122 @@ public extension OptimizedObjectActionHandler {
         let objectTypeCache = ObjectTypeCache()
         let validationCache = ValidationCache()
         let metricsCollector = OptimizedMetricsCollector()
-        
+
         // Performance monitoring
         let performanceMonitor = ObjectActionPerformanceMonitor()
-        
+
         // Background processing queue
-        let processingQueue = DispatchQueue(label: "com.aiko.object-action.optimized", 
-                                          qos: .userInitiated,
-                                          attributes: .concurrent)
-        
+        let processingQueue = DispatchQueue(label: "com.aiko.object-action.optimized",
+                                            qos: .userInitiated,
+                                            attributes: .concurrent)
+
         @Dependency(\.objectActionCache) var cache
-        
+
         return Self(
             identifyObjectType: { object in
                 let start = Date()
-                
+
                 // Check cache first
                 let objectId = "\(type(of: object))_\(String(describing: object))".hashValue
                 if let cachedType = await objectTypeCache.get(objectId) {
                     await performanceMonitor.recordCacheHit(operation: "identifyObjectType")
                     return cachedType
                 }
-                
+
                 // Original identification logic with caching
                 let objectType = try await identifyObjectTypeOptimized(object)
                 await objectTypeCache.set(objectId, type: objectType)
-                
+
                 let duration = Date().timeIntervalSince(start)
                 await performanceMonitor.recordOperation(
                     type: "identifyObjectType",
                     duration: duration,
                     cacheHit: false
                 )
-                
+
                 return objectType
             },
-            
+
             getAvailableActions: { objectType, context in
                 let start = Date()
-                
+
                 // Create cache key
                 let cacheKey = "\(objectType.rawValue)|\(context.cacheKey)"
-                
+
                 // Check validation cache
                 if let cachedActions = await validationCache.getActions(cacheKey) {
                     await performanceMonitor.recordCacheHit(operation: "getAvailableActions")
                     return cachedActions
                 }
-                
+
                 // Optimized action discovery
                 let actions = await discoverActionsOptimized(for: objectType, in: context)
-                
+
                 // Cache the results
                 await validationCache.setActions(cacheKey, actions: actions)
-                
+
                 let duration = Date().timeIntervalSince(start)
                 await performanceMonitor.recordOperation(
                     type: "getAvailableActions",
                     duration: duration,
                     cacheHit: false
                 )
-                
+
                 return actions
             },
-            
+
             executeAction: { action in
                 let start = Date()
-                
+
                 // Check cache first
                 if let cachedResult = await cache.get(action) {
                     await performanceMonitor.recordCacheHit(operation: "executeAction")
                     return cachedResult
                 }
-                
+
                 // Execute with resource pooling
                 let result = try await executeWithResourcePool(action)
-                
+
                 // Cache successful results
                 if result.status == .completed {
                     await cache.set(action, result: result)
                 }
-                
+
                 let duration = Date().timeIntervalSince(start)
                 await performanceMonitor.recordOperation(
                     type: "executeAction",
                     duration: duration,
                     cacheHit: false
                 )
-                
+
                 return result
             },
-            
+
             validateAction: { action in
                 let start = Date()
-                
+
                 // Fast validation with caching
                 let cacheKey = ValidationCacheKey(action: action)
                 if let cached = await validationCache.get(cacheKey) {
                     await performanceMonitor.recordCacheHit(operation: "validateAction")
                     return cached
                 }
-                
+
                 let result = try await validateActionOptimized(action)
-                
+
                 // Cache validation results
                 await validationCache.set(cacheKey, result: result)
-                
+
                 let duration = Date().timeIntervalSince(start)
                 await performanceMonitor.recordOperation(
                     type: "validateAction",
                     duration: duration,
                     cacheHit: false
                 )
-                
+
                 return result
             },
-            
+
             learnFromExecution: { result in
                 // Process learning asynchronously with batching
                 learningQueue.async {
@@ -153,48 +154,48 @@ public extension OptimizedObjectActionHandler {
                     }
                 }
             },
-            
+
             optimizeActionPlan: { actions in
                 let start = Date()
-                
+
                 // Advanced optimization with dependency analysis
                 let optimizer = ActionPlanOptimizer()
                 let optimized = await optimizer.optimize(actions)
-                
+
                 let duration = Date().timeIntervalSince(start)
                 await performanceMonitor.recordOperation(
                     type: "optimizeActionPlan",
                     duration: duration,
                     cacheHit: false
                 )
-                
+
                 return optimized
             },
-            
+
             // MARK: - Performance Features
-            
+
             batchExecute: { actions in
                 let start = Date()
-                
+
                 // Group by dependency and execute in parallel where possible
                 let executor = BatchActionExecutor()
                 let results = try await executor.execute(actions)
-                
+
                 let duration = Date().timeIntervalSince(start)
                 await performanceMonitor.recordOperation(
                     type: "batchExecute",
                     duration: duration,
                     cacheHit: false
                 )
-                
+
                 return results
             },
-            
+
             preloadCache: { actions in
                 // Warm cache with predicted actions
                 await cache.warmCache(predictions: actions)
             },
-            
+
             getPerformanceReport: {
                 await performanceMonitor.generateReport()
             }
@@ -225,7 +226,7 @@ private func identifyObjectTypeOptimized(_ object: Any) async throws -> ObjectTy
     default:
         // Use optimized reflection
         let typeName = String(describing: type(of: object)).lowercased()
-        
+
         if typeName.contains("document") {
             return .document
         } else if typeName.contains("acquisition") {
@@ -240,10 +241,10 @@ private func identifyObjectTypeOptimized(_ object: Any) async throws -> ObjectTy
 
 private func discoverActionsOptimized(for objectType: ObjectType, in context: ActionContext) async -> [ObjectAction] {
     var actions: [ObjectAction] = []
-    
+
     // Get base actions for the object type
     let supportedActionTypes = objectType.supportedActions
-    
+
     // Parallel action creation
     await withTaskGroup(of: ObjectAction?.self) { group in
         for actionType in supportedActionTypes {
@@ -251,12 +252,12 @@ private func discoverActionsOptimized(for objectType: ObjectType, in context: Ac
                 guard await isActionAvailableOptimized(actionType, for: objectType, in: context) else {
                     return nil
                 }
-                
+
                 return ObjectAction(
                     type: actionType,
                     objectType: objectType,
                     objectId: UUID().uuidString,
-                    parameters: ParameterDefaults.get(for: actionType),
+                    parameters: convertToParameterValues(ParameterDefaults.get(for: actionType)),
                     context: context,
                     priority: PriorityCalculator.calculate(actionType, context: context),
                     estimatedDuration: DurationEstimator.estimate(actionType, objectType: objectType),
@@ -264,14 +265,14 @@ private func discoverActionsOptimized(for objectType: ObjectType, in context: Ac
                 )
             }
         }
-        
+
         for await action in group {
-            if let action = action {
+            if let action {
                 actions.append(action)
             }
         }
     }
-    
+
     // Sort by priority and estimated duration
     return actions.sorted { lhs, rhs in
         if lhs.priority != rhs.priority {
@@ -281,10 +282,10 @@ private func discoverActionsOptimized(for objectType: ObjectType, in context: Ac
     }
 }
 
-private func isActionAvailableOptimized(_ actionType: ActionType, for objectType: ObjectType, in context: ActionContext) async -> Bool {
+private func isActionAvailableOptimized(_ actionType: ActionType, for _: ObjectType, in context: ActionContext) async -> Bool {
     // Check permissions with caching
     guard await hasPermissionOptimized(for: actionType, in: context) else { return false }
-    
+
     // Check environmental constraints
     switch context.environment {
     case .development:
@@ -300,7 +301,7 @@ private func isActionAvailableOptimized(_ actionType: ActionType, for objectType
 private func executeWithResourcePool(_ action: ObjectAction) async throws -> ActionResult {
     let startTime = Date()
     let resourcePool = ResourcePool.shared
-    
+
     // Acquire resources
     let resources = try await resourcePool.acquire(for: action)
     defer {
@@ -308,11 +309,11 @@ private func executeWithResourcePool(_ action: ObjectAction) async throws -> Act
             await resourcePool.release(resources)
         }
     }
-    
+
     do {
         // Execute with monitoring
         let output = try await executeActionOptimized(action, resources: resources)
-        
+
         let endTime = Date()
         let metrics = ActionMetrics(
             startTime: startTime,
@@ -326,9 +327,9 @@ private func executeWithResourcePool(_ action: ObjectAction) async throws -> Act
             ),
             effectivenessScore: calculateOptimizedEffectivenessScore(output, action: action)
         )
-        
+
         let insights = await generateOptimizedInsights(action: action, output: output, metrics: metrics)
-        
+
         return ActionResult(
             actionId: action.id,
             status: .completed,
@@ -337,7 +338,7 @@ private func executeWithResourcePool(_ action: ObjectAction) async throws -> Act
             errors: [],
             learningInsights: insights
         )
-        
+
     } catch {
         let endTime = Date()
         let metrics = ActionMetrics(
@@ -349,7 +350,7 @@ private func executeWithResourcePool(_ action: ObjectAction) async throws -> Act
             performanceScore: 0.0,
             effectivenessScore: 0.0
         )
-        
+
         return ActionResult(
             actionId: action.id,
             status: .failed,
@@ -398,57 +399,57 @@ private func executeActionOptimized(_ action: ObjectAction, resources: ResourceA
 
 // MARK: - Optimized Action Handlers
 
-private func handleCreateActionOptimized(_ action: ObjectAction, resources: ResourceAllocation) async throws -> ActionOutput {
+private func handleCreateActionOptimized(_ action: ObjectAction, resources _: ResourceAllocation) async throws -> ActionOutput {
     let data = "Created \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
     return ActionOutput(type: .json, data: data, metadata: ["created": "true"])
 }
 
-private func handleReadActionOptimized(_ action: ObjectAction, resources: ResourceAllocation) async throws -> ActionOutput {
+private func handleReadActionOptimized(_ action: ObjectAction, resources _: ResourceAllocation) async throws -> ActionOutput {
     let data = "Read \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
     return ActionOutput(type: .json, data: data)
 }
 
-private func handleUpdateActionOptimized(_ action: ObjectAction, resources: ResourceAllocation) async throws -> ActionOutput {
+private func handleUpdateActionOptimized(_ action: ObjectAction, resources _: ResourceAllocation) async throws -> ActionOutput {
     let data = "Updated \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
     return ActionOutput(type: .json, data: data)
 }
 
-private func handleDeleteActionOptimized(_ action: ObjectAction, resources: ResourceAllocation) async throws -> ActionOutput {
+private func handleDeleteActionOptimized(_ action: ObjectAction, resources _: ResourceAllocation) async throws -> ActionOutput {
     let data = "Deleted \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
     return ActionOutput(type: .json, data: data)
 }
 
-private func handleGenerateActionOptimized(_ action: ObjectAction, resources: ResourceAllocation) async throws -> ActionOutput {
+private func handleGenerateActionOptimized(_ action: ObjectAction, resources _: ResourceAllocation) async throws -> ActionOutput {
     let generated = "Generated content for \(action.objectType)".data(using: .utf8)!
     return ActionOutput(type: .document, data: generated, metadata: ["generated": "true"])
 }
 
-private func handleAnalyzeActionOptimized(_ action: ObjectAction, resources: ResourceAllocation) async throws -> ActionOutput {
+private func handleAnalyzeActionOptimized(_ action: ObjectAction, resources _: ResourceAllocation) async throws -> ActionOutput {
     let analysis: [String: Any] = [
         "objectType": action.objectType.rawValue,
         "insights": ["Pattern detected", "Optimization opportunity found"],
-        "score": 0.85
+        "score": 0.85,
     ]
     let data = try JSONSerialization.data(withJSONObject: analysis)
     return ActionOutput(type: .json, data: data, metadata: ["analyzed": "true"])
 }
 
-private func handleValidateActionOptimized(_ action: ObjectAction, resources: ResourceAllocation) async throws -> ActionOutput {
+private func handleValidateActionOptimized(_ action: ObjectAction, resources _: ResourceAllocation) async throws -> ActionOutput {
     let data = "Validated \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
     return ActionOutput(type: .json, data: data)
 }
 
-private func handleExecuteActionOptimized(_ action: ObjectAction, resources: ResourceAllocation) async throws -> ActionOutput {
+private func handleExecuteActionOptimized(_ action: ObjectAction, resources _: ResourceAllocation) async throws -> ActionOutput {
     let data = "Executed \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
     return ActionOutput(type: .json, data: data)
 }
 
-private func handleLearnActionOptimized(_ action: ObjectAction, resources: ResourceAllocation) async throws -> ActionOutput {
+private func handleLearnActionOptimized(_ action: ObjectAction, resources _: ResourceAllocation) async throws -> ActionOutput {
     let data = "Learning from \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
     return ActionOutput(type: .json, data: data)
 }
 
-private func handleOptimizeActionOptimized(_ action: ObjectAction, resources: ResourceAllocation) async throws -> ActionOutput {
+private func handleOptimizeActionOptimized(_ action: ObjectAction, resources _: ResourceAllocation) async throws -> ActionOutput {
     let data = "Optimized \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
     return ActionOutput(type: .json, data: data)
 }
@@ -459,12 +460,12 @@ private func validateActionOptimized(_ action: ObjectAction) async throws -> Obj
     var errors: [String] = []
     var warnings: [String] = []
     var suggestions: [String] = []
-    
+
     // Validate object type supports action
     if !action.objectType.supportedActions.contains(action.type) {
         errors.append("Action '\(action.type)' is not supported for object type '\(action.objectType)'")
     }
-    
+
     // Validate required parameters
     let requiredParams = ParameterRequirements.get(actionType: action.type)
     for param in requiredParams {
@@ -472,20 +473,20 @@ private func validateActionOptimized(_ action: ObjectAction) async throws -> Obj
             errors.append("Missing required parameter: '\(param)'")
         }
     }
-    
+
     // Validate capabilities
     let availableCapabilities = await getAvailableCapabilities()
     let missingCapabilities = action.requiredCapabilities.subtracting(availableCapabilities)
     if !missingCapabilities.isEmpty {
         errors.append("Missing required capabilities: \(missingCapabilities.map(\.rawValue).joined(separator: ", "))")
     }
-    
+
     // Performance warnings
     if action.estimatedDuration > 10.0 {
         warnings.append("This action may take more than 10 seconds to complete")
         suggestions.append("Consider breaking this into smaller actions")
     }
-    
+
     return ObjectActionHandler.ValidationResult(
         isValid: errors.isEmpty,
         errors: errors,
@@ -498,11 +499,11 @@ private func validateActionOptimized(_ action: ObjectAction) async throws -> Obj
 
 private actor ObjectTypeCache {
     private var cache: [Int: ObjectType] = [:]
-    
+
     func get(_ objectId: Int) -> ObjectType? {
         cache[objectId]
     }
-    
+
     func set(_ objectId: Int, type: ObjectType) {
         cache[objectId] = type
     }
@@ -511,19 +512,19 @@ private actor ObjectTypeCache {
 private actor ValidationCache {
     private var actionCache: [String: [ObjectAction]] = [:]
     private var validationCache: [ValidationCacheKey: ObjectActionHandler.ValidationResult] = [:]
-    
+
     func getActions(_ key: String) -> [ObjectAction]? {
         actionCache[key]
     }
-    
+
     func setActions(_ key: String, actions: [ObjectAction]) {
         actionCache[key] = actions
     }
-    
+
     func get(_ key: ValidationCacheKey) -> ObjectActionHandler.ValidationResult? {
         validationCache[key]
     }
-    
+
     func set(_ key: ValidationCacheKey, result: ObjectActionHandler.ValidationResult) {
         validationCache[key] = result
     }
@@ -533,11 +534,11 @@ private struct ValidationCacheKey: Hashable {
     let actionType: String
     let objectType: String
     let contextHash: String
-    
+
     init(action: ObjectAction) {
-        self.actionType = action.type.rawValue
-        self.objectType = action.objectType.rawValue
-        self.contextHash = action.context.cacheKey
+        actionType = action.type.rawValue
+        objectType = action.objectType.rawValue
+        contextHash = action.context.cacheKey
     }
 }
 
@@ -553,14 +554,14 @@ public actor ObjectActionPerformanceMonitor {
     private var operations: [OperationRecord] = []
     private var cacheHits: [String: Int] = [:]
     private var cacheMisses: [String: Int] = [:]
-    
+
     struct OperationRecord {
         let type: String
         let duration: TimeInterval
         let timestamp: Date
         let cacheHit: Bool
     }
-    
+
     func recordOperation(type: String, duration: TimeInterval, cacheHit: Bool) async {
         operations.append(OperationRecord(
             type: type,
@@ -568,29 +569,29 @@ public actor ObjectActionPerformanceMonitor {
             timestamp: Date(),
             cacheHit: cacheHit
         ))
-        
+
         if cacheHit {
             cacheHits[type, default: 0] += 1
         } else {
             cacheMisses[type, default: 0] += 1
         }
     }
-    
+
     func recordCacheHit(operation: String) async {
         cacheHits[operation, default: 0] += 1
     }
-    
+
     func generateReport() async -> ObjectActionPerformanceReport {
         let totalOps = operations.count
         let avgDuration = operations.isEmpty ? 0 : operations.map(\.duration).reduce(0, +) / Double(totalOps)
-        
+
         var cacheHitRates: [String: Double] = [:]
         for (op, hits) in cacheHits {
             let misses = cacheMisses[op] ?? 0
             let total = hits + misses
             cacheHitRates[op] = total > 0 ? Double(hits) / Double(total) : 0
         }
-        
+
         return ObjectActionPerformanceReport(
             totalOperations: totalOps,
             averageDuration: avgDuration,
@@ -608,14 +609,14 @@ public actor ObjectActionPerformanceMonitor {
     }
 }
 
-public struct ObjectActionPerformanceReport {
+public struct ObjectActionPerformanceReport: Sendable {
     let totalOperations: Int
     let averageDuration: TimeInterval
     let cacheHitRates: [String: Double]
     let operationBreakdown: [String: OperationStats]
 }
 
-public struct OperationStats {
+public struct OperationStats: Sendable {
     let count: Int
     let averageDuration: TimeInterval
     let minDuration: TimeInterval
@@ -626,30 +627,30 @@ public struct OperationStats {
 
 private actor ResourcePool {
     static let shared = ResourcePool()
-    
+
     private var availableResources: [ResourceAllocation] = []
     private var allocatedResources: Set<UUID> = []
-    
+
     private init() {
         // Initialize resource pool
-        for _ in 0..<10 {
+        for _ in 0 ..< 10 {
             availableResources.append(ResourceAllocation())
         }
     }
-    
-    func acquire(for action: ObjectAction) async throws -> ResourceAllocation {
+
+    func acquire(for _: ObjectAction) async throws -> ResourceAllocation {
         // Wait for available resource
         while availableResources.isEmpty {
             try await Task.sleep(nanoseconds: 10_000_000) // 10ms
         }
-        
+
         var resource = availableResources.removeFirst()
         resource.id = UUID()
         allocatedResources.insert(resource.id)
-        
+
         return resource
     }
-    
+
     func release(_ resource: ResourceAllocation) async {
         allocatedResources.remove(resource.id)
         availableResources.append(resource)
@@ -669,7 +670,7 @@ private actor BatchActionExecutor {
         // Group actions by dependency
         let groups = groupByDependency(actions)
         var results: [ActionResult] = []
-        
+
         // Execute each group in parallel
         for group in groups {
             let groupResults = try await withThrowingTaskGroup(of: ActionResult.self) { taskGroup in
@@ -678,25 +679,25 @@ private actor BatchActionExecutor {
                         try await executeWithResourcePool(action)
                     }
                 }
-                
+
                 var groupResults: [ActionResult] = []
                 for try await result in taskGroup {
                     groupResults.append(result)
                 }
                 return groupResults
             }
-            
+
             results.append(contentsOf: groupResults)
         }
-        
+
         return results
     }
-    
+
     private func groupByDependency(_ actions: [ObjectAction]) -> [[ObjectAction]] {
         // Simple grouping - in real implementation would analyze dependencies
         var groups: [[ObjectAction]] = []
         var currentGroup: [ObjectAction] = []
-        
+
         for action in actions {
             if currentGroup.count < 5 {
                 currentGroup.append(action)
@@ -705,11 +706,11 @@ private actor BatchActionExecutor {
                 currentGroup = [action]
             }
         }
-        
+
         if !currentGroup.isEmpty {
             groups.append(currentGroup)
         }
-        
+
         return groups
     }
 }
@@ -720,22 +721,22 @@ private actor ActionPlanOptimizer {
     func optimize(_ actions: [ObjectAction]) async -> [ObjectAction] {
         // Build dependency graph
         let graph = buildDependencyGraph(actions)
-        
+
         // Topological sort with priority consideration
         let sorted = topologicalSort(graph, actions: actions)
-        
+
         // Identify parallelizable actions
         let optimized = identifyParallelGroups(sorted, graph: graph)
-        
+
         return optimized
     }
-    
+
     private func buildDependencyGraph(_ actions: [ObjectAction]) -> DependencyGraph {
         // Build graph based on action relationships
         DependencyGraph(actions: actions)
     }
-    
-    private func topologicalSort(_ graph: DependencyGraph, actions: [ObjectAction]) -> [ObjectAction] {
+
+    private func topologicalSort(_: DependencyGraph, actions: [ObjectAction]) -> [ObjectAction] {
         // Implement topological sort
         actions.sorted { lhs, rhs in
             if lhs.priority != rhs.priority {
@@ -744,8 +745,8 @@ private actor ActionPlanOptimizer {
             return lhs.estimatedDuration < rhs.estimatedDuration
         }
     }
-    
-    private func identifyParallelGroups(_ actions: [ObjectAction], graph: DependencyGraph) -> [ObjectAction] {
+
+    private func identifyParallelGroups(_ actions: [ObjectAction], graph _: DependencyGraph) -> [ObjectAction] {
         // Mark actions that can be executed in parallel
         actions
     }
@@ -763,10 +764,10 @@ private let learningQueue = DispatchQueue(label: "com.aiko.object-action.learnin
 private func processBatchedLearning(_ result: ActionResult) async {
     // Batch learning insights
     let insights = result.learningInsights
-    
+
     // Process by type
     let grouped = Dictionary(grouping: insights) { $0.type }
-    
+
     for (type, typeInsights) in grouped {
         switch type {
         case .pattern:
@@ -785,7 +786,7 @@ private func processBatchedLearning(_ result: ActionResult) async {
 
 private func generateOptimizedInsights(action: ObjectAction, output: ActionOutput?, metrics: ActionMetrics) async -> [LearningInsight] {
     var insights: [LearningInsight] = []
-    
+
     // Performance insights
     if metrics.performanceScore < 0.7 {
         insights.append(LearningInsight(
@@ -796,9 +797,9 @@ private func generateOptimizedInsights(action: ObjectAction, output: ActionOutpu
             impact: .medium
         ))
     }
-    
+
     // Pattern insights
-    if action.type == .analyze && output != nil {
+    if action.type == .analyze, output != nil {
         insights.append(LearningInsight(
             type: .pattern,
             description: "Analysis pattern detected for \(action.objectType)",
@@ -807,7 +808,7 @@ private func generateOptimizedInsights(action: ObjectAction, output: ActionOutpu
             impact: .low
         ))
     }
-    
+
     // Effectiveness insights
     if metrics.effectivenessScore > 0.9 {
         insights.append(LearningInsight(
@@ -818,16 +819,16 @@ private func generateOptimizedInsights(action: ObjectAction, output: ActionOutpu
             impact: .high
         ))
     }
-    
+
     return insights
 }
 
 // MARK: - Helper Structures
 
-private struct ParameterDefaults {
+private enum ParameterDefaults {
     static func get(for actionType: ActionType) -> [String: Any] {
         var params: [String: Any] = [:]
-        
+
         switch actionType {
         case .create:
             params["template"] = "default"
@@ -844,33 +845,33 @@ private struct ParameterDefaults {
         default:
             break
         }
-        
+
         return params
     }
 }
 
-private struct PriorityCalculator {
-    static func calculate(_ actionType: ActionType, context: ActionContext) -> ObjectActionPriority {
+private enum PriorityCalculator {
+    static func calculate(_ actionType: ActionType, context _: ActionContext) -> ObjectActionPriority {
         // Critical actions
         if [.validate, .approve, .reject].contains(actionType) {
             return .critical
         }
-        
+
         // High priority actions
         if [.execute, .complete, .generate].contains(actionType) {
             return .high
         }
-        
+
         // Low priority actions
         if [.track, .visualize, .report].contains(actionType) {
             return .low
         }
-        
+
         return .normal
     }
 }
 
-private struct DurationEstimator {
+private enum DurationEstimator {
     static func estimate(_ actionType: ActionType, objectType: ObjectType) -> TimeInterval {
         // Base estimates for valid ActionType cases only
         let baseEstimates: [ActionType: TimeInterval] = [
@@ -908,11 +909,11 @@ private struct DurationEstimator {
             .notify: 0.5,
             .customize: 1.5,
             .apply: 1.0,
-            .respond: 1.0
+            .respond: 1.0,
         ]
-        
+
         let base = baseEstimates[actionType] ?? 1.0
-        
+
         // Complexity multipliers for valid ObjectType cases
         let complexityMultipliers: [ObjectType: Double] = [
             .acquisition: 2.0,
@@ -936,16 +937,16 @@ private struct DurationEstimator {
             .userHistory: 0.8,
             .systemConfiguration: 1.2,
             .integrationEndpoint: 1.5,
-            .documentDraft: 1.2
+            .documentDraft: 1.2,
         ]
-        
+
         let multiplier = complexityMultipliers[objectType] ?? 1.0
-        
+
         return base * multiplier
     }
 }
 
-private struct CapabilityRequirements {
+private enum CapabilityRequirements {
     static func get(actionType: ActionType) -> Set<Capability> {
         // Pre-computed capability mappings
         let requirements: [ActionType: Set<Capability>] = [
@@ -956,22 +957,22 @@ private struct CapabilityRequirements {
             .learn: [.machineLearning],
             .predict: [.machineLearning, .dataAnalysis],
             .adapt: [.machineLearning],
-            .optimize: [.machineLearning, .dataAnalysis]
+            .optimize: [.machineLearning, .dataAnalysis],
         ]
-        
+
         return requirements[actionType] ?? []
     }
 }
 
-private struct ParameterRequirements {
+private enum ParameterRequirements {
     static func get(actionType: ActionType) -> [String] {
         let requirements: [ActionType: [String]] = [
             .create: ["template", "name"],
             .update: ["fields"],
             .generate: ["format"],
-            .analyze: ["depth"]
+            .analyze: ["depth"],
         ]
-        
+
         return requirements[actionType] ?? []
     }
 }
@@ -980,40 +981,40 @@ private struct ParameterRequirements {
 
 private actor PatternRepository {
     static let shared = PatternRepository()
-    
-    func storeBatch(_ insights: [LearningInsight]) async {
+
+    func storeBatch(_: [LearningInsight]) async {
         // Batch storage implementation
     }
 }
 
 private actor AnomalyDetector {
     static let shared = AnomalyDetector()
-    
-    func recordBatch(_ insights: [LearningInsight]) async {
+
+    func recordBatch(_: [LearningInsight]) async {
         // Batch recording implementation
     }
 }
 
 private actor OptimizationEngine {
     static let shared = OptimizationEngine()
-    
-    func applyBatch(_ insights: [LearningInsight]) async {
+
+    func applyBatch(_: [LearningInsight]) async {
         // Batch application implementation
     }
 }
 
 private actor PredictionModel {
     static let shared = PredictionModel()
-    
-    func updateBatch(_ insights: [LearningInsight]) async {
+
+    func updateBatch(_: [LearningInsight]) async {
         // Batch update implementation
     }
 }
 
 private actor RecommendationEngine {
     static let shared = RecommendationEngine()
-    
-    func addBatch(_ insights: [LearningInsight]) async {
+
+    func addBatch(_: [LearningInsight]) async {
         // Batch addition implementation
     }
 }
@@ -1022,7 +1023,7 @@ private actor RecommendationEngine {
 
 private func calculateOptimizedPerformanceScore(duration: TimeInterval, expectedDuration: TimeInterval) -> Double {
     let ratio = duration / expectedDuration
-    
+
     if ratio <= 0.5 {
         return 1.0 // Exceptional performance
     } else if ratio <= 1.0 {
@@ -1037,15 +1038,15 @@ private func calculateOptimizedPerformanceScore(duration: TimeInterval, expected
 }
 
 private func calculateOptimizedEffectivenessScore(_ output: ActionOutput?, action: ObjectAction) -> Double {
-    guard let output = output else { return 0.0 }
-    
+    guard let output else { return 0.0 }
+
     var score = 0.0
-    
+
     // Output type match
     if output.type == ExpectedOutputType.get(for: action.type) {
         score += 0.3
     }
-    
+
     // Data completeness
     let dataSize = output.data.count
     if dataSize > 0 {
@@ -1054,12 +1055,12 @@ private func calculateOptimizedEffectivenessScore(_ output: ActionOutput?, actio
     if dataSize > 100 {
         score += 0.1
     }
-    
+
     // Metadata presence
     if !output.metadata.isEmpty {
         score += 0.2
     }
-    
+
     // Action-specific scoring
     switch action.type {
     case .analyze:
@@ -1075,23 +1076,23 @@ private func calculateOptimizedEffectivenessScore(_ output: ActionOutput?, actio
     default:
         score += 0.2
     }
-    
+
     return min(score, 1.0)
 }
 
-private struct ExpectedOutputType {
+private enum ExpectedOutputType {
     static func get(for actionType: ActionType) -> ActionOutput.OutputType {
         switch actionType {
         case .generate:
-            return .document
+            .document
         case .analyze:
-            return .json
+            .json
         case .visualize:
-            return .visualization
+            .visualization
         case .calculate:
-            return .metrics
+            .metrics
         default:
-            return .json
+            .json
         }
     }
 }
@@ -1101,22 +1102,22 @@ private struct ExpectedOutputType {
 private func hasPermissionOptimized(for actionType: ActionType, in context: ActionContext) async -> Bool {
     // Fast permission check with caching
     let cacheKey = "\(actionType.rawValue):\(context.userId)"
-    
+
     // Check permission cache first
     if let cached = await PermissionCache.shared.get(cacheKey) {
         return cached
     }
-    
+
     // Perform actual permission check
     let hasPermission = await checkPermission(actionType: actionType, context: context)
-    
+
     // Cache result
     await PermissionCache.shared.set(cacheKey, value: hasPermission)
-    
+
     return hasPermission
 }
 
-private func checkPermission(actionType: ActionType, context: ActionContext) async -> Bool {
+private func checkPermission(actionType _: ActionType, context _: ActionContext) async -> Bool {
     // Simplified permission check
     true
 }
@@ -1129,7 +1130,7 @@ private func hasElevatedPermissions(_ context: ActionContext) -> Bool {
     context.metadata["role"] == "admin"
 }
 
-private func isErrorRecoverable(_ error: Error) -> Bool {
+private func isErrorRecoverable(_: Error) -> Bool {
     // Determine if error can be recovered from
     true
 }
@@ -1143,25 +1144,55 @@ private func getAvailableCapabilities() async -> Set<Capability> {
 
 private actor PermissionCache {
     static let shared = PermissionCache()
-    
+
     private var cache: [String: Bool] = [:]
     private let ttl: TimeInterval = 300 // 5 minutes
     private var timestamps: [String: Date] = [:]
-    
+
     func get(_ key: String) -> Bool? {
         guard let timestamp = timestamps[key],
-              Date().timeIntervalSince(timestamp) < ttl else {
+              Date().timeIntervalSince(timestamp) < ttl
+        else {
             cache.removeValue(forKey: key)
             timestamps.removeValue(forKey: key)
             return nil
         }
-        
+
         return cache[key]
     }
-    
+
     func set(_ key: String, value: Bool) {
         cache[key] = value
         timestamps[key] = Date()
+    }
+}
+
+// MARK: - Parameter Conversion Utilities
+
+private func convertToParameterValues(_ params: [String: Any]) -> [String: ParameterValue] {
+    var result: [String: ParameterValue] = [:]
+    for (key, value) in params {
+        result[key] = convertToParameterValue(value)
+    }
+    return result
+}
+
+private func convertToParameterValue(_ value: Any) -> ParameterValue {
+    switch value {
+    case let stringValue as String:
+        return .string(stringValue)
+    case let intValue as Int:
+        return .int(intValue)
+    case let doubleValue as Double:
+        return .double(doubleValue)
+    case let boolValue as Bool:
+        return .bool(boolValue)
+    case let arrayValue as [Any]:
+        return .array(arrayValue.map(convertToParameterValue))
+    case let dictValue as [String: Any]:
+        return .dictionary(convertToParameterValues(dictValue))
+    default:
+        return .null
     }
 }
 

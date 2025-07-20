@@ -12,10 +12,10 @@ struct SmartDefaultsDemoFeature {
         var formFields: [SmartDefaultField] = []
         var metrics: SmartDefaultsMetrics
         var showingLearningDetails = false
-        
+
         init() {
             // Initialize with sample context
-            self.context = SmartDefaultContext(
+            context = SmartDefaultContext(
                 sessionId: UUID(),
                 userId: "john.doe@agency.gov",
                 organizationUnit: "Contracting Division",
@@ -29,11 +29,11 @@ struct SmartDefaultsDemoFeature {
                 daysUntilFYEnd: 180,
                 autoFillThreshold: 0.8
             )
-            
-            self.metrics = SmartDefaultsMetrics()
+
+            metrics = SmartDefaultsMetrics()
         }
     }
-    
+
     enum Action {
         case onAppear
         case generateNewDefaults
@@ -47,10 +47,10 @@ struct SmartDefaultsDemoFeature {
         case dismissLearningDetails
         case updateMetrics
     }
-    
+
     @Dependency(\.smartDefaultsEngine) var smartDefaultsEngine
     @Dependency(\.continuousClock) var clock
-    
+
     var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
@@ -59,28 +59,28 @@ struct SmartDefaultsDemoFeature {
                 return .run { send in
                     await send(.generateNewDefaults)
                 }
-                
+
             case .generateNewDefaults:
                 state.isLoading = true
                 return .run { [context = state.context] send in
                     // Simulate getting smart defaults
                     try await clock.sleep(for: .seconds(1))
-                    
+
                     let fields = await generateSampleSmartDefaults(context: context)
                     await send(.defaultsGenerated(fields))
                 }
-                
+
             case let .defaultsGenerated(fields):
                 state.isLoading = false
                 state.formFields = fields
                 return .send(.updateMetrics)
-                
+
             case let .acceptDefault(field):
                 if let index = state.formFields.firstIndex(where: { $0.id == field.id }) {
                     state.formFields[index].status = .autoFilled
                     state.formFields[index].userAccepted = true
                 }
-                
+
                 // Learn from acceptance
                 return .run { [field, context = state.context] _ in
                     await smartDefaultsEngine.learn(
@@ -91,13 +91,13 @@ struct SmartDefaultsDemoFeature {
                         context: context
                     )
                 }
-                
+
             case let .rejectDefault(field):
                 if let index = state.formFields.firstIndex(where: { $0.id == field.id }) {
                     state.formFields[index].status = .manual
                     state.formFields[index].userAccepted = false
                 }
-                
+
                 // Learn from rejection
                 return .run { [field, context = state.context] _ in
                     await smartDefaultsEngine.learn(
@@ -108,13 +108,13 @@ struct SmartDefaultsDemoFeature {
                         context: context
                     )
                 }
-                
+
             case let .editField(field, newValue):
                 if let index = state.formFields.firstIndex(where: { $0.id == field.id }) {
                     state.formFields[index].value = newValue
                     state.formFields[index].status = .userEdited
                 }
-                
+
                 // Learn from edit
                 return .run { [field, context = state.context] _ in
                     await smartDefaultsEngine.learn(
@@ -125,7 +125,7 @@ struct SmartDefaultsDemoFeature {
                         context: context
                     )
                 }
-                
+
             case .acceptAllDefaults:
                 for index in state.formFields.indices {
                     if state.formFields[index].status == .suggested {
@@ -134,7 +134,7 @@ struct SmartDefaultsDemoFeature {
                     }
                 }
                 return .send(.updateMetrics)
-                
+
             case .clearAllDefaults:
                 for index in state.formFields.indices {
                     state.formFields[index].value = ""
@@ -142,15 +142,15 @@ struct SmartDefaultsDemoFeature {
                     state.formFields[index].userAccepted = false
                 }
                 return .send(.updateMetrics)
-                
+
             case .showLearningDetails:
                 state.showingLearningDetails = true
                 return .none
-                
+
             case .dismissLearningDetails:
                 state.showingLearningDetails = false
                 return .none
-                
+
             case .updateMetrics:
                 state.metrics.autoFillCount = state.formFields.filter { $0.status == .autoFilled }.count
                 state.metrics.suggestedCount = state.formFields.filter { $0.status == .suggested }.count
@@ -174,7 +174,7 @@ struct SmartDefaultField: Equatable, Identifiable {
     var reasoning: String?
     var alternatives: [String]
     var userAccepted: Bool = false
-    
+
     enum Status: Equatable {
         case autoFilled
         case suggested
@@ -192,8 +192,8 @@ struct SmartDefaultsMetrics: Equatable {
 
 // MARK: - Sample Data Generation
 
-private func generateSampleSmartDefaults(context: SmartDefaultContext) async -> [SmartDefaultField] {
-    return [
+private func generateSampleSmartDefaults(context _: SmartDefaultContext) async -> [SmartDefaultField] {
+    [
         SmartDefaultField(
             fieldType: .vendorName,
             name: "Vendor Name",
@@ -265,7 +265,7 @@ private func generateSampleSmartDefaults(context: SmartDefaultContext) async -> 
             status: .suggested,
             reasoning: "Your usual POC for supplies",
             alternatives: ["Jane Doe, x5678"]
-        )
+        ),
     ]
 }
 
@@ -280,6 +280,6 @@ extension DependencyValues {
 
 private enum SmartDefaultsEngineKey: DependencyKey {
     static var liveValue: SmartDefaultsEngine {
-        return SmartDefaultsEngine.createForDependency()
+        SmartDefaultsEngine.createForDependency()
     }
 }

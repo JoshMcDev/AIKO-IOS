@@ -1,6 +1,6 @@
-import SwiftUI
 import AppCore
 import ComposableArchitecture
+import SwiftUI
 
 // MARK: - Welcome Step
 
@@ -105,7 +105,8 @@ struct PersonalInfoStepView: View {
             Button(action: onUpdateProfileImage) {
                 ZStack {
                     if let imageData = profile.profileImageData,
-                       let image = imageLoader.loadImage(imageData) {
+                       let image = imageLoader.loadImage(imageData)
+                    {
                         image
                             .resizable()
                             .scaledToFill()
@@ -268,7 +269,8 @@ struct OrganizationInfoStepView: View {
 
                 Button(action: onUpdateLogo) {
                     if let logoData = profile.organizationLogoData,
-                       let image = imageLoader.loadImage(logoData) {
+                       let image = imageLoader.loadImage(logoData)
+                    {
                         image
                             .resizable()
                             .scaledToFit()
@@ -399,7 +401,8 @@ struct ReviewStepView: View {
             // Profile summary
             HStack(spacing: Theme.Spacing.lg) {
                 if let imageData = profile.profileImageData,
-                   let image = imageLoader.loadImage(imageData) {
+                   let image = imageLoader.loadImage(imageData)
+                {
                     image
                         .resizable()
                         .scaledToFill()
@@ -644,7 +647,7 @@ struct APIKeyStepView: View {
 // Extension to add Face ID section
 extension APIKeyStepView {
     @ViewBuilder
-    func faceIDSection(isEnabled: Bool, onToggle: @escaping (Bool) -> Void) -> some View {
+    func faceIDSection(isEnabled: Bool, onToggle: @escaping @Sendable (Bool) -> Void) -> some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
             HStack {
                 Image(systemName: "faceid")

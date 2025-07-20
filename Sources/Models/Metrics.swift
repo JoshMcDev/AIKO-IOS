@@ -3,7 +3,7 @@ import Foundation
 // MARK: - Measures of Performance (MOPs)
 
 /// Technical metrics that measure how well the system performs its functions
-public enum MeasureOfPerformance: String, CaseIterable, Codable {
+public enum MeasureOfPerformance: String, CaseIterable, Codable, Sendable {
     // Speed & Efficiency
     case responseTime = "response_time"
     case processingSpeed = "processing_speed"
@@ -80,7 +80,7 @@ public enum MOPCategory: String, CaseIterable, Codable {
 // MARK: - Measures of Effectiveness (MOEs)
 
 /// Business/mission metrics that measure how well the system achieves its intended outcomes
-public enum MeasureOfEffectiveness: String, CaseIterable, Codable {
+public enum MeasureOfEffectiveness: String, CaseIterable, Codable, Sendable {
     // User Satisfaction
     case userSatisfaction = "user_satisfaction"
     case netPromoterScore = "net_promoter_score"
@@ -155,7 +155,7 @@ public enum MOECategory: String, CaseIterable, Codable {
 
 // MARK: - Metric Types
 
-public enum MetricUnit: String, Codable {
+public enum MetricUnit: String, Codable, Sendable {
     case milliseconds
     case seconds
     case minutes
@@ -173,7 +173,7 @@ public enum MetricUnit: String, Codable {
 }
 
 /// A recorded metric value
-public struct MetricValue: Identifiable, Equatable, Codable {
+public struct MetricValue: Identifiable, Equatable, Codable, Sendable {
     public let id: UUID
     public let timestamp: Date
     public let value: Double
@@ -202,7 +202,7 @@ public struct MetricValue: Identifiable, Equatable, Codable {
 }
 
 /// A collection of metrics for a specific measurement
-public struct MetricMeasurement: Identifiable, Equatable, Codable {
+public struct MetricMeasurement: Identifiable, Equatable, Codable, Sendable {
     public let id: UUID
     public let name: String
     public let type: MetricType
@@ -212,7 +212,7 @@ public struct MetricMeasurement: Identifiable, Equatable, Codable {
     public let score: Double // 0-1 normalized score
     public let context: MetricContext
 
-    public enum MetricType: Equatable, Codable {
+    public enum MetricType: Equatable, Codable, Sendable {
         case mop(MeasureOfPerformance)
         case moe(MeasureOfEffectiveness)
 
@@ -257,7 +257,7 @@ public struct MetricMeasurement: Identifiable, Equatable, Codable {
 }
 
 /// Context for a metric measurement
-public struct MetricContext: Equatable, Codable {
+public struct MetricContext: Equatable, Codable, Sendable {
     public let sessionId: String
     public let userId: String
     public let feature: String
@@ -283,7 +283,7 @@ public struct MetricContext: Equatable, Codable {
 }
 
 /// Summary of metrics over a time period
-public struct MetricsSummary: Equatable, Codable {
+public struct MetricsSummary: Equatable, Codable, Sendable {
     public let period: DateInterval
     public let mopScores: [MeasureOfPerformance: Double]
     public let moeScores: [MeasureOfEffectiveness: Double]
@@ -322,7 +322,7 @@ public struct MetricsSummary: Equatable, Codable {
 }
 
 /// An insight derived from metrics analysis
-public struct MetricInsight: Identifiable, Equatable, Codable {
+public struct MetricInsight: Identifiable, Equatable, Codable, Sendable {
     public let id: UUID
     public let type: InsightType
     public let severity: InsightSeverity
@@ -331,7 +331,7 @@ public struct MetricInsight: Identifiable, Equatable, Codable {
     public let confidence: Double
     public let timestamp: Date
 
-    public enum InsightType: String, Codable {
+    public enum InsightType: String, Codable, Sendable {
         case anomaly
         case trend
         case correlation
@@ -340,7 +340,7 @@ public struct MetricInsight: Identifiable, Equatable, Codable {
         case degradation
     }
 
-    public enum InsightSeverity: String, Codable {
+    public enum InsightSeverity: String, Codable, Sendable {
         case info
         case warning
         case critical
@@ -367,7 +367,7 @@ public struct MetricInsight: Identifiable, Equatable, Codable {
 }
 
 /// A recommendation based on metrics analysis
-public struct MetricRecommendation: Identifiable, Equatable, Codable {
+public struct MetricRecommendation: Identifiable, Equatable, Codable, Sendable {
     public let id: UUID
     public let priority: RecommendationPriority
     public let category: RecommendationCategory
@@ -377,7 +377,7 @@ public struct MetricRecommendation: Identifiable, Equatable, Codable {
     public let requiredActions: [String]
     public let relatedMetrics: [String]
 
-    public enum RecommendationPriority: Int, Codable, Comparable {
+    public enum RecommendationPriority: Int, Codable, Comparable, Sendable {
         case low = 0
         case medium = 1
         case high = 2
@@ -388,7 +388,7 @@ public struct MetricRecommendation: Identifiable, Equatable, Codable {
         }
     }
 
-    public enum RecommendationCategory: String, Codable {
+    public enum RecommendationCategory: String, Codable, Sendable {
         case performance
         case effectiveness
         case cost
@@ -396,7 +396,7 @@ public struct MetricRecommendation: Identifiable, Equatable, Codable {
         case system
     }
 
-    public struct ExpectedImpact: Equatable, Codable {
+    public struct ExpectedImpact: Equatable, Codable, Sendable {
         public let metricImprovements: [String: Double] // Metric name to expected % improvement
         public let timeToImpact: TimeInterval
         public let confidence: Double
@@ -434,7 +434,7 @@ public struct MetricRecommendation: Identifiable, Equatable, Codable {
 }
 
 /// Report containing comprehensive metrics analysis
-public struct MetricsReport: Equatable, Codable {
+public struct MetricsReport: Equatable, Codable, Sendable {
     public let id: UUID
     public let title: String
     public let period: DateInterval
@@ -469,7 +469,7 @@ public struct MetricsReport: Equatable, Codable {
 }
 
 /// Trend analysis for a metric over time
-public struct MetricTrend: Identifiable, Equatable, Codable {
+public struct MetricTrend: Identifiable, Equatable, Codable, Sendable {
     public let id: UUID
     public let metricName: String
     public let direction: TrendDirection
@@ -477,14 +477,14 @@ public struct MetricTrend: Identifiable, Equatable, Codable {
     public let significance: Double // Statistical significance 0-1
     public let dataPoints: [TrendDataPoint]
 
-    public enum TrendDirection: String, Codable {
+    public enum TrendDirection: String, Codable, Sendable {
         case increasing
         case decreasing
         case stable
         case volatile
     }
 
-    public struct TrendDataPoint: Equatable, Codable {
+    public struct TrendDataPoint: Equatable, Codable, Sendable {
         public let timestamp: Date
         public let value: Double
 
@@ -512,7 +512,7 @@ public struct MetricTrend: Identifiable, Equatable, Codable {
 }
 
 /// Comparison between different metrics or time periods
-public struct MetricComparison: Identifiable, Equatable, Codable {
+public struct MetricComparison: Identifiable, Equatable, Codable, Sendable {
     public let id: UUID
     public let type: ComparisonType
     public let baseline: MetricMeasurement
@@ -521,7 +521,7 @@ public struct MetricComparison: Identifiable, Equatable, Codable {
     public let percentageChange: Double
     public let interpretation: String
 
-    public enum ComparisonType: String, Codable {
+    public enum ComparisonType: String, Codable, Sendable {
         case periodOverPeriod
         case targetVsActual
         case userVsAverage

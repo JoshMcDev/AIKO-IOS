@@ -12,21 +12,21 @@ public protocol FileServiceProtocol: Sendable {
         content: String,
         suggestedFileName: String,
         allowedFileTypes: [String],
-        completion: @escaping (Result<URL, Error>) -> Void
+        completion: @escaping @Sendable (Result<URL, Error>) -> Void
     )
-    
+
     /// Shows an open dialog to select a file
     /// - Parameters:
     ///   - allowedFileTypes: Array of allowed file types
     ///   - completion: Completion handler with the selected URL or nil
     func openFile(
         allowedFileTypes: [String],
-        completion: @escaping (URL?) -> Void
+        completion: @escaping @Sendable (URL?) -> Void
     )
 }
 
 /// Errors that can occur during file operations
-public enum FileServiceError: LocalizedError {
+public enum FileServiceError: LocalizedError, Sendable {
     case saveCancelled
     case saveFailure(Error)
     case openCancelled
@@ -34,23 +34,23 @@ public enum FileServiceError: LocalizedError {
     case openFailed
     case accessDenied
     case invalidURL
-    
+
     public var errorDescription: String? {
         switch self {
         case .saveCancelled:
-            return "Save operation was cancelled"
-        case .saveFailure(let error):
-            return "Failed to save file: \(error.localizedDescription)"
+            "Save operation was cancelled"
+        case let .saveFailure(error):
+            "Failed to save file: \(error.localizedDescription)"
         case .openCancelled:
-            return "Open operation was cancelled"
+            "Open operation was cancelled"
         case .saveFailed:
-            return "Failed to save file"
+            "Failed to save file"
         case .openFailed:
-            return "Failed to open file"
+            "Failed to open file"
         case .accessDenied:
-            return "Access denied to file system"
+            "Access denied to file system"
         case .invalidURL:
-            return "Invalid file URL"
+            "Invalid file URL"
         }
     }
 }

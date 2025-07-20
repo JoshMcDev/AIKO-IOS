@@ -154,7 +154,7 @@ public struct AuthenticationFeature {
 
 // MARK: - Models
 
-public enum BiometricType: String, Equatable {
+public enum BiometricType: String, Equatable, Sendable {
     case none = "None"
     case faceID = "Face ID"
     case touchID = "Touch ID"

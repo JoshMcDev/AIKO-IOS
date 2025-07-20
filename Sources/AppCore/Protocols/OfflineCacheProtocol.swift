@@ -14,52 +14,52 @@ public protocol OfflineCacheProtocol {
     ///   - object: The object to store
     ///   - key: The unique key for retrieval
     /// - Throws: OfflineCacheError if storage fails
-    func store<T: Codable>(_ object: T, forKey key: String) async throws
-    
+    func store(_ object: some Codable & Sendable, forKey key: String) async throws
+
     /// Retrieve a codable object from the cache
     /// - Parameters:
     ///   - type: The type of object to retrieve
     ///   - key: The unique key
     /// - Returns: The cached object, or nil if not found
     /// - Throws: OfflineCacheError if retrieval fails
-    func retrieve<T: Codable>(_ type: T.Type, forKey key: String) async throws -> T?
-    
+    func retrieve<T: Codable & Sendable>(_ type: T.Type, forKey key: String) async throws -> T?
+
     /// Store raw data in the cache
     /// - Parameters:
     ///   - data: The data to store
     ///   - key: The unique key for retrieval
     /// - Throws: OfflineCacheError if storage fails
     func storeData(_ data: Data, forKey key: String) async throws
-    
+
     /// Retrieve raw data from the cache
     /// - Parameters:
     ///   - key: The unique key
     /// - Returns: The cached data, or nil if not found
     /// - Throws: OfflineCacheError if retrieval fails
     func retrieveData(forKey key: String) async throws -> Data?
-    
+
     /// Remove an item from the cache
     /// - Parameter key: The key of the item to remove
     /// - Throws: OfflineCacheError if removal fails
     func remove(forKey key: String) async throws
-    
+
     /// Remove all items from the cache
     /// - Throws: OfflineCacheError if clearing fails
     func clearAll() async throws
-    
+
     /// Get the total size of the cache in bytes
     /// - Returns: The size in bytes
     func size() async -> Int64
-    
+
     /// Check if a key exists in the cache
     /// - Parameter key: The key to check
     /// - Returns: true if the key exists
     func exists(forKey key: String) async -> Bool
-    
+
     /// Get all keys in the cache
     /// - Returns: Array of all cache keys
     func allKeys() async -> [String]
-    
+
     /// Set expiration for a cached item
     /// - Parameters:
     ///   - duration: Time interval until expiration
@@ -69,7 +69,7 @@ public protocol OfflineCacheProtocol {
 }
 
 /// Errors that can occur during cache operations
-public enum OfflineCacheError: LocalizedError {
+public enum OfflineCacheError: LocalizedError, Sendable {
     case storageFailure(String)
     case retrievalFailure(String)
     case dataCorrupted
@@ -77,41 +77,41 @@ public enum OfflineCacheError: LocalizedError {
     case keyNotFound
     case unauthorized
     case quotaExceeded
-    
+
     public var errorDescription: String? {
         switch self {
-        case .storageFailure(let message):
-            return "Failed to store item: \(message)"
-        case .retrievalFailure(let message):
-            return "Failed to retrieve item: \(message)"
+        case let .storageFailure(message):
+            "Failed to store item: \(message)"
+        case let .retrievalFailure(message):
+            "Failed to retrieve item: \(message)"
         case .dataCorrupted:
-            return "Cache data is corrupted"
+            "Cache data is corrupted"
         case .insufficientSpace:
-            return "Insufficient storage space"
+            "Insufficient storage space"
         case .keyNotFound:
-            return "Key not found in cache"
+            "Key not found in cache"
         case .unauthorized:
-            return "Unauthorized cache access"
+            "Unauthorized cache access"
         case .quotaExceeded:
-            return "Cache quota exceeded"
+            "Cache quota exceeded"
         }
     }
 }
 
 /// Cache configuration options
-public struct OfflineCacheConfiguration: Codable {
+public struct OfflineCacheConfiguration: Codable, Sendable {
     /// Maximum cache size in bytes
     public let maxSize: Int64
-    
+
     /// Default expiration time for cached items
     public let defaultExpiration: TimeInterval
-    
+
     /// Whether to use encryption for sensitive data
     public let useEncryption: Bool
-    
+
     /// Cache eviction policy
     public let evictionPolicy: CacheEvictionPolicy
-    
+
     /// Initialize cache configuration
     public init(
         maxSize: Int64,
@@ -124,7 +124,7 @@ public struct OfflineCacheConfiguration: Codable {
         self.useEncryption = useEncryption
         self.evictionPolicy = evictionPolicy
     }
-    
+
     /// Default configuration
     public static let `default` = OfflineCacheConfiguration(
         maxSize: 100_000_000, // 100 MB
@@ -132,7 +132,7 @@ public struct OfflineCacheConfiguration: Codable {
         useEncryption: false,
         evictionPolicy: .leastRecentlyUsed
     )
-    
+
     /// Configuration for sensitive data
     public static let secure = OfflineCacheConfiguration(
         maxSize: 50_000_000, // 50 MB
@@ -143,7 +143,7 @@ public struct OfflineCacheConfiguration: Codable {
 }
 
 /// Cache eviction policies
-public enum CacheEvictionPolicy: String, Codable {
+public enum CacheEvictionPolicy: String, Codable, Sendable {
     case leastRecentlyUsed
     case leastFrequentlyUsed
     case firstInFirstOut

@@ -1,29 +1,29 @@
+import AppCore
 import ComposableArchitecture
 import CoreML
 import Foundation
-import AppCore
 import NaturalLanguage
 
 // MARK: - Adaptive Intelligence Service
 
-public struct AdaptiveIntelligenceService {
+public struct AdaptiveIntelligenceService: Sendable {
     // Learning from user behavior
-    public var learnFromInteraction: (UserInteraction) async throws -> LearningOutcome
-    public var predictNextAction: (WorkflowContext, UserHistory) async throws -> [PredictedAction]
-    public var personalizeContent: (DocumentType, UserProfile, HistoricalData) async throws -> PersonalizationResult
-    public var optimizeWorkflow: (WorkflowHistory) async throws -> OptimizedWorkflow
-    public var detectPatterns: ([Acquisition]) async throws -> [Pattern]
-    public var suggestAutomation: (RepeatedActions) async throws -> [AutomationSuggestion]
-    public var adaptToFeedback: (UserFeedback) async throws -> AdaptationResult
+    public var learnFromInteraction: @Sendable (UserInteraction) async throws -> LearningOutcome
+    public var predictNextAction: @Sendable (WorkflowContext, UserHistory) async throws -> [PredictedAction]
+    public var personalizeContent: @Sendable (DocumentType, UserProfile, HistoricalData) async throws -> PersonalizationResult
+    public var optimizeWorkflow: @Sendable (WorkflowHistory) async throws -> OptimizedWorkflow
+    public var detectPatterns: @Sendable ([AppCore.Acquisition]) async throws -> [Pattern]
+    public var suggestAutomation: @Sendable (RepeatedActions) async throws -> [AutomationSuggestion]
+    public var adaptToFeedback: @Sendable (UserFeedback) async throws -> AdaptationResult
 
     public init(
-        learnFromInteraction: @escaping (UserInteraction) async throws -> LearningOutcome,
-        predictNextAction: @escaping (WorkflowContext, UserHistory) async throws -> [PredictedAction],
-        personalizeContent: @escaping (DocumentType, UserProfile, HistoricalData) async throws -> PersonalizationResult,
-        optimizeWorkflow: @escaping (WorkflowHistory) async throws -> OptimizedWorkflow,
-        detectPatterns: @escaping ([Acquisition]) async throws -> [Pattern],
-        suggestAutomation: @escaping (RepeatedActions) async throws -> [AutomationSuggestion],
-        adaptToFeedback: @escaping (UserFeedback) async throws -> AdaptationResult
+        learnFromInteraction: @escaping @Sendable (UserInteraction) async throws -> LearningOutcome,
+        predictNextAction: @escaping @Sendable (WorkflowContext, UserHistory) async throws -> [PredictedAction],
+        personalizeContent: @escaping @Sendable (DocumentType, UserProfile, HistoricalData) async throws -> PersonalizationResult,
+        optimizeWorkflow: @escaping @Sendable (WorkflowHistory) async throws -> OptimizedWorkflow,
+        detectPatterns: @escaping @Sendable ([AppCore.Acquisition]) async throws -> [Pattern],
+        suggestAutomation: @escaping @Sendable (RepeatedActions) async throws -> [AutomationSuggestion],
+        adaptToFeedback: @escaping @Sendable (UserFeedback) async throws -> AdaptationResult
     ) {
         self.learnFromInteraction = learnFromInteraction
         self.predictNextAction = predictNextAction
@@ -497,15 +497,15 @@ private func calculateTimeSaving(_: [[String]], current _: [WorkflowHistory]) ->
     0
 }
 
-private func findDocumentSequencePatterns(_: [Acquisition]) async -> [Pattern] {
+private func findDocumentSequencePatterns(_: [AppCore.Acquisition]) async -> [Pattern] {
     []
 }
 
-private func findTimePatterns(_: [Acquisition]) -> [Pattern] {
+private func findTimePatterns(_: [AppCore.Acquisition]) -> [Pattern] {
     []
 }
 
-private func analyzeRequirementPatterns(_: [Acquisition]) async -> [Pattern] {
+private func analyzeRequirementPatterns(_: [AppCore.Acquisition]) async -> [Pattern] {
     []
 }
 

@@ -37,15 +37,15 @@ public enum OTAgreementType: String, CaseIterable {
 
 // MARK: - OT Agreement Templates Service
 
-public struct OTAgreementTemplates {
-    public var selectTemplate: (OTAgreementType) async throws -> String
-    public var analyzeRequirements: (String) async throws -> OTAgreementType
-    public var getTemplateGuidance: (OTAgreementType) async throws -> OTTemplateGuidance
+public struct OTAgreementTemplates: Sendable {
+    public var selectTemplate: @Sendable (OTAgreementType) async throws -> String
+    public var analyzeRequirements: @Sendable (String) async throws -> OTAgreementType
+    public var getTemplateGuidance: @Sendable (OTAgreementType) async throws -> OTTemplateGuidance
 
     public init(
-        selectTemplate: @escaping (OTAgreementType) async throws -> String,
-        analyzeRequirements: @escaping (String) async throws -> OTAgreementType,
-        getTemplateGuidance: @escaping (OTAgreementType) async throws -> OTTemplateGuidance
+        selectTemplate: @escaping @Sendable (OTAgreementType) async throws -> String,
+        analyzeRequirements: @escaping @Sendable (String) async throws -> OTAgreementType,
+        getTemplateGuidance: @escaping @Sendable (OTAgreementType) async throws -> OTTemplateGuidance
     ) {
         self.selectTemplate = selectTemplate
         self.analyzeRequirements = analyzeRequirements

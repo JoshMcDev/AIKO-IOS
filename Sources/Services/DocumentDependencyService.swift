@@ -1,24 +1,24 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 
 // MARK: - Document Dependency Service
 
-public struct DocumentDependencyService {
-    public var getDependencies: (DocumentType) -> [DocumentDependency]
-    public var getRequiredDocuments: (DocumentType) -> [DocumentType]
-    public var getDataFlow: (DocumentType, DocumentType) -> [String]
-    public var suggestNextDocuments: ([DocumentType], CollectedData) -> [DocumentType]
-    public var validateDependencies: ([GeneratedDocument], DocumentType) -> DependencyValidation
-    public var extractDataForDependents: (GeneratedDocument) -> CollectedData
+public struct DocumentDependencyService: Sendable {
+    public var getDependencies: @Sendable (DocumentType) -> [DocumentDependency]
+    public var getRequiredDocuments: @Sendable (DocumentType) -> [DocumentType]
+    public var getDataFlow: @Sendable (DocumentType, DocumentType) -> [String]
+    public var suggestNextDocuments: @Sendable ([DocumentType], CollectedData) -> [DocumentType]
+    public var validateDependencies: @Sendable ([GeneratedDocument], DocumentType) -> DependencyValidation
+    public var extractDataForDependents: @Sendable (GeneratedDocument) -> CollectedData
 
     public init(
-        getDependencies: @escaping (DocumentType) -> [DocumentDependency],
-        getRequiredDocuments: @escaping (DocumentType) -> [DocumentType],
-        getDataFlow: @escaping (DocumentType, DocumentType) -> [String],
-        suggestNextDocuments: @escaping ([DocumentType], CollectedData) -> [DocumentType],
-        validateDependencies: @escaping ([GeneratedDocument], DocumentType) -> DependencyValidation,
-        extractDataForDependents: @escaping (GeneratedDocument) -> CollectedData
+        getDependencies: @escaping @Sendable (DocumentType) -> [DocumentDependency],
+        getRequiredDocuments: @escaping @Sendable (DocumentType) -> [DocumentType],
+        getDataFlow: @escaping @Sendable (DocumentType, DocumentType) -> [String],
+        suggestNextDocuments: @escaping @Sendable ([DocumentType], CollectedData) -> [DocumentType],
+        validateDependencies: @escaping @Sendable ([GeneratedDocument], DocumentType) -> DependencyValidation,
+        extractDataForDependents: @escaping @Sendable (GeneratedDocument) -> CollectedData
     ) {
         self.getDependencies = getDependencies
         self.getRequiredDocuments = getRequiredDocuments
@@ -31,7 +31,7 @@ public struct DocumentDependencyService {
 
 // MARK: - Dependency Validation
 
-public struct DependencyValidation: Equatable {
+public struct DependencyValidation: Equatable, Sendable {
     public let isValid: Bool
     public let missingDocuments: [DocumentType]
     public let missingFields: [String]
@@ -53,7 +53,7 @@ public struct DependencyValidation: Equatable {
 // MARK: - Document Dependency Definitions
 
 extension DocumentDependencyService: DependencyKey {
-    public static var liveValue: DocumentDependencyService {
+    public nonisolated static var liveValue: DocumentDependencyService {
         // Define the dependency graph
         let dependencyGraph = buildDependencyGraph()
 

@@ -6,15 +6,15 @@
 //  Copyright © 2025 AIKO. All rights reserved.
 //
 
-import SwiftUI
 import ComposableArchitecture
 import LocalAuthentication
+import SwiftUI
 
 struct LLMProviderSettingsView: View {
     let store: StoreOf<LLMProviderSettingsFeature>
-    
+
     var body: some View {
-        WithViewStore(self.store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }) { viewStore in
             NavigationView {
                 List {
                     // Active Provider Section
@@ -24,7 +24,7 @@ struct LLMProviderSettingsView: View {
                                 Image(systemName: activeProvider.provider.iconName)
                                     .foregroundColor(.accentColor)
                                     .frame(width: 30)
-                                
+
                                 VStack(alignment: .leading) {
                                     Text(activeProvider.provider.name)
                                         .font(.headline)
@@ -32,9 +32,9 @@ struct LLMProviderSettingsView: View {
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                                 }
-                                
+
                                 Spacer()
-                                
+
                                 Image(systemName: "checkmark.circle.fill")
                                     .foregroundColor(.green)
                             }
@@ -45,7 +45,7 @@ struct LLMProviderSettingsView: View {
                     } header: {
                         Text("Active Provider")
                     }
-                    
+
                     // Available Providers Section
                     Section {
                         ForEach(LLMProvider.allCases) { provider in
@@ -63,10 +63,10 @@ struct LLMProviderSettingsView: View {
                     } footer: {
                         Text("Tap a provider to configure or manage its API key")
                     }
-                    
+
                     // Provider Priority Section
                     Section {
-                        NavigationLink(destination: ProviderPriorityView(store: self.store)) {
+                        NavigationLink(destination: ProviderPriorityView(store: store)) {
                             HStack {
                                 Image(systemName: "arrow.up.arrow.down")
                                 Text("Fallback Priority")
@@ -78,7 +78,7 @@ struct LLMProviderSettingsView: View {
                     } header: {
                         Text("Provider Settings")
                     }
-                    
+
                     // Security Section
                     Section {
                         Button(action: {
@@ -114,7 +114,7 @@ struct LLMProviderSettingsView: View {
             ) {
                 if let provider = viewStore.selectedProvider {
                     ProviderConfigurationView(
-                        store: self.store.scope(
+                        store: store.scope(
                             state: \.providerConfigState,
                             action: LLMProviderSettingsFeature.Action.providerConfig
                         ),
@@ -130,7 +130,7 @@ struct LLMProviderSettingsView: View {
             ) {
                 switch viewStore.alert {
                 case .clearConfirmation:
-                    return Alert(
+                    Alert(
                         title: Text("Clear All API Keys?"),
                         message: Text("This action cannot be undone. All provider configurations will be removed."),
                         primaryButton: .destructive(Text("Clear All")) {
@@ -138,14 +138,14 @@ struct LLMProviderSettingsView: View {
                         },
                         secondaryButton: .cancel()
                     )
-                case .error(let message):
-                    return Alert(
+                case let .error(message):
+                    Alert(
                         title: Text("Error"),
                         message: Text(message),
                         dismissButton: .default(Text("OK"))
                     )
                 case .none:
-                    return Alert(title: Text(""))
+                    Alert(title: Text(""))
                 }
             }
         }
@@ -159,18 +159,18 @@ struct ProviderRowView: View {
     let isConfigured: Bool
     let isActive: Bool
     let onTap: () -> Void
-    
+
     var body: some View {
         Button(action: onTap) {
             HStack {
                 Image(systemName: provider.iconName)
                     .foregroundColor(isConfigured ? .accentColor : .secondary)
                     .frame(width: 30)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text(provider.name)
                         .foregroundColor(.primary)
-                    
+
                     if isConfigured {
                         HStack {
                             Image(systemName: "key.fill")
@@ -181,9 +181,9 @@ struct ProviderRowView: View {
                         .foregroundColor(.green)
                     }
                 }
-                
+
                 Spacer()
-                
+
                 if isActive {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundColor(.green)
@@ -204,13 +204,13 @@ struct ProviderRowView: View {
 struct ProviderConfigurationView: View {
     let store: StoreOf<ProviderConfigurationFeature>
     let provider: LLMProvider
-    
+
     @State private var apiKey: String = ""
     @State private var showAPIKey: Bool = false
     @State private var isAuthenticating: Bool = false
-    
+
     var body: some View {
-        WithViewStore(self.store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }) { viewStore in
             NavigationView {
                 Form {
                     // Provider Info
@@ -219,7 +219,7 @@ struct ProviderConfigurationView: View {
                             Image(systemName: provider.iconName)
                                 .font(.largeTitle)
                                 .foregroundColor(.accentColor)
-                            
+
                             VStack(alignment: .leading) {
                                 Text(provider.name)
                                     .font(.title2)
@@ -231,7 +231,7 @@ struct ProviderConfigurationView: View {
                         }
                         .padding(.vertical, 8)
                     }
-                    
+
                     // API Key Section
                     Section {
                         HStack {
@@ -246,7 +246,7 @@ struct ProviderConfigurationView: View {
                                     .autocapitalization(.none)
                                     .disableAutocorrection(true)
                             }
-                            
+
                             Button(action: {
                                 showAPIKey.toggle()
                             }) {
@@ -254,7 +254,7 @@ struct ProviderConfigurationView: View {
                                     .foregroundColor(.secondary)
                             }
                         }
-                        
+
                         if viewStore.hasExistingKey {
                             HStack {
                                 Image(systemName: "checkmark.circle.fill")
@@ -269,7 +269,7 @@ struct ProviderConfigurationView: View {
                     } footer: {
                         Text(getAPIKeyHelperText())
                     }
-                    
+
                     // Model Selection
                     Section {
                         Picker("Model", selection: viewStore.binding(
@@ -290,7 +290,7 @@ struct ProviderConfigurationView: View {
                     } header: {
                         Text("Model Selection")
                     }
-                    
+
                     // Advanced Settings
                     Section {
                         HStack {
@@ -300,14 +300,14 @@ struct ProviderConfigurationView: View {
                                     get: \.temperature,
                                     send: ProviderConfigurationFeature.Action.temperatureChanged
                                 ),
-                                in: 0...1,
+                                in: 0 ... 1,
                                 step: 0.1
                             )
                             Text("\(viewStore.temperature, specifier: "%.1f")")
                                 .monospacedDigit()
                                 .foregroundColor(.secondary)
                         }
-                        
+
                         if provider == .custom {
                             TextField(
                                 "Custom Endpoint URL",
@@ -323,7 +323,7 @@ struct ProviderConfigurationView: View {
                     } header: {
                         Text("Advanced Settings")
                     }
-                    
+
                     // Actions
                     Section {
                         Button(action: {
@@ -343,7 +343,7 @@ struct ProviderConfigurationView: View {
                             }
                         }
                         .disabled(apiKey.isEmpty || viewStore.isSaving)
-                        
+
                         if viewStore.hasExistingKey {
                             Button(action: {
                                 viewStore.send(.removeConfiguration)
@@ -378,39 +378,39 @@ struct ProviderConfigurationView: View {
             }
         }
     }
-    
+
     private func getAPIKeyHelperText() -> String {
         switch provider {
         case .claude:
-            return "Get your API key from console.anthropic.com"
+            "Get your API key from console.anthropic.com"
         case .openAI, .chatGPT:
-            return "Get your API key from platform.openai.com"
+            "Get your API key from platform.openai.com"
         case .gemini:
-            return "Get your API key from makersuite.google.com"
+            "Get your API key from makersuite.google.com"
         case .custom:
-            return "Enter your custom provider's API key"
+            "Enter your custom provider's API key"
         }
     }
-    
+
     private func authenticateAndSave() async {
         // Require biometric authentication before saving
         let context = LAContext()
         var error: NSError?
-        
+
         guard context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) else {
             // Fallback to device passcode
             await saveConfiguration()
             return
         }
-        
+
         isAuthenticating = true
-        
+
         do {
             let success = try await context.evaluatePolicy(
                 .deviceOwnerAuthenticationWithBiometrics,
                 localizedReason: "Authenticate to save API key"
             )
-            
+
             if success {
                 await saveConfiguration()
             }
@@ -419,14 +419,14 @@ struct ProviderConfigurationView: View {
             // Fallback to device passcode
             await saveConfiguration()
         }
-        
+
         isAuthenticating = false
     }
-    
+
     private func saveConfiguration() async {
         await ViewStore(store).send(.saveConfiguration(apiKey: apiKey)).finish()
     }
-    
+
     private func loadExistingKey() async {
         // In production, we might not want to load the actual key
         // Instead, just show that it exists
@@ -438,9 +438,9 @@ struct ProviderConfigurationView: View {
 
 struct ProviderPriorityView: View {
     let store: StoreOf<LLMProviderSettingsFeature>
-    
+
     var body: some View {
-        WithViewStore(self.store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }) { viewStore in
             Form {
                 Section {
                     Picker("Fallback Behavior", selection: viewStore.binding(
@@ -457,7 +457,7 @@ struct ProviderPriorityView: View {
                 } footer: {
                     Text(viewStore.providerPriority.fallbackBehavior.description)
                 }
-                
+
                 Section {
                     ForEach(viewStore.providerPriority.providers) { provider in
                         HStack {
@@ -492,26 +492,26 @@ extension LLMProviderPriority.FallbackBehavior: CaseIterable {
     var displayName: String {
         switch self {
         case .sequential:
-            return "Sequential"
+            "Sequential"
         case .loadBalanced:
-            return "Load Balanced"
+            "Load Balanced"
         case .costOptimized:
-            return "Cost Optimized"
+            "Cost Optimized"
         case .performanceOptimized:
-            return "Performance"
+            "Performance"
         }
     }
-    
+
     var description: String {
         switch self {
         case .sequential:
-            return "Try providers in order until one succeeds"
+            "Try providers in order until one succeeds"
         case .loadBalanced:
-            return "Distribute requests across available providers"
+            "Distribute requests across available providers"
         case .costOptimized:
-            return "Choose the most cost-effective provider"
+            "Choose the most cost-effective provider"
         case .performanceOptimized:
-            return "Choose the fastest responding provider"
+            "Choose the fastest responding provider"
         }
     }
 }

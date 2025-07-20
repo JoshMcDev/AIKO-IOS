@@ -1,6 +1,5 @@
 @testable import AIKO
 import ComposableArchitecture
-import LocalAuthentication
 import XCTest
 
 @MainActor

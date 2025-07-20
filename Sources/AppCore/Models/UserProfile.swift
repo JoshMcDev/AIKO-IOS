@@ -1,6 +1,6 @@
 import Foundation
 
-public struct UserProfile: Equatable, Codable {
+public struct UserProfile: Equatable, Codable, Sendable {
     public var id: UUID
     public var fullName: String
     public var title: String
@@ -61,7 +61,7 @@ public struct UserProfile: Equatable, Codable {
     }
 }
 
-public struct Address: Equatable, Codable {
+public struct Address: Equatable, Codable, Sendable {
     public var freeText: String
     public var street1: String
     public var street2: String

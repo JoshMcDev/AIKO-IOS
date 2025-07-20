@@ -1,6 +1,6 @@
+import AppCore
 import ComposableArchitecture
 import SwiftUI
-import AppCore
 
 // MARK: - Enhanced App View with UI/UX Improvements
 
@@ -24,7 +24,7 @@ public struct EnhancedAppView: View {
             .preferredColorScheme(.dark)
             .modifier(NavigationBarHiddenModifier())
     }
-    
+
     @ViewBuilder
     private var navigationContent: some View {
         if navigationService.supportsNavigationStack() {
@@ -207,7 +207,7 @@ public struct EnhancedAppView: View {
 
 struct EnhancedHeaderView: View {
     @Binding var showMenu: Bool
-    let loadedAcquisition: Acquisition?
+    let loadedAcquisition: AppCore.Acquisition?
     let loadedAcquisitionDisplayName: String?
     let hasSelectedDocuments: Bool
     let onNewAcquisition: () -> Void
@@ -218,7 +218,7 @@ struct EnhancedHeaderView: View {
     @Environment(\.sizeCategory) private var sizeCategory
 
     @Dependency(\.imageLoader) var imageLoader
-    
+
     private func loadSAMIcon() -> Image? {
         // For Swift Package, load from module bundle
         guard let url = Bundle.module.url(forResource: "SAMIcon", withExtension: "png") else {
@@ -370,7 +370,7 @@ struct EnhancedHeaderView: View {
 struct EnhancedDocumentGenerationView: View {
     let store: StoreOf<DocumentGenerationFeature>
     let isChatMode: Bool
-    let loadedAcquisition: Acquisition?
+    let loadedAcquisition: AppCore.Acquisition?
     let loadedAcquisitionDisplayName: String?
 
     @State private var scrollOffset: CGFloat = 0
@@ -387,20 +387,20 @@ struct EnhancedDocumentGenerationView: View {
         let selectedDocumentTypes: Set<DocumentType>
         let selectedDFDocumentTypes: Set<DFDocumentType>
         let documentReadinessStatus: [DocumentType: DocumentStatusFeature.DocumentStatus]
-        
+
         init(state: DocumentGenerationFeature.State) {
-            self.analysisConversationHistory = state.analysis.conversationHistory
-            self.analysisIsAnalyzingRequirements = state.analysis.isAnalyzingRequirements
-            self.analysisUploadedDocuments = state.analysis.uploadedDocuments
-            self.analysisIsRecording = state.analysis.isRecording
-            self.requirements = state.requirements
-            self.isGenerating = state.isGenerating
-            self.selectedDocumentTypes = state.selectedDocumentTypes
-            self.selectedDFDocumentTypes = state.status.selectedDFDocumentTypes
-            self.documentReadinessStatus = state.status.documentReadinessStatus
+            analysisConversationHistory = state.analysis.conversationHistory
+            analysisIsAnalyzingRequirements = state.analysis.isAnalyzingRequirements
+            analysisUploadedDocuments = state.analysis.uploadedDocuments
+            analysisIsRecording = state.analysis.isRecording
+            requirements = state.requirements
+            isGenerating = state.isGenerating
+            selectedDocumentTypes = state.selectedDocumentTypes
+            selectedDFDocumentTypes = state.status.selectedDFDocumentTypes
+            documentReadinessStatus = state.status.documentReadinessStatus
         }
     }
-    
+
     var body: some View {
         WithViewStore(store, observe: ViewState.init) { viewStore in
             VStack(spacing: 0) {
@@ -1073,7 +1073,7 @@ struct AppEnhancedInputArea: View {
     let uploadedDocuments: [UploadedDocument]
     let isChatMode: Bool
     let isRecording: Bool
-    let onRequirementsChanged: (String) -> Void
+    let onRequirementsChanged: @Sendable (String) -> Void
     let onAnalyzeRequirements: () -> Void
     let onEnhancePrompt: () -> Void
     let onStartRecording: () -> Void
@@ -1500,14 +1500,14 @@ struct AnimatedGradientBackground: View {
 
 // Preference Keys
 struct ScrollOffsetPreferenceKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
+    static let defaultValue: CGFloat = 0
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
         value = nextValue()
     }
 }
 
 struct HeightPreferenceKey: PreferenceKey {
-    static var defaultValue: CGFloat = 44
+    static let defaultValue: CGFloat = 44
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
         value = nextValue()
     }

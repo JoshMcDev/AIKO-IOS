@@ -1,25 +1,25 @@
-import SwiftUI
 import AppCore
 import ComposableArchitecture
+import SwiftUI
 
 public enum Theme {
     // MARK: - Colors
 
     public enum Colors {
-        @Dependency(\.themeService) private static var themeService
-        
+        @Dependency(\.themeService) nonisolated(unsafe) private static var themeService
+
         public static var aikoBackground: Color {
             themeService.backgroundColor()
         }
-        
+
         public static var aikoCard: Color {
             themeService.cardColor()
         }
-        
+
         public static var aikoSecondary: Color {
             themeService.secondaryColor()
         }
-        
+
         public static var aikoTertiary: Color {
             themeService.tertiaryColor()
         }
@@ -73,18 +73,18 @@ public enum Theme {
 
 // MARK: - Button Styles
 
-public struct AIKOButtonStyle: ButtonStyle {
+public struct AIKOButtonStyle: ButtonStyle, Sendable {
     let variant: Variant
     let size: Size
 
-    public enum Variant {
+    public enum Variant: Sendable {
         case primary
         case secondary
         case ghost
         case destructive
     }
 
-    public enum Size {
+    public enum Size: Sendable {
         case small
         case medium
         case large
@@ -177,7 +177,7 @@ public struct AIKOButtonStyle: ButtonStyle {
 
 // MARK: - Card Modifier
 
-public struct AIKOCardModifier: ViewModifier {
+public struct AIKOCardModifier: ViewModifier, Sendable {
     let padding: EdgeInsets
     let shadow: Bool
 
@@ -202,7 +202,7 @@ public struct AIKOCardModifier: ViewModifier {
 
 // MARK: - Loading View
 
-public struct AIKOLoadingView: View {
+public struct AIKOLoadingView: View, Sendable {
     let message: String
 
     public init(message: String = "Loading...") {
@@ -226,9 +226,9 @@ public struct AIKOLoadingView: View {
 
 // MARK: - Navigation Bar Hidden Modifier
 
-public struct NavigationBarHiddenModifier: ViewModifier {
+public struct NavigationBarHiddenModifier: ViewModifier, Sendable {
     @Dependency(\.themeService) var themeService
-    
+
     public func body(content: Content) -> some View {
         themeService.applyNavigationBarHidden(to: AnyView(content))
     }
@@ -236,9 +236,9 @@ public struct NavigationBarHiddenModifier: ViewModifier {
 
 // MARK: - Dark Navigation Bar Modifier
 
-public struct DarkNavigationBarModifier: ViewModifier {
+public struct DarkNavigationBarModifier: ViewModifier, Sendable {
     @Dependency(\.themeService) var themeService
-    
+
     public func body(content: Content) -> some View {
         themeService.applyDarkNavigationBar(to: AnyView(content))
     }
@@ -246,9 +246,9 @@ public struct DarkNavigationBarModifier: ViewModifier {
 
 // MARK: - Sheet Modifier
 
-public struct AIKOSheetModifier: ViewModifier {
+public struct AIKOSheetModifier: ViewModifier, Sendable {
     @Dependency(\.themeService) var themeService
-    
+
     public func body(content: Content) -> some View {
         themeService.applySheet(to: AnyView(content))
     }

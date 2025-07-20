@@ -1,11 +1,11 @@
-import SwiftUI
-import ComposableArchitecture
 import AppCore
+import ComposableArchitecture
+import SwiftUI
 
 #if os(iOS)
-import AIKOiOS
+    import AIKOiOS
 #elseif os(macOS)
-import AIKOmacOS
+    import AIKOmacOS
 #endif
 
 // MARK: - Follow-On Action Card View
@@ -15,7 +15,7 @@ struct FollowOnActionCardView: View {
     let isExecuting: Bool
     let onTap: () -> Void
     @Dependency(\.themeService) var themeService
-    
+
     var body: some View {
         Button(action: onTap) {
             VStack(alignment: .leading, spacing: 8) {
@@ -23,13 +23,13 @@ struct FollowOnActionCardView: View {
                     Image(systemName: action.category.icon)
                         .font(.title3)
                         .foregroundColor(.accentColor)
-                    
+
                     Text(action.title)
                         .font(.headline)
                         .foregroundColor(.primary)
-                    
+
                     Spacer()
-                    
+
                     if isExecuting {
                         ProgressView()
                             .scaleEffect(0.8)
@@ -37,19 +37,19 @@ struct FollowOnActionCardView: View {
                         PriorityBadge(priority: action.priority)
                     }
                 }
-                
+
                 Text(action.description)
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .lineLimit(2)
-                
+
                 HStack {
                     Label(formatDuration(action.estimatedDuration), systemImage: "clock")
                         .font(.caption2)
                         .foregroundColor(.secondary)
-                    
+
                     Spacer()
-                    
+
                     AutomationLevelBadge(level: action.automationLevel)
                 }
             }
@@ -66,7 +66,7 @@ struct FollowOnActionCardView: View {
         .buttonStyle(PlainButtonStyle())
         .disabled(isExecuting)
     }
-    
+
     private func formatDuration(_ duration: TimeInterval) -> String {
         let minutes = Int(duration) / 60
         if minutes < 60 {
@@ -82,7 +82,7 @@ struct FollowOnActionCardView: View {
 
 struct PriorityBadge: View {
     let priority: ActionPriority
-    
+
     var body: some View {
         Text(priority.rawValue)
             .font(.caption2)
@@ -95,17 +95,17 @@ struct PriorityBadge: View {
             )
             .foregroundColor(priorityColor)
     }
-    
+
     private var priorityColor: Color {
         switch priority {
         case .critical:
-            return .red
+            .red
         case .high:
-            return .orange
+            .orange
         case .medium:
-            return .yellow
+            .yellow
         case .low:
-            return .green
+            .green
         }
     }
 }
@@ -114,26 +114,26 @@ struct PriorityBadge: View {
 
 struct AutomationLevelBadge: View {
     let level: AutomationLevel
-    
+
     var body: some View {
         HStack(spacing: 4) {
             Image(systemName: iconName)
                 .font(.caption2)
-            
+
             Text(level.rawValue)
                 .font(.caption2)
         }
         .foregroundColor(.secondary)
     }
-    
+
     private var iconName: String {
         switch level {
         case .manual:
-            return "person.fill"
+            "person.fill"
         case .semiAutomated:
-            return "person.and.arrow.left.and.arrow.right"
+            "person.and.arrow.left.and.arrow.right"
         case .fullyAutomated:
-            return "gear"
+            "gear"
         }
     }
 }
@@ -146,29 +146,29 @@ struct FollowOnActionsListView: View {
     let completedActionIds: Set<UUID>
     let onActionTap: (FollowOnAction) -> Void
     @Dependency(\.themeService) var themeService
-    
+
     var availableActions: [FollowOnAction] {
         actions.filter { action in
             !completedActionIds.contains(action.id) &&
-            action.dependencies.allSatisfy { completedActionIds.contains($0) }
+                action.dependencies.allSatisfy { completedActionIds.contains($0) }
         }
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Label("Suggested Actions", systemImage: "lightbulb.fill")
                     .font(.headline)
                     .foregroundColor(.primary)
-                
+
                 Spacer()
-                
+
                 Text("\(availableActions.count) available")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
             .padding(.horizontal)
-            
+
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
                     ForEach(availableActions.prefix(5)) { action in
@@ -196,7 +196,7 @@ struct InlineActionSuggestion: View {
     let onAccept: () -> Void
     let onDismiss: () -> Void
     @Dependency(\.themeService) var themeService
-    
+
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: action.category.icon)
@@ -207,20 +207,20 @@ struct InlineActionSuggestion: View {
                     Circle()
                         .fill(Color.accentColor.opacity(0.1))
                 )
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(action.title)
                     .font(.subheadline)
                     .fontWeight(.medium)
-                
+
                 Text(action.description)
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .lineLimit(1)
             }
-            
+
             Spacer()
-            
+
             if isExecuting {
                 ProgressView()
                     .scaleEffect(0.8)
@@ -236,7 +236,7 @@ struct InlineActionSuggestion: View {
                                     .fill(themeService.groupedTertiaryBackground())
                             )
                     }
-                    
+
                     Button(action: onAccept) {
                         Image(systemName: "checkmark")
                             .font(.caption)
@@ -266,25 +266,25 @@ struct ActionProgressView: View {
     let action: FollowOnAction
     let progress: Double
     @Dependency(\.themeService) var themeService
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Image(systemName: action.category.icon)
                     .font(.caption)
                     .foregroundColor(.accentColor)
-                
+
                 Text(action.title)
                     .font(.caption)
                     .fontWeight(.medium)
-                
+
                 Spacer()
-                
+
                 Text("\(Int(progress * 100))%")
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }
-            
+
             ProgressView(value: progress)
                 .progressViewStyle(LinearProgressViewStyle())
                 .tint(.accentColor)

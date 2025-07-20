@@ -1,15 +1,15 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 import SwiftAnthropic
 
-public struct AIDocumentGenerator {
-    public var generateDocuments: (String, Set<DocumentType>) async throws -> [GeneratedDocument]
-    public var generateDFDocuments: (String, Set<DFDocumentType>) async throws -> [GeneratedDocument]
+public struct AIDocumentGenerator: Sendable {
+    public var generateDocuments: @Sendable (String, Set<DocumentType>) async throws -> [GeneratedDocument]
+    public var generateDFDocuments: @Sendable (String, Set<DFDocumentType>) async throws -> [GeneratedDocument]
 
     public init(
-        generateDocuments: @escaping (String, Set<DocumentType>) async throws -> [GeneratedDocument],
-        generateDFDocuments: @escaping (String, Set<DFDocumentType>) async throws -> [GeneratedDocument]
+        generateDocuments: @escaping @Sendable (String, Set<DocumentType>) async throws -> [GeneratedDocument],
+        generateDFDocuments: @escaping @Sendable (String, Set<DFDocumentType>) async throws -> [GeneratedDocument]
     ) {
         self.generateDocuments = generateDocuments
         self.generateDFDocuments = generateDFDocuments
@@ -24,7 +24,7 @@ extension AIDocumentGenerator: DependencyKey {
                 @Dependency(\.userProfileService) var userProfileService
                 @Dependency(\.documentGenerationCache) var cache
                 @Dependency(\.spellCheckService) var spellCheckService
-                
+
                 let anthropicService = AnthropicServiceFactory.service(
                     apiKey: APIConfiguration.getAnthropicKey(),
                     betaHeaders: nil
@@ -151,7 +151,7 @@ extension AIDocumentGenerator: DependencyKey {
                 @Dependency(\.userProfileService) var userProfileService
                 @Dependency(\.documentGenerationCache) var cache
                 @Dependency(\.spellCheckService) var spellCheckService
-                
+
                 let anthropicService = AnthropicServiceFactory.service(
                     apiKey: APIConfiguration.getAnthropicKey(),
                     betaHeaders: nil
@@ -789,7 +789,7 @@ extension AIDocumentGenerator: DependencyKey {
             - Transition to Phase III considerations
             - Success fee structures
             """
-            
+
         case .farUpdates:
             """
             1. Summary of recent FAR/DFAR changes

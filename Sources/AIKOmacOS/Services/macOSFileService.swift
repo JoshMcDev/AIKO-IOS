@@ -1,80 +1,90 @@
 #if os(macOS)
-import Foundation
-import AppKit
-import AppCore
+    import AppCore
+    import AppKit
+    import Foundation
 
-/// macOS implementation of FileServiceProtocol
-public final class macOSFileService: FileServiceProtocol {
-    public init() {}
-    
-    public func saveFile(
-        content: String,
-        suggestedFileName: String,
-        allowedFileTypes: [String],
-        completion: @escaping (Result<URL, Error>) -> Void
-    ) {
-        Task { @MainActor in
-            let savePanel = NSSavePanel()
-            savePanel.allowedContentTypes = allowedFileTypes.compactMap { ext in
-                switch ext {
-                case "txt":
-                    return .plainText
-                case "md":
-                    return .init(filenameExtension: "md")
-                case "json":
-                    return .json
-                default:
-                    return .init(filenameExtension: ext)
+    /// macOS implementation of FileServiceProtocol
+    public final class macOSFileService: FileServiceProtocol {
+        public init() {}
+
+        public func saveFile(
+            content: String,
+            suggestedFileName: String,
+            allowedFileTypes: [String],
+            completion: @escaping @Sendable (Result<URL, Error>) -> Void
+        ) {
+            Task { @MainActor in
+                let savePanel = NSSavePanel()
+                savePanel.allowedContentTypes = allowedFileTypes.compactMap { ext in
+                    switch ext {
+                    case "txt":
+                        .plainText
+                    case "md":
+                        .init(filenameExtension: "md")
+                    case "json":
+                        .json
+                    default:
+                        .init(filenameExtension: ext)
+                    }
                 }
-            }
-            savePanel.nameFieldStringValue = suggestedFileName
-            savePanel.canCreateDirectories = true
-            savePanel.showsTagField = false
-            
-            let response = savePanel.runModal()
-            
-            if response == .OK, let url = savePanel.url {
-                do {
-                    try content.write(to: url, atomically: true, encoding: .utf8)
-                    completion(.success(url))
-                } catch {
-                    completion(.failure(FileServiceError.saveFailure(error)))
+                savePanel.nameFieldStringValue = suggestedFileName
+                savePanel.canCreateDirectories = true
+                savePanel.showsTagField = false
+
+                let response = savePanel.runModal()
+
+                if response == .OK, let url = savePanel.url {
+                    do {
+                        try content.write(to: url, atomically: true, encoding: .utf8)
+                        await MainActor.run {
+                            completion(.success(url))
+                        }
+                    } catch {
+                        await MainActor.run {
+                            completion(.failure(FileServiceError.saveFailure(error)))
+                        }
+                    }
+                } else {
+                    await MainActor.run {
+                        completion(.failure(FileServiceError.saveCancelled))
+                    }
                 }
-            } else {
-                completion(.failure(FileServiceError.saveCancelled))
             }
         }
-    }
-    
-    public func openFile(
-        allowedFileTypes: [String],
-        completion: @escaping (URL?) -> Void
-    ) {
-        Task { @MainActor in
-            let openPanel = NSOpenPanel()
-            openPanel.allowedContentTypes = allowedFileTypes.compactMap { ext in
-                switch ext {
-                case "txt":
-                    return .plainText
-                case "md":
-                    return .init(filenameExtension: "md")
-                case "json":
-                    return .json
-                default:
-                    return .init(filenameExtension: ext)
+
+        public func openFile(
+            allowedFileTypes: [String],
+            completion: @escaping @Sendable (URL?) -> Void
+        ) {
+            Task { @MainActor in
+                let openPanel = NSOpenPanel()
+                openPanel.allowedContentTypes = allowedFileTypes.compactMap { ext in
+                    switch ext {
+                    case "txt":
+                        .plainText
+                    case "md":
+                        .init(filenameExtension: "md")
+                    case "json":
+                        .json
+                    default:
+                        .init(filenameExtension: ext)
+                    }
+                }
+                openPanel.canChooseFiles = true
+                openPanel.canChooseDirectories = false
+                openPanel.allowsMultipleSelection = false
+
+                let response = openPanel.runModal()
+
+                if response == .OK {
+                    await MainActor.run {
+                        completion(openPanel.url)
+                    }
+                } else {
+                    await MainActor.run {
+                        completion(nil)
+                    }
                 }
             }
-            openPanel.canChooseFiles = true
-            openPanel.canChooseDirectories = false
-            openPanel.allowsMultipleSelection = false
-            
-            let response = openPanel.runModal()
-            
-            if response == .OK {
-                completion(openPanel.url)
-            } else {
-                completion(nil)
-            }
         }
-    }
-}#endif
+    }#endif

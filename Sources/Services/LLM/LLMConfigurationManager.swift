@@ -6,57 +6,54 @@
 //  Copyright © 2025 AIKO. All rights reserved.
 //
 
-import Foundation
-import SwiftUI
-import Foundation
-import SwiftUI
 import AppCore
 import ComposableArchitecture
+import Foundation
+import SwiftUI
 
 /// Manages LLM provider configurations with secure storage
 @MainActor
-final class LLMConfigurationManager: ObservableObject {
-    
+final class LLMConfigurationManager: ObservableObject, @unchecked Sendable {
     // MARK: - Properties
-    
+
     static let shared = LLMConfigurationManager()
-    
+
     /// Current active provider configuration
     @Published var activeProviderConfig: LLMProviderConfig?
-    
+
     /// All configured providers
     @Published var configuredProviders: [LLMProvider: LLMProviderConfig] = [:]
-    
+
     /// Provider priority for fallback
     @Published var providerPriority: LLMProviderPriority
-    
+
     /// UserDefaults keys for non-sensitive data
     private enum UserDefaultsKeys {
         static let activeProvider = "llm.activeProvider"
         static let providerConfigs = "llm.providerConfigs"
         static let providerPriority = "llm.providerPriority"
     }
-    
+
     private let keychain = LLMKeychainService.shared
-    
+
     // MARK: - Initialization
-    
+
     private init() {
         // Default provider priority
-        self.providerPriority = LLMProviderPriority(
+        providerPriority = LLMProviderPriority(
             providers: [.claude, .openAI, .gemini],
             fallbackBehavior: .sequential
         )
-        
+
         // Load saved configurations
         loadConfigurations()
-        
+
         // Migrate from UserDefaults if needed
         // Migration would go here if needed
     }
-    
+
     // MARK: - Configuration Management
-    
+
     /// Configures a provider with API key and settings
     /// - Parameters:
     ///   - provider: The LLM provider
@@ -72,10 +69,10 @@ final class LLMConfigurationManager: ObservableObject {
         guard !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             throw LLMError.invalidAPIKey(provider: provider)
         }
-        
+
         // Store API key securely in keychain
         try keychain.storeAPIKey(apiKey, for: provider.rawValue)
-        
+
         // Create or update configuration (without API key)
         let defaultModel = getDefaultModel(for: provider)
         let providerConfig = config ?? LLMProviderConfig(
@@ -98,70 +95,70 @@ final class LLMConfigurationManager: ObservableObject {
             presencePenalty: providerConfig.presencePenalty,
             stopSequences: providerConfig.stopSequences
         )
-        
+
         configuredProviders[provider] = finalConfig
-        
+
         // If no active provider, set this as active
         if activeProviderConfig == nil {
             activeProviderConfig = finalConfig
         }
-        
+
         // Save configurations
         saveConfigurations()
     }
-    
+
     /// Removes a provider configuration
     /// - Parameter provider: The provider to remove
     func removeProvider(_ provider: LLMProvider) throws {
         // Remove API key from keychain
         try keychain.deleteAPIKey(for: provider.rawValue)
-        
+
         // Remove configuration
         configuredProviders.removeValue(forKey: provider)
-        
+
         // If this was the active provider, switch to next available
         if activeProviderConfig?.provider == provider.rawValue {
             activeProviderConfig = configuredProviders.values.first
         }
-        
+
         // Save configurations
         saveConfigurations()
     }
-    
+
     /// Sets the active provider
     /// - Parameter provider: The provider to activate
     func setActiveProvider(_ provider: LLMProvider) throws {
         guard let config = configuredProviders[provider] else {
             throw LLMError.providerUnavailable(provider: provider)
         }
-        
+
         // Verify API key exists
         guard keychain.hasAPIKey(for: provider.rawValue) else {
             throw LLMError.noAPIKey(provider: provider)
         }
-        
+
         activeProviderConfig = config
         UserDefaults.standard.set(provider.rawValue, forKey: UserDefaultsKeys.activeProvider)
     }
-    
+
     /// Updates provider priority for fallback
     /// - Parameter priority: New priority configuration
     func updateProviderPriority(_ priority: LLMProviderPriority) {
-        self.providerPriority = priority
-        
+        providerPriority = priority
+
         // Save to UserDefaults
         if let encoded = try? JSONEncoder().encode(priority) {
             UserDefaults.standard.set(encoded, forKey: UserDefaultsKeys.providerPriority)
         }
     }
-    
+
     /// Gets the API key for a provider
     /// - Parameter provider: The provider
     /// - Returns: The API key if available
     func getAPIKey(for provider: LLMProvider) -> String? {
         try? keychain.retrieveAPIKey(for: provider.rawValue)
     }
-    
+
     /// Gets all available providers (configured with API keys)
     /// - Returns: Array of available providers
     func getAvailableProviders() -> [LLMProvider] {
@@ -169,13 +166,13 @@ final class LLMConfigurationManager: ObservableObject {
             keychain.hasAPIKey(for: provider.rawValue)
         }.sorted { $0.rawValue < $1.rawValue }
     }
-    
+
     /// Lists configured provider IDs
     /// - Returns: Array of provider ID strings
     func listConfiguredProviders() -> [String] {
-        configuredProviders.keys.map { $0.rawValue }
+        configuredProviders.keys.map(\.rawValue)
     }
-    
+
     /// Checks if a provider is configured
     /// - Parameter providerId: The provider ID to check
     /// - Returns: True if the provider is configured
@@ -185,7 +182,7 @@ final class LLMConfigurationManager: ObservableObject {
             configuredProviders[provider] != nil && keychain.hasAPIKey(for: providerId)
         }
     }
-    
+
     /// Loads configuration for a specific provider
     /// - Parameter providerId: The provider ID
     /// - Returns: The configuration if available
@@ -197,105 +194,109 @@ final class LLMConfigurationManager: ObservableObject {
             configuredProviders[provider]
         }
     }
-    
+
     /// Gets default model for a provider
     /// - Parameter provider: The LLM provider
     /// - Returns: Default model name for the provider
     private func getDefaultModel(for provider: LLMProvider) -> String {
         switch provider {
         case .claude:
-            return "claude-3-sonnet-20240229"
+            "claude-3-sonnet-20240229"
         case .openAI, .chatGPT:
-            return "gpt-4"
+            "gpt-4"
         case .gemini:
-            return "gemini-pro"
+            "gemini-pro"
         case .azureOpenAI:
-            return "gpt-4"
+            "gpt-4"
         case .local:
-            return "local-model"
+            "local-model"
         case .custom:
-            return "custom-model"
+            "custom-model"
         }
     }
-    
+
     /// Gets the next provider in fallback order
     /// - Parameter currentProvider: The current provider that failed
     /// - Returns: Next provider if available
     func getNextFallbackProvider(after currentProvider: LLMProvider) -> LLMProvider? {
         let availableProviders = getAvailableProviders()
         let priorityProviders = providerPriority.providers.filter { availableProviders.contains($0) }
-        
+
         guard let currentIndex = priorityProviders.firstIndex(of: currentProvider),
-              currentIndex + 1 < priorityProviders.count else {
+              currentIndex + 1 < priorityProviders.count
+        else {
             return nil
         }
-        
+
         return priorityProviders[currentIndex + 1]
     }
-    
+
     // MARK: - Persistence
-    
+
     /// Loads configurations from UserDefaults
     private func loadConfigurations() {
         // Load provider configurations
         if let data = UserDefaults.standard.data(forKey: UserDefaultsKeys.providerConfigs),
-           let configs = try? JSONDecoder().decode([LLMProvider: LLMProviderConfig].self, from: data) {
-            self.configuredProviders = configs
+           let configs = try? JSONDecoder().decode([LLMProvider: LLMProviderConfig].self, from: data)
+        {
+            configuredProviders = configs
         }
-        
+
         // Load active provider
         if let activeProviderString = UserDefaults.standard.string(forKey: UserDefaultsKeys.activeProvider),
            let activeProvider = LLMProvider(rawValue: activeProviderString),
-           let config = configuredProviders[activeProvider] {
-            self.activeProviderConfig = config
+           let config = configuredProviders[activeProvider]
+        {
+            activeProviderConfig = config
         }
-        
+
         // Load provider priority
         if let data = UserDefaults.standard.data(forKey: UserDefaultsKeys.providerPriority),
-           let priority = try? JSONDecoder().decode(LLMProviderPriority.self, from: data) {
-            self.providerPriority = priority
+           let priority = try? JSONDecoder().decode(LLMProviderPriority.self, from: data)
+        {
+            providerPriority = priority
         }
     }
-    
+
     /// Saves configurations to UserDefaults
     private func saveConfigurations() {
         // Save provider configurations (without API keys)
         if let encoded = try? JSONEncoder().encode(configuredProviders) {
             UserDefaults.standard.set(encoded, forKey: UserDefaultsKeys.providerConfigs)
         }
-        
+
         // Save active provider
         if let activeProvider = activeProviderConfig?.provider {
             UserDefaults.standard.set(activeProvider, forKey: UserDefaultsKeys.activeProvider)
         }
     }
-    
+
     // MARK: - Security
-    
+
     /// Clears all provider configurations and API keys
     func clearAllConfigurations() throws {
         // Clear keychain
         try keychain.deleteAllAPIKeys()
-        
+
         // Clear configurations
         configuredProviders.removeAll()
         activeProviderConfig = nil
-        
+
         // Clear UserDefaults
         UserDefaults.standard.removeObject(forKey: UserDefaultsKeys.providerConfigs)
         UserDefaults.standard.removeObject(forKey: UserDefaultsKeys.activeProvider)
         UserDefaults.standard.removeObject(forKey: UserDefaultsKeys.providerPriority)
     }
-    
+
     /// Validates all configured providers have valid API keys
     /// - Returns: Dictionary of validation results
     func validateAllProviders() async -> [LLMProvider: Bool] {
         var results: [LLMProvider: Bool] = [:]
-        
+
         for provider in configuredProviders.keys {
             results[provider] = keychain.hasAPIKey(for: provider.rawValue)
         }
-        
+
         return results
     }
 }

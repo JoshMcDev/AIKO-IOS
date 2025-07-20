@@ -1,6 +1,6 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 
 @Reducer
 public struct DocumentStatusFeature {

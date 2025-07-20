@@ -2,7 +2,7 @@ import ComposableArchitecture
 import Foundation
 
 @DependencyClient
-public struct VoiceRecordingClient {
+public struct VoiceRecordingClient: Sendable {
     public var checkPermissions: @Sendable () -> Bool = { false }
     public var requestPermissions: @Sendable () async -> Bool = { false }
     public var startRecording: @Sendable () async throws -> Void
@@ -15,7 +15,7 @@ extension VoiceRecordingClient: TestDependencyKey {
 }
 
 extension VoiceRecordingClient: DependencyKey {
-    public static var liveValue: Self = Self()
+    public static let liveValue: Self = .init()
 }
 
 public extension DependencyValues {

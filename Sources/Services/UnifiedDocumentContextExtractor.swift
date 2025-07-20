@@ -1,35 +1,35 @@
-import Foundation
-import Vision
-import UniformTypeIdentifiers
 import AppCore
+import Foundation
+import UniformTypeIdentifiers
+import Vision
 
 // MARK: - Unified Document Context Extractor
 
 /// Unified service that orchestrates all document extraction components
 /// for the Adaptive Prompting Engine
-public class UnifiedDocumentContextExtractor {
+public final class UnifiedDocumentContextExtractor: @unchecked Sendable {
     /// Shared instance for non-MainActor contexts
     @MainActor
     public static let shared = UnifiedDocumentContextExtractor()
-    
+
     /// Non-MainActor shared instance for dependency injection
     public static let sharedNonMainActor = UnifiedDocumentContextExtractor(
         documentParser: DocumentParserEnhanced(),
         contextExtractor: DocumentContextExtractorEnhanced.shared,
         adaptiveExtractor: AdaptiveDataExtractor.shared
     )
-    
+
     private let documentParser: DocumentParserEnhanced
     private let contextExtractor: DocumentContextExtractorEnhanced
     private let adaptiveExtractor: AdaptiveDataExtractor
-    
+
     @MainActor
     public init() {
-        self.documentParser = DocumentParserEnhanced()
-        self.contextExtractor = DocumentContextExtractorEnhanced()
-        self.adaptiveExtractor = AdaptiveDataExtractor()
+        documentParser = DocumentParserEnhanced()
+        contextExtractor = DocumentContextExtractorEnhanced()
+        adaptiveExtractor = AdaptiveDataExtractor()
     }
-    
+
     public init(
         documentParser: DocumentParserEnhanced,
         contextExtractor: DocumentContextExtractorEnhanced,
@@ -39,17 +39,16 @@ public class UnifiedDocumentContextExtractor {
         self.contextExtractor = contextExtractor
         self.adaptiveExtractor = adaptiveExtractor
     }
-    
+
     /// Main entry point for document context extraction
     /// Handles everything from raw document data to structured context
     public func extractComprehensiveContext(
         from documentData: [(data: Data, type: UTType)],
         withHints: [String: Any]? = nil
     ) async throws -> ComprehensiveDocumentContext {
-        
         // Step 1: Parse all documents (OCR if needed)
         var parsedDocuments: [ParsedDocument] = []
-        
+
         for (data, type) in documentData {
             do {
                 let docType = mapUTTypeToDocumentType(type)
@@ -60,17 +59,17 @@ public class UnifiedDocumentContextExtractor {
                 // Continue with other documents
             }
         }
-        
+
         guard !parsedDocuments.isEmpty else {
             throw DocumentExtractionError.noDocumentsParsed
         }
-        
+
         // Step 2: Extract context using both standard and adaptive extraction
         let extractedContext = try await contextExtractor.extract(from: parsedDocuments)
-        
+
         // Step 3: Apply adaptive learning for better pattern recognition
         var adaptiveResults: [AdaptiveExtractionResult] = []
-        
+
         for document in parsedDocuments {
             let adaptiveResult = try await adaptiveExtractor.extractAdaptively(
                 from: document,
@@ -78,20 +77,20 @@ public class UnifiedDocumentContextExtractor {
             )
             adaptiveResults.append(adaptiveResult)
         }
-        
+
         // Step 4: Merge and consolidate all extraction results
         let consolidatedContext = consolidateResults(
             standardContext: extractedContext,
             adaptiveResults: adaptiveResults,
             parsedDocuments: parsedDocuments
         )
-        
+
         // Step 5: Calculate overall confidence
         let confidence = calculateOverallConfidence(
             context: consolidatedContext,
             adaptiveResults: adaptiveResults
         )
-        
+
         return ComprehensiveDocumentContext(
             extractedContext: consolidatedContext,
             parsedDocuments: parsedDocuments,
@@ -100,7 +99,7 @@ public class UnifiedDocumentContextExtractor {
             extractionDate: Date()
         )
     }
-    
+
     /// Extract comprehensive context directly from OCR results
     /// Optimized pathway for Phase 4.2 enhanced OCR integration
     public func extractComprehensiveContext(
@@ -108,14 +107,13 @@ public class UnifiedDocumentContextExtractor {
         pageImageData: [Data] = [],
         withHints: [String: Any]? = nil
     ) async throws -> ComprehensiveDocumentContext {
-        
         guard !ocrResults.isEmpty else {
             throw DocumentExtractionError.noDocumentsParsed
         }
-        
+
         // Step 1: Convert OCR results to ParsedDocument format for compatibility
         var parsedDocuments: [ParsedDocument] = []
-        
+
         for (index, ocrResult) in ocrResults.enumerated() {
             let parsedDoc = ParsedDocument(
                 id: UUID(),
@@ -131,17 +129,17 @@ public class UnifiedDocumentContextExtractor {
             )
             parsedDocuments.append(parsedDoc)
         }
-        
+
         // Step 2: Extract context using enhanced OCR data
         let extractedContext = try await extractContextFromOCRResults(ocrResults)
-        
+
         // Step 3: Apply adaptive learning if we have image data
         var adaptiveResults: [AdaptiveExtractionResult] = []
-        
+
         if !pageImageData.isEmpty {
             for (index, _) in pageImageData.enumerated() {
                 guard index < parsedDocuments.count else { break }
-                
+
                 let adaptiveResult = try await adaptiveExtractor.extractAdaptively(
                     from: parsedDocuments[index],
                     withHints: withHints
@@ -149,21 +147,21 @@ public class UnifiedDocumentContextExtractor {
                 adaptiveResults.append(adaptiveResult)
             }
         }
-        
+
         // Step 4: Merge OCR-based context with adaptive results
         let consolidatedContext = consolidateOCRResults(
             ocrContext: extractedContext,
             adaptiveResults: adaptiveResults,
             ocrResults: ocrResults
         )
-        
+
         // Step 5: Calculate confidence based on OCR and adaptive results
         let confidence = calculateOCRBasedConfidence(
             context: consolidatedContext,
             ocrResults: ocrResults,
             adaptiveResults: adaptiveResults
         )
-        
+
         return ComprehensiveDocumentContext(
             extractedContext: consolidatedContext,
             parsedDocuments: parsedDocuments,
@@ -172,49 +170,48 @@ public class UnifiedDocumentContextExtractor {
             extractionDate: Date()
         )
     }
-    
+
     // MARK: - Helper Methods
-    
+
     private func mapUTTypeToDocumentType(_ type: UTType) -> ParsedDocumentType {
         switch type {
         case .pdf:
-            return .pdf
+            .pdf
         case .rtf:
-            return .rtf
+            .rtf
         case .plainText:
-            return .text
+            .text
         case .png:
-            return .png
+            .png
         case .jpeg:
-            return .jpeg
+            .jpeg
         case .heic:
-            return .heic
+            .heic
         default:
             if type.conforms(to: .image) {
-                return .unknown // Will use OCR
+                .unknown // Will use OCR
             } else if isWordDocument(type) {
-                return .word
+                .word
             } else {
-                return .unknown
+                .unknown
             }
         }
     }
-    
+
     private func isWordDocument(_ type: UTType) -> Bool {
         let wordTypes = [
             "com.microsoft.word.doc",
             "com.microsoft.word.docx",
-            "org.openxmlformats.wordprocessingml.document"
+            "org.openxmlformats.wordprocessingml.document",
         ]
         return wordTypes.contains(type.identifier)
     }
-    
+
     private func consolidateResults(
         standardContext: ExtractedContext,
         adaptiveResults: [AdaptiveExtractionResult],
-        parsedDocuments: [ParsedDocument]
+        parsedDocuments _: [ParsedDocument]
     ) -> ExtractedContext {
-        
         // Start with standard extraction results
         var consolidatedVendorInfo = standardContext.vendorInfo
         var consolidatedPricing = standardContext.pricing
@@ -222,7 +219,7 @@ public class UnifiedDocumentContextExtractor {
         var consolidatedTechnicalDetails = standardContext.technicalDetails
         var consolidatedSpecialTerms = standardContext.specialTerms
         var consolidatedConfidence = standardContext.confidence
-        
+
         // Enhance with adaptive extraction results
         for result in adaptiveResults {
             // Update vendor info with higher confidence values
@@ -233,7 +230,7 @@ public class UnifiedDocumentContextExtractor {
                     confidence: result.confidence
                 )
             }
-            
+
             // Update pricing with more detailed line items
             if let pricing = extractPricingFromAdaptive(result) {
                 consolidatedPricing = mergePricing(
@@ -242,7 +239,7 @@ public class UnifiedDocumentContextExtractor {
                     confidence: result.confidence
                 )
             }
-            
+
             // Update dates with better pattern recognition
             if let dates = extractDatesFromAdaptive(result) {
                 consolidatedDates = mergeDates(
@@ -251,27 +248,27 @@ public class UnifiedDocumentContextExtractor {
                     confidence: result.confidence
                 )
             }
-            
+
             // Add technical details from adaptive extraction
             let technicalDetails = extractTechnicalDetailsFromAdaptive(result)
             consolidatedTechnicalDetails.append(contentsOf: technicalDetails)
-            
+
             // Add special terms from adaptive extraction
             let specialTerms = extractSpecialTermsFromAdaptive(result)
             consolidatedSpecialTerms.append(contentsOf: specialTerms)
-            
+
             // Update confidence scores
             updateConfidenceScores(
                 &consolidatedConfidence,
                 from: result
             )
         }
-        
+
         // Remove duplicates and clean up
         consolidatedTechnicalDetails = Array(Set(consolidatedTechnicalDetails))
             .filter { !$0.isEmpty && $0.count > 10 }
         consolidatedSpecialTerms = Array(Set(consolidatedSpecialTerms))
-        
+
         return ExtractedContext(
             vendorInfo: consolidatedVendorInfo,
             pricing: consolidatedPricing,
@@ -281,11 +278,11 @@ public class UnifiedDocumentContextExtractor {
             confidence: consolidatedConfidence
         )
     }
-    
+
     private func extractVendorInfoFromAdaptive(_ result: AdaptiveExtractionResult) -> APEVendorInfo? {
         var vendorInfo = APEVendorInfo()
         var hasData = false
-        
+
         for object in result.valueObjects {
             switch object.fieldName.lowercased() {
             case "vendor", "vendor_name", "company":
@@ -310,14 +307,14 @@ public class UnifiedDocumentContextExtractor {
                 break
             }
         }
-        
+
         return hasData ? vendorInfo : nil
     }
-    
+
     private func extractPricingFromAdaptive(_ result: AdaptiveExtractionResult) -> PricingInfo? {
         var totalPrice: Decimal?
         var lineItems: [APELineItem] = []
-        
+
         for object in result.valueObjects {
             if object.dataType == .currency {
                 if object.fieldName.lowercased().contains("total") {
@@ -326,7 +323,8 @@ public class UnifiedDocumentContextExtractor {
                 } else {
                     // Might be a line item price
                     if let price = Decimal(string: object.value.replacingOccurrences(of: "$", with: "")
-                        .replacingOccurrences(of: ",", with: "")) {
+                        .replacingOccurrences(of: ",", with: ""))
+                    {
                         lineItems.append(APELineItem(
                             description: object.fieldName,
                             quantity: 1,
@@ -337,18 +335,18 @@ public class UnifiedDocumentContextExtractor {
                 }
             }
         }
-        
+
         if totalPrice != nil || !lineItems.isEmpty {
             return PricingInfo(totalPrice: totalPrice, unitPrices: lineItems)
         }
-        
+
         return nil
     }
-    
+
     private func extractDatesFromAdaptive(_ result: AdaptiveExtractionResult) -> ExtractedDates? {
         var dates = ExtractedDates()
         var hasData = false
-        
+
         for object in result.valueObjects {
             if object.dataType == .date {
                 if let date = parseDate(object.value) {
@@ -368,35 +366,37 @@ public class UnifiedDocumentContextExtractor {
                 }
             }
         }
-        
+
         return hasData ? dates : nil
     }
-    
+
     private func extractTechnicalDetailsFromAdaptive(_ result: AdaptiveExtractionResult) -> [String] {
-        return result.valueObjects
+        result.valueObjects
             .filter { $0.fieldName.lowercased().contains("technical") ||
-                     $0.fieldName.lowercased().contains("specification") ||
-                     $0.fieldName.lowercased().contains("feature") }
-            .map { $0.value }
+                $0.fieldName.lowercased().contains("specification") ||
+                $0.fieldName.lowercased().contains("feature")
+            }
+            .map(\.value)
             .filter { $0.count > 20 }
     }
-    
+
     private func extractSpecialTermsFromAdaptive(_ result: AdaptiveExtractionResult) -> [String] {
-        return result.valueObjects
+        result.valueObjects
             .filter { $0.fieldName.lowercased().contains("term") ||
-                     $0.fieldName.lowercased().contains("condition") ||
-                     $0.fieldName.lowercased().contains("requirement") }
-            .map { $0.value }
+                $0.fieldName.lowercased().contains("condition") ||
+                $0.fieldName.lowercased().contains("requirement")
+            }
+            .map(\.value)
     }
-    
+
     private func mergeVendorInfo(
         existing: APEVendorInfo?,
         new: APEVendorInfo,
         confidence: Double
     ) -> APEVendorInfo {
-        guard let existing = existing else { return new }
+        guard let existing else { return new }
         guard confidence > 0.8 else { return existing } // Only merge if high confidence
-        
+
         return APEVendorInfo(
             name: new.name ?? existing.name,
             uei: new.uei ?? existing.uei,
@@ -406,30 +406,30 @@ public class UnifiedDocumentContextExtractor {
             address: new.address ?? existing.address
         )
     }
-    
+
     private func mergePricing(
         existing: PricingInfo?,
         new: PricingInfo,
         confidence: Double
     ) -> PricingInfo {
-        guard let existing = existing else { return new }
+        guard let existing else { return new }
         guard confidence > 0.7 else { return existing }
-        
+
         return PricingInfo(
             totalPrice: new.totalPrice ?? existing.totalPrice,
             unitPrices: existing.unitPrices + new.unitPrices,
             currency: new.currency
         )
     }
-    
+
     private func mergeDates(
         existing: ExtractedDates?,
         new: ExtractedDates,
         confidence: Double
     ) -> ExtractedDates {
-        guard let existing = existing else { return new }
+        guard let existing else { return new }
         guard confidence > 0.7 else { return existing }
-        
+
         return ExtractedDates(
             quoteDate: new.quoteDate ?? existing.quoteDate,
             validUntil: new.validUntil ?? existing.validUntil,
@@ -437,7 +437,7 @@ public class UnifiedDocumentContextExtractor {
             performancePeriod: new.performancePeriod ?? existing.performancePeriod
         )
     }
-    
+
     private func updateConfidenceScores(
         _ confidence: inout [RequirementField: Float],
         from result: AdaptiveExtractionResult
@@ -450,9 +450,9 @@ public class UnifiedDocumentContextExtractor {
             ("price", .estimatedValue),
             ("date", .requiredDate),
             ("technical", .technicalSpecs),
-            ("special", .specialConditions)
+            ("special", .specialConditions),
         ]
-        
+
         for object in result.valueObjects {
             for (pattern, field) in fieldMappings {
                 if object.fieldName.lowercased().contains(pattern) {
@@ -462,75 +462,75 @@ public class UnifiedDocumentContextExtractor {
             }
         }
     }
-    
+
     private func calculateOverallConfidence(
         context: ExtractedContext,
         adaptiveResults: [AdaptiveExtractionResult]
     ) -> Double {
         var scores: [Double] = []
-        
+
         // Add confidence from standard extraction
         scores.append(contentsOf: context.confidence.values.map { Double($0) })
-        
+
         // Add confidence from adaptive extraction
-        scores.append(contentsOf: adaptiveResults.map { $0.confidence })
-        
+        scores.append(contentsOf: adaptiveResults.map(\.confidence))
+
         // Calculate weighted average
         guard !scores.isEmpty else { return 0.0 }
         let average = scores.reduce(0.0, +) / Double(scores.count)
-        
+
         // Boost confidence if we have multiple extraction methods agreeing
         let agreementBonus = adaptiveResults.isEmpty ? 0.0 : 0.1
-        
+
         return min(average + agreementBonus, 1.0)
     }
-    
+
     private func parseDate(_ dateString: String) -> Date? {
         let formatters = [
             ISO8601DateFormatter(),
             DateFormatter.mmddyyyy,
             DateFormatter.yyyymmdd,
-            DateFormatter.mmmddyyyy
+            DateFormatter.mmmddyyyy,
         ]
-        
+
         // Try ISO8601 first
         if let iso = formatters.first as? ISO8601DateFormatter,
-           let date = iso.date(from: dateString) {
+           let date = iso.date(from: dateString)
+        {
             return date
         }
-        
+
         // Try other formatters
         for formatter in formatters.dropFirst() {
             if let formatter = formatter as? DateFormatter,
-               let date = formatter.date(from: dateString) {
+               let date = formatter.date(from: dateString)
+            {
                 return date
             }
         }
-        
+
         return nil
     }
-    
+
     // MARK: - OCR-Based Extraction Methods
-    
+
     private func convertOCRToExtractedDataForParser(_ ocrResult: OCRResult) -> ExtractedData {
         // Convert OCRResult to DocumentParserEnhanced's ExtractedData format
         var entities: [ExtractedEntity] = []
         let relationships: [ExtractedRelationship] = []
         var tables: [ExtractedTable] = []
-        
+
         // Convert form fields to entities
         for field in ocrResult.recognizedFields {
-            let entityType: ExtractedEntity.EntityType = {
-                switch field.fieldType {
-                case .email: return .email
-                case .phone: return .phone
-                case .address: return .address
-                case .currency, .number: return .price
-                case .date: return .date
-                default: return .unknown
-                }
-            }()
-            
+            let entityType: ExtractedEntity.EntityType = switch field.fieldType {
+            case .email: .email
+            case .phone: .phone
+            case .address: .address
+            case .currency, .number: .price
+            case .date: .date
+            default: .unknown
+            }
+
             entities.append(ExtractedEntity(
                 type: entityType,
                 value: field.value,
@@ -541,7 +541,7 @@ public class UnifiedDocumentContextExtractor {
                 )
             ))
         }
-        
+
         // Convert extracted metadata to entities
         for currency in ocrResult.extractedMetadata.currencies {
             entities.append(ExtractedEntity(
@@ -550,7 +550,7 @@ public class UnifiedDocumentContextExtractor {
                 confidence: currency.confidence
             ))
         }
-        
+
         for date in ocrResult.extractedMetadata.dates {
             entities.append(ExtractedEntity(
                 type: .date,
@@ -558,7 +558,7 @@ public class UnifiedDocumentContextExtractor {
                 confidence: date.confidence
             ))
         }
-        
+
         for email in ocrResult.extractedMetadata.emailAddresses {
             entities.append(ExtractedEntity(
                 type: .email,
@@ -566,7 +566,7 @@ public class UnifiedDocumentContextExtractor {
                 confidence: 0.9
             ))
         }
-        
+
         for phone in ocrResult.extractedMetadata.phoneNumbers {
             entities.append(ExtractedEntity(
                 type: .phone,
@@ -574,21 +574,21 @@ public class UnifiedDocumentContextExtractor {
                 confidence: 0.9
             ))
         }
-        
+
         // Convert tables from document structure
         for table in ocrResult.documentStructure.tables {
-            let headers = table.rows.first?.map { $0.content } ?? []
+            let headers = table.rows.first?.map(\.content) ?? []
             let dataRows = Array(table.rows.dropFirst()).map { row in
-                row.map { $0.content }
+                row.map(\.content)
             }
-            
+
             tables.append(ExtractedTable(
                 headers: headers,
                 rows: dataRows,
                 confidence: table.confidence
             ))
         }
-        
+
         return ExtractedData(
             entities: entities,
             relationships: relationships,
@@ -596,10 +596,10 @@ public class UnifiedDocumentContextExtractor {
             summary: ocrResult.fullText.count > 500 ? String(ocrResult.fullText.prefix(500)) + "..." : nil
         )
     }
-    
+
     private func convertOCRToExtractedData(_ ocrResult: OCRResult) -> [String: Any] {
         var extractedData: [String: Any] = [:]
-        
+
         // Add form fields
         var formFields: [[String: Any]] = []
         for field in ocrResult.recognizedFields {
@@ -612,45 +612,45 @@ public class UnifiedDocumentContextExtractor {
                     "x": field.boundingBox.origin.x,
                     "y": field.boundingBox.origin.y,
                     "width": field.boundingBox.size.width,
-                    "height": field.boundingBox.size.height
-                ]
+                    "height": field.boundingBox.size.height,
+                ],
             ])
         }
         extractedData["form_fields"] = formFields
-        
+
         // Add document structure
         extractedData["layout_type"] = ocrResult.documentStructure.layout.rawValue
         extractedData["paragraph_count"] = ocrResult.documentStructure.paragraphs.count
         extractedData["table_count"] = ocrResult.documentStructure.tables.count
         extractedData["list_count"] = ocrResult.documentStructure.lists.count
         extractedData["header_count"] = ocrResult.documentStructure.headers.count
-        
+
         // Add extracted metadata
         extractedData["dates"] = ocrResult.extractedMetadata.dates.map { date in
             [
                 "date": date.date.timeIntervalSince1970,
                 "original_text": date.originalText,
                 "confidence": date.confidence,
-                "context": date.context ?? ""
+                "context": date.context ?? "",
             ]
         }
-        
+
         extractedData["currencies"] = ocrResult.extractedMetadata.currencies.map { currency in
             [
                 "amount": currency.amount.description,
                 "currency": currency.currency,
                 "original_text": currency.originalText,
-                "confidence": currency.confidence
+                "confidence": currency.confidence,
             ]
         }
-        
+
         extractedData["phone_numbers"] = ocrResult.extractedMetadata.phoneNumbers
         extractedData["email_addresses"] = ocrResult.extractedMetadata.emailAddresses
         extractedData["urls"] = ocrResult.extractedMetadata.urls
-        
+
         return extractedData
     }
-    
+
     private func extractContextFromOCRResults(_ ocrResults: [OCRResult]) async throws -> ExtractedContext {
         // Use the existing helper functions from DocumentScannerFeature but make them more sophisticated
         let vendorInfo = extractEnhancedVendorInfoFromOCR(ocrResults)
@@ -659,7 +659,7 @@ public class UnifiedDocumentContextExtractor {
         let dates = extractEnhancedDatesFromOCR(ocrResults)
         let specialTerms = extractEnhancedSpecialTermsFromOCR(ocrResults)
         let confidence = calculateEnhancedConfidenceFromOCR(ocrResults)
-        
+
         return ExtractedContext(
             vendorInfo: vendorInfo,
             pricing: pricing,
@@ -669,11 +669,11 @@ public class UnifiedDocumentContextExtractor {
             confidence: confidence
         )
     }
-    
+
     private func consolidateOCRResults(
         ocrContext: ExtractedContext,
         adaptiveResults: [AdaptiveExtractionResult],
-        ocrResults: [OCRResult]
+        ocrResults _: [OCRResult]
     ) -> ExtractedContext {
         // Start with OCR-based context
         var consolidatedVendorInfo = ocrContext.vendorInfo
@@ -682,7 +682,7 @@ public class UnifiedDocumentContextExtractor {
         var consolidatedTechnicalDetails = ocrContext.technicalDetails
         var consolidatedSpecialTerms = ocrContext.specialTerms
         var consolidatedConfidence = ocrContext.confidence
-        
+
         // Enhance with adaptive extraction results (using existing logic)
         for result in adaptiveResults {
             if let vendorInfo = extractVendorInfoFromAdaptive(result) {
@@ -692,7 +692,7 @@ public class UnifiedDocumentContextExtractor {
                     confidence: result.confidence
                 )
             }
-            
+
             if let pricing = extractPricingFromAdaptive(result) {
                 consolidatedPricing = mergePricing(
                     existing: consolidatedPricing,
@@ -700,7 +700,7 @@ public class UnifiedDocumentContextExtractor {
                     confidence: result.confidence
                 )
             }
-            
+
             if let dates = extractDatesFromAdaptive(result) {
                 consolidatedDates = mergeDates(
                     existing: consolidatedDates,
@@ -708,20 +708,20 @@ public class UnifiedDocumentContextExtractor {
                     confidence: result.confidence
                 )
             }
-            
+
             let technicalDetails = extractTechnicalDetailsFromAdaptive(result)
             consolidatedTechnicalDetails.append(contentsOf: technicalDetails)
-            
+
             let specialTerms = extractSpecialTermsFromAdaptive(result)
             consolidatedSpecialTerms.append(contentsOf: specialTerms)
-            
+
             updateConfidenceScores(&consolidatedConfidence, from: result)
         }
-        
+
         // Remove duplicates
         consolidatedTechnicalDetails = Array(Set(consolidatedTechnicalDetails))
         consolidatedSpecialTerms = Array(Set(consolidatedSpecialTerms))
-        
+
         return ExtractedContext(
             vendorInfo: consolidatedVendorInfo,
             pricing: consolidatedPricing,
@@ -731,44 +731,44 @@ public class UnifiedDocumentContextExtractor {
             confidence: consolidatedConfidence
         )
     }
-    
+
     private func calculateOCRBasedConfidence(
         context: ExtractedContext,
         ocrResults: [OCRResult],
         adaptiveResults: [AdaptiveExtractionResult]
     ) -> Double {
         var scores: [Double] = []
-        
+
         // Add OCR confidence scores
-        scores.append(contentsOf: ocrResults.map { $0.confidence })
-        
+        scores.append(contentsOf: ocrResults.map(\.confidence))
+
         // Add context extraction confidence
         scores.append(contentsOf: context.confidence.values.map { Double($0) })
-        
+
         // Add adaptive extraction confidence
-        scores.append(contentsOf: adaptiveResults.map { $0.confidence })
-        
+        scores.append(contentsOf: adaptiveResults.map(\.confidence))
+
         guard !scores.isEmpty else { return 0.0 }
         let average = scores.reduce(0.0, +) / Double(scores.count)
-        
+
         // Boost confidence if we have multiple high-quality sources
         let qualityBonus = (ocrResults.count > 1 && !adaptiveResults.isEmpty) ? 0.15 : 0.05
-        
+
         return min(average + qualityBonus, 1.0)
     }
-    
+
     // Enhanced extraction methods that leverage the structured OCR data
-    
+
     private func extractEnhancedVendorInfoFromOCR(_ ocrResults: [OCRResult]) -> APEVendorInfo? {
         var vendorInfo = APEVendorInfo()
         var hasData = false
-        
+
         for result in ocrResults {
             // Check form fields with higher precision
             for field in result.recognizedFields where field.confidence > 0.7 {
                 switch field.label.lowercased() {
                 case let label where label.contains("vendor") || label.contains("company") || label.contains("supplier"):
-                    if field.fieldType == .text && !field.value.isEmpty {
+                    if field.fieldType == .text, !field.value.isEmpty {
                         vendorInfo.name = field.value
                         hasData = true
                     }
@@ -797,7 +797,7 @@ public class UnifiedDocumentContextExtractor {
                     break
                 }
             }
-            
+
             // Check metadata with pattern matching
             for address in result.extractedMetadata.addresses where address.confidence > 0.8 {
                 if vendorInfo.address == nil {
@@ -805,14 +805,14 @@ public class UnifiedDocumentContextExtractor {
                     hasData = true
                 }
             }
-            
+
             for email in result.extractedMetadata.emailAddresses {
                 if vendorInfo.email == nil {
                     vendorInfo.email = email
                     hasData = true
                 }
             }
-            
+
             for phone in result.extractedMetadata.phoneNumbers {
                 if vendorInfo.phone == nil {
                     vendorInfo.phone = phone
@@ -820,14 +820,14 @@ public class UnifiedDocumentContextExtractor {
                 }
             }
         }
-        
+
         return hasData ? vendorInfo : nil
     }
-    
+
     private func extractEnhancedPricingFromOCR(_ ocrResults: [OCRResult]) -> PricingInfo? {
         var totalPrice: Decimal?
         var lineItems: [APELineItem] = []
-        
+
         for result in ocrResults {
             // Check form fields for pricing with higher confidence threshold
             for field in result.recognizedFields where field.confidence > 0.8 {
@@ -835,10 +835,11 @@ public class UnifiedDocumentContextExtractor {
                     let cleanValue = field.value.replacingOccurrences(of: "$", with: "")
                         .replacingOccurrences(of: ",", with: "")
                         .trimmingCharacters(in: .whitespaces)
-                    
+
                     if let price = Decimal(string: cleanValue) {
-                        if field.label.lowercased().contains("total") || 
-                           field.label.lowercased().contains("amount") {
+                        if field.label.lowercased().contains("total") ||
+                            field.label.lowercased().contains("amount")
+                        {
                             totalPrice = price
                         } else {
                             lineItems.append(APELineItem(
@@ -851,22 +852,22 @@ public class UnifiedDocumentContextExtractor {
                     }
                 }
             }
-            
+
             // Process currency metadata with context analysis
             for currency in result.extractedMetadata.currencies where currency.confidence > 0.9 {
                 if totalPrice == nil {
                     // Look for "total" context in surrounding text
                     let fullText = result.fullText.lowercased()
                     let currencyIndex = fullText.range(of: currency.originalText.lowercased())
-                    
+
                     if let index = currencyIndex {
-                        let startIndex = max(fullText.startIndex, 
-                                            fullText.index(index.lowerBound, offsetBy: -50, limitedBy: fullText.startIndex) ?? fullText.startIndex)
+                        let startIndex = max(fullText.startIndex,
+                                             fullText.index(index.lowerBound, offsetBy: -50, limitedBy: fullText.startIndex) ?? fullText.startIndex)
                         let endIndex = min(fullText.endIndex,
-                                         fullText.index(index.upperBound, offsetBy: 50, limitedBy: fullText.endIndex) ?? fullText.endIndex)
-                        let surroundingRange = startIndex..<endIndex
+                                           fullText.index(index.upperBound, offsetBy: 50, limitedBy: fullText.endIndex) ?? fullText.endIndex)
+                        let surroundingRange = startIndex ..< endIndex
                         let context = String(fullText[surroundingRange])
-                        
+
                         if context.contains("total") || context.contains("amount due") {
                             totalPrice = currency.amount
                         } else {
@@ -881,40 +882,42 @@ public class UnifiedDocumentContextExtractor {
                 }
             }
         }
-        
+
         if totalPrice != nil || !lineItems.isEmpty {
             return PricingInfo(totalPrice: totalPrice, unitPrices: lineItems)
         }
-        
+
         return nil
     }
-    
+
     private func extractEnhancedTechnicalDetailsFromOCR(_ ocrResults: [OCRResult]) -> [String] {
         var technicalDetails: [String] = []
-        
+
         for result in ocrResults {
             // Extract from form fields
             for field in result.recognizedFields where field.confidence > 0.7 {
                 let label = field.label.lowercased()
-                if label.contains("spec") || label.contains("technical") || 
-                   label.contains("feature") || label.contains("requirement") {
+                if label.contains("spec") || label.contains("technical") ||
+                    label.contains("feature") || label.contains("requirement")
+                {
                     if field.value.count > 20 {
                         technicalDetails.append(field.value)
                     }
                 }
             }
-            
+
             // Extract from document structure
             for paragraph in result.documentStructure.paragraphs where paragraph.confidence > 0.8 {
                 let text = paragraph.text.lowercased()
                 if text.contains("specification") || text.contains("technical") ||
-                   text.contains("requirements") || text.contains("performance") {
+                    text.contains("requirements") || text.contains("performance")
+                {
                     if paragraph.text.count > 50 {
                         technicalDetails.append(paragraph.text)
                     }
                 }
             }
-            
+
             // Extract from lists that might contain technical specs
             for list in result.documentStructure.lists {
                 for item in list.items where item.confidence > 0.8 {
@@ -925,14 +928,14 @@ public class UnifiedDocumentContextExtractor {
                 }
             }
         }
-        
+
         return Array(Set(technicalDetails))
     }
-    
+
     private func extractEnhancedDatesFromOCR(_ ocrResults: [OCRResult]) -> ExtractedDates? {
         var dates = ExtractedDates()
         var hasData = false
-        
+
         for result in ocrResults {
             // Check form fields for dates
             for field in result.recognizedFields where field.confidence > 0.8 {
@@ -952,17 +955,17 @@ public class UnifiedDocumentContextExtractor {
                     }
                 }
             }
-            
+
             // Check extracted metadata dates with context
             for extractedDate in result.extractedMetadata.dates where extractedDate.confidence > 0.8 {
                 if let context = extractedDate.context?.lowercased() {
-                    if context.contains("quote") && dates.quoteDate == nil {
+                    if context.contains("quote"), dates.quoteDate == nil {
                         dates.quoteDate = extractedDate.date
                         hasData = true
-                    } else if context.contains("delivery") && dates.deliveryDate == nil {
+                    } else if context.contains("delivery"), dates.deliveryDate == nil {
                         dates.deliveryDate = extractedDate.date
                         hasData = true
-                    } else if context.contains("valid") && dates.validUntil == nil {
+                    } else if context.contains("valid"), dates.validUntil == nil {
                         dates.validUntil = extractedDate.date
                         hasData = true
                     }
@@ -978,49 +981,51 @@ public class UnifiedDocumentContextExtractor {
                 }
             }
         }
-        
+
         return hasData ? dates : nil
     }
-    
+
     private func extractEnhancedSpecialTermsFromOCR(_ ocrResults: [OCRResult]) -> [String] {
         var specialTerms: [String] = []
-        
+
         for result in ocrResults {
             // Extract from form fields
             for field in result.recognizedFields where field.confidence > 0.7 {
                 let label = field.label.lowercased()
-                if label.contains("term") || label.contains("condition") || 
-                   label.contains("requirement") || label.contains("clause") {
+                if label.contains("term") || label.contains("condition") ||
+                    label.contains("requirement") || label.contains("clause")
+                {
                     if field.value.count > 10 {
                         specialTerms.append(field.value)
                     }
                 }
             }
-            
+
             // Extract from lists that contain terms
             for list in result.documentStructure.lists {
                 for item in list.items where item.confidence > 0.8 {
                     let text = item.text.lowercased()
-                    if text.contains("term") || text.contains("condition") || 
-                       text.contains("shall") || text.contains("must") {
+                    if text.contains("term") || text.contains("condition") ||
+                        text.contains("shall") || text.contains("must")
+                    {
                         specialTerms.append(item.text)
                     }
                 }
             }
         }
-        
+
         return Array(Set(specialTerms))
     }
-    
+
     private func calculateEnhancedConfidenceFromOCR(_ ocrResults: [OCRResult]) -> [RequirementField: Float] {
         var confidence: [RequirementField: Float] = [:]
-        
-        let overallConfidence = ocrResults.isEmpty ? 0.0 : 
-            ocrResults.map { $0.confidence }.reduce(0, +) / Double(ocrResults.count)
-        
+
+        let overallConfidence = ocrResults.isEmpty ? 0.0 :
+            ocrResults.map(\.confidence).reduce(0, +) / Double(ocrResults.count)
+
         // Calculate field-specific confidence based on detection
         var fieldConfidences: [RequirementField: [Double]] = [:]
-        
+
         for result in ocrResults {
             for field in result.recognizedFields {
                 let label = field.label.lowercased()
@@ -1038,12 +1043,12 @@ public class UnifiedDocumentContextExtractor {
                 }
             }
         }
-        
+
         // Calculate averages for detected fields
         for (field, confidences) in fieldConfidences {
             confidence[field] = Float(confidences.reduce(0, +) / Double(confidences.count))
         }
-        
+
         // Fill in missing fields with overall confidence
         let allFields: [RequirementField] = [.vendorName, .vendorUEI, .vendorCAGE, .estimatedValue, .requiredDate, .technicalSpecs, .specialConditions]
         for field in allFields {
@@ -1051,10 +1056,10 @@ public class UnifiedDocumentContextExtractor {
                 confidence[field] = Float(overallConfidence * 0.8) // Slightly lower for undetected fields
             }
         }
-        
+
         return confidence
     }
-    
+
     private func parseAdvancedDate(_ dateString: String) -> Date? {
         let formatters = [
             "MM/dd/yyyy",
@@ -1065,9 +1070,9 @@ public class UnifiedDocumentContextExtractor {
             "MMMM dd, yyyy",
             "MMM dd, yyyy",
             "dd MMMM yyyy",
-            "dd MMM yyyy"
+            "dd MMM yyyy",
         ]
-        
+
         for format in formatters {
             let formatter = DateFormatter()
             formatter.dateFormat = format
@@ -1076,46 +1081,46 @@ public class UnifiedDocumentContextExtractor {
                 return date
             }
         }
-        
+
         return nil
     }
 }
 
 // MARK: - Supporting Types
 
-public struct ComprehensiveDocumentContext {
+public struct ComprehensiveDocumentContext: Sendable {
     public let extractedContext: ExtractedContext
     public let parsedDocuments: [ParsedDocument]
     public let adaptiveResults: [AdaptiveExtractionResult]
     public let confidence: Double
     public let extractionDate: Date
-    
+
     /// Check if we have sufficient context to proceed
     public var hasSufficientContext: Bool {
         confidence > 0.6 && !extractedContext.isEmpty
     }
-    
+
     /// Get a summary of what was extracted
     public var summary: String {
         var parts: [String] = []
-        
+
         if let vendor = extractedContext.vendorInfo?.name {
             parts.append("Vendor: \(vendor)")
         }
-        
+
         if let price = extractedContext.pricing?.totalPrice {
             parts.append("Price: $\(price)")
         }
-        
+
         if let date = extractedContext.dates?.deliveryDate {
             let formatter = DateFormatter()
             formatter.dateStyle = .medium
             parts.append("Delivery: \(formatter.string(from: date))")
         }
-        
+
         parts.append("Technical specs: \(extractedContext.technicalDetails.count)")
         parts.append("Confidence: \(Int(confidence * 100))%")
-        
+
         return parts.joined(separator: " | ")
     }
 }
@@ -1123,10 +1128,10 @@ public struct ComprehensiveDocumentContext {
 extension ExtractedContext {
     var isEmpty: Bool {
         vendorInfo == nil &&
-        pricing == nil &&
-        technicalDetails.isEmpty &&
-        dates == nil &&
-        specialTerms.isEmpty
+            pricing == nil &&
+            technicalDetails.isEmpty &&
+            dates == nil &&
+            specialTerms.isEmpty
     }
 }
 
@@ -1134,15 +1139,15 @@ public enum DocumentExtractionError: LocalizedError {
     case noDocumentsParsed
     case insufficientContext
     case extractionFailed(String)
-    
+
     public var errorDescription: String? {
         switch self {
         case .noDocumentsParsed:
-            return "No documents could be parsed successfully"
+            "No documents could be parsed successfully"
         case .insufficientContext:
-            return "Insufficient context extracted from documents"
-        case .extractionFailed(let reason):
-            return "Document extraction failed: \(reason)"
+            "Insufficient context extracted from documents"
+        case let .extractionFailed(reason):
+            "Document extraction failed: \(reason)"
         }
     }
 }

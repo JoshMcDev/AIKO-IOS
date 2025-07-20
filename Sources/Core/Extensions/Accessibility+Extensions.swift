@@ -1,6 +1,6 @@
-import SwiftUI
 import AppCore
 import ComposableArchitecture
+import SwiftUI
 
 // MARK: - Accessibility Extensions
 
@@ -64,9 +64,9 @@ enum HeaderLevel {
 // MARK: - Accessibility Announcements
 
 enum AccessibilityAnnouncement {
-    @Dependency(\.accessibilityService) private static var accessibilityService
-    
+    @MainActor
     static func announce(_ message: String, priority: AnnouncementPriority = .high) {
+        @Dependency(\.accessibilityService) var accessibilityService
         let servicePriority: AccessibilityAnnouncementPriority = priority == .high ? .high : .low
         accessibilityService.announceNotification(message, priority: servicePriority)
     }
@@ -184,13 +184,13 @@ struct VoiceOverDetector: ViewModifier {
                 }
         }
     }
-    
+
     private func voiceOverNotificationPublisher() -> NotificationCenter.Publisher {
         if accessibilityService.hasVoiceOverStatusNotifications() {
-            return NotificationCenter.default.publisher(for: accessibilityService.voiceOverStatusChangeNotificationName())
+            NotificationCenter.default.publisher(for: accessibilityService.voiceOverStatusChangeNotificationName())
         } else {
             // Platform doesn't have VoiceOver notifications, return a never-publishing publisher
-            return NotificationCenter.default.publisher(for: Notification.Name("com.aiko.never"))
+            NotificationCenter.default.publisher(for: Notification.Name("com.aiko.never"))
         }
     }
 }

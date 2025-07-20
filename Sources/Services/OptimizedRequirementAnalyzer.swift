@@ -1,20 +1,20 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import SwiftAnthropic
-import AppCore
+@preconcurrency import SwiftAnthropic
 
 /// Optimized RequirementAnalyzer with batching and enhanced caching
-public struct OptimizedRequirementAnalyzer {
-    public var analyzeRequirements: (String) async throws -> (response: String, recommendedDocuments: [DocumentType])
-    public var analyzeDocumentContent: (Data, String) async throws -> (response: String, recommendedDocuments: [DocumentType])
-    public var enhancePrompt: (String) async throws -> String
-    public var batchAnalyzeRequirements: ([String]) async throws -> [(response: String, recommendedDocuments: [DocumentType])]
+public struct OptimizedRequirementAnalyzer: Sendable {
+    public var analyzeRequirements: @Sendable (String) async throws -> (response: String, recommendedDocuments: [DocumentType])
+    public var analyzeDocumentContent: @Sendable (Data, String) async throws -> (response: String, recommendedDocuments: [DocumentType])
+    public var enhancePrompt: @Sendable (String) async throws -> String
+    public var batchAnalyzeRequirements: @Sendable ([String]) async throws -> [(response: String, recommendedDocuments: [DocumentType])]
 
     public init(
-        analyzeRequirements: @escaping (String) async throws -> (response: String, recommendedDocuments: [DocumentType]),
-        analyzeDocumentContent: @escaping (Data, String) async throws -> (response: String, recommendedDocuments: [DocumentType]),
-        enhancePrompt: @escaping (String) async throws -> String,
-        batchAnalyzeRequirements: @escaping ([String]) async throws -> [(response: String, recommendedDocuments: [DocumentType])]
+        analyzeRequirements: @escaping @Sendable (String) async throws -> (response: String, recommendedDocuments: [DocumentType]),
+        analyzeDocumentContent: @escaping @Sendable (Data, String) async throws -> (response: String, recommendedDocuments: [DocumentType]),
+        enhancePrompt: @escaping @Sendable (String) async throws -> String,
+        batchAnalyzeRequirements: @escaping @Sendable ([String]) async throws -> [(response: String, recommendedDocuments: [DocumentType])]
     ) {
         self.analyzeRequirements = analyzeRequirements
         self.analyzeDocumentContent = analyzeDocumentContent

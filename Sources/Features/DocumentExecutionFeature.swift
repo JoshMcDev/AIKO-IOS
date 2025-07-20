@@ -1,13 +1,13 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 import SwiftUI
 #if os(macOS)
     import AppKit
 #endif
 
 @Reducer
-public struct DocumentExecutionFeature {
+public struct DocumentExecutionFeature: Sendable {
     @ObservableState
     public struct State: Equatable {
         public var isExecuting: Bool = false
@@ -93,7 +93,7 @@ public struct DocumentExecutionFeature {
                     state.showingFARUpdatesView = true
                     return .none
                 }
-                
+
                 state.executingCategory = category
                 state.executingDocumentTypes = documentTypes
                 state.executingDFDocumentTypes = dfDocumentTypes
@@ -113,7 +113,7 @@ public struct DocumentExecutionFeature {
                             await send(.informationCheckCompleted(true, []))
                             return
                         }
-                        
+
                         // Simulate checking if we have enough information
                         // In real implementation, this would call the LLM to check
                         try await clock.sleep(for: .seconds(1))
@@ -289,14 +289,16 @@ public struct DocumentExecutionFeature {
                     }
                 #else
                     // On macOS, use NSSavePanel
-                    let savePanel = NSSavePanel()
-                    savePanel.allowedContentTypes = [.rtf]
-                    savePanel.nameFieldStringValue = fileName
-                    savePanel.begin { result in
-                        if result == .OK, let url = savePanel.url {
-                            let (rtfString, _) = RTFFormatter.convertToRTF(document.content)
-                            if let rtfData = rtfString.data(using: .utf8) {
-                                try? rtfData.write(to: url)
+                    Task { @MainActor in
+                        let savePanel = NSSavePanel()
+                        savePanel.allowedContentTypes = [.rtf]
+                        savePanel.nameFieldStringValue = fileName
+                        savePanel.begin { result in
+                            if result == .OK, let url = savePanel.url {
+                                let (rtfString, _) = RTFFormatter.convertToRTF(document.content)
+                                if let rtfData = rtfString.data(using: .utf8) {
+                                    try? rtfData.write(to: url)
+                                }
                             }
                         }
                     }

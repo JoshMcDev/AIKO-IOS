@@ -1,41 +1,33 @@
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 /// Adaptive intelligence adapter for government forms
 /// Integrates forms with the learning loop and requirement analysis system
-public struct FormIntelligenceAdapter {
-    
+public actor FormIntelligenceAdapter {
     // MARK: - Dependencies
-    
-    public var learningLoop: LearningLoop
-    public var requirementAnalyzer: RequirementAnalyzer
-    public var formService: GovernmentFormService
-    public var patternTracker: UserPatternTracker
-    
-    // MARK: - Core Functions
-    
-    /// Analyze requirements and recommend appropriate forms
-    public var recommendForms: (String, AcquisitionAggregate) async throws -> FormRecommendation
-    
-    /// Auto-fill form based on learned patterns and historical data
-    public var autoFillForm: (String, FormData, AcquisitionAggregate) async throws -> FormData
-    
-    /// Provide intelligent guidance for form completion
-    public var provideFormGuidance: (String, FormSection) async throws -> FormGuidance
-    
-    /// Learn from form submission patterns
-    public var learnFromSubmission: (GovernmentFormData, SubmissionOutcome) async throws -> Void
-    
-    /// Generate form insights based on usage patterns
-    public var generateFormInsights: () async throws -> [FormInsight]
-    
+
+    private let learningLoop: LearningLoop
+    private let requirementAnalyzer: RequirementAnalyzer
+    private let formService: GovernmentFormService
+    private let patternTracker: UserPatternTracker
+    private let coreDataActor: CoreDataActor
+
+    // MARK: - Private closures for functionality
+
+    private let recommendFormsImpl: (String, AcquisitionAggregate) async throws -> FormRecommendation
+    private let autoFillFormImpl: (String, FormData, AcquisitionAggregate) async throws -> FormData
+    private let provideFormGuidanceImpl: (String, FormSection) async throws -> FormGuidance
+    private let learnFromSubmissionImpl: (GovernmentFormData, SubmissionOutcome) async throws -> Void
+    private let generateFormInsightsImpl: () async throws -> [FormInsight]
+
     // MARK: - Initialization
-    
+
     public init(
         learningLoop: LearningLoop,
         requirementAnalyzer: RequirementAnalyzer,
         formService: GovernmentFormService,
         patternTracker: UserPatternTracker,
+        coreDataActor: CoreDataActor,
         recommendForms: @escaping (String, AcquisitionAggregate) async throws -> FormRecommendation,
         autoFillForm: @escaping (String, FormData, AcquisitionAggregate) async throws -> FormData,
         provideFormGuidance: @escaping (String, FormSection) async throws -> FormGuidance,
@@ -46,23 +38,51 @@ public struct FormIntelligenceAdapter {
         self.requirementAnalyzer = requirementAnalyzer
         self.formService = formService
         self.patternTracker = patternTracker
-        self.recommendForms = recommendForms
-        self.autoFillForm = autoFillForm
-        self.provideFormGuidance = provideFormGuidance
-        self.learnFromSubmission = learnFromSubmission
-        self.generateFormInsights = generateFormInsights
+        self.coreDataActor = coreDataActor
+        recommendFormsImpl = recommendForms
+        autoFillFormImpl = autoFillForm
+        provideFormGuidanceImpl = provideFormGuidance
+        learnFromSubmissionImpl = learnFromSubmission
+        generateFormInsightsImpl = generateFormInsights
+    }
+
+    // MARK: - Public Actor Methods
+
+    /// Analyze requirements and recommend appropriate forms
+    public func recommendForms(_ requirements: String, _ acquisition: AcquisitionAggregate) async throws -> FormRecommendation {
+        try await recommendFormsImpl(requirements, acquisition)
+    }
+
+    /// Auto-fill form based on learned patterns and historical data
+    public func autoFillForm(_ formType: String, _ baseData: FormData, _ acquisition: AcquisitionAggregate) async throws -> FormData {
+        try await autoFillFormImpl(formType, baseData, acquisition)
+    }
+
+    /// Provide intelligent guidance for form completion
+    public func provideFormGuidance(_ formType: String, _ section: FormSection) async throws -> FormGuidance {
+        try await provideFormGuidanceImpl(formType, section)
+    }
+
+    /// Learn from form submission patterns
+    public func learnFromSubmission(_ formData: GovernmentFormData, _ outcome: SubmissionOutcome) async throws {
+        try await learnFromSubmissionImpl(formData, outcome)
+    }
+
+    /// Generate form insights based on usage patterns
+    public func generateFormInsights() async throws -> [FormInsight] {
+        try await generateFormInsightsImpl()
     }
 }
 
 // MARK: - Form Recommendation
 
-public struct FormRecommendation: Equatable {
+public struct FormRecommendation: Equatable, Sendable {
     public let primaryForm: RecommendedForm
     public let supplementaryForms: [RecommendedForm]
     public let reasoning: String
     public let confidence: Double
-    
-    public struct RecommendedForm: Equatable {
+
+    public struct RecommendedForm: Equatable, Sendable {
         public let formType: String
         public let formNumber: String
         public let title: String
@@ -74,34 +94,34 @@ public struct FormRecommendation: Equatable {
 
 // MARK: - Form Guidance
 
-public struct FormGuidance: Equatable {
+public struct FormGuidance: Equatable, Sendable {
     public let sectionName: String
     public let fieldGuidance: [FieldGuidance]
     public let tips: [String]
     public let warnings: [ComplianceWarning]
     public let references: [FARReference]
-    
-    public struct FieldGuidance: Equatable {
+
+    public struct FieldGuidance: Equatable, Sendable {
         public let fieldName: String
         public let description: String
         public let example: String?
         public let validation: String?
         public let autofillAvailable: Bool
     }
-    
-    public struct ComplianceWarning: Equatable {
+
+    public struct ComplianceWarning: Equatable, Sendable {
         public let severity: Severity
         public let message: String
         public let farReference: String?
-        
-        public enum Severity: String, Equatable {
+
+        public enum Severity: String, Equatable, Sendable {
             case info
             case warning
             case error
         }
     }
-    
-    public struct FARReference: Equatable {
+
+    public struct FARReference: Equatable, Sendable {
         public let clause: String
         public let title: String
         public let relevance: String
@@ -110,7 +130,7 @@ public struct FormGuidance: Equatable {
 
 // MARK: - Form Section
 
-public enum FormSection: String, Equatable {
+public enum FormSection: String, Equatable, Sendable {
     case contractInformation = "Contract Information"
     case vendorInformation = "Vendor Information"
     case suppliesServices = "Supplies/Services"
@@ -123,20 +143,20 @@ public enum FormSection: String, Equatable {
 
 // MARK: - Submission Outcome
 
-public struct SubmissionOutcome: Equatable {
+public struct SubmissionOutcome: Equatable, Sendable {
     public let success: Bool
     public let processingTime: TimeInterval
     public let validationErrors: [ValidationError]
     public let userCorrections: [FieldCorrection]
     public let finalValues: [String: String] // Changed from Any to String for Equatable conformance
-    
-    public struct ValidationError: Equatable {
+
+    public struct ValidationError: Equatable, Sendable {
         public let fieldName: String
         public let errorType: String
         public let message: String
     }
-    
-    public struct FieldCorrection: Equatable {
+
+    public struct FieldCorrection: Equatable, Sendable {
         public let fieldName: String
         public let originalValue: String
         public let correctedValue: String
@@ -146,7 +166,7 @@ public struct SubmissionOutcome: Equatable {
 
 // MARK: - Form Insights
 
-public struct FormInsight: Equatable {
+public struct FormInsight: Equatable, Sendable {
     public let id: UUID
     public let formType: String
     public let insightType: InsightType
@@ -155,8 +175,8 @@ public struct FormInsight: Equatable {
     public let impact: Impact
     public let recommendations: [String]
     public let dataPoints: [DataPoint]
-    
-    public enum InsightType: String, Equatable {
+
+    public enum InsightType: String, Equatable, Sendable {
         case usagePattern = "Usage Pattern"
         case completionRate = "Completion Rate"
         case commonErrors = "Common Errors"
@@ -164,14 +184,14 @@ public struct FormInsight: Equatable {
         case fieldAccuracy = "Field Accuracy"
         case automationOpportunity = "Automation Opportunity"
     }
-    
-    public enum Impact: String, Equatable {
+
+    public enum Impact: String, Equatable, Sendable {
         case high
         case medium
         case low
     }
-    
-    public struct DataPoint: Equatable {
+
+    public struct DataPoint: Equatable, Sendable {
         public let label: String
         public let value: Double
         public let unit: String?
@@ -181,27 +201,30 @@ public struct FormInsight: Equatable {
 // MARK: - Live Implementation
 
 extension FormIntelligenceAdapter: DependencyKey {
-    public static var liveValue: FormIntelligenceAdapter {
+    public nonisolated static var liveValue: FormIntelligenceAdapter {
         let learningLoop = LearningLoop.liveValue
         let requirementAnalyzer = RequirementAnalyzer.liveValue
-        let formService = GovernmentFormService(context: CoreDataStack.shared.viewContext)
+        let coreDataActor = CoreDataStack.shared.actor
+        let formService = GovernmentFormService(context: coreDataActor)
         let patternTracker = UserPatternTracker.liveValue
-        
+
         return FormIntelligenceAdapter(
             learningLoop: learningLoop,
             requirementAnalyzer: requirementAnalyzer,
             formService: formService,
             patternTracker: patternTracker,
+            coreDataActor: coreDataActor,
             recommendForms: { requirements, acquisition in
                 // Analyze requirements to determine form needs
                 let analysis = try await requirementAnalyzer.analyzeRequirements(requirements)
-                
+
                 // Map document recommendations to form types
                 var recommendedForms: [FormRecommendation.RecommendedForm] = []
-                
+
                 // Check for commercial acquisition
-                if analysis.response.contains("commercial") || 
-                   analysis.response.contains("FAR Part 12") {
+                if analysis.response.contains("commercial") ||
+                    analysis.response.contains("FAR Part 12")
+                {
                     recommendedForms.append(.init(
                         formType: GovernmentFormData.FormType.sf1449,
                         formNumber: "SF 1449",
@@ -211,10 +234,11 @@ extension FormIntelligenceAdapter: DependencyKey {
                         estimatedCompletionTime: 1800 // 30 minutes
                     ))
                 }
-                
+
                 // Check for simplified acquisition
-                if analysis.response.contains("simplified acquisition") || 
-                   analysis.response.contains("FAR Part 13") {
+                if analysis.response.contains("simplified acquisition") ||
+                    analysis.response.contains("FAR Part 13")
+                {
                     recommendedForms.append(.init(
                         formType: GovernmentFormData.FormType.sf18,
                         formNumber: "SF 18",
@@ -224,10 +248,11 @@ extension FormIntelligenceAdapter: DependencyKey {
                         estimatedCompletionTime: 900 // 15 minutes
                     ))
                 }
-                
+
                 // Check for contract modification needs
-                if (acquisition.status == .inProgress || acquisition.status == .underReview) && 
-                   (requirements.contains("modification") || requirements.contains("change")) {
+                if acquisition.status == .inProgress || acquisition.status == .underReview,
+                   requirements.contains("modification") || requirements.contains("change")
+                {
                     recommendedForms.append(.init(
                         formType: GovernmentFormData.FormType.sf30,
                         formNumber: "SF 30",
@@ -237,7 +262,7 @@ extension FormIntelligenceAdapter: DependencyKey {
                         estimatedCompletionTime: 1200 // 20 minutes
                     ))
                 }
-                
+
                 // Default to SF1449 if no specific form identified
                 if recommendedForms.isEmpty {
                     recommendedForms.append(.init(
@@ -249,7 +274,7 @@ extension FormIntelligenceAdapter: DependencyKey {
                         estimatedCompletionTime: 1800
                     ))
                 }
-                
+
                 // Record the recommendation event
                 await learningLoop.recordEvent(LearningEvent(
                     eventType: .documentSelected,
@@ -261,7 +286,7 @@ extension FormIntelligenceAdapter: DependencyKey {
                         systemData: ["form_count": String(recommendedForms.count)]
                     )
                 ))
-                
+
                 return FormRecommendation(
                     primaryForm: recommendedForms.first!,
                     supplementaryForms: Array(recommendedForms.dropFirst()),
@@ -272,42 +297,41 @@ extension FormIntelligenceAdapter: DependencyKey {
             autoFillForm: { formType, baseData, acquisition in
                 // Get user patterns
                 let patterns = await patternTracker.getPatterns()
-                
+
                 var updatedFields = baseData.fields
-                
+
                 // Auto-fill from acquisition data
                 if let projectNumber = acquisition.projectNumber {
                     updatedFields["projectNumber"] = projectNumber
                     updatedFields["requisitionNumber"] = "REQ-\(projectNumber)"
                 }
-                
+
                 updatedFields["title"] = acquisition.title
                 updatedFields["requirements"] = acquisition.requirements
                 updatedFields["acquisitionId"] = acquisition.id.uuidString
-                
+
                 // Apply preferred values from patterns
                 for (fieldName, commonValues) in patterns.preferredValues {
                     if updatedFields[fieldName] == nil, let preferredValue = commonValues.first {
                         updatedFields[fieldName] = preferredValue
                     }
                 }
-                
+
                 // Get similar past forms
                 let similarForms = try await formService.getForms(ofType: formType)
                     .prefix(5) // Last 5 forms
-                
+
                 // Apply common values from past forms
                 for form in similarForms {
-                    if let decodedForm = try? form.decodeForm([String: String].self) {
-                        // Copy commonly reused fields
-                        for field in ["contractingOfficer", "issuingOffice", "paymentTerms"] {
-                            if let value = decodedForm[field], updatedFields[field] == nil {
-                                updatedFields[field] = value
-                            }
+                    let decodedForm = form.fields
+                    // Copy commonly reused fields
+                    for field in ["contractingOfficer", "issuingOffice", "paymentTerms"] {
+                        if let value = decodedForm[field], updatedFields[field] == nil {
+                            updatedFields[field] = value
                         }
                     }
                 }
-                
+
                 // Record auto-fill event
                 await learningLoop.recordEvent(LearningEvent(
                     eventType: .dataExtracted,
@@ -319,7 +343,7 @@ extension FormIntelligenceAdapter: DependencyKey {
                         systemData: ["fields_filled": String(updatedFields.count)]
                     )
                 ))
-                
+
                 return FormData(
                     formNumber: baseData.formNumber,
                     revision: baseData.revision,
@@ -333,7 +357,7 @@ extension FormIntelligenceAdapter: DependencyKey {
                 var tips: [String] = []
                 var warnings: [FormGuidance.ComplianceWarning] = []
                 var references: [FormGuidance.FARReference] = []
-                
+
                 // Form-specific guidance
                 switch formType {
                 case GovernmentFormData.FormType.sf1449:
@@ -352,7 +376,7 @@ extension FormIntelligenceAdapter: DependencyKey {
                             title: "Contract Numbering",
                             relevance: "Defines PIID requirements"
                         ))
-                        
+
                     case .vendorInformation:
                         fieldGuidance.append(.init(
                             fieldName: "cageCode",
@@ -366,11 +390,11 @@ extension FormIntelligenceAdapter: DependencyKey {
                             message: "Verify vendor is active in SAM.gov",
                             farReference: "FAR 4.1102"
                         ))
-                        
+
                     default:
                         break
                     }
-                    
+
                 case GovernmentFormData.FormType.sf30:
                     tips.append("Clearly describe all changes being made")
                     tips.append("Include justification for the modification")
@@ -379,11 +403,11 @@ extension FormIntelligenceAdapter: DependencyKey {
                         message: "Bilateral modifications require contractor signature",
                         farReference: "FAR 43.103"
                     ))
-                    
+
                 default:
                     tips.append("Complete all required fields before submission")
                 }
-                
+
                 return FormGuidance(
                     sectionName: section.rawValue,
                     fieldGuidance: fieldGuidance,
@@ -403,12 +427,12 @@ extension FormIntelligenceAdapter: DependencyKey {
                         userData: [:],
                         systemData: [
                             "processing_time": String(outcome.processingTime),
-                            "error_count": String(outcome.validationErrors.count)
+                            "error_count": String(outcome.validationErrors.count),
                         ]
                     ),
                     outcome: outcome.success ? .success : .failure
                 ))
-                
+
                 // Learn from corrections
                 for _ in outcome.userCorrections {
                     await patternTracker.trackAction(TrackedAction(
@@ -423,7 +447,7 @@ extension FormIntelligenceAdapter: DependencyKey {
                         )
                     ))
                 }
-                
+
                 // Track form completion outcome
                 await patternTracker.learnFromOutcome(ActionOutcome(
                     actionId: UUID(),
@@ -434,7 +458,7 @@ extension FormIntelligenceAdapter: DependencyKey {
             },
             generateFormInsights: {
                 var insights: [FormInsight] = []
-                
+
                 // Analyze form usage patterns
                 let formTypes = [
                     GovernmentFormData.FormType.sf1449,
@@ -443,23 +467,23 @@ extension FormIntelligenceAdapter: DependencyKey {
                     GovernmentFormData.FormType.sf18,
                     GovernmentFormData.FormType.sf26,
                     GovernmentFormData.FormType.sf44,
-                    GovernmentFormData.FormType.dd1155
+                    GovernmentFormData.FormType.dd1155,
                 ]
-                
+
                 // Get user patterns for analysis
                 let userPatterns = await patternTracker.getPatterns()
-                
+
                 // Analyze form usage based on document sequences
                 for formType in formTypes {
                     // Find sequences containing this form type
                     let formSequences = userPatterns.documentSequences.filter { seq in
                         seq.documents.contains(formType)
                     }
-                    
+
                     if !formSequences.isEmpty {
                         let totalFrequency = formSequences.reduce(0) { $0 + $1.frequency }
                         let avgSuccessRate = formSequences.reduce(0.0) { $0 + $1.successRate } / Double(formSequences.count)
-                        
+
                         insights.append(FormInsight(
                             id: UUID(),
                             formType: formType,
@@ -469,15 +493,15 @@ extension FormIntelligenceAdapter: DependencyKey {
                             impact: totalFrequency > 10 ? .high : .medium,
                             recommendations: [
                                 "Consider creating templates for common scenarios",
-                                "Review auto-fill accuracy for frequently used fields"
+                                "Review auto-fill accuracy for frequently used fields",
                             ],
                             dataPoints: [
                                 .init(label: "Pattern Frequency", value: Double(totalFrequency), unit: "occurrences"),
-                                .init(label: "Success Rate", value: avgSuccessRate * 100, unit: "%")
+                                .init(label: "Success Rate", value: avgSuccessRate * 100, unit: "%"),
                             ]
                         ))
                     }
-                    
+
                     // Add time-to-complete insights if available
                     if let avgTime = userPatterns.averageTimePerDocument[formType] {
                         insights.append(FormInsight(
@@ -489,20 +513,20 @@ extension FormIntelligenceAdapter: DependencyKey {
                             impact: avgTime > 1800 ? .high : .low,
                             recommendations: avgTime > 1800 ? [
                                 "Consider breaking complex sections into steps",
-                                "Provide more auto-fill options"
+                                "Provide more auto-fill options",
                             ] : [
-                                "Current completion time is optimal"
+                                "Current completion time is optimal",
                             ],
                             dataPoints: [
-                                .init(label: "Average Time", value: avgTime / 60, unit: "minutes")
+                                .init(label: "Average Time", value: avgTime / 60, unit: "minutes"),
                             ]
                         ))
                     }
                 }
-                
+
                 // Process insights through learning loop
                 let processingResult = try await learningLoop.processQueue()
-                
+
                 // Add any system-generated insights
                 for learning in processingResult.learningsGenerated {
                     if learning.type == .automationOpportunity {
@@ -516,12 +540,12 @@ extension FormIntelligenceAdapter: DependencyKey {
                             recommendations: [learning.recommendation.action],
                             dataPoints: [
                                 .init(label: "Confidence", value: learning.confidence * 100, unit: "%"),
-                                .init(label: "Impact", value: learning.recommendation.impact == .high ? 100 : learning.recommendation.impact == .medium ? 50 : 25, unit: "score")
+                                .init(label: "Impact", value: learning.recommendation.impact == .high ? 100 : learning.recommendation.impact == .medium ? 50 : 25, unit: "score"),
                             ]
                         ))
                     }
                 }
-                
+
                 return insights
             }
         )
@@ -530,8 +554,8 @@ extension FormIntelligenceAdapter: DependencyKey {
 
 // MARK: - Dependency Values
 
-extension DependencyValues {
-    public var formIntelligenceAdapter: FormIntelligenceAdapter {
+public extension DependencyValues {
+    var formIntelligenceAdapter: FormIntelligenceAdapter {
         get { self[FormIntelligenceAdapter.self] }
         set { self[FormIntelligenceAdapter.self] = newValue }
     }

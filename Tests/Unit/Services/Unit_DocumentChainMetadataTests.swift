@@ -27,7 +27,7 @@ final class DocumentChainMetadataTests: XCTestCase {
         var metrics = TestMetrics()
 
         // Create test acquisition
-        let acquisition = Acquisition(context: context)
+        let acquisition = CoreDataAcquisition(context: context)
         acquisition.id = UUID()
         acquisition.title = "Test Acquisition"
         acquisition.createdDate = Date()
@@ -174,7 +174,7 @@ final class DocumentChainMetadataTests: XCTestCase {
     func testLargeChainPerformance() async throws {
         var metrics = TestMetrics()
 
-        let acquisition = Acquisition(context: context)
+        let acquisition = CoreDataAcquisition(context: context)
         acquisition.id = UUID()
         acquisition.title = "Performance Test"
 

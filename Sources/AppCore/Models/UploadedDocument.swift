@@ -1,6 +1,6 @@
 import Foundation
 
-public struct UploadedDocument: Equatable, Identifiable {
+public struct UploadedDocument: Equatable, Identifiable, Sendable {
     public let id = UUID()
     public let fileName: String
     public let data: Data

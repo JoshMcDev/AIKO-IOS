@@ -1,37 +1,37 @@
+import AppCore
 import ComposableArchitecture
 import CoreData
 import Foundation
-import AppCore
 
-public struct WorkflowEngine {
-    public var startWorkflow: (UUID) async throws -> WorkflowContext
-    public var loadWorkflow: (UUID) async throws -> WorkflowContext
-    public var updateWorkflowState: (UUID, WorkflowState) async throws -> WorkflowContext
-    public var recordWorkflowStep: (UUID, WorkflowStep) async throws -> Void
-    public var collectData: (UUID, CollectedData) async throws -> Void
-    public var generatePrompts: (WorkflowContext) async throws -> [SuggestedPrompt]
-    public var processLLMResponse: (UUID, String, CollectedData) async throws -> WorkflowContext
-    public var requestApproval: (UUID, WorkflowStep) async throws -> Void
-    public var processApproval: (UUID, UUID, ApprovalStatus) async throws -> WorkflowContext
-    public var getNextSteps: (WorkflowContext) -> [WorkflowState]
-    public var shouldAutomate: (WorkflowContext, WorkflowState) -> Bool
-    public var extractDataFromDocument: (GeneratedDocument) async throws -> CollectedData
-    public var buildDocumentContext: (UUID, DocumentType) async throws -> DocumentGenerationContext
+public struct WorkflowEngine: Sendable {
+    public var startWorkflow: @Sendable (UUID) async throws -> WorkflowContext
+    public var loadWorkflow: @Sendable (UUID) async throws -> WorkflowContext
+    public var updateWorkflowState: @Sendable (UUID, WorkflowState) async throws -> WorkflowContext
+    public var recordWorkflowStep: @Sendable (UUID, WorkflowStep) async throws -> Void
+    public var collectData: @Sendable (UUID, CollectedData) async throws -> Void
+    public var generatePrompts: @Sendable (WorkflowContext) async throws -> [SuggestedPrompt]
+    public var processLLMResponse: @Sendable (UUID, String, CollectedData) async throws -> WorkflowContext
+    public var requestApproval: @Sendable (UUID, WorkflowStep) async throws -> Void
+    public var processApproval: @Sendable (UUID, UUID, ApprovalStatus) async throws -> WorkflowContext
+    public var getNextSteps: @Sendable (WorkflowContext) -> [WorkflowState]
+    public var shouldAutomate: @Sendable (WorkflowContext, WorkflowState) -> Bool
+    public var extractDataFromDocument: @Sendable (GeneratedDocument) async throws -> CollectedData
+    public var buildDocumentContext: @Sendable (UUID, DocumentType) async throws -> DocumentGenerationContext
 
     public init(
-        startWorkflow: @escaping (UUID) async throws -> WorkflowContext,
-        loadWorkflow: @escaping (UUID) async throws -> WorkflowContext,
-        updateWorkflowState: @escaping (UUID, WorkflowState) async throws -> WorkflowContext,
-        recordWorkflowStep: @escaping (UUID, WorkflowStep) async throws -> Void,
-        collectData: @escaping (UUID, CollectedData) async throws -> Void,
-        generatePrompts: @escaping (WorkflowContext) async throws -> [SuggestedPrompt],
-        processLLMResponse: @escaping (UUID, String, CollectedData) async throws -> WorkflowContext,
-        requestApproval: @escaping (UUID, WorkflowStep) async throws -> Void,
-        processApproval: @escaping (UUID, UUID, ApprovalStatus) async throws -> WorkflowContext,
-        getNextSteps: @escaping (WorkflowContext) -> [WorkflowState],
-        shouldAutomate: @escaping (WorkflowContext, WorkflowState) -> Bool,
-        extractDataFromDocument: @escaping (GeneratedDocument) async throws -> CollectedData,
-        buildDocumentContext: @escaping (UUID, DocumentType) async throws -> DocumentGenerationContext
+        startWorkflow: @escaping @Sendable (UUID) async throws -> WorkflowContext,
+        loadWorkflow: @escaping @Sendable (UUID) async throws -> WorkflowContext,
+        updateWorkflowState: @escaping @Sendable (UUID, WorkflowState) async throws -> WorkflowContext,
+        recordWorkflowStep: @escaping @Sendable (UUID, WorkflowStep) async throws -> Void,
+        collectData: @escaping @Sendable (UUID, CollectedData) async throws -> Void,
+        generatePrompts: @escaping @Sendable (WorkflowContext) async throws -> [SuggestedPrompt],
+        processLLMResponse: @escaping @Sendable (UUID, String, CollectedData) async throws -> WorkflowContext,
+        requestApproval: @escaping @Sendable (UUID, WorkflowStep) async throws -> Void,
+        processApproval: @escaping @Sendable (UUID, UUID, ApprovalStatus) async throws -> WorkflowContext,
+        getNextSteps: @escaping @Sendable (WorkflowContext) -> [WorkflowState],
+        shouldAutomate: @escaping @Sendable (WorkflowContext, WorkflowState) -> Bool,
+        extractDataFromDocument: @escaping @Sendable (GeneratedDocument) async throws -> CollectedData,
+        buildDocumentContext: @escaping @Sendable (UUID, DocumentType) async throws -> DocumentGenerationContext
     ) {
         self.startWorkflow = startWorkflow
         self.loadWorkflow = loadWorkflow
@@ -396,7 +396,7 @@ private func loadWorkflowContext(for _: UUID) async throws -> WorkflowContext {
     throw WorkflowError.notImplemented
 }
 
-private func loadWorkflowData(from _: Acquisition) async throws -> (currentState: WorkflowState, steps: [WorkflowStep], automationSettings: AutomationSettings, collectedData: CollectedData, pendingApprovals: [WorkflowStep]) {
+private func loadWorkflowData(from _: AppCore.Acquisition) async throws -> (currentState: WorkflowState, steps: [WorkflowStep], automationSettings: AutomationSettings, collectedData: CollectedData, pendingApprovals: [WorkflowStep]) {
     // Extract workflow data from Core Data
     throw WorkflowError.notImplemented
 }
@@ -445,7 +445,7 @@ private func fetchPreviousDocuments(for _: UUID) async throws -> [GeneratedDocum
     []
 }
 
-private func extractAcquisitionData(from _: Acquisition?) async throws -> CollectedData {
+private func extractAcquisitionData(from _: AppCore.Acquisition?) async throws -> CollectedData {
     // Extract data from acquisition entity
     CollectedData()
 }

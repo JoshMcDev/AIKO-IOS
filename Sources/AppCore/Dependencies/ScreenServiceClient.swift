@@ -1,6 +1,6 @@
 import ComposableArchitecture
-import Foundation
 import CoreGraphics
+import Foundation
 
 @DependencyClient
 public struct ScreenServiceClient: Sendable {
@@ -22,8 +22,8 @@ extension ScreenServiceClient: TestDependencyKey {
     )
 }
 
-extension DependencyValues {
-    public var screenService: ScreenServiceClient {
+public extension DependencyValues {
+    var screenService: ScreenServiceClient {
         get { self[ScreenServiceClient.self] }
         set { self[ScreenServiceClient.self] = newValue }
     }

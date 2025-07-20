@@ -205,21 +205,21 @@ final class NavigationFeatureTests: XCTestCase {
 
 final class AppViewTests: XCTestCase {
     func testAllCasesHaveIcons() {
-        for view in AppView.allCases {
+        for view in NavigationView.allCases {
             XCTAssertFalse(view.iconName.isEmpty, "AppView case \(view) should have an icon")
         }
     }
 
     func testIconNames() {
-        XCTAssertEqual(AppView.home.iconName, "house")
-        XCTAssertEqual(AppView.profile.iconName, "person.circle")
-        XCTAssertEqual(AppView.myAcquisitions.iconName, "doc.text")
-        XCTAssertEqual(AppView.searchTemplates.iconName, "magnifyingglass")
-        XCTAssertEqual(AppView.userGuide.iconName, "book")
-        XCTAssertEqual(AppView.settings.iconName, "gear")
-        XCTAssertEqual(AppView.samGovLookup.iconName, "building.2")
-        XCTAssertEqual(AppView.acquisitionChat.iconName, "message")
-        XCTAssertEqual(AppView.loading.iconName, "hourglass")
+        XCTAssertEqual(NavigationView.home.iconName, "house")
+        XCTAssertEqual(NavigationView.profile.iconName, "person.circle")
+        XCTAssertEqual(NavigationView.myAcquisitions.iconName, "doc.text")
+        XCTAssertEqual(NavigationView.searchTemplates.iconName, "magnifyingglass")
+        XCTAssertEqual(NavigationView.userGuide.iconName, "book")
+        XCTAssertEqual(NavigationView.settings.iconName, "gear")
+        XCTAssertEqual(NavigationView.samGovLookup.iconName, "building.2")
+        XCTAssertEqual(NavigationView.acquisitionChat.iconName, "message")
+        XCTAssertEqual(NavigationView.loading.iconName, "hourglass")
     }
 }
 

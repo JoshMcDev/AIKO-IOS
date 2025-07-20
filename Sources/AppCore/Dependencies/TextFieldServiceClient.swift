@@ -12,8 +12,8 @@ extension TextFieldServiceClient: TestDependencyKey {
     public static let testValue = Self()
 }
 
-extension DependencyValues {
-    public var textFieldService: TextFieldServiceClient {
+public extension DependencyValues {
+    var textFieldService: TextFieldServiceClient {
         get { self[TextFieldServiceClient.self] }
         set { self[TextFieldServiceClient.self] = newValue }
     }

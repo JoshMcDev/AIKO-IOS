@@ -1,12 +1,11 @@
-import Foundation
-import ComposableArchitecture
 import AppCore
+import ComposableArchitecture
+import Foundation
 
 /// Performance monitoring system for document generation
 public actor DocumentGenerationPerformanceMonitor {
-    
     // MARK: - Performance Metrics
-    
+
     public struct GenerationMetrics {
         public let documentType: String
         public let cacheHit: Bool
@@ -16,13 +15,13 @@ public actor DocumentGenerationPerformanceMonitor {
         public let templateLoadDuration: TimeInterval
         public let spellCheckDuration: TimeInterval
         public let timestamp: Date
-        
+
         public var speedImprovement: Double? {
             guard let apiDuration = apiCallDuration, apiDuration > 0 else { return nil }
             return (apiDuration - totalDuration) / apiDuration
         }
     }
-    
+
     public struct BatchMetrics {
         public let batchSize: Int
         public let totalDuration: TimeInterval
@@ -31,7 +30,7 @@ public actor DocumentGenerationPerformanceMonitor {
         public let speedup: Double
         public let timestamp: Date
     }
-    
+
     public struct SessionMetrics {
         public let sessionId: String
         public let startTime: Date
@@ -44,26 +43,27 @@ public actor DocumentGenerationPerformanceMonitor {
         public var averageGenerationTime: TimeInterval {
             totalDocumentsGenerated > 0 ? totalProcessingTime / Double(totalDocumentsGenerated) : 0
         }
+
         public var cacheHitRate: Double {
             let total = cacheHits + cacheMisses
             return total > 0 ? Double(cacheHits) / Double(total) : 0
         }
     }
-    
+
     // MARK: - Storage
-    
+
     private var currentSession: SessionMetrics?
     private var generationMetrics: [GenerationMetrics] = []
     private var batchMetrics: [BatchMetrics] = []
     private let maxStoredMetrics = 1000
-    
+
     // Performance thresholds
     private let targetGenerationTime: TimeInterval = 3.0 // 3 seconds per document
     private let targetCacheHitRate: Double = 0.7 // 70% cache hit rate
     private let targetSpeedup: Double = 4.2 // 4.2x speedup target
-    
+
     // MARK: - Session Management
-    
+
     public func startSession() -> String {
         let sessionId = UUID().uuidString
         currentSession = SessionMetrics(
@@ -72,13 +72,13 @@ public actor DocumentGenerationPerformanceMonitor {
         )
         return sessionId
     }
-    
+
     public func endSession() {
         currentSession?.endTime = Date()
     }
-    
+
     // MARK: - Metric Recording
-    
+
     public func recordGeneration(
         documentType: String,
         cacheHit: Bool,
@@ -100,14 +100,14 @@ public actor DocumentGenerationPerformanceMonitor {
             spellCheckDuration: durations.spellCheck,
             timestamp: Date()
         )
-        
+
         generationMetrics.append(metric)
-        
+
         // Update session metrics
         if currentSession != nil {
             currentSession!.totalDocumentsGenerated += 1
             currentSession!.totalProcessingTime += durations.total
-            
+
             if cacheHit {
                 currentSession!.cacheHits += 1
             } else {
@@ -117,13 +117,13 @@ public actor DocumentGenerationPerformanceMonitor {
                 }
             }
         }
-        
+
         // Maintain size limit
         if generationMetrics.count > maxStoredMetrics {
             generationMetrics.removeFirst()
         }
     }
-    
+
     public func recordBatch(
         size: Int,
         totalDuration: TimeInterval,
@@ -131,7 +131,7 @@ public actor DocumentGenerationPerformanceMonitor {
     ) {
         let sequentialEstimate = Double(size) * targetGenerationTime
         let speedup = sequentialEstimate / totalDuration
-        
+
         let metric = BatchMetrics(
             batchSize: size,
             totalDuration: totalDuration,
@@ -140,34 +140,34 @@ public actor DocumentGenerationPerformanceMonitor {
             speedup: speedup,
             timestamp: Date()
         )
-        
+
         batchMetrics.append(metric)
-        
+
         // Maintain size limit
         if batchMetrics.count > maxStoredMetrics {
             batchMetrics.removeFirst()
         }
     }
-    
+
     // MARK: - Performance Analysis
-    
+
     public func getPerformanceReport() -> PerformanceReport {
         let recentMetrics = generationMetrics.suffix(100)
         let recentBatches = batchMetrics.suffix(20)
-        
+
         // Calculate averages
         let avgGenerationTime = recentMetrics.reduce(0.0) { $0 + $1.totalDuration } / Double(recentMetrics.count)
-        let avgCacheHitRate = Double(recentMetrics.filter { $0.cacheHit }.count) / Double(recentMetrics.count)
+        let avgCacheHitRate = Double(recentMetrics.filter(\.cacheHit).count) / Double(recentMetrics.count)
         let avgSpeedup = recentBatches.reduce(0.0) { $0 + $1.speedup } / Double(recentBatches.count)
-        
+
         // Calculate by document type
         var typeMetrics: [String: TypePerformance] = [:]
         let groupedByType = Dictionary(grouping: recentMetrics, by: { $0.documentType })
-        
+
         for (type, metrics) in groupedByType {
             let avgTime = metrics.reduce(0.0) { $0 + $1.totalDuration } / Double(metrics.count)
-            let cacheRate = Double(metrics.filter { $0.cacheHit }.count) / Double(metrics.count)
-            
+            let cacheRate = Double(metrics.filter(\.cacheHit).count) / Double(metrics.count)
+
             typeMetrics[type] = TypePerformance(
                 documentType: type,
                 averageGenerationTime: avgTime,
@@ -175,12 +175,12 @@ public actor DocumentGenerationPerformanceMonitor {
                 sampleCount: metrics.count
             )
         }
-        
+
         // Check performance targets
         let meetsGenerationTarget = avgGenerationTime <= targetGenerationTime
         let meetsCacheTarget = avgCacheHitRate >= targetCacheHitRate
         let meetsSpeedupTarget = avgSpeedup >= targetSpeedup
-        
+
         return PerformanceReport(
             sessionMetrics: currentSession,
             averageGenerationTime: avgGenerationTime,
@@ -194,13 +194,13 @@ public actor DocumentGenerationPerformanceMonitor {
             recentBatches: Array(recentBatches)
         )
     }
-    
+
     // MARK: - Performance Optimization Suggestions
-    
+
     public func getOptimizationSuggestions() -> [OptimizationSuggestion] {
         var suggestions: [OptimizationSuggestion] = []
         let report = getPerformanceReport()
-        
+
         // Check cache hit rate
         if report.averageCacheHitRate < targetCacheHitRate {
             suggestions.append(OptimizationSuggestion(
@@ -210,7 +210,7 @@ public actor DocumentGenerationPerformanceMonitor {
                 recommendation: "Consider increasing cache expiration time or pre-warming cache with common documents"
             ))
         }
-        
+
         // Check generation time
         if report.averageGenerationTime > targetGenerationTime {
             suggestions.append(OptimizationSuggestion(
@@ -220,7 +220,7 @@ public actor DocumentGenerationPerformanceMonitor {
                 recommendation: "Enable batch generation or increase parallel processing"
             ))
         }
-        
+
         // Check speedup
         if report.averageSpeedup < targetSpeedup {
             suggestions.append(OptimizationSuggestion(
@@ -230,7 +230,7 @@ public actor DocumentGenerationPerformanceMonitor {
                 recommendation: "Increase batch sizes or optimize parallel processing configuration"
             ))
         }
-        
+
         // Check for slow document types
         for (type, performance) in report.typeMetrics {
             if performance.averageGenerationTime > targetGenerationTime * 1.5 {
@@ -242,85 +242,85 @@ public actor DocumentGenerationPerformanceMonitor {
                 ))
             }
         }
-        
+
         return suggestions
     }
-    
+
     // MARK: - Benchmarking
-    
+
     public func runBenchmark() async throws -> BenchmarkResult {
         let _ = [DocumentType.sow, DocumentType.marketResearch, DocumentType.evaluationPlan]
         let _ = "Benchmark test: Cloud computing services for data analytics platform"
-        
+
         var results: [BenchmarkTestResult] = []
-        
+
         // Test sequential generation
         let sequentialStart = Date()
         var sequentialTimes: [TimeInterval] = []
-        
-        for _ in 0..<3 {
+
+        for _ in 0 ..< 3 {
             let start = Date()
             // Simulate generation
             try await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds
             sequentialTimes.append(Date().timeIntervalSince(start))
         }
-        
+
         let sequentialTotal = Date().timeIntervalSince(sequentialStart)
-        
+
         // Test parallel generation
         let parallelStart = Date()
-        
+
         await withTaskGroup(of: TimeInterval.self) { group in
-            for _ in 0..<3 {
+            for _ in 0 ..< 3 {
                 group.addTask {
                     let start = Date()
                     try? await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds
                     return Date().timeIntervalSince(start)
                 }
             }
-            
+
             for await time in group {
                 // Collect times
                 _ = time
             }
         }
-        
+
         let parallelTotal = Date().timeIntervalSince(parallelStart)
-        
+
         // Test with cache
         let cacheStart = Date()
         // Simulate cache hit
         try await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
         let cacheTotal = Date().timeIntervalSince(cacheStart)
-        
+
         results.append(BenchmarkTestResult(
             testName: "Sequential Generation",
             duration: sequentialTotal,
             documentsGenerated: 3,
             averagePerDocument: sequentialTotal / 3
         ))
-        
+
         results.append(BenchmarkTestResult(
             testName: "Parallel Generation",
             duration: parallelTotal,
             documentsGenerated: 3,
             averagePerDocument: parallelTotal / 3
         ))
-        
+
         results.append(BenchmarkTestResult(
             testName: "Cached Generation",
             duration: cacheTotal,
             documentsGenerated: 1,
             averagePerDocument: cacheTotal
         ))
-        
+
         let speedup = sequentialTotal / parallelTotal
-        
+
         return BenchmarkResult(
             timestamp: Date(),
             results: results,
             overallSpeedup: speedup,
-            recommendation: speedup >= targetSpeedup ? 
+            recommendation: speedup >= targetSpeedup ?
                 "Performance optimization successful! Achieved \(String(format: "%.1fx", speedup)) speedup." :
                 "Further optimization needed. Current speedup: \(String(format: "%.1fx", speedup)), target: \(String(format: "%.1fx", targetSpeedup))"
         )
@@ -356,13 +356,13 @@ public struct OptimizationSuggestion {
         case parallelization
         case documentType
     }
-    
+
     public enum Priority {
         case high
         case medium
         case low
     }
-    
+
     public let category: Category
     public let priority: Priority
     public let description: String

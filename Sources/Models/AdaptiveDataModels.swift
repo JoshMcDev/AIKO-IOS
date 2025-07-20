@@ -1,26 +1,26 @@
-import Foundation
 import CoreData
+import Foundation
 
 // MARK: - Core Data Extensions for Adaptive Storage
 
-extension DocumentData {
+public extension DocumentData {
     /// Store extracted data as flexible JSON
-    @NSManaged public var id: UUID?
-    @NSManaged public var timestamp: Date?
-    @NSManaged public var extractedData: Data?
-    @NSManaged public var documentSignature: String?
-    @NSManaged public var patternNames: String? // Comma-separated list
-    @NSManaged public var attributes: NSSet?
+    @NSManaged var id: UUID?
+    @NSManaged var timestamp: Date?
+    @NSManaged var extractedData: Data?
+    @NSManaged var documentSignature: String?
+    @NSManaged var patternNames: String? // Comma-separated list
+    @NSManaged var attributes: NSSet?
 }
 
-extension DocumentAttribute {
-    @NSManaged public var id: UUID?
-    @NSManaged public var fieldName: String?
-    @NSManaged public var fieldValue: String?
-    @NSManaged public var dataType: String?
-    @NSManaged public var confidence: Double
-    @NSManaged public var extractionPattern: String?
-    @NSManaged public var document: DocumentData?
+public extension DocumentAttribute {
+    @NSManaged var id: UUID?
+    @NSManaged var fieldName: String?
+    @NSManaged var fieldValue: String?
+    @NSManaged var dataType: String?
+    @NSManaged var confidence: Double
+    @NSManaged var extractionPattern: String?
+    @NSManaged var document: DocumentData?
 }
 
 // MARK: - Pattern Storage Models
@@ -35,17 +35,18 @@ public class PatternEntity: NSManagedObject {
     @NSManaged public var averageConfidence: Double
     @NSManaged public var lastSeen: Date?
     @NSManaged public var createdAt: Date?
-    
+
     func toLearnedPattern() -> LearnedPattern? {
-        guard let id = id,
-              let name = name,
+        guard let id,
+              let name,
               let mappingsData = fieldMappings,
-              let signatures = documentSignatures?.components(separatedBy: ",") else {
+              let signatures = documentSignatures?.components(separatedBy: ",")
+        else {
             return nil
         }
-        
+
         let mappings = (try? JSONDecoder().decode([LearnedPattern.FieldMapping].self, from: mappingsData)) ?? []
-        
+
         return LearnedPattern(
             id: id,
             patternName: name,
@@ -63,32 +64,32 @@ public class PatternEntity: NSManagedObject {
 @MainActor
 public class ValueObjectRepository {
     private let container: NSPersistentContainer
-    
+
     nonisolated init(container: NSPersistentContainer) {
         self.container = container
     }
-    
+
     static func shared() -> ValueObjectRepository {
         ValueObjectRepository(container: CoreDataManager.shared.persistentContainer)
     }
-    
+
     // MARK: - Store Dynamic Value Objects
-    
+
     public func store(_ objects: [DynamicValueObject], for documentId: UUID) throws {
         let context = container.viewContext
-        
+
         // Find or create document
         let fetchRequest = NSFetchRequest<DocumentData>(entityName: "DocumentData")
         fetchRequest.predicate = NSPredicate(format: "id == %@", documentId as CVarArg)
-        
+
         let document = try context.fetch(fetchRequest).first ?? DocumentData(context: context)
         document.id = documentId
         document.timestamp = Date()
-        
+
         // Convert objects to JSON for flexible storage
         var jsonData: [String: Any] = [:]
         var attributes = Set<DocumentAttribute>()
-        
+
         for object in objects {
             // Store in JSON structure
             jsonData[object.fieldName] = [
@@ -99,10 +100,10 @@ public class ValueObjectRepository {
                 "context": [
                     "documentType": object.documentContext.documentType,
                     "section": object.documentContext.section ?? "",
-                    "lineNumber": object.documentContext.lineNumber ?? -1
-                ]
+                    "lineNumber": object.documentContext.lineNumber ?? -1,
+                ],
             ]
-            
+
             // Create searchable attribute
             let attribute = DocumentAttribute(context: context)
             attribute.id = UUID()
@@ -112,32 +113,32 @@ public class ValueObjectRepository {
             attribute.confidence = object.confidence
             attribute.extractionPattern = object.extractionPattern
             attribute.document = document
-            
+
             attributes.insert(attribute)
         }
-        
+
         document.extractedData = try JSONSerialization.data(
             withJSONObject: jsonData,
             options: .prettyPrinted
         )
         document.attributes = attributes as NSSet
-        
+
         try context.save()
     }
-    
+
     // MARK: - Query Dynamic Fields
-    
+
     public func findDocuments(with criteria: SearchCriteria) throws -> [DocumentResult] {
         let context = container.viewContext
         let request = NSFetchRequest<DocumentAttribute>(entityName: "DocumentAttribute")
-        
+
         var predicates: [NSPredicate] = []
-        
+
         // Build dynamic predicates
         if let fieldName = criteria.fieldName {
             predicates.append(NSPredicate(format: "fieldName == %@", fieldName))
         }
-        
+
         if let fieldValue = criteria.fieldValue {
             if criteria.exactMatch {
                 predicates.append(NSPredicate(format: "fieldValue == %@", fieldValue))
@@ -145,36 +146,37 @@ public class ValueObjectRepository {
                 predicates.append(NSPredicate(format: "fieldValue CONTAINS[cd] %@", fieldValue))
             }
         }
-        
+
         if let dataType = criteria.dataType {
             predicates.append(NSPredicate(format: "dataType == %@", dataType.rawValue))
         }
-        
+
         if let minConfidence = criteria.minConfidence {
             predicates.append(NSPredicate(format: "confidence >= %f", minConfidence))
         }
-        
+
         if !predicates.isEmpty {
             request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         }
-        
+
         let attributes = try context.fetch(request)
-        
+
         // Group by document
         let groupedByDocument = Dictionary(grouping: attributes) { $0.document }
-        
-        return groupedByDocument.compactMap { (document, attributes) -> DocumentResult? in
+
+        return groupedByDocument.compactMap { document, attributes -> DocumentResult? in
             guard let doc = document,
                   let docId = doc.id else { return nil }
-            
+
             let valueObjects = attributes.compactMap { attr -> DynamicValueObject? in
                 guard let fieldName = attr.fieldName,
                       let fieldValue = attr.fieldValue,
                       let dataTypeString = attr.dataType,
-                      let dataType = DynamicValueObject.DataType(rawValue: dataTypeString) else {
+                      let dataType = DynamicValueObject.DataType(rawValue: dataTypeString)
+                else {
                     return nil
                 }
-                
+
                 return DynamicValueObject(
                     fieldName: fieldName,
                     value: fieldValue,
@@ -190,7 +192,7 @@ public class ValueObjectRepository {
                     )
                 )
             }
-            
+
             return DocumentResult(
                 documentId: docId,
                 timestamp: doc.timestamp ?? Date(),
@@ -200,15 +202,15 @@ public class ValueObjectRepository {
             )
         }
     }
-    
+
     // MARK: - Pattern Management
-    
+
     public func storePattern(_ pattern: LearnedPattern) throws {
         let context = container.viewContext
-        
+
         let fetchRequest = NSFetchRequest<PatternEntity>(entityName: "PatternEntity")
         fetchRequest.predicate = NSPredicate(format: "id == %@", pattern.id as CVarArg)
-        
+
         let entity = try context.fetch(fetchRequest).first ?? PatternEntity(context: context)
         entity.id = pattern.id
         entity.name = pattern.patternName
@@ -218,15 +220,15 @@ public class ValueObjectRepository {
         entity.averageConfidence = pattern.averageConfidence
         entity.lastSeen = pattern.lastSeen
         entity.createdAt = entity.createdAt ?? Date()
-        
+
         try context.save()
     }
-    
+
     public func loadPatterns() throws -> [LearnedPattern] {
         let context = container.viewContext
         let request = NSFetchRequest<PatternEntity>(entityName: "PatternEntity")
         request.sortDescriptors = [NSSortDescriptor(key: "occurrenceCount", ascending: false)]
-        
+
         let entities = try context.fetch(request)
         return entities.compactMap { $0.toLearnedPattern() }
     }
@@ -241,7 +243,7 @@ public struct SearchCriteria {
     public let minConfidence: Double?
     public let exactMatch: Bool
     public let dateRange: DateInterval?
-    
+
     public init(
         fieldName: String? = nil,
         fieldValue: String? = nil,
@@ -265,11 +267,11 @@ public struct DocumentResult {
     public let signature: String
     public let valueObjects: [DynamicValueObject]
     public let rawData: Data?
-    
+
     public func getFieldValue(_ fieldName: String) -> String? {
-        return valueObjects.first { $0.fieldName == fieldName }?.value
+        valueObjects.first { $0.fieldName == fieldName }?.value
     }
-    
+
     public func toJSON() -> [String: Any]? {
         guard let data = rawData else { return nil }
         return try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
@@ -278,13 +280,12 @@ public struct DocumentResult {
 
 // MARK: - Usage Example for Quote Processing
 
-extension AdaptiveDataExtractor {
-    
+public extension AdaptiveDataExtractor {
     /// Example of how the system learns from the MTO quote
-    public func demonstrateQuoteLearning() async throws {
+    func demonstrateQuoteLearning() async throws {
         // After processing the MTO quote, the system would learn:
-        
-        let _ = LearnedPattern(
+
+        _ = LearnedPattern(
             id: UUID(),
             patternName: "Government_Technical_Equipment_Quote",
             fieldMappings: [
@@ -343,18 +344,18 @@ extension AdaptiveDataExtractor {
                     expectedDataType: .boolean,
                     isRequired: false,
                     defaultValue: "false"
-                )
+                ),
             ],
             documentTypeSignatures: [
                 "quote_government_vendor_technical_equipment_pricing",
                 "government_communications_equipment",
-                "military_technical_quote"
+                "military_technical_quote",
             ],
             occurrenceCount: 1,
             averageConfidence: 0.96,
             lastSeen: Date()
         )
-        
+
         // This pattern would be stored and used for future similar quotes
         print("Learned pattern for government technical equipment quotes")
         print("Future quotes from defense contractors will be processed more accurately")

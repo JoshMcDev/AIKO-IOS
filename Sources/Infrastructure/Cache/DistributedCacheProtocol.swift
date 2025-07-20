@@ -1,38 +1,38 @@
-import Foundation
 import Combine
+import Foundation
 
 /// Protocol defining distributed cache operations
 public protocol DistributedCacheProtocol {
     /// Get value from distributed cache
-    func get<T: Codable>(_ key: String) async throws -> T?
-    
+    func get<T: Codable & Sendable>(_ key: String) async throws -> T?
+
     /// Set value in distributed cache
-    func set<T: Codable>(_ key: String, value: T, ttl: TimeInterval?) async throws
-    
+    func set(_ key: String, value: some Codable & Sendable, ttl: TimeInterval?) async throws
+
     /// Remove value from distributed cache
     func remove(_ key: String) async throws
-    
+
     /// Check if key exists in distributed cache
     func exists(_ key: String) async throws -> Bool
-    
+
     /// Get multiple values
-    func getMultiple<T: Codable>(_ keys: [String], type: T.Type) async throws -> [String: T]
-    
+    func getMultiple<T: Codable & Sendable>(_ keys: [String], type: T.Type) async throws -> [String: T]
+
     /// Set multiple values
-    func setMultiple<T: Codable>(_ values: [String: T], ttl: TimeInterval?) async throws
-    
+    func setMultiple(_ values: [String: some Codable & Sendable], ttl: TimeInterval?) async throws
+
     /// Remove multiple values
     func removeMultiple(_ keys: [String]) async throws
-    
+
     /// Get cache statistics
     func getStats() async throws -> DistributedCacheStats
-    
+
     /// Subscribe to cache events
     func subscribe() -> AnyPublisher<DistributedCacheEvent, Never>
 }
 
 /// Statistics for distributed cache
-public struct DistributedCacheStats {
+public struct DistributedCacheStats: Sendable {
     public let totalNodes: Int
     public let activeNodes: Int
     public let totalKeys: Int
@@ -40,7 +40,7 @@ public struct DistributedCacheStats {
     public let hitRate: Double
     public let averageLatency: TimeInterval
     public let replicationFactor: Int
-    
+
     public init(
         totalNodes: Int,
         activeNodes: Int,
@@ -61,7 +61,7 @@ public struct DistributedCacheStats {
 }
 
 /// Events emitted by distributed cache
-public enum DistributedCacheEvent {
+public enum DistributedCacheEvent: Sendable {
     case nodeJoined(nodeId: String)
     case nodeLeft(nodeId: String)
     case keyInvalidated(key: String, nodeId: String)
@@ -71,7 +71,7 @@ public enum DistributedCacheEvent {
 }
 
 /// Configuration for distributed cache
-public struct DistributedCacheConfiguration {
+public struct DistributedCacheConfiguration: Sendable {
     public let nodeId: String
     public let clusterEndpoints: [String]
     public let replicationFactor: Int
@@ -80,19 +80,19 @@ public struct DistributedCacheConfiguration {
     public let syncInterval: TimeInterval
     public let heartbeatInterval: TimeInterval
     public let failoverTimeout: TimeInterval
-    
-    public enum ConsistencyLevel {
+
+    public enum ConsistencyLevel: Sendable {
         case eventual
         case strong
         case quorum
     }
-    
-    public enum PartitionStrategy {
+
+    public enum PartitionStrategy: Sendable {
         case consistentHashing
         case range
         case modulo
     }
-    
+
     public init(
         nodeId: String = UUID().uuidString,
         clusterEndpoints: [String] = ["localhost:7000"],

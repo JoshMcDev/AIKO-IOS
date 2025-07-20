@@ -1,9 +1,9 @@
+import AppCore
 import ComposableArchitecture
 import SwiftUI
-import AppCore
 
 public struct FormSelectionView: View {
-    @ObservedObject private var formMappingService = FormMappingService.shared
+    @State private var formMappingService = FormMappingService.shared
     @Environment(\.dismiss) var dismiss
 
     let documentType: DocumentType
@@ -14,6 +14,7 @@ public struct FormSelectionView: View {
     @State private var downloadProgress: Double = 0
     @State private var isDownloading = false
     @State private var downloadError: String?
+    @State private var availableForms: [FormSelection] = []
 
     public init(documentType: DocumentType, templateData: TemplateData, selectedForm: Binding<FormType?>) {
         self.documentType = documentType
@@ -109,14 +110,17 @@ public struct FormSelectionView: View {
                 } message: {
                     Text(downloadError ?? "")
                 }
+                .task {
+                    await loadAvailableForms()
+                }
         }
     }
 
     // MARK: - Computed Properties
-
-    private var availableForms: [FormSelection] {
-        let forms = formMappingService.getFormsForTemplate(documentType)
-        return forms.map { form in
+    
+    private func loadAvailableForms() async {
+        let forms = await formMappingService.getFormsForTemplate(documentType)
+        let formSelections = forms.map { form in
             let isRecommended = isFormRecommended(form)
             let complianceScore = calculateComplianceScore(form)
             let notes = generateFormNotes(form)
@@ -127,6 +131,9 @@ public struct FormSelectionView: View {
                 complianceScore: complianceScore,
                 notes: notes
             )
+        }
+        await MainActor.run {
+            self.availableForms = formSelections
         }
     }
 
@@ -387,11 +394,12 @@ public struct FormSelectionView: View {
 struct FormPreviewView: View {
     let formType: FormType
     @Environment(\.dismiss) var dismiss
+    @State private var previewURL: URL?
 
     var body: some View {
         SwiftUI.NavigationView {
             VStack {
-                if let url = FormMappingService.shared.getFormPreviewURL(formType) {
+                if let url = previewURL {
                     // In a real app, this would show a web view or PDF viewer
                     VStack(spacing: Theme.Spacing.lg) {
                         Image(systemName: formType.icon)
@@ -431,6 +439,9 @@ struct FormPreviewView: View {
                         }
                     }
                 }
+        }
+        .task {
+            previewURL = await FormMappingService.shared.getFormPreviewURL(formType)
         }
     }
 }

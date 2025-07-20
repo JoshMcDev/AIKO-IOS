@@ -1,15 +1,15 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 
 /// Service for loading standard document templates
-public struct StandardTemplateService {
-    public var loadTemplate: (DocumentType) async throws -> String
-    public var loadQuickReference: (DocumentType) async throws -> String?
+public struct StandardTemplateService: Sendable {
+    public var loadTemplate: @Sendable (DocumentType) async throws -> String
+    public var loadQuickReference: @Sendable (DocumentType) async throws -> String?
 
     public init(
-        loadTemplate: @escaping (DocumentType) async throws -> String,
-        loadQuickReference: @escaping (DocumentType) async throws -> String?
+        loadTemplate: @escaping @Sendable (DocumentType) async throws -> String,
+        loadQuickReference: @escaping @Sendable (DocumentType) async throws -> String?
     ) {
         self.loadTemplate = loadTemplate
         self.loadQuickReference = loadQuickReference

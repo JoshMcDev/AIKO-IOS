@@ -2,15 +2,15 @@ import ComposableArchitecture
 import Foundation
 
 /// Service for interacting with SAM.gov Entity API
-public struct SAMGovService {
-    public var searchEntity: (String) async throws -> EntitySearchResult
-    public var getEntityByCAGE: (String) async throws -> EntityDetail
-    public var getEntityByUEI: (String) async throws -> EntityDetail
+public struct SAMGovService: Sendable {
+    public var searchEntity: @Sendable (String) async throws -> EntitySearchResult
+    public var getEntityByCAGE: @Sendable (String) async throws -> EntityDetail
+    public var getEntityByUEI: @Sendable (String) async throws -> EntityDetail
 
     public init(
-        searchEntity: @escaping (String) async throws -> EntitySearchResult,
-        getEntityByCAGE: @escaping (String) async throws -> EntityDetail,
-        getEntityByUEI: @escaping (String) async throws -> EntityDetail
+        searchEntity: @escaping @Sendable (String) async throws -> EntitySearchResult,
+        getEntityByCAGE: @escaping @Sendable (String) async throws -> EntityDetail,
+        getEntityByUEI: @escaping @Sendable (String) async throws -> EntityDetail
     ) {
         self.searchEntity = searchEntity
         self.getEntityByCAGE = getEntityByCAGE
@@ -20,12 +20,12 @@ public struct SAMGovService {
 
 // MARK: - Models
 
-public struct EntitySearchResult: Equatable {
+public struct EntitySearchResult: Equatable, Sendable {
     public let totalRecords: Int
     public let entities: [EntitySummary]
 }
 
-public struct EntitySummary: Equatable {
+public struct EntitySummary: Equatable, Sendable {
     public let ueiSAM: String
     public let cageCode: String?
     public let legalBusinessName: String
@@ -34,7 +34,7 @@ public struct EntitySummary: Equatable {
     public let expirationDate: Date?
 }
 
-public struct EntityDetail: Equatable {
+public struct EntityDetail: Equatable, Sendable {
     public let ueiSAM: String
     public let cageCode: String?
     public let legalBusinessName: String
@@ -60,19 +60,19 @@ public struct EntityDetail: Equatable {
     public let foreignGovtEntities: [ForeignGovtEntity]
 }
 
-public struct Section889Status: Equatable {
+public struct Section889Status: Equatable, Sendable {
     public let doesNotProvideProhibitedTelecom: Bool?
     public let doesNotUseProhibitedTelecom: Bool?
     public let certificationDate: Date?
 }
 
-public struct ResponsibilityInfo: Equatable {
+public struct ResponsibilityInfo: Equatable, Sendable {
     public let hasDelinquentFederalDebt: Bool?
     public let hasUnpaidTaxLiability: Bool?
     public let integrityRecords: [IntegrityRecord]
 }
 
-public struct IntegrityRecord: Equatable {
+public struct IntegrityRecord: Equatable, Sendable {
     public let proceedingType: String?
     public let proceedingDescription: String?
     public let proceedingDate: Date?
@@ -80,14 +80,14 @@ public struct IntegrityRecord: Equatable {
     public let agency: String?
 }
 
-public struct ArchitectEngineerInfo: Equatable {
+public struct ArchitectEngineerInfo: Equatable, Sendable {
     public let hasArchitectEngineerResponses: Bool
     public let hasSF330Filed: Bool
     public let lastSF330Date: Date?
     public let disciplines: [String]
 }
 
-public struct ForeignGovtEntity: Equatable {
+public struct ForeignGovtEntity: Equatable, Sendable {
     public let country: String
     public let name: String
     public let interestType: String?
@@ -95,12 +95,12 @@ public struct ForeignGovtEntity: Equatable {
     public let controlDescription: String?
 }
 
-public struct BusinessType: Equatable {
+public struct BusinessType: Equatable, Sendable {
     public let code: String
     public let description: String
 }
 
-public struct SAMGovAddress: Equatable {
+public struct SAMGovAddress: Equatable, Sendable {
     public let streetAddress: String?
     public let city: String?
     public let state: String?
@@ -108,13 +108,13 @@ public struct SAMGovAddress: Equatable {
     public let country: String?
 }
 
-public struct NAICSCode: Equatable {
+public struct NAICSCode: Equatable, Sendable {
     public let code: String
     public let description: String
     public let isPrimary: Bool
 }
 
-public struct PointOfContact: Equatable {
+public struct PointOfContact: Equatable, Sendable {
     public let firstName: String?
     public let lastName: String?
     public let title: String?
@@ -124,7 +124,7 @@ public struct PointOfContact: Equatable {
 
 // MARK: - Errors
 
-public enum SAMGovError: Error, LocalizedError {
+public enum SAMGovError: Error, LocalizedError, Sendable {
     case invalidAPIKey
     case entityNotFound
     case rateLimitExceeded
@@ -152,12 +152,12 @@ public enum SAMGovError: Error, LocalizedError {
 extension SAMGovService: DependencyKey {
     public static var liveValue: SAMGovService {
         // Always use repository-based implementation as part of Phase 4 migration
-        return .liveValueWithRepository
+        .liveValueWithRepository
     }
-    
+
     // Keep the old implementation as a backup/reference
     static var directAPIValue: SAMGovService {
-        return SAMGovService(
+        SAMGovService(
             searchEntity: { query in
                 // Get API key from settings
                 @Dependency(\.settingsManager) var settingsManager

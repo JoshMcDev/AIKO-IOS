@@ -1,31 +1,31 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 
 /// Document Cache Service for performance optimization
 /// Implements LRU (Least Recently Used) caching strategy for documents and LLM responses
-public struct DocumentCacheService {
+public struct DocumentCacheService: Sendable {
     // Cache operations
-    public var cacheDocument: (GeneratedDocument) async throws -> Void
-    public var getCachedDocument: (DocumentType, String) async -> GeneratedDocument?
-    public var cacheAnalysisResponse: (String, String, [DocumentType]) async throws -> Void
-    public var getCachedAnalysisResponse: (String) async -> (response: String, recommendedDocuments: [DocumentType])?
-    public var clearCache: () async throws -> Void
-    public var getCacheStatistics: () async -> CacheStatistics
+    public var cacheDocument: @Sendable (GeneratedDocument) async throws -> Void
+    public var getCachedDocument: @Sendable (DocumentType, String) async -> GeneratedDocument?
+    public var cacheAnalysisResponse: @Sendable (String, String, [DocumentType]) async throws -> Void
+    public var getCachedAnalysisResponse: @Sendable (String) async -> (response: String, recommendedDocuments: [DocumentType])?
+    public var clearCache: @Sendable () async throws -> Void
+    public var getCacheStatistics: @Sendable () async -> CacheStatistics
 
     // Performance optimization
-    public var preloadFrequentDocuments: () async throws -> Void
-    public var optimizeCacheForMemory: () async throws -> Void
+    public var preloadFrequentDocuments: @Sendable () async throws -> Void
+    public var optimizeCacheForMemory: @Sendable () async throws -> Void
 
     public init(
-        cacheDocument: @escaping (GeneratedDocument) async throws -> Void,
-        getCachedDocument: @escaping (DocumentType, String) async -> GeneratedDocument?,
-        cacheAnalysisResponse: @escaping (String, String, [DocumentType]) async throws -> Void,
-        getCachedAnalysisResponse: @escaping (String) async -> (response: String, recommendedDocuments: [DocumentType])?,
-        clearCache: @escaping () async throws -> Void,
-        getCacheStatistics: @escaping () async -> CacheStatistics,
-        preloadFrequentDocuments: @escaping () async throws -> Void,
-        optimizeCacheForMemory: @escaping () async throws -> Void
+        cacheDocument: @escaping @Sendable (GeneratedDocument) async throws -> Void,
+        getCachedDocument: @escaping @Sendable (DocumentType, String) async -> GeneratedDocument?,
+        cacheAnalysisResponse: @escaping @Sendable (String, String, [DocumentType]) async throws -> Void,
+        getCachedAnalysisResponse: @escaping @Sendable (String) async -> (response: String, recommendedDocuments: [DocumentType])?,
+        clearCache: @escaping @Sendable () async throws -> Void,
+        getCacheStatistics: @escaping @Sendable () async -> CacheStatistics,
+        preloadFrequentDocuments: @escaping @Sendable () async throws -> Void,
+        optimizeCacheForMemory: @escaping @Sendable () async throws -> Void
     ) {
         self.cacheDocument = cacheDocument
         self.getCachedDocument = getCachedDocument
@@ -40,7 +40,7 @@ public struct DocumentCacheService {
 
 // MARK: - Models
 
-public struct CacheStatistics: Equatable {
+public struct CacheStatistics: Equatable, Sendable {
     public let totalCachedDocuments: Int
     public let totalCachedAnalyses: Int
     public let cacheSize: Int64 // in bytes

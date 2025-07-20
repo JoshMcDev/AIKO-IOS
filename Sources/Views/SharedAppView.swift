@@ -1,17 +1,17 @@
-import SwiftUI
-import ComposableArchitecture
 import AppCore
+import ComposableArchitecture
+import SwiftUI
 
 /// Shared AppView implementation containing all platform-agnostic logic
 public struct SharedAppView<Services: AppViewPlatformServices>: View {
     let store: StoreOf<AppFeature>
     let services: Services
-    
+
     public init(store: StoreOf<AppFeature>, services: Services) {
         self.store = store
         self.services = services
     }
-    
+
     public var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             if !viewStore.isOnboardingCompleted {
@@ -29,9 +29,9 @@ public struct SharedAppView<Services: AppViewPlatformServices>: View {
             store: store.scope(state: \.$errorAlert, action: \.errorAlert)
         )
     }
-    
+
     // MARK: - Onboarding View
-    
+
     private var onboardingView: some View {
         OnboardingView(
             store: store.scope(
@@ -41,9 +41,9 @@ public struct SharedAppView<Services: AppViewPlatformServices>: View {
         )
         .transition(.opacity)
     }
-    
+
     // MARK: - Authentication View
-    
+
     private func authenticationView(viewStore: ViewStore<AppFeature.State, AppFeature.Action>) -> some View {
         FaceIDAuthenticationView(
             isAuthenticating: viewStore.isAuthenticating,
@@ -52,16 +52,16 @@ public struct SharedAppView<Services: AppViewPlatformServices>: View {
         )
         .transition(.opacity)
     }
-    
+
     // MARK: - Main Content View
-    
+
     @ViewBuilder
     private func mainContentView(viewStore: ViewStore<AppFeature.State, AppFeature.Action>) -> some View {
         ZStack(alignment: .trailing) {
             // Background that extends to safe area
             Color.black
                 .ignoresSafeArea()
-            
+
             VStack(spacing: 0) {
                 // Header
                 SharedHeaderView(
@@ -79,11 +79,14 @@ public struct SharedAppView<Services: AppViewPlatformServices>: View {
                     onSAMGovLookup: {
                         viewStore.send(.showSAMGovLookup(true))
                     },
+                    onQuickScan: {
+                        viewStore.send(.startQuickScan)
+                    },
                     onExecuteAll: {
                         viewStore.send(.executeAllDocuments)
                     }
                 )
-                
+
                 // Main Content
                 EnhancedDocumentGenerationView(
                     store: store.scope(
@@ -98,7 +101,7 @@ public struct SharedAppView<Services: AppViewPlatformServices>: View {
             .modifier(NavigationBarHiddenModifier())
             .preferredColorScheme(.dark)
             .ignoresSafeArea(.keyboard) // Allow keyboard to overlay content
-            
+
             // Menu overlay
             if viewStore.showingMenu {
                 MenuView(
@@ -127,31 +130,32 @@ public struct SharedAppView<Services: AppViewPlatformServices>: View {
 /// Shared header view that works across platforms
 struct SharedHeaderView<Services: AppViewPlatformServices>: View {
     @Binding var showMenu: Bool
-    let loadedAcquisition: Acquisition?
+    let loadedAcquisition: AppCore.Acquisition?
     let loadedAcquisitionDisplayName: String?
     let hasSelectedDocuments: Bool
     let services: Services
     let onNewAcquisition: () -> Void
     let onSAMGovLookup: () -> Void
+    let onQuickScan: () -> Void
     let onExecuteAll: () -> Void
-    
+
     private func loadSAMIcon() -> Image? {
         // For Swift Package, load from module bundle
         guard Bundle.module.url(forResource: "SAMIcon", withExtension: "png") != nil else {
             return nil
         }
-        
+
         return nil // TODO: Services doesn't have loadImage(from: URL)
     }
-    
+
     var body: some View {
         HStack(spacing: Theme.Spacing.lg) {
             // App Icon on the left
             SharedAppIconView(services: services)
                 .frame(width: 50, height: 50)
-            
+
             Spacer()
-            
+
             // Icon buttons evenly spaced
             HStack(spacing: Theme.Spacing.lg) {
                 // SAM.gov lookup button (moved to left)
@@ -179,7 +183,20 @@ struct SharedHeaderView<Services: AppViewPlatformServices>: View {
                             )
                     }
                 }
-                
+
+                // Quick Document Scanner button
+                Button(action: onQuickScan) {
+                    Image(systemName: "camera.fill")
+                        .font(.title3)
+                        .foregroundColor(Theme.Colors.aikoPrimary)
+                        .frame(width: 40, height: 40)
+                        .background(Color.black)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                                .stroke(Theme.Colors.aikoPrimary, lineWidth: 2)
+                        )
+                }
+
                 // Execute all button
                 Button(action: onExecuteAll) {
                     Image(systemName: hasSelectedDocuments ? "play.fill" : "play")
@@ -193,7 +210,7 @@ struct SharedHeaderView<Services: AppViewPlatformServices>: View {
                         )
                 }
                 .disabled(!hasSelectedDocuments)
-                
+
                 // New acquisition button
                 Button(action: onNewAcquisition) {
                     Image(systemName: "plus")
@@ -206,7 +223,7 @@ struct SharedHeaderView<Services: AppViewPlatformServices>: View {
                                 .stroke(Theme.Colors.aikoPrimary, lineWidth: 2)
                         )
                 }
-                
+
                 // Menu button
                 Button(action: { showMenu.toggle() }) {
                     Image(systemName: "line.horizontal.3")
@@ -230,7 +247,7 @@ struct SharedHeaderView<Services: AppViewPlatformServices>: View {
 /// Shared app icon view component
 struct SharedAppIconView<Services: AppViewPlatformServices>: View {
     let services: Services
-    
+
     var body: some View {
         if let image = services.getAppIcon() {
             image
@@ -252,13 +269,13 @@ struct SharedAppIconView<Services: AppViewPlatformServices>: View {
                             endPoint: .topTrailing
                         )
                     )
-                
+
                 // Scroll and quill design
                 ZStack {
                     Image(systemName: "scroll")
                         .font(.system(size: 20, weight: .medium))
                         .foregroundColor(.cyan)
-                    
+
                     Image(systemName: "pencil")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(.cyan)
@@ -275,7 +292,7 @@ struct SharedAppIconView<Services: AppViewPlatformServices>: View {
 struct AppSheetPresentation<Services: AppViewPlatformServices>: ViewModifier {
     let store: StoreOf<AppFeature>
     let services: Services
-    
+
     @ViewBuilder
     func body(content: Content) -> some View {
         WithViewStore(store, observe: { $0 }) { viewStore in

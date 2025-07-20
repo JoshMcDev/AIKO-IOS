@@ -1,33 +1,34 @@
-import AppCore
-import ComposableArchitecture
-import Foundation
+#if os(iOS)
+    import AppCore
+    import ComposableArchitecture
+    import Foundation
 
-extension ShareServiceClient {
-    public static let iOSLive = Self(
-        share: { items in
-            await withCheckedContinuation { continuation in
-                iOSShareService().share(items: items) { success in
-                    continuation.resume(returning: success)
+    public extension ShareServiceClient {
+        static let iOS = Self(
+            share: { items in
+                let service = iOSShareService()
+                return await service.share(items: ShareableItems(items))
+            },
+            createShareableFile: { text, fileName in
+                let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+                try text.write(to: tempURL, atomically: true, encoding: .utf8)
+                return tempURL
+            },
+            shareContent: { content, fileName in
+                do {
+                    let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+                    try content.write(to: tempURL, atomically: true, encoding: .utf8)
+                    let service = iOSShareService()
+                    _ = await service.share(items: ShareableItems([tempURL]))
+                } catch {
+                    // Handle error silently for now
+                    print("Failed to share content: \(error)")
                 }
             }
-        },
-        createShareableFile: { text, fileName in
-            try iOSShareService().createShareableFile(from: text, fileName: fileName)
-        },
-        shareContent: { content, fileName in
-            let service = iOSShareService()
-            if let url = try? service.createShareableFile(from: content, fileName: fileName) {
-                _ = await withCheckedContinuation { continuation in
-                    service.share(items: [url]) { _ in
-                        continuation.resume()
-                    }
-                }
-            }
-        }
-    )
-}
+        )
+    }
 
-// Convenience static accessor
-public enum iOSShareServiceClient {
-    public static let live = ShareServiceClient.iOSLive
-}
+    public enum iOSShareServiceClient {
+        public static let live = ShareServiceClient.iOS
+    }
+#endif

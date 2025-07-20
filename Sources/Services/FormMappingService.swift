@@ -1,18 +1,18 @@
+import AppCore
 import Combine
 import Foundation
-import AppCore
 
 /// Service responsible for mapping AIKO templates to official government forms
-public final class FormMappingService: ObservableObject {
+public actor FormMappingService {
     // MARK: - Singleton
 
     public static let shared = FormMappingService()
 
-    // MARK: - Published Properties
+    // MARK: - Properties
 
-    @Published public private(set) var availableForms: [FormDefinition] = []
-    @Published public private(set) var isLoading = false
-    @Published public private(set) var error: FormMappingError?
+    private var availableForms: [FormDefinition] = []
+    private var isLoading = false
+    private var error: FormMappingError?
 
     // MARK: - Private Properties
 
@@ -30,7 +30,10 @@ public final class FormMappingService: ObservableObject {
         validationService = FARValidationService()
         transformationService = DataTransformationService()
 
-        loadAvailableForms()
+        // Load forms asynchronously
+        Task {
+            await loadAvailableForms()
+        }
     }
 
     // MARK: - Public Methods
@@ -118,13 +121,11 @@ public final class FormMappingService: ObservableObject {
 
     // MARK: - Private Methods
 
-    private func loadAvailableForms() {
-        Task {
-            do {
-                availableForms = try await formRepository.loadFormDefinitions()
-            } catch {
-                self.error = FormMappingError.loadingFailed(error)
-            }
+    private func loadAvailableForms() async {
+        do {
+            availableForms = try await formRepository.loadFormDefinitions()
+        } catch {
+            self.error = FormMappingError.loadingFailed(error)
         }
     }
 }
@@ -168,7 +169,7 @@ public struct MappingOptions {
 
 public struct FormOutput {
     public let formType: FormType
-    public let formData: [String: Any]
+    public let formData: [String: String]
     public let complianceStatus: FormComplianceResult
     public let generatedAt: Date
 

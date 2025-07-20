@@ -1,11 +1,10 @@
-import Foundation
 import AppCore
 import CoreData
+import Foundation
 
-// Make CoreDataRepository conform to our internal protocol
-extension CoreDataRepository: RepositoryProtocol where Entity: Identifiable {
-    // The methods are already implemented, this just declares conformance
-}
+// Note: CoreDataRepository cannot directly conform to RepositoryProtocol
+// because NSManagedObject entities are not Sendable.
+// Services should use specific repositories that return Sendable DTOs instead.
 
 // Acquisition and AcquisitionDocument already conform to Identifiable in their Core Data definitions
 
@@ -13,9 +12,9 @@ extension CoreDataRepository: RepositoryProtocol where Entity: Identifiable {
 extension Acquisition {
     var estimatedValue: Decimal {
         // Would be stored in documentChainMetadata or computed from requirements
-        return 0
+        0
     }
-    
+
     var requiredDocuments: [DocumentType] {
         // This would be computed based on business rules
         []

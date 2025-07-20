@@ -5,37 +5,36 @@ import Security
 
 /// Secure storage for LLM provider API keys using iOS/macOS Keychain
 public final class LLMKeychainService: @unchecked Sendable {
-    
     // MARK: - Properties
-    
+
     public static let shared = LLMKeychainService()
-    
+
     private let serviceName = "com.aiko.llm"
     private let accessGroup: String? = nil // Set if using app groups
-    
+
     // MARK: - Public Methods
-    
+
     /// Store API key for a provider
     public func storeAPIKey(_ key: String, for provider: String) throws {
         let account = accountName(for: provider)
         let data = key.data(using: .utf8)!
-        
+
         // Check if key already exists
         if let _ = try? retrieveAPIKey(for: provider) {
             // Update existing key
             let query: [String: Any] = [
                 kSecClass as String: kSecClassGenericPassword,
                 kSecAttrService as String: serviceName,
-                kSecAttrAccount as String: account
+                kSecAttrAccount as String: account,
             ]
-            
+
             let attributes: [String: Any] = [
                 kSecValueData as String: data,
-                kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+                kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
             ]
-            
+
             let status = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
-            
+
             if status != errSecSuccess {
                 throw KeychainError.updateFailed(status)
             }
@@ -46,70 +45,71 @@ public final class LLMKeychainService: @unchecked Sendable {
                 kSecAttrService as String: serviceName,
                 kSecAttrAccount as String: account,
                 kSecValueData as String: data,
-                kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+                kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
             ]
-            
-            if let accessGroup = accessGroup {
+
+            if let accessGroup {
                 query[kSecAttrAccessGroup as String] = accessGroup
             }
-            
+
             let status = SecItemAdd(query as CFDictionary, nil)
-            
+
             if status != errSecSuccess {
                 throw KeychainError.saveFailed(status)
             }
         }
     }
-    
+
     /// Retrieve API key for a provider
     public func retrieveAPIKey(for provider: String) throws -> String {
         let account = accountName(for: provider)
-        
+
         var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: serviceName,
             kSecAttrAccount as String: account,
             kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne
+            kSecMatchLimit as String: kSecMatchLimitOne,
         ]
-        
-        if let accessGroup = accessGroup {
+
+        if let accessGroup {
             query[kSecAttrAccessGroup as String] = accessGroup
         }
-        
+
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
-        
+
         guard status == errSecSuccess,
               let data = result as? Data,
-              let key = String(data: data, encoding: .utf8) else {
+              let key = String(data: data, encoding: .utf8)
+        else {
             throw KeychainError.notFound
         }
-        
+
         return key
     }
-    
+
     /// Delete API key for a provider
     public func deleteAPIKey(for provider: String) throws {
         let account = accountName(for: provider)
-        
+
         var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: serviceName,
-            kSecAttrAccount as String: account
+            kSecAttrAccount as String: account,
         ]
-        
-        if let accessGroup = accessGroup {
+
+        if let accessGroup {
             query[kSecAttrAccessGroup as String] = accessGroup
         }
-        
+
         let status = SecItemDelete(query as CFDictionary)
-        
-        if status != errSecSuccess && status != errSecItemNotFound {
+
+        if status != errSecSuccess, status != errSecItemNotFound {
             throw KeychainError.deleteFailed(status)
         }
     }
-    
+
     /// Check if API key exists for a provider
     public func hasAPIKey(for provider: String) -> Bool {
         do {
@@ -119,58 +119,59 @@ public final class LLMKeychainService: @unchecked Sendable {
             return false
         }
     }
-    
+
     /// List all configured providers
     public func listConfiguredProviders() -> [String] {
         var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: serviceName,
             kSecReturnAttributes as String: true,
-            kSecMatchLimit as String: kSecMatchLimitAll
+            kSecMatchLimit as String: kSecMatchLimitAll,
         ]
-        
-        if let accessGroup = accessGroup {
+
+        if let accessGroup {
             query[kSecAttrAccessGroup as String] = accessGroup
         }
-        
+
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
-        
+
         guard status == errSecSuccess,
-              let items = result as? [[String: Any]] else {
+              let items = result as? [[String: Any]]
+        else {
             return []
         }
-        
+
         return items.compactMap { item in
             guard let account = item[kSecAttrAccount as String] as? String else { return nil }
             return providerFromAccount(account)
         }
     }
-    
+
     /// Delete all stored API keys
     public func deleteAllAPIKeys() throws {
         var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: serviceName
+            kSecAttrService as String: serviceName,
         ]
-        
-        if let accessGroup = accessGroup {
+
+        if let accessGroup {
             query[kSecAttrAccessGroup as String] = accessGroup
         }
-        
+
         let status = SecItemDelete(query as CFDictionary)
-        
-        if status != errSecSuccess && status != errSecItemNotFound {
+
+        if status != errSecSuccess, status != errSecItemNotFound {
             throw KeychainError.deleteFailed(status)
         }
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func accountName(for provider: String) -> String {
-        return "llm_provider_\(provider)"
+        "llm_provider_\(provider)"
     }
-    
+
     private func providerFromAccount(_ account: String) -> String? {
         guard account.hasPrefix("llm_provider_") else { return nil }
         return String(account.dropFirst("llm_provider_".count))
@@ -185,22 +186,22 @@ public enum KeychainError: LocalizedError {
     case deleteFailed(OSStatus)
     case notFound
     case invalidData
-    
+
     public var errorDescription: String? {
         switch self {
-        case .saveFailed(let status):
-            return "Failed to save to keychain: \(errorMessage(for: status))"
-        case .updateFailed(let status):
-            return "Failed to update keychain: \(errorMessage(for: status))"
-        case .deleteFailed(let status):
-            return "Failed to delete from keychain: \(errorMessage(for: status))"
+        case let .saveFailed(status):
+            "Failed to save to keychain: \(errorMessage(for: status))"
+        case let .updateFailed(status):
+            "Failed to update keychain: \(errorMessage(for: status))"
+        case let .deleteFailed(status):
+            "Failed to delete from keychain: \(errorMessage(for: status))"
         case .notFound:
-            return "API key not found in keychain"
+            "API key not found in keychain"
         case .invalidData:
-            return "Invalid data in keychain"
+            "Invalid data in keychain"
         }
     }
-    
+
     private func errorMessage(for status: OSStatus) -> String {
         if let error = SecCopyErrorMessageString(status, nil) as String? {
             return error
@@ -218,7 +219,7 @@ public struct LLMProviderConfiguration: Equatable, Sendable {
     public let organizationId: String?
     public let customEndpoint: String?
     public let additionalSettings: [String: String]
-    
+
     public init(
         providerId: String,
         apiKey: String,
@@ -233,4 +234,3 @@ public struct LLMProviderConfiguration: Equatable, Sendable {
         self.additionalSettings = additionalSettings
     }
 }
-

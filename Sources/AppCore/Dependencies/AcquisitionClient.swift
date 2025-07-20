@@ -3,7 +3,7 @@ import Foundation
 
 /// TCA-compatible dependency client for acquisition management
 @DependencyClient
-public struct AcquisitionClient {
+public struct AcquisitionClient: Sendable {
     public var createAcquisition: @Sendable (String, String, [UploadedDocument]) async throws -> Acquisition
     public var fetchAcquisitions: @Sendable () async throws -> [Acquisition]
     public var fetchAcquisition: @Sendable (UUID) async throws -> Acquisition?
@@ -15,8 +15,8 @@ public struct AcquisitionClient {
 }
 
 extension AcquisitionClient: TestDependencyKey {
-    public static var testValue = Self()
-    public static var previewValue = Self(
+    public static let testValue = Self()
+    public static let previewValue = Self(
         createAcquisition: { title, requirements, _ in
             Acquisition(title: title, requirements: requirements)
         },

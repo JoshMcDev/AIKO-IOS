@@ -2,7 +2,7 @@ import Combine
 import Foundation
 
 /// Service for handling network requests
-public final class NetworkService: ObservableObject {
+public final class NetworkService: ObservableObject, @unchecked Sendable {
     // MARK: - Singleton
 
     public static let shared = NetworkService()

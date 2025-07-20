@@ -1,13 +1,13 @@
 import Foundation
 
 // Document chain related types
-public struct DocumentChainProgress: Equatable {
+public struct DocumentChainProgress: Equatable, Sendable {
     public let acquisitionId: UUID
     public let documentOrder: [DocumentType]
     public var completedDocuments: [DocumentType]
     public var currentDocument: DocumentType?
     public var propagatedData: [String: String]
-    
+
     public init(
         acquisitionId: UUID,
         documentOrder: [DocumentType],
@@ -23,11 +23,11 @@ public struct DocumentChainProgress: Equatable {
     }
 }
 
-public struct ChainValidation: Equatable {
+public struct ChainValidation: Equatable, Sendable {
     public let isValid: Bool
     public let errors: [String]
     public let warnings: [String]
-    
+
     public init(isValid: Bool, errors: [String] = [], warnings: [String] = []) {
         self.isValid = isValid
         self.errors = errors
@@ -35,7 +35,7 @@ public struct ChainValidation: Equatable {
     }
 }
 
-public protocol DocumentChainManagerProtocol {
+public protocol DocumentChainManagerProtocol: Sendable {
     func createChain(_ acquisitionId: UUID, _ documentTypes: [DocumentType]) async throws -> DocumentChainProgress
     func validateChain(_ acquisitionId: UUID) async throws -> ChainValidation
     func updateChainProgress(_ acquisitionId: UUID, _ documentType: DocumentType, _ document: GeneratedDocument) async throws -> DocumentChainProgress

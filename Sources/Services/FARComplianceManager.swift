@@ -1,44 +1,44 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 
 /// Unified FAR Compliance Manager consolidating all FAR-related functionality
-public struct FARComplianceManager {
+public struct FARComplianceManager: Sendable {
     // Compliance validation
-    public var validateCompliance: (FARValidationRequest) async throws -> FARComplianceResult
-    public var validateDocument: (GeneratedDocument, FARPart) async throws -> [FARViolation]
-    public var checkClause: (String, FARClause) async -> Bool
+    public var validateCompliance: @Sendable (FARValidationRequest) async throws -> FARComplianceResult
+    public var validateDocument: @Sendable (GeneratedDocument, FARPart) async throws -> [FARViolation]
+    public var checkClause: @Sendable (String, FARClause) async -> Bool
 
     // Reference lookup
-    public var lookupClause: (String) async throws -> FARClause?
-    public var searchClauses: (String, FARPart?) async throws -> [FARClause]
-    public var getRequiredClauses: (ContractType, Double) async throws -> [FARClause]
-    public var getFlowdownClauses: ([FARClause]) async throws -> [FARClause]
+    public var lookupClause: @Sendable (String) async throws -> FARClause?
+    public var searchClauses: @Sendable (String, FARPart?) async throws -> [FARClause]
+    public var getRequiredClauses: @Sendable (ContractType, Double) async throws -> [FARClause]
+    public var getFlowdownClauses: @Sendable ([FARClause]) async throws -> [FARClause]
 
     // Part 12 Commercial Items
-    public var analyzePart12Applicability: (AcquisitionDetails) async throws -> Part12Analysis
-    public var generatePart12Documentation: (Part12Requirements) async throws -> Part12Package
-    public var validateCommercialItemDetermination: (CommercialItemData) async throws -> FARValidationResult
+    public var analyzePart12Applicability: @Sendable (AcquisitionDetails) async throws -> Part12Analysis
+    public var generatePart12Documentation: @Sendable (Part12Requirements) async throws -> Part12Package
+    public var validateCommercialItemDetermination: @Sendable (CommercialItemData) async throws -> FARValidationResult
 
     // Compliance guidance
-    public var getComplianceGuidance: (FARClause) async -> ComplianceGuidance
-    public var suggestAlternatives: (FARClause, ContractContext) async throws -> [AlternativeApproach]
-    public var checkExemptions: (FARClause, ContractContext) async -> [PossibleExemption]
+    public var getComplianceGuidance: @Sendable (FARClause) async -> ComplianceGuidance
+    public var suggestAlternatives: @Sendable (FARClause, ContractContext) async throws -> [AlternativeApproach]
+    public var checkExemptions: @Sendable (FARClause, ContractContext) async -> [PossibleExemption]
 
     // Wizard and workflow
-    public var startComplianceWizard: (WizardConfiguration) async -> WizardSession
-    public var continueWizard: (WizardSession, WizardResponse) async throws -> ComplianceWizardStep?
-    public var generateComplianceReport: (ComplianceCheckResults) async throws -> Data
+    public var startComplianceWizard: @Sendable (WizardConfiguration) async -> WizardSession
+    public var continueWizard: @Sendable (WizardSession, WizardResponse) async throws -> ComplianceWizardStep?
+    public var generateComplianceReport: @Sendable (ComplianceCheckResults) async throws -> Data
 
     // Updates and monitoring
-    public var checkForUpdates: () async throws -> [FARUpdateInfo]
-    public var subscribeToClause: (String) async throws -> Void
-    public var getChangeHistory: (String) async throws -> [FARChange]
+    public var checkForUpdates: @Sendable () async throws -> [FARUpdateInfo]
+    public var subscribeToClause: @Sendable (String) async throws -> Void
+    public var getChangeHistory: @Sendable (String) async throws -> [FARChange]
 }
 
 // MARK: - Unified FAR Models
 
-public enum ContractType: String, CaseIterable {
+public enum ContractType: String, CaseIterable, Sendable {
     case fixedPrice = "fixed_price"
     case costReimbursement = "cost_reimbursement"
     case timeAndMaterials = "time_and_materials"
@@ -70,7 +70,7 @@ public struct FARValidationRequest {
     }
 }
 
-public struct FARComplianceResult {
+public struct FARComplianceResult: Sendable {
     public let isCompliant: Bool
     public let violations: [FARViolation]
     public let warnings: [FARWarning]
@@ -82,14 +82,14 @@ public struct FARComplianceResult {
 
 public typealias ComplianceCheckResults = FARComplianceResult
 
-public struct FARViolation: Equatable {
+public struct FARViolation: Equatable, Sendable {
     public let clause: FARClause
     public let severity: ViolationSeverity
     public let description: String
     public let location: String?
     public let suggestedFix: String?
 
-    public enum ViolationSeverity: String, Equatable {
+    public enum ViolationSeverity: String, Equatable, Sendable {
         case critical
         case major
         case minor
@@ -97,13 +97,13 @@ public struct FARViolation: Equatable {
     }
 }
 
-public struct FARWarning: Equatable {
+public struct FARWarning: Equatable, Sendable {
     public let clause: FARClause?
     public let message: String
     public let recommendation: String
 }
 
-public enum FARPart: String, CaseIterable {
+public enum FARPart: String, CaseIterable, Sendable {
     case part1 = "1" // Federal Acquisition Regulations System
     case part2 = "2" // Definitions
     case part3 = "3" // Improper Business Practices
@@ -145,7 +145,7 @@ public enum FARPart: String, CaseIterable {
     }
 }
 
-public struct Part12Analysis {
+public struct Part12Analysis: Sendable {
     public let isApplicable: Bool
     public let commercialityDetermination: CommercialityDetermination
     public let requiredDocumentation: [Part12Document]
@@ -154,7 +154,7 @@ public struct Part12Analysis {
     public let recommendations: [String]
 }
 
-public struct Part12Package {
+public struct Part12Package: Sendable {
     public let marketResearchReport: GeneratedDocument
     public let commercialItemDetermination: GeneratedDocument
     public let simplifiedAcquisitionPlan: GeneratedDocument?
@@ -162,7 +162,7 @@ public struct Part12Package {
     public let clauseMatrix: ClauseMatrix
 }
 
-public enum CommercialityDetermination {
+public enum CommercialityDetermination: Sendable {
     case commercial
     case commercialOffTheShelf
     case nonDevelopmental
@@ -170,7 +170,7 @@ public enum CommercialityDetermination {
     case hybrid(commercialComponents: [String])
 }
 
-public struct ComplianceGuidance {
+public struct ComplianceGuidance: Sendable {
     public let clause: FARClause
     public let interpretation: String
     public let bestPractices: [String]
@@ -179,7 +179,7 @@ public struct ComplianceGuidance {
     public let relatedClauses: [FARClause]
 }
 
-public struct AlternativeApproach {
+public struct AlternativeApproach: Sendable {
     public let description: String
     public let applicableSituations: [String]
     public let advantages: [String]
@@ -556,7 +556,7 @@ actor FARComplianceStorage {
 
 // MARK: - Supporting Components
 
-final class FARClauseDatabase {
+final class FARClauseDatabase: @unchecked Sendable {
     // Database implementation
     init() async throws {}
 
@@ -573,7 +573,7 @@ final class FARClauseDatabase {
     func getCommercialItemClauses() async -> [FARClause] { [] }
 }
 
-final class Part12ComplianceEngine {
+final class Part12ComplianceEngine: @unchecked Sendable {
     func analyzeApplicability(_: AcquisitionDetails) async -> Part12Analysis {
         Part12Analysis(
             isApplicable: true,
@@ -598,13 +598,13 @@ final class Part12ComplianceEngine {
     }
 }
 
-final class FARValidationEngine {
+final class FARValidationEngine: @unchecked Sendable {
     func validateDocument(content _: String, againstClauses _: [FARClause]) async throws -> [FARViolation] {
         []
     }
 }
 
-final class ComplianceWizardEngine {
+final class ComplianceWizardEngine: @unchecked Sendable {
     func startSession(configuration _: WizardConfiguration) async -> WizardSession {
         WizardSession(id: UUID().uuidString, currentStep: ComplianceWizardStep(id: "start", title: "Start", questions: []))
     }
@@ -616,7 +616,7 @@ final class ComplianceWizardEngine {
 
 // MARK: - Additional Models
 
-public struct ContractContext {
+public struct ContractContext: Sendable {
     public let contractType: ContractType
     public let value: Double
     public let performancePeriod: DateInterval
@@ -624,150 +624,150 @@ public struct ContractContext {
     public let naics: String?
 }
 
-public struct AcquisitionDetails {
+public struct AcquisitionDetails: Sendable {
     public let description: String
     public let estimatedValue: Double
     public let marketResearch: FARMarketResearchData?
     public let technicalRequirements: [String]
 }
 
-public struct Part12Requirements {
+public struct Part12Requirements: Sendable {
     public let itemDescription: String
     public let quantity: Int
     public let deliverySchedule: String
     public let performanceRequirements: [String]
 }
 
-public struct Part12Document {
+public struct Part12Document: Sendable {
     public let type: String
     public let isRequired: Bool
     public let templateId: String?
 }
 
-public struct StreamlinedProcedure {
+public struct StreamlinedProcedure: Sendable {
     public let name: String
     public let description: String
     public let applicability: String
 }
 
-public struct ClauseMatrix {
+public struct ClauseMatrix: Sendable {
     public let requiredClauses: [FARClause]
     public let optionalClauses: [FARClause]
     public let inapplicableClauses: [FARClause]
 }
 
-public struct CommercialItemData {
+public struct CommercialItemData: Sendable {
     public let itemDescription: String
     public let marketEvidence: [String]
     public let priceAnalysis: PriceAnalysisData?
     public let customization: String?
 }
 
-public struct FARValidationResult {
+public struct FARValidationResult: Sendable {
     public let isValid: Bool
     public let issues: [ValidationIssue]
 }
 
-public struct FARMarketResearchData {
+public struct FARMarketResearchData: Sendable {
     public let sources: [String]
     public let findings: [String]
     public let conclusion: String
 }
 
-public struct PriceAnalysisData {
+public struct PriceAnalysisData: Sendable {
     public let method: String
     public let comparisons: [PriceComparison]
     public let conclusion: String
 }
 
-public struct PriceComparison {
+public struct PriceComparison: Sendable {
     public let source: String
     public let price: Double
     public let adjustments: [String]
 }
 
-public struct ComplianceRecommendation {
+public struct ComplianceRecommendation: Sendable {
     public let priority: Priority
     public let description: String
     public let clause: FARClause?
     public let estimatedEffort: EffortLevel
 
-    public enum Priority {
+    public enum Priority: Sendable {
         case critical, high, medium, low
     }
 
-    public enum EffortLevel {
+    public enum EffortLevel: Sendable {
         case minimal, low, medium, high
     }
 }
 
-public struct ComplianceExample {
+public struct ComplianceExample: Sendable {
     public let scenario: String
     public let compliantApproach: String
     public let nonCompliantApproach: String?
 }
 
-public struct PossibleExemption {
+public struct PossibleExemption: Sendable {
     public let type: String
     public let conditions: [String]
     public let justificationRequired: Bool
 }
 
-public struct FARUpdateInfo {
+public struct FARUpdateInfo: Sendable {
     public let clauseNumber: String
     public let changeType: ChangeType
     public let effectiveDate: Date
     public let summary: String
 
-    public enum ChangeType {
+    public enum ChangeType: Sendable {
         case new, revised, removed
     }
 }
 
-public struct FARChange {
+public struct FARChange: Sendable {
     public let date: Date
     public let description: String
     public let federalRegisterCitation: String?
 }
 
-public struct WizardConfiguration {
+public struct WizardConfiguration: @unchecked Sendable {
     public let purpose: WizardPurpose
     public let initialData: [String: Any]
 
-    public enum WizardPurpose {
+    public enum WizardPurpose: Sendable {
         case compliance, part12, clauseSelection, exemption
     }
 }
 
-public struct WizardSession {
+public struct WizardSession: @unchecked Sendable {
     public let id: String
     public var currentStep: ComplianceWizardStep
     public var responses: [String: Any] = [:]
 }
 
-public struct ComplianceWizardStep {
+public struct ComplianceWizardStep: Sendable {
     public let id: String
     public let title: String
     public let questions: [WizardQuestion]
 }
 
-public struct WizardQuestion {
+public struct WizardQuestion: Sendable {
     public let id: String
     public let text: String
     public let type: QuestionType
     public let options: [String]?
 
-    public enum QuestionType {
+    public enum QuestionType: Sendable {
         case text, singleChoice, multipleChoice, numeric, date
     }
 }
 
-public struct WizardResponse {
+public struct WizardResponse: @unchecked Sendable {
     public let questionId: String
     public let answer: Any
 }
 
-enum FARError: LocalizedError {
+enum FARError: LocalizedError, Sendable {
     case notImplemented
 
     var errorDescription: String? {
@@ -786,7 +786,7 @@ extension FARComplianceManager: DependencyKey {
             try await FARComplianceStorage()
         }
 
-        func getStorage() async throws -> FARComplianceStorage {
+        @Sendable func getStorage() async throws -> FARComplianceStorage {
             try await storage.value
         }
 

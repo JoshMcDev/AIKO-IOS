@@ -1,5 +1,5 @@
-import Foundation
 import AppCore
+import Foundation
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -15,12 +15,12 @@ public protocol AdaptivePromptingEngineProtocol {
 
 // MARK: - Data Models
 
-public struct ConversationContext {
+public struct ConversationContext: Sendable {
     public let acquisitionType: APEAcquisitionType
     public let uploadedDocuments: [ParsedDocument]
     public let userProfile: ConversationUserProfile?
     public let historicalData: [HistoricalAcquisition]
-    
+
     public init(
         acquisitionType: APEAcquisitionType,
         uploadedDocuments: [ParsedDocument] = [],
@@ -34,7 +34,7 @@ public struct ConversationContext {
     }
 }
 
-public struct ConversationSession: Identifiable, Equatable {
+public struct ConversationSession: Identifiable, Equatable, Sendable {
     public let id = UUID()
     public let startTime = Date()
     public var state: ConversationState
@@ -42,16 +42,16 @@ public struct ConversationSession: Identifiable, Equatable {
     public var questionHistory: [AskedQuestion]
     public var remainingQuestions: [DynamicQuestion]
     public var confidence: ConfidenceLevel
-    public var suggestedAnswers: [RequirementField: Any]?
+    public var suggestedAnswers: [RequirementField: UserResponse.ResponseValue]?
     public var autoFillResult: ConfidenceBasedAutoFillEngine.AutoFillResult?
-    
+
     public init(
         state: ConversationState = .starting,
         collectedData: RequirementsData = RequirementsData(),
         questionHistory: [AskedQuestion] = [],
         remainingQuestions: [DynamicQuestion] = [],
         confidence: ConfidenceLevel = .low,
-        suggestedAnswers: [RequirementField: Any]? = nil,
+        suggestedAnswers: [RequirementField: UserResponse.ResponseValue]? = nil,
         autoFillResult: ConfidenceBasedAutoFillEngine.AutoFillResult? = nil
     ) {
         self.state = state
@@ -62,20 +62,20 @@ public struct ConversationSession: Identifiable, Equatable {
         self.suggestedAnswers = suggestedAnswers
         self.autoFillResult = autoFillResult
     }
-    
+
     public static func == (lhs: ConversationSession, rhs: ConversationSession) -> Bool {
         lhs.id == rhs.id &&
-        lhs.startTime == rhs.startTime &&
-        lhs.state == rhs.state &&
-        lhs.collectedData == rhs.collectedData &&
-        lhs.questionHistory == rhs.questionHistory &&
-        lhs.remainingQuestions == rhs.remainingQuestions &&
-        lhs.confidence == rhs.confidence
+            lhs.startTime == rhs.startTime &&
+            lhs.state == rhs.state &&
+            lhs.collectedData == rhs.collectedData &&
+            lhs.questionHistory == rhs.questionHistory &&
+            lhs.remainingQuestions == rhs.remainingQuestions &&
+            lhs.confidence == rhs.confidence
         // Note: suggestedAnswers is not compared due to Any type
     }
 }
 
-public enum ConversationState: Equatable {
+public enum ConversationState: Equatable, Sendable {
     case starting
     case gatheringBasicInfo
     case extractingFromDocuments
@@ -84,7 +84,7 @@ public enum ConversationState: Equatable {
     case complete
 }
 
-public struct RequirementsData: Equatable {
+public struct RequirementsData: Equatable, Sendable {
     public var projectTitle: String?
     public var description: String?
     public var estimatedValue: Decimal?
@@ -100,7 +100,7 @@ public struct RequirementsData: Equatable {
     public var competitionMethod: String?
     public var setAsideType: String?
     public var evaluationCriteria: [String]
-    
+
     public init(
         projectTitle: String? = nil,
         description: String? = nil,
@@ -136,14 +136,14 @@ public struct RequirementsData: Equatable {
     }
 }
 
-public struct APEVendorInfo: Equatable {
+public struct APEVendorInfo: Equatable, Sendable {
     public var name: String?
     public var uei: String?
     public var cage: String?
     public var email: String?
     public var phone: String?
     public var address: String?
-    
+
     public init(name: String? = nil, uei: String? = nil, cage: String? = nil, email: String? = nil, phone: String? = nil, address: String? = nil) {
         self.name = name
         self.uei = uei
@@ -154,25 +154,25 @@ public struct APEVendorInfo: Equatable {
     }
 }
 
-public struct DocumentReference: Identifiable, Equatable {
+public struct DocumentReference: Identifiable, Equatable, Sendable {
     public let id = UUID()
     public let fileName: String
     public let documentType: DocumentType
-    
+
     public init(fileName: String, documentType: DocumentType) {
         self.fileName = fileName
         self.documentType = documentType
     }
 }
 
-public struct UserResponse: Equatable {
+public struct UserResponse: Equatable, Sendable {
     public let questionId: String
     public let responseType: ResponseType
-    public let value: Any
+    public let value: ResponseValue
     public let confidence: Float
     public let timestamp: Date
-    
-    public enum ResponseType: Equatable {
+
+    public enum ResponseType: Equatable, Sendable {
         case text
         case selection
         case numeric
@@ -181,34 +181,76 @@ public struct UserResponse: Equatable {
         case document
         case skip
     }
-    
-    public init(questionId: String, responseType: ResponseType, value: Any, confidence: Float = 1.0) {
+
+    public enum ResponseValue: Equatable, Sendable {
+        case text(String)
+        case selection(String)
+        case numeric(Decimal)
+        case date(Date)
+        case boolean(Bool)
+        case document(UUID)
+        case skip
+    }
+
+    public init(questionId: String, responseType: ResponseType, value: ResponseValue, confidence: Float = 1.0) {
         self.questionId = questionId
         self.responseType = responseType
         self.value = value
         self.confidence = confidence
-        self.timestamp = Date()
+        timestamp = Date()
     }
-    
-    public static func == (lhs: UserResponse, rhs: UserResponse) -> Bool {
-        // Basic comparison without value since Any isn't Equatable
-        lhs.questionId == rhs.questionId &&
-        lhs.responseType == rhs.responseType &&
-        lhs.confidence == rhs.confidence &&
-        lhs.timestamp == rhs.timestamp
+
+    // Convenience initializers for backward compatibility
+    public init(questionId: String, responseType: ResponseType, value: Any, confidence: Float = 1.0) {
+        self.questionId = questionId
+        self.responseType = responseType
+        self.confidence = confidence
+        timestamp = Date()
+
+        // Convert Any to ResponseValue based on ResponseType
+        switch responseType {
+        case .text:
+            self.value = .text(value as? String ?? "")
+        case .selection:
+            self.value = .selection(value as? String ?? "")
+        case .numeric:
+            if let decimal = value as? Decimal {
+                self.value = .numeric(decimal)
+            } else if let double = value as? Double {
+                self.value = .numeric(Decimal(double))
+            } else if let int = value as? Int {
+                self.value = .numeric(Decimal(int))
+            } else {
+                self.value = .numeric(Decimal.zero)
+            }
+        case .date:
+            self.value = .date(value as? Date ?? Date())
+        case .boolean:
+            self.value = .boolean(value as? Bool ?? false)
+        case .document:
+            if let uuid = value as? UUID {
+                self.value = .document(uuid)
+            } else if let string = value as? String, let uuid = UUID(uuidString: string) {
+                self.value = .document(uuid)
+            } else {
+                self.value = .document(UUID())
+            }
+        case .skip:
+            self.value = .skip
+        }
     }
 }
 
-public struct NextPrompt {
+public struct NextPrompt: Sendable {
     public let question: DynamicQuestion
-    public let suggestedAnswer: Any?
+    public let suggestedAnswer: UserResponse.ResponseValue?
     public let confidenceInSuggestion: Float
     public let isRequired: Bool
     public let helpText: String?
-    
+
     public init(
         question: DynamicQuestion,
-        suggestedAnswer: Any? = nil,
+        suggestedAnswer: UserResponse.ResponseValue? = nil,
         confidenceInSuggestion: Float = 0,
         isRequired: Bool = true,
         helpText: String? = nil
@@ -219,9 +261,59 @@ public struct NextPrompt {
         self.isRequired = isRequired
         self.helpText = helpText
     }
+
+    // Convenience initializer for backward compatibility
+    public init(
+        question: DynamicQuestion,
+        suggestedAnswer: Any?,
+        confidenceInSuggestion: Float = 0,
+        isRequired: Bool = true,
+        helpText: String? = nil
+    ) {
+        self.question = question
+        self.confidenceInSuggestion = confidenceInSuggestion
+        self.isRequired = isRequired
+        self.helpText = helpText
+
+        // Convert Any to ResponseValue based on question responseType
+        if let value = suggestedAnswer {
+            switch question.responseType {
+            case .text:
+                self.suggestedAnswer = .text(value as? String ?? "")
+            case .selection:
+                self.suggestedAnswer = .selection(value as? String ?? "")
+            case .numeric:
+                if let decimal = value as? Decimal {
+                    self.suggestedAnswer = .numeric(decimal)
+                } else if let double = value as? Double {
+                    self.suggestedAnswer = .numeric(Decimal(double))
+                } else if let int = value as? Int {
+                    self.suggestedAnswer = .numeric(Decimal(int))
+                } else {
+                    self.suggestedAnswer = .numeric(Decimal.zero)
+                }
+            case .date:
+                self.suggestedAnswer = .date(value as? Date ?? Date())
+            case .boolean:
+                self.suggestedAnswer = .boolean(value as? Bool ?? false)
+            case .document:
+                if let uuid = value as? UUID {
+                    self.suggestedAnswer = .document(uuid)
+                } else if let string = value as? String, let uuid = UUID(uuidString: string) {
+                    self.suggestedAnswer = .document(uuid)
+                } else {
+                    self.suggestedAnswer = .document(UUID())
+                }
+            case .skip:
+                self.suggestedAnswer = .skip
+            }
+        } else {
+            self.suggestedAnswer = nil
+        }
+    }
 }
 
-public struct DynamicQuestion: Identifiable, Equatable {
+public struct DynamicQuestion: Identifiable, Equatable, Sendable {
     public let id = UUID()
     public let field: RequirementField
     public let prompt: String
@@ -233,18 +325,18 @@ public struct DynamicQuestion: Identifiable, Equatable {
     public let helpText: String?
     public let examples: [String]
     public let isRequired: Bool
-    
-    public enum QuestionPriority: Int, Comparable, Equatable {
+
+    public enum QuestionPriority: Int, Comparable, Equatable, Sendable {
         case critical = 0
         case high = 1
         case medium = 2
         case low = 3
-        
+
         public static func < (lhs: QuestionPriority, rhs: QuestionPriority) -> Bool {
             lhs.rawValue < rhs.rawValue
         }
     }
-    
+
     public init(
         field: RequirementField,
         prompt: String,
@@ -298,11 +390,11 @@ public enum RequirementField: String, CaseIterable, Equatable, Sendable {
     case pointOfContact
 }
 
-public struct ValidationRule: Equatable {
+public struct ValidationRule: Equatable, Sendable {
     public let type: ValidationType
     public let errorMessage: String
-    
-    public enum ValidationType: Equatable {
+
+    public enum ValidationType: Equatable, Sendable {
         case required
         case minLength(Int)
         case maxLength(Int)
@@ -310,56 +402,56 @@ public struct ValidationRule: Equatable {
         case range(min: Decimal, max: Decimal)
         case futureDate
         case custom(String) // Changed from closure to identifier for Equatable
-        
+
         public static func == (lhs: ValidationType, rhs: ValidationType) -> Bool {
             switch (lhs, rhs) {
-            case (.required, .required): return true
-            case let (.minLength(a), .minLength(b)): return a == b
-            case let (.maxLength(a), .maxLength(b)): return a == b
-            case let (.regex(a), .regex(b)): return a == b
-            case let (.range(minA, maxA), .range(minB, maxB)): return minA == minB && maxA == maxB
-            case (.futureDate, .futureDate): return true
-            case let (.custom(a), .custom(b)): return a == b
-            default: return false
+            case (.required, .required): true
+            case let (.minLength(a), .minLength(b)): a == b
+            case let (.maxLength(a), .maxLength(b)): a == b
+            case let (.regex(a), .regex(b)): a == b
+            case let (.range(minA, maxA), .range(minB, maxB)): minA == minB && maxA == maxB
+            case (.futureDate, .futureDate): true
+            case let (.custom(a), .custom(b)): a == b
+            default: false
             }
         }
     }
-    
+
     public init(type: ValidationType, errorMessage: String) {
         self.type = type
         self.errorMessage = errorMessage
     }
 }
 
-public struct AskedQuestion: Equatable {
+public struct AskedQuestion: Equatable, Sendable {
     public let question: DynamicQuestion
     public let response: UserResponse?
     public let timestamp: Date
     public let skipped: Bool
-    
+
     public init(question: DynamicQuestion, response: UserResponse?, skipped: Bool = false) {
         self.question = question
         self.response = response
-        self.timestamp = Date()
+        timestamp = Date()
         self.skipped = skipped
     }
 }
 
-public enum ConfidenceLevel: Float, Equatable {
+public enum ConfidenceLevel: Float, Equatable, Sendable {
     case low = 0.3
     case medium = 0.6
     case high = 0.8
     case veryHigh = 0.95
 }
 
-public struct ExtractedContext: Equatable {
+public struct ExtractedContext: Equatable, Sendable {
     public let vendorInfo: APEVendorInfo?
     public let pricing: PricingInfo?
     public let technicalDetails: [String]
     public let dates: ExtractedDates?
     public let specialTerms: [String]
     public let confidence: [RequirementField: Float]
-    
+
     public init(
         vendorInfo: APEVendorInfo? = nil,
         pricing: PricingInfo? = nil,
@@ -377,11 +469,11 @@ public struct ExtractedContext: Equatable {
     }
 }
 
-public struct PricingInfo: Equatable {
+public struct PricingInfo: Equatable, Sendable {
     public let totalPrice: Decimal?
     public let unitPrices: [APELineItem]
     public let currency: String
-    
+
     public init(totalPrice: Decimal? = nil, unitPrices: [APELineItem] = [], currency: String = "USD") {
         self.totalPrice = totalPrice
         self.unitPrices = unitPrices
@@ -389,13 +481,13 @@ public struct PricingInfo: Equatable {
     }
 }
 
-public struct APELineItem: Identifiable, Equatable {
+public struct APELineItem: Identifiable, Equatable, Sendable {
     public let id: UUID
     public let description: String
     public let quantity: Int
     public let unitPrice: Decimal
     public let totalPrice: Decimal
-    
+
     public init(id: UUID = UUID(), description: String, quantity: Int, unitPrice: Decimal, totalPrice: Decimal) {
         self.id = id
         self.description = description
@@ -405,12 +497,12 @@ public struct APELineItem: Identifiable, Equatable {
     }
 }
 
-public struct ExtractedDates: Equatable {
+public struct ExtractedDates: Equatable, Sendable {
     public var quoteDate: Date?
     public var validUntil: Date?
     public var deliveryDate: Date?
     public var performancePeriod: DateInterval?
-    
+
     public init(
         quoteDate: Date? = nil,
         validUntil: Date? = nil,
@@ -424,21 +516,21 @@ public struct ExtractedDates: Equatable {
     }
 }
 
-public struct APEUserInteraction {
+public struct APEUserInteraction: Sendable {
     public let sessionId: UUID
     public let field: RequirementField
-    public let suggestedValue: Any?
+    public let suggestedValue: UserResponse.ResponseValue?
     public let acceptedSuggestion: Bool
-    public let finalValue: Any
+    public let finalValue: UserResponse.ResponseValue
     public let timeToRespond: TimeInterval
     public let documentContext: Bool
-    
+
     public init(
         sessionId: UUID,
         field: RequirementField,
-        suggestedValue: Any? = nil,
+        suggestedValue: UserResponse.ResponseValue? = nil,
         acceptedSuggestion: Bool = false,
-        finalValue: Any,
+        finalValue: UserResponse.ResponseValue,
         timeToRespond: TimeInterval,
         documentContext: Bool = false
     ) {
@@ -452,33 +544,33 @@ public struct APEUserInteraction {
     }
 }
 
-public struct FieldDefault {
-    public let value: Any
+public struct FieldDefault: Sendable {
+    public let value: UserResponse.ResponseValue
     public let confidence: Float
     public let source: DefaultSource
-    
-    public enum DefaultSource {
+
+    public enum DefaultSource: Sendable {
         case historical
         case userPattern
         case documentContext
         case systemDefault
-        case contextual  // Advanced context-aware defaults
+        case contextual // Advanced context-aware defaults
     }
-    
-    public init(value: Any, confidence: Float, source: DefaultSource) {
+
+    public init(value: UserResponse.ResponseValue, confidence: Float, source: DefaultSource) {
         self.value = value
         self.confidence = confidence
         self.source = source
     }
 }
 
-public struct HistoricalAcquisition {
+public struct HistoricalAcquisition: Sendable {
     public let id: UUID
     public let date: Date
     public let type: APEAcquisitionType
     public let data: RequirementsData
     public let vendor: APEVendorInfo?
-    
+
     public init(id: UUID = UUID(), date: Date, type: APEAcquisitionType, data: RequirementsData, vendor: APEVendorInfo? = nil) {
         self.id = id
         self.date = date
@@ -488,7 +580,7 @@ public struct HistoricalAcquisition {
     }
 }
 
-public enum APEAcquisitionType: String, Codable {
+public enum APEAcquisitionType: String, Codable, Sendable {
     case supplies
     case services
     case construction
@@ -500,7 +592,7 @@ public enum APEAcquisitionType: String, Codable {
 extension ExtractedContext {
     func toFieldMapping() -> [String: String] {
         var mapping: [String: String] = [:]
-        
+
         // Add vendor info
         if let vendor = vendorInfo {
             if let name = vendor.name { mapping["vendorName"] = name }
@@ -510,19 +602,19 @@ extension ExtractedContext {
             if let phone = vendor.phone { mapping["vendorPhone"] = phone }
             if let address = vendor.address { mapping["vendorAddress"] = address }
         }
-        
+
         // Add pricing info
-        if let pricing = pricing {
+        if let pricing {
             if let total = pricing.totalPrice {
                 mapping["estimatedValue"] = String(describing: total)
             }
         }
-        
+
         // Add dates
-        if let dates = dates {
+        if let dates {
             let formatter = DateFormatter()
             formatter.dateFormat = "MM/dd/yyyy"
-            
+
             if let quoteDate = dates.quoteDate {
                 mapping["quoteDate"] = formatter.string(from: quoteDate)
             }
@@ -534,17 +626,17 @@ extension ExtractedContext {
                 mapping["requiredDate"] = formatter.string(from: deliveryDate)
             }
         }
-        
+
         // Add technical details
         if !technicalDetails.isEmpty {
             mapping["technicalSpecs"] = technicalDetails.joined(separator: "; ")
         }
-        
+
         // Add special terms
         if !specialTerms.isEmpty {
             mapping["specialConditions"] = specialTerms.joined(separator: "; ")
         }
-        
+
         return mapping
     }
 }
@@ -552,14 +644,14 @@ extension ExtractedContext {
 extension ConversationUserProfile {
     var organizationUnit: String {
         // Default organization unit - could be extended later
-        return "Default Organization"
+        "Default Organization"
     }
 }
 
 // MARK: - Main Implementation
 
 @MainActor
-public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
+public final class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol, @unchecked Sendable {
     private let documentParser: DocumentParserEnhanced
     private let learningEngine: UserPatternLearningEngine
     private let smartDefaultsEngine: SmartDefaultsEngine
@@ -567,46 +659,46 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
     private var unifiedExtractor: UnifiedDocumentContextExtractor?
     private let questionGenerator: DynamicQuestionGenerator
     private let autoFillEngine: ConfidenceBasedAutoFillEngine
-    
+
     public init() {
-        self.documentParser = DocumentParserEnhanced()
-        self.learningEngine = UserPatternLearningEngine()
-        self.contextExtractor = DocumentContextExtractor()
-        self.questionGenerator = DynamicQuestionGenerator()
-        
+        documentParser = DocumentParserEnhanced()
+        learningEngine = UserPatternLearningEngine()
+        contextExtractor = DocumentContextExtractor()
+        questionGenerator = DynamicQuestionGenerator()
+
         // Initialize UnifiedDocumentContextExtractor
-        self.unifiedExtractor = UnifiedDocumentContextExtractor()
-        
+        unifiedExtractor = UnifiedDocumentContextExtractor()
+
         // Initialize SmartDefaultsEngine with all dependencies
-        self.smartDefaultsEngine = SmartDefaultsEngine(
+        smartDefaultsEngine = SmartDefaultsEngine(
             smartDefaultsProvider: SmartDefaultsProvider(),
-            patternLearningEngine: self.learningEngine,
-            contextExtractor: self.unifiedExtractor!
+            patternLearningEngine: learningEngine,
+            contextExtractor: unifiedExtractor!
         )
-        
+
         // Initialize ConfidenceBasedAutoFillEngine
-        self.autoFillEngine = ConfidenceBasedAutoFillEngine(
+        autoFillEngine = ConfidenceBasedAutoFillEngine(
             configuration: ConfidenceBasedAutoFillEngine.AutoFillConfiguration(
                 autoFillThreshold: 0.85,
                 suggestionThreshold: 0.65,
                 autoFillCriticalFields: false,
                 maxAutoFillFields: 20
             ),
-            smartDefaultsEngine: self.smartDefaultsEngine
+            smartDefaultsEngine: smartDefaultsEngine
         )
     }
-    
+
     public func startConversation(with context: ConversationContext) async -> ConversationSession {
         // Extract context from uploaded documents
         let extractedContext = try? await extractContextFromDocuments(context.uploadedDocuments)
-        
+
         // Generate initial questions based on context
         let questions = await questionGenerator.generateQuestions(
             for: context.acquisitionType,
             with: extractedContext,
             historicalData: context.historicalData
         )
-        
+
         // Build smart defaults context
         let defaultsContext = SmartDefaultContext(
             sessionId: UUID(),
@@ -620,14 +712,14 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
             daysUntilFYEnd: daysUntilFiscalYearEnd(),
             autoFillThreshold: 0.8
         )
-        
+
         // Get confidence-based auto-fill results
-        let allFields = questions.map { $0.field }
+        let allFields = questions.map(\.field)
         let autoFillResult = await autoFillEngine.analyzeFieldsForAutoFill(
             fields: allFields,
             context: defaultsContext
         )
-        
+
         // Create session with only the questions we must ask
         var session = ConversationSession(
             state: .gatheringBasicInfo,
@@ -635,45 +727,45 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
                 !autoFillResult.autoFilledFields.keys.contains(question.field)
             }.sorted { $0.priority < $1.priority }
         )
-        
+
         // Pre-fill data from auto-fill results
         session.collectedData = prefillDataFromAutoFillResults(
             extractedContext: extractedContext,
             autoFillResult: autoFillResult
         )
-        
+
         // Store auto-fill result for UI display
         session.autoFillResult = autoFillResult
-        
+
         // Calculate confidence based on auto-fill results
         let totalFields = Float(allFields.count)
         let filledFields = Float(autoFillResult.summary.autoFilledCount)
         let suggestedFields = Float(autoFillResult.summary.suggestedCount)
         let confidenceScore = (filledFields + suggestedFields * 0.5) / totalFields
-        
-        session.confidence = confidenceScore > 0.7 ? ConfidenceLevel.high : 
-                           confidenceScore > 0.4 ? ConfidenceLevel.medium : ConfidenceLevel.low
-        
+
+        session.confidence = confidenceScore > 0.7 ? ConfidenceLevel.high :
+            confidenceScore > 0.4 ? ConfidenceLevel.medium : ConfidenceLevel.low
+
         return session
     }
-    
+
     public func processUserResponse(_ response: UserResponse, in session: ConversationSession) async throws -> NextPrompt? {
         var updatedSession = session
-        
+
         // Record the response
         let question = session.remainingQuestions.first { $0.id.uuidString == response.questionId }
-        if let question = question {
+        if let question {
             updatedSession.questionHistory.append(AskedQuestion(question: question, response: response))
             updatedSession.remainingQuestions.removeAll { $0.id == question.id }
-            
+
             // Update collected data
             updateCollectedData(&updatedSession.collectedData, field: question.field, value: response.value)
-            
+
             // Learn from this interaction
             let suggestedValue = session.suggestedAnswers?[question.field]
-            let acceptedSuggestion = suggestedValue != nil && 
+            let acceptedSuggestion = suggestedValue != nil &&
                 String(describing: suggestedValue!) == String(describing: response.value)
-            
+
             let interaction = APEUserInteraction(
                 sessionId: session.id,
                 field: question.field,
@@ -685,17 +777,17 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
             )
             await learnFromInteraction(interaction)
         }
-        
+
         // Determine next question or complete
         if let nextQuestion = selectNextQuestion(from: updatedSession) {
             let suggestion = await getSmartDefaults(for: nextQuestion.field)
-            
+
             // Store suggestion for learning
             if updatedSession.suggestedAnswers == nil {
                 updatedSession.suggestedAnswers = [:]
             }
             updatedSession.suggestedAnswers?[nextQuestion.field] = suggestion?.value
-            
+
             return NextPrompt(
                 question: nextQuestion,
                 suggestedAnswer: suggestion?.value,
@@ -708,11 +800,11 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
             return nil
         }
     }
-    
+
     public func extractContextFromDocuments(_ documents: [ParsedDocument]) async throws -> ExtractedContext {
         try await contextExtractor.extract(from: documents)
     }
-    
+
     /// Enhanced document context extraction using unified extractor
     /// This method handles raw document data and performs comprehensive extraction
     public func extractContextFromRawDocuments(
@@ -722,15 +814,15 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
         guard let extractor = unifiedExtractor else {
             throw DocumentParserError.unsupportedFormat
         }
-        
+
         let comprehensiveContext = try await extractor.extractComprehensiveContext(
             from: documentData,
             withHints: withHints
         )
-        
+
         // Log extraction summary for debugging
         print("Document extraction completed: \(comprehensiveContext.summary)")
-        
+
         // Store parsed documents for future reference
         // This could be used for learning patterns
         for result in comprehensiveContext.adaptiveResults {
@@ -738,14 +830,14 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
                 print("Applied pattern: \(pattern)")
             }
         }
-        
+
         return comprehensiveContext.extractedContext
     }
-    
+
     public func learnFromInteraction(_ interaction: APEUserInteraction) async {
         await learningEngine.learn(from: interaction)
     }
-    
+
     public func getSmartDefaults(for field: RequirementField) async -> FieldDefault? {
         // Build context for smart defaults
         let context = SmartDefaultContext(
@@ -754,75 +846,75 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
             isEndOfFiscalYear: isEndOfFiscalYear(),
             daysUntilFYEnd: daysUntilFiscalYearEnd()
         )
-        
+
         return await smartDefaultsEngine.getSmartDefault(for: field, context: context)
     }
-    
+
     // MARK: - Helper Methods for Fiscal Context
-    
+
     private func getCurrentFiscalQuarter() -> String {
         let month = Calendar.current.component(.month, from: Date())
         switch month {
-        case 10...12: return "Q1"
-        case 1...3: return "Q2"
-        case 4...6: return "Q3"
+        case 10 ... 12: return "Q1"
+        case 1 ... 3: return "Q2"
+        case 4 ... 6: return "Q3"
         default: return "Q4"
         }
     }
-    
+
     private func isEndOfFiscalYear() -> Bool {
         let month = Calendar.current.component(.month, from: Date())
         return month >= 8 && month <= 9
     }
-    
+
     private func daysUntilFiscalYearEnd() -> Int {
         let calendar = Calendar.current
         let now = Date()
         let currentYear = calendar.component(.year, from: now)
-        
+
         // Federal fiscal year ends September 30
         var components = DateComponents()
         components.year = currentYear
         components.month = 9
         components.day = 30
-        
+
         // If we're past September, next FY end is next year
         if calendar.component(.month, from: now) >= 10 {
             components.year = currentYear + 1
         }
-        
+
         if let fyEnd = calendar.date(from: components) {
             return calendar.dateComponents([.day], from: now, to: fyEnd).day ?? 0
         }
-        
+
         return 0
     }
-    
+
     // MARK: - Private Helpers
-    
+
     private func prefillDataFromMultipleSources(
         extractedContext: ExtractedContext?,
         autoFillDefaults: [RequirementField: FieldDefault],
-        suggestedDefaults: [RequirementField: FieldDefault]
+        suggestedDefaults _: [RequirementField: FieldDefault]
     ) -> RequirementsData {
         var data = RequirementsData()
-        
+
         // First, apply extracted context
         if let context = extractedContext {
             data = prefillData(from: context)
         }
-        
+
         // Then apply auto-fill defaults
         for (field, defaultValue) in autoFillDefaults {
             applyDefaultToData(&data, field: field, value: defaultValue.value)
         }
-        
+
         // Store suggested defaults separately (not applied automatically)
         // These will be shown as suggestions in the UI
-        
+
         return data
     }
-    
+
     private func applyDefaultToData(_ data: inout RequirementsData, field: RequirementField, value: Any) {
         switch field {
         case .projectTitle:
@@ -833,7 +925,8 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
             if let decimal = value as? Decimal {
                 data.estimatedValue = decimal
             } else if let string = value as? String,
-                      let double = Double(string.replacingOccurrences(of: "$", with: "").replacingOccurrences(of: ",", with: "")) {
+                      let double = Double(string.replacingOccurrences(of: "$", with: "").replacingOccurrences(of: ",", with: ""))
+            {
                 data.estimatedValue = Decimal(double)
             }
         case .requiredDate:
@@ -867,10 +960,10 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
             break
         }
     }
-    
+
     private func generateHelpText(for field: RequirementField, suggestion: FieldDefault?) -> String? {
         var helpTexts: [String] = []
-        
+
         // Add field-specific help
         switch field {
         case .estimatedValue:
@@ -884,9 +977,9 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
         default:
             break
         }
-        
+
         // Add suggestion confidence info
-        if let suggestion = suggestion {
+        if let suggestion {
             let confidence = Int(suggestion.confidence * 100)
             switch suggestion.source {
             case .documentContext:
@@ -901,84 +994,84 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
                 helpTexts.append("Based on contextual analysis (\(confidence)% confidence)")
             }
         }
-        
+
         return helpTexts.isEmpty ? nil : helpTexts.joined(separator: ". ")
     }
-    
+
     private func prefillData(from context: ExtractedContext) -> RequirementsData {
         var data = RequirementsData()
-        
+
         if let vendorInfo = context.vendorInfo {
             data.vendorInfo = vendorInfo
         }
-        
+
         if let pricing = context.pricing {
             data.estimatedValue = pricing.totalPrice
         }
-        
+
         if let dates = context.dates {
             data.requiredDate = dates.deliveryDate
         }
-        
+
         data.technicalRequirements = context.technicalDetails
         data.specialConditions = context.specialTerms
-        
+
         return data
     }
-    
+
     private func calculateOverallConfidence(_ fieldConfidences: [RequirementField: Float]) -> ConfidenceLevel {
         guard !fieldConfidences.isEmpty else { return .low }
-        
+
         let average = fieldConfidences.values.reduce(0, +) / Float(fieldConfidences.count)
-        
+
         switch average {
         case 0.8...: return .veryHigh
-        case 0.6..<0.8: return .high
-        case 0.3..<0.6: return .medium
+        case 0.6 ..< 0.8: return .high
+        case 0.3 ..< 0.6: return .medium
         default: return .low
         }
     }
-    
+
     private func selectNextQuestion(from session: ConversationSession) -> DynamicQuestion? {
         // Skip questions we already have high-confidence answers for
-        let answeredFields = Set(session.questionHistory.compactMap { $0.question.field })
-        
+        let answeredFields = Set(session.questionHistory.compactMap(\.question.field))
+
         return session.remainingQuestions.first { question in
             !answeredFields.contains(question.field) &&
-            !hasHighConfidenceValue(for: question.field, in: session.collectedData)
+                !hasHighConfidenceValue(for: question.field, in: session.collectedData)
         }
     }
-    
+
     private func hasHighConfidenceValue(for field: RequirementField, in data: RequirementsData) -> Bool {
         switch field {
-        case .projectTitle: return data.projectTitle != nil
-        case .description: return data.description != nil
-        case .estimatedValue: return data.estimatedValue != nil
-        case .requiredDate: return data.requiredDate != nil
-        case .vendorName: return data.vendorInfo?.name != nil
-        case .vendorUEI: return data.vendorInfo?.uei != nil
-        case .vendorCAGE: return data.vendorInfo?.cage != nil
-        case .technicalSpecs: return !data.technicalRequirements.isEmpty
-        case .performanceLocation: return data.placeOfPerformance != nil
-        case .contractType: return data.acquisitionType != nil
-        case .setAsideType: return data.setAsideType != nil
-        case .specialConditions: return !data.specialConditions.isEmpty
-        case .justification: return data.businessJustification != nil
-        case .fundingSource: return false // Not in current data model
-        case .requisitionNumber: return false // Not in current data model
-        case .costCenter: return false // Not in current data model
-        case .accountingCode: return false // Not in current data model
-        case .qualityRequirements: return false // Not in current data model
-        case .deliveryInstructions: return false // Not in current data model
-        case .packagingRequirements: return false // Not in current data model
-        case .inspectionRequirements: return false // Not in current data model
-        case .paymentTerms: return false // Not in current data model
-        case .warrantyRequirements: return false // Not in current data model
-        case .attachments: return !data.attachments.isEmpty
-        case .pointOfContact: return false // Not in current data model
+        case .projectTitle: data.projectTitle != nil
+        case .description: data.description != nil
+        case .estimatedValue: data.estimatedValue != nil
+        case .requiredDate: data.requiredDate != nil
+        case .vendorName: data.vendorInfo?.name != nil
+        case .vendorUEI: data.vendorInfo?.uei != nil
+        case .vendorCAGE: data.vendorInfo?.cage != nil
+        case .technicalSpecs: !data.technicalRequirements.isEmpty
+        case .performanceLocation: data.placeOfPerformance != nil
+        case .contractType: data.acquisitionType != nil
+        case .setAsideType: data.setAsideType != nil
+        case .specialConditions: !data.specialConditions.isEmpty
+        case .justification: data.businessJustification != nil
+        case .fundingSource: false // Not in current data model
+        case .requisitionNumber: false // Not in current data model
+        case .costCenter: false // Not in current data model
+        case .accountingCode: false // Not in current data model
+        case .qualityRequirements: false // Not in current data model
+        case .deliveryInstructions: false // Not in current data model
+        case .packagingRequirements: false // Not in current data model
+        case .inspectionRequirements: false // Not in current data model
+        case .paymentTerms: false // Not in current data model
+        case .warrantyRequirements: false // Not in current data model
+        case .attachments: !data.attachments.isEmpty
+        case .pointOfContact: false // Not in current data model
         }
     }
-    
+
     private func updateCollectedData(_ data: inout RequirementsData, field: RequirementField, value: Any) {
         switch field {
         case .projectTitle:
@@ -1040,29 +1133,29 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
             break
         }
     }
-    
+
     private func prefillDataFromAutoFillResults(
         extractedContext: ExtractedContext?,
         autoFillResult: ConfidenceBasedAutoFillEngine.AutoFillResult
     ) -> RequirementsData {
         var data = RequirementsData()
-        
+
         // First, apply extracted context
         if let context = extractedContext {
             data = prefillData(from: context)
         }
-        
+
         // Then apply auto-filled values
         for (field, value) in autoFillResult.autoFilledFields {
             applyDefaultToData(&data, field: field, value: value)
         }
-        
+
         // Note: Suggested fields are not automatically applied
         // They will be shown in the UI for user confirmation
-        
+
         return data
     }
-    
+
     /// Process user feedback on auto-filled values
     public func processAutoFillFeedback(
         field: RequirementField,
@@ -1078,7 +1171,7 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
             organizationUnit: "", // Would come from user profile
             autoFillThreshold: 0.85
         )
-        
+
         // Process feedback
         await autoFillEngine.processUserFeedback(
             field: field,
@@ -1088,23 +1181,22 @@ public class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol {
             context: context
         )
     }
-    
+
     /// Get auto-fill metrics
     public func getAutoFillMetrics() -> ConfidenceBasedAutoFillEngine.AutoFillMetrics {
-        return autoFillEngine.getMetrics()
+        autoFillEngine.getMetrics()
     }
-    
+
     private func convertToAcquisitionType(_ type: APEAcquisitionType) -> AcquisitionType? {
         switch type {
         case .supplies:
-            return .commercialItem
+            .commercialItem
         case .services:
-            return .nonCommercialService
+            .nonCommercialService
         case .construction:
-            return .constructionProject
+            .constructionProject
         case .researchAndDevelopment:
-            return .researchDevelopment
+            .researchDevelopment
         }
     }
 }
-

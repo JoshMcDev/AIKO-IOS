@@ -3,7 +3,7 @@ import Foundation
 
 /// TCA-compatible dependency client for settings management
 @DependencyClient
-public struct SettingsManagerClient {
+public struct SettingsManagerClient: Sendable {
     public var loadSettings: @Sendable () async throws -> SettingsData
     public var saveSettings: @Sendable (SettingsData) async throws -> Void
     public var resetToDefaults: @Sendable () async throws -> Void
@@ -18,17 +18,17 @@ public struct SettingsManagerClient {
 }
 
 extension SettingsManagerClient: TestDependencyKey {
-    public static var testValue = Self()
-    public static var previewValue = Self(
+    public static let testValue = Self()
+    public static let previewValue = Self(
         loadSettings: { SettingsData() },
         saveSettings: { _ in },
-        resetToDefaults: { },
+        resetToDefaults: {},
         saveAPIKey: { _ in },
         loadAPIKey: { "preview-key" },
         validateAPIKey: { _ in true },
         exportData: { _ in URL(string: "file://test.json")! },
         importData: { _ in },
-        clearCache: { },
+        clearCache: {},
         performBackup: { _ in URL(string: "file://backup.json")! },
         restoreBackup: { _, _ in }
     )

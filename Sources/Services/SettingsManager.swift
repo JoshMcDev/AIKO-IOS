@@ -1,36 +1,36 @@
+import AppCore
 import ComposableArchitecture
 import CoreData
 import Foundation
-import AppCore
 import Security
 
-public struct SettingsManager {
-    public var loadSettings: () async throws -> SettingsData
-    public var saveSettings: () async throws -> Void
-    public var resetToDefaults: () async throws -> Void
-    public var restoreDefaults: () async throws -> Void
-    public var saveAPIKey: (String) async throws -> Void
-    public var loadAPIKey: () async throws -> String?
-    public var validateAPIKey: (String) async -> Bool
-    public var exportData: (@escaping (Double) -> Void) async throws -> URL
-    public var importData: (URL) async throws -> Void
-    public var clearCache: () async throws -> Void
-    public var performBackup: (@escaping (Double) -> Void) async throws -> URL
-    public var restoreBackup: (URL, @escaping (Double) -> Void) async throws -> Void
+public struct SettingsManager: Sendable {
+    public var loadSettings: @Sendable () async throws -> SettingsData
+    public var saveSettings: @Sendable () async throws -> Void
+    public var resetToDefaults: @Sendable () async throws -> Void
+    public var restoreDefaults: @Sendable () async throws -> Void
+    public var saveAPIKey: @Sendable (String) async throws -> Void
+    public var loadAPIKey: @Sendable () async throws -> String?
+    public var validateAPIKey: @Sendable (String) async -> Bool
+    public var exportData: @Sendable (@escaping @Sendable (Double) -> Void) async throws -> URL
+    public var importData: @Sendable (URL) async throws -> Void
+    public var clearCache: @Sendable () async throws -> Void
+    public var performBackup: @Sendable (@escaping @Sendable (Double) -> Void) async throws -> URL
+    public var restoreBackup: @Sendable (URL, @escaping @Sendable (Double) -> Void) async throws -> Void
 
     public init(
-        loadSettings: @escaping () async throws -> SettingsData,
-        saveSettings: @escaping () async throws -> Void,
-        resetToDefaults: @escaping () async throws -> Void,
-        restoreDefaults: @escaping () async throws -> Void,
-        saveAPIKey: @escaping (String) async throws -> Void,
-        loadAPIKey: @escaping () async throws -> String?,
-        validateAPIKey: @escaping (String) async -> Bool,
-        exportData: @escaping (@escaping (Double) -> Void) async throws -> URL,
-        importData: @escaping (URL) async throws -> Void,
-        clearCache: @escaping () async throws -> Void,
-        performBackup: @escaping (@escaping (Double) -> Void) async throws -> URL,
-        restoreBackup: @escaping (URL, @escaping (Double) -> Void) async throws -> Void
+        loadSettings: @escaping @Sendable () async throws -> SettingsData,
+        saveSettings: @escaping @Sendable () async throws -> Void,
+        resetToDefaults: @escaping @Sendable () async throws -> Void,
+        restoreDefaults: @escaping @Sendable () async throws -> Void,
+        saveAPIKey: @escaping @Sendable (String) async throws -> Void,
+        loadAPIKey: @escaping @Sendable () async throws -> String?,
+        validateAPIKey: @escaping @Sendable (String) async -> Bool,
+        exportData: @escaping @Sendable (@escaping @Sendable (Double) -> Void) async throws -> URL,
+        importData: @escaping @Sendable (URL) async throws -> Void,
+        clearCache: @escaping @Sendable () async throws -> Void,
+        performBackup: @escaping @Sendable (@escaping @Sendable (Double) -> Void) async throws -> URL,
+        restoreBackup: @escaping @Sendable (URL, @escaping @Sendable (Double) -> Void) async throws -> Void
     ) {
         self.loadSettings = loadSettings
         self.saveSettings = saveSettings
@@ -47,7 +47,7 @@ public struct SettingsManager {
     }
 }
 
-public struct SettingsData: Codable, Equatable {
+public struct SettingsData: Codable, Equatable, Sendable {
     public var appSettings: AppSettingsData
     public var apiSettings: APISettingsData
     public var documentSettings: DocumentSettingsData
@@ -72,7 +72,7 @@ public struct SettingsData: Codable, Equatable {
     }
 }
 
-public struct AppSettingsData: Codable, Equatable {
+public struct AppSettingsData: Codable, Equatable, Sendable {
     public var theme: String = "system"
     public var accentColor: String = "blue"
     public var fontSize: String = "medium"
@@ -91,7 +91,7 @@ public struct AppSettingsData: Codable, Equatable {
     public init() {}
 }
 
-public struct APISettingsData: Codable, Equatable {
+public struct APISettingsData: Codable, Equatable, Sendable {
     public var apiEndpoint: String = "https://api.anthropic.com"
     public var maxRetries: Int = 3
     public var timeoutInterval: TimeInterval = 30
@@ -107,7 +107,7 @@ public struct APISettingsData: Codable, Equatable {
     public init() {}
 }
 
-public struct APIKeyEntryData: Codable, Equatable {
+public struct APIKeyEntryData: Codable, Equatable, Sendable {
     public let id: String
     public var name: String
     public var key: String
@@ -121,7 +121,7 @@ public struct APIKeyEntryData: Codable, Equatable {
     }
 }
 
-public struct DocumentSettingsData: Codable, Equatable {
+public struct DocumentSettingsData: Codable, Equatable, Sendable {
     public var defaultTemplateSet: String = "standard"
     public var includeMetadata: Bool = true
     public var includeVersionHistory: Bool = true
@@ -135,7 +135,7 @@ public struct DocumentSettingsData: Codable, Equatable {
     public init() {}
 }
 
-public struct NotificationSettingsData: Codable, Equatable {
+public struct NotificationSettingsData: Codable, Equatable, Sendable {
     public var enableNotifications: Bool = true
     public var documentGenerationComplete: Bool = true
     public var acquisitionReminders: Bool = true
@@ -147,7 +147,7 @@ public struct NotificationSettingsData: Codable, Equatable {
     public init() {}
 }
 
-public struct DataPrivacySettingsData: Codable, Equatable {
+public struct DataPrivacySettingsData: Codable, Equatable, Sendable {
     public var analyticsEnabled: Bool = false
     public var crashReportingEnabled: Bool = true
     public var dataRetentionDays: Int = 90
@@ -158,7 +158,7 @@ public struct DataPrivacySettingsData: Codable, Equatable {
     public init() {}
 }
 
-public struct AdvancedSettingsData: Codable, Equatable {
+public struct AdvancedSettingsData: Codable, Equatable, Sendable {
     public var debugModeEnabled: Bool = false
     public var showDetailedErrors: Bool = false
     public var enableBetaFeatures: Bool = false
@@ -175,7 +175,7 @@ public struct AdvancedSettingsData: Codable, Equatable {
 }
 
 extension SettingsManager: DependencyKey {
-    public static var liveValue: SettingsManager {
+    public nonisolated static var liveValue: SettingsManager {
         let settingsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("aiko_settings.json")
 
@@ -341,7 +341,7 @@ extension SettingsManager: DependencyKey {
                 let coreDataSnapshot: Data?
                 do {
                     coreDataSnapshot = try await Task.detached {
-                        try CoreDataStack.shared.exportCoreDataToJSON()
+                        try await CoreDataStack.shared.exportCoreDataToJSON()
                     }.value
                 } catch {
                     print("Failed to export Core Data: \(error)")
@@ -404,7 +404,7 @@ extension SettingsManager: DependencyKey {
                 if let coreDataSnapshot = backupData.coreDataSnapshot {
                     do {
                         try await Task.detached {
-                            try CoreDataStack.shared.importCoreDataFromJSON(coreDataSnapshot)
+                            try await CoreDataStack.shared.importCoreDataFromJSON(coreDataSnapshot)
                         }.value
                     } catch {
                         print("Failed to restore Core Data: \(error)")

@@ -1,9 +1,8 @@
-import Foundation
 @testable import AIKO
+import Foundation
 
 // Mock SAM.gov API client for testing without API key
 class MockSAMGovAPIClient: SAMGovAPIClientProtocol {
-    
     func searchEntities(query: String) async throws -> [SAMEntity] {
         // Mock responses based on query
         if query.lowercased().contains("lockheed") || query.contains("1F353") {
@@ -16,21 +15,21 @@ class MockSAMGovAPIClient: SAMGovAPIClientProtocol {
             return [] // Empty array for no results
         }
     }
-    
+
     func getEntity(uei: String) async throws -> SAMEntity? {
         // Search for entity by UEI or CAGE
         switch uei {
         case "G2Y7W1E3LJK5", "1F353":
-            return createLockheedEntity()
+            createLockheedEntity()
         case "R3Q8P8B7VNJ3", "17038":
-            return createBoozAllenEntity()
+            createBoozAllenEntity()
         default:
-            return nil
+            nil
         }
     }
-    
+
     // MARK: - Helper Methods
-    
+
     private func createLockheedEntity() -> SAMEntity {
         SAMEntity(
             ueiSAM: "G2Y7W1E3LJK5",
@@ -48,7 +47,7 @@ class MockSAMGovAPIClient: SAMGovAPIClientProtocol {
             isSmallBusiness: false
         )
     }
-    
+
     private func createBoozAllenEntity() -> SAMEntity {
         SAMEntity(
             ueiSAM: "R3Q8P8B7VNJ3",
@@ -73,7 +72,7 @@ class MockSAMGovAPIClient: SAMGovAPIClientProtocol {
 extension SAMGovRepository {
     /// Creates a SAMGovRepository with mock API client for testing
     static func createMock(context: NSManagedObjectContext) -> SAMGovRepository {
-        return SAMGovRepository(
+        SAMGovRepository(
             context: context,
             apiClient: MockSAMGovAPIClient()
         )
@@ -82,15 +81,15 @@ extension SAMGovRepository {
 
 // MARK: - Test Data Factory
 
-struct SAMGovTestData {
+enum SAMGovTestData {
     static let lockheedUEI = "G2Y7W1E3LJK5"
     static let lockheedCAGE = "1F353"
     static let lockheedName = "LOCKHEED MARTIN CORPORATION"
-    
+
     static let boozAllenUEI = "R3Q8P8B7VNJ3"
     static let boozAllenCAGE = "17038"
     static let boozAllenName = "BOOZ ALLEN HAMILTON INC"
-    
+
     static func createExclusion(type: String = "Debarment") -> SAMExclusion {
         SAMExclusion(
             classificationType: type,
@@ -105,7 +104,7 @@ struct SAMGovTestData {
             samAdditionalComments: nil
         )
     }
-    
+
     static func createEntityWithExclusions() -> SAMEntity {
         SAMEntity(
             ueiSAM: "EXCL123456",

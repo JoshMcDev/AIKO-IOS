@@ -10,23 +10,22 @@ import Foundation
 
 /// Google Gemini API adapter implementation
 final class GeminiAdapter: LLMProviderAdapter {
-    
     private let session: URLSession
     private let decoder = JSONDecoder()
     private let encoder = JSONEncoder()
-    
+
     override init(provider: LLMProvider = .gemini, configuration: LLMProviderConfig) {
         // Configure URL session
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 60
         config.timeoutIntervalForResource = 300
-        self.session = URLSession(configuration: config)
-        
+        session = URLSession(configuration: config)
+
         super.init(provider: provider, configuration: configuration)
     }
-    
+
     // MARK: - LLMProviderProtocol
-    
+
     override func sendRequest(
         prompt: String,
         context: ConversationContext?,
@@ -35,42 +34,42 @@ final class GeminiAdapter: LLMProviderAdapter {
         guard let apiKey = await getAPIKey() else {
             throw LLMError.noAPIKey(provider: provider)
         }
-        
+
         let mergedOptions = options.merged(with: configuration)
         let requestBody = try buildRequestBody(
             prompt: prompt,
             context: context,
             options: mergedOptions
         )
-        
+
         let endpoint = configuration.model.id.contains("vision") ? "generateContent" : "generateContent"
         let url = URL(string: "\(getBaseURL())/v1beta/models/\(configuration.model.id):\(endpoint)?key=\(apiKey)")!
-        
+
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.httpBody = try encoder.encode(requestBody)
         request.allHTTPHeaderFields = buildGeminiHeaders()
-        
+
         let (data, response) = try await session.data(for: request)
-        
+
         guard let httpResponse = response as? HTTPURLResponse else {
             throw LLMError.networkError(URLError(.badServerResponse))
         }
-        
+
         switch httpResponse.statusCode {
         case 200:
             let geminiResponse = try decoder.decode(GeminiResponse.self, from: data)
             return try geminiResponse.toLLMResponse()
-            
+
         case 429:
             throw LLMError.rateLimitExceeded(provider: provider)
-            
+
         case 400:
             if let errorData = try? decoder.decode(GeminiErrorResponse.self, from: data) {
                 throw LLMError.invalidResponse(errorData.error.message)
             }
             throw LLMError.invalidAPIKey(provider: provider)
-            
+
         default:
             if let errorResponse = try? decoder.decode(GeminiErrorResponse.self, from: data) {
                 throw LLMError.invalidResponse(errorResponse.error.message)
@@ -78,7 +77,7 @@ final class GeminiAdapter: LLMProviderAdapter {
             throw LLMError.networkError(URLError(.badServerResponse))
         }
     }
-    
+
     override func streamRequest(
         prompt: String,
         context: ConversationContext?,
@@ -90,35 +89,36 @@ final class GeminiAdapter: LLMProviderAdapter {
                     guard let apiKey = await getAPIKey() else {
                         throw LLMError.noAPIKey(provider: provider)
                     }
-                    
+
                     let mergedOptions = options.merged(with: configuration)
                     let requestBody = try buildRequestBody(
                         prompt: prompt,
                         context: context,
                         options: mergedOptions
                     )
-                    
+
                     let url = URL(string: "\(getBaseURL())/v1beta/models/\(configuration.model.id):streamGenerateContent?key=\(apiKey)")!
-                    
+
                     var request = URLRequest(url: url)
                     request.httpMethod = "POST"
                     request.httpBody = try encoder.encode(requestBody)
                     request.allHTTPHeaderFields = buildGeminiHeaders()
-                    
+
                     let (data, response) = try await session.data(for: request)
-                    
+
                     guard let httpResponse = response as? HTTPURLResponse,
-                          httpResponse.statusCode == 200 else {
+                          httpResponse.statusCode == 200
+                    else {
                         throw LLMError.networkError(URLError(.badServerResponse))
                     }
-                    
+
                     // Gemini returns a JSON array of responses for streaming
                     // Parse the complete response and emit chunks
                     if let streamResponses = try? decoder.decode([GeminiResponse].self, from: data) {
                         for (index, response) in streamResponses.enumerated() {
                             if let candidate = response.candidates?.first,
-                               let text = candidate.content.parts.first?.text {
-                                
+                               let text = candidate.content.parts.first?.text
+                            {
                                 let chunk = LLMStreamChunk(
                                     id: UUID().uuidString,
                                     delta: text,
@@ -130,50 +130,50 @@ final class GeminiAdapter: LLMProviderAdapter {
                             }
                         }
                     }
-                    
+
                     continuation.finish()
-                    
+
                 } catch {
                     continuation.finish(throwing: error)
                 }
             }
-            
+
             trackTask(task)
-            
+
             continuation.onTermination = { _ in
                 task.cancel()
                 self.removeTask(task)
             }
         }
     }
-    
+
     override func countTokens(for text: String) -> Int {
         // Gemini uses a different tokenization approach
         // This is a rough approximation
         let words = text.split(separator: " ").count
         let characters = text.count
-        
+
         // Gemini tends to use fewer tokens than GPT models
         return Int(Double(words) * 1.1) + (characters / 5)
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func buildGeminiHeaders() -> [String: String] {
         var headers = buildHeaders(apiKey: "") // API key is in URL for Gemini
         headers.removeValue(forKey: "Authorization")
         return headers
     }
-    
+
     private func buildRequestBody(
         prompt: String,
         context: ConversationContext?,
         options: LLMRequestOptions
     ) throws -> GeminiRequestBody {
         var contents: [GeminiContent] = []
-        
+
         // Add conversation history
-        if let context = context {
+        if let context {
             // Add system instruction if available
             if let systemPrompt = context.systemPrompt {
                 contents.append(GeminiContent(
@@ -185,7 +185,7 @@ final class GeminiAdapter: LLMProviderAdapter {
                     parts: [GeminiPart(text: "Understood. I'll follow these instructions.")]
                 ))
             }
-            
+
             // Add conversation messages
             for message in context.messages {
                 let role = message.role == .user ? "user" : "model"
@@ -195,13 +195,13 @@ final class GeminiAdapter: LLMProviderAdapter {
                 ))
             }
         }
-        
+
         // Add current prompt
         contents.append(GeminiContent(
             role: "user",
             parts: [GeminiPart(text: prompt)]
         ))
-        
+
         // Build generation config
         let generationConfig = GeminiGenerationConfig(
             temperature: options.temperature,
@@ -211,7 +211,7 @@ final class GeminiAdapter: LLMProviderAdapter {
             maxOutputTokens: options.maxTokens,
             stopSequences: options.stopSequences
         )
-        
+
         // Build safety settings (using default for now)
         let safetySettings = [
             GeminiSafetySetting(
@@ -229,9 +229,9 @@ final class GeminiAdapter: LLMProviderAdapter {
             GeminiSafetySetting(
                 category: "HARM_CATEGORY_DANGEROUS_CONTENT",
                 threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            )
+            ),
         ]
-        
+
         return GeminiRequestBody(
             contents: contents,
             generationConfig: generationConfig,
@@ -275,7 +275,7 @@ private struct GeminiResponse: Codable {
     let candidates: [GeminiCandidate]?
     let promptFeedback: GeminiPromptFeedback?
     let usageMetadata: GeminiUsageMetadata?
-    
+
     func toLLMResponse() throws -> LLMResponse {
         guard let candidate = candidates?.first else {
             if let feedback = promptFeedback {
@@ -283,20 +283,18 @@ private struct GeminiResponse: Codable {
             }
             throw LLMError.invalidResponse("No candidates in response")
         }
-        
+
         let content = candidate.content.parts
-            .compactMap { $0.text }
+            .compactMap(\.text)
             .joined(separator: "\n")
-        
-        let finishReason: FinishReason? = {
-            switch candidate.finishReason {
-            case "STOP": return .stop
-            case "MAX_TOKENS": return .length
-            case "SAFETY": return .contentFilter
-            default: return nil
-            }
-        }()
-        
+
+        let finishReason: FinishReason? = switch candidate.finishReason {
+        case "STOP": .stop
+        case "MAX_TOKENS": .length
+        case "SAFETY": .contentFilter
+        default: nil
+        }
+
         return LLMResponse(
             id: UUID().uuidString,
             content: content,
@@ -306,7 +304,7 @@ private struct GeminiResponse: Codable {
                 promptTokens: $0.promptTokenCount,
                 completionTokens: $0.candidatesTokenCount,
                 totalTokens: $0.totalTokenCount
-            )}
+            ) }
         )
     }
 }

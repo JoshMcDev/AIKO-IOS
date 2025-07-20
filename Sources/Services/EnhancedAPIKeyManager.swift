@@ -259,7 +259,7 @@ public actor EnhancedAPIKeyManager {
 
 // MARK: - Supporting Types
 
-public enum APIService: String, CaseIterable {
+public enum APIService: String, CaseIterable, Sendable {
     case anthropic
     case openai
     case sam = "sam_gov"
@@ -320,9 +320,13 @@ public final class PinnedSessionDelegate: NSObject, URLSessionDelegate {
             return
         }
 
-        Task {
+        Task { @Sendable in
+            nonisolated(unsafe) let serverTrust = serverTrust
+            nonisolated(unsafe) let completionHandler = completionHandler
+            nonisolated(unsafe) let host = challenge.protectionSpace.host
+            
             let isValid = await EnhancedAPIKeyManager.shared.validateCertificatePin(
-                for: challenge.protectionSpace.host,
+                for: host,
                 serverTrust: serverTrust
             )
 

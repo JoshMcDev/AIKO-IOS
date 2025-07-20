@@ -3,7 +3,7 @@ import Foundation
 
 // MARK: - FAR Part 12 Determination Wizard
 
-public struct FARPart12Wizard {
+public struct FARPart12Wizard: @unchecked Sendable {
     public var startWizard: () async throws -> CommercialItemWizard
     public var answerQuestion: (String, WizardAnswer) async throws -> WizardStep
     public var generateDetermination: (CommercialItemWizard) async throws -> CommercialItemDetermination
@@ -46,7 +46,7 @@ public struct CommercialItemWizard {
     }
 }
 
-public struct WizardStep {
+public struct WizardStep: @unchecked Sendable {
     public let id: String
     public let question: String
     public let helpText: String

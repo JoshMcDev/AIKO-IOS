@@ -1,17 +1,17 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 import SwiftAnthropic
 
-public struct RequirementAnalyzer {
-    public var analyzeRequirements: (String) async throws -> (response: String, recommendedDocuments: [DocumentType])
-    public var analyzeDocumentContent: (Data, String) async throws -> (response: String, recommendedDocuments: [DocumentType])
-    public var enhancePrompt: (String) async throws -> String
+public struct RequirementAnalyzer: Sendable {
+    public var analyzeRequirements: @Sendable (String) async throws -> (response: String, recommendedDocuments: [DocumentType])
+    public var analyzeDocumentContent: @Sendable (Data, String) async throws -> (response: String, recommendedDocuments: [DocumentType])
+    public var enhancePrompt: @Sendable (String) async throws -> String
 
     public init(
-        analyzeRequirements: @escaping (String) async throws -> (response: String, recommendedDocuments: [DocumentType]),
-        analyzeDocumentContent: @escaping (Data, String) async throws -> (response: String, recommendedDocuments: [DocumentType]),
-        enhancePrompt: @escaping (String) async throws -> String
+        analyzeRequirements: @escaping @Sendable (String) async throws -> (response: String, recommendedDocuments: [DocumentType]),
+        analyzeDocumentContent: @escaping @Sendable (Data, String) async throws -> (response: String, recommendedDocuments: [DocumentType]),
+        enhancePrompt: @escaping @Sendable (String) async throws -> String
     ) {
         self.analyzeRequirements = analyzeRequirements
         self.analyzeDocumentContent = analyzeDocumentContent

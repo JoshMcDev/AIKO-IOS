@@ -4,7 +4,7 @@ import Foundation
 // MARK: - Task Queue Manager
 
 /// Manages autonomous task execution with queue management, prioritization, and parallel execution
-public final class TaskQueueManager {
+public actor TaskQueueManager {
     // MARK: - Properties
 
     private var taskQueue: [QueuedTask] = []
@@ -118,9 +118,9 @@ public final class TaskQueueManager {
     private func executeTask(_ queuedTask: QueuedTask) async -> TaskExecutionResult {
         do {
             // Update progress callback
-            let progressHandler: (Double) -> Void = { progress in
-                Task { @MainActor in
-                    self.updateProgress(queuedTask.id, progress: progress)
+            let progressHandler: @Sendable (Double) -> Void = { progress in
+                Task {
+                    await self.updateProgress(queuedTask.id, progress: progress)
                 }
             }
 
@@ -230,8 +230,8 @@ public struct QueueStatus: Equatable {
 
 // MARK: - Task Executor Protocol
 
-public protocol TaskExecutor {
-    func execute(_ task: AgentTask, progressHandler: @escaping (Double) -> Void) async throws -> Any
+public protocol TaskExecutor: Sendable {
+    func execute(_ task: AgentTask, progressHandler: @escaping @Sendable (Double) -> Void) async throws -> [String: String]
 }
 
 // MARK: - Enhanced Task Queue Feature
@@ -269,7 +269,7 @@ public extension AgenticChatFeature {
 // MARK: - Dependency Key
 
 public struct TaskQueueManagerKey: DependencyKey {
-    public static let liveValue = TaskQueueManager(
+    public nonisolated static let liveValue = TaskQueueManager(
         maxConcurrentTasks: 3,
         taskExecutor: LiveTaskExecutor()
     )
@@ -283,7 +283,7 @@ public extension DependencyValues {
 }
 
 public struct LiveTaskExecutor: TaskExecutor {
-    public func execute(_ task: AgentTask, progressHandler: @escaping (Double) -> Void) async throws -> Any {
+    public func execute(_ task: AgentTask, progressHandler: @escaping @Sendable (Double) -> Void) async throws -> [String: String] {
         // Simulate task execution with progress updates
         for i in 1 ... 10 {
             try await Task.sleep(for: .milliseconds(200))
@@ -293,17 +293,17 @@ public struct LiveTaskExecutor: TaskExecutor {
         // Return mock result based on task type
         switch task.action.type {
         case .gatherMarketResearch:
-            return ["vendors": 15, "averagePrice": 50000]
+            return ["vendors": "15", "averagePrice": "50000"]
         case .generateDocuments:
-            return ["documents": ["SOW", "PWS", "QASP"]]
+            return ["documents": "SOW,PWS,QASP", "count": "3"]
         case .identifyVendors:
-            return ["vendors": ["Vendor A", "Vendor B", "Vendor C"]]
+            return ["vendors": "Vendor A,Vendor B,Vendor C", "count": "3"]
         case .scheduleReviews:
-            return ["meetings": 3, "nextReview": Date().addingTimeInterval(86400)]
+            return ["meetings": "3", "nextReview": ISO8601DateFormatter().string(from: Date().addingTimeInterval(86400))]
         case .submitForApproval:
-            return ["trackingNumber": "AP-2025-0142"]
+            return ["trackingNumber": "AP-2025-0142", "status": "submitted"]
         case .monitorCompliance:
-            return ["complianceScore": 0.95, "issues": 0]
+            return ["complianceScore": "0.95", "issues": "0"]
         }
     }
 }

@@ -12,15 +12,15 @@ public protocol DocumentParserProtocol {
 public struct DocumentParser: DocumentParserProtocol {
     private let wordParser = WordDocumentParser()
     private let validator = DocumentParserValidator()
-    
+
     public init() {}
 
     public func parseDocument(_ data: Data, type: UTType) async throws -> String {
         // Validate document first
         try validator.validateDocument(data, type: type)
-        
+
         let extractedText: String
-        
+
         if type == .pdf {
             extractedText = try parsePDF(data)
         } else if type == .rtf || type.conforms(to: .text) {
@@ -32,10 +32,10 @@ public struct DocumentParser: DocumentParserProtocol {
         } else {
             throw DocumentParserError.unsupportedFormat
         }
-        
+
         // Validate extracted text
         try validator.validateExtractedText(extractedText)
-        
+
         return extractedText
     }
 
@@ -118,7 +118,7 @@ public struct DocumentParser: DocumentParserProtocol {
         }
         return text.trimmingCharacters(in: .whitespacesAndNewlines)
     }
-    
+
     private func isWordDocument(_ type: UTType) -> Bool {
         // Check for common Word document types
         let wordTypes = [
@@ -127,18 +127,18 @@ public struct DocumentParser: DocumentParserProtocol {
             "org.openxmlformats.wordprocessingml.document",
             "com.microsoft.word.wordml",
             "application/msword",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         ]
-        
+
         // Check by identifier
         if wordTypes.contains(type.identifier) {
             return true
         }
-        
+
         // Check by file extension
         let docType = UTType(filenameExtension: "doc") ?? .data
         let docxType = UTType(filenameExtension: "docx") ?? .data
-        
+
         return type.conforms(to: docType) || type.conforms(to: docxType)
     }
 }

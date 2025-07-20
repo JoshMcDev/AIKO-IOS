@@ -1,5 +1,5 @@
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
 /// Protocol defining the shared interface for AppView across platforms
 /// Note: This protocol is for documentation purposes. The actual implementation
@@ -15,22 +15,22 @@ public protocol AppViewPlatformServices {
     associatedtype DocumentPickerView: View
     associatedtype ImagePickerView: View
     associatedtype ShareView: View
-    
+
     /// Create the navigation container appropriate for the platform
-    func makeNavigationStack<Content: View>(@ViewBuilder content: @escaping () -> Content) -> NavigationStack
-    
+    func makeNavigationStack(@ViewBuilder content: @escaping () -> some View) -> NavigationStack
+
     /// Create a document picker view for the platform
     func makeDocumentPicker(onDocumentsPicked: @escaping ([(Data, String)]) -> Void) -> DocumentPickerView
-    
+
     /// Create an image picker/scanner view for the platform
     func makeImagePicker(onImagePicked: @escaping (Data) -> Void) -> ImagePickerView
-    
+
     /// Create a share sheet view for the platform
     func makeShareSheet(items: [Any]) -> ShareView?
-    
+
     /// Load an image from data in a platform-appropriate way
     func loadImage(from data: Data) -> Image?
-    
+
     /// Get the app icon image for the platform
     func getAppIcon() -> Image?
 }
@@ -57,5 +57,5 @@ public protocol PlatformViewModifier: ViewModifier where Body: View {
 /// Protocol for platform-specific sheet presentation
 public protocol SheetPresentationModifier: ViewModifier {
     associatedtype StyledContent: View
-    func applySheetStyle<Content: View>(to content: Content) -> StyledContent
+    func applySheetStyle(to content: some View) -> StyledContent
 }

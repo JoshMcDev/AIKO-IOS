@@ -1,6 +1,6 @@
 import Foundation
 
-public struct SettingsData: Codable, Equatable {
+public struct SettingsData: Codable, Equatable, Sendable {
     public var appSettings: AppSettingsData
     public var apiSettings: APISettingsData
     public var documentSettings: DocumentSettingsData
@@ -25,7 +25,7 @@ public struct SettingsData: Codable, Equatable {
     }
 }
 
-public struct AppSettingsData: Codable, Equatable {
+public struct AppSettingsData: Codable, Equatable, Sendable {
     public var theme: String = "system"
     public var accentColor: String = "blue"
     public var fontSize: String = "medium"
@@ -44,7 +44,7 @@ public struct AppSettingsData: Codable, Equatable {
     public init() {}
 }
 
-public struct APISettingsData: Codable, Equatable {
+public struct APISettingsData: Codable, Equatable, Sendable {
     public var apiEndpoint: String = "https://api.anthropic.com"
     public var maxRetries: Int = 3
     public var timeoutInterval: TimeInterval = 30
@@ -60,7 +60,7 @@ public struct APISettingsData: Codable, Equatable {
     public init() {}
 }
 
-public struct APIKeyEntryData: Codable, Equatable {
+public struct APIKeyEntryData: Codable, Equatable, Sendable {
     public let id: String
     public var name: String
     public var key: String
@@ -74,7 +74,7 @@ public struct APIKeyEntryData: Codable, Equatable {
     }
 }
 
-public struct DocumentSettingsData: Codable, Equatable {
+public struct DocumentSettingsData: Codable, Equatable, Sendable {
     public var defaultTemplateSet: String = "standard"
     public var includeMetadata: Bool = true
     public var includeVersionHistory: Bool = true
@@ -88,7 +88,7 @@ public struct DocumentSettingsData: Codable, Equatable {
     public init() {}
 }
 
-public struct NotificationSettingsData: Codable, Equatable {
+public struct NotificationSettingsData: Codable, Equatable, Sendable {
     public var enableNotifications: Bool = true
     public var documentGenerationComplete: Bool = true
     public var acquisitionReminders: Bool = true
@@ -100,7 +100,7 @@ public struct NotificationSettingsData: Codable, Equatable {
     public init() {}
 }
 
-public struct DataPrivacySettingsData: Codable, Equatable {
+public struct DataPrivacySettingsData: Codable, Equatable, Sendable {
     public var analyticsEnabled: Bool = false
     public var crashReportingEnabled: Bool = true
     public var dataRetentionDays: Int = 90
@@ -111,7 +111,7 @@ public struct DataPrivacySettingsData: Codable, Equatable {
     public init() {}
 }
 
-public struct AdvancedSettingsData: Codable, Equatable {
+public struct AdvancedSettingsData: Codable, Equatable, Sendable {
     public var debugModeEnabled: Bool = false
     public var showDetailedErrors: Bool = false
     public var enableBetaFeatures: Bool = false

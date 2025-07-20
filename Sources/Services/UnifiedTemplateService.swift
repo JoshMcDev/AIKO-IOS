@@ -1,6 +1,6 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 
 // MARK: - Document Template Model
 
@@ -238,8 +238,8 @@ public struct TemplateStatistics: Equatable {
     public let popularFields: [String]
 }
 
-public struct ValidationIssue: Equatable {
-    public enum Severity: String, Equatable {
+public struct ValidationIssue: Equatable, Sendable {
+    public enum Severity: String, Equatable, Sendable {
         case error
         case warning
         case info
@@ -811,7 +811,7 @@ extension UnifiedTemplateService: DependencyKey {
             try await UnifiedTemplateStorage()
         }
 
-        func getStorage() async throws -> UnifiedTemplateStorage {
+        @Sendable func getStorage() async throws -> UnifiedTemplateStorage {
             try await storage.value
         }
 

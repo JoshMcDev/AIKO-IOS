@@ -1,30 +1,30 @@
-import AppCore
-import ComposableArchitecture
-import Foundation
+#if os(iOS)
+    import AppCore
+    import ComposableArchitecture
+    import Foundation
+    import UIKit
 
-extension ScreenServiceClient {
-    private static let screenService = iOSScreenService()
-    
-    public static let iOSLive = Self(
-        mainScreenBounds: {
-            screenService.mainScreenBounds
-        },
-        mainScreenWidth: {
-            screenService.mainScreenWidth
-        },
-        mainScreenHeight: {
-            screenService.mainScreenHeight
-        },
-        screenScale: {
-            screenService.screenScale
-        },
-        isCompact: {
-            screenService.isCompact
-        }
-    )
-}
+    public extension ScreenServiceClient {
+        static let iOS = Self(
+            mainScreenBounds: {
+                UIScreen.main.bounds
+            },
+            mainScreenWidth: {
+                UIScreen.main.bounds.width
+            },
+            mainScreenHeight: {
+                UIScreen.main.bounds.height
+            },
+            screenScale: {
+                UIScreen.main.scale
+            },
+            isCompact: {
+                UIScreen.main.bounds.width < 768
+            }
+        )
+    }
 
-// Convenience static accessor
-public enum iOSScreenServiceClient {
-    public static let live = ScreenServiceClient.iOSLive
-}
+    public enum iOSScreenServiceClient {
+        public static let live = ScreenServiceClient.iOS
+    }
+#endif

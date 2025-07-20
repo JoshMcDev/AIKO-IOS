@@ -11,11 +11,11 @@ public struct ClipboardServiceClient: Sendable {
 }
 
 extension ClipboardServiceClient: DependencyKey {
-    public static var liveValue: Self = Self()
+    public static let liveValue: Self = .init()
 }
 
-extension DependencyValues {
-    public var clipboardService: ClipboardServiceClient {
+public extension DependencyValues {
+    var clipboardService: ClipboardServiceClient {
         get { self[ClipboardServiceClient.self] }
         set { self[ClipboardServiceClient.self] = newValue }
     }

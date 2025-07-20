@@ -1,14 +1,13 @@
+import AppCore
 import Foundation
 import SwiftData
-import AppCore
 
 // MARK: - User Pattern Learning Module
 
 /// Tracks and learns from user behavior to improve future interactions
 public class UserPatternLearner {
-    
     // MARK: - Types
-    
+
     public struct UserPattern: Codable, Identifiable {
         public var id = UUID()
         public let patternType: PatternType
@@ -19,17 +18,17 @@ public class UserPatternLearner {
         public let confidence: Double
         public let lastSeen: Date
         public let metadata: [String: String]
-        
+
         public enum PatternType: String, Codable {
             case defaultValue = "default_value"
             case frequentChoice = "frequent_choice"
-            case workflow = "workflow"
+            case workflow
             case documentType = "document_type"
             case vendorPreference = "vendor_preference"
             case approvalChain = "approval_chain"
         }
     }
-    
+
     public struct PatternContext: Codable {
         public let userId: String
         public let organizationUnit: String?
@@ -38,7 +37,7 @@ public class UserPatternLearner {
         public let timeOfDay: String?
         public let dayOfWeek: String?
     }
-    
+
     public struct LearningInsight {
         public let field: String
         public let suggestedValue: String
@@ -46,57 +45,57 @@ public class UserPatternLearner {
         public let reasoning: String
         public let alternativeValues: [(value: String, confidence: Double)]
     }
-    
+
     // MARK: - Properties
-    
+
     private var patterns: [UserPattern] = []
     private let minOccurrencesForPattern = 3
     private let confidenceThreshold = 0.65
     private let patternDecayDays = 90
-    
+
     // MARK: - Public Methods
-    
+
     /// Learn from a user interaction
     public func learn(from interaction: PatternUserInteraction) async {
         // Extract patterns from the interaction
         let extractedPatterns = extractPatterns(from: interaction)
-        
+
         // Update existing patterns or create new ones
         for pattern in extractedPatterns {
             await updatePattern(pattern)
         }
-        
+
         // Decay old patterns
         await decayOldPatterns()
-        
+
         // Persist patterns
         await persistPatterns()
     }
-    
+
     /// Get insights for a specific field based on learned patterns
     public func getInsights(for field: String, context: PatternContext) async -> LearningInsight? {
         // Find relevant patterns
         let relevantPatterns = patterns.filter { pattern in
             pattern.field == field &&
-            isContextSimilar(pattern.context, context) &&
-            pattern.confidence >= confidenceThreshold
+                isContextSimilar(pattern.context, context) &&
+                pattern.confidence >= confidenceThreshold
         }
-        
+
         guard !relevantPatterns.isEmpty else { return nil }
-        
+
         // Sort by relevance (confidence * recency factor)
         let sortedPatterns = relevantPatterns.sorted { pattern1, pattern2 in
             let recency1 = recencyFactor(for: pattern1.lastSeen)
             let recency2 = recencyFactor(for: pattern2.lastSeen)
             return (pattern1.confidence * recency1) > (pattern2.confidence * recency2)
         }
-        
+
         // Build insight
         let topPattern = sortedPatterns[0]
         let alternatives = Array(sortedPatterns.dropFirst().prefix(3)).map {
             ($0.value, $0.confidence * recencyFactor(for: $0.lastSeen))
         }
-        
+
         return LearningInsight(
             field: field,
             suggestedValue: topPattern.value,
@@ -105,41 +104,42 @@ public class UserPatternLearner {
             alternativeValues: alternatives
         )
     }
-    
+
     /// Get workflow patterns for a user
     public func getWorkflowPatterns(for userId: String) async -> [WorkflowPattern] {
-        let userPatterns = patterns.filter { 
-            $0.context.userId == userId && 
-            $0.patternType == .workflow 
+        let userPatterns = patterns.filter {
+            $0.context.userId == userId &&
+                $0.patternType == .workflow
         }
-        
+
         return analyzeWorkflowPatterns(userPatterns)
     }
-    
+
     /// Get smart defaults for a form
     public func getSmartDefaults(for formType: DocumentType, context: PatternContext) async -> [String: String] {
         var defaults: [String: String] = [:]
-        
+
         // Get all fields typically used for this form type
         let formFields = getFieldsForFormType(formType)
-        
+
         // Get insights for each field
         for field in formFields {
             if let insight = await getInsights(for: field, context: context),
-               insight.confidence >= 0.7 {
+               insight.confidence >= 0.7
+            {
                 defaults[field] = insight.suggestedValue
             }
         }
-        
+
         return defaults
     }
-    
+
     /// Analyze acquisition patterns for optimization
     public func analyzeAcquisitionPatterns() async -> AcquisitionAnalysis {
         let vendorPatterns = patterns.filter { $0.patternType == .vendorPreference }
         let workflowPatterns = patterns.filter { $0.patternType == .workflow }
         let valuePatterns = patterns.filter { $0.patternType == .defaultValue }
-        
+
         return AcquisitionAnalysis(
             preferredVendors: extractPreferredVendors(from: vendorPatterns),
             commonWorkflows: extractCommonWorkflows(from: workflowPatterns),
@@ -147,12 +147,12 @@ public class UserPatternLearner {
             efficiencyMetrics: calculateEfficiencyMetrics()
         )
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func extractPatterns(from interaction: PatternUserInteraction) -> [UserPattern] {
         var extractedPatterns: [UserPattern] = []
-        
+
         // Extract value patterns
         for (field, value) in interaction.fieldValues {
             let pattern = UserPattern(
@@ -167,20 +167,20 @@ public class UserPatternLearner {
             )
             extractedPatterns.append(pattern)
         }
-        
+
         // Extract workflow patterns
         if let workflow = extractWorkflowPattern(from: interaction) {
             extractedPatterns.append(workflow)
         }
-        
+
         return extractedPatterns
     }
-    
+
     private func updatePattern(_ newPattern: UserPattern) async {
-        if let existingIndex = patterns.firstIndex(where: { 
-            $0.field == newPattern.field && 
-            $0.value == newPattern.value &&
-            $0.context.userId == newPattern.context.userId 
+        if let existingIndex = patterns.firstIndex(where: {
+            $0.field == newPattern.field &&
+                $0.value == newPattern.value &&
+                $0.context.userId == newPattern.context.userId
         }) {
             // Update existing pattern
             let updated = patterns[existingIndex]
@@ -202,14 +202,14 @@ public class UserPatternLearner {
             patterns.append(newPattern)
         }
     }
-    
+
     private func decayOldPatterns() async {
         let cutoffDate = Calendar.current.date(
-            byAdding: .day, 
-            value: -patternDecayDays, 
+            byAdding: .day,
+            value: -patternDecayDays,
             to: Date()
         )!
-        
+
         patterns = patterns.compactMap { pattern in
             if pattern.lastSeen < cutoffDate {
                 // Decay confidence for old patterns
@@ -217,7 +217,7 @@ public class UserPatternLearner {
                 if decayedConfidence < 0.3 {
                     return nil // Remove patterns with very low confidence
                 }
-                
+
                 return UserPattern(
                     patternType: pattern.patternType,
                     field: pattern.field,
@@ -232,33 +232,33 @@ public class UserPatternLearner {
             return pattern
         }
     }
-    
+
     private func isContextSimilar(_ context1: PatternContext, _ context2: PatternContext) -> Bool {
         // Same user is most important
         guard context1.userId == context2.userId else { return false }
-        
+
         // Check other context factors
         var similarity = 1.0
-        
+
         if let org1 = context1.organizationUnit, let org2 = context2.organizationUnit {
             similarity *= (org1 == org2) ? 1.0 : 0.8
         }
-        
+
         if let type1 = context1.acquisitionType, let type2 = context2.acquisitionType {
             similarity *= (type1 == type2) ? 1.0 : 0.7
         }
-        
+
         return similarity >= 0.7
     }
-    
+
     private func recencyFactor(for date: Date) -> Double {
         let daysSince = Calendar.current.dateComponents([.day], from: date, to: Date()).day ?? 0
         return max(0.5, 1.0 - (Double(daysSince) / Double(patternDecayDays)))
     }
-    
+
     private func generateReasoning(for pattern: UserPattern) -> String {
         let timeAgo = formatTimeAgo(pattern.lastSeen)
-        
+
         switch pattern.patternType {
         case .defaultValue:
             return "You've used '\(pattern.value)' \(pattern.occurrences) times \(timeAgo)"
@@ -274,7 +274,7 @@ public class UserPatternLearner {
             return "Standard approval chain for your organization"
         }
     }
-    
+
     private func formatTimeAgo(_ date: Date) -> String {
         let days = Calendar.current.dateComponents([.day], from: date, to: Date()).day ?? 0
         if days == 0 { return "today" }
@@ -283,50 +283,50 @@ public class UserPatternLearner {
         else if days < 30 { return "in the last month" }
         else { return "in the last \(days / 30) months" }
     }
-    
-    private func determinePatternType(field: String, value: String) -> UserPattern.PatternType {
+
+    private func determinePatternType(field: String, value _: String) -> UserPattern.PatternType {
         // Logic to determine pattern type based on field
         if field.contains("vendor") { return .vendorPreference }
         if field.contains("approval") { return .approvalChain }
         if field.contains("workflow") { return .workflow }
         return .defaultValue
     }
-    
+
     private func calculateInitialConfidence(_ interaction: PatternUserInteraction) -> Double {
         // Base confidence on various factors
         var confidence = 0.5
-        
+
         // Increase if user didn't change the suggested value
         if interaction.acceptedSuggestion { confidence += 0.2 }
-        
+
         // Increase if interaction was completed quickly
         if interaction.completionTime < 60 { confidence += 0.1 }
-        
+
         // Increase if no errors occurred
         if interaction.errorCount == 0 { confidence += 0.2 }
-        
+
         return min(1.0, confidence)
     }
-    
+
     private func recalculateConfidence(currentConfidence: Double, occurrences: Int) -> Double {
         // Increase confidence with more occurrences, but with diminishing returns
         let occurrenceFactor = Double(occurrences) / (Double(occurrences) + 10.0)
         return currentConfidence * 0.7 + occurrenceFactor * 0.3
     }
-    
-    private func extractMetadata(from interaction: PatternUserInteraction, field: String) -> [String: String] {
+
+    private func extractMetadata(from interaction: PatternUserInteraction, field _: String) -> [String: String] {
         var metadata: [String: String] = [:]
-        
+
         metadata["source"] = interaction.source.rawValue
         metadata["completionTime"] = "\(interaction.completionTime)"
-        
+
         if let docType = interaction.documentType {
             metadata["documentType"] = docType.rawValue
         }
-        
+
         return metadata
     }
-    
+
     private func mergeMetadata(_ existing: [String: String], _ new: [String: String]) -> [String: String] {
         var merged = existing
         for (key, value) in new {
@@ -334,12 +334,12 @@ public class UserPatternLearner {
         }
         return merged
     }
-    
+
     private func extractWorkflowPattern(from interaction: PatternUserInteraction) -> UserPattern? {
         guard let workflow = interaction.workflowSteps, !workflow.isEmpty else { return nil }
-        
+
         let workflowString = workflow.joined(separator: " → ")
-        
+
         return UserPattern(
             patternType: .workflow,
             field: "workflow_sequence",
@@ -351,36 +351,36 @@ public class UserPatternLearner {
             metadata: ["stepCount": "\(workflow.count)"]
         )
     }
-    
+
     private func getFieldsForFormType(_ formType: DocumentType) -> [String] {
         // Return typical fields for each form type
         switch formType {
         case .requestForQuote:
-            return ["vendor", "deliveryDate", "location", "justification", "approver"]
+            ["vendor", "deliveryDate", "location", "justification", "approver"]
         case .requestForProposal:
-            return ["requirements", "evaluationCriteria", "submissionDeadline", "pointOfContact"]
+            ["requirements", "evaluationCriteria", "submissionDeadline", "pointOfContact"]
         case .contractScaffold:
-            return ["contractType", "performancePeriod", "deliverables", "paymentTerms"]
+            ["contractType", "performancePeriod", "deliverables", "paymentTerms"]
         default:
-            return ["description", "requiredDate", "approver"]
+            ["description", "requiredDate", "approver"]
         }
     }
-    
+
     private func analyzeWorkflowPatterns(_ patterns: [UserPattern]) -> [WorkflowPattern] {
         // Group patterns by workflow sequence
         var workflowGroups: [String: [UserPattern]] = [:]
-        
+
         for pattern in patterns {
             workflowGroups[pattern.value, default: []].append(pattern)
         }
-        
+
         // Convert to WorkflowPattern objects
-        return workflowGroups.compactMap { (workflow, patterns) in
+        return workflowGroups.compactMap { workflow, patterns in
             guard !patterns.isEmpty else { return nil }
-            
+
             let totalOccurrences = patterns.reduce(0) { $0 + $1.occurrences }
             let avgConfidence = patterns.reduce(0.0) { $0 + $1.confidence } / Double(patterns.count)
-            
+
             return WorkflowPattern(
                 steps: workflow.split(separator: " → ").map(String.init),
                 occurrences: totalOccurrences,
@@ -389,7 +389,7 @@ public class UserPatternLearner {
             )
         }
     }
-    
+
     private func extractAverageTime(from patterns: [UserPattern]) -> TimeInterval {
         let times = patterns.compactMap { pattern in
             Double(pattern.metadata["completionTime"] ?? "0")
@@ -397,10 +397,10 @@ public class UserPatternLearner {
         guard !times.isEmpty else { return 0 }
         return times.reduce(0, +) / Double(times.count)
     }
-    
+
     private func extractPreferredVendors(from patterns: [UserPattern]) -> [PreferredVendor] {
         var vendorStats: [String: (count: Int, confidence: Double)] = [:]
-        
+
         for pattern in patterns {
             let current = vendorStats[pattern.value] ?? (0, 0.0)
             vendorStats[pattern.value] = (
@@ -408,7 +408,7 @@ public class UserPatternLearner {
                 confidence: max(current.confidence, pattern.confidence)
             )
         }
-        
+
         return vendorStats.map { vendor, stats in
             PreferredVendor(
                 name: vendor,
@@ -417,64 +417,64 @@ public class UserPatternLearner {
             )
         }.sorted { $0.selectionCount > $1.selectionCount }
     }
-    
+
     private func extractCommonWorkflows(from patterns: [UserPattern]) -> [String] {
         patterns
             .sorted { $0.occurrences > $1.occurrences }
             .prefix(5)
-            .map { $0.value }
+            .map(\.value)
     }
-    
+
     private func extractTypicalValues(from patterns: [UserPattern]) -> [String: String] {
         var typicalValues: [String: String] = [:]
-        
+
         // Group by field
         let fieldGroups = Dictionary(grouping: patterns) { $0.field }
-        
+
         for (field, fieldPatterns) in fieldGroups {
             // Find most common value for this field
             if let mostCommon = fieldPatterns.max(by: { $0.occurrences < $1.occurrences }) {
                 typicalValues[field] = mostCommon.value
             }
         }
-        
+
         return typicalValues
     }
-    
+
     private func calculateEfficiencyMetrics() -> EfficiencyMetrics {
         // Calculate various efficiency metrics
-        let recentPatterns = patterns.filter { 
-            $0.lastSeen > Calendar.current.date(byAdding: .day, value: -30, to: Date())! 
+        let recentPatterns = patterns.filter {
+            $0.lastSeen > Calendar.current.date(byAdding: .day, value: -30, to: Date())!
         }
-        
+
         let avgCompletionTime = recentPatterns
             .compactMap { Double($0.metadata["completionTime"] ?? "0") }
             .reduce(0.0, +) / Double(max(1, recentPatterns.count))
-        
+
         let reuseRate = Double(patterns.filter { $0.occurrences > 1 }.count) / Double(max(1, patterns.count))
-        
+
         return EfficiencyMetrics(
             averageCompletionTime: avgCompletionTime,
             patternReuseRate: reuseRate,
             confidenceGrowth: calculateConfidenceGrowth()
         )
     }
-    
+
     private func calculateConfidenceGrowth() -> Double {
         let sortedByDate = patterns.sorted { $0.lastSeen < $1.lastSeen }
         guard sortedByDate.count >= 2 else { return 0.0 }
-        
+
         let earliestAvg = sortedByDate.prefix(patterns.count / 3)
-            .map { $0.confidence }
+            .map(\.confidence)
             .reduce(0.0, +) / Double(patterns.count / 3)
-        
+
         let latestAvg = sortedByDate.suffix(patterns.count / 3)
-            .map { $0.confidence }
+            .map(\.confidence)
             .reduce(0.0, +) / Double(patterns.count / 3)
-        
+
         return latestAvg - earliestAvg
     }
-    
+
     private func persistPatterns() async {
         // Save patterns to persistent storage
         // This would integrate with SwiftData or Core Data
@@ -493,7 +493,7 @@ public struct PatternUserInteraction {
     public let completionTime: TimeInterval
     public let errorCount: Int
     public let workflowSteps: [String]?
-    
+
     public enum InteractionSource: String {
         case manualEntry = "manual"
         case documentUpload = "upload"

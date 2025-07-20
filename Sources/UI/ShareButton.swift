@@ -1,6 +1,6 @@
-import SwiftUI
-import ComposableArchitecture
 import AppCore
+import ComposableArchitecture
+import SwiftUI
 
 // Reusable share button component for all reports and documents
 struct ShareButton: View {
@@ -43,7 +43,7 @@ struct ShareButton: View {
             }
         }
     }
-    
+
     private func shareContent() async {
         let fullFileName = "\(fileName).\(fileExtension)"
         await shareService.shareContent(content, fullFileName)

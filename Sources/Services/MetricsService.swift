@@ -4,7 +4,7 @@ import Foundation
 import os.log
 
 /// Service responsible for tracking, analyzing, and reporting on system metrics (MOPs and MOEs)
-public struct MetricsService {
+public struct MetricsService: Sendable {
     public var recordMOP: @Sendable (MeasureOfPerformance, Double, MetricContext) async throws -> Void
     public var recordMOE: @Sendable (MeasureOfEffectiveness, Double, MetricContext) async throws -> Void
     public var recordMetric: @Sendable (MetricMeasurement) async throws -> Void
@@ -207,7 +207,7 @@ public extension MetricsService {
             subscribeToMetrics: { types in
                 AsyncStream { continuation in
                     Task {
-                        for await measurement in await storage.metricsStream.stream {
+                        for await measurement in storage.metricsStream.stream {
                             // Filter by requested types
                             if types.isEmpty || types.contains(measurement.type) {
                                 continuation.yield(measurement)
@@ -777,7 +777,7 @@ private struct MetricsAnalyzer {
 // MARK: - Dependency Registration
 
 extension MetricsService: DependencyKey {
-    public static var liveValue: MetricsService = .live
+    public static let liveValue: MetricsService = .live
 }
 
 public extension DependencyValues {

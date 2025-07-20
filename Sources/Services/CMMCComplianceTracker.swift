@@ -4,19 +4,19 @@ import Foundation
 // MARK: - CMMC Compliance Tracker
 
 /// Service for tracking Cybersecurity Maturity Model Certification (CMMC) compliance
-public struct CMMCComplianceTracker {
-    public var loadRequirements: (CMMCLevel) async throws -> [CMMCRequirement]
-    public var trackRequirement: (String, CMMCEvidence) async throws -> Void
-    public var generateComplianceReport: (CMMCLevel) async throws -> CMMCComplianceReport
-    public var calculateComplianceScore: (CMMCLevel) async throws -> Double
-    public var exportComplianceMatrix: (CMMCLevel) async throws -> String
+public struct CMMCComplianceTracker: Sendable {
+    public var loadRequirements: @Sendable (CMMCLevel) async throws -> [CMMCRequirement]
+    public var trackRequirement: @Sendable (String, CMMCEvidence) async throws -> Void
+    public var generateComplianceReport: @Sendable (CMMCLevel) async throws -> CMMCComplianceReport
+    public var calculateComplianceScore: @Sendable (CMMCLevel) async throws -> Double
+    public var exportComplianceMatrix: @Sendable (CMMCLevel) async throws -> String
 
     public init(
-        loadRequirements: @escaping (CMMCLevel) async throws -> [CMMCRequirement],
-        trackRequirement: @escaping (String, CMMCEvidence) async throws -> Void,
-        generateComplianceReport: @escaping (CMMCLevel) async throws -> CMMCComplianceReport,
-        calculateComplianceScore: @escaping (CMMCLevel) async throws -> Double,
-        exportComplianceMatrix: @escaping (CMMCLevel) async throws -> String
+        loadRequirements: @escaping @Sendable (CMMCLevel) async throws -> [CMMCRequirement],
+        trackRequirement: @escaping @Sendable (String, CMMCEvidence) async throws -> Void,
+        generateComplianceReport: @escaping @Sendable (CMMCLevel) async throws -> CMMCComplianceReport,
+        calculateComplianceScore: @escaping @Sendable (CMMCLevel) async throws -> Double,
+        exportComplianceMatrix: @escaping @Sendable (CMMCLevel) async throws -> String
     ) {
         self.loadRequirements = loadRequirements
         self.trackRequirement = trackRequirement
@@ -28,7 +28,7 @@ public struct CMMCComplianceTracker {
 
 // MARK: - Models
 
-public enum CMMCLevel: Int, CaseIterable {
+public enum CMMCLevel: Int, CaseIterable, Sendable {
     case level1 = 1
     case level2 = 2
     case level3 = 3
@@ -50,7 +50,7 @@ public enum CMMCLevel: Int, CaseIterable {
     }
 }
 
-public struct CMMCRequirement: Identifiable, Equatable {
+public struct CMMCRequirement: Identifiable, Equatable, Sendable {
     public let id: String
     public let domain: CMMCDomain
     public let practice: String
@@ -87,7 +87,7 @@ public struct CMMCRequirement: Identifiable, Equatable {
     }
 }
 
-public enum CMMCDomain: String, CaseIterable {
+public enum CMMCDomain: String, CaseIterable, Sendable {
     case accessControl = "Access Control"
     case assetManagement = "Asset Management"
     case auditAndAccountability = "Audit and Accountability"
@@ -107,7 +107,7 @@ public enum CMMCDomain: String, CaseIterable {
     case systemAndInformationIntegrity = "System and Information Integrity"
 }
 
-public struct CMMCEvidence: Equatable {
+public struct CMMCEvidence: Equatable, Sendable {
     public let documentName: String
     public let documentType: String
     public let uploadDate: Date
@@ -144,29 +144,49 @@ public struct CMMCComplianceReport: Equatable {
     }
 }
 
+// MARK: - Thread-Safe Storage Actor
+
+private actor CMMCStatusStorage {
+    private var requirementStatus: [String: (Bool, CMMCEvidence?)] = [:]
+    
+    func updateStatus(_ requirementId: String, isImplemented: Bool, evidence: CMMCEvidence?) {
+        requirementStatus[requirementId] = (isImplemented, evidence)
+    }
+    
+    func getStatus(_ requirementId: String) -> (Bool, CMMCEvidence?)? {
+        return requirementStatus[requirementId]
+    }
+    
+    func getAllStatuses() -> [String: (Bool, CMMCEvidence?)] {
+        return requirementStatus
+    }
+}
+
 // MARK: - Implementation
 
 extension CMMCComplianceTracker: DependencyKey {
     public static var liveValue: CMMCComplianceTracker {
-        // In-memory storage for demo purposes
-        var requirementStatus: [String: (Bool, CMMCEvidence?)] = [:]
+        // Thread-safe storage for requirement status
+        let storage = CMMCStatusStorage()
 
         return CMMCComplianceTracker(
             loadRequirements: { level in
                 getCMMCRequirements(for: level)
             },
 
-            trackRequirement: { requirementId, evidence in
-                requirementStatus[requirementId] = (true, evidence)
+            trackRequirement: { @Sendable requirementId, evidence in
+                await storage.updateStatus(requirementId, isImplemented: true, evidence: evidence)
             },
 
-            generateComplianceReport: { level in
+            generateComplianceReport: { @Sendable level in
                 let requirements = getCMMCRequirements(for: level)
                 var domainCounts: [CMMCDomain: (implemented: Int, total: Int)] = [:]
                 var gaps: [CMMCRequirement] = []
+                
+                let allStatuses = await storage.getAllStatuses()
 
                 for requirement in requirements {
-                    let status = requirementStatus[requirement.id]
+                    let status = allStatuses[requirement.id]
                     let isImplemented = status?.0 ?? false
 
                     var counts = domainCounts[requirement.domain] ?? (0, 0)
@@ -202,18 +222,21 @@ extension CMMCComplianceTracker: DependencyKey {
                 )
             },
 
-            calculateComplianceScore: { level in
+            calculateComplianceScore: { @Sendable level in
                 let requirements = getCMMCRequirements(for: level)
-                let implementedCount = requirements.filter { requirementStatus[$0.id]?.0 ?? false }.count
+                let allStatuses = await storage.getAllStatuses()
+                let implementedCount = requirements.filter { allStatuses[$0.id]?.0 ?? false }.count
                 return Double(implementedCount) / Double(requirements.count)
             },
 
-            exportComplianceMatrix: { level in
+            exportComplianceMatrix: { @Sendable level in
                 let requirements = getCMMCRequirements(for: level)
                 var csv = "Requirement ID,Domain,Practice,Level,Description,Implemented,Evidence\n"
+                
+                let allStatuses = await storage.getAllStatuses()
 
                 for requirement in requirements {
-                    let status = requirementStatus[requirement.id]
+                    let status = allStatuses[requirement.id]
                     let implemented = status?.0 ?? false
                     let evidence = status?.1?.documentName ?? "N/A"
 

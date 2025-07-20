@@ -13,11 +13,11 @@ public struct KeyboardServiceClient: Sendable {
 }
 
 extension KeyboardServiceClient: DependencyKey {
-    public static var liveValue: Self = Self()
+    public static let liveValue: Self = .init()
 }
 
-extension DependencyValues {
-    public var keyboardService: KeyboardServiceClient {
+public extension DependencyValues {
+    var keyboardService: KeyboardServiceClient {
         get { self[KeyboardServiceClient.self] }
         set { self[KeyboardServiceClient.self] = newValue }
     }

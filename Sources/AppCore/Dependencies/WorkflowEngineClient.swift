@@ -2,7 +2,7 @@ import ComposableArchitecture
 import Foundation
 
 @DependencyClient
-public struct WorkflowEngineClient {
+public struct WorkflowEngineClient: Sendable {
     public var startWorkflow: @Sendable (UUID) async throws -> WorkflowContext
     public var loadWorkflow: @Sendable (UUID) async throws -> WorkflowContext
     public var updateWorkflowState: @Sendable (UUID, WorkflowState) async throws -> WorkflowContext

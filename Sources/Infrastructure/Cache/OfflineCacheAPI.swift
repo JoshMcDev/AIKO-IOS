@@ -5,16 +5,15 @@
 //  Extended API for offline cache management
 //
 
-import Foundation
-import Combine
-import os.log
 import AppCore
+import Combine
+import Foundation
+import os.log
 
 /// Extended API for cache management operations
 extension OfflineCacheManager {
-    
     // MARK: - Search and Query API
-    
+
     /// Search cache entries by pattern
     /// - Parameters:
     ///   - pattern: Search pattern (supports wildcards)
@@ -27,17 +26,17 @@ extension OfflineCacheManager {
         dateRange: DateInterval? = nil
     ) async -> [CacheSearchResult] {
         logger.debug("Searching cache with pattern: \(pattern)")
-        
+
         var results: [CacheSearchResult] = []
-        
+
         // Get all keys from all caches
         let allKeys = await getAllKeys()
-        
+
         // Filter by pattern
         let matchingKeys = allKeys.filter { key in
             matchesPattern(key, pattern: pattern)
         }
-        
+
         // Get metadata for matching keys
         for key in matchingKeys {
             if let metadata = await getCacheMetadata(forKey: key) {
@@ -45,13 +44,13 @@ extension OfflineCacheManager {
                 if let types = contentTypes, !types.contains(metadata.contentType) {
                     continue
                 }
-                
+
                 if let range = dateRange {
                     if metadata.createdAt < range.start || metadata.createdAt > range.end {
                         continue
                     }
                 }
-                
+
                 results.append(CacheSearchResult(
                     key: key,
                     metadata: metadata,
@@ -59,45 +58,45 @@ extension OfflineCacheManager {
                 ))
             }
         }
-        
+
         return results
     }
-    
+
     /// Get cache metadata for a key
     func getCacheMetadata(forKey key: String) async -> OfflineCacheMetadata? {
         // Try to get metadata from each cache
         if let metadata = await memoryCache.getMetadata(forKey: key) {
             return metadata
         }
-        
+
         if let metadata = await diskCache.getMetadata(forKey: key) {
             return metadata
         }
-        
+
         if let metadata = await secureCache.getMetadata(forKey: key) {
             return metadata
         }
-        
+
         return nil
     }
-    
+
     // MARK: - Batch Operations API
-    
+
     /// Store multiple items in batch
     /// - Parameters:
     ///   - items: Array of items to store
     ///   - progressHandler: Optional progress callback
     /// - Returns: Results for each item
     @discardableResult
-    func batchStore<T: Codable>(
-        _ items: [(key: String, object: T, type: CacheContentType, isSecure: Bool)],
+    func batchStore(
+        _ items: [(key: String, object: some Codable & Sendable, type: CacheContentType, isSecure: Bool)],
         progressHandler: ((Double) -> Void)? = nil
     ) async throws -> [BatchOperationResult] {
         logger.info("Batch storing \(items.count) items")
-        
+
         var results: [BatchOperationResult] = []
         let total = Double(items.count)
-        
+
         for (index, item) in items.enumerated() {
             do {
                 try await store(item.object, forKey: item.key, type: item.type, isSecure: item.isSecure)
@@ -105,23 +104,23 @@ extension OfflineCacheManager {
             } catch {
                 results.append(BatchOperationResult(key: item.key, success: false, error: error))
             }
-            
+
             progressHandler?(Double(index + 1) / total)
         }
-        
+
         return results
     }
-    
+
     /// Retrieve multiple items in batch
-    func batchRetrieve<T: Codable>(
+    func batchRetrieve<T: Codable & Sendable>(
         _ type: T.Type,
         keys: [String],
         isSecure: Bool = false
     ) async -> [String: T?] {
         logger.debug("Batch retrieving \(keys.count) items")
-        
+
         var results: [String: T?] = [:]
-        
+
         await withTaskGroup(of: (String, T?).self) { group in
             for key in keys {
                 group.addTask {
@@ -129,44 +128,43 @@ extension OfflineCacheManager {
                     return (key, value)
                 }
             }
-            
+
             for await (key, value) in group {
                 results[key] = value
             }
         }
-        
+
         return results
     }
-    
+
     /// Remove multiple items in batch
     func batchRemove(keys: [String]) async throws {
         logger.info("Batch removing \(keys.count) items")
-        
+
         for key in keys {
             try await remove(forKey: key)
         }
     }
-    
+
     // MARK: - Cache Health and Monitoring API
-    
+
     /// Get cache health status
     func healthCheck() async -> CacheHealthStatus {
         let memoryHealth = await memoryCache.checkHealth()
         let diskHealth = await diskCache.checkHealth()
         let secureHealth = await secureCache.checkHealth()
-        
+
         let totalSize = await totalSize()
         let sizePercentage = Double(totalSize) / Double(configuration.maxSize)
-        
-        let overallHealth: CacheHealthStatus.HealthLevel
-        if memoryHealth && diskHealth && secureHealth && sizePercentage < 0.9 {
-            overallHealth = .healthy
+
+        let overallHealth: CacheHealthStatus.HealthLevel = if memoryHealth, diskHealth, secureHealth, sizePercentage < 0.9 {
+            .healthy
         } else if sizePercentage > 0.95 {
-            overallHealth = .critical
+            .critical
         } else {
-            overallHealth = .warning
+            .warning
         }
-        
+
         return CacheHealthStatus(
             level: overallHealth,
             totalSize: totalSize,
@@ -177,7 +175,7 @@ extension OfflineCacheManager {
             issues: identifyHealthIssues()
         )
     }
-    
+
     /// Monitor cache performance
     func startMonitoring(interval: TimeInterval = 60) -> AnyPublisher<CachePerformanceMetrics, Never> {
         Timer.publish(every: interval, on: .main, in: .common)
@@ -193,9 +191,9 @@ extension OfflineCacheManager {
             }
             .eraseToAnyPublisher()
     }
-    
+
     // MARK: - Import/Export API
-    
+
     /// Export cache contents to a file
     /// - Parameters:
     ///   - url: Destination URL
@@ -203,47 +201,47 @@ extension OfflineCacheManager {
     /// - Returns: Export summary
     func exportCache(to url: URL, options: CacheExportOptions = .default) async throws -> CacheExportSummary {
         logger.info("Exporting cache to: \(url.path)")
-        
+
         var exportData: [String: Any] = [:]
         var exportedCount = 0
-        
+
         // Collect data based on options
         if options.includeMemoryCache {
             let memoryData = await memoryCache.exportAllData()
             exportData["memory"] = memoryData
             exportedCount += memoryData.count
         }
-        
+
         if options.includeDiskCache {
             let diskData = await diskCache.exportAllData()
             exportData["disk"] = diskData
             exportedCount += diskData.count
         }
-        
-        if options.includeSecureCache && options.includeSecureData {
+
+        if options.includeSecureCache, options.includeSecureData {
             let secureData = await secureCache.exportAllData()
             exportData["secure"] = secureData
             exportedCount += secureData.count
         }
-        
+
         // Add metadata
-        exportData["metadata"] = [
+        exportData["metadata"] = try [
             "exportDate": Date(),
             "version": "1.0",
-            "configuration": try JSONEncoder().encode(configuration)
+            "configuration": JSONEncoder().encode(configuration),
         ]
-        
+
         // Write to file
         let jsonData = try JSONSerialization.data(withJSONObject: exportData, options: .prettyPrinted)
         try jsonData.write(to: url)
-        
+
         return CacheExportSummary(
             exportedEntries: exportedCount,
             fileSize: jsonData.count,
             exportDate: Date()
         )
     }
-    
+
     /// Import cache contents from a file
     /// - Parameters:
     ///   - url: Source URL
@@ -251,13 +249,13 @@ extension OfflineCacheManager {
     /// - Returns: Import summary
     func importCache(from url: URL, options: CacheImportOptions = .default) async throws -> CacheImportSummary {
         logger.info("Importing cache from: \(url.path)")
-        
+
         let data = try Data(contentsOf: url)
         let importData = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
-        
+
         var importedCount = 0
         var failedCount = 0
-        
+
         // Import based on options
         if options.importMemoryCache, let memoryData = importData["memory"] as? [String: Data] {
             for (key, data) in memoryData {
@@ -270,7 +268,7 @@ extension OfflineCacheManager {
                 }
             }
         }
-        
+
         if options.importDiskCache, let diskData = importData["disk"] as? [String: Data] {
             for (key, data) in diskData {
                 do {
@@ -281,19 +279,19 @@ extension OfflineCacheManager {
                 }
             }
         }
-        
+
         return CacheImportSummary(
             importedEntries: importedCount,
             failedEntries: failedCount,
             importDate: Date()
         )
     }
-    
+
     // MARK: - Priority-based Caching API
-    
+
     /// Store with priority
-    func storeWithPriority<T: Codable>(
-        _ object: T,
+    func storeWithPriority(
+        _ object: some Codable & Sendable,
         forKey key: String,
         type: CacheContentType,
         priority: CachePriority,
@@ -310,26 +308,26 @@ extension OfflineCacheManager {
             expiresAt: nil
         )
         metadata.priority = priority
-        
+
         // Store with priority consideration
         try await store(object, forKey: key, type: type, isSecure: isSecure)
-        
+
         // Update metadata
         await updateMetadata(metadata, forKey: key)
     }
-    
+
     /// Pre-load high priority items
     func preloadHighPriorityItems() async {
         logger.info("Pre-loading high priority items")
-        
+
         let highPriorityKeys = await getKeysByPriority(.high)
-        
+
         for key in highPriorityKeys {
             // Ensure it's in memory cache
             if await memoryCache.exists(forKey: key) {
                 continue
             }
-            
+
             // Load from disk/secure cache
             if let data = try? await diskCache.retrieveData(forKey: key) {
                 try? await memoryCache.storeData(data, forKey: key)
@@ -338,9 +336,9 @@ extension OfflineCacheManager {
             }
         }
     }
-    
+
     // MARK: - Synchronization API
-    
+
     /// Get synchronization status
     func getSyncStatus() -> CacheSyncStatus {
         CacheSyncStatus(
@@ -350,39 +348,39 @@ extension OfflineCacheManager {
             syncErrors: statistics.syncErrors
         )
     }
-    
+
     /// Mark items for synchronization
     func markForSync(keys: [String]) async {
         for key in keys {
             await markKeyForSync(key)
         }
-        
+
         statistics.pendingChanges = keys.count
     }
-    
+
     /// Get items pending synchronization
     func getPendingSyncItems() async -> [String] {
         // Implementation would track which items need syncing
         []
     }
-    
+
     // MARK: - Advanced Configuration API
-    
+
     /// Update cache configuration
-    func updateConfiguration(_ newConfig: OfflineCacheConfiguration) async {
+    func updateConfiguration(_: OfflineCacheConfiguration) async {
         logger.info("Updating cache configuration")
-        
+
         // This would require rebuilding caches with new config
         // For now, log the intent
         logger.warning("Configuration update not fully implemented")
     }
-    
+
     /// Get detailed cache analytics
     func getAnalytics() async -> CacheAnalytics {
         let patterns = await analyzeAccessPatterns()
         let sizeDistribution = await analyzeSizeDistribution()
         let typeDistribution = await analyzeTypeDistribution()
-        
+
         return CacheAnalytics(
             accessPatterns: patterns,
             sizeDistribution: sizeDistribution,
@@ -396,83 +394,84 @@ extension OfflineCacheManager {
             )
         )
     }
-    
+
     // MARK: - Helper Methods
-    
+
     private func matchesPattern(_ key: String, pattern: String) -> Bool {
         // Simple wildcard matching
         let regexPattern = pattern
             .replacingOccurrences(of: "*", with: ".*")
             .replacingOccurrences(of: "?", with: ".")
-        
+
         return key.range(of: regexPattern, options: .regularExpression) != nil
     }
-    
-    private func getCacheLocation(forKey key: String) -> CacheLocation {
+
+    private func getCacheLocation(forKey _: String) -> CacheLocation {
         // This would need async handling to determine location
         // For now, return none - proper implementation would track this
-        return .none
+        .none
     }
-    
+
     private func calculateHitRate() -> Double {
         let total = statistics.hitCount + statistics.missCount
         guard total > 0 else { return 0 }
         return Double(statistics.hitCount) / Double(total)
     }
-    
+
     private func getMemoryPressure() -> Double {
         // Simplified memory pressure calculation
         // This would need proper async handling to get actual memory size
-        return 0.5
+        0.5
     }
-    
+
     private func getDiskUsage() -> Double {
         // Simplified disk usage calculation
-        return Double(statistics.totalSize) / Double(configuration.maxSize)
+        Double(statistics.totalSize) / Double(configuration.maxSize)
     }
-    
+
     private func identifyHealthIssues() -> [String] {
         var issues: [String] = []
-        
+
         if getDiskUsage() > 0.9 {
             issues.append("Cache size approaching limit")
         }
-        
+
         if calculateHitRate() < 0.5 {
             issues.append("Low cache hit rate")
         }
-        
+
         if let lastCleanup = statistics.lastCleanup,
-           Date().timeIntervalSince(lastCleanup) > 86400 * 7 {
+           Date().timeIntervalSince(lastCleanup) > 86400 * 7
+        {
             issues.append("Cache cleanup overdue")
         }
-        
+
         return issues
     }
-    
-    private func updateMetadata(_ metadata: OfflineCacheMetadata, forKey key: String) async {
+
+    private func updateMetadata(_: OfflineCacheMetadata, forKey _: String) async {
         // Implementation would update metadata in the appropriate cache
     }
-    
-    private func getKeysByPriority(_ priority: CachePriority) async -> [String] {
+
+    private func getKeysByPriority(_: CachePriority) async -> [String] {
         // Implementation would filter keys by priority
         []
     }
-    
-    private func markKeyForSync(_ key: String) async {
+
+    private func markKeyForSync(_: String) async {
         // Implementation would mark key for synchronization
     }
-    
+
     private func analyzeAccessPatterns() async -> [AccessPattern] {
         // Implementation would analyze access patterns
         []
     }
-    
+
     private func analyzeSizeDistribution() async -> SizeDistribution {
         // Implementation would analyze size distribution
         SizeDistribution(small: 0, medium: 0, large: 0)
     }
-    
+
     private func analyzeTypeDistribution() async -> [CacheContentType: Int] {
         // Implementation would analyze type distribution
         [:]
@@ -508,7 +507,7 @@ struct CacheHealthStatus {
     let hitRate: Double
     let lastCleanup: Date?
     let issues: [String]
-    
+
     enum HealthLevel {
         case healthy
         case warning
@@ -530,7 +529,7 @@ struct CacheExportOptions {
     let includeSecureCache: Bool
     let includeSecureData: Bool
     let compress: Bool
-    
+
     static let `default` = CacheExportOptions(
         includeMemoryCache: true,
         includeDiskCache: true,
@@ -551,7 +550,7 @@ struct CacheImportOptions {
     let importDiskCache: Bool
     let importSecureCache: Bool
     let overwriteExisting: Bool
-    
+
     static let `default` = CacheImportOptions(
         importMemoryCache: true,
         importDiskCache: true,
@@ -594,9 +593,9 @@ struct AccessPattern {
 }
 
 struct SizeDistribution {
-    let small: Int  // < 1KB
+    let small: Int // < 1KB
     let medium: Int // 1KB - 1MB
-    let large: Int  // > 1MB
+    let large: Int // > 1MB
 }
 
 // MARK: - Cache Metadata Extension

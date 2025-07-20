@@ -1,7 +1,7 @@
 import Foundation
 
 /// Value object representing the status of an acquisition
-public enum AcquisitionStatus: String, CaseIterable, Codable {
+public enum AcquisitionStatus: String, CaseIterable, Codable, Sendable {
     case draft
     case inProgress = "in_progress"
     case underReview = "under_review"
@@ -11,112 +11,103 @@ public enum AcquisitionStatus: String, CaseIterable, Codable {
     case onHold = "on_hold"
     case awarded
     case archived
-    
+
     public var displayName: String {
         switch self {
-        case .draft: return "Draft"
-        case .inProgress: return "In Progress"
-        case .underReview: return "Under Review"
-        case .approved: return "Approved"
-        case .completed: return "Completed"
-        case .cancelled: return "Cancelled"
-        case .onHold: return "On Hold"
-        case .awarded: return "Awarded"
-        case .archived: return "Archived"
+        case .draft: "Draft"
+        case .inProgress: "In Progress"
+        case .underReview: "Under Review"
+        case .approved: "Approved"
+        case .completed: "Completed"
+        case .cancelled: "Cancelled"
+        case .onHold: "On Hold"
+        case .awarded: "Awarded"
+        case .archived: "Archived"
         }
     }
-    
+
     public var icon: String {
         switch self {
-        case .draft: return "pencil.circle"
-        case .inProgress: return "arrow.right.circle"
-        case .underReview: return "magnifyingglass.circle"
-        case .approved: return "checkmark.circle"
-        case .completed: return "checkmark.seal"
-        case .cancelled: return "xmark.circle"
-        case .onHold: return "pause.circle"
-        case .awarded: return "rosette"
-        case .archived: return "archivebox"
+        case .draft: "pencil.circle"
+        case .inProgress: "arrow.right.circle"
+        case .underReview: "magnifyingglass.circle"
+        case .approved: "checkmark.circle"
+        case .completed: "checkmark.seal"
+        case .cancelled: "xmark.circle"
+        case .onHold: "pause.circle"
+        case .awarded: "rosette"
+        case .archived: "archivebox"
         }
     }
-    
+
     public var color: String {
         switch self {
-        case .draft: return "gray"
-        case .inProgress: return "blue"
-        case .underReview: return "orange"
-        case .approved: return "green"
-        case .completed: return "mint"
-        case .cancelled: return "red"
-        case .onHold: return "yellow"
-        case .awarded: return "purple"
-        case .archived: return "secondary"
+        case .draft: "gray"
+        case .inProgress: "blue"
+        case .underReview: "orange"
+        case .approved: "green"
+        case .completed: "mint"
+        case .cancelled: "red"
+        case .onHold: "yellow"
+        case .awarded: "purple"
+        case .archived: "secondary"
         }
     }
-    
+
     /// Determines if this status represents an active acquisition
     public var isActive: Bool {
         switch self {
         case .draft, .inProgress, .underReview, .approved, .onHold:
-            return true
+            true
         case .completed, .cancelled, .awarded, .archived:
-            return false
+            false
         }
     }
-    
+
     /// Determines if this status allows editing
     public var allowsEditing: Bool {
         switch self {
         case .draft, .inProgress:
-            return true
+            true
         case .underReview, .approved, .completed, .cancelled, .onHold, .awarded, .archived:
-            return false
+            false
         }
     }
-    
+
     /// Determines valid transitions from this status
     public func canTransition(to targetStatus: AcquisitionStatus) -> Bool {
         switch (self, targetStatus) {
         // From Draft
-        case (.draft, .inProgress): return true
-        case (.draft, .cancelled): return true
-        
+        case (.draft, .inProgress): true
+        case (.draft, .cancelled): true
         // From In Progress
-        case (.inProgress, .underReview): return true
-        case (.inProgress, .draft): return true
-        case (.inProgress, .cancelled): return true
-        case (.inProgress, .onHold): return true
-        
+        case (.inProgress, .underReview): true
+        case (.inProgress, .draft): true
+        case (.inProgress, .cancelled): true
+        case (.inProgress, .onHold): true
         // From Under Review
-        case (.underReview, .approved): return true
-        case (.underReview, .inProgress): return true
-        case (.underReview, .cancelled): return true
-        
+        case (.underReview, .approved): true
+        case (.underReview, .inProgress): true
+        case (.underReview, .cancelled): true
         // From Approved
-        case (.approved, .awarded): return true
-        case (.approved, .cancelled): return true
-        case (.approved, .completed): return true
-        
+        case (.approved, .awarded): true
+        case (.approved, .cancelled): true
+        case (.approved, .completed): true
         // From On Hold
-        case (.onHold, .inProgress): return true
-        case (.onHold, .cancelled): return true
-        
+        case (.onHold, .inProgress): true
+        case (.onHold, .cancelled): true
         // From Awarded
-        case (.awarded, .completed): return true
-        case (.awarded, .archived): return true
-        
+        case (.awarded, .completed): true
+        case (.awarded, .archived): true
         // From Completed
-        case (.completed, .archived): return true
-        
+        case (.completed, .archived): true
         // From Cancelled
-        case (.cancelled, .draft): return true // Allow restart
-        case (.cancelled, .archived): return true
-        
+        case (.cancelled, .draft): true // Allow restart
+        case (.cancelled, .archived): true
         // Same status transitions allowed
-        case _ where self == targetStatus: return true
-        
+        case _ where self == targetStatus: true
         // All other transitions not allowed
-        default: return false
+        default: false
         }
     }
 }
@@ -129,34 +120,34 @@ public extension AcquisitionStatus {
         case planning = "Planning"
         case execution = "Execution"
         case completion = "Completion"
-        
+
         var statuses: [AcquisitionStatus] {
             switch self {
             case .planning:
-                return [.draft]
+                [.draft]
             case .execution:
-                return [.inProgress, .underReview, .approved, .onHold]
+                [.inProgress, .underReview, .approved, .onHold]
             case .completion:
-                return [.awarded, .completed, .cancelled, .archived]
+                [.awarded, .completed, .cancelled, .archived]
             }
         }
-        
+
         var icon: String {
             switch self {
-            case .planning: return "lightbulb"
-            case .execution: return "gearshape"
-            case .completion: return "checkmark.seal"
+            case .planning: "lightbulb"
+            case .execution: "gearshape"
+            case .completion: "checkmark.seal"
             }
         }
     }
-    
+
     var phase: Phase {
         if Phase.planning.statuses.contains(self) {
-            return .planning
+            .planning
         } else if Phase.execution.statuses.contains(self) {
-            return .execution
+            .execution
         } else {
-            return .completion
+            .completion
         }
     }
 }

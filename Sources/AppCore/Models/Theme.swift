@@ -3,7 +3,7 @@ import SwiftUI
 /// Shared theme constants for AIKO application
 public enum Theme {
     // MARK: - Colors
-    
+
     public enum Colors {
         public static let aikoBackground = Color.black
         public static let aikoCard = Color.black.opacity(0.8)
@@ -17,9 +17,9 @@ public enum Theme {
         public static let aikoError = Color.red
         public static let aikoAccent = Color.purple
     }
-    
+
     // MARK: - Typography
-    
+
     public enum Typography {
         public static let largeTitle = Font.system(size: 34, weight: .bold, design: .rounded)
         public static let title = Font.system(size: 28, weight: .bold, design: .rounded)
@@ -32,9 +32,9 @@ public enum Theme {
         public static let caption = Font.system(size: 12, weight: .regular, design: .default)
         public static let caption2 = Font.system(size: 11, weight: .regular, design: .default)
     }
-    
+
     // MARK: - Spacing
-    
+
     public enum Spacing {
         public static let xs: CGFloat = 4
         public static let sm: CGFloat = 8
@@ -43,9 +43,9 @@ public enum Theme {
         public static let xl: CGFloat = 32
         public static let xxl: CGFloat = 40
     }
-    
+
     // MARK: - Corner Radius
-    
+
     public enum CornerRadius {
         public static let sm: CGFloat = 8
         public static let md: CGFloat = 12

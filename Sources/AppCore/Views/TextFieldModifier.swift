@@ -6,7 +6,7 @@ public struct TextFieldModifier: ViewModifier {
     let keyboardType: PlatformKeyboardType?
     let supportsAutocapitalization: Bool
     let supportsKeyboardTypes: Bool
-    
+
     public init(
         disableAutocapitalization: Bool = false,
         keyboardType: PlatformKeyboardType? = nil,
@@ -18,42 +18,42 @@ public struct TextFieldModifier: ViewModifier {
         self.supportsAutocapitalization = supportsAutocapitalization
         self.supportsKeyboardTypes = supportsKeyboardTypes
     }
-    
+
     public func body(content: Content) -> some View {
         #if os(iOS)
-        if supportsAutocapitalization || supportsKeyboardTypes {
-            content
-                .autocapitalization(disableAutocapitalization ? .none : .sentences)
-                .keyboardType(keyboardType.map(iOSKeyboardType) ?? .default)
-        } else {
-            content
-        }
+            if supportsAutocapitalization || supportsKeyboardTypes {
+                content
+                    .autocapitalization(disableAutocapitalization ? .none : .sentences)
+                    .keyboardType(keyboardType.map(iOSKeyboardType) ?? .default)
+            } else {
+                content
+            }
         #else
-        content
+            content
         #endif
     }
-    
+
     #if os(iOS)
-    private func iOSKeyboardType(from platformType: PlatformKeyboardType) -> UIKeyboardType {
-        switch platformType {
-        case .default:
-            return .default
-        case .email:
-            return .emailAddress
-        case .emailAddress:
-            return .emailAddress
-        case .number:
-            return .numberPad
-        case .numberPad:
-            return .numberPad
-        case .phone:
-            return .phonePad
-        case .url:
-            return .URL
-        case .decimal:
-            return .decimalPad
+        private func iOSKeyboardType(from platformType: PlatformKeyboardType) -> UIKeyboardType {
+            switch platformType {
+            case .default:
+                .default
+            case .email:
+                .emailAddress
+            case .emailAddress:
+                .emailAddress
+            case .number:
+                .numberPad
+            case .numberPad:
+                .numberPad
+            case .phone:
+                .phonePad
+            case .url:
+                .URL
+            case .decimal:
+                .decimalPad
+            }
         }
-    }
     #endif
 }
 
@@ -65,7 +65,7 @@ public extension View {
         supportsAutocapitalization: Bool,
         supportsKeyboardTypes: Bool
     ) -> some View {
-        self.modifier(TextFieldModifier(
+        modifier(TextFieldModifier(
             disableAutocapitalization: disableAutocapitalization,
             keyboardType: keyboardType,
             supportsAutocapitalization: supportsAutocapitalization,

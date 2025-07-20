@@ -1,15 +1,15 @@
-import SwiftUI
-import ComposableArchitecture
 import AppCore
+import ComposableArchitecture
+import SwiftUI
 
 // MARK: - LLM Provider Settings View
 
 struct LLMProviderSettingsView: View {
     let store: StoreOf<LLMProviderSettingsFeature>
     @Dependency(\.navigationService) var navigationService
-    
+
     var body: some View {
-        WithViewStore(self.store, observe: { $0 }) { store in
+        WithViewStore(store, observe: { $0 }) { store in
             List {
                 // Active Provider Section
                 Section {
@@ -27,7 +27,7 @@ struct LLMProviderSettingsView: View {
                 } header: {
                     Text("Active Provider")
                 }
-                
+
                 // Available Providers Section
                 Section {
                     ForEach(store.availableProviders) { providerState in
@@ -46,7 +46,7 @@ struct LLMProviderSettingsView: View {
                     Text("Configure providers to enable AI features. API keys are stored securely in the system keychain.")
                         .font(.caption)
                 }
-                
+
                 // Provider Capabilities Section
                 if let selectedProvider = store.selectedProvider {
                     Section {
@@ -91,7 +91,7 @@ struct ProviderRow: View {
     let isActive: Bool
     let isConfigured: Bool
     let onTap: () -> Void
-    
+
     var body: some View {
         Button(action: onTap) {
             HStack {
@@ -99,21 +99,21 @@ struct ProviderRow: View {
                     HStack {
                         Text(provider.name)
                             .font(.headline)
-                        
+
                         if isActive {
                             Label("Active", systemImage: "checkmark.circle.fill")
                                 .font(.caption)
                                 .foregroundColor(.green)
                         }
                     }
-                    
+
                     Text(provider.id)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                
+
                 Spacer()
-                
+
                 if isConfigured {
                     Image(systemName: "checkmark.circle")
                         .foregroundColor(.green)
@@ -132,7 +132,7 @@ struct ProviderRow: View {
 
 struct ProviderCapabilitiesView: View {
     let provider: any LLMProviderProtocol
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Features
@@ -140,53 +140,53 @@ struct ProviderCapabilitiesView: View {
                 Text("Features")
                     .font(.subheadline)
                     .fontWeight(.semibold)
-                
+
                 HStack(spacing: 12) {
                     CapabilityBadge(
                         title: "Streaming",
                         isSupported: provider.capabilities.supportsStreaming
                     )
-                    
+
                     CapabilityBadge(
                         title: "Vision",
                         isSupported: provider.capabilities.supportsVision
                     )
-                    
+
                     CapabilityBadge(
                         title: "Functions",
                         isSupported: provider.capabilities.supportsFunctionCalling
                     )
-                    
+
                     CapabilityBadge(
                         title: "Embeddings",
                         isSupported: provider.capabilities.supportsEmbeddings
                     )
                 }
             }
-            
+
             // Context Limits
             VStack(alignment: .leading, spacing: 8) {
                 Text("Limits")
                     .font(.subheadline)
                     .fontWeight(.semibold)
-                
+
                 HStack(spacing: 20) {
                     Label("\(provider.capabilities.maxContextLength / 1000)K context", systemImage: "doc.text")
                         .font(.caption)
-                    
+
                     Label("\(provider.capabilities.maxTokens) max output", systemImage: "text.cursor")
                         .font(.caption)
                 }
                 .foregroundColor(.secondary)
             }
-            
+
             // Available Models
             if !provider.capabilities.supportedModels.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Models")
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                    
+
                     ForEach(provider.capabilities.supportedModels) { model in
                         ModelRow(model: model)
                     }
@@ -202,12 +202,12 @@ struct ProviderCapabilitiesView: View {
 struct CapabilityBadge: View {
     let title: String
     let isSupported: Bool
-    
+
     var body: some View {
         HStack(spacing: 4) {
             Image(systemName: isSupported ? "checkmark.circle.fill" : "xmark.circle")
                 .font(.caption2)
-            
+
             Text(title)
                 .font(.caption)
         }
@@ -223,23 +223,23 @@ struct CapabilityBadge: View {
 
 struct ModelRow: View {
     let model: LLMModel
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(model.name)
                     .font(.caption)
                     .fontWeight(.medium)
-                
+
                 Spacer()
-                
+
                 if let pricing = model.pricing {
                     Text("$\(String(format: "%.2f", NSDecimalNumber(decimal: pricing.inputPricePerMillion).doubleValue))/$\(String(format: "%.2f", NSDecimalNumber(decimal: pricing.outputPricePerMillion).doubleValue))")
                         .font(.caption2)
                         .foregroundColor(.secondary)
                 }
             }
-            
+
             Text(model.description)
                 .font(.caption2)
                 .foregroundColor(.secondary)
@@ -255,14 +255,14 @@ struct LLMProviderConfigurationView: View {
     @FocusState private var focusedField: Field?
     @Dependency(\.navigationService) var navigationService
     @Dependency(\.textFieldService) var textFieldService
-    
+
     enum Field: Hashable {
         case apiKey
         case organizationId
         case customEndpoint
         case deploymentName
     }
-    
+
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             Form {
@@ -276,7 +276,7 @@ struct LLMProviderConfigurationView: View {
                 } header: {
                     Text("Provider Information")
                 }
-                
+
                 Section {
                     SecureField("API Key", text: viewStore.binding(
                         get: \.apiKey,
@@ -289,7 +289,7 @@ struct LLMProviderConfigurationView: View {
                         supportsKeyboardTypes: textFieldService.supportsKeyboardTypes()
                     )
                     .disableAutocorrection(true)
-                    
+
                     if viewStore.provider.id == "openai" || viewStore.provider.id == "azure-openai" {
                         TextField("Organization ID (Optional)", text: viewStore.binding(
                             get: \.organizationId,
@@ -303,7 +303,7 @@ struct LLMProviderConfigurationView: View {
                         )
                         .disableAutocorrection(true)
                     }
-                    
+
                     if viewStore.provider.id == "azure-openai" {
                         TextField("Azure Endpoint URL", text: viewStore.binding(
                             get: \.customEndpoint,
@@ -317,7 +317,7 @@ struct LLMProviderConfigurationView: View {
                             supportsKeyboardTypes: textFieldService.supportsKeyboardTypes()
                         )
                         .disableAutocorrection(true)
-                        
+
                         TextField("Deployment Name", text: viewStore.binding(
                             get: \.deploymentName,
                             send: { .updateDeploymentName($0) }
@@ -330,7 +330,7 @@ struct LLMProviderConfigurationView: View {
                         )
                         .disableAutocorrection(true)
                     }
-                    
+
                     if viewStore.provider.id == "local" {
                         TextField("Server URL", text: viewStore.binding(
                             get: \.customEndpoint,
@@ -356,7 +356,7 @@ struct LLMProviderConfigurationView: View {
                         Text("Your API key will be stored securely in the system keychain")
                     }
                 }
-                
+
                 if viewStore.isValidating {
                     Section {
                         HStack {
@@ -379,7 +379,7 @@ struct LLMProviderConfigurationView: View {
                         viewStore.send(.cancelTapped)
                     }
                 }
-                
+
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         viewStore.send(.saveTapped)

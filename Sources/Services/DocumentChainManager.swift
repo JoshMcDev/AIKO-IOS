@@ -1,23 +1,23 @@
+import AppCore
 import ComposableArchitecture
 import CoreData
 import Foundation
-import AppCore
 
 // MARK: - Document Chain Manager
 
-public struct DocumentChainManager {
-    public var createChain: (UUID, [DocumentType]) async throws -> DocumentChainProgress
-    public var updateChainProgress: (UUID, DocumentType, GeneratedDocument) async throws -> DocumentChainProgress
-    public var getNextInChain: (UUID) async throws -> DocumentType?
-    public var extractAndPropagate: (UUID, GeneratedDocument) async throws -> CollectedData
-    public var validateChain: (UUID) async throws -> ChainValidation
+public struct DocumentChainManager: Sendable {
+    public var createChain: @Sendable (UUID, [DocumentType]) async throws -> DocumentChainProgress
+    public var updateChainProgress: @Sendable (UUID, DocumentType, GeneratedDocument) async throws -> DocumentChainProgress
+    public var getNextInChain: @Sendable (UUID) async throws -> DocumentType?
+    public var extractAndPropagate: @Sendable (UUID, GeneratedDocument) async throws -> CollectedData
+    public var validateChain: @Sendable (UUID) async throws -> ChainValidation
 
     public init(
-        createChain: @escaping (UUID, [DocumentType]) async throws -> DocumentChainProgress,
-        updateChainProgress: @escaping (UUID, DocumentType, GeneratedDocument) async throws -> DocumentChainProgress,
-        getNextInChain: @escaping (UUID) async throws -> DocumentType?,
-        extractAndPropagate: @escaping (UUID, GeneratedDocument) async throws -> CollectedData,
-        validateChain: @escaping (UUID) async throws -> ChainValidation
+        createChain: @escaping @Sendable (UUID, [DocumentType]) async throws -> DocumentChainProgress,
+        updateChainProgress: @escaping @Sendable (UUID, DocumentType, GeneratedDocument) async throws -> DocumentChainProgress,
+        getNextInChain: @escaping @Sendable (UUID) async throws -> DocumentType?,
+        extractAndPropagate: @escaping @Sendable (UUID, GeneratedDocument) async throws -> CollectedData,
+        validateChain: @escaping @Sendable (UUID) async throws -> ChainValidation
     ) {
         self.createChain = createChain
         self.updateChainProgress = updateChainProgress
@@ -29,7 +29,7 @@ public struct DocumentChainManager {
 
 // MARK: - Document Chain Progress Model
 
-public struct DocumentChainProgress: Equatable, Codable {
+public struct DocumentChainProgress: Equatable, Codable, Sendable {
     public let id: UUID
     public let acquisitionId: UUID
     public let plannedDocuments: [DocumentType]
@@ -123,7 +123,7 @@ public struct DocumentChainProgress: Equatable, Codable {
 
 // MARK: - Broken Link
 
-public struct BrokenLink: Equatable {
+public struct BrokenLink: Equatable, Sendable {
     public let from: DocumentType
     public let to: DocumentType
     public let reason: String
@@ -137,7 +137,7 @@ public struct BrokenLink: Equatable {
 
 // MARK: - Chain Validation
 
-public struct ChainValidation: Equatable {
+public struct ChainValidation: Equatable, Sendable {
     public let isValid: Bool
     public let brokenLinks: [BrokenLink]
     public let missingData: [DocumentType: [String]]
@@ -158,13 +158,27 @@ public struct ChainValidation: Equatable {
 
 // MARK: - Live Implementation
 
+// MARK: - Chain Storage Actor
+
+private actor ChainStorage {
+    private var chains: [UUID: DocumentChainProgress] = [:]
+
+    func getChain(_ id: UUID) -> DocumentChainProgress? {
+        chains[id]
+    }
+
+    func setChain(_ id: UUID, _ chain: DocumentChainProgress) {
+        chains[id] = chain
+    }
+}
+
 extension DocumentChainManager: DependencyKey {
-    public static var liveValue: DocumentChainManager {
+    public nonisolated static var liveValue: DocumentChainManager {
         let documentDependencyService = DocumentDependencyService.liveValue
         _ = AcquisitionService.liveValue
 
         // In-memory storage for chains (would be persisted in real implementation)
-        var chains: [UUID: DocumentChainProgress] = [:]
+        let chainStorage = ChainStorage()
 
         return DocumentChainManager(
             createChain: { acquisitionId, plannedDocuments in
@@ -178,23 +192,23 @@ extension DocumentChainManager: DependencyKey {
                     createdAt: Date(),
                     updatedAt: Date()
                 )
-                chains[acquisitionId] = chain
+                await chainStorage.setChain(acquisitionId, chain)
 
                 // Store in Core Data
                 let context = CoreDataStack.shared.viewContext
-                let fetchRequest: NSFetchRequest<Acquisition> = Acquisition.fetchRequest()
+                let fetchRequest: NSFetchRequest<CoreDataAcquisition> = CoreDataAcquisition.fetchRequest()
                 fetchRequest.predicate = NSPredicate(format: "id == %@", acquisitionId as CVarArg)
 
                 if let acquisition = try? context.fetch(fetchRequest).first {
                     try? acquisition.setDocumentChainCodable(chain)
-                    try? CoreDataStack.shared.save()
+                    try? await CoreDataStack.shared.save()
                 }
 
                 return chain
             },
 
             updateChainProgress: { acquisitionId, documentType, generatedDocument in
-                guard let chain = chains[acquisitionId] else {
+                guard let chain = await chainStorage.getChain(acquisitionId) else {
                     throw ChainError.chainNotFound
                 }
 
@@ -226,23 +240,23 @@ extension DocumentChainManager: DependencyKey {
                     updatedAt: Date()
                 )
 
-                chains[acquisitionId] = updatedChain
+                await chainStorage.setChain(acquisitionId, updatedChain)
 
                 // Update Core Data with chain metadata
                 let context = CoreDataStack.shared.viewContext
-                let fetchRequest: NSFetchRequest<Acquisition> = Acquisition.fetchRequest()
+                let fetchRequest: NSFetchRequest<CoreDataAcquisition> = CoreDataAcquisition.fetchRequest()
                 fetchRequest.predicate = NSPredicate(format: "id == %@", acquisitionId as CVarArg)
 
                 if let acquisition = try? context.fetch(fetchRequest).first {
                     try? acquisition.setDocumentChainCodable(updatedChain)
-                    try? CoreDataStack.shared.save()
+                    try? await CoreDataStack.shared.save()
                 }
 
                 return updatedChain
             },
 
             getNextInChain: { acquisitionId in
-                guard let chain = chains[acquisitionId] else {
+                guard let chain = await chainStorage.getChain(acquisitionId) else {
                     throw ChainError.chainNotFound
                 }
 
@@ -263,7 +277,7 @@ extension DocumentChainManager: DependencyKey {
             },
 
             extractAndPropagate: { acquisitionId, generatedDocument in
-                guard let chain = chains[acquisitionId] else {
+                guard let chain = await chainStorage.getChain(acquisitionId) else {
                     throw ChainError.chainNotFound
                 }
 
@@ -287,7 +301,7 @@ extension DocumentChainManager: DependencyKey {
             },
 
             validateChain: { acquisitionId in
-                guard let chain = chains[acquisitionId] else {
+                guard let chain = await chainStorage.getChain(acquisitionId) else {
                     throw ChainError.chainNotFound
                 }
 

@@ -5,7 +5,7 @@ public protocol EmailServiceProtocol: Sendable {
     /// Checks if the device can send email
     /// - Returns: True if email is available, false otherwise
     var canSendEmail: Bool { get }
-    
+
     /// Composes and sends an email
     /// - Parameters:
     ///   - to: Array of recipient email addresses
@@ -20,9 +20,9 @@ public protocol EmailServiceProtocol: Sendable {
         body: String,
         isHTML: Bool,
         attachments: [(data: Data, mimeType: String, fileName: String)]?,
-        completion: @escaping (Bool) -> Void
+        completion: @escaping @Sendable (Bool) -> Void
     )
-    
+
     /// Shows the system email composer if available
     /// - Parameters:
     ///   - recipients: Array of recipient email addresses
@@ -33,7 +33,7 @@ public protocol EmailServiceProtocol: Sendable {
         recipients: [String],
         subject: String,
         body: String,
-        completion: @escaping (EmailComposeResult) -> Void
+        completion: @escaping @Sendable (EmailComposeResult) -> Void
     )
 }
 
@@ -46,19 +46,19 @@ public enum EmailComposeResult: Sendable {
 }
 
 /// Email service errors
-public enum EmailServiceError: LocalizedError {
+public enum EmailServiceError: LocalizedError, Sendable {
     case notAvailable
     case compositionFailed
     case cancelled
-    
+
     public var errorDescription: String? {
         switch self {
         case .notAvailable:
-            return "Email service is not available on this device"
+            "Email service is not available on this device"
         case .compositionFailed:
-            return "Failed to compose email"
+            "Failed to compose email"
         case .cancelled:
-            return "Email was cancelled"
+            "Email was cancelled"
         }
     }
 }

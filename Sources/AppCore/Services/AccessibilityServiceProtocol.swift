@@ -1,53 +1,54 @@
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
 /// Platform-agnostic accessibility service
-public protocol AccessibilityServiceProtocol {
-    func announceNotification(_ message: String, priority: AccessibilityAnnouncementPriority) -> Void
+public protocol AccessibilityServiceProtocol: Sendable {
+    func announceNotification(_ message: String, priority: AccessibilityAnnouncementPriority)
     func supportsAccessibilityNotifications() -> Bool
-    func notifyVoiceOverStatusChange() -> Void
+    func notifyVoiceOverStatusChange()
     func voiceOverStatusChangeNotificationName() -> Notification.Name
     func hasVoiceOverStatusNotifications() -> Bool
 }
 
-public enum AccessibilityAnnouncementPriority {
+public enum AccessibilityAnnouncementPriority: Sendable {
     case high
     case low
 }
 
 @DependencyClient
-public struct AccessibilityServiceClient {
+public struct AccessibilityServiceClient: Sendable {
     public var _announceNotification: @Sendable (String, AccessibilityAnnouncementPriority) -> Void = { _, _ in }
     public var _supportsAccessibilityNotifications: @Sendable () -> Bool = { false }
-    public var _notifyVoiceOverStatusChange: @Sendable () -> Void = { }
+    public var _notifyVoiceOverStatusChange: @Sendable () -> Void = {}
     public var _voiceOverStatusChangeNotificationName: @Sendable () -> Notification.Name = { Notification.Name("com.aiko.never") }
     public var _hasVoiceOverStatusNotifications: @Sendable () -> Bool = { false }
 }
 
 // Protocol conformance
 extension AccessibilityServiceClient: AccessibilityServiceProtocol {
-    public func announceNotification(_ message: String, priority: AccessibilityAnnouncementPriority) -> Void {
-        self._announceNotification(message, priority)
+    public func announceNotification(_ message: String, priority: AccessibilityAnnouncementPriority) {
+        _announceNotification(message, priority)
     }
-    
+
     public func supportsAccessibilityNotifications() -> Bool {
-        self._supportsAccessibilityNotifications()
+        _supportsAccessibilityNotifications()
     }
-    
-    public func notifyVoiceOverStatusChange() -> Void {
-        self._notifyVoiceOverStatusChange()
+
+    public func notifyVoiceOverStatusChange() {
+        _notifyVoiceOverStatusChange()
     }
-    
+
     public func voiceOverStatusChangeNotificationName() -> Notification.Name {
-        self._voiceOverStatusChangeNotificationName()
+        _voiceOverStatusChangeNotificationName()
     }
-    
+
     public func hasVoiceOverStatusNotifications() -> Bool {
-        self._hasVoiceOverStatusNotifications()
+        _hasVoiceOverStatusNotifications()
     }
 }
 
 // MARK: - Dependency
+
 private enum AccessibilityServiceKey: DependencyKey {
     static let liveValue: AccessibilityServiceProtocol = AccessibilityServiceClient()
 }

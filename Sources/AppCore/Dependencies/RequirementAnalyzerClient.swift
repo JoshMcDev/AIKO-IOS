@@ -2,7 +2,7 @@ import ComposableArchitecture
 import Foundation
 
 @DependencyClient
-public struct RequirementAnalyzerClient {
+public struct RequirementAnalyzerClient: Sendable {
     public var analyzeRequirements: @Sendable (String) async throws -> (String, [DocumentType])
     public var analyzeDocumentContent: @Sendable (Data, String) async throws -> (String, [DocumentType])
     public var enhancePrompt: @Sendable (String) async throws -> String

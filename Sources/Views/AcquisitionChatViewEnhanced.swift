@@ -1,18 +1,18 @@
-import SwiftUI
 import ComposableArchitecture
-import UniformTypeIdentifiers
 import Perception
+import SwiftUI
+import UniformTypeIdentifiers
 
 // MARK: - Enhanced Acquisition Chat View
 
 public struct AcquisitionChatViewEnhanced: View {
     @Perception.Bindable var store: StoreOf<AcquisitionChatFeatureEnhanced>
     @FocusState private var isInputFocused: Bool
-    
+
     public init(store: StoreOf<AcquisitionChatFeatureEnhanced>) {
         self.store = store
     }
-    
+
     public var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -22,7 +22,7 @@ public struct AcquisitionChatViewEnhanced: View {
                         .padding(.horizontal)
                         .padding(.vertical, 8)
                 }
-                
+
                 // Chat messages
                 ScrollViewReader { scrollProxy in
                     ScrollView {
@@ -31,7 +31,7 @@ public struct AcquisitionChatViewEnhanced: View {
                                 EnhancedMessageView(message: message)
                                     .id(message.id)
                             }
-                            
+
                             if store.isProcessing {
                                 ProcessingIndicator()
                             }
@@ -44,9 +44,9 @@ public struct AcquisitionChatViewEnhanced: View {
                         }
                     }
                 }
-                
+
                 Divider()
-                
+
                 // Smart suggestions
                 if !(store.conversationSession?.remainingQuestions.isEmpty ?? true) {
                     SmartSuggestionsView(
@@ -58,7 +58,7 @@ public struct AcquisitionChatViewEnhanced: View {
                     .padding(.horizontal)
                     .padding(.top, 8)
                 }
-                
+
                 // Input area
                 EnhancedInputArea(
                     text: Binding(
@@ -79,38 +79,38 @@ public struct AcquisitionChatViewEnhanced: View {
             }
             .navigationTitle("New Acquisition")
             #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationBarItems(
-                leading: Button("Close") {
-                    store.send(.closeChat)
-                },
-                trailing: Group {
-                    if store.confidence != .low && !store.recommendedDocuments.isEmpty {
-                        Button("Generate") {
-                            store.send(.generateDocuments)
-                        }
-                        .foregroundColor(Theme.Colors.aikoPrimary)
-                        .fontWeight(.semibold)
-                    }
-                }
-            )
-            #else
-            .toolbar {
-                ToolbarItem(placement: .navigation) {
-                    Button("Close") {
+                .navigationBarTitleDisplayMode(.inline)
+                .navigationBarItems(
+                    leading: Button("Close") {
                         store.send(.closeChat)
-                    }
-                }
-                ToolbarItem(placement: .primaryAction) {
-                    if store.confidence != .low && !store.recommendedDocuments.isEmpty {
-                        Button("Generate") {
-                            store.send(.generateDocuments)
+                    },
+                    trailing: Group {
+                        if store.confidence != .low, !store.recommendedDocuments.isEmpty {
+                            Button("Generate") {
+                                store.send(.generateDocuments)
+                            }
+                            .foregroundColor(Theme.Colors.aikoPrimary)
+                            .fontWeight(.semibold)
                         }
-                        .foregroundColor(Theme.Colors.aikoPrimary)
-                        .fontWeight(.semibold)
                     }
-                }
-            }
+                )
+            #else
+                .toolbar {
+                        ToolbarItem(placement: .navigation) {
+                            Button("Close") {
+                                store.send(.closeChat)
+                            }
+                        }
+                        ToolbarItem(placement: .primaryAction) {
+                            if store.confidence != .low, !store.recommendedDocuments.isEmpty {
+                                Button("Generate") {
+                                    store.send(.generateDocuments)
+                                }
+                                .foregroundColor(Theme.Colors.aikoPrimary)
+                                .fontWeight(.semibold)
+                            }
+                        }
+                    }
             #endif
         }
         .fileImporter(
@@ -123,7 +123,7 @@ public struct AcquisitionChatViewEnhanced: View {
         ) { result in
             store.send(.dismissDocumentPicker)
             switch result {
-            case .success(let urls):
+            case let .success(urls):
                 for url in urls {
                     if let data = try? Data(contentsOf: url) {
                         let document = EnhancedUploadedDocument(
@@ -133,7 +133,7 @@ public struct AcquisitionChatViewEnhanced: View {
                         store.send(.documentPicked(document))
                     }
                 }
-            case .failure(let error):
+            case let .failure(error):
                 print("File picker error: \(error)")
             }
         }
@@ -162,22 +162,22 @@ public struct AcquisitionChatViewEnhanced: View {
 
 struct ProgressIndicator: View {
     let session: ConversationSession
-    
+
     var progress: Double {
         let total = session.questionHistory.count + session.remainingQuestions.count
         guard total > 0 else { return 0 }
         return Double(session.questionHistory.count) / Double(total)
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text("\(session.questionHistory.count) of \(session.questionHistory.count + session.remainingQuestions.count) questions")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                
+
                 Spacer()
-                
+
                 HStack(spacing: 4) {
                     Image(systemName: confidenceIcon)
                         .font(.caption)
@@ -187,7 +187,7 @@ struct ProgressIndicator: View {
                 }
                 .foregroundColor(confidenceColor)
             }
-            
+
             ProgressView(value: progress)
                 .tint(Theme.Colors.aikoPrimary)
         }
@@ -196,22 +196,22 @@ struct ProgressIndicator: View {
         .background(Theme.Colors.aikoCard)
         .cornerRadius(8)
     }
-    
+
     var confidenceIcon: String {
         switch session.confidence {
-        case .low: return "circle"
-        case .medium: return "circle.lefthalf.filled"
-        case .high: return "circle.fill"
-        case .veryHigh: return "checkmark.circle.fill"
+        case .low: "circle"
+        case .medium: "circle.lefthalf.filled"
+        case .high: "circle.fill"
+        case .veryHigh: "checkmark.circle.fill"
         }
     }
-    
+
     var confidenceColor: Color {
         switch session.confidence {
-        case .low: return .red
-        case .medium: return .orange
-        case .high: return Theme.Colors.aikoPrimary
-        case .veryHigh: return .green
+        case .low: .red
+        case .medium: .orange
+        case .high: Theme.Colors.aikoPrimary
+        case .veryHigh: .green
         }
     }
 }
@@ -220,7 +220,7 @@ struct ProgressIndicator: View {
 
 struct EnhancedMessageView: View {
     let message: EnhancedChatMessage
-    
+
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             if message.role == .assistant {
@@ -231,7 +231,7 @@ struct EnhancedMessageView: View {
                     .background(Theme.Colors.aikoPrimary.opacity(0.1))
                     .clipShape(Circle())
             }
-            
+
             VStack(alignment: message.role == .user ? .trailing : .leading, spacing: 4) {
                 if message.role == .user {
                     Text(message.content)
@@ -248,13 +248,13 @@ struct EnhancedMessageView: View {
                         .cornerRadius(16)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                
+
                 Text(message.timestamp, style: .time)
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }
             .frame(maxWidth: message.role == .user ? 280 : .infinity)
-            
+
             if message.role == .user {
                 Image(systemName: "person.circle.fill")
                     .font(.title3)
@@ -270,13 +270,13 @@ struct EnhancedMessageView: View {
 struct ProcessingIndicator: View {
     @State private var dots = 0
     let timer = Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()
-    
+
     var body: some View {
         HStack(spacing: 4) {
             Image(systemName: "brain")
                 .font(.caption)
                 .foregroundColor(Theme.Colors.aikoPrimary)
-            
+
             Text("Thinking" + String(repeating: ".", count: dots))
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -296,9 +296,9 @@ struct ProcessingIndicator: View {
 struct SmartSuggestionsView: View {
     let question: DynamicQuestion?
     let onSelect: (String) -> Void
-    
+
     var body: some View {
-        if let question = question, let options = question.options, !options.isEmpty {
+        if let question, let options = question.options, !options.isEmpty {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     ForEach(options, id: \.self) { suggestion in
@@ -326,7 +326,7 @@ struct EnhancedInputArea: View {
     let isProcessing: Bool
     let onSend: () -> Void
     let onAttach: () -> Void
-    
+
     var body: some View {
         HStack(spacing: 12) {
             Button(action: onAttach) {
@@ -335,16 +335,16 @@ struct EnhancedInputArea: View {
                     .foregroundColor(Theme.Colors.aikoPrimary)
             }
             .disabled(isProcessing)
-            
+
             TextField(placeholder, text: $text, axis: .vertical)
                 .textFieldStyle(.plain)
                 .disabled(isProcessing)
                 .onSubmit {
-                    if !text.isEmpty && !isProcessing {
+                    if !text.isEmpty, !isProcessing {
                         onSend()
                     }
                 }
-            
+
             Button(action: onSend) {
                 Image(systemName: "arrow.up.circle.fill")
                     .font(.title2)
@@ -362,7 +362,7 @@ struct EnhancedInputArea: View {
 
 struct MarkdownText: View {
     let content: String
-    
+
     var body: some View {
         // Simple markdown rendering - in production, use a proper markdown library
         VStack(alignment: .leading, spacing: 8) {
@@ -371,11 +371,11 @@ struct MarkdownText: View {
             }
         }
     }
-    
+
     func parseMarkdown(_ text: String) -> [String] {
         text.components(separatedBy: "\n")
     }
-    
+
     @ViewBuilder
     func renderElement(_ text: String) -> some View {
         if text.hasPrefix("# ") {
@@ -386,7 +386,7 @@ struct MarkdownText: View {
             Text(text.dropFirst(4))
                 .font(.subheadline)
                 .fontWeight(.semibold)
-        } else if text.hasPrefix("**") && text.hasSuffix("**") && text.count > 4 {
+        } else if text.hasPrefix("**"), text.hasSuffix("**"), text.count > 4 {
             let content = text.dropFirst(2).dropLast(2)
             Text(String(content))
                 .fontWeight(.semibold)
@@ -395,7 +395,7 @@ struct MarkdownText: View {
                 Text("•")
                 Text(text.dropFirst(2))
             }
-        } else if text.hasPrefix("*") && text.hasSuffix("*") && text.count > 2 {
+        } else if text.hasPrefix("*"), text.hasSuffix("*"), text.count > 2 {
             let content = text.dropFirst(1).dropLast(1)
             Text(String(content))
                 .italic()

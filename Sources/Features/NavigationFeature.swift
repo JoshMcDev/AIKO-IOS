@@ -128,7 +128,7 @@ public struct NavigationFeature {
 
 // MARK: - Navigation Models
 
-public enum NavigationDestination: Equatable {
+public enum NavigationDestination: Equatable, Sendable {
     case home
     case profile
     case acquisitions
@@ -141,7 +141,7 @@ public enum NavigationDestination: Equatable {
     case view(NavigationView)
 }
 
-public enum NavigationView: String, CaseIterable, Equatable {
+public enum NavigationView: String, CaseIterable, Equatable, Sendable {
     case home = "Home"
     case profile = "Profile"
     case myAcquisitions = "My Acquisitions"
@@ -179,7 +179,7 @@ public enum NavigationView: String, CaseIterable, Equatable {
     }
 }
 
-public struct MenuItem: Equatable, Identifiable {
+public struct MenuItem: Equatable, Identifiable, Sendable {
     public let id: String
     public let title: String
     public let icon: String

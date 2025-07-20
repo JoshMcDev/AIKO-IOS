@@ -1,5 +1,5 @@
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
 struct FARUpdatesView: View {
     @StateObject private var updateService = FARUpdateService()
@@ -8,14 +8,14 @@ struct FARUpdatesView: View {
     @State private var summaryText = ""
     @Dependency(\.shareService) var shareService
     @Dependency(\.themeService) var themeService
-    
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
                 // Status Card
                 statusCard
                     .padding()
-                
+
                 // Update Summary
                 ScrollView {
                     if updateService.updateStatus.completedUpdates.isEmpty {
@@ -50,7 +50,7 @@ struct FARUpdatesView: View {
             }
         }
     }
-    
+
     private var statusCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -59,13 +59,13 @@ struct FARUpdatesView: View {
                     Image(systemName: updateService.updateStatus.status.statusIcon)
                         .foregroundColor(updateService.updateStatus.status.statusLight)
                         .font(.title2)
-                    
+
                     Text(statusText)
                         .font(.headline)
                 }
-                
+
                 Spacer()
-                
+
                 // Check button
                 Button(action: {
                     Task {
@@ -91,7 +91,7 @@ struct FARUpdatesView: View {
                 }
                 .disabled(isChecking)
             }
-            
+
             // Last update info
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
@@ -102,7 +102,7 @@ struct FARUpdatesView: View {
                         .font(.caption)
                         .fontWeight(.medium)
                 }
-                
+
                 if let lastCompleted = updateService.updateStatus.lastUpdateCompleted {
                     HStack {
                         Text("Last Update:")
@@ -113,7 +113,7 @@ struct FARUpdatesView: View {
                             .fontWeight(.medium)
                     }
                 }
-                
+
                 if !updateService.updateStatus.completedUpdates.isEmpty {
                     HStack {
                         Text("Recent Changes:")
@@ -132,36 +132,36 @@ struct FARUpdatesView: View {
         .cornerRadius(12)
         .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
     }
-    
+
     private var statusText: String {
         switch updateService.updateStatus.status {
         case .upToDate:
-            return "Regulations Up to Date"
+            "Regulations Up to Date"
         case .updating:
-            return "Checking for Updates..."
+            "Checking for Updates..."
         case .updateAvailable:
-            return "Updates Available"
+            "Updates Available"
         case .error:
-            return "Update Check Failed"
+            "Update Check Failed"
         }
     }
-    
+
     private var emptyStateView: some View {
         VStack(spacing: 16) {
             Image(systemName: "checkmark.seal.fill")
                 .font(.system(size: 60))
                 .foregroundColor(.green.opacity(0.8))
-            
+
             Text("All Regulations Current")
                 .font(.title2)
                 .fontWeight(.semibold)
-            
+
             Text("No recent updates to FAR/DFAR regulations.")
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
-            
+
             Text("The system automatically monitors acquisition.gov for changes and will notify you when updates are available.")
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -171,12 +171,12 @@ struct FARUpdatesView: View {
         }
         .padding(.vertical, 60)
     }
-    
+
     private var summaryView: some View {
         VStack(alignment: .leading, spacing: 16) {
             // Generate and display the summary
             let summary = updateService.generateUpdateSummary()
-            
+
             ScrollView {
                 Text(summary)
                     .font(.body)
@@ -187,18 +187,18 @@ struct FARUpdatesView: View {
             }
         }
     }
-    
+
     private func checkForUpdates() async {
         isChecking = true
         await updateService.checkForUpdates()
         isChecking = false
-        
+
         // Update summary text if there are updates
         if !updateService.updateStatus.completedUpdates.isEmpty {
             summaryText = updateService.generateUpdateSummary()
         }
     }
-    
+
     private func shareReport() {
         if summaryText.isEmpty {
             summaryText = updateService.generateUpdateSummary()

@@ -1,17 +1,17 @@
 #if os(macOS)
-import SwiftUI
-import AppCore
-import ComposableArchitecture
+    import AppCore
+    import ComposableArchitecture
+    import SwiftUI
 
-extension FontScalingServiceClient {
-    public static let macOS: Self = {
-        let service = macOSFontScalingService()
-        return Self(
-            _scaledFontSize: { baseSize, textStyle, sizeCategory in
-                service.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: sizeCategory)
-            },
-            _supportsUIFontMetrics: { service.supportsUIFontMetrics() }
-        )
-    }()
-}
+    public extension FontScalingServiceClient {
+        static let macOS: Self = {
+            let service = macOSFontScalingService()
+            return Self(
+                _scaledFontSize: { baseSize, textStyle, sizeCategory in
+                    service.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: sizeCategory)
+                },
+                _supportsUIFontMetrics: { service.supportsUIFontMetrics() }
+            )
+        }()
+    }
 #endif

@@ -1,8 +1,8 @@
-import Foundation
 import AppCore
+import Foundation
 
 /// Engine responsible for mapping template fields to form fields
-final class MappingEngine {
+final class MappingEngine: @unchecked Sendable {
     // MARK: - Mapping Rules
 
     private let mappingRules: [DocumentType: [FormType: MappingRuleSet]] = [
@@ -265,19 +265,19 @@ final class MappingEngine {
 
 // MARK: - Supporting Types
 
-struct MappingRuleSet {
+struct MappingRuleSet: Sendable {
     let rules: [MappingRule]
-    let defaultValues: [String: Any]
+    let defaultValues: [String: String] // Changed from [String: Any] to make it Sendable
 }
 
-struct MappingRule {
+struct MappingRule: Sendable {
     let sourceField: String
     let targetField: String
     let transformation: FieldTransformation
     let isRequired: Bool = true
 }
 
-enum FieldTransformation {
+enum FieldTransformation: @unchecked Sendable {
     case direct
     case dateFormat(String)
     case currency

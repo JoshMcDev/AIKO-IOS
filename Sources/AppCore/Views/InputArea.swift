@@ -1,5 +1,5 @@
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
 public struct InputArea: View {
     let requirements: String
@@ -15,17 +15,17 @@ public struct InputArea: View {
     let onShowDocumentPicker: () -> Void
     let onShowImagePicker: () -> Void
     let onRemoveDocument: (UploadedDocument.ID) -> Void
-    
+
     @State private var showingUploadOptions = false
     @State private var chatMessages: [ChatMessage] = []
-    
+
     struct ChatMessage: Identifiable {
         let id = UUID()
         let text: String
         let isUser: Bool
         let timestamp: Date = .init()
     }
-    
+
     public init(
         requirements: String,
         isGenerating: Bool,
@@ -55,11 +55,11 @@ public struct InputArea: View {
         self.onShowImagePicker = onShowImagePicker
         self.onRemoveDocument = onRemoveDocument
     }
-    
+
     public var body: some View {
         VStack(spacing: 0) {
             Divider()
-            
+
             VStack(spacing: Theme.Spacing.md) {
                 // Uploaded Documents
                 if !uploadedDocuments.isEmpty {
@@ -82,7 +82,7 @@ public struct InputArea: View {
                     ZStack(alignment: .leading) {
                         TextField("", text: .init(
                             get: { requirements },
-                            set: onRequirementsChanged
+                            set: { @Sendable (value: String) in onRequirementsChanged(value) }
                         ), prompt: Text("...").foregroundColor(.gray), axis: .vertical)
                             .textFieldStyle(PlainTextFieldStyle())
                             .foregroundColor(.white)
@@ -91,7 +91,7 @@ public struct InputArea: View {
                             .padding(.trailing, Theme.Spacing.sm)
                             .lineLimit(1 ... 4)
                     }
-                    
+
                     // Action buttons
                     HStack(spacing: Theme.Spacing.sm) {
                         // Enhance prompt button
@@ -108,7 +108,7 @@ public struct InputArea: View {
                                 .animation(.easeInOut(duration: 0.2), value: requirements.isEmpty)
                         }
                         .disabled(requirements.isEmpty || isGenerating)
-                        
+
                         // Upload options
                         Button(action: { showingUploadOptions.toggle() }) {
                             Image(systemName: "plus")
@@ -121,13 +121,13 @@ public struct InputArea: View {
                                 onShowDocumentPicker()
                             }
                             #if os(iOS)
-                            Button("📷 Scan Document") {
-                                onShowImagePicker()
-                            }
+                                Button("📷 Scan Document") {
+                                    onShowImagePicker()
+                                }
                             #endif
                             Button("Cancel", role: .cancel) {}
                         }
-                        
+
                         // Voice input
                         Button(action: {
                             if isRecording {
@@ -144,7 +144,7 @@ public struct InputArea: View {
                                 .animation(.easeInOut(duration: 0.2), value: isRecording)
                         }
                         .disabled(isGenerating && !isRecording)
-                        
+
                         // Analyze button
                         Button(action: onAnalyzeRequirements) {
                             if isGenerating {
@@ -195,25 +195,25 @@ public struct InputArea: View {
 public struct UploadedDocumentCard: View {
     let document: UploadedDocument
     let onRemove: () -> Void
-    
+
     public var body: some View {
         HStack(spacing: Theme.Spacing.sm) {
             Image(systemName: fileIcon(for: document.fileName))
                 .font(.title3)
                 .foregroundColor(.blue)
-            
+
             VStack(alignment: .leading, spacing: 2) {
                 Text(document.fileName)
                     .font(.caption)
                     .fontWeight(.medium)
                     .foregroundColor(.white)
                     .lineLimit(1)
-                
+
                 Text(formattedFileSize(document.data.count))
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }
-            
+
             Button(action: onRemove) {
                 Image(systemName: "xmark.circle.fill")
                     .font(.caption)
@@ -227,7 +227,7 @@ public struct UploadedDocumentCard: View {
                 .fill(Theme.Colors.aikoSecondary)
         )
     }
-    
+
     func fileIcon(for fileName: String) -> String {
         let ext = (fileName as NSString).pathExtension.lowercased()
         switch ext {
@@ -237,7 +237,7 @@ public struct UploadedDocumentCard: View {
         default: return "doc.fill"
         }
     }
-    
+
     func formattedFileSize(_ bytes: Int) -> String {
         let formatter = ByteCountFormatter()
         formatter.countStyle = .file

@@ -2,7 +2,7 @@ import CoreData
 import Foundation
 
 @objc(AcquisitionDocument)
-public class AcquisitionDocument: NSManagedObject {
+public class AcquisitionDocument: NSManagedObject, @unchecked Sendable {
     override public func awakeFromInsert() {
         super.awakeFromInsert()
 

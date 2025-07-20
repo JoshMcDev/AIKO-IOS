@@ -1,13 +1,13 @@
 import Foundation
 
 // Workflow-related types that are platform-agnostic
-public struct WorkflowContext: Equatable {
+public struct WorkflowContext: Equatable, Sendable {
     public var currentState: WorkflowState
     public var collectedData: CollectedData
     public var suggestedPrompts: [SuggestedPrompt]
     public var pendingApprovals: [WorkflowStep]
     public var automationSettings: AutomationSettings
-    
+
     public init(
         currentState: WorkflowState = .notStarted,
         collectedData: CollectedData = CollectedData(),
@@ -23,7 +23,7 @@ public struct WorkflowContext: Equatable {
     }
 }
 
-public enum WorkflowState: String, Equatable, Codable {
+public enum WorkflowState: String, Equatable, Codable, Sendable {
     case notStarted
     case gatheringRequirements
     case analyzingRequirements
@@ -34,20 +34,20 @@ public enum WorkflowState: String, Equatable, Codable {
     case completed
 }
 
-public struct CollectedData: Equatable, Codable {
+public struct CollectedData: Equatable, Codable, Sendable {
     public var data: [String: String]
-    
+
     public init(data: [String: String] = [:]) {
         self.data = data
     }
 }
 
-public struct SuggestedPrompt: Identifiable, Equatable {
+public struct SuggestedPrompt: Identifiable, Equatable, Sendable {
     public let id = UUID()
     public let prompt: String
     public let category: PromptCategory
     public let nextState: WorkflowState?
-    
+
     public init(prompt: String, category: PromptCategory, nextState: WorkflowState? = nil) {
         self.prompt = prompt
         self.category = category
@@ -55,7 +55,7 @@ public struct SuggestedPrompt: Identifiable, Equatable {
     }
 }
 
-public enum PromptCategory: String, Equatable {
+public enum PromptCategory: String, Equatable, Sendable {
     case nextStep
     case documentSelection
     case dataCollection
@@ -63,12 +63,12 @@ public enum PromptCategory: String, Equatable {
     case clarification
 }
 
-public struct WorkflowStep: Identifiable, Equatable {
+public struct WorkflowStep: Identifiable, Equatable, Sendable {
     public let id = UUID()
     public let title: String
     public let description: String
     public let requiredApproval: Bool
-    
+
     public init(title: String, description: String, requiredApproval: Bool = false) {
         self.title = title
         self.description = description
@@ -76,11 +76,11 @@ public struct WorkflowStep: Identifiable, Equatable {
     }
 }
 
-public struct AutomationSettings: Equatable, Codable {
+public struct AutomationSettings: Equatable, Codable, Sendable {
     public var autoProgressEnabled: Bool
     public var skipApprovals: Bool
     public var useDefaults: Bool
-    
+
     public init(
         autoProgressEnabled: Bool = false,
         skipApprovals: Bool = false,
@@ -92,13 +92,13 @@ public struct AutomationSettings: Equatable, Codable {
     }
 }
 
-public enum ApprovalStatus: String, Equatable {
+public enum ApprovalStatus: String, Equatable, Sendable {
     case approved
     case rejected
     case pending
 }
 
-public protocol WorkflowEngineProtocol {
+public protocol WorkflowEngineProtocol: Sendable {
     func startWorkflow(_ acquisitionId: UUID) async throws -> WorkflowContext
     func loadWorkflow(_ acquisitionId: UUID) async throws -> WorkflowContext
     func updateWorkflowState(_ acquisitionId: UUID, _ newState: WorkflowState) async throws -> WorkflowContext

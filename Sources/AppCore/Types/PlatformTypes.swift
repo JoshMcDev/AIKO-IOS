@@ -6,18 +6,18 @@ import SwiftUI
 public struct PlatformImage: Sendable {
     /// The underlying image data
     public let data: Data
-    
+
     /// Optional format hint
     public let format: ImageFormat?
-    
+
     public enum ImageFormat: String, Sendable {
-        case png = "png"
-        case jpeg = "jpeg"
-        case jpg = "jpg"
-        case gif = "gif"
-        case tiff = "tiff"
+        case png
+        case jpeg
+        case jpg
+        case gif
+        case tiff
     }
-    
+
     public init(data: Data, format: ImageFormat? = nil) {
         self.data = data
         self.format = format

@@ -3,48 +3,48 @@ import Foundation
 
 /// Main service for regulatory API integration
 /// Handles data ingestion from Regulations.gov and GSA DITA toolkit
-public struct RegulationService {
+public struct RegulationService: Sendable {
     // MARK: - Core API Operations
 
-    public var searchDocuments: (RegulationSearchQuery) async throws -> RegulationSearchResponse
-    public var getDocument: (String) async throws -> RegulationDocument
-    public var getDocumentComments: (String) async throws -> [RegulationComment]
-    public var getDocket: (String) async throws -> RegulationDocket
-    public var downloadAttachment: (String, String) async throws -> Data
+    public var searchDocuments: @Sendable (RegulationSearchQuery) async throws -> RegulationSearchResponse
+    public var getDocument: @Sendable (String) async throws -> RegulationDocument
+    public var getDocumentComments: @Sendable (String) async throws -> [RegulationComment]
+    public var getDocket: @Sendable (String) async throws -> RegulationDocket
+    public var downloadAttachment: @Sendable (String, String) async throws -> Data
 
     // MARK: - FAR/DFARS Operations
 
-    public var getFARContent: (FARReference) async throws -> FARContent
-    public var getDFARSContent: (DFARSReference) async throws -> DFARSContent
-    public var parseDITAContent: (Data) async throws -> RegulationServiceContent
-    public var searchFARClauses: (String) async throws -> [FARClause]
+    public var getFARContent: @Sendable (FARReference) async throws -> FARContent
+    public var getDFARSContent: @Sendable (DFARSReference) async throws -> DFARSContent
+    public var parseDITAContent: @Sendable (Data) async throws -> RegulationServiceContent
+    public var searchFARClauses: @Sendable (String) async throws -> [FARClause]
 
     // MARK: - Subscription & Updates
 
-    public var subscribeToUpdates: (RegulationSubscription) async throws -> Void
-    public var unsubscribeFromUpdates: (String) async throws -> Void
-    public var checkForUpdates: ([RegulationCategory]) async throws -> [RegulationServiceUpdate]
+    public var subscribeToUpdates: @Sendable (RegulationSubscription) async throws -> Void
+    public var unsubscribeFromUpdates: @Sendable (String) async throws -> Void
+    public var checkForUpdates: @Sendable ([RegulationCategory]) async throws -> [RegulationServiceUpdate]
 
     // MARK: - Batch Operations
 
-    public var batchDownloadDocuments: ([String]) async throws -> [RegulationDocument]
-    public var batchSearchClauses: ([String]) async throws -> [FARClause]
+    public var batchDownloadDocuments: @Sendable ([String]) async throws -> [RegulationDocument]
+    public var batchSearchClauses: @Sendable ([String]) async throws -> [FARClause]
 
     public init(
-        searchDocuments: @escaping (RegulationSearchQuery) async throws -> RegulationSearchResponse,
-        getDocument: @escaping (String) async throws -> RegulationDocument,
-        getDocumentComments: @escaping (String) async throws -> [RegulationComment],
-        getDocket: @escaping (String) async throws -> RegulationDocket,
-        downloadAttachment: @escaping (String, String) async throws -> Data,
-        getFARContent: @escaping (FARReference) async throws -> FARContent,
-        getDFARSContent: @escaping (DFARSReference) async throws -> DFARSContent,
-        parseDITAContent: @escaping (Data) async throws -> RegulationServiceContent,
-        searchFARClauses: @escaping (String) async throws -> [FARClause],
-        subscribeToUpdates: @escaping (RegulationSubscription) async throws -> Void,
-        unsubscribeFromUpdates: @escaping (String) async throws -> Void,
-        checkForUpdates: @escaping ([RegulationCategory]) async throws -> [RegulationServiceUpdate],
-        batchDownloadDocuments: @escaping ([String]) async throws -> [RegulationDocument],
-        batchSearchClauses: @escaping ([String]) async throws -> [FARClause]
+        searchDocuments: @escaping @Sendable (RegulationSearchQuery) async throws -> RegulationSearchResponse,
+        getDocument: @escaping @Sendable (String) async throws -> RegulationDocument,
+        getDocumentComments: @escaping @Sendable (String) async throws -> [RegulationComment],
+        getDocket: @escaping @Sendable (String) async throws -> RegulationDocket,
+        downloadAttachment: @escaping @Sendable (String, String) async throws -> Data,
+        getFARContent: @escaping @Sendable (FARReference) async throws -> FARContent,
+        getDFARSContent: @escaping @Sendable (DFARSReference) async throws -> DFARSContent,
+        parseDITAContent: @escaping @Sendable (Data) async throws -> RegulationServiceContent,
+        searchFARClauses: @escaping @Sendable (String) async throws -> [FARClause],
+        subscribeToUpdates: @escaping @Sendable (RegulationSubscription) async throws -> Void,
+        unsubscribeFromUpdates: @escaping @Sendable (String) async throws -> Void,
+        checkForUpdates: @escaping @Sendable ([RegulationCategory]) async throws -> [RegulationServiceUpdate],
+        batchDownloadDocuments: @escaping @Sendable ([String]) async throws -> [RegulationDocument],
+        batchSearchClauses: @escaping @Sendable ([String]) async throws -> [FARClause]
     ) {
         self.searchDocuments = searchDocuments
         self.getDocument = getDocument
@@ -135,7 +135,7 @@ public struct RegulationSearchResponse: Equatable {
     public let hasMoreResults: Bool
 }
 
-public struct RegulationDocument: Identifiable, Equatable, Codable {
+public struct RegulationDocument: Identifiable, Equatable, Codable, Sendable {
     public let id: String
     public let documentId: String
     public let documentType: String
@@ -151,11 +151,11 @@ public struct RegulationDocument: Identifiable, Equatable, Codable {
     public let attachments: [Attachment]
     public let metadata: [String: String]
 
-    public struct Attachment: Equatable, Codable {
+    public struct Attachment: Equatable, Codable, Sendable {
         public let fileFormats: [FileFormat]
         public let title: String
 
-        public struct FileFormat: Equatable, Codable {
+        public struct FileFormat: Equatable, Codable, Sendable {
             public let fileUrl: String
             public let format: String
             public let size: Int?
@@ -252,7 +252,7 @@ public struct DFARSContent: Equatable, Codable {
     public let ditaContent: Data?
 }
 
-public struct FARClause: Identifiable, Equatable, Codable {
+public struct FARClause: Identifiable, Equatable, Codable, Sendable {
     public let id: String
     public let clauseNumber: String
     public let title: String

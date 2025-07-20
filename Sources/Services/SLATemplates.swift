@@ -3,17 +3,17 @@ import Foundation
 
 // MARK: - SLA Template Service
 
-public struct SLATemplateService {
-    public var loadTemplate: (SLAIndustry) async throws -> SLATemplate
-    public var customizeTemplate: (SLATemplate, SLACustomization) async throws -> String
-    public var validateSLA: (String) async throws -> SLAValidation
-    public var generateMetrics: (SLAIndustry) async throws -> [SLAMetric]
+public struct SLATemplateService: Sendable {
+    public var loadTemplate: @Sendable (SLAIndustry) async throws -> SLATemplate
+    public var customizeTemplate: @Sendable (SLATemplate, SLACustomization) async throws -> String
+    public var validateSLA: @Sendable (String) async throws -> SLAValidation
+    public var generateMetrics: @Sendable (SLAIndustry) async throws -> [SLAMetric]
 
     public init(
-        loadTemplate: @escaping (SLAIndustry) async throws -> SLATemplate,
-        customizeTemplate: @escaping (SLATemplate, SLACustomization) async throws -> String,
-        validateSLA: @escaping (String) async throws -> SLAValidation,
-        generateMetrics: @escaping (SLAIndustry) async throws -> [SLAMetric]
+        loadTemplate: @escaping @Sendable (SLAIndustry) async throws -> SLATemplate,
+        customizeTemplate: @escaping @Sendable (SLATemplate, SLACustomization) async throws -> String,
+        validateSLA: @escaping @Sendable (String) async throws -> SLAValidation,
+        generateMetrics: @escaping @Sendable (SLAIndustry) async throws -> [SLAMetric]
     ) {
         self.loadTemplate = loadTemplate
         self.customizeTemplate = customizeTemplate
@@ -24,7 +24,7 @@ public struct SLATemplateService {
 
 // MARK: - SLA Models
 
-public enum SLAIndustry: String, CaseIterable {
+public enum SLAIndustry: String, CaseIterable, Sendable {
     case telecommunications = "Telecommunications"
     case cloudComputing = "Cloud Computing"
     case dataCenter = "Data Center"
@@ -37,7 +37,7 @@ public enum SLAIndustry: String, CaseIterable {
     case managedServices = "Managed Services"
 }
 
-public struct SLATemplate {
+public struct SLATemplate: Sendable {
     public let industry: SLAIndustry
     public let name: String
     public let description: String
@@ -62,7 +62,7 @@ public struct SLATemplate {
     }
 }
 
-public struct SLASection {
+public struct SLASection: Sendable {
     public let title: String
     public let content: String
     public let isRequired: Bool
@@ -74,7 +74,7 @@ public struct SLASection {
     }
 }
 
-public struct SLAMetric {
+public struct SLAMetric: Sendable {
     public let name: String
     public let description: String
     public let measurementMethod: String
@@ -96,7 +96,7 @@ public struct SLAMetric {
     }
 }
 
-public struct SLAPenalty {
+public struct SLAPenalty: Sendable {
     public let metric: String
     public let threshold: String
     public let penalty: String

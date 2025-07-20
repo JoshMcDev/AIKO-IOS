@@ -1,6 +1,6 @@
+import AppCore
 import ComposableArchitecture
 import SwiftUI
-import AppCore
 
 // MARK: - Enhanced LLM Decision Dialog
 
@@ -351,14 +351,14 @@ public struct RequirementsRefinementDialog: View {
                     displayMode: .inline,
                     supportsNavigationBarDisplayMode: true
                 )
-                    .toolbar {
-                        ToolbarItem(placement: .automatic) {
-                            Button("Skip") {
-                                // TODO: Handle skip refinement
-                                viewStore.send(.analysis(.showDocumentPicker(true)))
-                            }
+                .toolbar {
+                    ToolbarItem(placement: .automatic) {
+                        Button("Skip") {
+                            // TODO: Handle skip refinement
+                            viewStore.send(.analysis(.showDocumentPicker(true)))
                         }
                     }
+                }
             }
         }
     }

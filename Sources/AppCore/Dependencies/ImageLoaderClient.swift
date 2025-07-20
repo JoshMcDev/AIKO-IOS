@@ -14,11 +14,11 @@ public struct ImageLoaderClient: Sendable {
 }
 
 extension ImageLoaderClient: DependencyKey {
-    public static var liveValue: Self = Self()
+    public static let liveValue: Self = .init()
 }
 
-extension DependencyValues {
-    public var imageLoader: ImageLoaderClient {
+public extension DependencyValues {
+    var imageLoader: ImageLoaderClient {
         get { self[ImageLoaderClient.self] }
         set { self[ImageLoaderClient.self] = newValue }
     }

@@ -1,69 +1,77 @@
 #if os(macOS)
-import SwiftUI
-import AppCore
+    import AppCore
+    import SwiftUI
 
-public final class macOSPlatformViewService: PlatformViewServiceProtocol {
-    public init() {}
-    
-    public func createNavigationStack<Content: View>(@ViewBuilder content: @escaping () -> Content) -> AnyView {
-        AnyView(
-            macOSNavigationStack(content: content)
-        )
+    public final class macOSPlatformViewService: @unchecked Sendable, PlatformViewServiceProtocol {
+        public init() {}
+
+        @MainActor
+        public func createNavigationStack(@ViewBuilder content: @escaping () -> some View) -> AnyView {
+            AnyView(
+                macOSNavigationStack(content: content)
+            )
+        }
+
+        @MainActor
+        public func createDocumentPicker(onDocumentsPicked: @escaping ([(Data, String)]) -> Void) -> AnyView {
+            AnyView(
+                macOSDocumentPickerView(onDocumentsPicked: onDocumentsPicked)
+            )
+        }
+
+        @MainActor
+        public func createImagePicker(onImagePicked: @escaping (Data) -> Void) -> AnyView {
+            AnyView(
+                macOSImagePickerView(onImagePicked: onImagePicked)
+            )
+        }
+
+        @MainActor
+        public func createShareSheet(items: [Any]) -> AnyView {
+            AnyView(
+                macOSShareButton(items: items)
+            )
+        }
+
+        @MainActor
+        public func createSidebarNavigation(
+            @ViewBuilder sidebar: @escaping () -> some View,
+            @ViewBuilder detail: @escaping () -> some View
+        ) -> AnyView {
+            AnyView(
+                macOSSidebarNavigation(sidebar: sidebar, detail: detail)
+            )
+        }
+
+        @MainActor
+        public func applyWindowStyle(to view: AnyView) -> AnyView {
+            AnyView(
+                view
+                    .modifier(macOSWindowStyleModifier())
+                    .modifier(macOSWindowControlsOverlay())
+            )
+        }
+
+        @MainActor
+        public func applyToolbarStyle(to view: AnyView) -> AnyView {
+            AnyView(
+                view
+                    .modifier(macOSToolbarModifier())
+            )
+        }
+
+        @MainActor
+        public func createDropZone(
+            @ViewBuilder content: @escaping () -> some View,
+            onItemsDropped: @escaping ([Any]) -> Void
+        ) -> AnyView {
+            AnyView(
+                macOSDocumentDropZone(onDocumentsDropped: { documents in
+                    onItemsDropped(documents.map { $0 as Any })
+                }) {
+                    content()
+                }
+            )
+        }
     }
-    
-    public func createDocumentPicker(onDocumentsPicked: @escaping ([(Data, String)]) -> Void) -> AnyView {
-        AnyView(
-            macOSDocumentPickerView(onDocumentsPicked: onDocumentsPicked)
-        )
-    }
-    
-    public func createImagePicker(onImagePicked: @escaping (Data) -> Void) -> AnyView {
-        AnyView(
-            macOSImagePickerView(onImagePicked: onImagePicked)
-        )
-    }
-    
-    public func createShareSheet(items: [Any]) -> AnyView {
-        AnyView(
-            macOSShareButton(items: items)
-        )
-    }
-    
-    public func createSidebarNavigation<SidebarContent: View, DetailContent: View>(
-        @ViewBuilder sidebar: @escaping () -> SidebarContent,
-        @ViewBuilder detail: @escaping () -> DetailContent
-    ) -> AnyView {
-        AnyView(
-            macOSSidebarNavigation(sidebar: sidebar, detail: detail)
-        )
-    }
-    
-    public func applyWindowStyle(to view: AnyView) -> AnyView {
-        AnyView(
-            view
-                .modifier(macOSWindowStyleModifier())
-                .modifier(macOSWindowControlsOverlay())
-        )
-    }
-    
-    public func applyToolbarStyle(to view: AnyView) -> AnyView {
-        AnyView(
-            view
-                .modifier(macOSToolbarModifier())
-        )
-    }
-    
-    public func createDropZone<Content: View>(
-        @ViewBuilder content: @escaping () -> Content,
-        onItemsDropped: @escaping ([Any]) -> Void
-    ) -> AnyView {
-        AnyView(
-            macOSDocumentDropZone(onDocumentsDropped: { documents in
-                onItemsDropped(documents.map { $0 as Any })
-            }) {
-                content()
-            }
-        )
-    }
-}
 #endif

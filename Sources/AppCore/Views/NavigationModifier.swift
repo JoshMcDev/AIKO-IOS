@@ -7,31 +7,31 @@ public struct NavigationModifier: ViewModifier {
         case inline
         case large
     }
-    
+
     let displayMode: DisplayMode
     let supportsNavigationBarDisplayMode: Bool
-    
+
     public init(displayMode: DisplayMode, supportsNavigationBarDisplayMode: Bool) {
         self.displayMode = displayMode
         self.supportsNavigationBarDisplayMode = supportsNavigationBarDisplayMode
     }
-    
+
     public func body(content: Content) -> some View {
         #if os(iOS)
-        if supportsNavigationBarDisplayMode {
-            switch displayMode {
-            case .automatic:
-                content.navigationBarTitleDisplayMode(.automatic)
-            case .inline:
-                content.navigationBarTitleDisplayMode(.inline)
-            case .large:
-                content.navigationBarTitleDisplayMode(.large)
+            if supportsNavigationBarDisplayMode {
+                switch displayMode {
+                case .automatic:
+                    content.navigationBarTitleDisplayMode(.automatic)
+                case .inline:
+                    content.navigationBarTitleDisplayMode(.inline)
+                case .large:
+                    content.navigationBarTitleDisplayMode(.large)
+                }
+            } else {
+                content
             }
-        } else {
-            content
-        }
         #else
-        content
+            content
         #endif
     }
 }
@@ -42,7 +42,7 @@ public extension View {
         displayMode: NavigationModifier.DisplayMode,
         supportsNavigationBarDisplayMode: Bool
     ) -> some View {
-        self.modifier(NavigationModifier(
+        modifier(NavigationModifier(
             displayMode: displayMode,
             supportsNavigationBarDisplayMode: supportsNavigationBarDisplayMode
         ))

@@ -1,19 +1,20 @@
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
 // MARK: - Navigation Bar Hidden Modifier
 
 public struct NavigationBarHiddenModifier: ViewModifier {
     @Dependency(\.themeService) var themeService
-    
+
     public init() {}
-    
+
     public func body(content: Content) -> some View {
         themeService.applyNavigationBarHidden(to: AnyView(content))
     }
 }
 
 // MARK: - AIKO Sheet Modifier
+
 // Note: aikoSheet() is defined in the main module's Theme.swift
 
 // MARK: - Document Types Section
@@ -28,9 +29,9 @@ public struct DocumentTypesSection: View {
     let onTypeToggled: (DocumentType) -> Void
     let onDFTypeToggled: (DFDocumentType) -> Void
     let onExecuteCategory: (DocumentCategory) -> Void
-    
+
     @State private var expandedCategories: Set<DocumentCategory> = []
-    
+
     public init(
         documentTypes: [DocumentType],
         selectedTypes: Set<DocumentType>,
@@ -52,11 +53,11 @@ public struct DocumentTypesSection: View {
         self.onDFTypeToggled = onDFTypeToggled
         self.onExecuteCategory = onExecuteCategory
     }
-    
+
     func filteredDocumentTypes(for category: DocumentCategory) -> [DocumentType] {
         category.documentTypes
     }
-    
+
     public var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
             // Acquisition name if loaded - centered
@@ -72,14 +73,14 @@ public struct DocumentTypesSection: View {
                     Spacer()
                 }
             }
-            
+
             // Header with search
             HStack(spacing: Theme.Spacing.sm) {
                 Label("Document Types", systemImage: "folder")
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(Theme.Colors.aikoPrimary)
-                
+
                 // Status indicator - moved after Document Types
                 Circle()
                     .fill(hasAcquisition ? Color.green : Color.red)
@@ -89,7 +90,7 @@ public struct DocumentTypesSection: View {
                             .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                     )
             }
-            
+
             // Category folders
             VStack(spacing: Theme.Spacing.md) {
                 ForEach(DocumentCategory.allCases, id: \.self) { category in
@@ -136,7 +137,7 @@ public struct DocumentCategoryFolder: View {
     let onTypeToggled: (DocumentType) -> Void
     let onDFTypeToggled: (DFDocumentType) -> Void
     let onExecute: () -> Void
-    
+
     var selectedCount: Int {
         if category == .determinationFindings {
             selectedDFTypes.count
@@ -144,11 +145,11 @@ public struct DocumentCategoryFolder: View {
             documentTypes.filter { selectedTypes.contains($0) }.count
         }
     }
-    
+
     var readyCount: Int {
         documentTypes.filter { documentStatus[$0] == .ready }.count
     }
-    
+
     public var body: some View {
         VStack(spacing: 0) {
             // Folder header
@@ -159,16 +160,16 @@ public struct DocumentCategoryFolder: View {
                         .font(.title2)
                         .foregroundColor(Theme.Colors.aikoPrimary)
                         .frame(width: 32, height: 32)
-                    
+
                     // Category info
                     VStack(alignment: .leading, spacing: 4) {
                         HStack {
                             Text(category.rawValue)
                                 .font(.headline)
                                 .foregroundColor(.white)
-                            
+
                             Spacer()
-                            
+
                             // Status badges
                             if selectedCount > 0 {
                                 Text("\(selectedCount) selected")
@@ -179,7 +180,7 @@ public struct DocumentCategoryFolder: View {
                                     .background(Theme.Colors.aikoPrimary)
                                     .cornerRadius(8)
                             }
-                            
+
                             if readyCount > 0 {
                                 Text("\(readyCount) ready")
                                     .font(.caption2)
@@ -189,7 +190,7 @@ public struct DocumentCategoryFolder: View {
                                     .background(Color.green)
                                     .cornerRadius(8)
                             }
-                            
+
                             // Execute button (only show if documents are selected)
                             if selectedCount > 0 {
                                 Button(action: onExecute) {
@@ -199,19 +200,19 @@ public struct DocumentCategoryFolder: View {
                                 }
                                 .buttonStyle(.plain)
                             }
-                            
+
                             // Expand/collapse arrow
                             Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                                 .rotationEffect(.degrees(isExpanded ? 0 : 0))
                         }
-                        
+
                         Text(category.description)
                             .font(.caption)
                             .foregroundColor(.white.opacity(0.8))
                             .lineLimit(1)
-                        
+
                         // Document count
                         if category == .determinationFindings {
                             Text("\(DFDocumentType.allCases.count) document types")
@@ -235,7 +236,7 @@ public struct DocumentCategoryFolder: View {
                 )
             }
             .buttonStyle(.plain)
-            
+
             // Expanded content
             if isExpanded {
                 if category == .determinationFindings {
@@ -284,7 +285,7 @@ public struct DocumentTypeCard: View {
     let isAvailable: Bool
     let status: DocumentStatus
     let onToggle: () -> Void
-    
+
     var statusColor: Color {
         switch status {
         case .notReady: .red
@@ -292,7 +293,7 @@ public struct DocumentTypeCard: View {
         case .ready: .green
         }
     }
-    
+
     func statusText(for status: DocumentStatus) -> String {
         switch status {
         case .notReady: "Not Ready"
@@ -300,7 +301,7 @@ public struct DocumentTypeCard: View {
         case .ready: "Ready"
         }
     }
-    
+
     public var body: some View {
         Button(action: onToggle) {
             HStack(spacing: Theme.Spacing.md) {
@@ -308,27 +309,27 @@ public struct DocumentTypeCard: View {
                 Circle()
                     .fill(statusColor)
                     .frame(width: 8, height: 8)
-                
+
                 // Icon
                 Image(systemName: documentType.icon)
                     .font(.body)
                     .foregroundColor(isAvailable ? .blue : .secondary)
                     .frame(width: 20, height: 20)
-                
+
                 // Document name only
                 Text(documentType.shortName)
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(.white)
                     .lineLimit(1)
-                
+
                 Spacer()
-                
+
                 // FAR Reference
                 Text(documentType.farReference)
                     .font(.caption2)
                     .foregroundColor(.secondary)
-                
+
                 // Checkmark
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .foregroundColor(isSelected ? .green : .secondary)
@@ -362,7 +363,7 @@ public struct DFDocumentTypeCard: View {
     let isSelected: Bool
     let hasAcquisition: Bool
     let onToggle: () -> Void
-    
+
     public var body: some View {
         Button(action: onToggle) {
             HStack(spacing: Theme.Spacing.md) {
@@ -370,27 +371,27 @@ public struct DFDocumentTypeCard: View {
                 Circle()
                     .fill(hasAcquisition ? Color.green : Color.red)
                     .frame(width: 8, height: 8)
-                
+
                 // Icon
                 Image(systemName: dfDocumentType.icon)
                     .font(.body)
                     .foregroundColor(.blue)
                     .frame(width: 20, height: 20)
-                
+
                 // Document name only
                 Text(dfDocumentType.shortName)
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(.white)
                     .lineLimit(1)
-                
+
                 Spacer()
-                
+
                 // FAR Reference
                 Text(dfDocumentType.farReference)
                     .font(.caption2)
                     .foregroundColor(.secondary)
-                
+
                 // Checkmark
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .foregroundColor(isSelected ? .green : .secondary)

@@ -1,12 +1,12 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 import SwiftAnthropic
 
 @Reducer
-public struct AcquisitionChatFeature {
+public struct AcquisitionChatFeature: Sendable {
     @ObservableState
-    public struct State: Equatable {
+    public struct State: Equatable, Sendable {
         public var messages: [ChatMessage] = []
         public var currentInput: String = ""
         public var isProcessing: Bool = false
@@ -30,7 +30,7 @@ public struct AcquisitionChatFeature {
         public var activeTasks: [AgentTask] = []
         public var messageCards: [UUID: MessageCard] = [:]
         public var approvalRequests: [UUID: ApprovalRequest] = [:]
-        
+
         // Follow-on Action properties
         public var suggestedActions: FollowOnActionSet?
         public var completedActionIds: Set<UUID> = []
@@ -92,7 +92,7 @@ public struct AcquisitionChatFeature {
         }
     }
 
-    public enum ChatPhase: Equatable {
+    public enum ChatPhase: Equatable, Sendable {
         case initial
         case gatheringBasics
         case gatheringDetails
@@ -109,7 +109,7 @@ public struct AcquisitionChatFeature {
         public var extractedContent: String?
     }
 
-    public struct RequirementsData: Equatable {
+    public struct RequirementsData: Equatable, Sendable {
         public var projectTitle: String = ""
         public var productOrService: String = ""
         public var estimatedValue: String = ""
@@ -139,29 +139,29 @@ public struct AcquisitionChatFeature {
                 !performancePeriod.isEmpty &&
                 !businessNeed.isEmpty
         }
-        
+
         // Convert to global RequirementsData type for use with services
         public func toGlobalRequirementsData() -> AIKO.RequirementsData {
             // Parse estimated value to Decimal
             let cleanedValue = estimatedValue.replacingOccurrences(of: "$", with: "")
                 .replacingOccurrences(of: ",", with: "")
             let decimalValue = Decimal(string: cleanedValue)
-            
+
             // Parse technical requirements (split by newlines)
             let techReqs = technicalRequirements.isEmpty ? [] : technicalRequirements
                 .components(separatedBy: .newlines)
                 .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
                 .filter { !$0.isEmpty }
-            
+
             // Parse evaluation criteria (split by newlines)
             let evalCriteria = evaluationCriteria.isEmpty ? [] : evaluationCriteria
                 .components(separatedBy: .newlines)
                 .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
                 .filter { !$0.isEmpty }
-            
+
             // Parse special conditions from specialConsiderations
             let specialConds = specialConsiderations.isEmpty ? [] : [specialConsiderations]
-            
+
             return AIKO.RequirementsData(
                 projectTitle: projectTitle.isEmpty ? nil : projectTitle,
                 description: productOrService.isEmpty ? nil : productOrService,
@@ -182,7 +182,7 @@ public struct AcquisitionChatFeature {
         }
     }
 
-    public struct ChatMessage: Equatable, Identifiable {
+    public struct ChatMessage: Equatable, Identifiable, Sendable {
         public let id = UUID()
         public let role: MessageRole
         public let content: String
@@ -243,7 +243,7 @@ public struct AcquisitionChatFeature {
         case agentRequestsApproval(ApprovalRequest)
         case approveAction(UUID)
         case rejectAction(UUID)
-        
+
         // Follow-on Action actions
         case generateFollowOnActions
         case followOnActionsGenerated(FollowOnActionSet)
@@ -710,7 +710,7 @@ public struct AcquisitionChatFeature {
                 )
                 state.messages.append(message)
                 return .none
-                
+
             // Follow-on Action handlers
             case .generateFollowOnActions:
                 return .run { [state] send in
@@ -730,17 +730,17 @@ public struct AcquisitionChatFeature {
                                 )
                             }
                         )
-                        
+
                         let actionSet = try await followOnActionService.generateFollowOnActions(for: state.acquisitionId ?? UUID(), context: context)
                         await send(.followOnActionsGenerated(actionSet))
                     } catch {
                         print("Failed to generate follow-on actions: \(error)")
                     }
                 }
-                
+
             case let .followOnActionsGenerated(actionSet):
                 state.suggestedActions = actionSet
-                
+
                 // Add a message about available actions
                 if !actionSet.actions.isEmpty {
                     let availableActions = actionSet.availableActions(completedActionIds: state.completedActionIds)
@@ -749,11 +749,11 @@ public struct AcquisitionChatFeature {
                             role: .assistant,
                             content: """
                             💡 **Suggested Next Steps:**
-                            
+
                             \(availableActions.prefix(3).enumerated().map { index, action in
                                 "\(index + 1). \(action.title) - \(action.description)"
                             }.joined(separator: "\n"))
-                            
+
                             Would you like me to help with any of these actions?
                             """
                         )
@@ -761,10 +761,10 @@ public struct AcquisitionChatFeature {
                     }
                 }
                 return .none
-                
+
             case let .executeFollowOnAction(action):
                 state.executingActionIds.insert(action.id)
-                
+
                 return .run { [state] send in
                     do {
                         let result = try await followOnActionService.executeAction(
@@ -781,11 +781,11 @@ public struct AcquisitionChatFeature {
                         await send(.followOnActionCompleted(action.id, failedResult))
                     }
                 }
-                
+
             case let .followOnActionCompleted(actionId, result):
                 state.executingActionIds.remove(actionId)
                 state.completedActionIds.insert(actionId)
-                
+
                 // Add completion message
                 let statusEmoji = result.status == .completed ? "✅" : "❌"
                 let message = ChatMessage(
@@ -793,7 +793,7 @@ public struct AcquisitionChatFeature {
                     content: "\(statusEmoji) \(result.output ?? "Action completed")"
                 )
                 state.messages.append(message)
-                
+
                 // If there are new actions from the result, add them
                 if let newActions = result.nextActions, !newActions.isEmpty {
                     if let currentSet = state.suggestedActions {
@@ -808,19 +808,19 @@ public struct AcquisitionChatFeature {
                         )
                     }
                 }
-                
+
                 // Refresh available actions
                 return .send(.refreshFollowOnActions)
-                
+
             case let .showActionSelector(show):
                 state.showingActionSelector = show
                 return .none
-                
+
             case .refreshFollowOnActions:
                 // Check if we should generate new actions
                 if let actionSet = state.suggestedActions {
                     let availableActions = actionSet.availableActions(completedActionIds: state.completedActionIds)
-                    if availableActions.isEmpty && state.completedActionIds.count > 0 {
+                    if availableActions.isEmpty, state.completedActionIds.count > 0 {
                         // All current actions completed, generate new ones
                         return .send(.generateFollowOnActions)
                     }
@@ -986,7 +986,7 @@ public struct AcquisitionChatFeature {
 
         return (responseMessage, requirements, readiness, recommended, nextPhase)
     }
-    
+
     private func processUserResponseWithAI(
         input: String,
         currentRequirements: RequirementsData,
@@ -1209,11 +1209,11 @@ private extension AcquisitionChatFeature.ChatPhase {
     func toAcquisitionPhase() -> AcquisitionPhase {
         switch self {
         case .initial, .gatheringBasics, .gatheringDetails:
-            return .planning
+            .planning
         case .analyzingRequirements:
-            return .requirementsDevelopment
+            .requirementsDevelopment
         case .confirmingPredictions, .readyToGenerate:
-            return .planning
+            .planning
         }
     }
 }

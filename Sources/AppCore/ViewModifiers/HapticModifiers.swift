@@ -1,6 +1,6 @@
-import SwiftUI
-import ComposableArchitecture
 import Combine
+import ComposableArchitecture
+import SwiftUI
 
 // MARK: - Haptic Feedback Modifier
 
@@ -8,7 +8,7 @@ public struct HapticFeedbackModifier: ViewModifier {
     let style: HapticStyle
     let trigger: Bool
     @Dependency(\.hapticManager) var hapticManager
-    
+
     public func body(content: Content) -> some View {
         if #available(macOS 14.0, iOS 17.0, *) {
             content
@@ -37,7 +37,7 @@ public struct HapticFeedbackModifier: ViewModifier {
 public struct HapticTapModifier: ViewModifier {
     let style: HapticStyle
     @Dependency(\.hapticManager) var hapticManager
-    
+
     public func body(content: Content) -> some View {
         content
             .onTapGesture {
@@ -54,7 +54,7 @@ public struct HapticNotificationModifier: ViewModifier {
     let type: HapticNotificationType
     let trigger: Bool
     @Dependency(\.hapticManager) var hapticManager
-    
+
     public func body(content: Content) -> some View {
         if #available(macOS 14.0, iOS 17.0, *) {
             content
@@ -80,16 +80,16 @@ public struct HapticNotificationModifier: ViewModifier {
 
 // MARK: - View Extensions
 
-extension View {
-    public func hapticFeedback(_ style: HapticStyle = .medium, trigger: Bool) -> some View {
+public extension View {
+    func hapticFeedback(_ style: HapticStyle = .medium, trigger: Bool) -> some View {
         modifier(HapticFeedbackModifier(style: style, trigger: trigger))
     }
-    
-    public func hapticTap(_ style: HapticStyle = .light) -> some View {
+
+    func hapticTap(_ style: HapticStyle = .light) -> some View {
         modifier(HapticTapModifier(style: style))
     }
-    
-    public func hapticNotification(_ type: HapticNotificationType, trigger: Bool) -> some View {
+
+    func hapticNotification(_ type: HapticNotificationType, trigger: Bool) -> some View {
         modifier(HapticNotificationModifier(type: type, trigger: trigger))
     }
 }
@@ -99,11 +99,11 @@ extension View {
 public struct HapticButtonStyle: ButtonStyle {
     let hapticStyle: HapticStyle
     @Dependency(\.hapticManager) var hapticManager
-    
+
     public init(hapticStyle: HapticStyle = .light) {
         self.hapticStyle = hapticStyle
     }
-    
+
     public func makeBody(configuration: Configuration) -> some View {
         if #available(macOS 14.0, iOS 17.0, *) {
             configuration.label
@@ -129,12 +129,12 @@ public struct HapticButtonStyle: ButtonStyle {
     }
 }
 
-extension ButtonStyle where Self == HapticButtonStyle {
-    public static var haptic: HapticButtonStyle {
+public extension ButtonStyle where Self == HapticButtonStyle {
+    static var haptic: HapticButtonStyle {
         HapticButtonStyle(hapticStyle: .light)
     }
-    
-    public static func haptic(_ style: HapticStyle) -> HapticButtonStyle {
+
+    static func haptic(_ style: HapticStyle) -> HapticButtonStyle {
         HapticButtonStyle(hapticStyle: style)
     }
 }
@@ -143,7 +143,7 @@ extension ButtonStyle where Self == HapticButtonStyle {
 
 public struct HapticToggleStyle: ToggleStyle {
     @Dependency(\.hapticManager) var hapticManager
-    
+
     public func makeBody(configuration: Configuration) -> some View {
         Button {
             configuration.isOn.toggle()

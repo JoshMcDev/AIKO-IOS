@@ -3,7 +3,7 @@ import Foundation
 import SwiftUI
 
 @Reducer
-public struct SettingsFeature {
+public struct SettingsFeature: Sendable {
     @ObservableState
     public struct State: Equatable {
         // App Settings
@@ -91,7 +91,7 @@ public struct SettingsFeature {
         public var selectedAPIKeyId: String = ""
     }
 
-    public struct APIKeyEntry: Equatable, Identifiable {
+    public struct APIKeyEntry: Equatable, Identifiable, Sendable {
         public let id: String = UUID().uuidString
         public var name: String
         public var key: String

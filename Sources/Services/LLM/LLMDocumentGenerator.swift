@@ -1,73 +1,71 @@
-import Foundation
 import AppCore
 import ComposableArchitecture
+import Foundation
 
 // MARK: - LLM Document Generator
 
 /// Generates context-aware documents using LLM providers
 @MainActor
-public final class LLMDocumentGenerator {
-    
+public final class LLMDocumentGenerator: @unchecked Sendable {
     // MARK: - Properties
-    
+
     public static let shared = LLMDocumentGenerator()
-    
+
     private let llmManager = LLMManager.shared
     private let conversationManager = LLMConversationManager.shared
     private let templates = DocumentTemplateLibrary()
-    
+
     // MARK: - Public Methods
-    
+
     /// Generate a document based on template and context
     public func generateDocument(
         type: DocumentType,
         context: LLMDocumentGenerationContext,
         template: LLMDocumentTemplate? = nil
     ) async throws -> LLMGeneratedDocument {
-        
         // Get or create template
         let selectedTemplate = template ?? templates.getTemplate(for: type)
-        
+
         // Build prompt
         let prompt = buildPrompt(
             template: selectedTemplate,
             context: context
         )
-        
+
         // Create conversation for generation
         var conversation = conversationManager.createConversation(
             title: "Generate \(type.displayName)",
             context: context.conversationContext
         )
-        
+
         // Set appropriate system prompt
         conversation.systemPrompt = selectedTemplate.systemPrompt
         conversation.temperature = selectedTemplate.temperature
         conversation.maxTokens = selectedTemplate.maxTokens
-        
+
         // Generate content
         let response = try await conversationManager.sendMessage(
             prompt,
             to: conversation,
             model: selectedTemplate.preferredModel
         )
-        
+
         // Parse and structure the response
         let document = try parseGeneratedContent(
             response.content,
             type: type,
             template: selectedTemplate
         )
-        
+
         // Apply post-processing
         let finalDocument = applyPostProcessing(
             document: document,
             context: context
         )
-        
+
         return finalDocument
     }
-    
+
     /// Generate document sections incrementally
     public func generateDocumentSections(
         type: DocumentType,
@@ -78,7 +76,7 @@ public final class LLMDocumentGenerator {
             Task {
                 do {
                     let selectedTemplate = template ?? templates.getTemplate(for: type)
-                    
+
                     // Generate each section
                     for sectionTemplate in selectedTemplate.sections {
                         let sectionPrompt = buildSectionPrompt(
@@ -86,30 +84,30 @@ public final class LLMDocumentGenerator {
                             context: context,
                             previousSections: []
                         )
-                        
+
                         var conversation = conversationManager.createConversation(
                             title: "Generate \(sectionTemplate.title)",
                             context: context.conversationContext
                         )
-                        
+
                         conversation.systemPrompt = selectedTemplate.systemPrompt
                         conversation.temperature = sectionTemplate.temperature ?? selectedTemplate.temperature
-                        
+
                         let response = try await conversationManager.sendMessage(
                             sectionPrompt,
                             to: conversation
                         )
-                        
+
                         let section = LLMDocumentSection(
                             id: UUID(),
                             title: sectionTemplate.title,
                             content: response.content,
                             metadata: sectionTemplate.metadata
                         )
-                        
+
                         continuation.yield(section)
                     }
-                    
+
                     continuation.finish()
                 } catch {
                     continuation.finish(throwing: error)
@@ -117,65 +115,64 @@ public final class LLMDocumentGenerator {
             }
         }
     }
-    
+
     /// Review and improve existing document
     public func reviewDocument(
         _ document: String,
         type: DocumentType,
         improvements: [ImprovementType]
     ) async throws -> ReviewedDocument {
-        
         let reviewPrompt = buildReviewPrompt(
             document: document,
             type: type,
             improvements: improvements
         )
-        
+
         var conversation = conversationManager.createConversation(
             title: "Review \(type.displayName)"
         )
-        
+
         conversation.systemPrompt = """
         You are an expert government contracting officer reviewing acquisition documents.
         Provide specific, actionable feedback to improve the document.
         Focus on compliance, clarity, and completeness.
         """
-        
+
         conversation.temperature = 0.3 // Lower temperature for consistent review
-        
+
         let response = try await conversationManager.sendMessage(
             reviewPrompt,
             to: conversation
         )
-        
+
         return parseReviewResponse(response.content)
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func buildPrompt(
         template: LLMDocumentTemplate,
         context: LLMDocumentGenerationContext
     ) -> String {
         var prompt = template.basePrompt
-        
+
         // Add context information
         if let acquisitionType = context.acquisitionType {
             prompt += "\n\nAcquisition Type: \(acquisitionType.rawValue)"
         }
-        
+
         if let vendor = context.vendorInfo {
             prompt += "\n\nVendor Information:"
             prompt += "\n- Name: \(vendor.name ?? "TBD")"
             prompt += "\n- UEI: \(vendor.uei ?? "TBD")"
             prompt += "\n- CAGE: \(vendor.cage ?? "TBD")"
         }
-        
+
         if let pricing = context.pricing {
             prompt += "\n\nPricing:"
             prompt += "\n- Total: $\(pricing.totalPrice ?? 0)"
         }
-        
+
         // Add specific requirements
         if !context.requirements.isEmpty {
             prompt += "\n\nSpecific Requirements:"
@@ -183,7 +180,7 @@ public final class LLMDocumentGenerator {
                 prompt += "\n- \(req)"
             }
         }
-        
+
         // Add any extracted data
         if !context.extractedData.isEmpty {
             prompt += "\n\nExtracted Information:"
@@ -191,20 +188,20 @@ public final class LLMDocumentGenerator {
                 prompt += "\n- \(key): \(value)"
             }
         }
-        
+
         // Add output format instructions
         prompt += "\n\n" + template.outputInstructions
-        
+
         return prompt
     }
-    
+
     private func buildSectionPrompt(
         section: DocumentSectionTemplate,
-        context: LLMDocumentGenerationContext,
+        context _: LLMDocumentGenerationContext,
         previousSections: [LLMDocumentSection]
     ) -> String {
         var prompt = section.prompt
-        
+
         // Add context from previous sections
         if !previousSections.isEmpty {
             prompt += "\n\nPrevious sections for context:"
@@ -212,7 +209,7 @@ public final class LLMDocumentGenerator {
                 prompt += "\n\n## \(prev.title)\n\(prev.content.prefix(500))..."
             }
         }
-        
+
         // Add section-specific context
         if let specifics = section.contextRequirements {
             prompt += "\n\nSection-specific requirements:"
@@ -220,10 +217,10 @@ public final class LLMDocumentGenerator {
                 prompt += "\n- \(req)"
             }
         }
-        
+
         return prompt
     }
-    
+
     private func buildReviewPrompt(
         document: String,
         type: DocumentType,
@@ -232,7 +229,7 @@ public final class LLMDocumentGenerator {
         var prompt = "Please review the following \(type.displayName) document:\n\n"
         prompt += document
         prompt += "\n\n---\n\nReview Focus Areas:"
-        
+
         for improvement in improvements {
             switch improvement {
             case .compliance:
@@ -247,12 +244,12 @@ public final class LLMDocumentGenerator {
                 prompt += "\n- Professional formatting and structure"
             }
         }
-        
+
         prompt += "\n\nProvide specific feedback with line references where applicable."
-        
+
         return prompt
     }
-    
+
     private func parseGeneratedContent(
         _ content: String,
         type: DocumentType,
@@ -260,14 +257,14 @@ public final class LLMDocumentGenerator {
     ) throws -> LLMGeneratedDocument {
         // Parse based on expected format
         // This is a simplified version - real implementation would be more sophisticated
-        
+
         let sections = content.components(separatedBy: "\n## ")
             .dropFirst()
             .map { section -> LLMDocumentSection in
                 let lines = section.split(separator: "\n", maxSplits: 1)
                 let title = String(lines.first ?? "")
                 let content = lines.count > 1 ? String(lines[1]) : ""
-                
+
                 return LLMDocumentSection(
                     id: UUID(),
                     title: title,
@@ -275,7 +272,7 @@ public final class LLMDocumentGenerator {
                     metadata: [:]
                 )
             }
-        
+
         return LLMGeneratedDocument(
             id: UUID(),
             type: type,
@@ -284,23 +281,23 @@ public final class LLMDocumentGenerator {
             rawContent: content,
             metadata: [
                 "template": template.id,
-                "generatedAt": ISO8601DateFormatter().string(from: Date())
+                "generatedAt": ISO8601DateFormatter().string(from: Date()),
             ]
         )
     }
-    
+
     private func applyPostProcessing(
         document: LLMGeneratedDocument,
         context: LLMDocumentGenerationContext
     ) -> LLMGeneratedDocument {
         var processed = document
-        
+
         // Apply any placeholders
         processed.rawContent = processed.rawContent
             .replacingOccurrences(of: "[VENDOR_NAME]", with: context.vendorInfo?.name ?? "[Vendor Name]")
             .replacingOccurrences(of: "[DATE]", with: Date().formatted(date: .abbreviated, time: .omitted))
             .replacingOccurrences(of: "[AMOUNT]", with: "$\(context.pricing?.totalPrice ?? 0)")
-        
+
         // Update sections
         processed.sections = processed.sections.map { section in
             var updated = section
@@ -310,18 +307,18 @@ public final class LLMDocumentGenerator {
                 .replacingOccurrences(of: "[AMOUNT]", with: "$\(context.pricing?.totalPrice ?? 0)")
             return updated
         }
-        
+
         return processed
     }
-    
+
     private func parseReviewResponse(_ content: String) -> ReviewedDocument {
         // Parse review feedback
         // This is simplified - real implementation would extract structured feedback
-        
+
         let lines = content.split(separator: "\n")
         var feedback: [ReviewFeedback] = []
         var suggestions: [String] = []
-        
+
         for line in lines {
             if line.hasPrefix("- ") {
                 suggestions.append(String(line.dropFirst(2)))
@@ -339,7 +336,7 @@ public final class LLMDocumentGenerator {
                 ))
             }
         }
-        
+
         return ReviewedDocument(
             feedback: feedback,
             suggestions: suggestions,
@@ -357,7 +354,7 @@ public struct LLMDocumentGenerationContext {
     public let pricing: PricingInfo?
     public let requirements: [String]
     public let extractedData: [String: String]
-    
+
     public init(
         conversationContext: LLMConversationContext = LLMConversationContext(),
         acquisitionType: AcquisitionType? = nil,
@@ -409,7 +406,7 @@ public struct ReviewFeedback {
     public let type: FeedbackType
     public let message: String
     public let lineNumber: Int?
-    
+
     public enum FeedbackType {
         case error
         case warning
@@ -420,24 +417,23 @@ public struct ReviewFeedback {
 // MARK: - Document Template Library
 
 public class DocumentTemplateLibrary {
-    
     private var templates: [DocumentType: LLMDocumentTemplate] = [:]
-    
+
     init() {
         loadDefaultTemplates()
     }
-    
+
     func getTemplate(for type: DocumentType) -> LLMDocumentTemplate {
-        return templates[type] ?? createDefaultTemplate(for: type)
+        templates[type] ?? createDefaultTemplate(for: type)
     }
-    
+
     private func loadDefaultTemplates() {
         // Load predefined templates
         templates[.requestForQuote] = createRFQTemplate()
         templates[.sow] = createSOWTemplate()
         templates[.justificationApproval] = createJustificationTemplate()
     }
-    
+
     private func createRFQTemplate() -> LLMDocumentTemplate {
         LLMDocumentTemplate(
             id: "rfq-standard",
@@ -466,13 +462,13 @@ public class DocumentTemplateLibrary {
                     title: "Delivery Requirements",
                     prompt: "Specify delivery or performance requirements",
                     contextRequirements: ["delivery date", "location", "schedule"]
-                )
+                ),
             ],
             temperature: 0.7,
             maxTokens: 2000
         )
     }
-    
+
     private func createSOWTemplate() -> LLMDocumentTemplate {
         LLMDocumentTemplate(
             id: "sow-standard",
@@ -495,7 +491,7 @@ public class DocumentTemplateLibrary {
             maxTokens: 3000
         )
     }
-    
+
     private func createJustificationTemplate() -> LLMDocumentTemplate {
         LLMDocumentTemplate(
             id: "justification-standard",
@@ -518,7 +514,7 @@ public class DocumentTemplateLibrary {
             maxTokens: 2500
         )
     }
-    
+
     private func createDefaultTemplate(for type: DocumentType) -> LLMDocumentTemplate {
         LLMDocumentTemplate(
             id: "\(type.rawValue)-default",
@@ -543,7 +539,7 @@ public struct LLMDocumentTemplate {
     public let temperature: Double
     public let maxTokens: Int
     public let preferredModel: String?
-    
+
     public init(
         id: String,
         documentTitle: String,
@@ -573,7 +569,7 @@ public struct DocumentSectionTemplate {
     public let contextRequirements: [String]?
     public let temperature: Double?
     public let metadata: [String: String]
-    
+
     public init(
         title: String,
         prompt: String,
@@ -593,6 +589,6 @@ public struct DocumentSectionTemplate {
 
 extension DocumentType {
     var displayName: String {
-        return self.rawValue
+        rawValue
     }
 }

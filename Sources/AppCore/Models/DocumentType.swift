@@ -2,7 +2,7 @@ import Foundation
 
 // NSAttributedString already conforms to Equatable in Foundation
 
-public enum DocumentType: String, CaseIterable, Identifiable, Codable {
+public enum DocumentType: String, CaseIterable, Identifiable, Codable, Sendable {
     case sow = "Statement of Work"
     case soo = "Statement of Objectives"
     case pws = "Performance Work Statement"
@@ -170,7 +170,7 @@ public enum DocumentType: String, CaseIterable, Identifiable, Codable {
     }
 }
 
-public enum DocumentCategoryType: Equatable, Hashable, Codable {
+public enum DocumentCategoryType: Equatable, Hashable, Codable, Sendable {
     case standard(DocumentType)
     case determinationFinding(DFDocumentType)
 
@@ -213,7 +213,7 @@ public enum DocumentCategoryType: Equatable, Hashable, Codable {
 
 // GeneratedDocument - Platform-agnostic version for AppCore
 // Platform-specific RTF formatting is handled in platform implementations
-public struct GeneratedDocument: Identifiable, Equatable, Codable {
+public struct GeneratedDocument: Identifiable, Equatable, Codable, Sendable {
     public let id: UUID
     public let title: String
     public let documentCategory: DocumentCategoryType

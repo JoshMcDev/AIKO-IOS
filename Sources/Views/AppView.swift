@@ -1,6 +1,6 @@
-import SwiftUI
-import ComposableArchitecture
 import AppCore
+import ComposableArchitecture
+import SwiftUI
 
 // Platform imports removed - views are now in main module
 
@@ -14,30 +14,30 @@ public struct AppView: View {
 
     public var body: some View {
         #if os(iOS)
-        iOSAppView(store: store)
+            iOSAppView(store: store)
         #elseif os(macOS)
-        macOSAppView(store: store)
+            macOSAppView(store: store)
         #endif
     }
 }
 
 #if DEBUG
-struct AppView_Previews: PreviewProvider {
-    static var previews: some View {
-        var state = AppFeature.State()
-        state.isOnboardingCompleted = true
-        state.isAuthenticated = true
+    struct AppView_Previews: PreviewProvider {
+        static var previews: some View {
+            var state = AppFeature.State()
+            state.isOnboardingCompleted = true
+            state.isAuthenticated = true
 
-        return AppView(
-            store: Store(
-                initialState: state
-            ) {
-                AppFeature()
-                    .dependency(\.biometricAuthenticationService, .previewValue)
-                    .dependency(\.settingsManager, .previewValue)
-            }
-        )
-        .preferredColorScheme(.dark)
+            return AppView(
+                store: Store(
+                    initialState: state
+                ) {
+                    AppFeature()
+                        .dependency(\.biometricAuthenticationService, .previewValue)
+                        .dependency(\.settingsManager, .previewValue)
+                }
+            )
+            .preferredColorScheme(.dark)
+        }
     }
-}
 #endif

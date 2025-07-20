@@ -1,9 +1,9 @@
-import Foundation
 import AppCore
+import Foundation
 
 // MARK: - Workflow State
 
-public enum WorkflowState: String, CaseIterable {
+public enum WorkflowState: String, CaseIterable, Sendable {
     case initial
     case gatheringRequirements = "gathering_requirements"
     case analyzingRequirements = "analyzing_requirements"
@@ -54,7 +54,7 @@ public enum WorkflowState: String, CaseIterable {
 
 // MARK: - Collected Data
 
-public struct CollectedData: Equatable, Codable {
+public struct CollectedData: Equatable, Codable, Sendable {
     public var data: [String: String] = [:]
 
     public init(data: [String: String] = [:]) {
@@ -69,7 +69,7 @@ public struct CollectedData: Equatable, Codable {
 
 // MARK: - Workflow Step
 
-public struct WorkflowStep: Identifiable, Equatable {
+public struct WorkflowStep: Identifiable, Equatable, Sendable {
     public let id = UUID()
     public let timestamp: Date
     public let state: WorkflowState
@@ -103,7 +103,7 @@ public struct WorkflowStep: Identifiable, Equatable {
 
 // MARK: - Approval Status
 
-public enum ApprovalStatus: String {
+public enum ApprovalStatus: String, Sendable {
     case pending
     case approved
     case rejected
@@ -112,7 +112,7 @@ public enum ApprovalStatus: String {
 
 // MARK: - Automation Settings
 
-public struct AutomationSettings: Equatable, Codable {
+public struct AutomationSettings: Equatable, Codable, Sendable {
     public var enabled: Bool
     public var requireApprovalForDocumentGeneration: Bool
     public var requireApprovalForDataCollection: Bool
@@ -142,7 +142,7 @@ public struct AutomationSettings: Equatable, Codable {
 
 // MARK: - Document Dependency
 
-public struct DocumentDependency: Identifiable, Equatable {
+public struct DocumentDependency: Identifiable, Equatable, Sendable {
     public let id = UUID()
     public let sourceDocumentType: DocumentType
     public let targetDocumentType: DocumentType
@@ -164,7 +164,7 @@ public struct DocumentDependency: Identifiable, Equatable {
 
 // MARK: - Workflow Context
 
-public struct WorkflowContext: Equatable {
+public struct WorkflowContext: Equatable, Sendable {
     public var acquisitionId: UUID
     public var currentState: WorkflowState
     public var workflowSteps: [WorkflowStep]
@@ -194,7 +194,7 @@ public struct WorkflowContext: Equatable {
 
 // MARK: - Suggested Prompt
 
-public struct SuggestedPrompt: Identifiable, Equatable {
+public struct SuggestedPrompt: Identifiable, Equatable, Sendable {
     public let id = UUID()
     public let prompt: String
     public let category: PromptCategory
@@ -202,7 +202,7 @@ public struct SuggestedPrompt: Identifiable, Equatable {
     public let dataToCollect: [String]
     public let nextState: WorkflowState?
 
-    public enum PromptCategory: String {
+    public enum PromptCategory: String, Sendable {
         case dataCollection = "data_collection"
         case clarification
         case documentSelection = "document_selection"
@@ -210,7 +210,7 @@ public struct SuggestedPrompt: Identifiable, Equatable {
         case nextStep = "next_step"
     }
 
-    public enum PromptPriority: Int {
+    public enum PromptPriority: Int, Sendable {
         case low = 0
         case medium = 1
         case high = 2
@@ -234,7 +234,7 @@ public struct SuggestedPrompt: Identifiable, Equatable {
 
 // MARK: - Document Generation Context
 
-public struct DocumentGenerationContext: Equatable {
+public struct DocumentGenerationContext: Equatable, Sendable {
     public let documentType: DocumentType
     public let acquisitionData: CollectedData
     public let userProfileData: CollectedData

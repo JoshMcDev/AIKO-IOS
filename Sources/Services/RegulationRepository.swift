@@ -4,17 +4,17 @@ import Foundation
 // MARK: - Regulation Repository Service
 
 /// Manages federal acquisition regulations and agency-specific supplements
-public struct RegulationRepository {
-    public var getRegulationsForAgency: (String) async throws -> RegulationSet
-    public var checkForUpdates: () async throws -> [RegulationUpdate]
-    public var downloadRegulation: (RegulationType) async throws -> RegulationContent
-    public var searchRegulations: (String, RegulationSet) async throws -> [RegulationSearchResult]
+public struct RegulationRepository: Sendable {
+    public var getRegulationsForAgency: @Sendable (String) async throws -> RegulationSet
+    public var checkForUpdates: @Sendable () async throws -> [RegulationUpdate]
+    public var downloadRegulation: @Sendable (RegulationType) async throws -> RegulationContent
+    public var searchRegulations: @Sendable (String, RegulationSet) async throws -> [RegulationSearchResult]
 
     public init(
-        getRegulationsForAgency: @escaping (String) async throws -> RegulationSet,
-        checkForUpdates: @escaping () async throws -> [RegulationUpdate],
-        downloadRegulation: @escaping (RegulationType) async throws -> RegulationContent,
-        searchRegulations: @escaping (String, RegulationSet) async throws -> [RegulationSearchResult]
+        getRegulationsForAgency: @escaping @Sendable (String) async throws -> RegulationSet,
+        checkForUpdates: @escaping @Sendable () async throws -> [RegulationUpdate],
+        downloadRegulation: @escaping @Sendable (RegulationType) async throws -> RegulationContent,
+        searchRegulations: @escaping @Sendable (String, RegulationSet) async throws -> [RegulationSearchResult]
     ) {
         self.getRegulationsForAgency = getRegulationsForAgency
         self.checkForUpdates = checkForUpdates

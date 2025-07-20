@@ -2,7 +2,7 @@ import ComposableArchitecture
 import Foundation
 import LocalAuthentication
 
-public struct BiometricAuthenticationService {
+public struct BiometricAuthenticationService: Sendable {
     public enum BiometricError: Error {
         case notAvailable
         case notEnrolled
@@ -18,12 +18,12 @@ public struct BiometricAuthenticationService {
         case none
     }
 
-    public var biometricType: () -> BiometricType
-    public var authenticate: (String) async throws -> Bool
+    public var biometricType: @Sendable () -> BiometricType
+    public var authenticate: @Sendable (String) async throws -> Bool
 
     public init(
-        biometricType: @escaping () -> BiometricType,
-        authenticate: @escaping (String) async throws -> Bool
+        biometricType: @escaping @Sendable () -> BiometricType,
+        authenticate: @escaping @Sendable (String) async throws -> Bool
     ) {
         self.biometricType = biometricType
         self.authenticate = authenticate

@@ -3,14 +3,14 @@ import Foundation
 import SwiftUI
 
 #if os(iOS)
-import AIKOiOS
+    import AIKOiOS
 #elseif os(macOS)
-import AIKOmacOS
+    import AIKOmacOS
 #endif
 
 /// Handles document sharing functionality
 @Reducer
-public struct ShareFeature {
+public struct ShareFeature: Sendable {
     // MARK: - State
 
     @ObservableState
@@ -215,7 +215,7 @@ public struct ShareFeature {
 
 // MARK: - Models
 
-public enum ShareMode: Equatable {
+public enum ShareMode: Equatable, Sendable {
     case none
     case singleDocument
     case multipleDocuments
@@ -283,7 +283,7 @@ public struct ShareSheetModifier: ViewModifier {
     public func body(content: Content) -> some View {
         content
             .task(id: isPresented) {
-                if isPresented && !items.isEmpty {
+                if isPresented, !items.isEmpty {
                     // Use the share service instead of direct ShareSheet
                     _ = await shareService.share(items)
                     isPresented = false

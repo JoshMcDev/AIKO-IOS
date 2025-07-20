@@ -1,23 +1,22 @@
 import Foundation
 
 /// Repository for SAM.gov entity interactions following domain-driven design
-public final class SAMGovRepository {
-    
+public final class SAMGovRepository: @unchecked Sendable {
     // MARK: - Private Properties
-    
+
     private let apiKey: String
     private let baseURL = "https://api.sam.gov/entity-information/v3"
     private let session: URLSession
-    
+
     // MARK: - Initialization
-    
+
     public init(apiKey: String, session: URLSession = .shared) {
         self.apiKey = apiKey
         self.session = session
     }
-    
+
     // MARK: - Public Methods
-    
+
     /// Search for entities by query
     public func searchEntities(_ query: String) async throws -> EntitySearchResult {
         var components = URLComponents(string: "\(baseURL)/entities")!
@@ -27,14 +26,14 @@ public final class SAMGovRepository {
             URLQueryItem(name: "registrationStatus", value: "A"), // Active only
             URLQueryItem(name: "includeSections", value: "entityRegistration,coreData,assertions,repsAndCerts,integrityInformation"),
         ]
-        
+
         guard let url = components.url else {
             throw SAMGovError.networkError("Invalid URL")
         }
-        
+
         let data = try await performRequest(url: url)
         let apiResponse = try decodeResponse(SAMGovAPIResponse.self, from: data)
-        
+
         let entities = apiResponse.entityData?.map { entity in
             EntitySummary(
                 ueiSAM: entity.entityRegistration?.ueiSAM ?? "",
@@ -45,26 +44,26 @@ public final class SAMGovRepository {
                 expirationDate: entity.entityRegistration?.expirationDate
             )
         } ?? []
-        
+
         return EntitySearchResult(
             totalRecords: apiResponse.totalRecords ?? 0,
             entities: entities
         )
     }
-    
+
     /// Get entity details by CAGE code
     public func getEntityByCAGE(_ cageCode: String) async throws -> EntityDetail {
         // Search by CAGE code first
         let searchResult = try await searchEntities("CAGE:\(cageCode)")
-        
+
         guard let firstEntity = searchResult.entities.first else {
             throw SAMGovError.entityNotFound
         }
-        
+
         // Get full details by UEI
         return try await getEntityByUEI(firstEntity.ueiSAM)
     }
-    
+
     /// Get entity details by UEI
     public func getEntityByUEI(_ uei: String) async throws -> EntityDetail {
         var components = URLComponents(string: "\(baseURL)/entities/\(uei)")!
@@ -72,26 +71,26 @@ public final class SAMGovRepository {
             URLQueryItem(name: "api_key", value: apiKey),
             URLQueryItem(name: "includeSections", value: "entityRegistration,coreData,assertions,repsAndCerts,integrityInformation"),
         ]
-        
+
         guard let url = components.url else {
             throw SAMGovError.networkError("Invalid URL")
         }
-        
+
         let data = try await performRequest(url: url)
         let entity = try decodeResponse(SAMGovEntityResponse.self, from: data)
-        
+
         return parseEntityDetail(from: entity)
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func performRequest(url: URL) async throws -> Data {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-        
+
         let (data, response) = try await session.data(for: request)
-        
+
         if let httpResponse = response as? HTTPURLResponse {
             switch httpResponse.statusCode {
             case 200:
@@ -106,14 +105,14 @@ public final class SAMGovRepository {
                 throw SAMGovError.networkError("HTTP \(httpResponse.statusCode)")
             }
         }
-        
+
         return data
     }
-    
+
     private func decodeResponse<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
-        
+
         do {
             return try decoder.decode(type, from: data)
         } catch {
@@ -124,7 +123,7 @@ public final class SAMGovRepository {
             throw SAMGovError.invalidResponse
         }
     }
-    
+
     private func parseEntityDetail(from entity: SAMGovEntityResponse) -> EntityDetail {
         // Parse business types and socioeconomic indicators
         var businessTypes: [BusinessType] = []
@@ -134,7 +133,7 @@ public final class SAMGovRepository {
         var isWomanOwned = false
         var is8aProgram = false
         var isHUBZone = false
-        
+
         // Parse business types from assertions
         if let assertions = entity.assertions {
             // Small Business
@@ -142,38 +141,38 @@ public final class SAMGovRepository {
                 isSmallBusiness = true
                 businessTypes.append(BusinessType(code: "2X", description: "Small Business"))
             }
-            
+
             // Veteran Owned
             if assertions.goodsAndServices?.veteranOwnedBusiness == "Y" {
                 isVeteranOwned = true
                 businessTypes.append(BusinessType(code: "A2", description: "Veteran-Owned Business"))
             }
-            
+
             // Service Disabled Veteran Owned
             if assertions.goodsAndServices?.serviceDisabledVeteranOwnedBusiness == "Y" {
                 isServiceDisabledVeteranOwned = true
                 businessTypes.append(BusinessType(code: "A5", description: "Service-Disabled Veteran-Owned Business"))
             }
-            
+
             // Woman Owned
             if assertions.goodsAndServices?.womenOwnedBusiness == "Y" {
                 isWomanOwned = true
                 businessTypes.append(BusinessType(code: "8W", description: "Women-Owned Business"))
             }
-            
+
             // 8(a) Program
             if assertions.goodsAndServices?.sba8aProgramParticipant == "Y" {
                 is8aProgram = true
                 businessTypes.append(BusinessType(code: "8A", description: "8(a) Program Participant"))
             }
-            
+
             // HUBZone
             if assertions.goodsAndServices?.hubZoneBusiness == "Y" {
                 isHUBZone = true
                 businessTypes.append(BusinessType(code: "JV", description: "HUBZone Business"))
             }
         }
-        
+
         // Parse NAICS codes
         let naicsCodes = entity.coreData?.entityInformation?.primaryNaics?.map { naics in
             NAICSCode(
@@ -182,7 +181,7 @@ public final class SAMGovRepository {
                 isPrimary: true
             )
         } ?? []
-        
+
         // Parse address
         let physicalAddress = entity.coreData?.mailingAddress.flatMap { addr in
             SAMGovAddress(
@@ -193,7 +192,7 @@ public final class SAMGovRepository {
                 country: addr.countryCode
             )
         }
-        
+
         // Parse points of contact
         let pointsOfContact = entity.repsAndCerts?.pointsOfContact?.map { poc in
             PointOfContact(
@@ -204,7 +203,7 @@ public final class SAMGovRepository {
                 phone: poc.usPhone
             )
         } ?? []
-        
+
         // Parse Section 889 certifications
         let section889Status = entity.assertions?.section889.flatMap { section889 in
             Section889Status(
@@ -213,7 +212,7 @@ public final class SAMGovRepository {
                 certificationDate: section889.certificationDate
             )
         }
-        
+
         // Parse responsibility information
         let responsibilityInfo = entity.integrityInformation.flatMap { integrity in
             ResponsibilityInfo(
@@ -230,7 +229,7 @@ public final class SAMGovRepository {
                 } ?? []
             )
         }
-        
+
         // Parse foreign government entities
         let foreignGovtEntities = entity.coreData?.foreignGovtEntities?.map { fge in
             ForeignGovtEntity(
@@ -241,7 +240,7 @@ public final class SAMGovRepository {
                 controlDescription: fge.controlDescription
             )
         } ?? []
-        
+
         return EntityDetail(
             ueiSAM: entity.entityRegistration?.ueiSAM ?? "",
             cageCode: entity.entityRegistration?.cageCode,

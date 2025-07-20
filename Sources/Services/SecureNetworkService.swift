@@ -5,7 +5,7 @@ import Foundation
 public final class SecureNetworkService: ObservableObject {
     // MARK: - Singleton
 
-    public static let shared = SecureNetworkService()
+    public nonisolated(unsafe) static let shared = SecureNetworkService()
 
     // MARK: - Properties
 

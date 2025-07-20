@@ -1,18 +1,18 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 
-public struct UserProfileService {
-    public var loadProfile: () async throws -> UserProfile?
-    public var saveProfile: (UserProfile) async throws -> Void
-    public var deleteProfile: () async throws -> Void
-    public var hasProfile: () async -> Bool
+public struct UserProfileService: Sendable {
+    public var loadProfile: @Sendable () async throws -> UserProfile?
+    public var saveProfile: @Sendable (UserProfile) async throws -> Void
+    public var deleteProfile: @Sendable () async throws -> Void
+    public var hasProfile: @Sendable () async -> Bool
 
     public init(
-        loadProfile: @escaping () async throws -> UserProfile?,
-        saveProfile: @escaping (UserProfile) async throws -> Void,
-        deleteProfile: @escaping () async throws -> Void,
-        hasProfile: @escaping () async -> Bool
+        loadProfile: @escaping @Sendable () async throws -> UserProfile?,
+        saveProfile: @escaping @Sendable (UserProfile) async throws -> Void,
+        deleteProfile: @escaping @Sendable () async throws -> Void,
+        hasProfile: @escaping @Sendable () async -> Bool
     ) {
         self.loadProfile = loadProfile
         self.saveProfile = saveProfile

@@ -10,76 +10,76 @@ public enum DocumentCategory: String, CaseIterable {
     case award = "Award"
     case analytics = "Analytics"
     case resourcesTools = "Resources and Tools"
-    
+
     public var icon: String {
         switch self {
-        case .requirements: return "doc.text"
-        case .marketIntelligence: return "magnifyingglass"
-        case .planning: return "calendar"
-        case .determinationFindings: return "checkmark.shield"
-        case .solicitation: return "envelope"
-        case .award: return "rosette"
-        case .analytics: return "chart.bar"
-        case .resourcesTools: return "wrench.and.screwdriver"
+        case .requirements: "doc.text"
+        case .marketIntelligence: "magnifyingglass"
+        case .planning: "calendar"
+        case .determinationFindings: "checkmark.shield"
+        case .solicitation: "envelope"
+        case .award: "rosette"
+        case .analytics: "chart.bar"
+        case .resourcesTools: "wrench.and.screwdriver"
         }
     }
-    
+
     public var description: String {
         switch self {
-        case .requirements: return "Define and refine specifications"
-        case .marketIntelligence: return "Research market and analyze competition"
-        case .planning: return "Strategic acquisition planning documents"
-        case .determinationFindings: return "Justify acquisition decisions and approvals"
-        case .solicitation: return "Request quotes and proposals from vendors"
-        case .award: return "Contract award and administration"
-        case .analytics: return "Performance metrics and data analysis"
-        case .resourcesTools: return "Resources, tools, and regulation updates"
+        case .requirements: "Define and refine specifications"
+        case .marketIntelligence: "Research market and analyze competition"
+        case .planning: "Strategic acquisition planning documents"
+        case .determinationFindings: "Justify acquisition decisions and approvals"
+        case .solicitation: "Request quotes and proposals from vendors"
+        case .award: "Contract award and administration"
+        case .analytics: "Performance metrics and data analysis"
+        case .resourcesTools: "Resources, tools, and regulation updates"
         }
     }
-    
+
     public static func category(for documentType: DocumentType) -> DocumentCategory? {
         switch documentType {
         case .rrd, .soo, .sow, .pws, .qasp:
-            return .requirements
+            .requirements
         case .marketResearch, .codes, .competitionAnalysis, .industryRFI, .sourcesSought, .costEstimate, .procurementSourcing:
-            return .marketIntelligence
+            .marketIntelligence
         case .acquisitionPlan, .evaluationPlan, .fiscalLawReview, .opsecReview, .justificationApproval:
-            return .planning
+            .planning
         case .requestForQuoteSimplified, .requestForQuote, .requestForProposal:
-            return .solicitation
+            .solicitation
         case .contractScaffold, .corAppointment:
-            return .award
+            .award
         case .analytics:
-            return .analytics
+            .analytics
         case .otherTransactionAgreement:
-            return .award
+            .award
         case .farUpdates:
-            return .resourcesTools
+            .resourcesTools
         }
     }
-    
+
     public func contains(_ documentType: DocumentType) -> Bool {
         DocumentCategory.category(for: documentType) == self
     }
-    
+
     public var documentTypes: [DocumentType] {
         switch self {
         case .requirements:
-            return [.rrd, .soo, .sow, .pws, .qasp]
+            [.rrd, .soo, .sow, .pws, .qasp]
         case .marketIntelligence:
-            return [.marketResearch, .codes, .competitionAnalysis, .industryRFI, .sourcesSought, .costEstimate, .procurementSourcing]
+            [.marketResearch, .codes, .competitionAnalysis, .industryRFI, .sourcesSought, .costEstimate, .procurementSourcing]
         case .planning:
-            return [.acquisitionPlan, .evaluationPlan, .fiscalLawReview, .opsecReview, .justificationApproval]
+            [.acquisitionPlan, .evaluationPlan, .fiscalLawReview, .opsecReview, .justificationApproval]
         case .determinationFindings:
-            return [] // D&F documents are handled through DFDocumentType
+            [] // D&F documents are handled through DFDocumentType
         case .solicitation:
-            return [.requestForQuoteSimplified, .requestForQuote, .requestForProposal]
+            [.requestForQuoteSimplified, .requestForQuote, .requestForProposal]
         case .award:
-            return [.contractScaffold, .corAppointment, .otherTransactionAgreement]
+            [.contractScaffold, .corAppointment, .otherTransactionAgreement]
         case .analytics:
-            return [.analytics]
+            [.analytics]
         case .resourcesTools:
-            return [.farUpdates]
+            [.farUpdates]
         }
     }
 }

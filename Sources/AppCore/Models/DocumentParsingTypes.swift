@@ -3,7 +3,7 @@ import Foundation
 // MARK: - Document Parsing Types
 
 /// Type of parsed document
-public enum ParsedDocumentType: String, Codable, CaseIterable {
+public enum ParsedDocumentType: String, Codable, CaseIterable, Sendable {
     case pdf
     case word
     case excel
@@ -15,7 +15,7 @@ public enum ParsedDocumentType: String, Codable, CaseIterable {
     case heic
     case ocr // Phase 4.2: OCR-processed document
     case unknown
-    
+
     public init(from mimeType: String) {
         switch mimeType.lowercased() {
         case "application/pdf":
@@ -40,19 +40,19 @@ public enum ParsedDocumentType: String, Codable, CaseIterable {
             self = .unknown
         }
     }
-    
+
     public var isImage: Bool {
         switch self {
         case .png, .jpg, .jpeg, .heic:
-            return true
+            true
         default:
-            return false
+            false
         }
     }
 }
 
 /// Parsed document data structure
-public struct ParsedDocument: Codable, Equatable {
+public struct ParsedDocument: Codable, Equatable, Sendable {
     public let id: UUID
     public let sourceType: ParsedDocumentType
     public let extractedText: String
@@ -60,7 +60,7 @@ public struct ParsedDocument: Codable, Equatable {
     public let extractedData: ExtractedData
     public let confidence: Double
     public let parseDate: Date
-    
+
     public init(
         id: UUID = UUID(),
         sourceType: ParsedDocumentType,
@@ -81,14 +81,14 @@ public struct ParsedDocument: Codable, Equatable {
 }
 
 /// Document parsing metadata
-public struct ParsedDocumentMetadata: Codable, Equatable {
+public struct ParsedDocumentMetadata: Codable, Equatable, Sendable {
     public let fileName: String?
     public let fileSize: Int
     public let pageCount: Int?
     public let author: String?
     public let creationDate: Date?
     public let modificationDate: Date?
-    
+
     public init(
         fileName: String? = nil,
         fileSize: Int,
@@ -107,12 +107,12 @@ public struct ParsedDocumentMetadata: Codable, Equatable {
 }
 
 /// Extracted data from document
-public struct ExtractedData: Codable, Equatable {
+public struct ExtractedData: Codable, Equatable, Sendable {
     public let entities: [ExtractedEntity]
     public let relationships: [ExtractedRelationship]
     public let tables: [ExtractedTable]
     public let summary: String?
-    
+
     public init(
         entities: [ExtractedEntity] = [],
         relationships: [ExtractedRelationship] = [],
@@ -127,13 +127,13 @@ public struct ExtractedData: Codable, Equatable {
 }
 
 /// Extracted entity from document
-public struct ExtractedEntity: Codable, Equatable {
+public struct ExtractedEntity: Codable, Equatable, Sendable {
     public let type: EntityType
     public let value: String
     public let confidence: Double
     public let location: ExtractedLocation?
-    
-    public enum EntityType: String, Codable {
+
+    public enum EntityType: String, Codable, Sendable {
         case vendor
         case price
         case date
@@ -146,7 +146,7 @@ public struct ExtractedEntity: Codable, Equatable {
         case organization
         case unknown
     }
-    
+
     public init(
         type: EntityType,
         value: String,
@@ -161,12 +161,12 @@ public struct ExtractedEntity: Codable, Equatable {
 }
 
 /// Relationship between extracted entities
-public struct ExtractedRelationship: Codable, Equatable {
+public struct ExtractedRelationship: Codable, Equatable, Sendable {
     public let from: ExtractedEntity
     public let to: ExtractedEntity
     public let type: RelationshipType
-    
-    public enum RelationshipType: String, Codable {
+
+    public enum RelationshipType: String, Codable, Sendable {
         case suppliedBy
         case pricedAt
         case deliveredOn
@@ -174,7 +174,7 @@ public struct ExtractedRelationship: Codable, Equatable {
         case partOf
         case relatedTo
     }
-    
+
     public init(from: ExtractedEntity, to: ExtractedEntity, type: RelationshipType) {
         self.from = from
         self.to = to
@@ -183,11 +183,11 @@ public struct ExtractedRelationship: Codable, Equatable {
 }
 
 /// Extracted table from document
-public struct ExtractedTable: Codable, Equatable {
+public struct ExtractedTable: Codable, Equatable, Sendable {
     public let headers: [String]
     public let rows: [[String]]
     public let confidence: Double
-    
+
     public init(headers: [String], rows: [[String]], confidence: Double) {
         self.headers = headers
         self.rows = rows
@@ -196,10 +196,10 @@ public struct ExtractedTable: Codable, Equatable {
 }
 
 /// Location information for extracted data
-public struct ExtractedLocation: Codable, Equatable {
+public struct ExtractedLocation: Codable, Equatable, Sendable {
     public let pageNumber: Int
     public let boundingBox: CGRect?
-    
+
     public init(pageNumber: Int, boundingBox: CGRect? = nil) {
         self.pageNumber = pageNumber
         self.boundingBox = boundingBox
@@ -216,4 +216,3 @@ public enum DocumentParserError: Error {
     case ocrFailed
     case extractionFailed
 }
-

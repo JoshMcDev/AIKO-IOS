@@ -1,7 +1,7 @@
+import AppCore
 import ComposableArchitecture
 import CryptoKit
 import Foundation
-import AppCore
 
 /// Unified Document Cache Service combining standard, encrypted, and adaptive caching
 public struct UnifiedDocumentCacheService {
@@ -636,7 +636,7 @@ extension UnifiedDocumentCacheService: DependencyKey {
             try await UnifiedCacheStorage(configuration: .standard)
         }
 
-        func getStorage() async throws -> UnifiedCacheStorage {
+        @Sendable func getStorage() async throws -> UnifiedCacheStorage {
             try await storage.value
         }
 

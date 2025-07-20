@@ -1,9 +1,9 @@
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 #if os(iOS)
-import UIKit
+    import UIKit
 #else
-import AppKit
+    import AppKit
 #endif
 
 // MARK: - Platform-specific Colors
@@ -11,9 +11,9 @@ import AppKit
 private extension Color {
     static var windowBackground: Color {
         #if os(macOS)
-        return Color(NSColor.windowBackgroundColor)
+            return Color(NSColor.windowBackgroundColor)
         #else
-        return Color(UIColor.secondarySystemBackground)
+            return Color(UIColor.secondarySystemBackground)
         #endif
     }
 }
@@ -22,13 +22,13 @@ private extension Color {
 
 struct SmartDefaultsDemoView: View {
     let store: StoreOf<SmartDefaultsDemoFeature>
-    
+
     var body: some View {
-        WithViewStore(self.store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }) { viewStore in
             ScrollView {
                 VStack(spacing: 20) {
                     headerSection
-                    
+
                     if viewStore.isLoading {
                         ProgressView("Analyzing context...")
                             .frame(maxWidth: .infinity)
@@ -44,22 +44,22 @@ struct SmartDefaultsDemoView: View {
             }
             .navigationTitle("Smart Defaults Demo")
             #if os(iOS)
-            .navigationBarTitleDisplayMode(.large)
+                .navigationBarTitleDisplayMode(.large)
             #endif
-            .onAppear {
-                viewStore.send(.onAppear)
-            }
+                .onAppear {
+                    viewStore.send(.onAppear)
+                }
         }
     }
-    
+
     // MARK: - Header Section
-    
+
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Label("Intelligent Form Auto-Fill", systemImage: "wand.and.stars")
                 .font(.title2)
                 .fontWeight(.semibold)
-            
+
             Text("Smart Defaults learns from your patterns and context to minimize data entry")
                 .font(.body)
                 .foregroundColor(.secondary)
@@ -69,14 +69,14 @@ struct SmartDefaultsDemoView: View {
         .background(Color.gray.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
-    
+
     // MARK: - Context Section
-    
+
     private func contextSection(_ viewStore: ViewStoreOf<SmartDefaultsDemoFeature>) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Current Context")
                 .font(.headline)
-            
+
             VStack(spacing: 12) {
                 contextRow("User", viewStore.context.userId)
                 contextRow("Organization", viewStore.context.organizationUnit)
@@ -92,14 +92,14 @@ struct SmartDefaultsDemoView: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
     }
-    
+
     // MARK: - Form Fields Section
-    
+
     private func formFieldsSection(_ viewStore: ViewStoreOf<SmartDefaultsDemoFeature>) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Form Fields with Smart Defaults")
                 .font(.headline)
-            
+
             ForEach(viewStore.formFields) { field in
                 SmartDefaultFieldRow(
                     field: field,
@@ -114,14 +114,14 @@ struct SmartDefaultsDemoView: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
     }
-    
+
     // MARK: - Confidence Metrics Section
-    
+
     private func confidenceMetricsSection(_ viewStore: ViewStoreOf<SmartDefaultsDemoFeature>) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Confidence Metrics")
                 .font(.headline)
-            
+
             HStack(spacing: 20) {
                 SmartDefaultsMetricCard(
                     title: "Auto-Fill",
@@ -129,14 +129,14 @@ struct SmartDefaultsDemoView: View {
                     subtitle: "High confidence",
                     color: .green
                 )
-                
+
                 SmartDefaultsMetricCard(
                     title: "Suggested",
                     value: "\(viewStore.metrics.suggestedCount)",
                     subtitle: "Medium confidence",
                     color: .orange
                 )
-                
+
                 SmartDefaultsMetricCard(
                     title: "Manual",
                     value: "\(viewStore.metrics.manualCount)",
@@ -144,15 +144,15 @@ struct SmartDefaultsDemoView: View {
                     color: .blue
                 )
             }
-            
+
             VStack(alignment: .leading, spacing: 8) {
                 Text("Learning Progress")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                
+
                 ProgressView(value: viewStore.metrics.learningProgress)
                     .tint(.purple)
-                
+
                 Text("\(Int(viewStore.metrics.learningProgress * 100))% pattern confidence")
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -163,9 +163,9 @@ struct SmartDefaultsDemoView: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
     }
-    
+
     // MARK: - Action Buttons Section
-    
+
     private func actionButtonsSection(_ viewStore: ViewStoreOf<SmartDefaultsDemoFeature>) -> some View {
         VStack(spacing: 12) {
             Button(action: { viewStore.send(.generateNewDefaults) }) {
@@ -173,7 +173,7 @@ struct SmartDefaultsDemoView: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
-            
+
             HStack(spacing: 12) {
                 Button(action: { viewStore.send(.acceptAllDefaults) }) {
                     Label("Accept All", systemImage: "checkmark.circle.fill")
@@ -181,7 +181,7 @@ struct SmartDefaultsDemoView: View {
                 }
                 .buttonStyle(.bordered)
                 .tint(.green)
-                
+
                 Button(action: { viewStore.send(.clearAllDefaults) }) {
                     Label("Clear All", systemImage: "xmark.circle")
                         .frame(maxWidth: .infinity)
@@ -189,7 +189,7 @@ struct SmartDefaultsDemoView: View {
                 .buttonStyle(.bordered)
                 .tint(.red)
             }
-            
+
             Button(action: { viewStore.send(.showLearningDetails) }) {
                 Label("View Learning Details", systemImage: "brain")
                     .frame(maxWidth: .infinity)
@@ -198,9 +198,9 @@ struct SmartDefaultsDemoView: View {
         }
         .padding(.top)
     }
-    
+
     // MARK: - Helper Views
-    
+
     private func contextRow(_ label: String, _ value: String, _ color: Color = .primary) -> some View {
         HStack {
             Text(label)
@@ -220,10 +220,10 @@ struct SmartDefaultFieldRow: View {
     let onAccept: () -> Void
     let onReject: () -> Void
     let onEdit: (String) -> Void
-    
+
     @State private var isEditing = false
     @State private var editedValue = ""
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -231,19 +231,19 @@ struct SmartDefaultFieldRow: View {
                     Text(field.name)
                         .font(.subheadline)
                         .fontWeight(.medium)
-                    
+
                     if let reasoning = field.reasoning {
                         Text(reasoning)
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
-                
+
                 Spacer()
-                
+
                 SmartDefaultsConfidenceIndicator(confidence: field.confidence)
             }
-            
+
             HStack(spacing: 8) {
                 if isEditing {
                     TextField("Enter value", text: $editedValue)
@@ -265,14 +265,14 @@ struct SmartDefaultFieldRow: View {
                             isEditing = true
                         }
                 }
-                
+
                 if field.status == .suggested {
                     Button(action: onAccept) {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundColor(.green)
                     }
                     .buttonStyle(.plain)
-                    
+
                     Button(action: onReject) {
                         Image(systemName: "xmark.circle")
                             .foregroundColor(.red)
@@ -280,7 +280,7 @@ struct SmartDefaultFieldRow: View {
                     .buttonStyle(.plain)
                 }
             }
-            
+
             if !field.alternatives.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
@@ -303,17 +303,17 @@ struct SmartDefaultFieldRow: View {
         .background(Color.gray.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
-    
+
     private func backgroundColorForStatus(_ status: SmartDefaultField.Status) -> Color {
         switch status {
         case .autoFilled:
-            return Color.green.opacity(0.1)
+            Color.green.opacity(0.1)
         case .suggested:
-            return Color.orange.opacity(0.1)
+            Color.orange.opacity(0.1)
         case .manual:
-            return Color.blue.opacity(0.1)
+            Color.blue.opacity(0.1)
         case .userEdited:
-            return Color.purple.opacity(0.1)
+            Color.purple.opacity(0.1)
         }
     }
 }
@@ -322,15 +322,15 @@ struct SmartDefaultFieldRow: View {
 
 struct SmartDefaultsConfidenceIndicator: View {
     let confidence: Float
-    
+
     var body: some View {
         HStack(spacing: 4) {
-            ForEach(0..<5) { index in
+            ForEach(0 ..< 5) { index in
                 Circle()
                     .fill(index < Int(confidence * 5) ? Color.green : Color.gray.opacity(0.3))
                     .frame(width: 8, height: 8)
             }
-            
+
             Text("\(Int(confidence * 100))%")
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -345,18 +345,18 @@ struct SmartDefaultsMetricCard: View {
     let value: String
     let subtitle: String
     let color: Color
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
                 .font(.caption)
                 .foregroundColor(.secondary)
-            
+
             Text(value)
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundColor(color)
-            
+
             Text(subtitle)
                 .font(.caption2)
                 .foregroundColor(.secondary)

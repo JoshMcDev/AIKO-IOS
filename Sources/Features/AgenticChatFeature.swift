@@ -1,6 +1,6 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 import SwiftUI
 
 // NSAttributedString already conforms to Equatable in Foundation
@@ -500,7 +500,7 @@ public struct MetricData: Equatable {
     public let unit: String
 }
 
-public struct AcquisitionIntent: Equatable {
+public struct AcquisitionIntent: Equatable, Sendable {
     public let id: UUID
     public let type: IntentType
     public let parameters: [String: String]
@@ -517,7 +517,7 @@ public struct AcquisitionIntent: Equatable {
     }
 }
 
-public enum AgentState: Equatable {
+public enum AgentState: Equatable, Sendable {
     case idle
     case thinking
     case executing
@@ -541,7 +541,7 @@ public struct AgentAction: Equatable {
     }
 }
 
-public struct AgentTask: Equatable, Identifiable {
+public struct AgentTask: Equatable, Identifiable, Sendable {
     public let id: UUID = .init()
     public let action: AgentAction
     public let startTime: Date = .init()
@@ -635,11 +635,11 @@ public struct AcquisitionProgress: Equatable, Identifiable {
 
 // MARK: - Dependencies
 
-public struct AgenticEngine {
-    public var generateResponse: (AcquisitionIntent, String) async throws -> ChatMessage
-    public var execute: (AgentAction) async throws -> Any
-    public var proceedWithApproval: (UUID) async throws -> Void
-    public var cancelRequest: (UUID) async throws -> Void
+public struct AgenticEngine: Sendable {
+    public var generateResponse: @Sendable (AcquisitionIntent, String) async throws -> ChatMessage
+    public var execute: @Sendable (AgentAction) async throws -> Any
+    public var proceedWithApproval: @Sendable (UUID) async throws -> Void
+    public var cancelRequest: @Sendable (UUID) async throws -> Void
 }
 
 extension AgenticEngine: DependencyKey {
@@ -669,9 +669,9 @@ extension AgenticEngine: DependencyKey {
     }
 }
 
-public struct NaturalLanguageProcessor {
-    public var processAcquisitionIntent: (String) async throws -> AcquisitionIntent
-    public var generateContextualSuggestions: (String) async throws -> [String]
+public struct NaturalLanguageProcessor: Sendable {
+    public var processAcquisitionIntent: @Sendable (String) async throws -> AcquisitionIntent
+    public var generateContextualSuggestions: @Sendable (String) async throws -> [String]
 }
 
 extension NaturalLanguageProcessor: DependencyKey {

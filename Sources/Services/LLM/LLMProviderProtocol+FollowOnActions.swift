@@ -1,6 +1,6 @@
-import Foundation
 import AppCore
 import ComposableArchitecture
+import Foundation
 
 // MARK: - LLM Provider Follow-On Action Extension
 
@@ -12,32 +12,32 @@ public extension LLMProviderProtocol {
     ) async throws -> FollowOnActionSet {
         // Build the system prompt for follow-on action generation
         let systemPrompt = buildFollowOnActionSystemPrompt(context: context)
-        
+
         // Build the user prompt with context
         let userPrompt = buildFollowOnActionUserPrompt(context: context)
-        
+
         // Create the chat request
         let request = LLMChatRequest(
             messages: [
                 LLMMessage(role: .system, content: systemPrompt),
-                LLMMessage(role: .user, content: userPrompt)
+                LLMMessage(role: .user, content: userPrompt),
             ],
             model: context.preferredModel ?? getSettings().apiEndpoint ?? "default",
             temperature: 0.3, // Lower temperature for consistent action generation
             maxTokens: 2000,
             responseFormat: .json
         )
-        
+
         // Send the request
         let response = try await chatCompletion(request)
-        
+
         // Parse the response into follow-on actions
         return try parseFollowOnActionResponse(response.message.content, context: context)
     }
-    
+
     /// Generate contextual suggestions for the user
     func generateContextualSuggestions(
-        messages: [LLMMessage],
+        messages _: [LLMMessage],
         currentState: AcquisitionState
     ) async throws -> [String] {
         let systemPrompt = """
@@ -47,33 +47,34 @@ public extension LLMProviderProtocol {
         Consider the current conversation and acquisition state.
         Return suggestions as a JSON array of strings.
         """
-        
+
         let contextSummary = """
         Current Phase: \(currentState.phase)
         Documents Ready: \(currentState.readyDocuments.count)
         Active Tasks: \(currentState.activeTasks.count)
         Last Action: \(currentState.lastCompletedAction ?? "None")
         """
-        
+
         let request = LLMChatRequest(
             messages: [
                 LLMMessage(role: .system, content: systemPrompt),
-                LLMMessage(role: .user, content: "Based on this context, suggest next actions: \(contextSummary)")
+                LLMMessage(role: .user, content: "Based on this context, suggest next actions: \(contextSummary)"),
             ],
             model: getSettings().apiEndpoint ?? "default",
             temperature: 0.5,
             maxTokens: 500,
             responseFormat: .json
         )
-        
+
         let response = try await chatCompletion(request)
-        
+
         // Parse JSON array of suggestions
         guard let data = response.message.content.data(using: .utf8),
-              let suggestions = try? JSONSerialization.jsonObject(with: data) as? [String] else {
+              let suggestions = try? JSONSerialization.jsonObject(with: data) as? [String]
+        else {
             return ["Continue with document generation", "Review requirements", "Check acquisition status"]
         }
-        
+
         return suggestions
     }
 }
@@ -81,7 +82,7 @@ public extension LLMProviderProtocol {
 // MARK: - Supporting Types
 
 /// Context for generating follow-on actions
-public struct FollowOnActionContext: Equatable {
+public struct FollowOnActionContext: Equatable, Sendable {
     public let currentPhase: AcquisitionPhase
     public let completedActions: [FollowOnAction]
     public let pendingTasks: [AgentTask]
@@ -91,7 +92,7 @@ public struct FollowOnActionContext: Equatable {
     public let userPreferences: UserPreferences?
     public let conversationHistory: [LLMMessage]
     public let preferredModel: String?
-    
+
     public init(
         currentPhase: AcquisitionPhase,
         completedActions: [FollowOnAction] = [],
@@ -116,11 +117,11 @@ public struct FollowOnActionContext: Equatable {
 }
 
 /// User preferences for action generation
-public struct UserPreferences: Equatable {
+public struct UserPreferences: Equatable, Sendable {
     public let preferredAutomationLevel: AutomationLevel
     public let maxConcurrentTasks: Int
     public let notificationSettings: NotificationSettings
-    
+
     public init(
         preferredAutomationLevel: AutomationLevel = .semiAutomated,
         maxConcurrentTasks: Int = 3,
@@ -133,11 +134,11 @@ public struct UserPreferences: Equatable {
 }
 
 /// Notification settings
-public struct NotificationSettings: Equatable {
+public struct NotificationSettings: Equatable, Sendable {
     public let notifyOnTaskCompletion: Bool
     public let notifyOnApprovalRequired: Bool
     public let notifyOnErrors: Bool
-    
+
     public init(
         notifyOnTaskCompletion: Bool = true,
         notifyOnApprovalRequired: Bool = true,
@@ -150,12 +151,12 @@ public struct NotificationSettings: Equatable {
 }
 
 /// Current acquisition state
-public struct AcquisitionState: Equatable {
+public struct AcquisitionState: Equatable, Sendable {
     public let phase: String
     public let readyDocuments: Set<DocumentType>
     public let activeTasks: [AgentTask]
     public let lastCompletedAction: String?
-    
+
     public init(
         phase: String,
         readyDocuments: Set<DocumentType> = [],
@@ -176,13 +177,13 @@ private extension LLMProviderProtocol {
         """
         You are an expert government acquisition assistant that always provides helpful next steps.
         Your role is to guide users through the acquisition process by suggesting logical follow-on actions.
-        
+
         Current Context:
         - Acquisition Phase: \(context.currentPhase.rawValue)
         - Review Mode: \(context.reviewMode.rawValue)
         - Completed Actions: \(context.completedActions.count)
         - Pending Tasks: \(context.pendingTasks.count)
-        
+
         Guidelines:
         1. Always suggest 3-5 relevant follow-on actions
         2. Prioritize actions based on acquisition phase and dependencies
@@ -190,7 +191,7 @@ private extension LLMProviderProtocol {
         4. Ensure actions move the acquisition process forward
         5. Include both immediate and planning actions
         6. Consider parallel workflows when beneficial
-        
+
         Return actions as a JSON object with this structure:
         {
             "context": "Brief description of why these actions are suggested",
@@ -216,17 +217,17 @@ private extension LLMProviderProtocol {
         }
         """
     }
-    
+
     func buildFollowOnActionUserPrompt(context: FollowOnActionContext) -> String {
         var prompt = "Based on the current acquisition state, suggest appropriate follow-on actions.\n\n"
-        
+
         // Add requirements summary
         prompt += "Requirements Summary:\n"
         prompt += "- Project Title: \(context.requirements.projectTitle ?? "Not specified")\n"
         prompt += "- Description: \(context.requirements.description ?? "Not specified")\n"
         prompt += "- Estimated Value: \(context.requirements.estimatedValue ?? 0)\n"
         prompt += "- Business Justification: \(context.requirements.businessJustification ?? "Not specified")\n"
-        
+
         // Add document chain info if available
         if let chain = context.documentChain {
             prompt += "\n\nDocument Chain:\n"
@@ -235,7 +236,7 @@ private extension LLMProviderProtocol {
             prompt += "- Documents: \(chain.nodes.count)\n"
             prompt += "- Review Mode: \(chain.reviewMode.rawValue)\n"
         }
-        
+
         // Add completed actions context
         if !context.completedActions.isEmpty {
             prompt += "\n\nRecently Completed Actions:\n"
@@ -243,29 +244,29 @@ private extension LLMProviderProtocol {
                 prompt += "- \(action.title)\n"
             }
         }
-        
+
         // Add user preferences
         if let prefs = context.userPreferences {
             prompt += "\n\nUser Preferences:\n"
             prompt += "- Automation Level: \(prefs.preferredAutomationLevel.rawValue)\n"
             prompt += "- Max Concurrent Tasks: \(prefs.maxConcurrentTasks)\n"
         }
-        
+
         prompt += "\n\nGenerate appropriate follow-on actions in JSON format."
-        
+
         return prompt
     }
-    
+
     func parseFollowOnActionResponse(_ response: String, context: FollowOnActionContext) throws -> FollowOnActionSet {
         guard let data = response.data(using: .utf8) else {
             throw LLMProviderError.invalidResponse("Failed to convert response to data")
         }
-        
+
         do {
             // First try to decode the JSON response
             let decoder = JSONDecoder()
             let actionResponse = try decoder.decode(FollowOnActionResponse.self, from: data)
-            
+
             // Convert to FollowOnActionSet
             let actions = actionResponse.actions.map { actionData in
                 FollowOnAction(
@@ -281,7 +282,7 @@ private extension LLMProviderProtocol {
                     metadata: parseActionMetadata(actionData.metadata)
                 )
             }
-            
+
             return FollowOnActionSet(
                 context: actionResponse.context,
                 actions: actions,
@@ -293,20 +294,20 @@ private extension LLMProviderProtocol {
             return generateDefaultFollowOnActions(context: context)
         }
     }
-    
+
     func parseActionMetadata(_ metadata: [String: String]?) -> ActionMetadata? {
-        guard let metadata = metadata else { return nil }
-        
+        guard let metadata else { return nil }
+
         return ActionMetadata(
             documentTypes: metadata["documentTypes"]?.components(separatedBy: ",").compactMap { DocumentType(rawValue: $0.trimmingCharacters(in: .whitespacesAndNewlines)) },
             complianceStandards: metadata["complianceStandards"]?.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) },
             customData: metadata
         )
     }
-    
+
     func generateDefaultFollowOnActions(context: FollowOnActionContext) -> FollowOnActionSet {
         var actions: [FollowOnAction] = []
-        
+
         // Generate phase-specific default actions
         switch context.currentPhase {
         case .planning:
@@ -324,9 +325,9 @@ private extension LLMProviderProtocol {
                     category: .requirementGathering,
                     priority: .critical,
                     estimatedDuration: 3600
-                )
+                ),
             ])
-            
+
         case .solicitation:
             actions.append(contentsOf: [
                 FollowOnAction(
@@ -343,9 +344,9 @@ private extension LLMProviderProtocol {
                     category: .vendorManagement,
                     priority: .high,
                     estimatedDuration: 1200
-                )
+                ),
             ])
-            
+
         default:
             // Generic actions for other phases
             actions.append(FollowOnAction(
@@ -356,7 +357,7 @@ private extension LLMProviderProtocol {
                 estimatedDuration: 600
             ))
         }
-        
+
         return FollowOnActionSet(
             context: "Default actions for \(context.currentPhase.rawValue) phase",
             actions: actions
@@ -371,7 +372,7 @@ private struct FollowOnActionResponse: Codable {
     let actions: [ActionData]
     let recommendedPath: [String]?
     let expiresAt: String?
-    
+
     struct ActionData: Codable {
         let id: String
         let title: String
@@ -383,13 +384,13 @@ private struct FollowOnActionResponse: Codable {
         let automationLevel: String
         let dependencies: [String]
         let metadata: [String: String]?
-        
+
         enum CodingKeys: String, CodingKey {
             case id, title, description, category, priority
             case estimatedDuration, requiresUserInput, automationLevel
             case dependencies, metadata
         }
-        
+
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             id = try container.decode(String.self, forKey: .id)
@@ -401,11 +402,11 @@ private struct FollowOnActionResponse: Codable {
             requiresUserInput = try container.decode(Bool.self, forKey: .requiresUserInput)
             automationLevel = try container.decode(String.self, forKey: .automationLevel)
             dependencies = try container.decode([String].self, forKey: .dependencies)
-            
+
             // Handle metadata as optional string dictionary
             metadata = try container.decodeIfPresent([String: String].self, forKey: .metadata)
         }
-        
+
         func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(id, forKey: .id)

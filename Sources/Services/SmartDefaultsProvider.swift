@@ -1,17 +1,16 @@
-import Foundation
-import ComposableArchitecture
 import AppCore
+import ComposableArchitecture
+import Foundation
 
 // MARK: - Smart Defaults Provider
 
 /// Provides intelligent default values for forms based on context and learned patterns
 public class SmartDefaultsProvider: @unchecked Sendable {
-    
     /// Shared instance
     public static let shared = SmartDefaultsProvider()
-    
+
     // MARK: - Types
-    
+
     public struct SmartDefault: Equatable {
         public let field: String
         public let value: String
@@ -19,12 +18,12 @@ public class SmartDefaultsProvider: @unchecked Sendable {
         public let source: DefaultSource
         public let reasoning: String
         public let alternatives: [Alternative]
-        
+
         public struct Alternative: Equatable {
             public let value: String
             public let confidence: Double
         }
-        
+
         public enum DefaultSource: String, Equatable {
             case documentExtraction = "document"
             case userPattern = "pattern"
@@ -33,7 +32,7 @@ public class SmartDefaultsProvider: @unchecked Sendable {
             case contextInference = "inference"
         }
     }
-    
+
     public struct DefaultsContext {
         public let userId: String
         public let organizationUnit: String
@@ -44,7 +43,7 @@ public class SmartDefaultsProvider: @unchecked Sendable {
         public let organizationalRules: [OrganizationalRule]
         public let timeContext: TimeContext
     }
-    
+
     public struct TimeContext {
         public let currentDate: Date
         public let fiscalYear: String
@@ -52,40 +51,40 @@ public class SmartDefaultsProvider: @unchecked Sendable {
         public let isEndOfFiscalYear: Bool
         public let daysUntilFYEnd: Int
     }
-    
+
     public struct OrganizationalRule: Equatable {
         public let field: String
         public let condition: String
         public let value: String
         public let priority: Int
     }
-    
+
     // MARK: - Properties
-    
+
     private let patternLearner: UserPatternLearner
     private let contextExtractor: DocumentContextExtractorEnhanced
     private let ruleEngine: OrganizationalRuleEngine
-    
+
     // MARK: - Initialization
-    
+
     public init() {
-        self.patternLearner = UserPatternLearner()
-        self.contextExtractor = DocumentContextExtractorEnhanced()
-        self.ruleEngine = OrganizationalRuleEngine()
+        patternLearner = UserPatternLearner()
+        contextExtractor = DocumentContextExtractorEnhanced()
+        ruleEngine = OrganizationalRuleEngine()
     }
-    
+
     // MARK: - Public Methods
-    
+
     /// Get smart defaults for a form
     public func getSmartDefaults(
         for formType: DocumentType,
         context: DefaultsContext
     ) async -> [SmartDefault] {
         var defaults: [SmartDefault] = []
-        
+
         // Get form fields that need defaults
         let formFields = getFieldsForFormType(formType)
-        
+
         // Process each field
         for field in formFields {
             if let smartDefault = await generateSmartDefault(
@@ -96,11 +95,11 @@ public class SmartDefaultsProvider: @unchecked Sendable {
                 defaults.append(smartDefault)
             }
         }
-        
+
         // Sort by confidence
         return defaults.sorted { $0.confidence > $1.confidence }
     }
-    
+
     /// Get a specific default value
     public func getDefault(
         for field: String,
@@ -112,14 +111,14 @@ public class SmartDefaultsProvider: @unchecked Sendable {
             context: context
         )
     }
-    
+
     /// Validate and adjust defaults based on real-time constraints
     public func validateDefaults(
         _ defaults: [SmartDefault],
         against constraints: [FieldConstraint]
     ) async -> [SmartDefault] {
         var validatedDefaults: [SmartDefault] = []
-        
+
         for defaultValue in defaults {
             if let constraint = constraints.first(where: { $0.field == defaultValue.field }) {
                 if let validated = validateAndAdjust(defaultValue, constraint: constraint) {
@@ -129,19 +128,19 @@ public class SmartDefaultsProvider: @unchecked Sendable {
                 validatedDefaults.append(defaultValue)
             }
         }
-        
+
         return validatedDefaults
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func generateSmartDefault(
         for field: String,
         formType: DocumentType,
         context: DefaultsContext
     ) async -> SmartDefault? {
         // Priority order for default sources
-        
+
         // 1. Check organizational rules
         if let ruleDefault = applyOrganizationalRules(
             field: field,
@@ -149,7 +148,7 @@ public class SmartDefaultsProvider: @unchecked Sendable {
         ) {
             return ruleDefault
         }
-        
+
         // 2. Check extracted document data
         if let extractedDefault = checkExtractedData(
             field: field,
@@ -157,7 +156,7 @@ public class SmartDefaultsProvider: @unchecked Sendable {
         ) {
             return extractedDefault
         }
-        
+
         // 3. Check user patterns
         if let patternDefault = await checkUserPatterns(
             field: field,
@@ -166,7 +165,7 @@ public class SmartDefaultsProvider: @unchecked Sendable {
         ) {
             return patternDefault
         }
-        
+
         // 4. Apply context inference
         if let inferredDefault = inferFromContext(
             field: field,
@@ -175,7 +174,7 @@ public class SmartDefaultsProvider: @unchecked Sendable {
         ) {
             return inferredDefault
         }
-        
+
         // 5. Use historical data
         if let historicalDefault = await getHistoricalDefault(
             field: field,
@@ -183,10 +182,10 @@ public class SmartDefaultsProvider: @unchecked Sendable {
         ) {
             return historicalDefault
         }
-        
+
         return nil
     }
-    
+
     private func applyOrganizationalRules(
         field: String,
         context: DefaultsContext
@@ -194,7 +193,7 @@ public class SmartDefaultsProvider: @unchecked Sendable {
         let applicableRules = context.organizationalRules
             .filter { $0.field == field }
             .sorted { $0.priority > $1.priority }
-        
+
         for rule in applicableRules {
             if evaluateRuleCondition(rule.condition, context: context) {
                 return SmartDefault(
@@ -207,17 +206,17 @@ public class SmartDefaultsProvider: @unchecked Sendable {
                 )
             }
         }
-        
+
         return nil
     }
-    
+
     private func checkExtractedData(
         field: String,
         extractedData: [String: String]
     ) -> SmartDefault? {
         // Map common field variations
         let fieldMappings = getFieldMappings(field)
-        
+
         for mapping in fieldMappings {
             if let value = extractedData[mapping] {
                 return SmartDefault(
@@ -230,31 +229,32 @@ public class SmartDefaultsProvider: @unchecked Sendable {
                 )
             }
         }
-        
+
         return nil
     }
-    
+
     private func checkUserPatterns(
         field: String,
         patterns: [UserPatternLearner.UserPattern],
-        context: DefaultsContext
+        context _: DefaultsContext
     ) async -> SmartDefault? {
         let relevantPatterns = patterns
             .filter { $0.field == field }
             .sorted { $0.confidence > $1.confidence }
-        
+
         guard let topPattern = relevantPatterns.first,
-              topPattern.confidence >= 0.65 else {
+              topPattern.confidence >= 0.65
+        else {
             return nil
         }
-        
+
         let alternatives = Array(relevantPatterns.dropFirst().prefix(2)).map {
             SmartDefault.Alternative(
                 value: $0.value,
                 confidence: $0.confidence
             )
         }
-        
+
         return SmartDefault(
             field: field,
             value: topPattern.value,
@@ -264,7 +264,7 @@ public class SmartDefaultsProvider: @unchecked Sendable {
             alternatives: alternatives
         )
     }
-    
+
     private func inferFromContext(
         field: String,
         formType: DocumentType,
@@ -272,30 +272,30 @@ public class SmartDefaultsProvider: @unchecked Sendable {
     ) -> SmartDefault? {
         switch field {
         case "deliveryDate", "requiredDate":
-            return inferDeliveryDate(context: context)
-            
+            inferDeliveryDate(context: context)
+
         case "fundingSource":
-            return inferFundingSource(context: context)
-            
+            inferFundingSource(context: context)
+
         case "priority":
-            return inferPriority(context: context)
-            
+            inferPriority(context: context)
+
         case "contractType":
-            return inferContractType(formType: formType, context: context)
-            
+            inferContractType(formType: formType, context: context)
+
         case "location":
-            return inferLocation(context: context)
-            
+            inferLocation(context: context)
+
         default:
-            return nil
+            nil
         }
     }
-    
+
     private func inferDeliveryDate(context: DefaultsContext) -> SmartDefault? {
         let calendar = Calendar.current
         var suggestedDate: Date
         var reasoning: String
-        
+
         if context.timeContext.isEndOfFiscalYear {
             // Urgent delivery before FY end
             suggestedDate = calendar.date(
@@ -309,10 +309,10 @@ public class SmartDefaultsProvider: @unchecked Sendable {
             suggestedDate = calendar.date(byAdding: .day, value: 30, to: Date())!
             reasoning = "Standard 30-day delivery window"
         }
-        
+
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
-        
+
         return SmartDefault(
             field: "deliveryDate",
             value: formatter.string(from: suggestedDate),
@@ -323,15 +323,15 @@ public class SmartDefaultsProvider: @unchecked Sendable {
                 SmartDefault.Alternative(
                     value: formatter.string(from: calendar.date(byAdding: .day, value: 45, to: Date())!),
                     confidence: 0.6
-                )
+                ),
             ]
         )
     }
-    
+
     private func inferFundingSource(context: DefaultsContext) -> SmartDefault? {
         var fundingSource: String
         var confidence: Double
-        
+
         switch context.acquisitionType {
         case .commercialItem, .simplifiedAcquisition:
             fundingSource = "O&M \(context.timeContext.fiscalYear)"
@@ -346,7 +346,7 @@ public class SmartDefaultsProvider: @unchecked Sendable {
             fundingSource = "O&M \(context.timeContext.fiscalYear)"
             confidence = 0.6
         }
-        
+
         return SmartDefault(
             field: "fundingSource",
             value: fundingSource,
@@ -356,19 +356,20 @@ public class SmartDefaultsProvider: @unchecked Sendable {
             alternatives: []
         )
     }
-    
+
     private func inferPriority(context: DefaultsContext) -> SmartDefault? {
         var priority: String
         var confidence: Double
         var reasoning: String
-        
+
         if context.timeContext.isEndOfFiscalYear {
             priority = "Urgent"
             confidence = 0.85
             reasoning = "End of fiscal year - urgent processing recommended"
         } else if let value = context.extractedData["totalValue"],
                   let amount = parseAmount(value),
-                  amount > 100000 {
+                  amount > 100_000
+        {
             priority = "High"
             confidence = 0.7
             reasoning = "High-value acquisition"
@@ -377,7 +378,7 @@ public class SmartDefaultsProvider: @unchecked Sendable {
             confidence = 0.75
             reasoning = "Standard processing timeline"
         }
-        
+
         return SmartDefault(
             field: "priority",
             value: priority,
@@ -387,7 +388,7 @@ public class SmartDefaultsProvider: @unchecked Sendable {
             alternatives: []
         )
     }
-    
+
     private func inferContractType(
         formType: DocumentType,
         context: DefaultsContext
@@ -401,14 +402,15 @@ public class SmartDefaultsProvider: @unchecked Sendable {
                 source: .contextInference,
                 reasoning: "Standard for purchase requests",
                 alternatives: [
-                    SmartDefault.Alternative(value: "BPA Call", confidence: 0.6)
+                    SmartDefault.Alternative(value: "BPA Call", confidence: 0.6),
                 ]
             )
-            
+
         case .contractScaffold:
             if let value = context.extractedData["estimatedValue"],
                let amount = parseAmount(value),
-               amount > 250000 {
+               amount > 250_000
+            {
                 return SmartDefault(
                     field: "contractType",
                     value: "Fixed Price",
@@ -416,18 +418,18 @@ public class SmartDefaultsProvider: @unchecked Sendable {
                     source: .contextInference,
                     reasoning: "Recommended for high-value acquisitions",
                     alternatives: [
-                        SmartDefault.Alternative(value: "Cost Plus", confidence: 0.5)
+                        SmartDefault.Alternative(value: "Cost Plus", confidence: 0.5),
                     ]
                 )
             }
-            
+
         default:
             break
         }
-        
+
         return nil
     }
-    
+
     private func inferLocation(context: DefaultsContext) -> SmartDefault? {
         if !context.organizationUnit.isEmpty {
             let unit = context.organizationUnit
@@ -440,46 +442,47 @@ public class SmartDefaultsProvider: @unchecked Sendable {
                 alternatives: []
             )
         }
-        
+
         return nil
     }
-    
+
     private func getHistoricalDefault(
-        field: String,
-        context: DefaultsContext
+        field _: String,
+        context _: DefaultsContext
     ) async -> SmartDefault? {
         // This would query historical data
         // For now, return nil
-        return nil
+        nil
     }
-    
+
     private func evaluateRuleCondition(
         _ condition: String,
         context: DefaultsContext
     ) -> Bool {
         // Simple rule evaluation
         // In production, this would be a proper rule engine
-        
+
         if condition.contains("fiscal_year_end") {
             return context.timeContext.isEndOfFiscalYear
         }
-        
+
         if condition.contains("high_value") {
             if let value = context.extractedData["totalValue"],
-               let amount = parseAmount(value) {
-                return amount > 100000
+               let amount = parseAmount(value)
+            {
+                return amount > 100_000
             }
         }
-        
+
         return false
     }
-    
+
     private func validateAndAdjust(
         _ defaultValue: SmartDefault,
         constraint: FieldConstraint
     ) -> SmartDefault? {
         switch constraint.type {
-        case .dateRange(let min, let max):
+        case let .dateRange(min, max):
             if let date = DateFormatter.mmddyyyy.date(from: defaultValue.value) {
                 if date < min {
                     return SmartDefault(
@@ -501,19 +504,19 @@ public class SmartDefaultsProvider: @unchecked Sendable {
                     )
                 }
             }
-            
-        case .valueRange(let min, let max):
+
+        case let .valueRange(min, max):
             if let value = Double(defaultValue.value) {
                 if value < min || value > max {
                     return nil // Cannot adjust numeric values automatically
                 }
             }
-            
-        case .allowedValues(let values):
+
+        case let .allowedValues(values):
             if !values.contains(defaultValue.value) {
                 // Try to find best match
-                if let alternative = defaultValue.alternatives.first(where: { 
-                    values.contains($0.value) 
+                if let alternative = defaultValue.alternatives.first(where: {
+                    values.contains($0.value)
                 }) {
                     return SmartDefault(
                         field: defaultValue.field,
@@ -527,56 +530,56 @@ public class SmartDefaultsProvider: @unchecked Sendable {
                 return nil
             }
         }
-        
+
         return defaultValue
     }
-    
+
     private func getFieldsForFormType(_ formType: DocumentType) -> [String] {
         switch formType {
         case .requestForQuote:
-            return [
+            [
                 "vendor", "deliveryDate", "location", "fundingSource",
-                "justification", "approver", "priority", "contractType"
+                "justification", "approver", "priority", "contractType",
             ]
-            
+
         case .requestForProposal:
-            return [
+            [
                 "requirements", "evaluationCriteria", "submissionDeadline",
-                "pointOfContact", "setAsideType", "naics"
+                "pointOfContact", "setAsideType", "naics",
             ]
-            
+
         case .contractScaffold:
-            return [
+            [
                 "contractType", "performancePeriod", "deliverables",
-                "paymentTerms", "clauses", "attachments"
+                "paymentTerms", "clauses", "attachments",
             ]
-            
+
         default:
-            return ["description", "requiredDate", "approver", "priority"]
+            ["description", "requiredDate", "approver", "priority"]
         }
     }
-    
+
     private func getFieldMappings(_ field: String) -> [String] {
         switch field {
         case "vendor":
-            return ["vendor", "vendorName", "vendor_name", "supplier", "company"]
+            ["vendor", "vendorName", "vendor_name", "supplier", "company"]
         case "deliveryDate":
-            return ["deliveryDate", "delivery_date", "requiredDate", "need_by", "due_date"]
+            ["deliveryDate", "delivery_date", "requiredDate", "need_by", "due_date"]
         case "location":
-            return ["location", "deliveryLocation", "delivery_location", "ship_to"]
+            ["location", "deliveryLocation", "delivery_location", "ship_to"]
         case "fundingSource":
-            return ["fundingSource", "funding_source", "fund", "appropriation"]
+            ["fundingSource", "funding_source", "fund", "appropriation"]
         default:
-            return [field]
+            [field]
         }
     }
-    
+
     private func parseAmount(_ value: String) -> Double? {
         let cleanValue = value
             .replacingOccurrences(of: "$", with: "")
             .replacingOccurrences(of: ",", with: "")
             .trimmingCharacters(in: .whitespaces)
-        
+
         return Double(cleanValue)
     }
 }
@@ -586,7 +589,7 @@ public class SmartDefaultsProvider: @unchecked Sendable {
 public struct FieldConstraint {
     public let field: String
     public let type: ConstraintType
-    
+
     public enum ConstraintType {
         case dateRange(min: Date, max: Date)
         case valueRange(min: Double, max: Double)
@@ -597,9 +600,9 @@ public struct FieldConstraint {
 // MARK: - Organizational Rule Engine (Simplified)
 
 public class OrganizationalRuleEngine {
-    public func getRules(for organization: String) -> [SmartDefaultsProvider.OrganizationalRule] {
+    public func getRules(for _: String) -> [SmartDefaultsProvider.OrganizationalRule] {
         // In production, this would load from a configuration
-        return [
+        [
             SmartDefaultsProvider.OrganizationalRule(
                 field: "approver",
                 condition: "value < 5000",
@@ -617,7 +620,7 @@ public class OrganizationalRuleEngine {
                 condition: "fiscal_year_end",
                 value: "Urgent",
                 priority: 9
-            )
+            ),
         ]
     }
 }

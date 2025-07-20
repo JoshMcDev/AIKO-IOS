@@ -1,7 +1,7 @@
 import Foundation
 
 /// Service responsible for validating FAR Part 53 compliance
-final class FARValidationService {
+final class FARValidationService: @unchecked Sendable {
     // MARK: - FAR Rules
 
     private let farRules: [FormType: [FARRule]] = [
@@ -229,7 +229,7 @@ struct FARRule {
     let validation: ([String: Any]) -> ValidationStatus
 }
 
-public enum ValidationStatus {
+public enum ValidationStatus: Sendable {
     case passed
     case warning(String)
     case failed(String)
@@ -245,13 +245,13 @@ public enum ValidationStatus {
     }
 }
 
-public struct RuleResult {
+public struct RuleResult: Sendable {
     public let ruleId: String
     public let description: String
     public let status: ValidationStatus
 }
 
-public struct FormComplianceResult {
+public struct FormComplianceResult: Sendable {
     public let formType: FormType
     public let ruleResults: [RuleResult]
     public let overallCompliance: Bool

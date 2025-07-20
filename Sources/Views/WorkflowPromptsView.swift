@@ -253,7 +253,7 @@ struct PromptCard: View {
 
 struct AutomationControlsSection: View {
     let settings: AutomationSettings
-    let onToggleAutomation: (Bool) -> Void
+    let onToggleAutomation: @Sendable (Bool) -> Void
     let onShowSettings: () -> Void
 
     var body: some View {

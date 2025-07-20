@@ -1,7 +1,7 @@
 import Foundation
 
 /// Represents different types of objects that can be handled by the adaptive intelligence system
-public enum ObjectType: String, CaseIterable, Codable {
+public enum ObjectType: String, CaseIterable, Codable, Sendable {
     // Document-related objects
     case document
     case documentTemplate = "document_template"
@@ -75,7 +75,7 @@ public enum ObjectType: String, CaseIterable, Codable {
     }
 }
 
-public enum ObjectCategory: String, CaseIterable, Codable {
+public enum ObjectCategory: String, CaseIterable, Codable, Sendable {
     case document
     case acquisition
     case workflow
@@ -84,7 +84,7 @@ public enum ObjectCategory: String, CaseIterable, Codable {
     case system
 }
 
-public enum ActionType: String, CaseIterable, Codable {
+public enum ActionType: String, CaseIterable, Codable, Sendable {
     // CRUD operations
     case create
     case read
@@ -135,13 +135,24 @@ public enum ActionType: String, CaseIterable, Codable {
     case respond
 }
 
+/// Sendable-compatible value type for parameters
+public enum ParameterValue: Sendable, Codable, Equatable {
+    case string(String)
+    case int(Int)
+    case double(Double)
+    case bool(Bool)
+    case array([ParameterValue])
+    case dictionary([String: ParameterValue])
+    case null
+}
+
 /// Represents an action that can be performed on an object
-public struct ObjectAction: Identifiable, Equatable, Codable {
+public struct ObjectAction: Identifiable, Equatable, Codable, Sendable {
     public let id: UUID
     public let type: ActionType
     public let objectType: ObjectType
     public let objectId: String
-    public let parameters: [String: Any]
+    public let parameters: [String: ParameterValue]
     public let context: ActionContext
     public let priority: ObjectActionPriority
     public let estimatedDuration: TimeInterval
@@ -152,7 +163,7 @@ public struct ObjectAction: Identifiable, Equatable, Codable {
         type: ActionType,
         objectType: ObjectType,
         objectId: String,
-        parameters: [String: Any] = [:],
+        parameters: [String: ParameterValue] = [:],
         context: ActionContext,
         priority: ObjectActionPriority = .normal,
         estimatedDuration: TimeInterval = 0,
@@ -186,14 +197,8 @@ public struct ObjectAction: Identifiable, Equatable, Codable {
         estimatedDuration = try container.decode(TimeInterval.self, forKey: .estimatedDuration)
         requiredCapabilities = try container.decode(Set<Capability>.self, forKey: .requiredCapabilities)
 
-        // Decode parameters as JSON
-        if let parametersData = try? container.decode(Data.self, forKey: .parameters),
-           let params = try? JSONSerialization.jsonObject(with: parametersData) as? [String: Any]
-        {
-            parameters = params
-        } else {
-            parameters = [:]
-        }
+        // Decode parameters directly
+        parameters = try container.decodeIfPresent([String: ParameterValue].self, forKey: .parameters) ?? [:]
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -207,10 +212,8 @@ public struct ObjectAction: Identifiable, Equatable, Codable {
         try container.encode(estimatedDuration, forKey: .estimatedDuration)
         try container.encode(requiredCapabilities, forKey: .requiredCapabilities)
 
-        // Encode parameters as JSON
-        if let parametersData = try? JSONSerialization.data(withJSONObject: parameters) {
-            try container.encode(parametersData, forKey: .parameters)
-        }
+        // Encode parameters directly
+        try container.encode(parameters, forKey: .parameters)
     }
 
     public static func == (lhs: ObjectAction, rhs: ObjectAction) -> Bool {
@@ -218,7 +221,7 @@ public struct ObjectAction: Identifiable, Equatable, Codable {
     }
 }
 
-public struct ActionContext: Equatable, Codable {
+public struct ActionContext: Equatable, Codable, Sendable {
     public let userId: String
     public let sessionId: String
     public let timestamp: Date
@@ -239,14 +242,14 @@ public struct ActionContext: Equatable, Codable {
         self.metadata = metadata
     }
 
-    public enum Environment: String, Codable {
+    public enum Environment: String, Codable, Sendable {
         case development
         case staging
         case production
     }
 }
 
-public enum ObjectActionPriority: Int, Codable, Comparable {
+public enum ObjectActionPriority: Int, Codable, Comparable, Sendable {
     case low = 0
     case normal = 1
     case high = 2
@@ -257,7 +260,7 @@ public enum ObjectActionPriority: Int, Codable, Comparable {
     }
 }
 
-public enum Capability: String, CaseIterable, Codable {
+public enum Capability: String, CaseIterable, Codable, Sendable {
     case documentGeneration
     case dataAnalysis
     case workflowExecution

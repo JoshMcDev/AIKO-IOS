@@ -1,6 +1,6 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 import PDFKit
 
 #if os(iOS)
@@ -10,15 +10,15 @@ import PDFKit
     import AppKit
 #endif
 
-public struct DocumentDeliveryService {
-    public var downloadDocuments: ([GeneratedDocument]) async throws -> Void
-    public var emailDocuments: ([GeneratedDocument], String) async throws -> Void
-    public var packageDocuments: ([GeneratedDocument], DocumentFormat) async throws -> Data
+public struct DocumentDeliveryService: Sendable {
+    public var downloadDocuments: @Sendable ([GeneratedDocument]) async throws -> Void
+    public var emailDocuments: @Sendable ([GeneratedDocument], String) async throws -> Void
+    public var packageDocuments: @Sendable ([GeneratedDocument], DocumentFormat) async throws -> Data
 
     public init(
-        downloadDocuments: @escaping ([GeneratedDocument]) async throws -> Void,
-        emailDocuments: @escaping ([GeneratedDocument], String) async throws -> Void,
-        packageDocuments: @escaping ([GeneratedDocument], DocumentFormat) async throws -> Data
+        downloadDocuments: @escaping @Sendable ([GeneratedDocument]) async throws -> Void,
+        emailDocuments: @escaping @Sendable ([GeneratedDocument], String) async throws -> Void,
+        packageDocuments: @escaping @Sendable ([GeneratedDocument], DocumentFormat) async throws -> Data
     ) {
         self.downloadDocuments = downloadDocuments
         self.emailDocuments = emailDocuments

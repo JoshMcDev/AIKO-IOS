@@ -13,7 +13,7 @@ public struct FileItem: Equatable, Sendable, Identifiable {
     public let modifiedAt: Date
     public let type: FileType
     public let attributes: FileAttributes
-    
+
     public init(
         id: UUID = UUID(),
         url: URL,
@@ -45,25 +45,25 @@ public enum FileType: String, Equatable, Sendable, CaseIterable {
     case archive = "Archive"
     case text = "Text"
     case unknown = "Unknown"
-    
+
     public static func from(extension ext: String) -> FileType {
         switch ext.lowercased() {
         case "pdf":
-            return .pdf
+            .pdf
         case "jpg", "jpeg", "png", "gif", "bmp", "tiff":
-            return .image
+            .image
         case "doc", "docx", "odt", "rtf":
-            return .document
+            .document
         case "xls", "xlsx", "ods", "csv":
-            return .spreadsheet
+            .spreadsheet
         case "ppt", "pptx", "odp":
-            return .presentation
+            .presentation
         case "zip", "rar", "7z", "tar", "gz":
-            return .archive
+            .archive
         case "txt", "md":
-            return .text
+            .text
         default:
-            return .unknown
+            .unknown
         }
     }
 }
@@ -73,7 +73,7 @@ public struct FileAttributes: Equatable, Sendable {
     public let isReadOnly: Bool
     public let isHidden: Bool
     public let isDirectory: Bool
-    
+
     public init(
         isReadOnly: Bool = false,
         isHidden: Bool = false,
@@ -91,17 +91,17 @@ public enum FileDirectory: Equatable, Sendable {
     case temporary
     case cache
     case custom(URL)
-    
+
     public var name: String {
         switch self {
         case .documents:
-            return "Documents"
+            "Documents"
         case .temporary:
-            return "Temporary"
+            "Temporary"
         case .cache:
-            return "Cache"
-        case .custom(let url):
-            return url.lastPathComponent
+            "Cache"
+        case let .custom(url):
+            url.lastPathComponent
         }
     }
 }
@@ -113,31 +113,31 @@ public enum FileDirectory: Equatable, Sendable {
 public struct FileSystemClient: Sendable {
     /// Get URL for a specific directory
     public var directoryURL: @Sendable (FileDirectory) throws -> URL
-    
+
     /// List files in a directory
     public var listFiles: @Sendable (URL, FileType?) async throws -> [FileItem]
-    
+
     /// Save data to a file
     public var save: @Sendable (Data, String, FileDirectory) async throws -> URL
-    
+
     /// Load data from a file
     public var load: @Sendable (URL) async throws -> Data
-    
+
     /// Delete a file
     public var delete: @Sendable (URL) async throws -> Void
-    
+
     /// Move a file
     public var move: @Sendable (URL, URL) async throws -> URL
-    
+
     /// Copy a file
     public var copy: @Sendable (URL, URL) async throws -> URL
-    
+
     /// Check if file exists
     public var fileExists: @Sendable (URL) -> Bool = { _ in false }
-    
+
     /// Get file attributes
     public var fileAttributes: @Sendable (URL) async throws -> FileAttributes
-    
+
     /// Create directory
     public var createDirectory: @Sendable (URL) async throws -> Void
 }
@@ -145,9 +145,9 @@ public struct FileSystemClient: Sendable {
 // MARK: - Dependency Registration
 
 extension FileSystemClient: DependencyKey {
-    public static var liveValue: Self = Self()
-    
-    public static var testValue: Self = Self(
+    public static let liveValue: Self = .init()
+
+    public static let testValue: Self = .init(
         directoryURL: { _ in URL(fileURLWithPath: "/tmp") },
         listFiles: { _, _ in [] },
         save: { _, filename, _ in URL(fileURLWithPath: "/tmp/\(filename)") },
@@ -161,8 +161,8 @@ extension FileSystemClient: DependencyKey {
     )
 }
 
-extension DependencyValues {
-    public var fileSystem: FileSystemClient {
+public extension DependencyValues {
+    var fileSystem: FileSystemClient {
         get { self[FileSystemClient.self] }
         set { self[FileSystemClient.self] = newValue }
     }
@@ -183,31 +183,31 @@ public enum FileSystemError: LocalizedError, Equatable {
     case moveFailed(String)
     case copyFailed(String)
     case unknownError(String)
-    
+
     public var errorDescription: String? {
         switch self {
         case .directoryNotFound:
-            return "Directory not found"
-        case .fileNotFound(let name):
-            return "File not found: \(name)"
-        case .accessDenied(let path):
-            return "Access denied: \(path)"
+            "Directory not found"
+        case let .fileNotFound(name):
+            "File not found: \(name)"
+        case let .accessDenied(path):
+            "Access denied: \(path)"
         case .diskFull:
-            return "Disk is full"
-        case .invalidFileName(let name):
-            return "Invalid file name: \(name)"
-        case .saveFailed(let reason):
-            return "Failed to save file: \(reason)"
-        case .loadFailed(let reason):
-            return "Failed to load file: \(reason)"
-        case .deleteFailed(let reason):
-            return "Failed to delete file: \(reason)"
-        case .moveFailed(let reason):
-            return "Failed to move file: \(reason)"
-        case .copyFailed(let reason):
-            return "Failed to copy file: \(reason)"
-        case .unknownError(let message):
-            return message
+            "Disk is full"
+        case let .invalidFileName(name):
+            "Invalid file name: \(name)"
+        case let .saveFailed(reason):
+            "Failed to save file: \(reason)"
+        case let .loadFailed(reason):
+            "Failed to load file: \(reason)"
+        case let .deleteFailed(reason):
+            "Failed to delete file: \(reason)"
+        case let .moveFailed(reason):
+            "Failed to move file: \(reason)"
+        case let .copyFailed(reason):
+            "Failed to copy file: \(reason)"
+        case let .unknownError(message):
+            message
         }
     }
 }

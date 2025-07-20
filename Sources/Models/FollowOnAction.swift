@@ -1,10 +1,10 @@
-import Foundation
 import AppCore
+import Foundation
 
 // MARK: - Follow-On Action Model
 
 /// Represents a suggested next action that the LLM recommends to the user
-public struct FollowOnAction: Equatable, Identifiable, Codable {
+public struct FollowOnAction: Equatable, Identifiable, Codable, Sendable {
     public let id: UUID
     public let title: String
     public let description: String
@@ -15,7 +15,7 @@ public struct FollowOnAction: Equatable, Identifiable, Codable {
     public let automationLevel: AutomationLevel
     public let dependencies: [UUID] // IDs of other actions that must complete first
     public let metadata: ActionMetadata?
-    
+
     public init(
         id: UUID = UUID(),
         title: String,
@@ -44,7 +44,7 @@ public struct FollowOnAction: Equatable, Identifiable, Codable {
 // MARK: - Supporting Types
 
 /// Categories for follow-on actions
-public enum ActionCategory: String, Codable, CaseIterable {
+public enum ActionCategory: String, Codable, CaseIterable, Sendable {
     case documentGeneration = "Document Generation"
     case requirementGathering = "Requirement Gathering"
     case vendorManagement = "Vendor Management"
@@ -58,49 +58,49 @@ public enum ActionCategory: String, Codable, CaseIterable {
 }
 
 /// Priority levels for actions
-public enum ActionPriority: String, Codable, CaseIterable {
+public enum ActionPriority: String, Codable, CaseIterable, Sendable {
     case critical = "Critical"
     case high = "High"
     case medium = "Medium"
     case low = "Low"
-    
+
     public var sortOrder: Int {
         switch self {
-        case .critical: return 0
-        case .high: return 1
-        case .medium: return 2
-        case .low: return 3
+        case .critical: 0
+        case .high: 1
+        case .medium: 2
+        case .low: 3
         }
     }
 }
 
 /// Level of automation for the action
-public enum AutomationLevel: String, Codable {
+public enum AutomationLevel: String, Codable, Sendable {
     case manual = "Manual"
     case semiAutomated = "Semi-Automated"
     case fullyAutomated = "Fully Automated"
-    
+
     public var description: String {
         switch self {
         case .manual:
-            return "Requires full user involvement"
+            "Requires full user involvement"
         case .semiAutomated:
-            return "LLM assists but needs user decisions"
+            "LLM assists but needs user decisions"
         case .fullyAutomated:
-            return "LLM can complete autonomously"
+            "LLM can complete autonomously"
         }
     }
 }
 
 /// Metadata for specific action types
-public struct ActionMetadata: Equatable, Codable {
+public struct ActionMetadata: Equatable, Codable, Sendable {
     public let documentTypes: [DocumentType]? // For document generation actions
     public let vendorIds: [UUID]? // For vendor-related actions
     public let complianceStandards: [String]? // For compliance actions
     public let dataSourceIds: [UUID]? // For data analysis actions
     public let recipientEmails: [String]? // For communication actions
     public let customData: [String: String]? // Flexible storage
-    
+
     public init(
         documentTypes: [DocumentType]? = nil,
         vendorIds: [UUID]? = nil,
@@ -121,13 +121,13 @@ public struct ActionMetadata: Equatable, Codable {
 // MARK: - Follow-On Action Set
 
 /// A collection of related follow-on actions for a specific context
-public struct FollowOnActionSet: Equatable, Identifiable {
+public struct FollowOnActionSet: Equatable, Identifiable, Sendable {
     public let id: UUID
     public let context: String // Description of when these actions apply
     public let actions: [FollowOnAction]
     public let recommendedPath: [UUID]? // Suggested order of action IDs
     public let expiresAt: Date? // When these recommendations are no longer valid
-    
+
     public init(
         id: UUID = UUID(),
         context: String,
@@ -141,7 +141,7 @@ public struct FollowOnActionSet: Equatable, Identifiable {
         self.recommendedPath = recommendedPath
         self.expiresAt = expiresAt
     }
-    
+
     /// Get actions sorted by priority and dependencies
     public var sortedActions: [FollowOnAction] {
         actions.sorted { lhs, rhs in
@@ -157,7 +157,7 @@ public struct FollowOnActionSet: Equatable, Identifiable {
             return lhs.estimatedDuration < rhs.estimatedDuration
         }
     }
-    
+
     /// Get actions that can be started immediately (no pending dependencies)
     public func availableActions(completedActionIds: Set<UUID>) -> [FollowOnAction] {
         actions.filter { action in
@@ -169,15 +169,15 @@ public struct FollowOnActionSet: Equatable, Identifiable {
 // MARK: - Action Execution Result
 
 /// Result of executing a follow-on action
-public struct ActionExecutionResult: Equatable {
+public struct ActionExecutionResult: Equatable, Sendable {
     public let actionId: UUID
     public let status: ExecutionStatus
     public let completedAt: Date
     public let output: String?
     public let generatedDocumentIds: [UUID]?
     public let nextActions: [FollowOnAction]? // New actions discovered during execution
-    
-    public enum ExecutionStatus: String, Codable {
+
+    public enum ExecutionStatus: String, Codable, Sendable {
         case completed = "Completed"
         case partiallyCompleted = "Partially Completed"
         case failed = "Failed"
@@ -185,7 +185,7 @@ public struct ActionExecutionResult: Equatable {
         case pendingUser = "Pending User"
         case pendingApproval = "Pending Approval"
     }
-    
+
     public init(
         actionId: UUID,
         status: ExecutionStatus,

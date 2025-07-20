@@ -1,33 +1,34 @@
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
 /// Platform-agnostic font scaling service for Dynamic Type support
-public protocol FontScalingServiceProtocol {
+public protocol FontScalingServiceProtocol: Sendable {
     func scaledFontSize(for baseSize: CGFloat, textStyle: Font.TextStyle, sizeCategory: ContentSizeCategory) -> CGFloat
     func supportsUIFontMetrics() -> Bool
 }
 
 @DependencyClient
-public struct FontScalingServiceClient {
+public struct FontScalingServiceClient: Sendable {
     public var _scaledFontSize: @Sendable (CGFloat, Font.TextStyle, ContentSizeCategory) -> CGFloat = { baseSize, _, sizeCategory in
         baseSize * sizeCategory.scaleFactor
     }
-    
+
     public var _supportsUIFontMetrics: @Sendable () -> Bool = { false }
 }
 
 // Protocol conformance
 extension FontScalingServiceClient: FontScalingServiceProtocol {
     public func scaledFontSize(for baseSize: CGFloat, textStyle: Font.TextStyle, sizeCategory: ContentSizeCategory) -> CGFloat {
-        self._scaledFontSize(baseSize, textStyle, sizeCategory)
+        _scaledFontSize(baseSize, textStyle, sizeCategory)
     }
-    
+
     public func supportsUIFontMetrics() -> Bool {
-        self._supportsUIFontMetrics()
+        _supportsUIFontMetrics()
     }
 }
 
 // MARK: - ContentSizeCategory Extensions
+
 public extension ContentSizeCategory {
     var scaleFactor: CGFloat {
         switch self {
@@ -49,6 +50,7 @@ public extension ContentSizeCategory {
 }
 
 // MARK: - Dependency
+
 private enum FontScalingServiceKey: DependencyKey {
     static let liveValue: FontScalingServiceProtocol = FontScalingServiceClient()
 }

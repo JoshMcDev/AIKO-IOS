@@ -1,6 +1,6 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 
 // MARK: - Cache Migration Extensions
 
@@ -149,13 +149,13 @@ public struct EnhancedCacheStatistics: Equatable {
 
 // MARK: - Cache Type Selection
 
-public enum CacheType {
+public enum CacheType: Sendable {
     case standard
     case encrypted
     case adaptive
 }
 
-public struct SimpleCacheConfiguration {
+public struct SimpleCacheConfiguration: Sendable {
     public let type: CacheType
     public let enableMetrics: Bool
     public let enablePreloading: Bool

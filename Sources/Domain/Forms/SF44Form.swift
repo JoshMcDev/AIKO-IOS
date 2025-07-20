@@ -2,17 +2,16 @@ import Foundation
 
 /// SF 44 - Purchase Order - Invoice - Voucher
 public final class SF44Form: BaseGovernmentForm {
-    
     // MARK: - Form Sections
-    
+
     public let purchaseOrder: PurchaseOrderSection
     public let suppliesServices: SuppliesServicesSection
     public let shipping: ShippingSection
     public let invoice: InvoiceSection
     public let voucher: VoucherSection
-    
+
     // MARK: - Initialization
-    
+
     public init(
         revision: String = "REV OCT 2023",
         metadata: FormMetadata,
@@ -27,7 +26,7 @@ public final class SF44Form: BaseGovernmentForm {
         self.shipping = shipping
         self.invoice = invoice
         self.voucher = voucher
-        
+
         super.init(
             formNumber: "SF44",
             formTitle: "Purchase Order - Invoice - Voucher",
@@ -38,12 +37,12 @@ public final class SF44Form: BaseGovernmentForm {
             metadata: metadata
         )
     }
-    
+
     // MARK: - Validation
-    
-    public override func validate() throws {
+
+    override public func validate() throws {
         try super.validate()
-        
+
         // Validate all sections
         try purchaseOrder.validate()
         try suppliesServices.validate()
@@ -51,18 +50,18 @@ public final class SF44Form: BaseGovernmentForm {
         try invoice.validate()
         try voucher.validate()
     }
-    
+
     // MARK: - Export
-    
-    public override func export() -> [String: Any] {
+
+    override public func export() -> [String: Any] {
         var data = super.export()
-        
+
         data["purchaseOrder"] = purchaseOrder.export()
         data["suppliesServices"] = suppliesServices.export()
         data["shipping"] = shipping.export()
         data["invoice"] = invoice.export()
         data["voucher"] = voucher.export()
-        
+
         return data
     }
 }
@@ -78,27 +77,27 @@ public struct PurchaseOrderSection: ValueObject {
     public let priorityRating: String?
     public let authorityType: AuthorityType
     public let vendor: VendorDetails
-    
+
     public enum AuthorityType: String, CaseIterable {
         case microPurchase = "MICRO_PURCHASE"
         case simplifiedAcquisition = "SIMPLIFIED_ACQUISITION"
         case emergency = "EMERGENCY"
         case other = "OTHER"
     }
-    
+
     public struct VendorDetails: ValueObject {
         public let name: String
         public let address: PostalAddress
         public let phoneNumber: PhoneNumber?
         public let cageCode: CageCode?
-        
+
         public func validate() throws {
             guard !name.isEmpty else {
                 throw FormError.missingRequiredField("vendor name")
             }
         }
     }
-    
+
     public init(
         orderNumber: String,
         orderDate: Date,
@@ -116,15 +115,15 @@ public struct PurchaseOrderSection: ValueObject {
         self.authorityType = authorityType
         self.vendor = vendor
     }
-    
+
     public func validate() throws {
         guard !orderNumber.isEmpty else {
             throw FormError.missingRequiredField("order number")
         }
-        
+
         try vendor.validate()
     }
-    
+
     func export() -> [String: Any] {
         [
             "orderNumber": orderNumber,
@@ -137,8 +136,8 @@ public struct PurchaseOrderSection: ValueObject {
                 "name": vendor.name,
                 "address": vendor.address.formatted,
                 "phoneNumber": vendor.phoneNumber?.value as Any,
-                "cageCode": vendor.cageCode?.value as Any
-            ]
+                "cageCode": vendor.cageCode?.value as Any,
+            ],
         ]
     }
 }
@@ -150,7 +149,7 @@ public struct SuppliesServicesSection: ValueObject {
     public let tax: Money?
     public let shipping: Money?
     public let total: Money
-    
+
     public struct OrderItem: ValueObject {
         public let lineNumber: Int
         public let stockNumber: String?
@@ -159,7 +158,7 @@ public struct SuppliesServicesSection: ValueObject {
         public let unit: String
         public let unitPrice: Money
         public let amount: Money
-        
+
         public init(
             lineNumber: Int,
             stockNumber: String? = nil,
@@ -177,20 +176,20 @@ public struct SuppliesServicesSection: ValueObject {
             self.unitPrice = unitPrice
             self.amount = amount
         }
-        
+
         public func validate() throws {
             guard lineNumber > 0 else {
                 throw FormError.invalidField("line number - must be positive")
             }
-            
+
             guard !description.isEmpty else {
                 throw FormError.missingRequiredField("item description")
             }
-            
+
             guard quantity > 0 else {
                 throw FormError.invalidField("quantity - must be positive")
             }
-            
+
             // Validate amount = quantity * unit price
             let calculatedAmount = quantity * unitPrice.amount
             guard abs(calculatedAmount - amount.amount) < 0.01 else {
@@ -198,7 +197,7 @@ public struct SuppliesServicesSection: ValueObject {
             }
         }
     }
-    
+
     public init(
         items: [OrderItem],
         subtotal: Money,
@@ -212,39 +211,39 @@ public struct SuppliesServicesSection: ValueObject {
         self.shipping = shipping
         self.total = total
     }
-    
+
     public func validate() throws {
         guard !items.isEmpty else {
             throw FormError.validationFailed("At least one item is required")
         }
-        
+
         for item in items {
             try item.validate()
         }
-        
+
         // Validate totals
         var calculatedSubtotal = Decimal(0)
         for item in items {
             calculatedSubtotal += item.amount.amount
         }
-        
+
         guard abs(calculatedSubtotal - subtotal.amount) < 0.01 else {
             throw FormError.validationFailed("Subtotal does not match sum of items")
         }
-        
+
         var calculatedTotal = subtotal.amount
-        if let tax = tax {
+        if let tax {
             calculatedTotal += tax.amount
         }
-        if let shipping = shipping {
+        if let shipping {
             calculatedTotal += shipping.amount
         }
-        
+
         guard abs(calculatedTotal - total.amount) < 0.01 else {
             throw FormError.validationFailed("Total does not match subtotal + tax + shipping")
         }
     }
-    
+
     func export() -> [String: Any] {
         [
             "items": items.map { item in
@@ -255,14 +254,14 @@ public struct SuppliesServicesSection: ValueObject {
                     "quantity": item.quantity,
                     "unit": item.unit,
                     "unitPrice": item.unitPrice.amount,
-                    "amount": item.amount.amount
+                    "amount": item.amount.amount,
                 ]
             },
             "subtotal": subtotal.amount,
             "tax": tax?.amount as Any,
             "shipping": shipping?.amount as Any,
             "total": total.amount,
-            "currency": total.currency.rawValue
+            "currency": total.currency.rawValue,
         ]
     }
 }
@@ -274,7 +273,7 @@ public struct ShippingSection: ValueObject {
     public let billOfLading: String?
     public let weight: String?
     public let shippingMethod: ShippingMethod?
-    
+
     public enum ShippingMethod: String, CaseIterable {
         case groundCommercial = "GROUND_COMMERCIAL"
         case groundGovt = "GROUND_GOVT"
@@ -284,7 +283,7 @@ public struct ShippingSection: ValueObject {
         case parcelPost = "PARCEL_POST"
         case other = "OTHER"
     }
-    
+
     public init(
         shipTo: PostalAddress,
         dateShipped: Date? = nil,
@@ -298,18 +297,18 @@ public struct ShippingSection: ValueObject {
         self.weight = weight
         self.shippingMethod = shippingMethod
     }
-    
+
     public func validate() throws {
         // No required validation for shipping section
     }
-    
+
     func export() -> [String: Any] {
         [
             "shipTo": shipTo.formatted,
             "dateShipped": dateShipped?.timeIntervalSince1970 as Any,
             "billOfLading": billOfLading as Any,
             "weight": weight as Any,
-            "shippingMethod": shippingMethod?.rawValue as Any
+            "shippingMethod": shippingMethod?.rawValue as Any,
         ]
     }
 }
@@ -320,7 +319,7 @@ public struct InvoiceSection: ValueObject {
     public let invoiceDate: Date?
     public let discountTerms: String?
     public let remitTo: PostalAddress?
-    
+
     public init(
         invoiceNumber: String? = nil,
         invoiceDate: Date? = nil,
@@ -332,17 +331,17 @@ public struct InvoiceSection: ValueObject {
         self.discountTerms = discountTerms
         self.remitTo = remitTo
     }
-    
+
     public func validate() throws {
         // Invoice section is optional
     }
-    
+
     func export() -> [String: Any] {
         [
             "invoiceNumber": invoiceNumber as Any,
             "invoiceDate": invoiceDate?.timeIntervalSince1970 as Any,
             "discountTerms": discountTerms as Any,
-            "remitTo": remitTo?.formatted as Any
+            "remitTo": remitTo?.formatted as Any,
         ]
     }
 }
@@ -357,28 +356,28 @@ public struct VoucherSection: ValueObject {
     public let checkDate: Date?
     public let billTo: PostalAddress?
     public let payee: PayeeInfo?
-    
+
     public struct PaymentPartial: ValueObject {
         public let amountPaid: Money
         public let balanceDue: Money
-        
+
         public func validate() throws {
             // No additional validation needed
         }
     }
-    
+
     public struct PayeeInfo: ValueObject {
         public let name: String
         public let address: PostalAddress?
         public let accountNumber: String?
-        
+
         public func validate() throws {
             guard !name.isEmpty else {
                 throw FormError.missingRequiredField("payee name")
             }
         }
     }
-    
+
     public init(
         voucherNumber: String? = nil,
         scheduleNumber: String? = nil,
@@ -398,13 +397,13 @@ public struct VoucherSection: ValueObject {
         self.billTo = billTo
         self.payee = payee
     }
-    
+
     public func validate() throws {
-        if let payee = payee {
+        if let payee {
             try payee.validate()
         }
     }
-    
+
     func export() -> [String: Any] {
         [
             "voucherNumber": voucherNumber as Any,
@@ -414,7 +413,7 @@ public struct VoucherSection: ValueObject {
                 [
                     "amountPaid": partial.amountPaid.amount,
                     "balanceDue": partial.balanceDue.amount,
-                    "currency": partial.amountPaid.currency.rawValue
+                    "currency": partial.amountPaid.currency.rawValue,
                 ]
             } as Any,
             "checkNumber": checkNumber as Any,
@@ -424,9 +423,9 @@ public struct VoucherSection: ValueObject {
                 [
                     "name": p.name,
                     "address": p.address?.formatted as Any,
-                    "accountNumber": p.accountNumber as Any
+                    "accountNumber": p.accountNumber as Any,
                 ]
-            } as Any
+            } as Any,
         ]
     }
 }
@@ -434,14 +433,13 @@ public struct VoucherSection: ValueObject {
 // MARK: - SF44 Factory
 
 public final class SF44Factory: BaseFormFactory<SF44Form> {
-    
-    public override func createBlank() -> SF44Form {
+    override public func createBlank() -> SF44Form {
         let metadata = FormMetadata(
             createdBy: "System",
             agency: "GSA",
             purpose: "Purchase order and payment"
         )
-        
+
         let emptyAddress = try! PostalAddress(
             street: "TBD",
             city: "TBD",
@@ -449,7 +447,7 @@ public final class SF44Factory: BaseFormFactory<SF44Form> {
             zipCode: "00000",
             country: "USA"
         )
-        
+
         return SF44Form(
             metadata: metadata,
             purchaseOrder: PurchaseOrderSection(
@@ -473,17 +471,17 @@ public final class SF44Factory: BaseFormFactory<SF44Form> {
             voucher: VoucherSection()
         )
     }
-    
-    public override func createForm(with data: FormData) throws -> SF44Form {
+
+    override public func createForm(with data: FormData) throws -> SF44Form {
         let metadata = data.metadata
-        
+
         // Extract and validate fields
         let purchaseOrder = try createPurchaseOrderSection(from: data.fields)
         let suppliesServices = try createSuppliesServicesSection(from: data.fields)
         let shipping = try createShippingSection(from: data.fields)
         let invoice = try createInvoiceSection(from: data.fields)
         let voucher = try createVoucherSection(from: data.fields)
-        
+
         return SF44Form(
             revision: data.revision ?? "REV OCT 2023",
             metadata: metadata,
@@ -494,7 +492,7 @@ public final class SF44Factory: BaseFormFactory<SF44Form> {
             voucher: voucher
         )
     }
-    
+
     // Helper methods for creating sections
     private func createPurchaseOrderSection(from fields: [String: Any]) throws -> PurchaseOrderSection {
         let vendorAddress = try PostalAddress(
@@ -503,14 +501,14 @@ public final class SF44Factory: BaseFormFactory<SF44Form> {
             state: fields["vendorState"] as? String ?? "TBD",
             zipCode: fields["vendorZip"] as? String ?? "00000"
         )
-        
+
         let vendor = PurchaseOrderSection.VendorDetails(
             name: fields["vendorName"] as? String ?? "",
             address: vendorAddress,
             phoneNumber: nil,
             cageCode: nil
         )
-        
+
         return PurchaseOrderSection(
             orderNumber: fields["orderNumber"] as? String ?? "PO-00000",
             orderDate: fields["orderDate"] as? Date ?? Date(),
@@ -518,20 +516,20 @@ public final class SF44Factory: BaseFormFactory<SF44Form> {
             vendor: vendor
         )
     }
-    
+
     private func createSuppliesServicesSection(from fields: [String: Any]) throws -> SuppliesServicesSection {
         let total = try Money(
             amount: fields["totalAmount"] as? Decimal ?? 0,
             currency: .usd
         )
-        
+
         return SuppliesServicesSection(
             items: [],
             subtotal: total,
             total: total
         )
     }
-    
+
     private func createShippingSection(from fields: [String: Any]) throws -> ShippingSection {
         let shipTo = try PostalAddress(
             street: fields["shipToStreet"] as? String ?? "TBD",
@@ -539,15 +537,15 @@ public final class SF44Factory: BaseFormFactory<SF44Form> {
             state: fields["shipToState"] as? String ?? "TBD",
             zipCode: fields["shipToZip"] as? String ?? "00000"
         )
-        
+
         return ShippingSection(shipTo: shipTo)
     }
-    
-    private func createInvoiceSection(from fields: [String: Any]) throws -> InvoiceSection {
+
+    private func createInvoiceSection(from _: [String: Any]) throws -> InvoiceSection {
         InvoiceSection()
     }
-    
-    private func createVoucherSection(from fields: [String: Any]) throws -> VoucherSection {
+
+    private func createVoucherSection(from _: [String: Any]) throws -> VoucherSection {
         VoucherSection()
     }
 }

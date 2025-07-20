@@ -3,7 +3,7 @@ import SwiftUI
 // MARK: - Agent State Indicator
 
 /// An animated indicator showing the current state of the AI agent with pulse effects
-public struct AgentStateIndicator: View {
+public struct AgentStateIndicator: View, Sendable {
     let state: AgentState
     @State private var isPulsing = false
     @State private var rotationAngle: Double = 0

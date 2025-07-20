@@ -10,23 +10,22 @@ import Foundation
 
 /// OpenAI API adapter implementation (also used for ChatGPT)
 final class OpenAIAdapter: LLMProviderAdapter {
-    
     private let session: URLSession
     private let decoder = JSONDecoder()
     private let encoder = JSONEncoder()
-    
+
     override init(provider: LLMProvider, configuration: LLMProviderConfig) {
         // Configure URL session
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 60
         config.timeoutIntervalForResource = 300
-        self.session = URLSession(configuration: config)
-        
+        session = URLSession(configuration: config)
+
         super.init(provider: provider, configuration: configuration)
     }
-    
+
     // MARK: - LLMProviderProtocol
-    
+
     override func sendRequest(
         prompt: String,
         context: ConversationContext?,
@@ -35,37 +34,37 @@ final class OpenAIAdapter: LLMProviderAdapter {
         guard let apiKey = await getAPIKey() else {
             throw LLMError.noAPIKey(provider: provider)
         }
-        
+
         let mergedOptions = options.merged(with: configuration)
         let requestBody = try buildRequestBody(
             prompt: prompt,
             context: context,
             options: mergedOptions
         )
-        
+
         let url = URL(string: "\(getBaseURL())/v1/chat/completions")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.httpBody = try encoder.encode(requestBody)
         request.allHTTPHeaderFields = buildOpenAIHeaders(apiKey: apiKey)
-        
+
         let (data, response) = try await session.data(for: request)
-        
+
         guard let httpResponse = response as? HTTPURLResponse else {
             throw LLMError.networkError(URLError(.badServerResponse))
         }
-        
+
         switch httpResponse.statusCode {
         case 200:
             let openAIResponse = try decoder.decode(OpenAIResponse.self, from: data)
             return try openAIResponse.toLLMResponse()
-            
+
         case 429:
             throw LLMError.rateLimitExceeded(provider: provider)
-            
+
         case 401:
             throw LLMError.invalidAPIKey(provider: provider)
-            
+
         default:
             if let errorResponse = try? decoder.decode(OpenAIErrorResponse.self, from: data) {
                 throw LLMError.invalidResponse(errorResponse.error.message)
@@ -73,7 +72,7 @@ final class OpenAIAdapter: LLMProviderAdapter {
             throw LLMError.networkError(URLError(.badServerResponse))
         }
     }
-    
+
     override func streamRequest(
         prompt: String,
         context: ConversationContext?,
@@ -85,7 +84,7 @@ final class OpenAIAdapter: LLMProviderAdapter {
                     guard let apiKey = await getAPIKey() else {
                         throw LLMError.noAPIKey(provider: provider)
                     }
-                    
+
                     let mergedOptions = options.merged(with: configuration)
                     var requestBody = try buildRequestBody(
                         prompt: prompt,
@@ -93,33 +92,34 @@ final class OpenAIAdapter: LLMProviderAdapter {
                         options: mergedOptions
                     )
                     requestBody.stream = true
-                    
+
                     let url = URL(string: "\(getBaseURL())/v1/chat/completions")!
                     var request = URLRequest(url: url)
                     request.httpMethod = "POST"
                     request.httpBody = try encoder.encode(requestBody)
                     request.allHTTPHeaderFields = buildOpenAIHeaders(apiKey: apiKey)
-                    
+
                     let (bytes, response) = try await session.bytes(for: request)
-                    
+
                     guard let httpResponse = response as? HTTPURLResponse,
-                          httpResponse.statusCode == 200 else {
+                          httpResponse.statusCode == 200
+                    else {
                         throw LLMError.networkError(URLError(.badServerResponse))
                     }
-                    
+
                     var buffer = ""
-                    
+
                     for try await byte in bytes {
                         buffer.append(Character(UnicodeScalar(byte)))
-                        
+
                         // Process complete SSE events
                         while let eventRange = buffer.range(of: "\n\n") {
                             let event = String(buffer[..<eventRange.lowerBound])
                             buffer.removeSubrange(..<eventRange.upperBound)
-                            
+
                             if let chunk = parseSSEEvent(event) {
                                 continuation.yield(chunk)
-                                
+
                                 if chunk.finishReason != nil {
                                     continuation.finish()
                                     return
@@ -127,54 +127,54 @@ final class OpenAIAdapter: LLMProviderAdapter {
                             }
                         }
                     }
-                    
+
                     continuation.finish()
-                    
+
                 } catch {
                     continuation.finish(throwing: error)
                 }
             }
-            
+
             trackTask(task)
-            
+
             continuation.onTermination = { _ in
                 task.cancel()
                 self.removeTask(task)
             }
         }
     }
-    
+
     override func countTokens(for text: String) -> Int {
         // OpenAI uses tiktoken for tokenization
         // This is a rough approximation
         let words = text.split(separator: " ").count
         let punctuation = text.filter { ".,!?;:".contains($0) }.count
-        
+
         // Rough approximation based on GPT tokenization patterns
         return Int(Double(words) * 1.3) + punctuation
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func buildOpenAIHeaders(apiKey: String) -> [String: String] {
         var headers = buildHeaders(apiKey: apiKey)
         headers["Authorization"] = "Bearer \(apiKey)"
-        
+
         // Add organization header if configured
         if let orgId = configuration.customHeaders?["OpenAI-Organization"] {
             headers["OpenAI-Organization"] = orgId
         }
-        
+
         return headers
     }
-    
+
     private func buildRequestBody(
         prompt: String,
         context: ConversationContext?,
         options: LLMRequestOptions
     ) throws -> OpenAIRequestBody {
         var messages: [OpenAIMessage] = []
-        
+
         // Add system message if available
         if let systemPrompt = context?.systemPrompt {
             messages.append(OpenAIMessage(
@@ -182,9 +182,9 @@ final class OpenAIAdapter: LLMProviderAdapter {
                 content: systemPrompt
             ))
         }
-        
+
         // Add conversation history
-        if let context = context {
+        if let context {
             for message in context.messages {
                 messages.append(OpenAIMessage(
                     role: message.role.openAIRole,
@@ -193,13 +193,13 @@ final class OpenAIAdapter: LLMProviderAdapter {
                 ))
             }
         }
-        
+
         // Add current prompt
         messages.append(OpenAIMessage(
             role: "user",
             content: prompt
         ))
-        
+
         // Build function definitions if provided
         let functions = options.functions?.map { function in
             OpenAIFunction(
@@ -208,7 +208,7 @@ final class OpenAIAdapter: LLMProviderAdapter {
                 parameters: function.parameters
             )
         }
-        
+
         return OpenAIRequestBody(
             model: configuration.model.id,
             messages: messages,
@@ -225,18 +225,19 @@ final class OpenAIAdapter: LLMProviderAdapter {
             response_format: options.responseFormat?.openAIFormat
         )
     }
-    
+
     private func parseSSEEvent(_ event: String) -> LLMStreamChunk? {
         guard event.hasPrefix("data: ") else { return nil }
-        
+
         let jsonString = String(event.dropFirst(6)).trimmingCharacters(in: .whitespacesAndNewlines)
         guard jsonString != "[DONE]",
               let data = jsonString.data(using: .utf8),
               let streamResponse = try? decoder.decode(OpenAIStreamResponse.self, from: data),
-              let choice = streamResponse.choices.first else {
+              let choice = streamResponse.choices.first
+        else {
             return nil
         }
-        
+
         let chunk = LLMStreamChunk(
             id: streamResponse.id,
             delta: choice.delta?.content ?? "",
@@ -244,7 +245,7 @@ final class OpenAIAdapter: LLMProviderAdapter {
             finishReason: choice.finish_reason.map { FinishReason(openAIReason: $0) },
             functionCall: choice.delta?.function_call.map { FunctionCall(name: $0.name ?? "", arguments: $0.arguments ?? "") }
         )
-        
+
         return chunk
     }
 }
@@ -271,7 +272,7 @@ private struct OpenAIMessage: Codable {
     let role: String
     let content: String
     let name: String?
-    
+
     init(role: String, content: String, name: String? = nil) {
         self.role = role
         self.content = content
@@ -283,30 +284,31 @@ private struct OpenAIFunction: Codable {
     let name: String
     let description: String
     let parameters: [String: Any]
-    
+
     // Custom encoding/decoding for parameters
     enum CodingKeys: String, CodingKey {
         case name, description, parameters
     }
-    
+
     init(name: String, description: String, parameters: [String: Any]) {
         self.name = name
         self.description = description
         self.parameters = parameters
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         name = try container.decode(String.self, forKey: .name)
         description = try container.decode(String.self, forKey: .description)
         if let jsonData = try? container.decode(Data.self, forKey: .parameters),
-           let json = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any] {
+           let json = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any]
+        {
             parameters = json
         } else {
             parameters = [:]
         }
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(name, forKey: .name)
@@ -328,18 +330,18 @@ private struct OpenAIResponse: Codable {
     let model: String
     let choices: [OpenAIChoice]
     let usage: OpenAIUsage?
-    
+
     func toLLMResponse() throws -> LLMResponse {
         guard let choice = choices.first else {
             throw LLMError.invalidResponse("No choices in response")
         }
-        
+
         let finishReason = choice.finish_reason.map { FinishReason(openAIReason: $0) }
-        
+
         let functionCalls = choice.message.function_call.map { call in
             [FunctionCall(name: call.name, arguments: call.arguments)]
         }
-        
+
         return LLMResponse(
             id: id,
             content: choice.message.content ?? "",
@@ -349,7 +351,7 @@ private struct OpenAIResponse: Codable {
                 promptTokens: $0.prompt_tokens,
                 completionTokens: $0.completion_tokens,
                 totalTokens: $0.total_tokens
-            )},
+            ) },
             functionCalls: functionCalls
         )
     }
@@ -420,13 +422,13 @@ private struct OpenAIStreamFunctionCall: Codable {
 private extension MessageRole {
     var openAIRole: String {
         switch self {
-        case .system: return "system"
-        case .user: return "user"
-        case .assistant: return "assistant"
-        case .function: return "function"
+        case .system: "system"
+        case .user: "user"
+        case .assistant: "assistant"
+        case .function: "function"
         }
     }
-    
+
     init?(openAIRole: String) {
         switch openAIRole {
         case "system": self = .system
@@ -454,12 +456,12 @@ private extension ResponseFormat {
     var openAIFormat: OpenAIResponseFormat? {
         switch self {
         case .text:
-            return nil
+            nil
         case .json:
-            return OpenAIResponseFormat(type: "json_object")
+            OpenAIResponseFormat(type: "json_object")
         case .jsonSchema:
             // OpenAI doesn't support JSON schema directly yet
-            return OpenAIResponseFormat(type: "json_object")
+            OpenAIResponseFormat(type: "json_object")
         }
     }
 }

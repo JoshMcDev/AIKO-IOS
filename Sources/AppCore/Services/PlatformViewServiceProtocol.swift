@@ -1,93 +1,110 @@
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
 /// Platform-agnostic view service for creating platform-specific UI components
-public protocol PlatformViewServiceProtocol {
+public protocol PlatformViewServiceProtocol: Sendable {
     /// Create a navigation container appropriate for the platform
-    func createNavigationStack<Content: View>(@ViewBuilder content: @escaping () -> Content) -> AnyView
-    
+    @MainActor
+    func createNavigationStack(@ViewBuilder content: @escaping () -> some View) -> AnyView
+
     /// Create a document picker view for the platform
+    @MainActor
     func createDocumentPicker(onDocumentsPicked: @escaping ([(Data, String)]) -> Void) -> AnyView
-    
+
     /// Create an image picker/scanner view for the platform
+    @MainActor
     func createImagePicker(onImagePicked: @escaping (Data) -> Void) -> AnyView
-    
+
     /// Create a share sheet view for the platform
+    @MainActor
     func createShareSheet(items: [Any]) -> AnyView
-    
+
     /// Create a sidebar navigation (for platforms that support it)
-    func createSidebarNavigation<SidebarContent: View, DetailContent: View>(
-        @ViewBuilder sidebar: @escaping () -> SidebarContent,
-        @ViewBuilder detail: @escaping () -> DetailContent
+    @MainActor
+    func createSidebarNavigation(
+        @ViewBuilder sidebar: @escaping () -> some View,
+        @ViewBuilder detail: @escaping () -> some View
     ) -> AnyView
-    
+
     /// Apply platform-specific window styling
+    @MainActor
     func applyWindowStyle(to view: AnyView) -> AnyView
-    
+
     /// Apply platform-specific toolbar styling
+    @MainActor
     func applyToolbarStyle(to view: AnyView) -> AnyView
-    
+
     /// Create a drop zone for file/image dropping (desktop platforms)
-    func createDropZone<Content: View>(
-        @ViewBuilder content: @escaping () -> Content,
+    @MainActor
+    func createDropZone(
+        @ViewBuilder content: @escaping () -> some View,
         onItemsDropped: @escaping ([Any]) -> Void
     ) -> AnyView
 }
 
 @DependencyClient
-public struct PlatformViewServiceClient {
-    public var _createNavigationStack: @Sendable (@escaping () -> AnyView) -> AnyView = { content in content() }
-    public var _createDocumentPicker: @Sendable (@escaping ([(Data, String)]) -> Void) -> AnyView = { _ in AnyView(EmptyView()) }
-    public var _createImagePicker: @Sendable (@escaping (Data) -> Void) -> AnyView = { _ in AnyView(EmptyView()) }
-    public var _createShareSheet: @Sendable ([Any]) -> AnyView = { _ in AnyView(EmptyView()) }
-    public var _createSidebarNavigation: @Sendable (@escaping () -> AnyView, @escaping () -> AnyView) -> AnyView = { _, detail in detail() }
-    public var _applyWindowStyle: @Sendable (AnyView) -> AnyView = { view in view }
-    public var _applyToolbarStyle: @Sendable (AnyView) -> AnyView = { view in view }
-    public var _createDropZone: @Sendable (@escaping () -> AnyView, @escaping ([Any]) -> Void) -> AnyView = { content, _ in content() }
+public struct PlatformViewServiceClient: Sendable {
+    public var _createNavigationStack: @MainActor (@escaping () -> AnyView) -> AnyView = { content in content() }
+    public var _createDocumentPicker: @MainActor (@escaping ([(Data, String)]) -> Void) -> AnyView = { _ in AnyView(EmptyView()) }
+    public var _createImagePicker: @MainActor (@escaping (Data) -> Void) -> AnyView = { _ in AnyView(EmptyView()) }
+    public var _createShareSheet: @MainActor ([Any]) -> AnyView = { _ in AnyView(EmptyView()) }
+    public var _createSidebarNavigation: @MainActor (@escaping () -> AnyView, @escaping () -> AnyView) -> AnyView = { _, detail in detail() }
+    public var _applyWindowStyle: @MainActor (AnyView) -> AnyView = { view in view }
+    public var _applyToolbarStyle: @MainActor (AnyView) -> AnyView = { view in view }
+    public var _createDropZone: @MainActor (@escaping () -> AnyView, @escaping ([Any]) -> Void) -> AnyView = { content, _ in content() }
 }
 
 // Protocol conformance
 extension PlatformViewServiceClient: PlatformViewServiceProtocol {
-    public func createNavigationStack<Content: View>(@ViewBuilder content: @escaping () -> Content) -> AnyView {
-        self._createNavigationStack { AnyView(content()) }
+    @MainActor
+    public func createNavigationStack(@ViewBuilder content: @escaping () -> some View) -> AnyView {
+        _createNavigationStack { AnyView(content()) }
     }
-    
+
+    @MainActor
     public func createDocumentPicker(onDocumentsPicked: @escaping ([(Data, String)]) -> Void) -> AnyView {
-        self._createDocumentPicker(onDocumentsPicked)
+        _createDocumentPicker(onDocumentsPicked)
     }
-    
+
+    @MainActor
     public func createImagePicker(onImagePicked: @escaping (Data) -> Void) -> AnyView {
-        self._createImagePicker(onImagePicked)
+        _createImagePicker(onImagePicked)
     }
-    
+
+    @MainActor
     public func createShareSheet(items: [Any]) -> AnyView {
-        self._createShareSheet(items)
+        _createShareSheet(items)
     }
-    
-    public func createSidebarNavigation<SidebarContent: View, DetailContent: View>(
-        @ViewBuilder sidebar: @escaping () -> SidebarContent,
-        @ViewBuilder detail: @escaping () -> DetailContent
+
+    @MainActor
+    public func createSidebarNavigation(
+        @ViewBuilder sidebar: @escaping () -> some View,
+        @ViewBuilder detail: @escaping () -> some View
     ) -> AnyView {
-        self._createSidebarNavigation({ AnyView(sidebar()) }, { AnyView(detail()) })
+        _createSidebarNavigation({ AnyView(sidebar()) }, { AnyView(detail()) })
     }
-    
+
+    @MainActor
     public func applyWindowStyle(to view: AnyView) -> AnyView {
-        self._applyWindowStyle(view)
+        _applyWindowStyle(view)
     }
-    
+
+    @MainActor
     public func applyToolbarStyle(to view: AnyView) -> AnyView {
-        self._applyToolbarStyle(view)
+        _applyToolbarStyle(view)
     }
-    
-    public func createDropZone<Content: View>(
-        @ViewBuilder content: @escaping () -> Content,
+
+    @MainActor
+    public func createDropZone(
+        @ViewBuilder content: @escaping () -> some View,
         onItemsDropped: @escaping ([Any]) -> Void
     ) -> AnyView {
-        self._createDropZone({ AnyView(content()) }, onItemsDropped)
+        _createDropZone({ AnyView(content()) }, onItemsDropped)
     }
 }
 
 // MARK: - Dependency
+
 private enum PlatformViewServiceKey: DependencyKey {
     static let liveValue: PlatformViewServiceProtocol = PlatformViewServiceClient()
 }

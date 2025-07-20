@@ -3,17 +3,17 @@ import Foundation
 
 // MARK: - CMMC Requirement Templates Service
 
-public struct CMMCRequirementTemplates {
-    public var loadTemplate: (CMMCDomain, CMMCLevel) async throws -> CMMCDomainTemplate
-    public var generateImplementationGuide: (CMMCRequirement) async throws -> ImplementationGuide
-    public var createAssessmentChecklist: (CMMCLevel) async throws -> AssessmentChecklist
-    public var exportSSP: (CMMCLevel, [CMMCRequirement]) async throws -> String
+public struct CMMCRequirementTemplates: Sendable {
+    public var loadTemplate: @Sendable (CMMCDomain, CMMCLevel) async throws -> CMMCDomainTemplate
+    public var generateImplementationGuide: @Sendable (CMMCRequirement) async throws -> ImplementationGuide
+    public var createAssessmentChecklist: @Sendable (CMMCLevel) async throws -> AssessmentChecklist
+    public var exportSSP: @Sendable (CMMCLevel, [CMMCRequirement]) async throws -> String
 
     public init(
-        loadTemplate: @escaping (CMMCDomain, CMMCLevel) async throws -> CMMCDomainTemplate,
-        generateImplementationGuide: @escaping (CMMCRequirement) async throws -> ImplementationGuide,
-        createAssessmentChecklist: @escaping (CMMCLevel) async throws -> AssessmentChecklist,
-        exportSSP: @escaping (CMMCLevel, [CMMCRequirement]) async throws -> String
+        loadTemplate: @escaping @Sendable (CMMCDomain, CMMCLevel) async throws -> CMMCDomainTemplate,
+        generateImplementationGuide: @escaping @Sendable (CMMCRequirement) async throws -> ImplementationGuide,
+        createAssessmentChecklist: @escaping @Sendable (CMMCLevel) async throws -> AssessmentChecklist,
+        exportSSP: @escaping @Sendable (CMMCLevel, [CMMCRequirement]) async throws -> String
     ) {
         self.loadTemplate = loadTemplate
         self.generateImplementationGuide = generateImplementationGuide
@@ -24,7 +24,7 @@ public struct CMMCRequirementTemplates {
 
 // MARK: - Template Models
 
-public struct CMMCDomainTemplate {
+public struct CMMCDomainTemplate: Sendable {
     public let domain: CMMCDomain
     public let level: CMMCLevel
     public let description: String
@@ -49,7 +49,7 @@ public struct CMMCDomainTemplate {
     }
 }
 
-public struct CMMCRequirementTemplate {
+public struct CMMCRequirementTemplate: Sendable {
     public let requirementId: String
     public let description: String
     public let implementationSteps: [String]
@@ -77,7 +77,7 @@ public struct CMMCRequirementTemplate {
     }
 }
 
-public struct ImplementationGuide {
+public struct ImplementationGuide: Sendable {
     public let requirement: CMMCRequirement
     public let quickStart: String
     public let detailedSteps: [ImplementationStep]
@@ -99,7 +99,7 @@ public struct ImplementationGuide {
     }
 }
 
-public struct ImplementationStep {
+public struct ImplementationStep: Sendable {
     public let stepNumber: Int
     public let title: String
     public let description: String
@@ -121,7 +121,7 @@ public struct ImplementationStep {
     }
 }
 
-public struct AssessmentChecklist {
+public struct AssessmentChecklist: Sendable {
     public let level: CMMCLevel
     public let domains: [DomainChecklist]
     public let totalRequirements: Int
@@ -140,7 +140,7 @@ public struct AssessmentChecklist {
     }
 }
 
-public struct DomainChecklist {
+public struct DomainChecklist: Sendable {
     public let domain: CMMCDomain
     public let checklistItems: [ChecklistItem]
 
@@ -150,7 +150,7 @@ public struct DomainChecklist {
     }
 }
 
-public struct ChecklistItem {
+public struct ChecklistItem: Sendable {
     public let requirementId: String
     public let checkDescription: String
     public let evidenceToReview: [String]

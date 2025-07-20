@@ -1,9 +1,9 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 
 @Reducer
-public struct DocumentDeliveryFeature {
+public struct DocumentDeliveryFeature: Sendable {
     @ObservableState
     public struct State: Equatable {
         public var generatedDocuments: [GeneratedDocument] = []

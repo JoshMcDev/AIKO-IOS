@@ -1,11 +1,11 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 
 @Reducer
 public struct DocumentAnalysisFeature {
     @ObservableState
-    public struct State: Equatable {
+    public struct State: Equatable, Sendable {
         public var requirements: String = ""
         public var isAnalyzingRequirements: Bool = false
         public var showingLLMConfirmation: Bool = false
@@ -75,7 +75,7 @@ public struct DocumentAnalysisFeature {
 
         // Workflow actions
         case loadAcquisition(UUID)
-        case acquisitionLoaded(Acquisition, WorkflowContext)
+        case acquisitionLoaded(AppCore.Acquisition, WorkflowContext)
         case workflowStateChanged(WorkflowState)
         case selectPrompt(SuggestedPrompt)
         case processPromptResponse(String, CollectedData)
@@ -96,7 +96,7 @@ public struct DocumentAnalysisFeature {
         case saveCurrentState
     }
 
-    public enum DocumentStatus: Equatable {
+    public enum DocumentStatus: Equatable, Sendable {
         case notReady
         case needsMoreInfo
         case ready
@@ -128,7 +128,8 @@ public struct DocumentAnalysisFeature {
                     return .concatenate(
                         .send(.createAcquisition),
                         .run { [requirements = state.requirements,
-                                uploadedDocs = state.uploadedDocuments] send in
+                                uploadedDocs = state.uploadedDocuments,
+                                requirementAnalyzer = self.requirementAnalyzer] send in
                                 // Build enhanced requirements including uploaded documents
                                 var enhancedRequirements = requirements
 
@@ -157,7 +158,8 @@ public struct DocumentAnalysisFeature {
                 } else {
                     // Acquisition already exists, just analyze
                     return .run { [requirements = state.requirements,
-                                   uploadedDocs = state.uploadedDocuments] send in
+                                   uploadedDocs = state.uploadedDocuments,
+                                   requirementAnalyzer = self.requirementAnalyzer] send in
                             // Build enhanced requirements including uploaded documents
                             var enhancedRequirements = requirements
 
@@ -255,7 +257,7 @@ public struct DocumentAnalysisFeature {
                 state.isAnalyzingRequirements = true
                 state.error = nil
 
-                return .run { send in
+                return .run { [requirementAnalyzer = self.requirementAnalyzer] send in
                     await send(.addToConversation("User uploaded: \(fileName)"))
 
                     do {
@@ -291,7 +293,7 @@ public struct DocumentAnalysisFeature {
                 state.error = nil
                 state.showingDocumentPicker = false
 
-                return .run { [existingDocs = state.uploadedDocuments] send in
+                return .run { [existingDocs = state.uploadedDocuments, requirementAnalyzer = self.requirementAnalyzer] send in
                     var processedDocs = existingDocs
 
                     for (data, fileName) in documents {
@@ -330,7 +332,7 @@ public struct DocumentAnalysisFeature {
                 state.isAnalyzingRequirements = true
                 state.error = nil
 
-                return .run { send in
+                return .run { [requirementAnalyzer = self.requirementAnalyzer] send in
                     await send(.addToConversation("User uploaded an image"))
 
                     do {
@@ -353,7 +355,7 @@ public struct DocumentAnalysisFeature {
 
                 state.isAnalyzingRequirements = true
 
-                return .run { [requirements = state.requirements] send in
+                return .run { [requirements = state.requirements, requirementAnalyzer = self.requirementAnalyzer] send in
                     do {
                         // Use AI to enhance the prompt
                         let enhancedPrompt = try await requirementAnalyzer.enhancePrompt(requirements)
@@ -372,7 +374,7 @@ public struct DocumentAnalysisFeature {
             case .startVoiceRecording:
                 state.isRecording = true
 
-                return .run { send in
+                return .run { [voiceRecordingClient = self.voiceRecordingClient] send in
                     do {
                         // Check permissions first
                         let hasPermissions = voiceRecordingClient.checkPermissions()
@@ -396,7 +398,7 @@ public struct DocumentAnalysisFeature {
             case .stopVoiceRecording:
                 state.isRecording = false
 
-                return .run { send in
+                return .run { [voiceRecordingClient = self.voiceRecordingClient] send in
                     do {
                         let transcription = try await voiceRecordingClient.stopRecording()
                         await send(.voiceTranscriptionReceived(transcription))
@@ -414,7 +416,7 @@ public struct DocumentAnalysisFeature {
                 let title = state.requirements.isEmpty ? "New Acquisition" : String(state.requirements.prefix(50))
                 state.currentAcquisitionTitle = title
 
-                return .run { [title, requirements = state.requirements, uploadedDocs = state.uploadedDocuments] send in
+                return .run { [title, requirements = state.requirements, uploadedDocs = state.uploadedDocuments, acquisitionService = self.acquisitionService] send in
                     do {
                         let acquisition = try await acquisitionService.createAcquisition(
                             title,
@@ -433,7 +435,7 @@ public struct DocumentAnalysisFeature {
                 state.currentAcquisitionId = id
 
                 // Start workflow for the new acquisition
-                return .run { send in
+                return .run { [workflowEngine = self.workflowEngine, id] send in
                     do {
                         let workflowContext = try await workflowEngine.startWorkflow(id)
                         await send(.workflowContextUpdated(workflowContext))
@@ -451,7 +453,7 @@ public struct DocumentAnalysisFeature {
 
                 guard let acquisitionId = state.currentAcquisitionId else { return .none }
 
-                return .run { send in
+                return .run { [acquisitionService = self.acquisitionService, acquisitionId] send in
                     do {
                         try await acquisitionService.updateAcquisition(acquisitionId) { acquisition in
                             acquisition.title = title
@@ -466,7 +468,7 @@ public struct DocumentAnalysisFeature {
                 state.isLoadingAcquisition = true
                 state.error = nil
 
-                return .run { send in
+                return .run { [acquisitionService = self.acquisitionService, workflowEngine = self.workflowEngine] send in
                     do {
                         guard let acquisition = try await acquisitionService.fetchAcquisition(acquisitionId) else {
                             throw AcquisitionError.notFound
@@ -513,7 +515,7 @@ public struct DocumentAnalysisFeature {
             case let .workflowStateChanged(newState):
                 guard let acquisitionId = state.currentAcquisitionId else { return .none }
 
-                return .run { send in
+                return .run { [workflowEngine = self.workflowEngine, acquisitionId] send in
                     do {
                         let updatedContext = try await workflowEngine.updateWorkflowState(acquisitionId, newState)
                         await send(.workflowContextUpdated(updatedContext))
@@ -550,7 +552,7 @@ public struct DocumentAnalysisFeature {
             case let .processPromptResponse(response, extractedData):
                 guard let acquisitionId = state.currentAcquisitionId else { return .none }
 
-                return .run { send in
+                return .run { [workflowEngine = self.workflowEngine, acquisitionId] send in
                     do {
                         let updatedContext = try await workflowEngine.processLLMResponse(
                             acquisitionId,
@@ -576,7 +578,7 @@ public struct DocumentAnalysisFeature {
                 context.automationSettings = settings
                 state.workflowContext = context
 
-                return .run { send in
+                return .run { [workflowEngine = self.workflowEngine, acquisitionId, settings] send in
                     do {
                         // Save automation settings
                         let encoder = JSONEncoder()
@@ -594,7 +596,7 @@ public struct DocumentAnalysisFeature {
             case let .approveWorkflowStep(stepId, status):
                 guard let acquisitionId = state.currentAcquisitionId else { return .none }
 
-                return .run { send in
+                return .run { [workflowEngine = self.workflowEngine, acquisitionId] send in
                     do {
                         let updatedContext = try await workflowEngine.processApproval(
                             acquisitionId,
@@ -610,7 +612,7 @@ public struct DocumentAnalysisFeature {
             case .refreshWorkflowContext:
                 guard let acquisitionId = state.currentAcquisitionId else { return .none }
 
-                return .run { send in
+                return .run { [workflowEngine = self.workflowEngine, acquisitionId] send in
                     do {
                         let updatedContext = try await workflowEngine.loadWorkflow(acquisitionId)
                         await send(.workflowContextUpdated(updatedContext))
@@ -626,7 +628,7 @@ public struct DocumentAnalysisFeature {
 
                 // Generate new prompts if needed
                 if context.suggestedPrompts.isEmpty {
-                    return .run { [context] send in
+                    return .run { [context, workflowEngine = self.workflowEngine] send in
                         do {
                             let prompts = try await workflowEngine.generatePrompts(context)
                             var updatedContext = context
@@ -644,7 +646,7 @@ public struct DocumentAnalysisFeature {
             case let .createDocumentChain(documentTypes):
                 guard let acquisitionId = state.currentAcquisitionId else { return .none }
 
-                return .run { send in
+                return .run { [documentChainManager = self.documentChainManager, acquisitionId] send in
                     do {
                         let chain = try await documentChainManager.createChain(acquisitionId, documentTypes)
                         await send(.documentChainCreated(chain))
@@ -661,7 +663,7 @@ public struct DocumentAnalysisFeature {
             case .validateDocumentChain:
                 guard let acquisitionId = state.currentAcquisitionId else { return .none }
 
-                return .run { send in
+                return .run { [documentChainManager = self.documentChainManager, acquisitionId] send in
                     do {
                         let validation = try await documentChainManager.validateChain(acquisitionId)
                         await send(.chainValidated(validation))
@@ -680,7 +682,7 @@ public struct DocumentAnalysisFeature {
 
                 let hasWorkflowContext = state.workflowContext != nil
 
-                return .run { send in
+                return .run { [documentChainManager = self.documentChainManager, workflowEngine = self.workflowEngine, acquisitionId, hasWorkflowContext] send in
                     do {
                         // Update chain progress
                         let updatedChain = try await documentChainManager.updateChainProgress(
@@ -721,12 +723,12 @@ public struct DocumentAnalysisFeature {
                 // Save current state to Core Data
                 guard let acquisitionId = state.currentAcquisitionId else { return .none }
 
-                return .run { [state] send in
+                return .run { [state, acquisitionService = self.acquisitionService, acquisitionId] send in
                     do {
                         // Update acquisition with current state
                         try await acquisitionService.updateAcquisition(acquisitionId) { acquisition in
                             acquisition.requirements = state.requirements
-                            acquisition.title = state.currentAcquisitionTitle.isEmpty ? nil : state.currentAcquisitionTitle
+                            acquisition.title = state.currentAcquisitionTitle.isEmpty ? "Untitled Acquisition" : state.currentAcquisitionTitle
                         }
 
                         // Workflow context and document chain are saved automatically

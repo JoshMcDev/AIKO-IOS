@@ -1,35 +1,34 @@
-import XCTest
-import UniformTypeIdentifiers
 @testable import AIKO
+import UniformTypeIdentifiers
+import XCTest
 
 final class DocumentParserValidatorTests: XCTestCase {
-    
     var validator: DocumentParserValidator!
-    
+
     override func setUp() {
         super.setUp()
         validator = DocumentParserValidator()
     }
-    
+
     override func tearDown() {
         validator = nil
         super.tearDown()
     }
-    
+
     // MARK: - Document Validation Tests
-    
+
     func testValidateDocument_EmptyData_ThrowsError() {
         // Given
         let emptyData = Data()
         let pdfType = UTType.pdf
-        
+
         // When/Then
         XCTAssertThrowsError(try validator.validateDocument(emptyData, type: pdfType)) { error in
             guard let validationError = error as? DocumentParserValidationError else {
                 XCTFail("Expected DocumentParserValidationError")
                 return
             }
-            
+
             switch validationError {
             case .emptyDocument:
                 // Expected
@@ -39,19 +38,19 @@ final class DocumentParserValidatorTests: XCTestCase {
             }
         }
     }
-    
+
     func testValidateDocument_TooLargeFile_ThrowsError() {
         // Given
         let largeData = Data(repeating: 0, count: 101 * 1024 * 1024) // 101 MB
         let pdfType = UTType.pdf
-        
+
         // When/Then
         XCTAssertThrowsError(try validator.validateDocument(largeData, type: pdfType)) { error in
             guard let validationError = error as? DocumentParserValidationError else {
                 XCTFail("Expected DocumentParserValidationError")
                 return
             }
-            
+
             switch validationError {
             case .fileTooLarge:
                 // Expected
@@ -61,19 +60,19 @@ final class DocumentParserValidatorTests: XCTestCase {
             }
         }
     }
-    
+
     func testValidateDocument_UnsupportedType_ThrowsError() {
         // Given
         let data = "test".data(using: .utf8)!
         let unsupportedType = UTType(filenameExtension: "xyz") ?? .data
-        
+
         // When/Then
         XCTAssertThrowsError(try validator.validateDocument(data, type: unsupportedType)) { error in
             guard let validationError = error as? DocumentParserValidationError else {
                 XCTFail("Expected DocumentParserValidationError")
                 return
             }
-            
+
             switch validationError {
             case .unsupportedDocumentType:
                 // Expected
@@ -83,19 +82,19 @@ final class DocumentParserValidatorTests: XCTestCase {
             }
         }
     }
-    
+
     func testValidateDocument_InvalidPDFHeader_ThrowsError() {
         // Given
         let invalidPDFData = "Not a PDF".data(using: .utf8)!
         let pdfType = UTType.pdf
-        
+
         // When/Then
         XCTAssertThrowsError(try validator.validateDocument(invalidPDFData, type: pdfType)) { error in
             guard let validationError = error as? DocumentParserValidationError else {
                 XCTFail("Expected DocumentParserValidationError")
                 return
             }
-            
+
             switch validationError {
             case .corruptedDocument:
                 // Expected
@@ -105,31 +104,31 @@ final class DocumentParserValidatorTests: XCTestCase {
             }
         }
     }
-    
+
     func testValidateDocument_ValidPDF_Succeeds() throws {
         // Given
         var data = Data()
         data.append(contentsOf: [0x25, 0x50, 0x44, 0x46]) // %PDF header
         data.append("rest of PDF content".data(using: .utf8)!)
         let pdfType = UTType.pdf
-        
+
         // When/Then
         XCTAssertNoThrow(try validator.validateDocument(data, type: pdfType))
     }
-    
+
     // MARK: - Text Validation Tests
-    
+
     func testValidateExtractedText_EmptyText_ThrowsError() {
         // Given
         let emptyText = ""
-        
+
         // When/Then
         XCTAssertThrowsError(try validator.validateExtractedText(emptyText)) { error in
             guard let validationError = error as? DocumentParserValidationError else {
                 XCTFail("Expected DocumentParserValidationError")
                 return
             }
-            
+
             switch validationError {
             case .noTextExtracted:
                 // Expected
@@ -139,18 +138,18 @@ final class DocumentParserValidatorTests: XCTestCase {
             }
         }
     }
-    
+
     func testValidateExtractedText_TooShortText_ThrowsError() {
         // Given
         let shortText = "Hi"
-        
+
         // When/Then
         XCTAssertThrowsError(try validator.validateExtractedText(shortText)) { error in
             guard let validationError = error as? DocumentParserValidationError else {
                 XCTFail("Expected DocumentParserValidationError")
                 return
             }
-            
+
             switch validationError {
             case .insufficientText:
                 // Expected
@@ -160,18 +159,18 @@ final class DocumentParserValidatorTests: XCTestCase {
             }
         }
     }
-    
+
     func testValidateExtractedText_NoMeaningfulContent_ThrowsError() {
         // Given
         let nonsenseText = "123 456 789 !@# $%^"
-        
+
         // When/Then
         XCTAssertThrowsError(try validator.validateExtractedText(nonsenseText)) { error in
             guard let validationError = error as? DocumentParserValidationError else {
                 XCTFail("Expected DocumentParserValidationError")
                 return
             }
-            
+
             switch validationError {
             case .noMeaningfulContent:
                 // Expected
@@ -181,30 +180,30 @@ final class DocumentParserValidatorTests: XCTestCase {
             }
         }
     }
-    
+
     func testValidateExtractedText_ValidText_Succeeds() throws {
         // Given
         let validText = "This is a valid document with meaningful content and several words."
-        
+
         // When/Then
         XCTAssertNoThrow(try validator.validateExtractedText(validText))
     }
-    
+
     // MARK: - Extracted Data Validation Tests
-    
+
     func testValidateExtractedData_InvalidEmail_ThrowsError() {
         // Given
         let data = ExtractedData(vendorEmail: "not-an-email")
-        
+
         // When/Then
         XCTAssertThrowsError(try validator.validateExtractedData(data)) { error in
             guard let validationError = error as? DocumentParserValidationError else {
                 XCTFail("Expected DocumentParserValidationError")
                 return
             }
-            
+
             switch validationError {
-            case .invalidField(let field, _) where field == "Email":
+            case let .invalidField(field, _) where field == "Email":
                 // Expected
                 break
             default:
@@ -212,20 +211,20 @@ final class DocumentParserValidatorTests: XCTestCase {
             }
         }
     }
-    
+
     func testValidateExtractedData_InvalidUEI_ThrowsError() {
         // Given
         let data = ExtractedData(vendorUEI: "SHORT")
-        
+
         // When/Then
         XCTAssertThrowsError(try validator.validateExtractedData(data)) { error in
             guard let validationError = error as? DocumentParserValidationError else {
                 XCTFail("Expected DocumentParserValidationError")
                 return
             }
-            
+
             switch validationError {
-            case .invalidField(let field, _) where field == "UEI":
+            case let .invalidField(field, _) where field == "UEI":
                 // Expected
                 break
             default:
@@ -233,20 +232,20 @@ final class DocumentParserValidatorTests: XCTestCase {
             }
         }
     }
-    
+
     func testValidateExtractedData_InvalidCAGE_ThrowsError() {
         // Given
         let data = ExtractedData(vendorCAGE: "123456") // Too long
-        
+
         // When/Then
         XCTAssertThrowsError(try validator.validateExtractedData(data)) { error in
             guard let validationError = error as? DocumentParserValidationError else {
                 XCTFail("Expected DocumentParserValidationError")
                 return
             }
-            
+
             switch validationError {
-            case .invalidField(let field, _) where field == "CAGE":
+            case let .invalidField(field, _) where field == "CAGE":
                 // Expected
                 break
             default:
@@ -254,20 +253,20 @@ final class DocumentParserValidatorTests: XCTestCase {
             }
         }
     }
-    
+
     func testValidateExtractedData_NegativePrice_ThrowsError() {
         // Given
         let data = ExtractedData(totalPrice: -100.00)
-        
+
         // When/Then
         XCTAssertThrowsError(try validator.validateExtractedData(data)) { error in
             guard let validationError = error as? DocumentParserValidationError else {
                 XCTFail("Expected DocumentParserValidationError")
                 return
             }
-            
+
             switch validationError {
-            case .invalidField(let field, _) where field == "Price":
+            case let .invalidField(field, _) where field == "Price":
                 // Expected
                 break
             default:
@@ -275,20 +274,20 @@ final class DocumentParserValidatorTests: XCTestCase {
             }
         }
     }
-    
+
     func testValidateExtractedData_InvalidDateRange_ThrowsError() {
         // Given
         let quoteDate = Date()
         let validUntilDate = Date(timeIntervalSinceNow: -86400) // Yesterday
         let data = ExtractedData(quoteDate: quoteDate, validUntilDate: validUntilDate)
-        
+
         // When/Then
         XCTAssertThrowsError(try validator.validateExtractedData(data)) { error in
             guard let validationError = error as? DocumentParserValidationError else {
                 XCTFail("Expected DocumentParserValidationError")
                 return
             }
-            
+
             switch validationError {
             case .invalidDateRange:
                 // Expected
@@ -298,17 +297,17 @@ final class DocumentParserValidatorTests: XCTestCase {
             }
         }
     }
-    
+
     func testValidateExtractedData_ValidData_Succeeds() throws {
         // Given
         let quoteDate = Date()
         let validUntilDate = Date(timeIntervalSinceNow: 30 * 86400) // 30 days from now
-        
+
         let lineItems = [
             LineItem(description: "Test Item 1", quantity: 5, unitPrice: 10.00, totalPrice: 50.00),
-            LineItem(description: "Test Item 2", quantity: 3, unitPrice: 20.00, totalPrice: 60.00)
+            LineItem(description: "Test Item 2", quantity: 3, unitPrice: 20.00, totalPrice: 60.00),
         ]
-        
+
         let data = ExtractedData(
             vendorName: "Test Vendor Inc.",
             vendorEmail: "vendor@example.com",
@@ -320,28 +319,28 @@ final class DocumentParserValidatorTests: XCTestCase {
             totalPrice: 110.00,
             lineItems: lineItems
         )
-        
+
         // When/Then
         XCTAssertNoThrow(try validator.validateExtractedData(data))
     }
-    
+
     func testValidateExtractedData_EmptyLineItemDescription_ThrowsError() {
         // Given
         let lineItems = [
-            LineItem(description: "", quantity: 5, unitPrice: 10.00, totalPrice: 50.00)
+            LineItem(description: "", quantity: 5, unitPrice: 10.00, totalPrice: 50.00),
         ]
-        
+
         let data = ExtractedData(lineItems: lineItems)
-        
+
         // When/Then
         XCTAssertThrowsError(try validator.validateExtractedData(data)) { error in
             guard let validationError = error as? DocumentParserValidationError else {
                 XCTFail("Expected DocumentParserValidationError")
                 return
             }
-            
+
             switch validationError {
-            case .invalidField(let field, _) where field.contains("Line Item"):
+            case let .invalidField(field, _) where field.contains("Line Item"):
                 // Expected
                 break
             default:
@@ -349,24 +348,24 @@ final class DocumentParserValidatorTests: XCTestCase {
             }
         }
     }
-    
+
     func testValidateExtractedData_ZeroQuantityLineItem_ThrowsError() {
         // Given
         let lineItems = [
-            LineItem(description: "Test Item", quantity: 0, unitPrice: 10.00, totalPrice: 0.00)
+            LineItem(description: "Test Item", quantity: 0, unitPrice: 10.00, totalPrice: 0.00),
         ]
-        
+
         let data = ExtractedData(lineItems: lineItems)
-        
+
         // When/Then
         XCTAssertThrowsError(try validator.validateExtractedData(data)) { error in
             guard let validationError = error as? DocumentParserValidationError else {
                 XCTFail("Expected DocumentParserValidationError")
                 return
             }
-            
+
             switch validationError {
-            case .invalidField(let field, _) where field.contains("Quantity"):
+            case let .invalidField(field, _) where field.contains("Quantity"):
                 // Expected
                 break
             default:

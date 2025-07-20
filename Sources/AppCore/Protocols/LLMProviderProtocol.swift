@@ -1,5 +1,5 @@
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 // MARK: - LLM Provider Protocol
 
@@ -7,31 +7,31 @@ import ComposableArchitecture
 public protocol LLMProviderProtocol: Sendable {
     /// Unique identifier for the provider
     var id: String { get }
-    
+
     /// Human-readable name of the provider
     var name: String { get }
-    
+
     /// Provider capabilities
     var capabilities: LLMProviderCapabilities { get }
-    
+
     /// Check if the provider is configured and ready to use
     var isConfigured: Bool { get async }
-    
+
     /// Validate API key or credentials
     func validateCredentials() async throws -> Bool
-    
+
     /// Send a chat completion request
     func chatCompletion(_ request: LLMChatRequest) async throws -> LLMChatResponse
-    
+
     /// Stream a chat completion response
     func streamChatCompletion(_ request: LLMChatRequest) -> AsyncThrowingStream<LLMStreamChunk, Error>
-    
+
     /// Generate embeddings for text
     func generateEmbeddings(_ text: String) async throws -> [Float]
-    
+
     /// Get token count for text
     func tokenCount(for text: String) async throws -> Int
-    
+
     /// Get provider-specific settings
     func getSettings() -> LLMProviderSettings
 }
@@ -40,33 +40,33 @@ public protocol LLMProviderProtocol: Sendable {
 
 /// LLM Provider enum
 public enum LLMProvider: String, CaseIterable, Identifiable, Codable, Sendable {
-    case claude = "claude"
+    case claude
     case openAI = "openai"
     case chatGPT = "chatgpt"
-    case gemini = "gemini"
+    case gemini
     case azureOpenAI = "azure-openai"
-    case local = "local"
-    case custom = "custom"
-    
+    case local
+    case custom
+
     public var id: String { rawValue }
-    
+
     /// Human-readable name for the provider
     public var name: String {
         switch self {
         case .claude:
-            return "Claude (Anthropic)"
+            "Claude (Anthropic)"
         case .openAI:
-            return "OpenAI"
+            "OpenAI"
         case .chatGPT:
-            return "ChatGPT"
+            "ChatGPT"
         case .gemini:
-            return "Google Gemini"
+            "Google Gemini"
         case .azureOpenAI:
-            return "Azure OpenAI"
+            "Azure OpenAI"
         case .local:
-            return "Local Model"
+            "Local Model"
         case .custom:
-            return "Custom Provider"
+            "Custom Provider"
         }
     }
 }
@@ -80,14 +80,14 @@ public struct LLMProviderCapabilities: Equatable, Sendable {
     public let maxTokens: Int
     public let maxContextLength: Int
     public let supportedModels: [LLMModel]
-    
+
     public init(
         supportsStreaming: Bool = true,
         supportsEmbeddings: Bool = false,
         supportsVision: Bool = false,
         supportsFunctionCalling: Bool = false,
         maxTokens: Int = 4096,
-        maxContextLength: Int = 128000,
+        maxContextLength: Int = 128_000,
         supportedModels: [LLMModel] = []
     ) {
         self.supportsStreaming = supportsStreaming
@@ -107,7 +107,7 @@ public struct LLMModel: Equatable, Sendable, Identifiable {
     public let description: String
     public let contextLength: Int
     public let pricing: ModelPricing?
-    
+
     public init(
         id: String,
         name: String,
@@ -128,7 +128,7 @@ public struct ModelPricing: Equatable, Sendable {
     public let inputPricePerMillion: Decimal
     public let outputPricePerMillion: Decimal
     public let currency: String
-    
+
     public init(
         inputPricePerMillion: Decimal,
         outputPricePerMillion: Decimal,
@@ -149,7 +149,7 @@ public struct LLMChatRequest: Equatable, Sendable {
     public let systemPrompt: String?
     public let functions: [LLMFunction]?
     public let responseFormat: ResponseFormat?
-    
+
     public init(
         messages: [LLMMessage],
         model: String,
@@ -175,7 +175,7 @@ public struct LLMMessage: Equatable, Sendable, Codable {
     public let content: String
     public let name: String?
     public let functionCall: FunctionCall?
-    
+
     public init(
         role: MessageRole,
         content: String,
@@ -202,13 +202,13 @@ public struct LLMFunction: Equatable {
     public let name: String
     public let description: String
     public let parameters: [String: Any]
-    
+
     public init(name: String, description: String, parameters: [String: Any]) {
         self.name = name
         self.description = description
         self.parameters = parameters
     }
-    
+
     public static func == (lhs: LLMFunction, rhs: LLMFunction) -> Bool {
         lhs.name == rhs.name && lhs.description == rhs.description
     }
@@ -221,7 +221,7 @@ extension LLMFunction: @unchecked Sendable {}
 public struct FunctionCall: Equatable, Sendable, Codable {
     public let name: String
     public let arguments: String
-    
+
     public init(name: String, arguments: String) {
         self.name = name
         self.arguments = arguments
@@ -242,7 +242,7 @@ public struct LLMChatResponse: Equatable, Sendable {
     public let message: LLMMessage
     public let usage: TokenUsage
     public let finishReason: FinishReason
-    
+
     public init(
         id: String,
         model: String,
@@ -263,7 +263,7 @@ public struct LLMStreamChunk: Equatable, Sendable {
     public let delta: String
     public let role: MessageRole?
     public let finishReason: FinishReason?
-    
+
     public init(
         delta: String,
         role: MessageRole? = nil,
@@ -280,11 +280,11 @@ public struct TokenUsage: Equatable, Sendable {
     public let promptTokens: Int
     public let completionTokens: Int
     public let totalTokens: Int
-    
+
     public init(promptTokens: Int, completionTokens: Int) {
         self.promptTokens = promptTokens
         self.completionTokens = completionTokens
-        self.totalTokens = promptTokens + completionTokens
+        totalTokens = promptTokens + completionTokens
     }
 }
 
@@ -304,7 +304,7 @@ public struct LLMProviderSettings: Equatable, Sendable {
     public let customHeaders: [String: String]
     public let timeout: TimeInterval
     public let retryCount: Int
-    
+
     public init(
         apiEndpoint: String? = nil,
         apiVersion: String? = nil,
@@ -339,7 +339,7 @@ public struct LLMProviderConfig: Codable, Equatable, Sendable {
     public let frequencyPenalty: Double?
     public let presencePenalty: Double?
     public let stopSequences: [String]?
-    
+
     public init(
         provider: String,
         providerId: String? = nil,
@@ -369,7 +369,7 @@ public struct LLMProviderConfig: Codable, Equatable, Sendable {
         self.presencePenalty = presencePenalty
         self.stopSequences = stopSequences
     }
-    
+
     // Add convenience initializer that takes LLMProvider enum
     public init(
         provider: LLMProvider,
@@ -409,12 +409,12 @@ public struct LLMProviderConfig: Codable, Equatable, Sendable {
 public struct LLMProviderPriority: Codable, Equatable, Sendable {
     public let providers: [LLMProvider]
     public let fallbackBehavior: FallbackBehavior
-    
+
     public init(providers: [LLMProvider], fallbackBehavior: FallbackBehavior = .sequential) {
         self.providers = providers
         self.fallbackBehavior = fallbackBehavior
     }
-    
+
     public enum FallbackBehavior: String, Codable, Sendable {
         case sequential // Try providers in order
         case random // Try providers randomly
@@ -431,19 +431,19 @@ public enum LLMError: LocalizedError {
     case noAPIKey(provider: LLMProvider)
     case configurationError(String)
     case keychainError(String)
-    
+
     public var errorDescription: String? {
         switch self {
-        case .invalidAPIKey(let provider):
-            return "Invalid API key format for \(provider.name)"
-        case .providerUnavailable(let provider):
-            return "Provider \(provider.name) is not available"
-        case .noAPIKey(let provider):
-            return "No API key found for \(provider.name)"
-        case .configurationError(let message):
-            return "Configuration error: \(message)"
-        case .keychainError(let message):
-            return "Keychain error: \(message)"
+        case let .invalidAPIKey(provider):
+            "Invalid API key format for \(provider.name)"
+        case let .providerUnavailable(provider):
+            "Provider \(provider.name) is not available"
+        case let .noAPIKey(provider):
+            "No API key found for \(provider.name)"
+        case let .configurationError(message):
+            "Configuration error: \(message)"
+        case let .keychainError(message):
+            "Keychain error: \(message)"
         }
     }
 }
@@ -463,33 +463,33 @@ public enum LLMProviderError: LocalizedError {
     case embeddingsNotSupported
     case timeout
     case cancelled
-    
+
     public var errorDescription: String? {
         switch self {
         case .notConfigured:
-            return "LLM provider is not configured"
+            "LLM provider is not configured"
         case .invalidCredentials:
-            return "Invalid API credentials"
+            "Invalid API credentials"
         case .rateLimitExceeded:
-            return "Rate limit exceeded"
+            "Rate limit exceeded"
         case .contextLengthExceeded:
-            return "Context length exceeded"
-        case .modelNotSupported(let model):
-            return "Model '\(model)' is not supported"
-        case .networkError(let message):
-            return "Network error: \(message)"
-        case .invalidResponse(let message):
-            return "Invalid response: \(message)"
+            "Context length exceeded"
+        case let .modelNotSupported(model):
+            "Model '\(model)' is not supported"
+        case let .networkError(message):
+            "Network error: \(message)"
+        case let .invalidResponse(message):
+            "Invalid response: \(message)"
         case .streamingNotSupported:
-            return "Streaming is not supported by this provider"
+            "Streaming is not supported by this provider"
         case .functionCallingNotSupported:
-            return "Function calling is not supported by this provider"
+            "Function calling is not supported by this provider"
         case .embeddingsNotSupported:
-            return "Embeddings are not supported by this provider"
+            "Embeddings are not supported by this provider"
         case .timeout:
-            return "Request timed out"
+            "Request timed out"
         case .cancelled:
-            return "Request was cancelled"
+            "Request was cancelled"
         }
     }
 }

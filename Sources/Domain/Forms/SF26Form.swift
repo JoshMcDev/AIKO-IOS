@@ -2,17 +2,16 @@ import Foundation
 
 /// SF 26 - Award/Contract
 public final class SF26Form: BaseGovernmentForm {
-    
     // MARK: - Form Sections
-    
+
     public let contractInfo: ContractInformation
     public let vendorInfo: VendorInformation
     public let supplies: SuppliesSection
     public let accounting: AccountingSection
     public let signatures: SignatureSection
-    
+
     // MARK: - Initialization
-    
+
     public init(
         revision: String = "REV APR 2018",
         metadata: FormMetadata,
@@ -27,7 +26,7 @@ public final class SF26Form: BaseGovernmentForm {
         self.supplies = supplies
         self.accounting = accounting
         self.signatures = signatures
-        
+
         super.init(
             formNumber: "SF26",
             formTitle: "Award/Contract",
@@ -38,12 +37,12 @@ public final class SF26Form: BaseGovernmentForm {
             metadata: metadata
         )
     }
-    
+
     // MARK: - Validation
-    
-    public override func validate() throws {
+
+    override public func validate() throws {
         try super.validate()
-        
+
         // Validate all sections
         try contractInfo.validate()
         try vendorInfo.validate()
@@ -51,18 +50,18 @@ public final class SF26Form: BaseGovernmentForm {
         try accounting.validate()
         try signatures.validate()
     }
-    
+
     // MARK: - Export
-    
-    public override func export() -> [String: Any] {
+
+    override public func export() -> [String: Any] {
         var data = super.export()
-        
+
         data["contractInfo"] = contractInfo.export()
         data["vendorInfo"] = vendorInfo.export()
         data["supplies"] = supplies.export()
         data["accounting"] = accounting.export()
         data["signatures"] = signatures.export()
-        
+
         return data
     }
 }
@@ -77,7 +76,7 @@ public struct ContractInformation: ValueObject {
     public let solicitationNumber: SolicitationNumber?
     public let contractType: ContractType
     public let totalAmount: Money
-    
+
     public enum ContractType: String, CaseIterable {
         case firmFixedPrice = "FFP"
         case costPlusFixedFee = "CPFF"
@@ -87,7 +86,7 @@ public struct ContractInformation: ValueObject {
         case laborHour = "LH"
         case indefiniteDelivery = "IDIQ"
     }
-    
+
     public init(
         contractNumber: ContractNumber,
         awardDate: Date,
@@ -103,11 +102,11 @@ public struct ContractInformation: ValueObject {
         self.contractType = contractType
         self.totalAmount = totalAmount
     }
-    
+
     public func validate() throws {
         // No additional validation needed - value objects validate themselves
     }
-    
+
     func export() -> [String: Any] {
         [
             "contractNumber": contractNumber.value,
@@ -116,7 +115,7 @@ public struct ContractInformation: ValueObject {
             "solicitationNumber": solicitationNumber?.value as Any,
             "contractType": contractType.rawValue,
             "totalAmount": totalAmount.amount,
-            "currency": totalAmount.currency.rawValue
+            "currency": totalAmount.currency.rawValue,
         ]
     }
 }
@@ -129,7 +128,7 @@ public struct VendorInformation: ValueObject {
     public let dunsNumber: DUNSNumber?
     public let taxId: String
     public let smallBusinessPrograms: [SmallBusinessProgram]
-    
+
     public enum SmallBusinessProgram: String, CaseIterable {
         case smallBusiness = "SB"
         case womenOwned = "WOSB"
@@ -140,7 +139,7 @@ public struct VendorInformation: ValueObject {
         case historicallyBlackCollege = "HBCU"
         case minorityInstitution = "MI"
     }
-    
+
     public init(
         name: String,
         address: PostalAddress,
@@ -156,17 +155,17 @@ public struct VendorInformation: ValueObject {
         self.taxId = taxId
         self.smallBusinessPrograms = smallBusinessPrograms
     }
-    
+
     public func validate() throws {
         guard !name.isEmpty else {
             throw FormError.missingRequiredField("vendor name")
         }
-        
+
         guard !taxId.isEmpty else {
             throw FormError.missingRequiredField("tax ID")
         }
     }
-    
+
     func export() -> [String: Any] {
         [
             "name": name,
@@ -174,7 +173,7 @@ public struct VendorInformation: ValueObject {
             "cageCode": cageCode.value,
             "dunsNumber": dunsNumber?.value as Any,
             "taxId": taxId,
-            "smallBusinessPrograms": smallBusinessPrograms.map { $0.rawValue }
+            "smallBusinessPrograms": smallBusinessPrograms.map(\.rawValue),
         ]
     }
 }
@@ -184,7 +183,7 @@ public struct SuppliesSection: ValueObject {
     public let items: [ContractLineItem]
     public let performancePeriod: DateRange
     public let placeOfPerformance: PlaceOfPerformance
-    
+
     public struct ContractLineItem: ValueObject {
         public let clin: String
         public let description: String
@@ -194,7 +193,7 @@ public struct SuppliesSection: ValueObject {
         public let totalPrice: Money
         public let naicsCode: FormNAICSCode?
         public let psc: String? // Product Service Code
-        
+
         public init(
             clin: String,
             description: String,
@@ -214,20 +213,20 @@ public struct SuppliesSection: ValueObject {
             self.naicsCode = naicsCode
             self.psc = psc
         }
-        
+
         public func validate() throws {
             guard !clin.isEmpty else {
                 throw FormError.missingRequiredField("CLIN")
             }
-            
+
             guard !description.isEmpty else {
                 throw FormError.missingRequiredField("description")
             }
-            
+
             guard quantity > 0 else {
                 throw FormError.invalidField("quantity - must be positive")
             }
-            
+
             // Validate total = quantity * unit price
             let calculatedTotal = quantity * unitPrice.amount
             guard abs(calculatedTotal - totalPrice.amount) < 0.01 else {
@@ -235,7 +234,7 @@ public struct SuppliesSection: ValueObject {
             }
         }
     }
-    
+
     public init(
         items: [ContractLineItem],
         performancePeriod: DateRange,
@@ -245,17 +244,17 @@ public struct SuppliesSection: ValueObject {
         self.performancePeriod = performancePeriod
         self.placeOfPerformance = placeOfPerformance
     }
-    
+
     public func validate() throws {
         guard !items.isEmpty else {
             throw FormError.validationFailed("At least one line item is required")
         }
-        
+
         for item in items {
             try item.validate()
         }
     }
-    
+
     func export() -> [String: Any] {
         [
             "items": items.map { item in
@@ -267,18 +266,18 @@ public struct SuppliesSection: ValueObject {
                     "unitPrice": item.unitPrice.amount,
                     "totalPrice": item.totalPrice.amount,
                     "naicsCode": item.naicsCode?.value as Any,
-                    "psc": item.psc as Any
+                    "psc": item.psc as Any,
                 ]
             },
             "performancePeriod": [
                 "startDate": performancePeriod.startDate.timeIntervalSince1970,
-                "endDate": performancePeriod.endDate.timeIntervalSince1970
+                "endDate": performancePeriod.endDate.timeIntervalSince1970,
             ],
             "placeOfPerformance": [
                 "address": placeOfPerformance.address.formatted,
                 "countryCode": placeOfPerformance.countryCode,
-                "principalPlaceCode": placeOfPerformance.principalPlaceCode as Any
-            ]
+                "principalPlaceCode": placeOfPerformance.principalPlaceCode as Any,
+            ],
         ]
     }
 }
@@ -290,7 +289,7 @@ public struct AccountingSection: ValueObject {
     public let objectClass: String?
     public let stationNumber: String?
     public let obligation: Money
-    
+
     public init(
         accountingClassification: String,
         appropriation: String,
@@ -304,17 +303,17 @@ public struct AccountingSection: ValueObject {
         self.stationNumber = stationNumber
         self.obligation = obligation
     }
-    
+
     public func validate() throws {
         guard !accountingClassification.isEmpty else {
             throw FormError.missingRequiredField("accounting classification")
         }
-        
+
         guard !appropriation.isEmpty else {
             throw FormError.missingRequiredField("appropriation")
         }
     }
-    
+
     func export() -> [String: Any] {
         [
             "accountingClassification": accountingClassification,
@@ -322,7 +321,7 @@ public struct AccountingSection: ValueObject {
             "objectClass": objectClass as Any,
             "stationNumber": stationNumber as Any,
             "obligation": obligation.amount,
-            "currency": obligation.currency.rawValue
+            "currency": obligation.currency.rawValue,
         ]
     }
 }
@@ -331,13 +330,13 @@ public struct AccountingSection: ValueObject {
 public struct SignatureSection: ValueObject {
     public let contractingOfficer: SignatureBlock
     public let vendor: SignatureBlock?
-    
+
     public struct SignatureBlock: ValueObject {
         public let name: String
         public let title: String
         public let signature: String? // Base64 encoded
         public let signatureDate: Date?
-        
+
         public init(
             name: String,
             title: String,
@@ -349,18 +348,18 @@ public struct SignatureSection: ValueObject {
             self.signature = signature
             self.signatureDate = signatureDate
         }
-        
+
         public func validate() throws {
             guard !name.isEmpty else {
                 throw FormError.missingRequiredField("name")
             }
-            
+
             guard !title.isEmpty else {
                 throw FormError.missingRequiredField("title")
             }
         }
     }
-    
+
     public init(
         contractingOfficer: SignatureBlock,
         vendor: SignatureBlock? = nil
@@ -368,31 +367,31 @@ public struct SignatureSection: ValueObject {
         self.contractingOfficer = contractingOfficer
         self.vendor = vendor
     }
-    
+
     public func validate() throws {
         try contractingOfficer.validate()
-        
-        if let vendor = vendor {
+
+        if let vendor {
             try vendor.validate()
         }
     }
-    
+
     func export() -> [String: Any] {
         [
             "contractingOfficer": [
                 "name": contractingOfficer.name,
                 "title": contractingOfficer.title,
                 "signature": contractingOfficer.signature as Any,
-                "signatureDate": contractingOfficer.signatureDate?.timeIntervalSince1970 as Any
+                "signatureDate": contractingOfficer.signatureDate?.timeIntervalSince1970 as Any,
             ],
             "vendor": vendor.map { v in
                 [
                     "name": v.name,
                     "title": v.title,
                     "signature": v.signature as Any,
-                    "signatureDate": v.signatureDate?.timeIntervalSince1970 as Any
+                    "signatureDate": v.signatureDate?.timeIntervalSince1970 as Any,
                 ]
-            } as Any
+            } as Any,
         ]
     }
 }
@@ -400,14 +399,13 @@ public struct SignatureSection: ValueObject {
 // MARK: - SF26 Factory
 
 public final class SF26Factory: BaseFormFactory<SF26Form> {
-    
-    public override func createBlank() -> SF26Form {
+    override public func createBlank() -> SF26Form {
         let metadata = FormMetadata(
             createdBy: "System",
             agency: "GSA",
             purpose: "Contract award"
         )
-        
+
         let emptyAddress = try! PostalAddress(
             street: "TBD",
             city: "TBD",
@@ -415,7 +413,7 @@ public final class SF26Factory: BaseFormFactory<SF26Form> {
             zipCode: "00000",
             country: "USA"
         )
-        
+
         return SF26Form(
             metadata: metadata,
             contractInfo: ContractInformation(
@@ -454,17 +452,17 @@ public final class SF26Factory: BaseFormFactory<SF26Form> {
             )
         )
     }
-    
-    public override func createForm(with data: FormData) throws -> SF26Form {
+
+    override public func createForm(with data: FormData) throws -> SF26Form {
         let metadata = data.metadata
-        
+
         // Extract and validate fields
         let contractInfo = try createContractInfo(from: data.fields)
         let vendorInfo = try createVendorInfo(from: data.fields)
         let supplies = try createSuppliesSection(from: data.fields)
         let accounting = try createAccountingSection(from: data.fields)
         let signatures = try createSignatureSection(from: data.fields)
-        
+
         return SF26Form(
             revision: data.revision ?? "REV APR 2018",
             metadata: metadata,
@@ -475,13 +473,13 @@ public final class SF26Factory: BaseFormFactory<SF26Form> {
             signatures: signatures
         )
     }
-    
+
     // Helper methods for creating sections
     private func createContractInfo(from fields: [String: Any]) throws -> ContractInformation {
         guard let contractNum = fields["contractNumber"] as? String else {
             throw FormError.missingRequiredField("contractNumber")
         }
-        
+
         let contractNumber = try ContractNumber(contractNum)
         let awardDate = fields["awardDate"] as? Date ?? Date()
         let contractType = ContractInformation.ContractType(
@@ -491,7 +489,7 @@ public final class SF26Factory: BaseFormFactory<SF26Form> {
             amount: fields["totalAmount"] as? Decimal ?? 0,
             currency: .usd
         )
-        
+
         return ContractInformation(
             contractNumber: contractNumber,
             awardDate: awardDate,
@@ -499,7 +497,7 @@ public final class SF26Factory: BaseFormFactory<SF26Form> {
             totalAmount: totalAmount
         )
     }
-    
+
     private func createVendorInfo(from fields: [String: Any]) throws -> VendorInformation {
         let address = try PostalAddress(
             street: fields["vendorStreet"] as? String ?? "TBD",
@@ -507,15 +505,15 @@ public final class SF26Factory: BaseFormFactory<SF26Form> {
             state: fields["vendorState"] as? String ?? "TBD",
             zipCode: fields["vendorZip"] as? String ?? "00000"
         )
-        
-        return VendorInformation(
+
+        return try VendorInformation(
             name: fields["vendorName"] as? String ?? "",
             address: address,
-            cageCode: try CageCode(fields["cageCode"] as? String ?? "00000"),
+            cageCode: CageCode(fields["cageCode"] as? String ?? "00000"),
             taxId: fields["taxId"] as? String ?? ""
         )
     }
-    
+
     private func createSuppliesSection(from fields: [String: Any]) throws -> SuppliesSection {
         let popAddress = try PostalAddress(
             street: fields["popStreet"] as? String ?? "TBD",
@@ -523,31 +521,31 @@ public final class SF26Factory: BaseFormFactory<SF26Form> {
             state: fields["popState"] as? String ?? "TBD",
             zipCode: fields["popZip"] as? String ?? "00000"
         )
-        
-        return SuppliesSection(
+
+        return try SuppliesSection(
             items: [],
-            performancePeriod: try DateRange(
+            performancePeriod: DateRange(
                 from: fields["startDate"] as? Date ?? Date(),
                 to: fields["endDate"] as? Date ?? Date().addingTimeInterval(365 * 24 * 60 * 60)
             ),
-            placeOfPerformance: try PlaceOfPerformance(
+            placeOfPerformance: PlaceOfPerformance(
                 address: popAddress,
                 countryCode: "US"
             )
         )
     }
-    
+
     private func createAccountingSection(from fields: [String: Any]) throws -> AccountingSection {
-        AccountingSection(
+        try AccountingSection(
             accountingClassification: fields["accountingClass"] as? String ?? "",
             appropriation: fields["appropriation"] as? String ?? "",
-            obligation: try Money(
+            obligation: Money(
                 amount: fields["obligation"] as? Decimal ?? 0,
                 currency: .usd
             )
         )
     }
-    
+
     private func createSignatureSection(from fields: [String: Any]) throws -> SignatureSection {
         SignatureSection(
             contractingOfficer: SignatureSection.SignatureBlock(

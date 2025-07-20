@@ -3,10 +3,9 @@ import Foundation
 // MARK: - Enhanced Contextual Defaults System
 
 /// Enhanced contextual defaults that consider multiple environmental factors
-public class EnhancedContextualDefaultsProvider {
-    
+public final class EnhancedContextualDefaultsProvider: @unchecked Sendable {
     // MARK: - Types
-    
+
     public struct ContextualFactors {
         // Temporal Context
         let currentDate: Date
@@ -18,7 +17,7 @@ public class EnhancedContextualDefaultsProvider {
         let daysUntilQuarterEnd: Int
         let timeOfDay: TimeOfDay
         let dayOfWeek: DayOfWeek
-        
+
         // Organizational Context
         let organizationUnit: String
         let department: String
@@ -26,54 +25,54 @@ public class EnhancedContextualDefaultsProvider {
         let budgetRemaining: Decimal?
         let typicalPurchaseAmount: Decimal?
         let approvalLevels: [ApprovalLevel]
-        
+
         // Historical Context
         let recentAcquisitions: [RecentAcquisition]
         let vendorPreferences: [VendorPreference]
         let seasonalPatterns: [SeasonalPattern]
-        
+
         // Environmental Context
         let currentWorkload: WorkloadLevel
         let urgentRequests: Int
         let pendingApprovals: Int
         let teamCapacity: Float
-        
+
         // Compliance Context
         let requiredClauses: [ComplianceClause]
         let setAsideGoals: SetAsideGoals
         let socioeconomicTargets: [SocioeconomicTarget]
     }
-    
+
     public enum TimeOfDay: String {
         case earlyMorning = "early_morning" // 6-9 AM
-        case lateMorning = "late_morning"   // 9-12 PM
-        case afternoon = "afternoon"         // 12-5 PM
-        case evening = "evening"             // 5-8 PM
-        case night = "night"                 // 8 PM-6 AM
+        case lateMorning = "late_morning" // 9-12 PM
+        case afternoon // 12-5 PM
+        case evening // 5-8 PM
+        case night // 8 PM-6 AM
     }
-    
+
     public enum DayOfWeek: String {
         case monday, tuesday, wednesday, thursday, friday, saturday, sunday
-        
+
         var isWeekend: Bool {
             self == .saturday || self == .sunday
         }
-        
+
         var isEndOfWeek: Bool {
             self == .thursday || self == .friday
         }
     }
-    
+
     public enum WorkloadLevel: String {
         case low, normal, high, critical
     }
-    
+
     public struct ApprovalLevel {
         let threshold: Decimal
         let approver: String
         let typicalTurnaround: Int // days
     }
-    
+
     public struct RecentAcquisition {
         let date: Date
         let vendor: String
@@ -81,7 +80,7 @@ public class EnhancedContextualDefaultsProvider {
         let category: String
         let deliveryTime: Int // days
     }
-    
+
     public struct VendorPreference {
         let vendor: String
         let category: String
@@ -89,21 +88,21 @@ public class EnhancedContextualDefaultsProvider {
         let averageDeliveryTime: Int
         let priceCompetitiveness: Float // 0-1
     }
-    
+
     public struct SeasonalPattern {
         let month: Int
         let category: String
         let volumeMultiplier: Float
         let urgencyMultiplier: Float
     }
-    
+
     public struct ComplianceClause {
         let clauseNumber: String
         let title: String
         let applicability: String
         let mandatory: Bool
     }
-    
+
     public struct SetAsideGoals {
         let smallBusiness: Float
         let womanOwned: Float
@@ -111,40 +110,40 @@ public class EnhancedContextualDefaultsProvider {
         let hubZone: Float
         let currentProgress: [String: Float]
     }
-    
+
     public struct SocioeconomicTarget {
         let category: String
         let targetPercentage: Float
         let currentPercentage: Float
         let priority: Int
     }
-    
+
     // MARK: - Properties
-    
+
     private let contextAnalyzer: ContextAnalyzer
     private let patternMatcher: PatternMatcher
     private let ruleEvaluator: RuleEvaluator
-    
+
     // MARK: - Initialization
-    
+
     public init() {
-        self.contextAnalyzer = ContextAnalyzer()
-        self.patternMatcher = PatternMatcher()
-        self.ruleEvaluator = RuleEvaluator()
+        contextAnalyzer = ContextAnalyzer()
+        patternMatcher = PatternMatcher()
+        ruleEvaluator = RuleEvaluator()
     }
-    
+
     // MARK: - Public Methods
-    
+
     /// Generate contextual defaults based on comprehensive environmental factors
     public func generateContextualDefaults(
         for fields: [RequirementField],
         factors: ContextualFactors
     ) async -> [RequirementField: ContextualDefault] {
         var defaults: [RequirementField: ContextualDefault] = [:]
-        
+
         // Analyze context to determine priorities
         let contextPriorities = analyzeContextPriorities(factors)
-        
+
         // Generate defaults for each field
         for field in fields {
             if let contextualDefault = await generateFieldDefault(
@@ -155,15 +154,15 @@ public class EnhancedContextualDefaultsProvider {
                 defaults[field] = contextualDefault
             }
         }
-        
+
         // Apply cross-field validation and adjustments
         defaults = applyCrossFieldValidation(defaults, factors: factors)
-        
+
         return defaults
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func generateFieldDefault(
         field: RequirementField,
         factors: ContextualFactors,
@@ -171,51 +170,51 @@ public class EnhancedContextualDefaultsProvider {
     ) async -> ContextualDefault? {
         switch field {
         case .requiredDate:
-            return generateRequiredDateDefault(factors: factors, priorities: priorities)
-            
+            generateRequiredDateDefault(factors: factors, priorities: priorities)
+
         case .fundingSource:
-            return generateFundingSourceDefault(factors: factors)
-            
+            generateFundingSourceDefault(factors: factors)
+
         case .contractType:
-            return generateContractTypeDefault(factors: factors, priorities: priorities)
-            
+            generateContractTypeDefault(factors: factors, priorities: priorities)
+
         case .setAsideType:
-            return generateSetAsideDefault(factors: factors)
-            
+            generateSetAsideDefault(factors: factors)
+
         case .performanceLocation:
-            return generateLocationDefault(factors: factors)
-            
+            generateLocationDefault(factors: factors)
+
         case .paymentTerms:
-            return generatePaymentTermsDefault(factors: factors)
-            
+            generatePaymentTermsDefault(factors: factors)
+
         case .qualityRequirements:
-            return generateQualityRequirementsDefault(factors: factors)
-            
+            generateQualityRequirementsDefault(factors: factors)
+
         case .inspectionRequirements:
-            return generateInspectionDefault(factors: factors)
-            
+            generateInspectionDefault(factors: factors)
+
         case .deliveryInstructions:
-            return generateDeliveryInstructionsDefault(factors: factors)
-            
+            generateDeliveryInstructionsDefault(factors: factors)
+
         case .specialConditions:
-            return generateSpecialConditionsDefault(factors: factors, priorities: priorities)
-            
+            generateSpecialConditionsDefault(factors: factors, priorities: priorities)
+
         default:
-            return nil
+            nil
         }
     }
-    
+
     private func generateRequiredDateDefault(
         factors: ContextualFactors,
-        priorities: ContextPriorities
+        priorities _: ContextPriorities
     ) -> ContextualDefault {
         let calendar = Calendar.current
         var suggestedDate: Date
         var confidence: Float = 0.7
         var reasoning: String
-        
+
         // Factor 1: Fiscal year considerations
-        if factors.isEndOfFiscalYear && factors.daysUntilFYEnd < 60 {
+        if factors.isEndOfFiscalYear, factors.daysUntilFYEnd < 60 {
             // Urgent delivery needed before FY end
             let maxDays = max(factors.daysUntilFYEnd - 10, 14) // At least 2 weeks
             suggestedDate = calendar.date(byAdding: .day, value: maxDays, to: Date())!
@@ -223,7 +222,7 @@ public class EnhancedContextualDefaultsProvider {
             reasoning = "End of fiscal year urgency - must deliver before \(factors.fiscalYear) ends"
         }
         // Factor 2: End of quarter considerations
-        else if factors.isEndOfQuarter && factors.daysUntilQuarterEnd < 30 {
+        else if factors.isEndOfQuarter, factors.daysUntilQuarterEnd < 30 {
             let targetDays = min(factors.daysUntilQuarterEnd - 5, 25)
             suggestedDate = calendar.date(byAdding: .day, value: targetDays, to: Date())!
             confidence = 0.85
@@ -248,10 +247,10 @@ public class EnhancedContextualDefaultsProvider {
             confidence = 0.7
             reasoning = "Standard 30-day delivery window"
         }
-        
+
         // Adjust for weekends
         suggestedDate = adjustForWeekend(date: suggestedDate, calendar: calendar)
-        
+
         return ContextualDefault(
             field: .requiredDate,
             value: suggestedDate,
@@ -260,12 +259,12 @@ public class EnhancedContextualDefaultsProvider {
             alternatives: generateDateAlternatives(baseDate: suggestedDate, factors: factors)
         )
     }
-    
+
     private func generateFundingSourceDefault(factors: ContextualFactors) -> ContextualDefault {
         var fundingSource: String
         var confidence: Float
         var reasoning: String
-        
+
         // Check remaining budget
         if let budgetRemaining = factors.budgetRemaining {
             if budgetRemaining < 10000 {
@@ -285,7 +284,7 @@ public class EnhancedContextualDefaultsProvider {
             confidence = 0.75
             reasoning = "Standard organizational funding source"
         }
-        
+
         return ContextualDefault(
             field: .fundingSource,
             value: fundingSource,
@@ -296,11 +295,11 @@ public class EnhancedContextualDefaultsProvider {
                     value: "Working Capital Fund \(factors.fiscalYear)",
                     confidence: 0.5,
                     reasoning: "Alternative for inter-agency purchases"
-                )
+                ),
             ]
         )
     }
-    
+
     private func generateContractTypeDefault(
         factors: ContextualFactors,
         priorities: ContextPriorities
@@ -308,17 +307,17 @@ public class EnhancedContextualDefaultsProvider {
         var contractType: String
         var confidence: Float
         var reasoning: String
-        
+
         // Analyze recent patterns
-        let recentTypes = factors.recentAcquisitions.map { $0.category }
+        let recentTypes = factors.recentAcquisitions.map(\.category)
         _ = findMostCommonElement(recentTypes)
-        
+
         if priorities.speedPriority > 0.8 {
             contractType = "Purchase Order"
             confidence = 0.9
             reasoning = "Simplified acquisition for speed"
         } else if let typical = factors.typicalPurchaseAmount {
-            if typical > 250000 {
+            if typical > 250_000 {
                 contractType = "Fixed Price Contract"
                 confidence = 0.85
                 reasoning = "Standard for high-value acquisitions"
@@ -336,7 +335,7 @@ public class EnhancedContextualDefaultsProvider {
             confidence = 0.7
             reasoning = "Default contract vehicle"
         }
-        
+
         return ContextualDefault(
             field: .contractType,
             value: contractType,
@@ -345,17 +344,17 @@ public class EnhancedContextualDefaultsProvider {
             alternatives: []
         )
     }
-    
+
     private func generateSetAsideDefault(factors: ContextualFactors) -> ContextualDefault? {
         // Check socioeconomic goals
         let goals = factors.setAsideGoals
         var setAsideType: String?
         var confidence: Float = 0.0
-        var reasoning: String = ""
-        
+        var reasoning = ""
+
         // Find category most behind target
         var maxGap: Float = 0
-        
+
         if let progress = goals.currentProgress["smallBusiness"] {
             let gap = goals.smallBusiness - progress
             if gap > maxGap {
@@ -365,7 +364,7 @@ public class EnhancedContextualDefaultsProvider {
                 reasoning = "Small business goal at \(Int(progress * 100))% of \(Int(goals.smallBusiness * 100))% target"
             }
         }
-        
+
         if let progress = goals.currentProgress["womanOwned"] {
             let gap = goals.womanOwned - progress
             if gap > maxGap {
@@ -375,7 +374,7 @@ public class EnhancedContextualDefaultsProvider {
                 reasoning = "Woman-owned goal at \(Int(progress * 100))% of \(Int(goals.womanOwned * 100))% target"
             }
         }
-        
+
         if let progress = goals.currentProgress["veteranOwned"] {
             let gap = goals.veteranOwned - progress
             if gap > maxGap {
@@ -385,9 +384,9 @@ public class EnhancedContextualDefaultsProvider {
                 reasoning = "Veteran-owned goal at \(Int(progress * 100))% of \(Int(goals.veteranOwned * 100))% target"
             }
         }
-        
+
         guard let selectedType = setAsideType else { return nil }
-        
+
         return ContextualDefault(
             field: .setAsideType,
             value: selectedType,
@@ -396,16 +395,16 @@ public class EnhancedContextualDefaultsProvider {
             alternatives: []
         )
     }
-    
+
     private func generateLocationDefault(factors: ContextualFactors) -> ContextualDefault {
         // Default to organizational location
-        return ContextualDefault(
+        ContextualDefault(
             field: .performanceLocation,
             value: factors.location,
             confidence: 0.95,
             reasoning: "Default organizational location",
             alternatives: factors.recentAcquisitions
-                .map { $0.vendor }
+                .map(\.vendor)
                 .unique()
                 .prefix(2)
                 .map { vendor in
@@ -417,12 +416,12 @@ public class EnhancedContextualDefaultsProvider {
                 }
         )
     }
-    
+
     private func generatePaymentTermsDefault(factors: ContextualFactors) -> ContextualDefault {
         var terms: String
         var confidence: Float
         var reasoning: String
-        
+
         if factors.currentWorkload == .critical || factors.urgentRequests > 5 {
             terms = "Net 45"
             confidence = 0.8
@@ -436,7 +435,7 @@ public class EnhancedContextualDefaultsProvider {
             confidence = 0.9
             reasoning = "Standard payment terms"
         }
-        
+
         return ContextualDefault(
             field: .paymentTerms,
             value: terms,
@@ -445,15 +444,15 @@ public class EnhancedContextualDefaultsProvider {
             alternatives: []
         )
     }
-    
+
     private func generateQualityRequirementsDefault(factors: ContextualFactors) -> ContextualDefault {
         let requirements = [
             "ISO 9001:2015 certified quality management system",
             "100% inspection for critical components",
             "Certificate of Conformance required with each shipment",
-            "Right of inspection at vendor facility"
+            "Right of inspection at vendor facility",
         ]
-        
+
         return ContextualDefault(
             field: .qualityRequirements,
             value: requirements,
@@ -462,11 +461,11 @@ public class EnhancedContextualDefaultsProvider {
             alternatives: []
         )
     }
-    
+
     private func generateInspectionDefault(factors: ContextualFactors) -> ContextualDefault {
         var inspection: String
         var confidence: Float
-        
+
         if factors.vendorPreferences.contains(where: { $0.satisfaction > 0.9 }) {
             inspection = "Destination inspection only"
             confidence = 0.85
@@ -474,7 +473,7 @@ public class EnhancedContextualDefaultsProvider {
             inspection = "Source and destination inspection"
             confidence = 0.8
         }
-        
+
         return ContextualDefault(
             field: .inspectionRequirements,
             value: inspection,
@@ -483,7 +482,7 @@ public class EnhancedContextualDefaultsProvider {
             alternatives: []
         )
     }
-    
+
     private func generateDeliveryInstructionsDefault(factors: ContextualFactors) -> ContextualDefault {
         let instructions = """
         Delivery Location: \(factors.location)
@@ -491,7 +490,7 @@ public class EnhancedContextualDefaultsProvider {
         Contact: \(factors.department) Receiving
         Special Instructions: Call 24 hours before delivery
         """
-        
+
         return ContextualDefault(
             field: .deliveryInstructions,
             value: instructions,
@@ -500,30 +499,30 @@ public class EnhancedContextualDefaultsProvider {
             alternatives: []
         )
     }
-    
+
     private func generateSpecialConditionsDefault(
         factors: ContextualFactors,
-        priorities: ContextPriorities
+        priorities _: ContextPriorities
     ) -> ContextualDefault? {
         var conditions: [String] = []
-        
+
         // Add time-based conditions
         if factors.isEndOfFiscalYear {
             conditions.append("Delivery must be completed before end of fiscal year \(factors.fiscalYear)")
         }
-        
+
         // Add workload-based conditions
         if factors.currentWorkload == .critical {
             conditions.append("Vendor must provide weekly status updates")
         }
-        
+
         // Add compliance conditions
         for clause in factors.requiredClauses where clause.mandatory {
             conditions.append("Compliance with \(clause.clauseNumber) - \(clause.title) is mandatory")
         }
-        
+
         guard !conditions.isEmpty else { return nil }
-        
+
         return ContextualDefault(
             field: .specialConditions,
             value: conditions,
@@ -532,38 +531,38 @@ public class EnhancedContextualDefaultsProvider {
             alternatives: []
         )
     }
-    
+
     // MARK: - Helper Methods
-    
+
     private func analyzeContextPriorities(_ factors: ContextualFactors) -> ContextPriorities {
         var priorities = ContextPriorities()
-        
+
         // Speed priority based on fiscal calendar
-        if factors.isEndOfFiscalYear && factors.daysUntilFYEnd < 30 {
+        if factors.isEndOfFiscalYear, factors.daysUntilFYEnd < 30 {
             priorities.speedPriority = 0.95
-        } else if factors.isEndOfQuarter && factors.daysUntilQuarterEnd < 15 {
+        } else if factors.isEndOfQuarter, factors.daysUntilQuarterEnd < 15 {
             priorities.speedPriority = 0.85
         } else {
             priorities.speedPriority = 0.5
         }
-        
+
         // Cost priority based on budget
         if let budget = factors.budgetRemaining {
             priorities.costPriority = budget < 50000 ? 0.9 : 0.6
         }
-        
+
         // Compliance priority
         priorities.compliancePriority = factors.requiredClauses.isEmpty ? 0.5 : 0.8
-        
+
         return priorities
     }
-    
+
     private func calculateAverageDeliveryTime(from acquisitions: [RecentAcquisition]) -> Int? {
         guard !acquisitions.isEmpty else { return nil }
         let total = acquisitions.reduce(0) { $0 + $1.deliveryTime }
         return total / acquisitions.count
     }
-    
+
     private func adjustForWeekend(date: Date, calendar: Calendar) -> Date {
         let weekday = calendar.component(.weekday, from: date)
         if weekday == 1 { // Sunday
@@ -573,14 +572,14 @@ public class EnhancedContextualDefaultsProvider {
         }
         return date
     }
-    
+
     private func generateDateAlternatives(
         baseDate: Date,
-        factors: ContextualFactors
+        factors _: ContextualFactors
     ) -> [ContextualDefaultAlternative] {
         let calendar = Calendar.current
         var alternatives: [ContextualDefaultAlternative] = []
-        
+
         // Earlier option
         if let earlier = calendar.date(byAdding: .day, value: -7, to: baseDate) {
             alternatives.append(ContextualDefaultAlternative(
@@ -589,7 +588,7 @@ public class EnhancedContextualDefaultsProvider {
                 reasoning: "Expedited delivery option"
             ))
         }
-        
+
         // Later option
         if let later = calendar.date(byAdding: .day, value: 14, to: baseDate) {
             alternatives.append(ContextualDefaultAlternative(
@@ -598,37 +597,39 @@ public class EnhancedContextualDefaultsProvider {
                 reasoning: "Extended timeline option"
             ))
         }
-        
+
         return alternatives
     }
-    
+
     private func findMostCommonElement<T: Hashable>(_ array: [T]) -> T? {
         let counts = array.reduce(into: [:]) { counts, element in
             counts[element, default: 0] += 1
         }
         return counts.max(by: { $0.value < $1.value })?.key
     }
-    
+
     private func applyCrossFieldValidation(
         _ defaults: [RequirementField: ContextualDefault],
-        factors: ContextualFactors
+        factors _: ContextualFactors
     ) -> [RequirementField: ContextualDefault] {
         let validated = defaults
-        
+
         // Validation 1: Payment terms should align with vendor preferences
         if let _ = validated[.paymentTerms],
-           let _ = validated[.vendorName] {
+           let _ = validated[.vendorName]
+        {
             // Adjust payment terms based on vendor history
             // Implementation would check vendor payment history
         }
-        
+
         // Validation 2: Delivery date should consider inspection requirements
         if let _ = validated[.requiredDate],
-           let _ = validated[.inspectionRequirements] {
+           let _ = validated[.inspectionRequirements]
+        {
             // Add buffer for inspection time if needed
             // Implementation would adjust dates accordingly
         }
-        
+
         return validated
     }
 }
@@ -658,23 +659,23 @@ private struct ContextPriorities {
 // MARK: - Helper Services
 
 private class ContextAnalyzer {
-    func analyzeContext(_ factors: EnhancedContextualDefaultsProvider.ContextualFactors) -> ContextInsights {
+    func analyzeContext(_: EnhancedContextualDefaultsProvider.ContextualFactors) -> ContextInsights {
         // Analyze various context factors to provide insights
-        return ContextInsights()
+        ContextInsights()
     }
 }
 
 private class PatternMatcher {
-    func findPatterns(in data: [Any]) -> [ContextPattern] {
+    func findPatterns(in _: [Any]) -> [ContextPattern] {
         // Find patterns in historical data
-        return []
+        []
     }
 }
 
 private class RuleEvaluator {
-    func evaluateRules(_ rules: [Rule], context: Any) -> [ContextRuleResult] {
+    func evaluateRules(_: [Rule], context _: Any) -> [ContextRuleResult] {
         // Evaluate business rules
-        return []
+        []
     }
 }
 

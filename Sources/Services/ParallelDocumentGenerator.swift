@@ -1,21 +1,20 @@
-import Foundation
-import ComposableArchitecture
-import SwiftAnthropic
 import AppCore
+import ComposableArchitecture
+import Foundation
+import SwiftAnthropic
 
 /// Parallel document generation service that processes multiple documents concurrently
-public struct ParallelDocumentGenerator {
-    
+public struct ParallelDocumentGenerator: Sendable {
     // MARK: - Configuration
-    
+
     /// Maximum number of concurrent document generations
     private let maxConcurrency = 4
-    
+
     /// Batch size for processing documents
     private let batchSize = 3
-    
+
     // MARK: - Dependencies
-    
+
     @Dependency(\.aiDocumentGenerator) var aiDocumentGenerator
     @Dependency(\.documentGenerationCache) var cache
     @Dependency(\.standardTemplateService) var templateService
@@ -24,9 +23,9 @@ public struct ParallelDocumentGenerator {
     @Dependency(\.spellCheckService) var spellCheckService
     @Dependency(\.documentGenerationPreloader) var preloader
     @Dependency(\.documentGenerationPerformanceMonitor) var performanceMonitor
-    
+
     // MARK: - Parallel Generation Methods
-    
+
     /// Generate multiple documents in parallel with optimized batching
     public func generateDocumentsParallel(
         requirements: String,
@@ -39,21 +38,21 @@ public struct ParallelDocumentGenerator {
             for: documentTypes,
             dfDocumentTypes: []
         )
-        
+
         // Batch check cache for all documents
         async let cachedDocsTask = preloader.preloadCachedDocuments(
             for: documentTypes,
             requirements: requirements,
             profile: profile
         )
-        
+
         // Await both results
         let (preloadedData, cachedDocs) = try await (preloadedDataTask, cachedDocsTask)
-        
+
         // Process cached documents
         var cachedDocuments: [GeneratedDocument] = []
         var typesToGenerate: [DocumentType] = []
-        
+
         for documentType in documentTypes {
             if let content = cachedDocs[documentType] {
                 // Record cache hit
@@ -78,12 +77,12 @@ public struct ParallelDocumentGenerator {
                 typesToGenerate.append(documentType)
             }
         }
-        
+
         // Return early if all documents were cached
         if typesToGenerate.isEmpty {
             return cachedDocuments
         }
-        
+
         // Second pass: Generate missing documents in parallel batches
         let generatedDocuments = try await generateDocumentBatch(
             requirements: requirements,
@@ -91,7 +90,7 @@ public struct ParallelDocumentGenerator {
             profile: profile ?? preloadedData.profile,
             preloadedData: preloadedData
         )
-        
+
         // Record batch performance metrics
         let totalDuration = Date().timeIntervalSince(startTime)
         await performanceMonitor.recordBatch(
@@ -99,10 +98,10 @@ public struct ParallelDocumentGenerator {
             totalDuration: totalDuration,
             parallelDuration: totalDuration
         )
-        
+
         return cachedDocuments + generatedDocuments
     }
-    
+
     /// Generate D&F documents in parallel
     public func generateDFDocumentsParallel(
         requirements: String,
@@ -115,21 +114,21 @@ public struct ParallelDocumentGenerator {
             for: [],
             dfDocumentTypes: dfDocumentTypes
         )
-        
+
         // Batch check cache for all documents
         async let cachedDocsTask = preloader.preloadCachedDFDocuments(
             for: dfDocumentTypes,
             requirements: requirements,
             profile: profile
         )
-        
+
         // Await both results
         let (preloadedData, cachedDocs) = try await (preloadedDataTask, cachedDocsTask)
-        
+
         // Process cached documents
         var cachedDocuments: [GeneratedDocument] = []
         var typesToGenerate: [DFDocumentType] = []
-        
+
         for dfDocumentType in dfDocumentTypes {
             if let content = cachedDocs[dfDocumentType] {
                 // Record cache hit
@@ -154,12 +153,12 @@ public struct ParallelDocumentGenerator {
                 typesToGenerate.append(dfDocumentType)
             }
         }
-        
+
         // Return early if all documents were cached
         if typesToGenerate.isEmpty {
             return cachedDocuments
         }
-        
+
         // Second pass: Generate missing documents in parallel batches
         let generatedDocuments = try await generateDFDocumentBatch(
             requirements: requirements,
@@ -167,7 +166,7 @@ public struct ParallelDocumentGenerator {
             profile: profile ?? preloadedData.profile,
             preloadedData: preloadedData
         )
-        
+
         // Record batch performance metrics
         let totalDuration = Date().timeIntervalSince(startTime)
         await performanceMonitor.recordBatch(
@@ -175,12 +174,12 @@ public struct ParallelDocumentGenerator {
             totalDuration: totalDuration,
             parallelDuration: totalDuration
         )
-        
+
         return cachedDocuments + generatedDocuments
     }
-    
+
     // MARK: - Private Batch Generation Methods
-    
+
     private func generateDocumentBatch(
         requirements: String,
         documentTypes: [DocumentType],
@@ -191,22 +190,22 @@ public struct ParallelDocumentGenerator {
             apiKey: APIConfiguration.getAnthropicKey(),
             betaHeaders: nil
         )
-        
+
         // Use preloaded templates
         let templates = preloadedData.templates
-        
+
         // Generate documents in batches
         var allDocuments: [GeneratedDocument] = []
-        
+
         for batchStart in stride(from: 0, to: documentTypes.count, by: batchSize) {
             let batchEnd = min(batchStart + batchSize, documentTypes.count)
-            let batchTypes = Array(documentTypes[batchStart..<batchEnd])
-            
+            let batchTypes = Array(documentTypes[batchStart ..< batchEnd])
+
             let batchDocuments = try await withThrowingTaskGroup(of: GeneratedDocument?.self) { group in
                 for documentType in batchTypes {
                     group.addTask {
                         do {
-                            return try await self.generateSingleDocument(
+                            return try await generateSingleDocument(
                                 documentType: documentType,
                                 requirements: requirements,
                                 template: templates[documentType],
@@ -221,7 +220,7 @@ public struct ParallelDocumentGenerator {
                         }
                     }
                 }
-                
+
                 var documents: [GeneratedDocument] = []
                 for try await document in group {
                     if let doc = document {
@@ -230,18 +229,18 @@ public struct ParallelDocumentGenerator {
                 }
                 return documents
             }
-            
+
             allDocuments.append(contentsOf: batchDocuments)
-            
+
             // Small delay between batches to avoid rate limiting
             if batchEnd < documentTypes.count {
                 try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
             }
         }
-        
+
         return allDocuments
     }
-    
+
     private func generateDFDocumentBatch(
         requirements: String,
         dfDocumentTypes: [DFDocumentType],
@@ -252,22 +251,22 @@ public struct ParallelDocumentGenerator {
             apiKey: APIConfiguration.getAnthropicKey(),
             betaHeaders: nil
         )
-        
+
         // Use preloaded templates
         let templates = preloadedData.dfTemplates
-        
+
         // Generate documents in batches
         var allDocuments: [GeneratedDocument] = []
-        
+
         for batchStart in stride(from: 0, to: dfDocumentTypes.count, by: batchSize) {
             let batchEnd = min(batchStart + batchSize, dfDocumentTypes.count)
-            let batchTypes = Array(dfDocumentTypes[batchStart..<batchEnd])
-            
+            let batchTypes = Array(dfDocumentTypes[batchStart ..< batchEnd])
+
             let batchDocuments = try await withThrowingTaskGroup(of: GeneratedDocument?.self) { group in
                 for dfDocumentType in batchTypes {
                     group.addTask {
                         do {
-                            return try await self.generateSingleDFDocument(
+                            return try await generateSingleDFDocument(
                                 dfDocumentType: dfDocumentType,
                                 requirements: requirements,
                                 template: templates[dfDocumentType],
@@ -282,7 +281,7 @@ public struct ParallelDocumentGenerator {
                         }
                     }
                 }
-                
+
                 var documents: [GeneratedDocument] = []
                 for try await document in group {
                     if let doc = document {
@@ -291,73 +290,73 @@ public struct ParallelDocumentGenerator {
                 }
                 return documents
             }
-            
+
             allDocuments.append(contentsOf: batchDocuments)
-            
+
             // Small delay between batches to avoid rate limiting
             if batchEnd < dfDocumentTypes.count {
                 try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
             }
         }
-        
+
         return allDocuments
     }
-    
+
     // MARK: - Template Loading
-    
+
     private func loadTemplatesParallel(for documentTypes: [DocumentType]) async -> [DocumentType: String] {
         await withTaskGroup(of: (DocumentType, String?).self) { group in
             for documentType in documentTypes {
                 group.addTask {
                     // Check cache first
-                    if let cached = await self.cache.getCachedTemplate(for: documentType) {
+                    if let cached = await cache.getCachedTemplate(for: documentType) {
                         return (documentType, cached)
                     }
-                    
+
                     // Load from service
-                    if let template = try? await self.templateService.loadTemplate(documentType) {
-                        await self.cache.cacheTemplate(template, for: documentType)
+                    if let template = try? await templateService.loadTemplate(documentType) {
+                        await cache.cacheTemplate(template, for: documentType)
                         return (documentType, template)
                     }
-                    
+
                     return (documentType, nil)
                 }
             }
-            
+
             var templates: [DocumentType: String] = [:]
             for await (documentType, template) in group {
-                if let template = template {
+                if let template {
                     templates[documentType] = template
                 }
             }
             return templates
         }
     }
-    
+
     private func loadDFTemplatesParallel(for dfDocumentTypes: [DFDocumentType]) async -> [DFDocumentType: DFTemplate] {
         await withTaskGroup(of: (DFDocumentType, DFTemplate?).self) { group in
             for dfDocumentType in dfDocumentTypes {
                 group.addTask {
                     // Load from service (D&F templates are more complex, so we don't cache the full template)
-                    if let template = try? await self.dfTemplateService.loadTemplate(dfDocumentType) {
+                    if let template = try? await dfTemplateService.loadTemplate(dfDocumentType) {
                         return (dfDocumentType, template)
                     }
                     return (dfDocumentType, nil)
                 }
             }
-            
+
             var templates: [DFDocumentType: DFTemplate] = [:]
             for await (dfDocumentType, template) in group {
-                if let template = template {
+                if let template {
                     templates[dfDocumentType] = template
                 }
             }
             return templates
         }
     }
-    
+
     // MARK: - Single Document Generation
-    
+
     private func generateSingleDocument(
         documentType: DocumentType,
         requirements: String,
@@ -374,9 +373,9 @@ public struct ParallelDocumentGenerator {
         // Prepare prompt
         let templateStartTime = Date()
         let prompt: String
-        if let template = template {
+        if let template {
             var processedTemplate = template
-            if let profile = profile {
+            if let profile {
                 for (key, value) in profile.templateVariables {
                     processedTemplate = processedTemplate.replacingOccurrences(of: "{{\(key)}}", with: value)
                 }
@@ -395,18 +394,18 @@ public struct ParallelDocumentGenerator {
             )
         }
         templateLoadDuration = Date().timeIntervalSince(templateStartTime)
-        
+
         // Use preloaded system prompt or generate if not available
         let finalSystemPrompt = systemPrompt ?? AIDocumentGenerator.getSystemPrompt(for: documentType)
-        
+
         // Create messages
         let messages = [
             MessageParameter.Message(
                 role: .user,
                 content: .text(prompt)
-            )
+            ),
         ]
-        
+
         // Create parameters
         let parameters = MessageParameter(
             model: .other("claude-sonnet-4-20250514"),
@@ -422,12 +421,12 @@ public struct ParallelDocumentGenerator {
             tools: nil,
             toolChoice: nil
         )
-        
+
         // Generate content
         let apiStartTime = Date()
         let result = try await anthropicService.createMessage(parameters)
         apiCallDuration = Date().timeIntervalSince(apiStartTime)
-        
+
         let content: String
         switch result.content.first {
         case let .text(text, _):
@@ -435,12 +434,12 @@ public struct ParallelDocumentGenerator {
         default:
             throw AIDocumentGeneratorError.noContent
         }
-        
+
         // Spell check
         let spellCheckStartTime = Date()
         let correctedContent = await spellCheckService.checkAndCorrect(content)
         spellCheckDuration = Date().timeIntervalSince(spellCheckStartTime)
-        
+
         // Cache the result
         await cache.cacheDocument(
             correctedContent,
@@ -448,11 +447,11 @@ public struct ParallelDocumentGenerator {
             requirements: requirements,
             profile: profile
         )
-        
+
         // Record performance metrics
         let totalDuration = Date().timeIntervalSince(totalStartTime)
         let cacheCheckDuration = Date().timeIntervalSince(cacheCheckStartTime) - (apiCallDuration ?? 0) - templateLoadDuration - spellCheckDuration
-        
+
         await performanceMonitor.recordGeneration(
             documentType: documentType.rawValue,
             cacheHit: false,
@@ -464,14 +463,14 @@ public struct ParallelDocumentGenerator {
                 spellCheck: spellCheckDuration
             )
         )
-        
+
         return GeneratedDocument(
             title: "\(documentType.shortName) - \(Date().formatted(date: .abbreviated, time: .omitted))",
             documentType: documentType,
             content: correctedContent
         )
     }
-    
+
     private func generateSingleDFDocument(
         dfDocumentType: DFDocumentType,
         requirements: String,
@@ -485,19 +484,19 @@ public struct ParallelDocumentGenerator {
         var apiCallDuration: TimeInterval?
         var templateLoadDuration: TimeInterval = 0
         var spellCheckDuration: TimeInterval = 0
-        guard let template = template else {
+        guard let template else {
             throw AIDocumentGeneratorError.noContent
         }
-        
+
         // Process template
         let templateStartTime = Date()
         var processedTemplate = template.template
-        if let profile = profile {
+        if let profile {
             for (key, value) in profile.templateVariables {
                 processedTemplate = processedTemplate.replacingOccurrences(of: "{{\(key)}}", with: value)
             }
         }
-        
+
         // Create prompt
         let prompt = AIDocumentGenerator.createDFPrompt(
             for: dfDocumentType,
@@ -507,18 +506,18 @@ public struct ParallelDocumentGenerator {
             profile: profile
         )
         templateLoadDuration = Date().timeIntervalSince(templateStartTime)
-        
+
         // Use preloaded system prompt or generate if not available
         let finalSystemPrompt = systemPrompt ?? AIDocumentGenerator.getDFSystemPrompt(for: dfDocumentType)
-        
+
         // Create messages
         let messages = [
             MessageParameter.Message(
                 role: .user,
                 content: .text(prompt)
-            )
+            ),
         ]
-        
+
         // Create parameters
         let parameters = MessageParameter(
             model: .other("claude-sonnet-4-20250514"),
@@ -534,12 +533,12 @@ public struct ParallelDocumentGenerator {
             tools: nil,
             toolChoice: nil
         )
-        
+
         // Generate content
         let apiStartTime = Date()
         let result = try await anthropicService.createMessage(parameters)
         apiCallDuration = Date().timeIntervalSince(apiStartTime)
-        
+
         let content: String
         switch result.content.first {
         case let .text(text, _):
@@ -547,12 +546,12 @@ public struct ParallelDocumentGenerator {
         default:
             throw AIDocumentGeneratorError.noContent
         }
-        
+
         // Spell check
         let spellCheckStartTime = Date()
         let correctedContent = await spellCheckService.checkAndCorrect(content)
         spellCheckDuration = Date().timeIntervalSince(spellCheckStartTime)
-        
+
         // Cache the result
         await cache.cacheDocument(
             correctedContent,
@@ -560,11 +559,11 @@ public struct ParallelDocumentGenerator {
             requirements: requirements,
             profile: profile
         )
-        
+
         // Record performance metrics
         let totalDuration = Date().timeIntervalSince(totalStartTime)
         let cacheCheckDuration = Date().timeIntervalSince(cacheCheckStartTime) - (apiCallDuration ?? 0) - templateLoadDuration - spellCheckDuration
-        
+
         await performanceMonitor.recordGeneration(
             documentType: dfDocumentType.rawValue,
             cacheHit: false,
@@ -576,7 +575,7 @@ public struct ParallelDocumentGenerator {
                 spellCheck: spellCheckDuration
             )
         )
-        
+
         return GeneratedDocument(
             title: "\(dfDocumentType.shortName) D&F - \(Date().formatted(date: .abbreviated, time: .omitted))",
             dfDocumentType: dfDocumentType,
@@ -585,12 +584,11 @@ public struct ParallelDocumentGenerator {
     }
 }
 
-
 // MARK: - Dependency Key
 
 public struct ParallelDocumentGeneratorKey: DependencyKey {
-    public static let liveValue = ParallelDocumentGenerator()
-    public static let testValue = ParallelDocumentGenerator()
+    public nonisolated static let liveValue = ParallelDocumentGenerator()
+    public nonisolated static let testValue = ParallelDocumentGenerator()
 }
 
 public extension DependencyValues {

@@ -1,89 +1,92 @@
+import AppCore
 import ComposableArchitecture
 import CoreData
 import Foundation
-import AppCore
 
 /// Adapter that bridges the TCA AcquisitionService dependency with the new AcquisitionRepository
 /// This allows gradual migration of UI features from AcquisitionService to AcquisitionRepository
 public extension AcquisitionService {
     static var repositoryBased: AcquisitionService {
-        let repository = AcquisitionRepository(context: CoreDataStack.shared.viewContext)
+        let repository = AcquisitionRepository(coreDataActor: CoreDataStack.shared.actor)
         // Document repository is created when needed in the actual methods
-        
+
         return AcquisitionService(
             createAcquisition: { title, requirements, uploadedDocuments in
                 // Convert to tuples for repository
                 let repoDocuments = uploadedDocuments.map { doc in
                     (fileName: doc.fileName, data: doc.data, contentSummary: doc.contentSummary)
                 }
-                
-                let aggregate = try await repository.createWithDocuments(
+
+                let acquisition = try await repository.createWithDocuments(
                     title: title,
                     requirements: requirements,
                     uploadedDocuments: repoDocuments
                 )
-                
-                return aggregate.managedObject
+
+                return acquisition
             },
-            
+
             fetchAcquisitions: {
-                let aggregates = try await repository.findAll()
-                return aggregates.map { $0.managedObject }
+                let acquisitions = try await repository.findAll()
+                return acquisitions
             },
-            
+
             fetchAcquisition: { id in
-                guard let aggregate = try await repository.findById(id) else {
-                    return nil
-                }
-                return aggregate.managedObject
+                let acquisition = try await repository.findById(id)
+                return acquisition
             },
-            
+
             updateAcquisition: { id, update in
-                guard let aggregate = try await repository.findById(id) else {
+                guard var acquisition = try await repository.findById(id) else {
                     throw AcquisitionError.notFound
                 }
-                
-                // Apply the update to the managed object
-                update(aggregate.managedObject)
-                
-                // Update through repository to ensure business rules
-                try await repository.update(aggregate)
+
+                // Apply update and save through repository
+                update(&acquisition)
+                try await repository.update(acquisition)
             },
-            
+
             deleteAcquisition: { id in
                 try await repository.delete(id)
             },
-            
+
             addUploadedFiles: { acquisitionId, uploadedDocuments in
-                guard let aggregate = try await repository.findById(acquisitionId) else {
-                    throw AcquisitionError.notFound
+                // For now, use Core Data actor directly for file operations
+                // This could be moved to a dedicated method in the repository
+                try await CoreDataStack.shared.actor.performBackgroundTask { context in
+                    let request = CoreDataAcquisition.fetchRequest()
+                    request.predicate = NSPredicate(format: "id == %@", acquisitionId as CVarArg)
+
+                    guard let acquisition = try context.fetch(request).first else {
+                        throw AcquisitionError.notFound
+                    }
+
+                    // Convert and add files
+                    for doc in uploadedDocuments {
+                        let uploadedFile = UploadedFile(context: context)
+                        uploadedFile.fileName = doc.fileName
+                        uploadedFile.data = doc.data
+                        uploadedFile.contentSummary = doc.contentSummary
+                        acquisition.addToUploadedFiles(uploadedFile)
+                    }
+
+                    acquisition.lastModifiedDate = Date()
+                    try context.save()
                 }
-                
-                // Convert and add files
-                for doc in uploadedDocuments {
-                    let uploadedFile = UploadedFile(context: aggregate.managedObject.managedObjectContext!)
-                    uploadedFile.fileName = doc.fileName
-                    uploadedFile.data = doc.data
-                    uploadedFile.contentSummary = doc.contentSummary
-                    aggregate.managedObject.addToUploadedFiles(uploadedFile)
-                }
-                
-                aggregate.updateLastModified()
-                try await repository.update(aggregate)
             },
-            
+
             addGeneratedDocuments: { acquisitionId, generatedDocuments in
                 // Convert our GeneratedDocument to repository's GeneratedDocument
                 let repoDocuments = generatedDocuments.map { doc in
                     (title: doc.title, content: doc.content, documentCategory: mapGeneratedDocumentToRepositoryCategory(doc))
                 }
-                
+
                 try await repository.addGeneratedDocuments(
                     to: acquisitionId,
                     documents: repoDocuments
                 )
             },
-            
+
             updateStatus: { acquisitionId, status in
                 let repositoryStatus = mapToRepositoryStatus(status)
                 try await repository.updateStatus(
@@ -103,52 +106,55 @@ public extension AcquisitionService {
 private func mapDocumentTypeToRepositoryCategory(_ documentType: DocumentType) -> DocumentCategory {
     switch documentType {
     case .rrd, .soo, .sow, .pws, .qasp:
-        return .requirements
+        .requirements
     case .marketResearch, .codes, .competitionAnalysis, .industryRFI, .sourcesSought, .costEstimate, .procurementSourcing:
-        return .marketIntelligence
+        .marketIntelligence
     case .acquisitionPlan, .evaluationPlan, .fiscalLawReview, .opsecReview, .justificationApproval:
-        return .planning
+        .planning
     case .requestForQuoteSimplified, .requestForQuote, .requestForProposal:
-        return .solicitation
+        .solicitation
     case .contractScaffold, .corAppointment, .otherTransactionAgreement:
-        return .award
+        .award
     case .analytics:
-        return .analytics
+        .analytics
     case .farUpdates:
-        return .analytics
+        .analytics
     }
 }
 
 /// Maps GeneratedDocument to repository category
 private func mapGeneratedDocumentToRepositoryCategory(_ document: GeneratedDocument) -> DocumentCategory {
     switch document.documentCategory {
-    case .standard(let documentType):
-        return mapDocumentTypeToRepositoryCategory(documentType)
-    case .determinationFinding(_):
+    case let .standard(documentType):
+        mapDocumentTypeToRepositoryCategory(documentType)
+    case .determinationFinding:
         // Map D&F documents to the determinationFindings category
-        return .determinationFindings
+        .determinationFindings
     }
 }
 
 /// Maps UI layer status to repository status
-private func mapToRepositoryStatus(_ status: Acquisition.Status) -> AcquisitionStatus {
+private func mapToRepositoryStatus(_ status: AcquisitionStatus) -> AcquisitionStatus {
     switch status {
     case .draft:
-        return .draft
+        .draft
     case .inProgress:
-        return .inProgress
+        .inProgress
     case .underReview:
-        return .underReview
+        .underReview
     case .approved:
-        return .approved
+        .approved
     case .awarded:
-        return .awarded
+        .awarded
     case .cancelled:
-        return .cancelled
+        .cancelled
     case .archived:
-        return .archived
+        .archived
+    case .completed:
+        .completed
+    case .onHold:
+        .onHold
     }
 }
 
 // MARK: - Dependency Registration
-

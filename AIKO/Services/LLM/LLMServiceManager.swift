@@ -6,41 +6,40 @@
 //  Copyright © 2025 AIKO. All rights reserved.
 //
 
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 /// Main service manager for LLM operations with fallback support
 @MainActor
 final class LLMServiceManager: ObservableObject {
-    
     // MARK: - Properties
-    
+
     static let shared = LLMServiceManager()
-    
+
     /// Currently active provider adapter
     @Published private(set) var activeAdapter: LLMProviderProtocol?
-    
+
     /// Available provider adapters
     private var adapters: [LLMProvider: LLMProviderProtocol] = [:]
-    
+
     /// Configuration manager
     private let configurationManager = LLMConfigurationManager.shared
-    
+
     /// Request queue for managing concurrent requests
     private let requestQueue = DispatchQueue(label: "com.aiko.llm.requests", attributes: .concurrent)
-    
+
     /// Active request tracking
     private var activeRequests: Set<UUID> = []
-    
+
     // MARK: - Initialization
-    
+
     private init() {
         setupAdapters()
         observeConfigurationChanges()
     }
-    
+
     // MARK: - Public Methods
-    
+
     /// Send a request to the active LLM provider with automatic fallback
     /// - Parameters:
     ///   - prompt: The user's prompt
@@ -55,11 +54,11 @@ final class LLMServiceManager: ObservableObject {
         guard let adapter = activeAdapter else {
             throw LLMError.providerUnavailable(provider: .claude)
         }
-        
+
         let requestId = UUID()
         activeRequests.insert(requestId)
         defer { activeRequests.remove(requestId) }
-        
+
         do {
             return try await adapter.sendRequest(
                 prompt: prompt,
@@ -77,7 +76,7 @@ final class LLMServiceManager: ObservableObject {
             )
         }
     }
-    
+
     /// Stream a response from the active LLM provider
     /// - Parameters:
     ///   - prompt: The user's prompt
@@ -94,26 +93,26 @@ final class LLMServiceManager: ObservableObject {
                 continuation.finish(throwing: LLMError.providerUnavailable(provider: .claude))
             }
         }
-        
+
         return adapter.streamRequest(
             prompt: prompt,
             context: context,
             options: options
         )
     }
-    
+
     /// Switch to a specific provider
     /// - Parameter provider: The provider to switch to
     func switchProvider(_ provider: LLMProvider) async throws {
         guard let config = configurationManager.configuredProviders[provider] else {
             throw LLMError.providerUnavailable(provider: provider)
         }
-        
+
         // Validate API key exists
         guard configurationManager.getAPIKey(for: provider) != nil else {
             throw LLMError.noAPIKey(provider: provider)
         }
-        
+
         // Create or get adapter
         if let adapter = adapters[provider] {
             activeAdapter = adapter
@@ -122,22 +121,22 @@ final class LLMServiceManager: ObservableObject {
             adapters[provider] = adapter
             activeAdapter = adapter
         }
-        
+
         // Update active configuration
         try configurationManager.setActiveProvider(provider)
     }
-    
+
     /// Get available providers
     /// - Returns: List of configured providers
     func getAvailableProviders() -> [LLMProvider] {
-        return configurationManager.getAvailableProviders()
+        configurationManager.getAvailableProviders()
     }
-    
+
     /// Validate all configured providers
     /// - Returns: Dictionary of provider validation results
     func validateProviders() async -> [LLMProvider: Bool] {
         var results: [LLMProvider: Bool] = [:]
-        
+
         for provider in getAvailableProviders() {
             if let adapter = adapters[provider] ?? createAdapterIfNeeded(for: provider) {
                 results[provider] = await adapter.validateConfiguration()
@@ -145,25 +144,25 @@ final class LLMServiceManager: ObservableObject {
                 results[provider] = false
             }
         }
-        
+
         return results
     }
-    
+
     /// Cancel all active requests
     func cancelAllRequests() {
         activeRequests.removeAll()
         adapters.values.forEach { $0.cancelAllRequests() }
     }
-    
+
     /// Count tokens for text using the active provider
     /// - Parameter text: The text to count tokens for
     /// - Returns: Approximate token count
     func countTokens(for text: String) -> Int {
-        return activeAdapter?.countTokens(for: text) ?? text.count / 4
+        activeAdapter?.countTokens(for: text) ?? text.count / 4
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func setupAdapters() {
         // Initialize with active provider if available
         if let activeConfig = configurationManager.activeProviderConfig {
@@ -172,45 +171,45 @@ final class LLMServiceManager: ObservableObject {
             activeAdapter = adapter
         }
     }
-    
+
     private func observeConfigurationChanges() {
         // Observe configuration changes
         configurationManager.$activeProviderConfig
             .sink { [weak self] config in
-                guard let self = self, let config = config else { return }
+                guard let self, let config else { return }
                 Task {
                     try? await self.switchProvider(config.provider)
                 }
             }
             .store(in: &cancellables)
     }
-    
+
     private var cancellables = Set<AnyCancellable>()
-    
+
     private func createAdapter(for provider: LLMProvider, config: LLMProviderConfig) -> LLMProviderProtocol {
         switch provider {
         case .claude:
-            return ClaudeAdapter(provider: provider, configuration: config)
+            ClaudeAdapter(provider: provider, configuration: config)
         case .openAI, .chatGPT:
-            return OpenAIAdapter(provider: provider, configuration: config)
+            OpenAIAdapter(provider: provider, configuration: config)
         case .gemini:
-            return GeminiAdapter(provider: provider, configuration: config)
+            GeminiAdapter(provider: provider, configuration: config)
         case .custom:
             // For custom providers, use OpenAI adapter as base
-            return OpenAIAdapter(provider: provider, configuration: config)
+            OpenAIAdapter(provider: provider, configuration: config)
         }
     }
-    
+
     private func createAdapterIfNeeded(for provider: LLMProvider) -> LLMProviderProtocol? {
         guard let config = configurationManager.configuredProviders[provider] else {
             return nil
         }
-        
+
         let adapter = createAdapter(for: provider, config: config)
         adapters[provider] = adapter
         return adapter
     }
-    
+
     private func sendRequestWithFallback(
         prompt: String,
         context: ConversationContext?,
@@ -219,37 +218,37 @@ final class LLMServiceManager: ObservableObject {
         originalError: Error
     ) async throws -> LLMResponse {
         var errors: [LLMProvider: Error] = [failedProvider: originalError]
-        
+
         // Get fallback providers based on priority
         let priority = configurationManager.providerPriority
         let availableProviders = getAvailableProviders()
-        let fallbackProviders = priority.providers.filter { 
-            availableProviders.contains($0) && $0 != failedProvider 
+        let fallbackProviders = priority.providers.filter {
+            availableProviders.contains($0) && $0 != failedProvider
         }
-        
+
         // Try each fallback provider
         for provider in fallbackProviders {
             guard let adapter = adapters[provider] ?? createAdapterIfNeeded(for: provider) else {
                 errors[provider] = LLMError.providerUnavailable(provider: provider)
                 continue
             }
-            
+
             do {
                 let response = try await adapter.sendRequest(
                     prompt: prompt,
                     context: context,
                     options: options
                 )
-                
+
                 // Update active adapter for future requests
                 activeAdapter = adapter
-                
+
                 return response
             } catch {
                 errors[provider] = error
             }
         }
-        
+
         // All providers failed
         throw LLMError.allProvidersFailed(errors)
     }

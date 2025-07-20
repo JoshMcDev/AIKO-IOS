@@ -8,7 +8,7 @@ import NaturalLanguage
 #endif
 
 /// Service for spell checking and grammar validation of generated documents
-public struct SpellCheckService {
+public struct SpellCheckService: Sendable {
     public struct SpellCheckResult {
         public let originalText: String
         public let correctedText: String
@@ -39,18 +39,18 @@ public struct SpellCheckService {
         }
     }
 
-    public var checkDocument: (String) async -> SpellCheckResult
-    public var checkAndCorrect: (String) async -> String
-    public var getSuggestions: (String, NSRange) async -> [String]
-    public var addToCustomDictionary: (String) async -> Void
-    public var removeFromCustomDictionary: (String) async -> Void
+    public var checkDocument: @Sendable (String) async -> SpellCheckResult
+    public var checkAndCorrect: @Sendable (String) async -> String
+    public var getSuggestions: @Sendable (String, NSRange) async -> [String]
+    public var addToCustomDictionary: @Sendable (String) async -> Void
+    public var removeFromCustomDictionary: @Sendable (String) async -> Void
 
     public init(
-        checkDocument: @escaping (String) async -> SpellCheckResult,
-        checkAndCorrect: @escaping (String) async -> String,
-        getSuggestions: @escaping (String, NSRange) async -> [String],
-        addToCustomDictionary: @escaping (String) async -> Void,
-        removeFromCustomDictionary: @escaping (String) async -> Void
+        checkDocument: @escaping @Sendable (String) async -> SpellCheckResult,
+        checkAndCorrect: @escaping @Sendable (String) async -> String,
+        getSuggestions: @escaping @Sendable (String, NSRange) async -> [String],
+        addToCustomDictionary: @escaping @Sendable (String) async -> Void,
+        removeFromCustomDictionary: @escaping @Sendable (String) async -> Void
     ) {
         self.checkDocument = checkDocument
         self.checkAndCorrect = checkAndCorrect

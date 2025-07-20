@@ -1,7 +1,7 @@
-import Foundation
 import AppCore
+import Foundation
 
-public enum DocumentCategory: String, CaseIterable {
+public enum DocumentCategory: String, CaseIterable, Sendable {
     case requirements = "Requirements Studio"
     case marketIntelligence = "Market Intelligence"
     case planning = "Acquisition Planning"

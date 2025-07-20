@@ -1,6 +1,6 @@
-import SwiftUI
 import AppCore
 import ComposableArchitecture
+import SwiftUI
 
 // MARK: - Enhanced Card View
 

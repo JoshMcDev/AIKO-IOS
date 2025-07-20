@@ -378,25 +378,25 @@ final class UIUXEnhancementTests: XCTestCase {
     private func testButtonInteraction() async -> Bool {
         // Simulate button tap interaction
         // In a real test, this would interact with the UI
-        return true
+        true
     }
 
     private func testToggleInteraction() async -> Bool {
         // Simulate toggle switch interaction
         // In a real test, this would interact with the UI
-        return true
+        true
     }
 
     private func testSuccessInteraction() async -> Bool {
         // Simulate success action interaction
         // In a real test, this would interact with the UI
-        return true
+        true
     }
 
     private func testErrorInteraction() async -> Bool {
         // Simulate error action interaction
         // In a real test, this would interact with the UI
-        return true
+        true
     }
 
     private func measureTransitionDuration(_ transition: String) -> Double {

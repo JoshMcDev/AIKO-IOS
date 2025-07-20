@@ -1,6 +1,6 @@
+import AppCore
 import ComposableArchitecture
 import SwiftUI
-import AppCore
 #if os(iOS)
     import UIKit
 #else
@@ -375,4 +375,3 @@ struct ProfileHeaderView: View {
         .padding(.vertical, Theme.Spacing.xl)
     }
 }
-

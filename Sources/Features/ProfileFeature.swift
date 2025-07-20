@@ -1,10 +1,10 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 import SwiftUI
 
 @Reducer
-public struct ProfileFeature {
+public struct ProfileFeature: Sendable {
     @ObservableState
     public struct State: Equatable {
         public var profile: UserProfile

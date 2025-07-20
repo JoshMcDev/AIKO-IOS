@@ -1,6 +1,6 @@
+import AppCore
 import Combine
 import Foundation
-import AppCore
 
 /// Repository for managing government form definitions and templates
 final class FormRepository {

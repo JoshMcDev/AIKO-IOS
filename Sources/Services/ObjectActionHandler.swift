@@ -1,10 +1,10 @@
+import AppCore
 import Combine
 import ComposableArchitecture
 import Foundation
-import AppCore
 
 /// Service responsible for handling actions on different object types in the adaptive intelligence system
-public struct ObjectActionHandler {
+public struct ObjectActionHandler: @unchecked Sendable {
     public var identifyObjectType: @Sendable (Any) async throws -> ObjectType
     public var getAvailableActions: @Sendable (ObjectType, ActionContext) async throws -> [ObjectAction]
     public var executeAction: @Sendable (ObjectAction) async throws -> ActionResult
@@ -12,7 +12,7 @@ public struct ObjectActionHandler {
     public var learnFromExecution: @Sendable (ActionResult) async throws -> Void
     public var optimizeActionPlan: @Sendable ([ObjectAction]) async throws -> [ObjectAction]
 
-    public struct ValidationResult: Equatable {
+    public struct ValidationResult: Equatable, Sendable {
         public let isValid: Bool
         public let errors: [String]
         public let warnings: [String]
@@ -77,7 +77,7 @@ public extension ObjectActionHandler {
                             type: actionType,
                             objectType: objectType,
                             objectId: UUID().uuidString,
-                            parameters: getDefaultParameters(for: actionType, objectType: objectType),
+                            parameters: convertToParameterValues(getDefaultParameters(for: actionType, objectType: objectType)),
                             context: context,
                             priority: determinePriority(actionType, context: context),
                             estimatedDuration: estimateDuration(actionType, objectType: objectType),
@@ -698,10 +698,39 @@ private struct EffectivenessAnalyzer {
     func improve(_: ActionResult) {}
 }
 
+// MARK: - Helper Functions
+
+private func convertToParameterValues(_ params: [String: Any]) -> [String: ParameterValue] {
+    var result: [String: ParameterValue] = [:]
+    for (key, value) in params {
+        result[key] = convertToParameterValue(value)
+    }
+    return result
+}
+
+private func convertToParameterValue(_ value: Any) -> ParameterValue {
+    switch value {
+    case let stringValue as String:
+        return .string(stringValue)
+    case let intValue as Int:
+        return .int(intValue)
+    case let doubleValue as Double:
+        return .double(doubleValue)
+    case let boolValue as Bool:
+        return .bool(boolValue)
+    case let arrayValue as [Any]:
+        return .array(arrayValue.map(convertToParameterValue))
+    case let dictValue as [String: Any]:
+        return .dictionary(convertToParameterValues(dictValue))
+    default:
+        return .null
+    }
+}
+
 // MARK: - Dependency Registration
 
 extension ObjectActionHandler: DependencyKey {
-    public static var liveValue: ObjectActionHandler = .live
+    public static let liveValue: ObjectActionHandler = .live
 }
 
 public extension DependencyValues {

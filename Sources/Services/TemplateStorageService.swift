@@ -1,25 +1,25 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 
 /// Service for managing custom template storage
-public struct TemplateStorageService {
-    public var saveTemplate: (CustomTemplate) async throws -> Void
-    public var loadTemplates: () async throws -> [CustomTemplate]
-    public var deleteTemplate: (UUID) async throws -> Void
-    public var saveEditedTemplate: (DocumentType, String) async throws -> Void
-    public var loadEditedTemplate: (DocumentType) async throws -> String?
-    public var saveOfficeTemplate: (OfficeTemplate) async throws -> Void
-    public var loadOfficeTemplates: (DocumentType) async throws -> [OfficeTemplate]
+public struct TemplateStorageService: Sendable {
+    public var saveTemplate: @Sendable (CustomTemplate) async throws -> Void
+    public var loadTemplates: @Sendable () async throws -> [CustomTemplate]
+    public var deleteTemplate: @Sendable (UUID) async throws -> Void
+    public var saveEditedTemplate: @Sendable (DocumentType, String) async throws -> Void
+    public var loadEditedTemplate: @Sendable (DocumentType) async throws -> String?
+    public var saveOfficeTemplate: @Sendable (OfficeTemplate) async throws -> Void
+    public var loadOfficeTemplates: @Sendable (DocumentType) async throws -> [OfficeTemplate]
 
     public init(
-        saveTemplate: @escaping (CustomTemplate) async throws -> Void,
-        loadTemplates: @escaping () async throws -> [CustomTemplate],
-        deleteTemplate: @escaping (UUID) async throws -> Void,
-        saveEditedTemplate: @escaping (DocumentType, String) async throws -> Void,
-        loadEditedTemplate: @escaping (DocumentType) async throws -> String?,
-        saveOfficeTemplate: @escaping (OfficeTemplate) async throws -> Void,
-        loadOfficeTemplates: @escaping (DocumentType) async throws -> [OfficeTemplate]
+        saveTemplate: @escaping @Sendable (CustomTemplate) async throws -> Void,
+        loadTemplates: @escaping @Sendable () async throws -> [CustomTemplate],
+        deleteTemplate: @escaping @Sendable (UUID) async throws -> Void,
+        saveEditedTemplate: @escaping @Sendable (DocumentType, String) async throws -> Void,
+        loadEditedTemplate: @escaping @Sendable (DocumentType) async throws -> String?,
+        saveOfficeTemplate: @escaping @Sendable (OfficeTemplate) async throws -> Void,
+        loadOfficeTemplates: @escaping @Sendable (DocumentType) async throws -> [OfficeTemplate]
     ) {
         self.saveTemplate = saveTemplate
         self.loadTemplates = loadTemplates
@@ -33,7 +33,7 @@ public struct TemplateStorageService {
 
 // MARK: - Models
 
-public struct CustomTemplate: Identifiable, Codable, Equatable {
+public struct CustomTemplate: Identifiable, Codable, Equatable, Sendable {
     public let id: UUID
     public let name: String
     public let category: String
@@ -61,7 +61,7 @@ public struct CustomTemplate: Identifiable, Codable, Equatable {
     }
 }
 
-public struct OfficeTemplate: Identifiable, Codable, Equatable {
+public struct OfficeTemplate: Identifiable, Codable, Equatable, Sendable {
     public let id: UUID
     public let documentType: DocumentType
     public let officeName: String
@@ -166,33 +166,67 @@ extension TemplateStorageService: DependencyKey {
     }
 
     public static var testValue: TemplateStorageService {
-        var savedTemplates: [CustomTemplate] = []
-        var editedTemplates: [DocumentType: String] = [:]
-        var officeTemplates: [OfficeTemplate] = []
-
+        let storage = TestTemplateStorage()
+        
         return TemplateStorageService(
             saveTemplate: { template in
-                savedTemplates.append(template)
+                await storage.saveTemplate(template)
             },
             loadTemplates: {
-                savedTemplates
+                await storage.loadTemplates()
             },
             deleteTemplate: { id in
-                savedTemplates.removeAll { $0.id == id }
+                await storage.deleteTemplate(id)
             },
             saveEditedTemplate: { documentType, content in
-                editedTemplates[documentType] = content
+                await storage.saveEditedTemplate(documentType, content)
             },
             loadEditedTemplate: { documentType in
-                editedTemplates[documentType]
+                await storage.loadEditedTemplate(documentType)
             },
             saveOfficeTemplate: { template in
-                officeTemplates.append(template)
+                await storage.saveOfficeTemplate(template)
             },
             loadOfficeTemplates: { documentType in
-                officeTemplates.filter { $0.documentType == documentType }
+                await storage.loadOfficeTemplates(documentType)
             }
         )
+    }
+}
+
+// MARK: - Test Storage Actor
+
+actor TestTemplateStorage {
+    private var savedTemplates: [CustomTemplate] = []
+    private var editedTemplates: [DocumentType: String] = [:]
+    private var officeTemplates: [OfficeTemplate] = []
+    
+    func saveTemplate(_ template: CustomTemplate) {
+        savedTemplates.append(template)
+    }
+    
+    func loadTemplates() -> [CustomTemplate] {
+        return savedTemplates
+    }
+    
+    func deleteTemplate(_ id: UUID) {
+        savedTemplates.removeAll { $0.id == id }
+    }
+    
+    func saveEditedTemplate(_ documentType: DocumentType, _ content: String) {
+        editedTemplates[documentType] = content
+    }
+    
+    func loadEditedTemplate(_ documentType: DocumentType) -> String? {
+        return editedTemplates[documentType]
+    }
+    
+    func saveOfficeTemplate(_ template: OfficeTemplate) {
+        officeTemplates.append(template)
+    }
+    
+    func loadOfficeTemplates(_ documentType: DocumentType) -> [OfficeTemplate] {
+        return officeTemplates.filter { $0.documentType == documentType }
     }
 }
 

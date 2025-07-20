@@ -1,21 +1,22 @@
-import AppCore
-import ComposableArchitecture
-import Foundation
+#if os(iOS)
+    import AppCore
+    import ComposableArchitecture
+    import Foundation
 
-extension TextFieldServiceClient {
-    private static let textFieldService = iOSTextFieldService()
-    
-    public static let iOSLive = Self(
-        supportsAutocapitalization: {
-            textFieldService.supportsAutocapitalization
-        },
-        supportsKeyboardTypes: {
-            textFieldService.supportsKeyboardTypes
-        }
-    )
-}
+    public extension TextFieldServiceClient {
+        static let iOS = Self(
+            supportsAutocapitalization: {
+                // iOS supports text field autocapitalization
+                true
+            },
+            supportsKeyboardTypes: {
+                // iOS supports different keyboard types
+                true
+            }
+        )
+    }
 
-// Convenience static accessor
-public enum iOSTextFieldServiceClient {
-    public static let live = TextFieldServiceClient.iOSLive
-}
+    public enum iOSTextFieldServiceClient {
+        public static let live = TextFieldServiceClient.iOS
+    }
+#endif

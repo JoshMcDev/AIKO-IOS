@@ -1,34 +1,32 @@
-import Foundation
 import CoreData
+import Foundation
 
-extension GovernmentFormData {
-
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<GovernmentFormData> {
-        return NSFetchRequest<GovernmentFormData>(entityName: "GovernmentFormData")
+public extension GovernmentFormData {
+    @nonobjc class func fetchRequest() -> NSFetchRequest<GovernmentFormData> {
+        NSFetchRequest<GovernmentFormData>(entityName: "GovernmentFormData")
     }
 
-    @NSManaged public var id: UUID?
-    @NSManaged public var formType: String?
-    @NSManaged public var formNumber: String?
-    @NSManaged public var revision: String?
-    @NSManaged public var formData: Data?
-    @NSManaged public var createdDate: Date?
-    @NSManaged public var lastModifiedDate: Date?
-    @NSManaged public var status: String?
-    @NSManaged public var metadata: Data?
-    @NSManaged public var acquisition: Acquisition?
-
+    @NSManaged var id: UUID?
+    @NSManaged var formType: String?
+    @NSManaged var formNumber: String?
+    @NSManaged var revision: String?
+    @NSManaged var formData: Data?
+    @NSManaged var createdDate: Date?
+    @NSManaged var lastModifiedDate: Date?
+    @NSManaged var status: String?
+    @NSManaged var metadata: Data?
+    @NSManaged var acquisition: Acquisition?
 }
 
 // MARK: - Fetch Request Helpers
+
 extension GovernmentFormData {
-    
     /// Fetch all forms for a specific acquisition
     static func fetchForAcquisition(_ acquisitionId: UUID, in context: NSManagedObjectContext) -> [GovernmentFormData] {
         let request: NSFetchRequest<GovernmentFormData> = fetchRequest()
         request.predicate = NSPredicate(format: "acquisition.id == %@", acquisitionId as CVarArg)
         request.sortDescriptors = [NSSortDescriptor(key: "createdDate", ascending: false)]
-        
+
         do {
             return try context.fetch(request)
         } catch {
@@ -36,13 +34,13 @@ extension GovernmentFormData {
             return []
         }
     }
-    
+
     /// Fetch forms by type
     static func fetchByType(_ formType: String, in context: NSManagedObjectContext) -> [GovernmentFormData] {
         let request: NSFetchRequest<GovernmentFormData> = fetchRequest()
         request.predicate = NSPredicate(format: "formType == %@", formType)
         request.sortDescriptors = [NSSortDescriptor(key: "createdDate", ascending: false)]
-        
+
         do {
             return try context.fetch(request)
         } catch {
@@ -50,13 +48,13 @@ extension GovernmentFormData {
             return []
         }
     }
-    
+
     /// Fetch forms by status
     static func fetchByStatus(_ status: String, in context: NSManagedObjectContext) -> [GovernmentFormData] {
         let request: NSFetchRequest<GovernmentFormData> = fetchRequest()
         request.predicate = NSPredicate(format: "status == %@", status)
         request.sortDescriptors = [NSSortDescriptor(key: "lastModifiedDate", ascending: false)]
-        
+
         do {
             return try context.fetch(request)
         } catch {
@@ -64,13 +62,13 @@ extension GovernmentFormData {
             return []
         }
     }
-    
+
     /// Fetch a specific form by ID
     static func fetchById(_ id: UUID, in context: NSManagedObjectContext) -> GovernmentFormData? {
         let request: NSFetchRequest<GovernmentFormData> = fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
         request.fetchLimit = 1
-        
+
         do {
             return try context.fetch(request).first
         } catch {
@@ -81,6 +79,5 @@ extension GovernmentFormData {
 }
 
 // MARK: Generated accessors for GovernmentFormData
-extension GovernmentFormData: Identifiable {
 
-}
+extension GovernmentFormData: Identifiable {}

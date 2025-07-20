@@ -1,6 +1,6 @@
 import Foundation
 
-public enum DFDocumentType: String, CaseIterable, Identifiable, Codable {
+public enum DFDocumentType: String, CaseIterable, Identifiable, Codable, Sendable {
     // Sole Source & Competition (alphabetized)
     case eightASoleSource = "8(a) Sole Source"
     case brandNameOrEqual = "Brand Name or Equal"

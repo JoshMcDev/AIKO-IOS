@@ -1,9 +1,9 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 
 /// Mock Context7 Service for testing purposes
-/// 
+///
 /// This mock service simulates Context7 MCP Server functionality for:
 /// - Federal regulation updates and compliance monitoring
 /// - User behavior insights
@@ -17,7 +17,7 @@ import AppCore
 /// ```swift
 /// // In tests
 /// let mockService = MockContext7Service.testValue
-/// 
+///
 /// // For integration testing with delayed responses
 /// let integrationService = MockContext7Service.integrationValue
 /// ```
@@ -154,9 +154,9 @@ public struct SecurityPolicy: Identifiable, Equatable {
 
 // MARK: - Mock Implementations
 
-extension MockContext7Service {
+public extension MockContext7Service {
     /// Test value with immediate responses and minimal data
-    public static var testValue: MockContext7Service {
+    static var testValue: MockContext7Service {
         MockContext7Service(
             getRegulationUpdates: { _ in [] },
             validateCompliance: { _, _ in
@@ -188,7 +188,7 @@ extension MockContext7Service {
     }
 
     /// Integration test value with simulated delays and realistic mock data
-    public static var integrationValue: MockContext7Service {
+    static var integrationValue: MockContext7Service {
         MockContext7Service(
             getRegulationUpdates: { category in
                 // Simulate network delay
@@ -311,7 +311,7 @@ extension MockContext7Service {
     }
 
     /// Failing test value for error handling tests
-    public static var failingValue: MockContext7Service {
+    static var failingValue: MockContext7Service {
         MockContext7Service(
             getRegulationUpdates: { _ in
                 throw MockError.networkError
@@ -344,15 +344,15 @@ public enum MockError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .networkError:
-            return "Mock network connection error"
+            "Mock network connection error"
         case .validationError:
-            return "Mock validation failed"
+            "Mock validation failed"
         case .dataError:
-            return "Mock data retrieval error"
+            "Mock data retrieval error"
         case .authenticationError:
-            return "Mock authentication failed"
+            "Mock authentication failed"
         case .searchError:
-            return "Mock search error"
+            "Mock search error"
         }
     }
 }

@@ -1,8 +1,8 @@
-import SwiftUI
-import ComposableArchitecture
 import AppCore
+import ComposableArchitecture
+import SwiftUI
 
-struct AppIconPreview: View {
+struct AppIconPreview: View, @unchecked Sendable {
     @Dependency(\.imageLoader) var imageLoader
     var body: some View {
         VStack(spacing: 30) {

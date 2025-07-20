@@ -1,21 +1,20 @@
-import Foundation
 import Combine
+import Foundation
 
 /// Domain event bus for decoupled event communication
-public final class DomainEventBus {
-    
+public final class DomainEventBus: @unchecked Sendable {
     // MARK: - Singleton
-    
+
     public static let shared = DomainEventBus()
-    
+
     // MARK: - Properties
-    
+
     private let dispatcher: DomainEventDispatcher
     private let eventStore: DomainEventStore?
     private var subscriptions = Set<AnyCancellable>()
-    
+
     // MARK: - Initialization
-    
+
     public init(
         dispatcher: DomainEventDispatcher = .shared,
         eventStore: DomainEventStore? = nil
@@ -23,13 +22,13 @@ public final class DomainEventBus {
         self.dispatcher = dispatcher
         self.eventStore = eventStore
     }
-    
+
     // MARK: - Publishing
-    
+
     /// Publish a domain event
     public func publish(_ event: DomainEvent) async {
         // Store event if event store is configured
-        if let eventStore = eventStore {
+        if let eventStore {
             do {
                 try await eventStore.store(event)
             } catch {
@@ -37,62 +36,62 @@ public final class DomainEventBus {
                 print("Failed to store event: \(error)")
             }
         }
-        
+
         // Dispatch to handlers
         await dispatcher.dispatch(event)
     }
-    
+
     /// Publish multiple events
     public func publish(_ events: [DomainEvent]) async {
         for event in events {
             await publish(event)
         }
     }
-    
+
     /// Publish events from an aggregate
-    public func publishFrom<T>(_ aggregate: AggregateRoot<T>) async {
+    public func publishFrom(_ aggregate: AggregateRoot<some Any>) async {
         let events = aggregate.pullDomainEvents()
         await publish(events)
     }
-    
+
     // MARK: - Subscription
-    
+
     /// Subscribe to events of a specific type
     public func subscribe<Event: DomainEvent>(
         to eventType: Event.Type,
         priority: Int = 0,
-        handler: @escaping (Event) async -> Void
+        handler: @escaping @Sendable (Event) async -> Void
     ) {
         dispatcher.on(eventType, priority: priority, handler: handler)
     }
-    
+
     /// Subscribe to events with Combine
     public func publisher<Event: DomainEvent>(
-        for eventType: Event.Type
+        for _: Event.Type
     ) -> AnyPublisher<Event, Never> {
         dispatcher.eventPublisher
             .compactMap { $0 as? Event }
             .eraseToAnyPublisher()
     }
-    
+
     /// Subscribe to all events
     public var allEventsPublisher: AnyPublisher<DomainEvent, Never> {
         dispatcher.eventPublisher
     }
-    
+
     // MARK: - Event Replay
-    
+
     /// Replay events for an aggregate
     public func replayEvents(
         forAggregate aggregateId: UUID,
         after: Date? = nil
     ) async throws {
-        guard let eventStore = eventStore else {
+        guard let eventStore else {
             throw DomainError.invalidState("Event store not configured")
         }
-        
+
         let events = try await eventStore.eventsForAggregate(id: aggregateId, after: after)
-        
+
         // Note: This is simplified - in production, you'd deserialize and dispatch
         // the actual event objects
         print("Would replay \(events.count) events for aggregate \(aggregateId)")
@@ -102,14 +101,13 @@ public final class DomainEventBus {
 // MARK: - Event Handler Registration
 
 public extension DomainEventBus {
-    
     /// Register multiple event handlers at once
-    func registerHandlers(_ handlers: [any DomainEventHandler]) {
+    func registerHandlers(_ handlers: [some DomainEventHandler & Sendable]) {
         for handler in handlers {
             dispatcher.register(handler)
         }
     }
-    
+
     /// Auto-register handlers using reflection (simplified version)
     func autoRegisterHandlers(in namespace: String = "AIKO") {
         // In a real implementation, this would use runtime inspection
@@ -122,22 +120,21 @@ public extension DomainEventBus {
 
 /// Generic event logger using closure-based handling
 public final class DomainEventLogger {
-    
     public let priority = 100 // High priority to log first
-    
+
     public init() {}
-    
+
     /// Register logger with event bus
     public func register(with dispatcher: DomainEventDispatcher) {
         // Register handlers for common event types
         dispatcher.on(AcquisitionStatusChangedEvent.self, priority: priority) { event in
             print("[DomainEvent] AcquisitionStatusChangedEvent - ID: \(event.eventId) - Aggregate: \(event.aggregateId)")
         }
-        
+
         dispatcher.on(DocumentAddedEvent.self, priority: priority) { event in
             print("[DomainEvent] DocumentAddedEvent - ID: \(event.eventId) - Aggregate: \(event.aggregateId)")
         }
-        
+
         dispatcher.on(DocumentRemovedEvent.self, priority: priority) { event in
             print("[DomainEvent] DocumentRemovedEvent - ID: \(event.eventId) - Aggregate: \(event.aggregateId)")
         }
@@ -147,17 +144,17 @@ public final class DomainEventLogger {
 /// Performance monitoring for specific event types
 public struct AcquisitionEventPerformanceMonitor: DomainEventHandler {
     public typealias Event = AcquisitionStatusChangedEvent
-    
+
     public let priority = 90
-    
+
     public init() {}
-    
-    public func handle(_ event: AcquisitionStatusChangedEvent) async {
+
+    public func handle(_: AcquisitionStatusChangedEvent) async {
         let startTime = CFAbsoluteTimeGetCurrent()
-        
+
         // Let other handlers process
         try? await Task.sleep(nanoseconds: 1_000_000) // 1ms
-        
+
         let timeElapsed = CFAbsoluteTimeGetCurrent() - startTime
         if timeElapsed > 0.1 { // Log slow events (>100ms)
             print("[Performance] Slow event handling: AcquisitionStatusChangedEvent took \(timeElapsed)s")

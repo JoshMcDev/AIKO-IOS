@@ -1,13 +1,13 @@
-import SwiftUI
-import UniformTypeIdentifiers
 import AppCore
 import ComposableArchitecture
+import SwiftUI
+import UniformTypeIdentifiers
 
 // Preview showing SAM.gov report with checkmark.circle SF Symbols
 struct SAMReportPreview: View {
     @State private var showShareSheet = false
     @State private var showingSATBotAlert = false
-    
+
     // Dependency injection
     @Dependency(\.imageLoader) var imageLoader
     @Dependency(\.shareService) var shareService
@@ -21,7 +21,7 @@ struct SAMReportPreview: View {
 
     private func loadSAMIcon() -> Image? {
         // Use dependency-injected image loader
-        return imageLoader.loadImageFromBundle("SAMIcon", "png", Bundle.module)
+        imageLoader.loadImageFromBundle("SAMIcon", "png", Bundle.module)
     }
 
     var body: some View {
@@ -156,7 +156,7 @@ struct SAMReportPreview: View {
             ShareView(reportContent: generateReportContent())
         }
         .alert("SAT Bot Intelligence", isPresented: $showingSATBotAlert) {
-            Button("OK") { }
+            Button("OK") {}
         } message: {
             Text(getSATBotMessage())
         }
@@ -166,15 +166,15 @@ struct SAMReportPreview: View {
         """
         SAM.gov Responsibility Check Report
         Generated: \(Date().formatted())
-        
+
         Company UEIs Checked: \(companyUEIs.joined(separator: ", "))
-        
+
         ✅ No Active Exclusions
         ✅ All registrations are active
         ✅ No FAPIIS records found
-        
+
         Contract Value: $\(String(format: "%.0f", acquisitionValue))
-        
+
         Recommendation: This acquisition qualifies for simplified procedures under FAR Part 13.
         """
     }
@@ -182,18 +182,18 @@ struct SAMReportPreview: View {
     private func getSATBotMessage() -> String {
         let message = """
         Based on the contract value of $\(String(format: "%.0f", acquisitionValue)), this acquisition falls under the Simplified Acquisition Threshold (SAT).
-        
+
         Key Benefits:
         • Streamlined procedures
         • Reduced documentation
         • Faster procurement timeline
-        
+
         Recommended Actions:
         1. Use simplified acquisition procedures
         2. Consider using purchase cards if applicable
         3. Leverage existing BPAs or IDIQs
         """
-        
+
         // Platform differences handled by service
         return message
     }
@@ -206,81 +206,48 @@ struct ShareView: View {
     @State private var showingSaveAlert = false
     @State private var showingEmailAlert = false
     @State private var saveMessage = ""
-    
+
     @Dependency(\.shareService) var shareService
     @Dependency(\.fileService) var fileService
     @Dependency(\.emailService) var emailService
     @Dependency(\.clipboardService) var clipboardService
-    
+
     var body: some View {
         content
     }
-    
+
     @ViewBuilder
     private var content: some View {
         VStack(spacing: 20) {
-                Text("Share Report")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .padding(.top)
-                
-                VStack(spacing: 15) {
-                    // Save to Files
-                    Button(action: saveToFiles) {
-                        HStack {
-                            Image(systemName: "folder")
-                                .frame(width: 30)
-                            Text("Save to Files")
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.secondary)
-                        }
-                        .padding()
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(10)
+            Text("Share Report")
+                .font(.title2)
+                .fontWeight(.bold)
+                .padding(.top)
+
+            VStack(spacing: 15) {
+                // Save to Files
+                Button(action: saveToFiles) {
+                    HStack {
+                        Image(systemName: "folder")
+                            .frame(width: 30)
+                        Text("Save to Files")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(.secondary)
                     }
-                    .buttonStyle(PlainButtonStyle())
-                    
-                    // Email
-                    if emailService.canSendEmail() {
-                        Button(action: sendEmail) {
-                            HStack {
-                                Image(systemName: "envelope")
-                                    .frame(width: 30)
-                                Text("Email")
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .foregroundColor(.secondary)
-                            }
-                            .padding()
-                            .background(Color.gray.opacity(0.1))
-                            .cornerRadius(10)
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                    }
-                    
-                    // Copy to Clipboard
-                    Button(action: copyToClipboard) {
+                    .padding()
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(10)
+                }
+                .buttonStyle(PlainButtonStyle())
+
+                // Email
+                if emailService.canSendEmail() {
+                    Button(action: sendEmail) {
                         HStack {
-                            Image(systemName: "doc.on.doc")
+                            Image(systemName: "envelope")
                                 .frame(width: 30)
-                            Text("Copy to Clipboard")
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.secondary)
-                        }
-                        .padding()
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(10)
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    
-                    // System Share Sheet
-                    Button(action: showSystemShare) {
-                        HStack {
-                            Image(systemName: "square.and.arrow.up")
-                                .frame(width: 30)
-                            Text("More Options")
+                            Text("Email")
                             Spacer()
                             Image(systemName: "chevron.right")
                                 .foregroundColor(.secondary)
@@ -291,30 +258,63 @@ struct ShareView: View {
                     }
                     .buttonStyle(PlainButtonStyle())
                 }
-                .padding(.horizontal)
-                
-                Spacer()
-                
-                Button("Cancel") {
-                    dismiss()
+
+                // Copy to Clipboard
+                Button(action: copyToClipboard) {
+                    HStack {
+                        Image(systemName: "doc.on.doc")
+                            .frame(width: 30)
+                        Text("Copy to Clipboard")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(.secondary)
+                    }
+                    .padding()
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(10)
                 }
-                .padding()
+                .buttonStyle(PlainButtonStyle())
+
+                // System Share Sheet
+                Button(action: showSystemShare) {
+                    HStack {
+                        Image(systemName: "square.and.arrow.up")
+                            .frame(width: 30)
+                        Text("More Options")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(.secondary)
+                    }
+                    .padding()
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(10)
+                }
+                .buttonStyle(PlainButtonStyle())
             }
-            #if os(iOS)
-            .navigationBarHidden(true)
-            #endif
+            .padding(.horizontal)
+
+            Spacer()
+
+            Button("Cancel") {
+                dismiss()
+            }
+            .padding()
+        }
+        #if os(iOS)
+        .navigationBarHidden(true)
+        #endif
         .alert("File Saved", isPresented: $showingSaveAlert) {
-            Button("OK") { }
+            Button("OK") {}
         } message: {
             Text(saveMessage)
         }
         .alert("Email", isPresented: $showingEmailAlert) {
-            Button("OK") { }
+            Button("OK") {}
         } message: {
             Text("Email functionality is not available on this device")
         }
     }
-    
+
     private func saveToFiles() {
         Task {
             let result = await fileService.saveFile(
@@ -322,18 +322,18 @@ struct ShareView: View {
                 "SAM_Report_\(Date().formatted(.dateTime.year().month().day())).txt",
                 ["txt"]
             )
-            
+
             switch result {
-            case .success(let url):
+            case let .success(url):
                 saveMessage = "Report saved to: \(url.lastPathComponent)"
                 showingSaveAlert = true
-            case .failure(let error):
+            case let .failure(error):
                 saveMessage = "Failed to save: \(error.localizedDescription)"
                 showingSaveAlert = true
             }
         }
     }
-    
+
     private func sendEmail() {
         Task {
             let result = await emailService.showEmailComposer(
@@ -341,13 +341,13 @@ struct ShareView: View {
                 "SAM.gov Report",
                 reportContent
             )
-            
+
             if case .failed = result {
                 showingEmailAlert = true
             }
         }
     }
-    
+
     private func copyToClipboard() {
         Task {
             await clipboardService.copyText(reportContent)
@@ -355,7 +355,7 @@ struct ShareView: View {
             showingSaveAlert = true
         }
     }
-    
+
     private func showSystemShare() {
         Task {
             do {
@@ -384,12 +384,12 @@ struct CheckItem: View {
 
     enum CheckStatus {
         case passed, failed, warning
-        
+
         var color: Color {
             switch self {
-            case .passed: return .green
-            case .failed: return .red
-            case .warning: return .orange
+            case .passed: .green
+            case .failed: .red
+            case .warning: .orange
             }
         }
     }
@@ -399,11 +399,11 @@ struct CheckItem: View {
             Image(systemName: icon)
                 .foregroundColor(status.color)
                 .font(.system(size: 20))
-            
+
             Text(text)
                 .foregroundColor(.white.opacity(0.9))
                 .font(.subheadline)
-            
+
             Spacer()
         }
         .padding(.vertical, 2)

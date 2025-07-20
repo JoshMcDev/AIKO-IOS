@@ -18,8 +18,8 @@ extension NavigationServiceClient: TestDependencyKey {
     )
 }
 
-extension DependencyValues {
-    public var navigationService: NavigationServiceClient {
+public extension DependencyValues {
+    var navigationService: NavigationServiceClient {
         get { self[NavigationServiceClient.self] }
         set { self[NavigationServiceClient.self] = newValue }
     }

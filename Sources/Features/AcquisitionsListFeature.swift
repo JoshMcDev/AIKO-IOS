@@ -1,53 +1,54 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
 
 @Reducer
 public struct AcquisitionsListFeature {
     @ObservableState
-    public struct State: Equatable {
-        public var acquisitions: [Acquisition] = []
+    public struct State: Equatable, Sendable {
+        public var acquisitions: [AppCore.Acquisition] = []
         public var isLoading = false
         public var error: String?
         public var searchText = ""
-        public var selectedStatus: Acquisition.Status?
+        public var selectedStatus: AcquisitionStatus?
         public var sortOrder: SortOrder = .dateDescending
         public var renamingAcquisitionId: UUID?
         public var newAcquisitionName = ""
 
-        public var filteredAcquisitions: [Acquisition] {
+        public var filteredAcquisitions: [AppCore.Acquisition] {
             var filtered = acquisitions
 
             // Filter by search text
             if !searchText.isEmpty {
                 filtered = filtered.filter { acquisition in
                     let searchLower = searchText.lowercased()
-                    return (acquisition.title?.lowercased().contains(searchLower) ?? false) ||
+                    return acquisition.title.lowercased().contains(searchLower) ||
                         (acquisition.projectNumber?.lowercased().contains(searchLower) ?? false) ||
-                        (acquisition.requirements?.lowercased().contains(searchLower) ?? false)
+                        acquisition.requirements.lowercased().contains(searchLower)
                 }
             }
 
             // Filter by status
             if let status = selectedStatus {
-                filtered = filtered.filter { $0.statusEnum == status }
+                filtered = filtered.filter { $0.status == status }
             }
 
             // Sort
             switch sortOrder {
             case .dateDescending:
-                filtered.sort { ($0.createdDate ?? Date()) > ($1.createdDate ?? Date()) }
+                filtered.sort { $0.createdDate > $1.createdDate }
             case .dateAscending:
-                filtered.sort { ($0.createdDate ?? Date()) < ($1.createdDate ?? Date()) }
+                filtered.sort { $0.createdDate < $1.createdDate }
             case .titleAscending:
-                filtered.sort { ($0.title ?? "") < ($1.title ?? "") }
+                filtered.sort { $0.title < $1.title }
             case .titleDescending:
-                filtered.sort { ($0.title ?? "") > ($1.title ?? "") }
+                filtered.sort { $0.title > $1.title }
             case .statusGrouped:
                 filtered.sort {
-                    if $0.statusEnum == $1.statusEnum {
-                        return ($0.createdDate ?? Date()) > ($1.createdDate ?? Date())
+                    if $0.status == $1.status {
+                        return $0.createdDate > $1.createdDate
                     }
-                    return $0.statusEnum.rawValue < $1.statusEnum.rawValue
+                    return $0.status.rawValue < $1.status.rawValue
                 }
             }
 
@@ -60,10 +61,10 @@ public struct AcquisitionsListFeature {
     public enum Action {
         case onAppear
         case loadAcquisitions
-        case acquisitionsLoaded([Acquisition])
+        case acquisitionsLoaded([AppCore.Acquisition])
         case loadError(String)
         case searchTextChanged(String)
-        case statusFilterChanged(Acquisition.Status?)
+        case statusFilterChanged(AcquisitionStatus?)
         case sortOrderChanged(SortOrder)
         case deleteAcquisition(UUID)
         case acquisitionDeleted(UUID)
@@ -80,7 +81,7 @@ public struct AcquisitionsListFeature {
         case acquisitionRenamed(UUID, String)
     }
 
-    public enum SortOrder: String, CaseIterable {
+    public enum SortOrder: String, CaseIterable, Sendable {
         case dateDescending = "Newest First"
         case dateAscending = "Oldest First"
         case titleAscending = "Title A-Z"
@@ -103,7 +104,7 @@ public struct AcquisitionsListFeature {
                 state.isLoading = true
                 state.error = nil
 
-                return .run { send in
+                return .run { [clock = self.clock, acquisitionService = self.acquisitionService] send in
                     do {
                         try await clock.sleep(for: .milliseconds(300)) // Prevent UI flicker
                         let acquisitions = try await acquisitionService.fetchAcquisitions()
@@ -136,7 +137,7 @@ public struct AcquisitionsListFeature {
                 return .none
 
             case let .deleteAcquisition(id):
-                return .run { send in
+                return .run { [acquisitionService = self.acquisitionService] send in
                     do {
                         try await acquisitionService.deleteAcquisition(id)
                         await send(.acquisitionDeleted(id))
@@ -174,14 +175,14 @@ public struct AcquisitionsListFeature {
                         }
 
                         // Create a duplicate with modified title
-                        let newTitle = (original.title ?? "Untitled") + " (Copy)"
+                        let newTitle = original.title + " (Copy)"
                         let newAcquisition = try await acquisitionService.createAcquisition(
                             newTitle,
-                            original.requirements ?? "",
+                            original.requirements,
                             []
                         )
 
-                        await send(.acquisitionDuplicated(newAcquisition.id ?? UUID()))
+                        await send(.acquisitionDuplicated(newAcquisition.id))
                         await send(.loadAcquisitions)
                     } catch {
                         await send(.loadError("Failed to duplicate: \(error.localizedDescription)"))
@@ -200,7 +201,7 @@ public struct AcquisitionsListFeature {
                 state.renamingAcquisitionId = id
                 // Find the current name
                 if let acquisition = state.acquisitions.first(where: { $0.id == id }) {
-                    state.newAcquisitionName = acquisition.title ?? ""
+                    state.newAcquisitionName = acquisition.title
                 }
                 return .none
 
@@ -217,7 +218,7 @@ public struct AcquisitionsListFeature {
 
                 let newName = state.newAcquisitionName.trimmingCharacters(in: .whitespacesAndNewlines)
 
-                return .run { send in
+                return .run { [acquisitionService = self.acquisitionService] send in
                     do {
                         try await acquisitionService.updateAcquisition(id) { acquisition in
                             acquisition.title = newName

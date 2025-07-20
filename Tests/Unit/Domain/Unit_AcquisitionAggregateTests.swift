@@ -1,20 +1,19 @@
-import XCTest
 @testable import AIKO
+import XCTest
 
 final class Unit_AcquisitionAggregateTests: XCTestCase {
-    
     // MARK: - Properties
-    
+
     private var sut: AcquisitionAggregate!
     private var mockEventPublisher: MockDomainEventPublisher!
-    
+
     // MARK: - Setup/Teardown
-    
+
     override func setUp() {
         super.setUp()
-        
+
         mockEventPublisher = MockDomainEventPublisher()
-        
+
         sut = AcquisitionAggregate(
             id: UUID(),
             title: "Test Acquisition",
@@ -27,15 +26,15 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
             eventPublisher: mockEventPublisher
         )
     }
-    
+
     override func tearDown() {
         sut = nil
         mockEventPublisher = nil
         super.tearDown()
     }
-    
+
     // MARK: - Initialization Tests
-    
+
     func testInit_SetsPropertiesCorrectly() {
         // Given
         let id = UUID()
@@ -44,7 +43,7 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
         let status = AcquisitionStatus.draft
         let createdAt = Date()
         let updatedAt = Date()
-        
+
         // When
         let acquisition = AcquisitionAggregate(
             id: id,
@@ -57,7 +56,7 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
             forms: [],
             eventPublisher: mockEventPublisher
         )
-        
+
         // Then
         XCTAssertEqual(acquisition.id, id)
         XCTAssertEqual(acquisition.title, title)
@@ -68,21 +67,21 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
         XCTAssertEqual(acquisition.documents.count, 0)
         XCTAssertEqual(acquisition.forms.count, 0)
     }
-    
+
     // MARK: - Update Tests
-    
+
     func testUpdateTitle_Success() {
         // Given
         let newTitle = "Updated Title"
         let originalUpdatedAt = sut.updatedAt
-        
+
         // When
         sut.updateTitle(newTitle)
-        
+
         // Then
         XCTAssertEqual(sut.title, newTitle)
         XCTAssertGreaterThan(sut.updatedAt, originalUpdatedAt)
-        
+
         // Verify event published
         XCTAssertEqual(mockEventPublisher.publishedEvents.count, 1)
         if let event = mockEventPublisher.publishedEvents.first as? AcquisitionUpdatedEvent {
@@ -93,19 +92,19 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
             XCTFail("Expected AcquisitionUpdatedEvent")
         }
     }
-    
+
     func testUpdateRequirements_Success() {
         // Given
         let newRequirements = "Updated requirements"
         let originalUpdatedAt = sut.updatedAt
-        
+
         // When
         sut.updateRequirements(newRequirements)
-        
+
         // Then
         XCTAssertEqual(sut.requirements, newRequirements)
         XCTAssertGreaterThan(sut.updatedAt, originalUpdatedAt)
-        
+
         // Verify event published
         XCTAssertEqual(mockEventPublisher.publishedEvents.count, 1)
         if let event = mockEventPublisher.publishedEvents.first as? AcquisitionUpdatedEvent {
@@ -113,14 +112,14 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
             XCTAssertEqual(event.newValue as? String, newRequirements)
         }
     }
-    
+
     func testUpdateStatus_ValidTransition_Success() {
         // Given
         XCTAssertEqual(sut.status, .draft)
-        
+
         // When - Draft to In Review
         sut.updateStatus(.inReview)
-        
+
         // Then
         XCTAssertEqual(sut.status, .inReview)
         XCTAssertEqual(mockEventPublisher.publishedEvents.count, 1)
@@ -129,22 +128,22 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
             XCTAssertEqual(event.newStatus, .inReview)
         }
     }
-    
+
     func testUpdateStatus_InvalidTransition_DoesNotUpdate() {
         // Given
         sut.updateStatus(.completed) // Set to completed
         mockEventPublisher.reset()
-        
+
         // When - Try to go back to draft (invalid)
         sut.updateStatus(.draft)
-        
+
         // Then
         XCTAssertEqual(sut.status, .completed) // Should remain completed
         XCTAssertEqual(mockEventPublisher.publishedEvents.count, 0) // No event published
     }
-    
+
     // MARK: - Document Management Tests
-    
+
     func testAddDocument_Success() {
         // Given
         let document = Document(
@@ -154,14 +153,14 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
             contentSummary: "Test document",
             createdAt: Date()
         )
-        
+
         // When
         sut.addDocument(document)
-        
+
         // Then
         XCTAssertEqual(sut.documents.count, 1)
         XCTAssertEqual(sut.documents.first?.id, document.id)
-        
+
         // Verify event published
         XCTAssertEqual(mockEventPublisher.publishedEvents.count, 1)
         if let event = mockEventPublisher.publishedEvents.first as? DocumentAddedEvent {
@@ -170,7 +169,7 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
             XCTAssertEqual(event.fileName, document.fileName)
         }
     }
-    
+
     func testAddDocument_Duplicate_DoesNotAdd() {
         // Given
         let document = Document(
@@ -182,15 +181,15 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
         )
         sut.addDocument(document)
         mockEventPublisher.reset()
-        
+
         // When - Try to add same document again
         sut.addDocument(document)
-        
+
         // Then
         XCTAssertEqual(sut.documents.count, 1) // Still only one
         XCTAssertEqual(mockEventPublisher.publishedEvents.count, 0) // No new event
     }
-    
+
     func testRemoveDocument_Success() {
         // Given
         let document = Document(
@@ -202,13 +201,13 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
         )
         sut.addDocument(document)
         mockEventPublisher.reset()
-        
+
         // When
         sut.removeDocument(withId: document.id)
-        
+
         // Then
         XCTAssertEqual(sut.documents.count, 0)
-        
+
         // Verify event published
         XCTAssertEqual(mockEventPublisher.publishedEvents.count, 1)
         if let event = mockEventPublisher.publishedEvents.first as? DocumentRemovedEvent {
@@ -216,32 +215,32 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
             XCTAssertEqual(event.documentId, document.id)
         }
     }
-    
+
     func testRemoveDocument_NonExistent_NoChange() {
         // Given
         let nonExistentId = UUID()
-        
+
         // When
         sut.removeDocument(withId: nonExistentId)
-        
+
         // Then
         XCTAssertEqual(sut.documents.count, 0)
         XCTAssertEqual(mockEventPublisher.publishedEvents.count, 0)
     }
-    
+
     // MARK: - Form Management Tests
-    
+
     func testAddForm_Success() {
         // Given
         let form = createTestForm()
-        
+
         // When
         sut.addForm(form)
-        
+
         // Then
         XCTAssertEqual(sut.forms.count, 1)
         XCTAssertTrue(sut.forms.contains { $0.formNumber == form.formNumber })
-        
+
         // Verify event published
         XCTAssertEqual(mockEventPublisher.publishedEvents.count, 1)
         if let event = mockEventPublisher.publishedEvents.first as? FormAddedEvent {
@@ -250,19 +249,19 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
             XCTAssertEqual(event.formType, String(describing: type(of: form)))
         }
     }
-    
+
     func testRemoveForm_Success() {
         // Given
         let form = createTestForm()
         sut.addForm(form)
         mockEventPublisher.reset()
-        
+
         // When
         sut.removeForm(withNumber: form.formNumber)
-        
+
         // Then
         XCTAssertEqual(sut.forms.count, 0)
-        
+
         // Verify event published
         XCTAssertEqual(mockEventPublisher.publishedEvents.count, 1)
         if let event = mockEventPublisher.publishedEvents.first as? FormRemovedEvent {
@@ -270,9 +269,9 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
             XCTAssertEqual(event.formNumber, form.formNumber)
         }
     }
-    
+
     // MARK: - Validation Tests
-    
+
     func testIsValidForSubmission_AllRequirementsMet_ReturnsTrue() {
         // Given
         sut.updateStatus(.approved)
@@ -284,14 +283,14 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
             createdAt: Date()
         ))
         sut.addForm(createTestForm())
-        
+
         // When
         let isValid = sut.isValidForSubmission()
-        
+
         // Then
         XCTAssertTrue(isValid)
     }
-    
+
     func testIsValidForSubmission_WrongStatus_ReturnsFalse() {
         // Given - In draft status
         sut.addDocument(Document(
@@ -302,26 +301,26 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
             createdAt: Date()
         ))
         sut.addForm(createTestForm())
-        
+
         // When
         let isValid = sut.isValidForSubmission()
-        
+
         // Then
         XCTAssertFalse(isValid)
     }
-    
+
     func testIsValidForSubmission_NoDocuments_ReturnsFalse() {
         // Given
         sut.updateStatus(.approved)
         sut.addForm(createTestForm())
-        
+
         // When
         let isValid = sut.isValidForSubmission()
-        
+
         // Then
         XCTAssertFalse(isValid)
     }
-    
+
     func testIsValidForSubmission_NoForms_ReturnsFalse() {
         // Given
         sut.updateStatus(.approved)
@@ -332,16 +331,16 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
             contentSummary: nil,
             createdAt: Date()
         ))
-        
+
         // When
         let isValid = sut.isValidForSubmission()
-        
+
         // Then
         XCTAssertFalse(isValid)
     }
-    
+
     // MARK: - Event Recording Tests
-    
+
     func testGetDomainEvents_ReturnsAllEvents() {
         // Given
         sut.updateTitle("New Title")
@@ -353,38 +352,38 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
             contentSummary: nil,
             createdAt: Date()
         ))
-        
+
         // When
         let events = sut.getDomainEvents()
-        
+
         // Then
         XCTAssertEqual(events.count, 3)
         XCTAssertTrue(events[0] is AcquisitionUpdatedEvent)
         XCTAssertTrue(events[1] is AcquisitionStatusChangedEvent)
         XCTAssertTrue(events[2] is DocumentAddedEvent)
     }
-    
+
     func testClearDomainEvents_RemovesAllEvents() {
         // Given
         sut.updateTitle("New Title")
         sut.updateStatus(.inReview)
-        
+
         // When
         sut.clearDomainEvents()
         let events = sut.getDomainEvents()
-        
+
         // Then
         XCTAssertEqual(events.count, 0)
     }
-    
+
     // MARK: - Helper Methods
-    
+
     private func createTestForm() -> GovernmentForm {
         let formData = FormData()
         formData["formNumber"] = "SF1449"
         formData["title"] = "Test Form"
         formData["revision"] = "10/2023"
-        
+
         let factory = SF1449Factory()
         return try! factory.create(with: formData)
     }
@@ -394,11 +393,11 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
 
 private class MockDomainEventPublisher: DomainEventPublisher {
     var publishedEvents: [DomainEvent] = []
-    
+
     func publish(_ event: DomainEvent) {
         publishedEvents.append(event)
     }
-    
+
     func reset() {
         publishedEvents.removeAll()
     }

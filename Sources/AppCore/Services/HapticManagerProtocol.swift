@@ -3,7 +3,7 @@ import SwiftUI
 
 // MARK: - Haptic Manager Protocol
 
-public protocol HapticManagerProtocol {
+public protocol HapticManagerProtocol: Sendable {
     func impact(_ style: HapticStyle)
     func notification(_ type: HapticNotificationType)
     func selection()
@@ -19,7 +19,7 @@ public protocol HapticManagerProtocol {
 
 // MARK: - Haptic Style
 
-public enum HapticStyle {
+public enum HapticStyle: Sendable {
     case light
     case medium
     case heavy
@@ -29,7 +29,7 @@ public enum HapticStyle {
 
 // MARK: - Haptic Notification Type
 
-public enum HapticNotificationType {
+public enum HapticNotificationType: Sendable {
     case success
     case warning
     case error
@@ -37,7 +37,7 @@ public enum HapticNotificationType {
 
 // MARK: - Haptic Manager Client
 
-public struct HapticManagerClient {
+public struct HapticManagerClient: Sendable {
     public var impact: @MainActor (HapticStyle) -> Void
     public var notification: @MainActor (HapticNotificationType) -> Void
     public var selection: @MainActor () -> Void
@@ -49,7 +49,7 @@ public struct HapticManagerClient {
     public var dragStarted: @MainActor () -> Void
     public var dragEnded: @MainActor () -> Void
     public var refresh: @MainActor () -> Void
-    
+
     public init(
         impact: @escaping @MainActor (HapticStyle) -> Void,
         notification: @escaping @MainActor (HapticNotificationType) -> Void,
@@ -81,8 +81,8 @@ public struct HapticManagerClient {
 
 import ComposableArchitecture
 
-extension DependencyValues {
-    public var hapticManager: HapticManagerClient {
+public extension DependencyValues {
+    var hapticManager: HapticManagerClient {
         get { self[HapticManagerKey.self] }
         set { self[HapticManagerKey.self] = newValue }
     }
@@ -92,16 +92,16 @@ private enum HapticManagerKey: DependencyKey {
     static let liveValue = HapticManagerClient(
         impact: { _ in },
         notification: { _ in },
-        selection: { },
-        buttonTap: { },
-        toggleSwitch: { },
-        successAction: { },
-        errorAction: { },
-        warningAction: { },
-        dragStarted: { },
-        dragEnded: { },
-        refresh: { }
+        selection: {},
+        buttonTap: {},
+        toggleSwitch: {},
+        successAction: {},
+        errorAction: {},
+        warningAction: {},
+        dragStarted: {},
+        dragEnded: {},
+        refresh: {}
     )
-    
+
     static let testValue = liveValue
 }

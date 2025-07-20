@@ -10,7 +10,7 @@ public struct ScannedDocument: Equatable, Sendable {
     public let title: String
     public let scannedAt: Date
     public let metadata: DocumentMetadata
-    
+
     public init(
         id: UUID = UUID(),
         pages: [ScannedPage],
@@ -29,20 +29,20 @@ public struct ScannedDocument: Equatable, Sendable {
 /// Represents a single page in a scanned document
 public struct ScannedPage: Equatable, Sendable, Identifiable {
     public let id: UUID
-    public let imageData: Data  // Platform-agnostic image representation
+    public let imageData: Data // Platform-agnostic image representation
     public var thumbnailData: Data?
     public var enhancedImageData: Data?
     public var ocrText: String?
     public var ocrResult: OCRResult?
     public var pageNumber: Int
     public var processingState: ProcessingState
-    
+
     // Phase 4.1: Quality and Processing Tracking
     public var qualityMetrics: QualityMetrics?
     public var enhancementApplied: Bool = false
     public var processingMode: ProcessingMode?
     public var processingResult: ProcessingResult?
-    
+
     public init(
         id: UUID = UUID(),
         imageData: Data,
@@ -70,17 +70,17 @@ public struct ScannedPage: Equatable, Sendable, Identifiable {
         self.processingMode = processingMode
         self.processingResult = processingResult
     }
-    
+
     /// Quality score computed from processing result or OCR result
     public var qualityScore: Double? {
         if let result = processingResult {
             return result.qualityMetrics.overallConfidence
-        } else if let ocrResult = ocrResult {
+        } else if let ocrResult {
             return ocrResult.confidence
         }
         return nil
     }
-    
+
     public enum ProcessingState: Equatable, Sendable {
         case pending
         case processing
@@ -94,7 +94,7 @@ public struct DocumentMetadata: Equatable, Sendable {
     public let source: DocumentSource
     public let captureDate: Date
     public let deviceInfo: String?
-    
+
     public init(
         source: DocumentSource = .unknown,
         captureDate: Date = Date(),
@@ -104,7 +104,7 @@ public struct DocumentMetadata: Equatable, Sendable {
         self.captureDate = captureDate
         self.deviceInfo = deviceInfo
     }
-    
+
     public enum DocumentSource: String, Equatable, Sendable {
         case camera = "Camera"
         case fileImport = "File Import"
@@ -120,54 +120,57 @@ public struct DocumentMetadata: Equatable, Sendable {
 public struct DocumentScannerClient: Sendable {
     /// Initiates the document scanning process
     public var scan: @Sendable () async throws -> ScannedDocument
-    
+
     /// Enhances a scanned image (contrast, brightness, etc.)
     public var enhanceImage: @Sendable (Data) async throws -> Data
-    
+
     /// Enhances a scanned image with advanced processing modes and progress callbacks
     public var enhanceImageAdvanced: @Sendable (Data, ProcessingMode, ProcessingOptions) async throws -> ProcessingResult
-    
+
     /// Performs Optical Character Recognition on image data (legacy)
     public var performOCR: @Sendable (Data) async throws -> String
-    
+
     /// Performs enhanced OCR with structured results and metadata extraction
     public var performEnhancedOCR: @Sendable (Data) async throws -> OCRResult
-    
+
     /// Generates a thumbnail from image data
     public var generateThumbnail: @Sendable (Data, CGSize) async throws -> Data
-    
+
     /// Saves scanned documents to the document pipeline
     public var saveToDocumentPipeline: @Sendable ([ScannedPage]) async throws -> Void
-    
+
     /// Checks if scanning is available on the current platform
     public var isScanningAvailable: @Sendable () -> Bool = { false }
-    
+
     /// Estimates processing time for given image and mode
     public var estimateProcessingTime: @Sendable (Data, ProcessingMode) async throws -> TimeInterval = { _, _ in 1.0 }
-    
+
     /// Checks if a processing mode is available
     public var isProcessingModeAvailable: @Sendable (ProcessingMode) -> Bool = { _ in false }
+
+    /// Checks camera permissions for document scanning
+    public var checkCameraPermissions: @Sendable () async -> Bool = { false }
 }
 
 // MARK: - Dependency Registration
 
 extension DocumentScannerClient: DependencyKey {
-    public static var liveValue: Self = Self()
-    
-    public static var testValue: Self = Self(
-        scan: { 
+    public static let liveValue: Self = .init()
+
+    public static let testValue: Self = .init(
+        scan: {
             ScannedDocument(
                 pages: [
                     ScannedPage(
                         imageData: Data(),
                         pageNumber: 1
-                    )
+                    ),
                 ],
                 title: "Test Document"
             )
         },
         enhanceImage: { data in data },
-        enhanceImageAdvanced: { data, mode, options in
+        enhanceImageAdvanced: { data, _, _ in
             ProcessingResult(
                 processedImageData: data,
                 qualityMetrics: QualityMetrics(
@@ -194,7 +197,7 @@ extension DocumentScannerClient: DependencyKey {
                         confidence: 0.9,
                         boundingBox: CGRect(x: 0, y: 0, width: 100, height: 20),
                         fieldType: .text
-                    )
+                    ),
                 ],
                 documentStructure: DocumentStructure(
                     paragraphs: [
@@ -203,7 +206,7 @@ extension DocumentScannerClient: DependencyKey {
                             boundingBox: CGRect(x: 0, y: 0, width: 200, height: 40),
                             confidence: 0.85,
                             textType: .body
-                        )
+                        ),
                     ],
                     layout: .document
                 ),
@@ -215,12 +218,13 @@ extension DocumentScannerClient: DependencyKey {
         saveToDocumentPipeline: { _ in },
         isScanningAvailable: { true },
         estimateProcessingTime: { _, _ in 1.0 },
-        isProcessingModeAvailable: { _ in true }
+        isProcessingModeAvailable: { _ in true },
+        checkCameraPermissions: { true }
     )
 }
 
-extension DependencyValues {
-    public var documentScanner: DocumentScannerClient {
+public extension DependencyValues {
+    var documentScanner: DocumentScannerClient {
         get { self[DocumentScannerClient.self] }
         set { self[DocumentScannerClient.self] = newValue }
     }
@@ -236,7 +240,7 @@ public struct OCRResult: Equatable, Sendable {
     public let documentStructure: DocumentStructure
     public let extractedMetadata: ExtractedMetadata
     public let processingTime: TimeInterval
-    
+
     public init(
         fullText: String,
         confidence: Double,
@@ -261,7 +265,7 @@ public struct FormField: Equatable, Sendable {
     public let confidence: Double
     public let boundingBox: CGRect
     public let fieldType: FieldType
-    
+
     public init(
         label: String,
         value: String,
@@ -275,17 +279,17 @@ public struct FormField: Equatable, Sendable {
         self.boundingBox = boundingBox
         self.fieldType = fieldType
     }
-    
+
     public enum FieldType: String, CaseIterable, Sendable {
-        case text = "text"
-        case number = "number"
-        case date = "date"
-        case currency = "currency"
-        case email = "email"
-        case phone = "phone"
-        case address = "address"
-        case checkbox = "checkbox"
-        case signature = "signature"
+        case text
+        case number
+        case date
+        case currency
+        case email
+        case phone
+        case address
+        case checkbox
+        case signature
     }
 }
 
@@ -296,7 +300,7 @@ public struct DocumentStructure: Equatable, Sendable {
     public let lists: [List]
     public let headers: [TextRegion]
     public let layout: LayoutType
-    
+
     public init(
         paragraphs: [TextRegion] = [],
         tables: [Table] = [],
@@ -310,15 +314,15 @@ public struct DocumentStructure: Equatable, Sendable {
         self.headers = headers
         self.layout = layout
     }
-    
+
     public enum LayoutType: String, CaseIterable, Sendable {
-        case document = "document"
-        case form = "form"
-        case table = "table"
-        case receipt = "receipt"
-        case invoice = "invoice"
-        case letter = "letter"
-        case unknown = "unknown"
+        case document
+        case form
+        case table
+        case receipt
+        case invoice
+        case letter
+        case unknown
     }
 }
 
@@ -328,7 +332,7 @@ public struct TextRegion: Equatable, Sendable {
     public let boundingBox: CGRect
     public let confidence: Double
     public let textType: TextType
-    
+
     public init(
         text: String,
         boundingBox: CGRect,
@@ -340,13 +344,13 @@ public struct TextRegion: Equatable, Sendable {
         self.confidence = confidence
         self.textType = textType
     }
-    
+
     public enum TextType: String, CaseIterable, Sendable {
-        case title = "title"
-        case header = "header"
-        case body = "body"
-        case footer = "footer"
-        case caption = "caption"
+        case title
+        case header
+        case body
+        case footer
+        case caption
     }
 }
 
@@ -355,7 +359,7 @@ public struct Table: Equatable, Sendable {
     public let rows: [[TableCell]]
     public let boundingBox: CGRect
     public let confidence: Double
-    
+
     public init(
         rows: [[TableCell]],
         boundingBox: CGRect,
@@ -373,7 +377,7 @@ public struct TableCell: Equatable, Sendable {
     public let boundingBox: CGRect
     public let confidence: Double
     public let isHeader: Bool
-    
+
     public init(
         content: String,
         boundingBox: CGRect,
@@ -392,7 +396,7 @@ public struct List: Equatable, Sendable {
     public let items: [ListItem]
     public let boundingBox: CGRect
     public let listType: ListType
-    
+
     public init(
         items: [ListItem],
         boundingBox: CGRect,
@@ -402,10 +406,10 @@ public struct List: Equatable, Sendable {
         self.boundingBox = boundingBox
         self.listType = listType
     }
-    
+
     public enum ListType: String, CaseIterable, Sendable {
-        case ordered = "ordered"
-        case unordered = "unordered"
+        case ordered
+        case unordered
     }
 }
 
@@ -415,7 +419,7 @@ public struct ListItem: Equatable, Sendable {
     public let boundingBox: CGRect
     public let confidence: Double
     public let level: Int // Indentation level
-    
+
     public init(
         text: String,
         boundingBox: CGRect,
@@ -438,7 +442,7 @@ public struct ExtractedMetadata: Equatable, Sendable {
     public let emailAddresses: [String]
     public let urls: [String]
     public let currencies: [ExtractedCurrency]
-    
+
     public init(
         dates: [ExtractedDate] = [],
         numbers: [ExtractedNumber] = [],
@@ -464,7 +468,7 @@ public struct ExtractedDate: Equatable, Sendable {
     public let originalText: String
     public let confidence: Double
     public let context: String? // Surrounding text for context
-    
+
     public init(
         date: Date,
         originalText: String,
@@ -484,7 +488,7 @@ public struct ExtractedNumber: Equatable, Sendable {
     public let originalText: String
     public let numberType: NumberType
     public let confidence: Double
-    
+
     public init(
         value: Double,
         originalText: String,
@@ -496,12 +500,12 @@ public struct ExtractedNumber: Equatable, Sendable {
         self.numberType = numberType
         self.confidence = confidence
     }
-    
+
     public enum NumberType: String, CaseIterable, Sendable {
-        case integer = "integer"
-        case decimal = "decimal"
-        case percentage = "percentage"
-        case identifier = "identifier" // Like ID numbers
+        case integer
+        case decimal
+        case percentage
+        case identifier // Like ID numbers
     }
 }
 
@@ -510,7 +514,7 @@ public struct ExtractedAddress: Equatable, Sendable {
     public let fullAddress: String
     public let components: AddressComponents
     public let confidence: Double
-    
+
     public init(
         fullAddress: String,
         components: AddressComponents = AddressComponents(),
@@ -529,7 +533,7 @@ public struct AddressComponents: Equatable, Sendable {
     public let state: String?
     public let zipCode: String?
     public let country: String?
-    
+
     public init(
         street: String? = nil,
         city: String? = nil,
@@ -551,7 +555,7 @@ public struct ExtractedCurrency: Equatable, Sendable {
     public let currency: String // Currency code like "USD"
     public let originalText: String
     public let confidence: Double
-    
+
     public init(
         amount: Decimal,
         currency: String,
@@ -576,23 +580,23 @@ public enum DocumentScannerError: LocalizedError, Equatable {
     case ocrFailed(String)
     case saveFailed(String)
     case unknownError(String)
-    
+
     public var errorDescription: String? {
         switch self {
         case .scanningNotAvailable:
-            return "Document scanning is not available on this device"
+            "Document scanning is not available on this device"
         case .userCancelled:
-            return "Scanning was cancelled"
+            "Scanning was cancelled"
         case .invalidImageData:
-            return "The image data is invalid or corrupted"
+            "The image data is invalid or corrupted"
         case .enhancementFailed:
-            return "Failed to enhance the image"
-        case .ocrFailed(let reason):
-            return "Text recognition failed: \(reason)"
-        case .saveFailed(let reason):
-            return "Failed to save document: \(reason)"
-        case .unknownError(let message):
-            return message
+            "Failed to enhance the image"
+        case let .ocrFailed(reason):
+            "Text recognition failed: \(reason)"
+        case let .saveFailed(reason):
+            "Failed to save document: \(reason)"
+        case let .unknownError(message):
+            message
         }
     }
 }

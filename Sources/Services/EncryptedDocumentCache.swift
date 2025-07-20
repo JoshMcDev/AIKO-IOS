@@ -1,26 +1,52 @@
+import AppCore
 import ComposableArchitecture
 import CryptoKit
 import Foundation
-import AppCore
 
 /// Encrypted Document Cache Service with AES-256 encryption
-public struct EncryptedDocumentCache {
+public struct EncryptedDocumentCache: Sendable {
     // Cache operations
-    public var cacheDocument: (GeneratedDocument) async throws -> Void
-    public var getCachedDocument: (DocumentType, String) async -> GeneratedDocument?
-    public var cacheAnalysisResponse: (String, String, [DocumentType]) async throws -> Void
-    public var getCachedAnalysisResponse: (String) async -> (response: String, recommendedDocuments: [DocumentType])?
-    public var clearCache: () async throws -> Void
-    public var getCacheStatistics: () async -> CacheStatistics
+    public var cacheDocument: @Sendable (GeneratedDocument) async throws -> Void
+    public var getCachedDocument: @Sendable (DocumentType, String) async -> GeneratedDocument?
+    public var cacheAnalysisResponse: @Sendable (String, String, [DocumentType]) async throws -> Void
+    public var getCachedAnalysisResponse: @Sendable (String) async -> (response: String, recommendedDocuments: [DocumentType])?
+    public var clearCache: @Sendable () async throws -> Void
+    public var getCacheStatistics: @Sendable () async -> CacheStatistics
 
     // Performance optimization
-    public var preloadFrequentDocuments: () async throws -> Void
-    public var optimizeCacheForMemory: () async throws -> Void
+    public var preloadFrequentDocuments: @Sendable () async throws -> Void
+    public var optimizeCacheForMemory: @Sendable () async throws -> Void
 
     // Security operations
-    public var rotateEncryptionKey: () async throws -> Void
-    public var exportEncryptedBackup: () async throws -> Data
-    public var importEncryptedBackup: (Data) async throws -> Void
+    public var rotateEncryptionKey: @Sendable () async throws -> Void
+    public var exportEncryptedBackup: @Sendable () async throws -> Data
+    public var importEncryptedBackup: @Sendable (Data) async throws -> Void
+
+    public init(
+        cacheDocument: @escaping @Sendable (GeneratedDocument) async throws -> Void,
+        getCachedDocument: @escaping @Sendable (DocumentType, String) async -> GeneratedDocument?,
+        cacheAnalysisResponse: @escaping @Sendable (String, String, [DocumentType]) async throws -> Void,
+        getCachedAnalysisResponse: @escaping @Sendable (String) async -> (response: String, recommendedDocuments: [DocumentType])?,
+        clearCache: @escaping @Sendable () async throws -> Void,
+        getCacheStatistics: @escaping @Sendable () async -> CacheStatistics,
+        preloadFrequentDocuments: @escaping @Sendable () async throws -> Void,
+        optimizeCacheForMemory: @escaping @Sendable () async throws -> Void,
+        rotateEncryptionKey: @escaping @Sendable () async throws -> Void,
+        exportEncryptedBackup: @escaping @Sendable () async throws -> Data,
+        importEncryptedBackup: @escaping @Sendable (Data) async throws -> Void
+    ) {
+        self.cacheDocument = cacheDocument
+        self.getCachedDocument = getCachedDocument
+        self.cacheAnalysisResponse = cacheAnalysisResponse
+        self.getCachedAnalysisResponse = getCachedAnalysisResponse
+        self.clearCache = clearCache
+        self.getCacheStatistics = getCacheStatistics
+        self.preloadFrequentDocuments = preloadFrequentDocuments
+        self.optimizeCacheForMemory = optimizeCacheForMemory
+        self.rotateEncryptionKey = rotateEncryptionKey
+        self.exportEncryptedBackup = exportEncryptedBackup
+        self.importEncryptedBackup = importEncryptedBackup
+    }
 }
 
 // MARK: - Encrypted Cache Storage
@@ -432,7 +458,7 @@ actor EncryptedDocumentCacheStorage {
 
 // MARK: - Document Encryption Manager
 
-final class DocumentEncryptionManager {
+actor DocumentEncryptionManager {
     private let keychainService = "com.aiko.document.encryption"
 
     struct MasterKeyData {
@@ -567,7 +593,7 @@ extension EncryptedDocumentCache: DependencyKey {
             try await EncryptedDocumentCacheStorage()
         }
 
-        func getStorage() async throws -> EncryptedDocumentCacheStorage {
+        @Sendable func getStorage() async throws -> EncryptedDocumentCacheStorage {
             try await storage.value
         }
 

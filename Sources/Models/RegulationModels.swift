@@ -1,5 +1,5 @@
-import Foundation
 import AppCore
+import Foundation
 
 // MARK: - Shared Regulation Models
 

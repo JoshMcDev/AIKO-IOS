@@ -2,17 +2,16 @@ import Foundation
 
 /// SF 30 - Amendment of Solicitation/Modification of Contract
 public final class SF30Form: BaseGovernmentForm {
-    
     // MARK: - Form Sections
-    
+
     public let amendmentInfo: AmendmentInfo
     public let contractInfo: ContractInfo
     public let changes: ChangesSection
     public let contractor: ContractorInfo
     public let administrativeData: AdministrativeData
-    
+
     // MARK: - Initialization
-    
+
     public init(
         revision: String = "REV OCT 2023",
         metadata: FormMetadata,
@@ -27,7 +26,7 @@ public final class SF30Form: BaseGovernmentForm {
         self.changes = changes
         self.contractor = contractor
         self.administrativeData = administrativeData
-        
+
         super.init(
             formNumber: "SF30",
             formTitle: "Amendment of Solicitation/Modification of Contract",
@@ -38,12 +37,12 @@ public final class SF30Form: BaseGovernmentForm {
             metadata: metadata
         )
     }
-    
+
     // MARK: - Validation
-    
-    public override func validate() throws {
+
+    override public func validate() throws {
         try super.validate()
-        
+
         // Validate all sections
         try amendmentInfo.validate()
         try contractInfo.validate()
@@ -51,18 +50,18 @@ public final class SF30Form: BaseGovernmentForm {
         try contractor.validate()
         try administrativeData.validate()
     }
-    
+
     // MARK: - Export
-    
-    public override func export() -> [String: Any] {
+
+    override public func export() -> [String: Any] {
         var data = super.export()
-        
+
         data["amendmentInfo"] = amendmentInfo.export()
         data["contractInfo"] = contractInfo.export()
         data["changes"] = changes.export()
         data["contractor"] = contractor.export()
         data["administrativeData"] = administrativeData.export()
-        
+
         return data
     }
 }
@@ -77,12 +76,12 @@ public struct AmendmentInfo: ValueObject {
     public let requisitionNumber: RequisitionNumber?
     public let solicitationNumber: SolicitationNumber?
     public let contractNumber: ContractNumber?
-    
+
     public enum ModificationType: String, CaseIterable {
         case amendmentSolicitation = "AMENDMENT_SOLICITATION"
         case modificationContract = "MODIFICATION_CONTRACT"
     }
-    
+
     public init(
         modificationType: ModificationType,
         modificationNumber: String,
@@ -98,12 +97,12 @@ public struct AmendmentInfo: ValueObject {
         self.solicitationNumber = solicitationNumber
         self.contractNumber = contractNumber
     }
-    
+
     public func validate() throws {
         guard !modificationNumber.isEmpty else {
             throw FormError.missingRequiredField("modification number")
         }
-        
+
         // Validate that appropriate reference is provided
         switch modificationType {
         case .amendmentSolicitation:
@@ -116,7 +115,7 @@ public struct AmendmentInfo: ValueObject {
             }
         }
     }
-    
+
     func export() -> [String: Any] {
         [
             "modificationType": modificationType.rawValue,
@@ -124,7 +123,7 @@ public struct AmendmentInfo: ValueObject {
             "effectiveDate": effectiveDate.timeIntervalSince1970,
             "requisitionNumber": requisitionNumber?.value as Any,
             "solicitationNumber": solicitationNumber?.value as Any,
-            "contractNumber": contractNumber?.value as Any
+            "contractNumber": contractNumber?.value as Any,
         ]
     }
 }
@@ -135,19 +134,19 @@ public struct ContractInfo: ValueObject {
     public let currentContractValue: Money?
     public let changeAmount: Money?
     public let fundingData: FundingData?
-    
+
     public struct FundingData: ValueObject {
         public let accountingData: String
         public let appropriation: String?
         public let obligatedAmount: Money
-        
+
         public func validate() throws {
             guard !accountingData.isEmpty else {
                 throw FormError.missingRequiredField("accounting data")
             }
         }
     }
-    
+
     public init(
         originalContractValue: Money? = nil,
         currentContractValue: Money? = nil,
@@ -159,13 +158,13 @@ public struct ContractInfo: ValueObject {
         self.changeAmount = changeAmount
         self.fundingData = fundingData
     }
-    
+
     public func validate() throws {
-        if let fundingData = fundingData {
+        if let fundingData {
             try fundingData.validate()
         }
     }
-    
+
     func export() -> [String: Any] {
         [
             "originalContractValue": originalContractValue?.amount as Any,
@@ -176,9 +175,9 @@ public struct ContractInfo: ValueObject {
                 [
                     "accountingData": funding.accountingData,
                     "appropriation": funding.appropriation as Any,
-                    "obligatedAmount": funding.obligatedAmount.amount
+                    "obligatedAmount": funding.obligatedAmount.amount,
                 ]
-            } as Any
+            } as Any,
         ]
     }
 }
@@ -189,7 +188,7 @@ public struct ChangesSection: ValueObject {
     public let description: String
     public let changes: [Change]
     public let attachments: [Attachment]
-    
+
     public enum ModificationPurpose: String, CaseIterable {
         case administrativeChange = "ADMINISTRATIVE"
         case supplementalAgreement = "SUPPLEMENTAL_AGREEMENT"
@@ -198,13 +197,13 @@ public struct ChangesSection: ValueObject {
         case terminationComplete = "TERMINATION_COMPLETE"
         case other = "OTHER"
     }
-    
+
     public struct Change: ValueObject {
         public let type: ChangeType
         public let description: String
         public let oldValue: String?
         public let newValue: String?
-        
+
         public enum ChangeType: String, CaseIterable {
             case deliverySchedule = "DELIVERY_SCHEDULE"
             case quantity = "QUANTITY"
@@ -214,19 +213,19 @@ public struct ChangesSection: ValueObject {
             case terms = "TERMS"
             case other = "OTHER"
         }
-        
+
         public func validate() throws {
             guard !description.isEmpty else {
                 throw FormError.missingRequiredField("change description")
             }
         }
     }
-    
+
     public struct Attachment: ValueObject {
         public let title: String
         public let pages: Int
         public let attachmentNumber: String
-        
+
         public func validate() throws {
             guard !title.isEmpty else {
                 throw FormError.missingRequiredField("attachment title")
@@ -236,7 +235,7 @@ public struct ChangesSection: ValueObject {
             }
         }
     }
-    
+
     public init(
         modificationPurpose: ModificationPurpose,
         description: String,
@@ -248,21 +247,21 @@ public struct ChangesSection: ValueObject {
         self.changes = changes
         self.attachments = attachments
     }
-    
+
     public func validate() throws {
         guard !description.isEmpty else {
             throw FormError.missingRequiredField("modification description")
         }
-        
+
         for change in changes {
             try change.validate()
         }
-        
+
         for attachment in attachments {
             try attachment.validate()
         }
     }
-    
+
     func export() -> [String: Any] {
         [
             "modificationPurpose": modificationPurpose.rawValue,
@@ -272,16 +271,16 @@ public struct ChangesSection: ValueObject {
                     "type": change.type.rawValue,
                     "description": change.description,
                     "oldValue": change.oldValue as Any,
-                    "newValue": change.newValue as Any
+                    "newValue": change.newValue as Any,
                 ]
             },
             "attachments": attachments.map { attachment in
                 [
                     "title": attachment.title,
                     "pages": attachment.pages,
-                    "attachmentNumber": attachment.attachmentNumber
+                    "attachmentNumber": attachment.attachmentNumber,
                 ]
-            }
+            },
         ]
     }
 }
@@ -293,20 +292,20 @@ public struct ContractorInfo: ValueObject {
     public let cageCode: CageCode?
     public let dunsNumber: DUNSNumber?
     public let acknowledgment: Acknowledgment?
-    
+
     public struct Acknowledgment: ValueObject {
         public let acknowledgedBy: String
         public let title: String
         public let acknowledgedDate: Date
         public let signature: String? // Base64 encoded
-        
+
         public func validate() throws {
             guard !acknowledgedBy.isEmpty else {
                 throw FormError.missingRequiredField("acknowledged by")
             }
         }
     }
-    
+
     public init(
         name: String,
         address: PostalAddress,
@@ -320,17 +319,17 @@ public struct ContractorInfo: ValueObject {
         self.dunsNumber = dunsNumber
         self.acknowledgment = acknowledgment
     }
-    
+
     public func validate() throws {
         guard !name.isEmpty else {
             throw FormError.missingRequiredField("contractor name")
         }
-        
-        if let acknowledgment = acknowledgment {
+
+        if let acknowledgment {
             try acknowledgment.validate()
         }
     }
-    
+
     func export() -> [String: Any] {
         [
             "name": name,
@@ -342,9 +341,9 @@ public struct ContractorInfo: ValueObject {
                     "acknowledgedBy": ack.acknowledgedBy,
                     "title": ack.title,
                     "acknowledgedDate": ack.acknowledgedDate.timeIntervalSince1970,
-                    "signature": ack.signature as Any
+                    "signature": ack.signature as Any,
                 ]
-            } as Any
+            } as Any,
         ]
     }
 }
@@ -353,7 +352,7 @@ public struct ContractorInfo: ValueObject {
 public struct AdministrativeData: ValueObject {
     public let contractingOfficer: ContractingOfficerData
     public let contractAdministration: ContractAdministration?
-    
+
     public struct ContractingOfficerData: ValueObject {
         public let name: String
         public let title: String
@@ -361,26 +360,26 @@ public struct AdministrativeData: ValueObject {
         public let email: Email
         public let signature: String? // Base64 encoded
         public let signatureDate: Date?
-        
+
         public func validate() throws {
             guard !name.isEmpty else {
                 throw FormError.missingRequiredField("contracting officer name")
             }
         }
     }
-    
+
     public struct ContractAdministration: ValueObject {
         public let office: String
         public let address: PostalAddress
         public let administrator: String
-        
+
         public func validate() throws {
             guard !office.isEmpty else {
                 throw FormError.missingRequiredField("administration office")
             }
         }
     }
-    
+
     public init(
         contractingOfficer: ContractingOfficerData,
         contractAdministration: ContractAdministration? = nil
@@ -388,15 +387,15 @@ public struct AdministrativeData: ValueObject {
         self.contractingOfficer = contractingOfficer
         self.contractAdministration = contractAdministration
     }
-    
+
     public func validate() throws {
         try contractingOfficer.validate()
-        
-        if let contractAdministration = contractAdministration {
+
+        if let contractAdministration {
             try contractAdministration.validate()
         }
     }
-    
+
     func export() -> [String: Any] {
         [
             "contractingOfficer": [
@@ -405,15 +404,15 @@ public struct AdministrativeData: ValueObject {
                 "phoneNumber": contractingOfficer.phoneNumber.value,
                 "email": contractingOfficer.email.value,
                 "signature": contractingOfficer.signature as Any,
-                "signatureDate": contractingOfficer.signatureDate?.timeIntervalSince1970 as Any
+                "signatureDate": contractingOfficer.signatureDate?.timeIntervalSince1970 as Any,
             ],
             "contractAdministration": contractAdministration.map { admin in
                 [
                     "office": admin.office,
                     "address": admin.address.formatted,
-                    "administrator": admin.administrator
+                    "administrator": admin.administrator,
                 ]
-            } as Any
+            } as Any,
         ]
     }
 }
@@ -421,14 +420,13 @@ public struct AdministrativeData: ValueObject {
 // MARK: - SF30 Factory
 
 public final class SF30Factory: BaseFormFactory<SF30Form> {
-    
-    public override func createBlank() -> SF30Form {
+    override public func createBlank() -> SF30Form {
         let metadata = FormMetadata(
             createdBy: "System",
             agency: "GSA",
             purpose: "Contract modification"
         )
-        
+
         let emptyAddress = try! PostalAddress(
             street: "TBD",
             city: "TBD",
@@ -436,7 +434,7 @@ public final class SF30Factory: BaseFormFactory<SF30Form> {
             zipCode: "00000",
             country: "USA"
         )
-        
+
         return SF30Form(
             metadata: metadata,
             amendmentInfo: AmendmentInfo(
@@ -465,17 +463,17 @@ public final class SF30Factory: BaseFormFactory<SF30Form> {
             )
         )
     }
-    
-    public override func createForm(with data: FormData) throws -> SF30Form {
+
+    override public func createForm(with data: FormData) throws -> SF30Form {
         let metadata = data.metadata
-        
+
         // Extract and validate fields
         let amendmentInfo = try createAmendmentInfo(from: data.fields)
         let contractInfo = try createContractInfo(from: data.fields)
         let changes = try createChangesSection(from: data.fields)
         let contractor = try createContractorInfo(from: data.fields)
         let administrativeData = try createAdministrativeData(from: data.fields)
-        
+
         return SF30Form(
             revision: data.revision ?? "REV OCT 2023",
             metadata: metadata,
@@ -486,31 +484,31 @@ public final class SF30Factory: BaseFormFactory<SF30Form> {
             administrativeData: administrativeData
         )
     }
-    
+
     // Helper methods for creating sections
     private func createAmendmentInfo(from fields: [String: Any]) throws -> AmendmentInfo {
         let modificationType = AmendmentInfo.ModificationType(
             rawValue: fields["modificationType"] as? String ?? "MODIFICATION_CONTRACT"
         ) ?? .modificationContract
-        
+
         return AmendmentInfo(
             modificationType: modificationType,
             modificationNumber: fields["modificationNumber"] as? String ?? "P00001",
             effectiveDate: fields["effectiveDate"] as? Date ?? Date()
         )
     }
-    
-    private func createContractInfo(from fields: [String: Any]) throws -> ContractInfo {
+
+    private func createContractInfo(from _: [String: Any]) throws -> ContractInfo {
         ContractInfo()
     }
-    
+
     private func createChangesSection(from fields: [String: Any]) throws -> ChangesSection {
         ChangesSection(
             modificationPurpose: .administrativeChange,
             description: fields["changeDescription"] as? String ?? ""
         )
     }
-    
+
     private func createContractorInfo(from fields: [String: Any]) throws -> ContractorInfo {
         let address = try PostalAddress(
             street: fields["contractorStreet"] as? String ?? "TBD",
@@ -518,23 +516,23 @@ public final class SF30Factory: BaseFormFactory<SF30Form> {
             state: fields["contractorState"] as? String ?? "TBD",
             zipCode: fields["contractorZip"] as? String ?? "00000"
         )
-        
+
         return ContractorInfo(
             name: fields["contractorName"] as? String ?? "",
             address: address
         )
     }
-    
+
     private func createAdministrativeData(from fields: [String: Any]) throws -> AdministrativeData {
-        let officer = AdministrativeData.ContractingOfficerData(
+        let officer = try AdministrativeData.ContractingOfficerData(
             name: fields["coName"] as? String ?? "",
             title: fields["coTitle"] as? String ?? "",
-            phoneNumber: try PhoneNumber(fields["coPhone"] as? String ?? "000-000-0000"),
-            email: try Email(fields["coEmail"] as? String ?? "placeholder@example.com"),
+            phoneNumber: PhoneNumber(fields["coPhone"] as? String ?? "000-000-0000"),
+            email: Email(fields["coEmail"] as? String ?? "placeholder@example.com"),
             signature: nil,
             signatureDate: nil
         )
-        
+
         return AdministrativeData(contractingOfficer: officer)
     }
 }

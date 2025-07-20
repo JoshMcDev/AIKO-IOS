@@ -5,23 +5,23 @@
 //  Test file for offline caching system
 //
 
-import Foundation
 import AppCore
+import Foundation
 
 /// Simple test to verify cache compilation
 @MainActor
 func testCacheImplementation() async throws {
     // Initialize cache manager
     let cacheManager = OfflineCacheManager.shared
-    
+
     // Test data
     struct TestData: Codable {
         let id: String
         let content: String
     }
-    
+
     let testObject = TestData(id: "test-1", content: "Hello, Cache!")
-    
+
     // Store in cache
     try await cacheManager.store(
         testObject,
@@ -29,20 +29,20 @@ func testCacheImplementation() async throws {
         type: .temporary,
         isSecure: false
     )
-    
+
     // Retrieve from cache
     let retrieved = try await cacheManager.retrieve(
         TestData.self,
         forKey: "test-key",
         isSecure: false
     )
-    
+
     print("Cache test successful: \(retrieved?.content ?? "nil")")
-    
+
     // Get cache size
     let size = await cacheManager.totalSize()
     print("Total cache size: \(size) bytes")
-    
+
     // Clear cache
     try await cacheManager.clearAll()
     print("Cache cleared successfully")

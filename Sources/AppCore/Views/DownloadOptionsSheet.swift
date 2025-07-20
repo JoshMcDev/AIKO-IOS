@@ -1,6 +1,6 @@
-import SwiftUI
 import ComposableArchitecture
 import Dependencies
+import SwiftUI
 
 // MARK: - Download Options Sheet
 
@@ -11,18 +11,18 @@ public struct DownloadOptionsSheet: View {
     @State private var selectedDocuments: Set<UUID> = []
     @State private var isDownloading = false
     @State private var downloadError: String?
-    
+
     // TODO: GeneratedFile is a Core Data model in the main module
     // This needs to be refactored to use a protocol or DTO
     var generatedFiles: [Any] {
         [] // Placeholder - needs Core Data models
     }
-    
+
     public init(acquisition: Acquisition, onDismiss: @escaping () -> Void) {
         self.acquisition = acquisition
         self.onDismiss = onDismiss
     }
-    
+
     @ViewBuilder
     private var documentList: some View {
         SwiftUI.List {
@@ -41,7 +41,7 @@ public struct DownloadOptionsSheet: View {
             }
         }
     }
-    
+
     public var body: some View {
         SwiftUI.NavigationView {
             VStack(spacing: 0) {
@@ -50,12 +50,12 @@ public struct DownloadOptionsSheet: View {
                 } else {
                     VStack(spacing: 0) {
                         documentList
-                            #if os(iOS)
-                            .listStyle(InsetGroupedListStyle())
-                            #else
-                            .listStyle(PlainListStyle())
-                            #endif
-                        
+                        #if os(iOS)
+                        .listStyle(InsetGroupedListStyle())
+                        #else
+                        .listStyle(PlainListStyle())
+                        #endif
+
                         // Download buttons
                         VStack(spacing: Theme.Spacing.md) {
                             if !selectedDocuments.isEmpty {
@@ -71,7 +71,7 @@ public struct DownloadOptionsSheet: View {
                                     .cornerRadius(Theme.CornerRadius.md)
                                 }
                             }
-                            
+
                             Button(action: downloadAll) {
                                 Label("Download All Documents", systemImage: "arrow.down.doc.fill")
                                     .frame(maxWidth: .infinity)
@@ -87,40 +87,40 @@ public struct DownloadOptionsSheet: View {
             }
             .navigationTitle("Download Documents")
             #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
+                .navigationBarTitleDisplayMode(.inline)
             #endif
-            .toolbar {
-                ToolbarItem(placement: .automatic) {
-                    Button("Done") {
-                        dismiss()
+                .toolbar {
+                    ToolbarItem(placement: .automatic) {
+                        Button("Done") {
+                            dismiss()
+                        }
                     }
                 }
-            }
-            .alert("Download Error", isPresented: .init(
-                get: { downloadError != nil },
-                set: { _ in downloadError = nil }
-            )) {
-                Button("OK") {}
-            } message: {
-                if let error = downloadError {
-                    Text(error)
+                .alert("Download Error", isPresented: .init(
+                    get: { downloadError != nil },
+                    set: { _ in downloadError = nil }
+                )) {
+                    Button("OK") {}
+                } message: {
+                    if let error = downloadError {
+                        Text(error)
+                    }
                 }
-            }
-            .overlay {
-                if isDownloading {
-                    Color.black.opacity(0.5)
-                        .ignoresSafeArea()
-                        .overlay {
-                            ProgressView("Downloading...")
-                                .padding()
-                                .background(Color.black)
-                                .cornerRadius(Theme.CornerRadius.md)
-                        }
+                .overlay {
+                    if isDownloading {
+                        Color.black.opacity(0.5)
+                            .ignoresSafeArea()
+                            .overlay {
+                                ProgressView("Downloading...")
+                                    .padding()
+                                    .background(Color.black)
+                                    .cornerRadius(Theme.CornerRadius.md)
+                            }
+                    }
                 }
-            }
         }
     }
-    
+
     private func downloadSelected() {
         // TODO: Implement when GeneratedFile is available
         // let filesToDownload = generatedFiles.filter { file in
@@ -129,22 +129,22 @@ public struct DownloadOptionsSheet: View {
         // downloadDocuments(filesToDownload)
         downloadDocuments([])
     }
-    
+
     private func downloadAll() {
         downloadDocuments(generatedFiles)
     }
-    
-    private func downloadDocuments(_ documents: [Any]) {
+
+    private func downloadDocuments(_: [Any]) {
         isDownloading = true
-        
+
         #if os(iOS)
-        // iOS implementation - handled by platform-specific code
-        downloadError = "Download functionality should be implemented in platform-specific code"
-        isDownloading = false
+            // iOS implementation - handled by platform-specific code
+            downloadError = "Download functionality should be implemented in platform-specific code"
+            isDownloading = false
         #else
-        // macOS implementation - handled by platform-specific code
-        downloadError = "Download functionality should be implemented in platform-specific code"
-        isDownloading = false
+            // macOS implementation - handled by platform-specific code
+            downloadError = "Download functionality should be implemented in platform-specific code"
+            isDownloading = false
         #endif
     }
 }
@@ -153,7 +153,7 @@ struct DocumentDownloadRow: View {
     let file: Any // TODO: Should be GeneratedFile from Core Data
     let isSelected: Bool
     let onToggle: () -> Void
-    
+
     var body: some View {
         HStack {
             Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
@@ -162,19 +162,19 @@ struct DocumentDownloadRow: View {
                 .onTapGesture {
                     onToggle()
                 }
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text("Untitled Document") // TODO: Use file.fileName
                     .font(.subheadline)
                     .foregroundColor(.primary)
-                
+
                 HStack {
                     Text("Unknown Type") // TODO: Use file.fileType
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     Spacer()
-                    
+
                     // TODO: Use file.content?.count
                     // if let size = file.content?.count {
                     //     Text(formatFileSize(size))
@@ -183,7 +183,7 @@ struct DocumentDownloadRow: View {
                     // }
                 }
             }
-            
+
             Spacer()
         }
         .contentShape(Rectangle())
@@ -191,7 +191,7 @@ struct DocumentDownloadRow: View {
             onToggle()
         }
     }
-    
+
     private func formatFileSize(_ bytes: Int) -> String {
         let formatter = ByteCountFormatter()
         formatter.countStyle = .file
@@ -203,21 +203,21 @@ struct DocumentsEmptyStateView: View {
     var body: some View {
         VStack(spacing: Theme.Spacing.lg) {
             Spacer()
-            
+
             Image(systemName: "doc.text.magnifyingglass")
                 .font(.system(size: 64))
                 .foregroundColor(.secondary)
-            
+
             Text("No Documents Available")
                 .font(.headline)
                 .foregroundColor(.primary)
-            
+
             Text("This acquisition doesn't have any generated documents yet.")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, Theme.Spacing.xl)
-            
+
             Spacer()
         }
     }
@@ -231,12 +231,12 @@ public struct DocumentSelectionSheet: View {
     let onToggleDocument: (UUID) -> Void
     let onConfirm: () -> Void
     let onCancel: () -> Void
-    
+
     // TODO: acquisitionService needs to be injected from the main module
     // @Dependency(\.acquisitionService) var acquisitionService
     @State private var acquisition: Acquisition?
     @State private var isLoading = true
-    
+
     public init(
         acquisitionId: UUID?,
         selectedDocuments: Set<UUID>,
@@ -250,7 +250,7 @@ public struct DocumentSelectionSheet: View {
         self.onConfirm = onConfirm
         self.onCancel = onCancel
     }
-    
+
     public var body: some View {
         SwiftUI.NavigationView {
             VStack {
@@ -265,13 +265,13 @@ public struct DocumentSelectionSheet: View {
                             .foregroundColor(.secondary)
                             .padding(.horizontal)
                             .padding(.top)
-                        
+
                         Text(acquisition.title.isEmpty ? "Untitled Acquisition" : acquisition.title)
                             .font(.title2)
                             .bold()
                             .padding(.horizontal)
                             .padding(.bottom)
-                        
+
                         // Document list
                         if true { // TODO: Check acquisition.documentsArray.isEmpty
                             VStack(spacing: 20) {
@@ -302,20 +302,20 @@ public struct DocumentSelectionSheet: View {
                                 .padding()
                             }
                         }
-                        
+
                         // Bottom actions
                         HStack(spacing: 16) {
                             Button("Cancel") {
                                 onCancel()
                             }
                             .foregroundColor(.red)
-                            
+
                             Spacer()
-                            
+
                             Text("\(selectedDocuments.count) selected")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-                            
+
                             Button("Share") {
                                 onConfirm()
                             }
@@ -339,13 +339,13 @@ public struct DocumentSelectionSheet: View {
             }
         }
     }
-    
+
     private func loadAcquisition() async {
         guard acquisitionId != nil else {
             isLoading = false
             return
         }
-        
+
         // TODO: Implement when acquisitionService is available
         // do {
         //     acquisition = try await acquisitionService.fetchAcquisition(acquisitionId)
@@ -362,24 +362,24 @@ struct DocumentSelectionRow: View {
     let document: Any // TODO: Should be AcquisitionDocument from Core Data
     let isSelected: Bool
     let onToggle: () -> Void
-    
+
     var body: some View {
         Button(action: onToggle) {
             HStack(spacing: 16) {
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.title2)
                     .foregroundColor(isSelected ? Theme.Colors.aikoPrimary : .gray)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Untitled Document") // TODO: Use document.documentType
                         .font(.headline)
                         .foregroundColor(.white)
-                    
+
                     HStack {
                         Text("Unknown Type") // TODO: Use document.documentType
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        
+
                         // TODO: Use document.createdDate
                         // if let date = document.createdDate {
                         //     Text("•")
@@ -390,9 +390,9 @@ struct DocumentSelectionRow: View {
                         // }
                     }
                 }
-                
+
                 Spacer()
-                
+
                 Image(systemName: "chevron.right")
                     .font(.caption)
                     .foregroundColor(.secondary)

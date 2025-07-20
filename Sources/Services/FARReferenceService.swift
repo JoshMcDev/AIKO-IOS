@@ -3,7 +3,7 @@ import Foundation
 /// Service for managing FAR and DFAR references throughout the application
 public enum FARReferenceService {
     /// Comprehensive FAR/DFAR reference mappings for all document types
-    public static let farReferences: [String: ComprehensiveFARReference] = [
+    public nonisolated(unsafe) static let farReferences: [String: ComprehensiveFARReference] = [
         // Standard Documents
         "Statement of Work": ComprehensiveFARReference(
             primary: "FAR 11.101",

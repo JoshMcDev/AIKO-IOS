@@ -1,23 +1,23 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 
 // MARK: - FAR Part 12 Compliance Service
 
 /// Service for ensuring compliance with FAR Part 12 Commercial Item acquisitions
-public struct FARPart12ComplianceService {
-    public var validateCommercialItem: (String, DocumentType) async throws -> CommercialItemValidation
-    public var getRequiredClauses: (ContractValue, DocumentType) async throws -> [CommercialItemClause]
-    public var checkMarketResearch: (String) async throws -> MarketResearchCompliance
-    public var validateSolicitationProvisions: (String) async throws -> [ComplianceIssue]
-    public var generateCommercialItemDetermination: (MarketResearchData) async throws -> String
+public struct FARPart12ComplianceService: Sendable {
+    public var validateCommercialItem: @Sendable (String, DocumentType) async throws -> CommercialItemValidation
+    public var getRequiredClauses: @Sendable (ContractValue, DocumentType) async throws -> [CommercialItemClause]
+    public var checkMarketResearch: @Sendable (String) async throws -> MarketResearchCompliance
+    public var validateSolicitationProvisions: @Sendable (String) async throws -> [ComplianceIssue]
+    public var generateCommercialItemDetermination: @Sendable (MarketResearchData) async throws -> String
 
     public init(
-        validateCommercialItem: @escaping (String, DocumentType) async throws -> CommercialItemValidation,
-        getRequiredClauses: @escaping (ContractValue, DocumentType) async throws -> [CommercialItemClause],
-        checkMarketResearch: @escaping (String) async throws -> MarketResearchCompliance,
-        validateSolicitationProvisions: @escaping (String) async throws -> [ComplianceIssue],
-        generateCommercialItemDetermination: @escaping (MarketResearchData) async throws -> String
+        validateCommercialItem: @escaping @Sendable (String, DocumentType) async throws -> CommercialItemValidation,
+        getRequiredClauses: @escaping @Sendable (ContractValue, DocumentType) async throws -> [CommercialItemClause],
+        checkMarketResearch: @escaping @Sendable (String) async throws -> MarketResearchCompliance,
+        validateSolicitationProvisions: @escaping @Sendable (String) async throws -> [ComplianceIssue],
+        generateCommercialItemDetermination: @escaping @Sendable (MarketResearchData) async throws -> String
     ) {
         self.validateCommercialItem = validateCommercialItem
         self.getRequiredClauses = getRequiredClauses

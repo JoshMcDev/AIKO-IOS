@@ -10,25 +10,25 @@ public protocol VoiceRecordingProtocol: Sendable {
 }
 
 /// Errors that can occur during voice recording
-public enum VoiceRecordingError: LocalizedError, Equatable {
+public enum VoiceRecordingError: LocalizedError, Equatable, Sendable {
     case permissionDenied
     case recordingFailed
     case recognitionRequestFailed
     case transcriptionFailed
     case notAvailable
-    
+
     public var errorDescription: String? {
         switch self {
         case .permissionDenied:
-            return "Microphone or speech recognition permissions denied"
+            "Microphone or speech recognition permissions denied"
         case .recordingFailed:
-            return "Failed to start recording"
+            "Failed to start recording"
         case .recognitionRequestFailed:
-            return "Failed to create speech recognition request"
+            "Failed to create speech recognition request"
         case .transcriptionFailed:
-            return "Failed to transcribe audio"
+            "Failed to transcribe audio"
         case .notAvailable:
-            return "Voice recording is not available on this platform"
+            "Voice recording is not available on this platform"
         }
     }
 }

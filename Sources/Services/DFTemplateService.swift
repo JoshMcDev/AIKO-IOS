@@ -1,6 +1,6 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 
 public enum DFTemplateError: Error {
     case bundleNotFound
@@ -8,7 +8,7 @@ public enum DFTemplateError: Error {
     case guideNotFound(String)
 }
 
-public struct DFTemplate {
+public struct DFTemplate: Sendable {
     public let type: DFDocumentType
     public let template: String
     public let quickReferenceGuide: String
@@ -20,13 +20,13 @@ public struct DFTemplate {
     }
 }
 
-public struct DFTemplateService {
-    public var loadTemplate: (DFDocumentType) async throws -> DFTemplate
-    public var loadAllTemplates: () async throws -> [DFTemplate]
+public struct DFTemplateService: Sendable {
+    public var loadTemplate: @Sendable (DFDocumentType) async throws -> DFTemplate
+    public var loadAllTemplates: @Sendable () async throws -> [DFTemplate]
 
     public init(
-        loadTemplate: @escaping (DFDocumentType) async throws -> DFTemplate,
-        loadAllTemplates: @escaping () async throws -> [DFTemplate]
+        loadTemplate: @escaping @Sendable (DFDocumentType) async throws -> DFTemplate,
+        loadAllTemplates: @escaping @Sendable () async throws -> [DFTemplate]
     ) {
         self.loadTemplate = loadTemplate
         self.loadAllTemplates = loadAllTemplates

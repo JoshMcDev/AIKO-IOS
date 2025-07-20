@@ -6,52 +6,51 @@
 //  Copyright © 2025 AIKO. All rights reserved.
 //
 
-import Foundation
-import CoreData
 import Combine
+import CoreData
+import Foundation
 import os.log
 
 /// Engine for learning and adapting to user patterns in government contracting workflows
 @MainActor
 final class UserPatternLearningEngine: ObservableObject {
-    
     // MARK: - Properties
-    
+
     static let shared = UserPatternLearningEngine()
-    
+
     /// Core Data context for pattern storage
     private let persistenceController = PersistenceController.shared
     private var context: NSManagedObjectContext {
         persistenceController.container.viewContext
     }
-    
+
     /// Pattern recognition algorithms
     private let patternRecognizer = PatternRecognitionAlgorithm()
-    
+
     /// User preference storage
     private let preferenceStore = UserPreferenceStore()
-    
+
     /// Learning feedback system
     private let feedbackLoop = LearningFeedbackLoop()
-    
+
     /// Analytics collector
     private let analyticsCollector = UserBehaviorAnalytics()
-    
+
     /// Logger
     private let logger = Logger(subsystem: "com.aiko", category: "PatternLearning")
-    
+
     /// Active learning session
     @Published private(set) var activeSession: LearningSession?
-    
+
     /// User patterns discovered
     @Published private(set) var discoveredPatterns: [UserPattern] = []
-    
+
     /// Confidence threshold for pattern recognition
     private let confidenceThreshold: Double = 0.75
-    
+
     /// Minimum occurrences before pattern is recognized
     private let minimumOccurrences: Int = 3
-    
+
     /// Pattern types we track
     enum PatternType: String, CaseIterable {
         case formFilling = "form_filling"
@@ -63,16 +62,16 @@ final class UserPatternLearningEngine: ObservableObject {
         case errorCorrection = "error_correction"
         case searchQueries = "search_queries"
     }
-    
+
     // MARK: - Initialization
-    
+
     private init() {
         loadStoredPatterns()
         startAnalyticsCollection()
     }
-    
+
     // MARK: - Public Methods
-    
+
     /// Start a new learning session
     func startLearningSession(userId: String, contextType: String) {
         activeSession = LearningSession(
@@ -82,70 +81,70 @@ final class UserPatternLearningEngine: ObservableObject {
             contextType: contextType,
             interactions: []
         )
-        
+
         logger.info("Started learning session for user \(userId) in context \(contextType)")
     }
-    
+
     /// Record a user interaction
     func recordInteraction(_ interaction: UserInteraction) {
         guard var session = activeSession else {
             logger.warning("No active session for recording interaction")
             return
         }
-        
+
         // Add to current session
         session.interactions.append(interaction)
         activeSession = session
-        
+
         // Analyze for patterns
         Task {
             await analyzeInteraction(interaction)
         }
-        
+
         // Store interaction
         storeInteraction(interaction)
-        
+
         logger.debug("Recorded interaction: \(interaction.type)")
     }
-    
+
     /// Get learned preferences for a specific context
     func getLearnedPreferences(for context: PatternContext) -> LearnedPreferences {
         let relevantPatterns = discoveredPatterns.filter { pattern in
             pattern.context.matches(context) && pattern.confidence >= confidenceThreshold
         }
-        
+
         return LearnedPreferences(
             patterns: relevantPatterns,
             suggestions: generateSuggestions(from: relevantPatterns, context: context),
             confidence: calculateOverallConfidence(relevantPatterns)
         )
     }
-    
+
     /// Predict next user action
     func predictNextAction(currentState: PatternWorkflowState) -> PredictedAction? {
         let sequencePatterns = discoveredPatterns.filter { $0.type == .workflowSequence }
-        
+
         for pattern in sequencePatterns {
             if let prediction = pattern.predictNext(from: currentState) {
                 return prediction
             }
         }
-        
+
         return nil
     }
-    
+
     /// Get smart defaults for form fields
     func getSmartDefaults(formType: String, fieldName: String) -> SmartDefault? {
         let fieldPatterns = discoveredPatterns.filter {
             $0.type == .fieldValues &&
-            $0.metadata["formType"] as? String == formType &&
-            $0.metadata["fieldName"] as? String == fieldName
+                $0.metadata["formType"] as? String == formType &&
+                $0.metadata["fieldName"] as? String == fieldName
         }
-        
+
         guard let bestPattern = fieldPatterns.max(by: { $0.confidence < $1.confidence }) else {
             return nil
         }
-        
+
         return SmartDefault(
             value: bestPattern.value,
             confidence: bestPattern.confidence,
@@ -153,48 +152,48 @@ final class UserPatternLearningEngine: ObservableObject {
             lastUsed: bestPattern.lastOccurrence
         )
     }
-    
+
     /// Apply user feedback to improve learning
     func applyFeedback(_ feedback: UserFeedback) {
         feedbackLoop.processFeedback(feedback)
-        
+
         // Update pattern confidence based on feedback
         if let patternId = feedback.patternId,
-           let index = discoveredPatterns.firstIndex(where: { $0.id == patternId }) {
-            
+           let index = discoveredPatterns.firstIndex(where: { $0.id == patternId })
+        {
             var pattern = discoveredPatterns[index]
             pattern.updateConfidence(basedOn: feedback)
             discoveredPatterns[index] = pattern
-            
+
             // Persist updated pattern
             updateStoredPattern(pattern)
         }
-        
+
         logger.info("Applied user feedback: \(feedback.type)")
     }
-    
+
     /// End the current learning session
     func endLearningSession() {
         guard let session = activeSession else { return }
-        
+
         // Final analysis of session
         Task {
             await performSessionAnalysis(session)
         }
-        
+
         // Store session data
         storeSession(session)
-        
+
         activeSession = nil
         logger.info("Ended learning session with \(session.interactions.count) interactions")
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func loadStoredPatterns() {
         let request: NSFetchRequest<PatternEntity> = PatternEntity.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(keyPath: \PatternEntity.confidence, ascending: false)]
-        
+
         do {
             let entities = try context.fetch(request)
             discoveredPatterns = entities.compactMap { UserPattern(from: $0) }
@@ -203,20 +202,20 @@ final class UserPatternLearningEngine: ObservableObject {
             logger.error("Failed to load patterns: \(error.localizedDescription)")
         }
     }
-    
+
     private func startAnalyticsCollection() {
         analyticsCollector.startCollection { [weak self] event in
             self?.processAnalyticsEvent(event)
         }
     }
-    
+
     private func analyzeInteraction(_ interaction: UserInteraction) async {
         // Run pattern recognition
         let detectedPatterns = await patternRecognizer.analyze(
             interaction: interaction,
             historicalData: getHistoricalInteractions()
         )
-        
+
         // Process detected patterns
         for detected in detectedPatterns {
             if let existingIndex = discoveredPatterns.firstIndex(where: { $0.id == detected.id }) {
@@ -226,7 +225,7 @@ final class UserPatternLearningEngine: ObservableObject {
                 pattern.lastOccurrence = Date()
                 pattern.updateConfidence()
                 discoveredPatterns[existingIndex] = pattern
-                
+
                 updateStoredPattern(pattern)
             } else if detected.occurrences >= minimumOccurrences {
                 // Add new pattern
@@ -235,11 +234,11 @@ final class UserPatternLearningEngine: ObservableObject {
             }
         }
     }
-    
+
     private func performSessionAnalysis(_ session: LearningSession) async {
         // Analyze entire session for macro patterns
         let sessionPatterns = await patternRecognizer.analyzeSession(session)
-        
+
         // Store valuable session patterns
         for pattern in sessionPatterns where pattern.confidence >= confidenceThreshold {
             if !discoveredPatterns.contains(where: { $0.id == pattern.id }) {
@@ -248,29 +247,29 @@ final class UserPatternLearningEngine: ObservableObject {
             }
         }
     }
-    
+
     private func generateSuggestions(from patterns: [UserPattern], context: PatternContext) -> [Suggestion] {
         var suggestions: [Suggestion] = []
-        
+
         for pattern in patterns {
             if let suggestion = pattern.generateSuggestion(for: context) {
                 suggestions.append(suggestion)
             }
         }
-        
+
         // Sort by relevance and confidence
         return suggestions.sorted { $0.relevance * $0.confidence > $1.relevance * $1.confidence }
     }
-    
+
     private func calculateOverallConfidence(_ patterns: [UserPattern]) -> Double {
         guard !patterns.isEmpty else { return 0 }
-        
+
         let totalConfidence = patterns.reduce(0) { $0 + $1.confidence }
         return totalConfidence / Double(patterns.count)
     }
-    
+
     // MARK: - Core Data Operations
-    
+
     private func storeInteraction(_ interaction: UserInteraction) {
         let entity = InteractionEntity(context: context)
         entity.id = interaction.id
@@ -278,18 +277,18 @@ final class UserPatternLearningEngine: ObservableObject {
         entity.timestamp = interaction.timestamp
         entity.metadata = try? JSONEncoder().encode(interaction.metadata)
         entity.userId = activeSession?.userId
-        
+
         do {
             try context.save()
         } catch {
             logger.error("Failed to store interaction: \(error.localizedDescription)")
         }
     }
-    
+
     private func storeNewPattern(_ pattern: UserPattern) {
         let entity = PatternEntity(context: context)
         pattern.populate(entity)
-        
+
         do {
             try context.save()
             logger.debug("Stored new pattern: \(pattern.type)")
@@ -297,11 +296,11 @@ final class UserPatternLearningEngine: ObservableObject {
             logger.error("Failed to store pattern: \(error.localizedDescription)")
         }
     }
-    
+
     private func updateStoredPattern(_ pattern: UserPattern) {
         let request: NSFetchRequest<PatternEntity> = PatternEntity.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", pattern.id as CVarArg)
-        
+
         do {
             if let entity = try context.fetch(request).first {
                 pattern.populate(entity)
@@ -311,7 +310,7 @@ final class UserPatternLearningEngine: ObservableObject {
             logger.error("Failed to update pattern: \(error.localizedDescription)")
         }
     }
-    
+
     private func storeSession(_ session: LearningSession) {
         let entity = SessionEntity(context: context)
         entity.id = session.id
@@ -320,19 +319,19 @@ final class UserPatternLearningEngine: ObservableObject {
         entity.endTime = Date()
         entity.contextType = session.contextType
         entity.interactionCount = Int32(session.interactions.count)
-        
+
         do {
             try context.save()
         } catch {
             logger.error("Failed to store session: \(error.localizedDescription)")
         }
     }
-    
+
     private func getHistoricalInteractions() -> [UserInteraction] {
         let request: NSFetchRequest<InteractionEntity> = InteractionEntity.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(keyPath: \InteractionEntity.timestamp, ascending: false)]
         request.fetchLimit = 1000 // Limit to recent interactions
-        
+
         do {
             let entities = try context.fetch(request)
             return entities.compactMap { UserInteraction(from: $0) }
@@ -341,7 +340,7 @@ final class UserPatternLearningEngine: ObservableObject {
             return []
         }
     }
-    
+
     private func processAnalyticsEvent(_ event: AnalyticsEvent) {
         // Convert analytics events to interactions
         let interaction = UserInteraction(
@@ -350,7 +349,7 @@ final class UserPatternLearningEngine: ObservableObject {
             timestamp: event.timestamp,
             metadata: event.properties
         )
-        
+
         recordInteraction(interaction)
     }
 }
@@ -366,9 +365,9 @@ struct UserPattern: Identifiable {
     var confidence: Double
     var lastOccurrence: Date
     let metadata: [String: Any]
-    
+
     mutating func updateConfidence(basedOn feedback: UserFeedback? = nil) {
-        if let feedback = feedback {
+        if let feedback {
             switch feedback.type {
             case .positive:
                 confidence = min(1.0, confidence * 1.1)
@@ -382,10 +381,10 @@ struct UserPattern: Identifiable {
             confidence = min(1.0, Double(occurrences) / 10.0)
         }
     }
-    
+
     func generateSuggestion(for context: PatternContext) -> Suggestion? {
         guard self.context.matches(context) else { return nil }
-        
+
         return Suggestion(
             id: UUID(),
             type: mapPatternTypeToSuggestionType(type),
@@ -395,42 +394,43 @@ struct UserPattern: Identifiable {
             relevance: calculateRelevance(to: context)
         )
     }
-    
+
     func predictNext(from state: PatternWorkflowState) -> PredictedAction? {
         guard type == .workflowSequence,
               let sequence = value as? [String],
               let currentIndex = sequence.firstIndex(of: state.currentStep),
-              currentIndex < sequence.count - 1 else {
+              currentIndex < sequence.count - 1
+        else {
             return nil
         }
-        
+
         return PredictedAction(
             action: sequence[currentIndex + 1],
             confidence: confidence,
             alternativeActions: []
         )
     }
-    
+
     private func mapPatternTypeToSuggestionType(_ type: UserPatternLearningEngine.PatternType) -> SuggestionType {
         switch type {
-        case .formFilling: return .formCompletion
-        case .documentType: return .documentSelection
-        case .workflowSequence: return .nextStep
-        case .fieldValues: return .fieldValue
-        case .navigationPath: return .navigation
-        default: return .general
+        case .formFilling: .formCompletion
+        case .documentType: .documentSelection
+        case .workflowSequence: .nextStep
+        case .fieldValues: .fieldValue
+        case .navigationPath: .navigation
+        default: .general
         }
     }
-    
+
     private func calculateRelevance(to context: PatternContext) -> Double {
         // Simple relevance calculation based on context similarity
         var relevance = 0.0
-        
+
         if self.context.formType == context.formType { relevance += 0.3 }
         if self.context.documentType == context.documentType { relevance += 0.3 }
         if self.context.workflowPhase == context.workflowPhase { relevance += 0.2 }
         if self.context.timeOfDay == context.timeOfDay { relevance += 0.2 }
-        
+
         return relevance
     }
 }
@@ -455,20 +455,20 @@ struct PatternContext {
     let documentType: String?
     let workflowPhase: String?
     let timeOfDay: TimeOfDay?
-    
+
     func matches(_ other: PatternContext) -> Bool {
-        if let formType = formType, let otherFormType = other.formType {
+        if let formType, let otherFormType = other.formType {
             guard formType == otherFormType else { return false }
         }
-        
-        if let documentType = documentType, let otherDocumentType = other.documentType {
+
+        if let documentType, let otherDocumentType = other.documentType {
             guard documentType == otherDocumentType else { return false }
         }
-        
-        if let workflowPhase = workflowPhase, let otherWorkflowPhase = other.workflowPhase {
+
+        if let workflowPhase, let otherWorkflowPhase = other.workflowPhase {
             guard workflowPhase == otherWorkflowPhase else { return false }
         }
-        
+
         return true
     }
 }
@@ -484,7 +484,7 @@ struct SmartDefault {
     let confidence: Double
     let source: DefaultSource
     let lastUsed: Date
-    
+
     enum DefaultSource {
         case learned
         case historical
@@ -530,7 +530,7 @@ struct UserFeedback {
     let type: FeedbackType
     let timestamp: Date
     let context: String?
-    
+
     enum FeedbackType {
         case positive
         case negative
@@ -539,18 +539,18 @@ struct UserFeedback {
 }
 
 enum TimeOfDay: String {
-    case morning = "morning"     // 6 AM - 12 PM
-    case afternoon = "afternoon" // 12 PM - 6 PM
-    case evening = "evening"     // 6 PM - 10 PM
-    case night = "night"         // 10 PM - 6 AM
-    
+    case morning // 6 AM - 12 PM
+    case afternoon // 12 PM - 6 PM
+    case evening // 6 PM - 10 PM
+    case night // 10 PM - 6 AM
+
     init(from date: Date) {
         let hour = Calendar.current.component(.hour, from: date)
-        
+
         switch hour {
-        case 6..<12: self = .morning
-        case 12..<18: self = .afternoon
-        case 18..<22: self = .evening
+        case 6 ..< 12: self = .morning
+        case 12 ..< 18: self = .afternoon
+        case 18 ..< 22: self = .evening
         default: self = .night
         }
     }
@@ -571,20 +571,21 @@ extension UserPattern {
               let type = UserPatternLearningEngine.PatternType(rawValue: typeString),
               let contextData = entity.context,
               let context = try? JSONDecoder().decode(PatternContext.self, from: contextData),
-              let lastOccurrence = entity.lastOccurrence else {
+              let lastOccurrence = entity.lastOccurrence
+        else {
             return nil
         }
-        
+
         self.id = id
         self.type = type
-        self.value = entity.value ?? ""
+        value = entity.value ?? ""
         self.context = context
-        self.occurrences = Int(entity.occurrences)
-        self.confidence = entity.confidence
+        occurrences = Int(entity.occurrences)
+        confidence = entity.confidence
         self.lastOccurrence = lastOccurrence
-        self.metadata = [:]
+        metadata = [:]
     }
-    
+
     func populate(_ entity: PatternEntity) {
         entity.id = id
         entity.type = type.rawValue
@@ -600,17 +601,19 @@ extension UserInteraction {
     init?(from entity: InteractionEntity) {
         guard let id = entity.id,
               let type = entity.type,
-              let timestamp = entity.timestamp else {
+              let timestamp = entity.timestamp
+        else {
             return nil
         }
-        
+
         self.id = id
         self.type = type
         self.timestamp = timestamp
-        self.metadata = [:]
-        
+        metadata = [:]
+
         if let metadataData = entity.metadata,
-           let metadata = try? JSONDecoder().decode([String: String].self, from: metadataData) {
+           let metadata = try? JSONDecoder().decode([String: String].self, from: metadataData)
+        {
             self.metadata = metadata
         }
     }

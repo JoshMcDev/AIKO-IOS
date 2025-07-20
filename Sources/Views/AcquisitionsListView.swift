@@ -1,3 +1,4 @@
+import AppCore
 import ComposableArchitecture
 import SwiftUI
 
@@ -9,7 +10,7 @@ public struct AcquisitionsListView: View {
     }
 
     public var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: \.self) { viewStore in
             VStack(spacing: 0) {
                 // Search and Filter Bar
                 SearchFilterBar(
@@ -117,7 +118,7 @@ public struct AcquisitionsListView: View {
 
 struct SearchFilterBar: View {
     @Binding var searchText: String
-    @Binding var selectedStatus: Acquisition.Status?
+    @Binding var selectedStatus: AcquisitionStatus?
     @Binding var sortOrder: AcquisitionsListFeature.SortOrder
 
     var body: some View {
@@ -153,7 +154,7 @@ struct SearchFilterBar: View {
                             selectedStatus = nil
                         }
                         Divider()
-                        ForEach(Acquisition.Status.allCases, id: \.self) { status in
+                        ForEach(AcquisitionStatus.allCases, id: \.self) { status in
                             Button(action: { selectedStatus = status }) {
                                 Label(status.displayName, systemImage: status.icon)
                             }

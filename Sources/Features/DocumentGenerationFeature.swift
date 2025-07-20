@@ -1,9 +1,9 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 
 @Reducer
-public struct DocumentGenerationFeature {
+public struct DocumentGenerationFeature: @unchecked Sendable {
     @ObservableState
     public struct State: Equatable {
         // Child feature states
@@ -152,7 +152,7 @@ public struct DocumentGenerationFeature {
                                     type: .generate,
                                     objectType: .documentTemplate,
                                     objectId: docType.rawValue,
-                                    parameters: ["requirements": requirements],
+                                    parameters: ["requirements": .string(requirements)],
                                     context: context,
                                     priority: .high,
                                     estimatedDuration: 5.0,
@@ -167,7 +167,7 @@ public struct DocumentGenerationFeature {
                                     type: .generate,
                                     objectType: .documentTemplate,
                                     objectId: dfType.rawValue,
-                                    parameters: ["requirements": requirements, "type": "df"],
+                                    parameters: ["requirements": .string(requirements), "type": .string("df")],
                                     context: context,
                                     priority: .high,
                                     estimatedDuration: 5.0,
@@ -194,7 +194,7 @@ public struct DocumentGenerationFeature {
 
                             // Load profile once before generation
                             let profile = try? await userProfileService.loadProfile()
-                            
+
                             // Generate standard and D&F documents in parallel
                             async let standardDocsTask = documentTypes.isEmpty ? [] :
                                 try await parallelDocumentGenerator.generateDocumentsParallel(
@@ -202,27 +202,27 @@ public struct DocumentGenerationFeature {
                                     documentTypes: documentTypes,
                                     profile: profile
                                 )
-                            
+
                             async let dfDocsTask = dfDocumentTypes.isEmpty ? [] :
                                 try await parallelDocumentGenerator.generateDFDocumentsParallel(
                                     requirements: requirements,
                                     dfDocumentTypes: dfDocumentTypes,
                                     profile: profile
                                 )
-                            
+
                             // Await both results
                             let (standardDocs, dfDocs) = try await (standardDocsTask, dfDocsTask)
-                            
+
                             documents.append(contentsOf: standardDocs)
                             documents.append(contentsOf: dfDocs)
 
                             await send(.documentsGenerated(documents))
-                            
+
                             // End performance monitoring session
                             await performanceMonitor.endSession()
                         } catch {
                             await send(.generationFailed(error.localizedDescription))
-                            
+
                             // End performance monitoring session even on failure
                             await performanceMonitor.endSession()
                         }

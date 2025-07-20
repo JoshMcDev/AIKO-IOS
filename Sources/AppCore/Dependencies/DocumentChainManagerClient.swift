@@ -2,7 +2,7 @@ import ComposableArchitecture
 import Foundation
 
 @DependencyClient
-public struct DocumentChainManagerClient {
+public struct DocumentChainManagerClient: Sendable {
     public var createChain: @Sendable (UUID, [DocumentType]) async throws -> DocumentChainProgress
     public var validateChain: @Sendable (UUID) async throws -> ChainValidation
     public var updateChainProgress: @Sendable (UUID, DocumentType, GeneratedDocument) async throws -> DocumentChainProgress

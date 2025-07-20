@@ -1,6 +1,6 @@
+import AppCore
 import ComposableArchitecture
 import Foundation
-import AppCore
 
 // MARK: - User Pattern Tracker
 
@@ -131,7 +131,7 @@ public struct ActionOutcome: Equatable {
 // MARK: - Implementation
 
 extension UserPatternTracker: DependencyKey {
-    public static var liveValue: UserPatternTracker {
+    public nonisolated static var liveValue: UserPatternTracker {
         let storage = PatternStorage()
 
         return UserPatternTracker(

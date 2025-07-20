@@ -1,293 +1,295 @@
-import XCTest
 @testable import AIKO
+import XCTest
 
 final class Unit_FormFactoryTests: XCTestCase {
-    
     // MARK: - SF1449 Factory Tests
-    
+
     func testSF1449Factory_CreateWithValidData_Success() throws {
         // Given
         let factory = SF1449Factory()
         let formData = createSF1449FormData()
-        
+
         // When
         let form = try factory.create(with: formData)
-        
+
         // Then
         XCTAssertEqual(form.formNumber, "SF1449")
         XCTAssertEqual(form.formTitle, "Solicitation/Contract/Order for Commercial Items")
         XCTAssertEqual(form.revision, "04/2024")
         XCTAssertTrue(form.isValid(on: Date()))
-        
+
         // Verify sections
         XCTAssertNotNil(form.solicitationSection)
         XCTAssertNotNil(form.contractOrderSection)
         XCTAssertNotNil(form.scheduleSection)
         XCTAssertNotNil(form.certificationSection)
     }
-    
+
     func testSF1449Factory_CreateBlank_Success() {
         // Given
         let factory = SF1449Factory()
-        
+
         // When
         let form = factory.createBlank()
-        
+
         // Then
         XCTAssertEqual(form.formNumber, "SF1449")
         XCTAssertEqual(form.formTitle, "Solicitation/Contract/Order for Commercial Items")
         XCTAssertTrue(form.solicitationSection.isBlank)
         XCTAssertTrue(form.contractOrderSection.isBlank)
     }
-    
+
     func testSF1449Factory_ValidateData_MissingRequired_ThrowsError() {
         // Given
         let factory = SF1449Factory()
         let formData = FormData() // Empty data
-        
+
         // When/Then
         XCTAssertThrowsError(try factory.validate(formData)) { error in
             guard let validationError = error as? FormValidationError,
-                  case .missingRequiredField = validationError else {
+                  case .missingRequiredField = validationError
+            else {
                 XCTFail("Expected FormValidationError.missingRequiredField")
                 return
             }
         }
     }
-    
+
     // MARK: - SF33 Factory Tests
-    
+
     func testSF33Factory_CreateWithValidData_Success() throws {
         // Given
         let factory = SF33Factory()
         let formData = createSF33FormData()
-        
+
         // When
         let form = try factory.create(with: formData)
-        
+
         // Then
         XCTAssertEqual(form.formNumber, "SF33")
         XCTAssertEqual(form.formTitle, "Solicitation, Offer and Award")
         XCTAssertEqual(form.revision, "04/2024")
-        
+
         // Verify sections
         XCTAssertNotNil(form.solicitationSection)
         XCTAssertNotNil(form.offerSection)
         XCTAssertNotNil(form.awardSection)
     }
-    
+
     func testSF33Factory_CreateBlank_Success() {
         // Given
         let factory = SF33Factory()
-        
+
         // When
         let form = factory.createBlank()
-        
+
         // Then
         XCTAssertEqual(form.formNumber, "SF33")
         XCTAssertTrue(form.solicitationSection.isBlank)
         XCTAssertTrue(form.offerSection.isBlank)
         XCTAssertTrue(form.awardSection.isBlank)
     }
-    
+
     // MARK: - SF30 Factory Tests
-    
+
     func testSF30Factory_CreateWithValidData_Success() throws {
         // Given
         let factory = SF30Factory()
         let formData = createSF30FormData()
-        
+
         // When
         let form = try factory.create(with: formData)
-        
+
         // Then
         XCTAssertEqual(form.formNumber, "SF30")
         XCTAssertEqual(form.formTitle, "Amendment of Solicitation/Modification of Contract")
         XCTAssertEqual(form.revision, "04/2024")
-        
+
         // Verify sections
         XCTAssertNotNil(form.modificationSection)
         XCTAssertNotNil(form.contractorSection)
         XCTAssertNotNil(form.changeSection)
     }
-    
+
     // MARK: - SF18 Factory Tests
-    
+
     func testSF18Factory_CreateWithValidData_Success() throws {
         // Given
         let factory = SF18Factory()
         let formData = createSF18FormData()
-        
+
         // When
         let form = try factory.create(with: formData)
-        
+
         // Then
         XCTAssertEqual(form.formNumber, "SF18")
         XCTAssertEqual(form.formTitle, "Request for Quotation")
         XCTAssertEqual(form.revision, "06/2016")
-        
+
         // Verify sections
         XCTAssertNotNil(form.requestSection)
         XCTAssertNotNil(form.vendorSection)
         XCTAssertNotNil(form.quotationSection)
     }
-    
+
     // MARK: - SF26 Factory Tests
-    
+
     func testSF26Factory_CreateWithValidData_Success() throws {
         // Given
         let factory = SF26Factory()
         let formData = createSF26FormData()
-        
+
         // When
         let form = try factory.create(with: formData)
-        
+
         // Then
         XCTAssertEqual(form.formNumber, "SF26")
         XCTAssertEqual(form.formTitle, "Award/Contract")
         XCTAssertEqual(form.revision, "04/2024")
-        
+
         // Verify sections
         XCTAssertNotNil(form.awardSection)
         XCTAssertNotNil(form.contractorSection)
         XCTAssertNotNil(form.itemSection)
     }
-    
+
     // MARK: - SF44 Factory Tests
-    
+
     func testSF44Factory_CreateWithValidData_Success() throws {
         // Given
         let factory = SF44Factory()
         let formData = createSF44FormData()
-        
+
         // When
         let form = try factory.create(with: formData)
-        
+
         // Then
         XCTAssertEqual(form.formNumber, "SF44")
         XCTAssertEqual(form.formTitle, "Purchase Order - Invoice - Voucher")
         XCTAssertEqual(form.revision, "10/1983")
-        
+
         // Verify sections
         XCTAssertNotNil(form.orderSection)
         XCTAssertNotNil(form.vendorSection)
         XCTAssertNotNil(form.itemSection)
     }
-    
+
     // MARK: - DD1155 Factory Tests
-    
+
     func testDD1155Factory_CreateWithValidData_Success() throws {
         // Given
         let factory = DD1155Factory()
         let formData = createDD1155FormData()
-        
+
         // When
         let form = try factory.create(with: formData)
-        
+
         // Then
         XCTAssertEqual(form.formNumber, "DD1155")
         XCTAssertEqual(form.formTitle, "Order for Supplies or Services")
         XCTAssertEqual(form.revision, "06/2024")
-        
+
         // Verify sections
         XCTAssertNotNil(form.orderSection)
         XCTAssertNotNil(form.vendorSection)
         XCTAssertNotNil(form.scheduleSection)
     }
-    
+
     // MARK: - Registry Tests
-    
+
     func testFormFactoryRegistry_RegisterAndCreate_Success() throws {
         // Given
         let registry = FormFactoryRegistry()
         let factory = SF1449Factory()
         registry.register(factory, for: "SF1449")
-        
+
         let formData = createSF1449FormData()
-        
+
         // When
         let form = try registry.createForm(type: "SF1449", with: formData)
-        
+
         // Then
         XCTAssertNotNil(form)
         XCTAssertEqual(form?.formNumber, "SF1449")
     }
-    
+
     func testFormFactoryRegistry_CreateUnregisteredType_ReturnsNil() throws {
         // Given
         let registry = FormFactoryRegistry()
         let formData = FormData()
-        
+
         // When
         let form = try registry.createForm(type: "UnknownForm", with: formData)
-        
+
         // Then
         XCTAssertNil(form)
     }
-    
+
     func testFormFactoryRegistry_CreateBlankForm_Success() {
         // Given
         let registry = FormFactoryRegistry()
         let factory = SF33Factory()
         registry.register(factory, for: "SF33")
-        
+
         // When
         let form = registry.createBlankForm(type: "SF33")
-        
+
         // Then
         XCTAssertNotNil(form)
         XCTAssertEqual(form?.formNumber, "SF33")
     }
-    
+
     // MARK: - Validation Tests
-    
+
     func testFormValidation_InvalidRevision_ThrowsError() {
         // Given
         let factory = SF1449Factory()
         let formData = createSF1449FormData()
         formData["revision"] = "01/2020" // Old revision
-        
+
         // When/Then
         XCTAssertThrowsError(try factory.validate(formData)) { error in
             guard let validationError = error as? FormValidationError,
-                  case .invalidFieldValue = validationError else {
+                  case .invalidFieldValue = validationError
+            else {
                 XCTFail("Expected FormValidationError.invalidFieldValue")
                 return
             }
         }
     }
-    
+
     func testFormValidation_InvalidDate_ThrowsError() {
         // Given
         let factory = SF1449Factory()
         let formData = createSF1449FormData()
         formData["requisitionDate"] = "invalid-date"
-        
+
         // When/Then
         XCTAssertThrowsError(try factory.validate(formData)) { error in
             guard let validationError = error as? FormValidationError,
-                  case .invalidFieldValue = validationError else {
+                  case .invalidFieldValue = validationError
+            else {
                 XCTFail("Expected FormValidationError.invalidFieldValue")
                 return
             }
         }
     }
-    
+
     // MARK: - Performance Tests
-    
+
     func testPerformance_CreateManyForms() {
         let factory = SF1449Factory()
         let formData = createSF1449FormData()
-        
+
         measure {
-            for _ in 1...100 {
+            for _ in 1 ... 100 {
                 _ = try? factory.create(with: formData)
             }
         }
     }
-    
+
     // MARK: - Helper Methods
-    
+
     private func createSF1449FormData() -> FormData {
         let data = FormData()
         data["requisitionNumber"] = "REQ-2024-001"
@@ -308,7 +310,7 @@ final class Unit_FormFactoryTests: XCTestCase {
         data["revision"] = "04/2024"
         return data
     }
-    
+
     private func createSF33FormData() -> FormData {
         let data = FormData()
         data["solicitationNumber"] = "SOL-2024-002"
@@ -325,7 +327,7 @@ final class Unit_FormFactoryTests: XCTestCase {
         data["revision"] = "04/2024"
         return data
     }
-    
+
     private func createSF30FormData() -> FormData {
         let data = FormData()
         data["modificationNumber"] = "P00001"
@@ -338,7 +340,7 @@ final class Unit_FormFactoryTests: XCTestCase {
         data["revision"] = "04/2024"
         return data
     }
-    
+
     private func createSF18FormData() -> FormData {
         let data = FormData()
         data["rfqNumber"] = "RFQ-2024-001"
@@ -357,7 +359,7 @@ final class Unit_FormFactoryTests: XCTestCase {
         data["revision"] = "06/2016"
         return data
     }
-    
+
     private func createSF26FormData() -> FormData {
         let data = FormData()
         data["contractNumber"] = "W912QR-24-C-0002"
@@ -369,12 +371,12 @@ final class Unit_FormFactoryTests: XCTestCase {
         data["itemDescription"] = "Professional Services"
         data["periodStart"] = "2024-02-01"
         data["periodEnd"] = "2025-01-31"
-        data["totalAmount"] = 150000.00
+        data["totalAmount"] = 150_000.00
         data["fundingSource"] = "Operations Budget"
         data["revision"] = "04/2024"
         return data
     }
-    
+
     private func createSF44FormData() -> FormData {
         let data = FormData()
         data["orderNumber"] = "PO-2024-0001"
@@ -392,7 +394,7 @@ final class Unit_FormFactoryTests: XCTestCase {
         data["revision"] = "10/1983"
         return data
     }
-    
+
     private func createDD1155FormData() -> FormData {
         let data = FormData()
         data["orderNumber"] = "SPE7LX-24-D-0001"

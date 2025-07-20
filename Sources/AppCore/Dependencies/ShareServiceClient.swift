@@ -5,18 +5,19 @@ import Foundation
 @DependencyClient
 public struct ShareServiceClient: Sendable {
     public var share: @Sendable ([Any]) async -> Bool = { _ in false }
-    public var createShareableFile: @Sendable (String, String) async throws -> URL = { _, _ in 
-        throw ShareServiceError.notAvailable 
+    public var createShareableFile: @Sendable (String, String) async throws -> URL = { _, _ in
+        throw ShareServiceError.notAvailable
     }
+
     public var shareContent: @Sendable (String, String) async -> Void = { _, _ in }
 }
 
 extension ShareServiceClient: DependencyKey {
-    public static var liveValue: Self = Self()
+    public static let liveValue: Self = .init()
 }
 
-extension DependencyValues {
-    public var shareService: ShareServiceClient {
+public extension DependencyValues {
+    var shareService: ShareServiceClient {
         get { self[ShareServiceClient.self] }
         set { self[ShareServiceClient.self] = newValue }
     }

@@ -1,10 +1,11 @@
-import AppCore
-import Foundation
+#if os(iOS)
+    import AppCore
+    import Foundation
 
-/// iOS implementation of text field service
-public struct iOSTextFieldService: TextFieldServiceProtocol {
-    public init() {}
-    
-    public var supportsAutocapitalization: Bool { true }
-    public var supportsKeyboardTypes: Bool { true }
-}
+    /// iOS implementation of text field service
+    public struct iOSTextFieldService: TextFieldServiceProtocol {
+        public init() {}
+
+        public var supportsAutocapitalization: Bool { true }
+        public var supportsKeyboardTypes: Bool { true }
+    }#endif
