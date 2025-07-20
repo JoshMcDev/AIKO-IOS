@@ -448,19 +448,19 @@ public struct ChatMessage: Equatable, Identifiable {
 // MessageRole is imported from LLMProviderProtocol
 // It includes: system, user, assistant, function cases
 
-public struct MessageCard: Equatable {
+public struct MessageCard: Equatable, Sendable {
     public let type: CardType
     public let title: String
     public let data: CardData
 
-    public enum CardType {
+    public enum CardType: Sendable {
         case vendorComparison
         case timeline
         case compliance
         case metrics
     }
 
-    public enum CardData: Equatable {
+    public enum CardData: Equatable, Sendable {
         case vendors([VendorInfo])
         case timeline(TimelineData)
         case compliance(ComplianceData)
@@ -470,30 +470,30 @@ public struct MessageCard: Equatable {
 
 // MARK: - Supporting Types for MessageCard
 
-public struct VendorInfo: Equatable {
+public struct VendorInfo: Equatable, Sendable {
     public let name: String
     public let capability: String
     public let compliance: String
     public let pricing: String
 }
 
-public struct TimelineData: Equatable {
+public struct TimelineData: Equatable, Sendable {
     public let milestones: [Milestone]
 
-    public struct Milestone: Equatable {
+    public struct Milestone: Equatable, Sendable {
         public let date: Date
         public let title: String
         public let isCompleted: Bool
     }
 }
 
-public struct ComplianceData: Equatable {
+public struct ComplianceData: Equatable, Sendable {
     public let score: Double
     public let issues: [String]
     public let recommendations: [String]
 }
 
-public struct MetricData: Equatable {
+public struct MetricData: Equatable, Sendable {
     public let name: String
     public let value: Double
     public let target: Double
@@ -525,13 +525,13 @@ public enum AgentState: Equatable, Sendable {
     case monitoring
 }
 
-public struct AgentAction: Equatable {
+public struct AgentAction: Equatable, Sendable {
     public let id: UUID
     public let type: ActionType
     public let description: String
     public let requiresApproval: Bool
 
-    public enum ActionType {
+    public enum ActionType: Sendable {
         case gatherMarketResearch
         case generateDocuments
         case identifyVendors
@@ -601,13 +601,13 @@ public enum TaskResult: Equatable {
     }
 }
 
-public struct ApprovalRequest: Equatable, Identifiable {
+public struct ApprovalRequest: Equatable, Identifiable, Sendable {
     public let id: UUID
     public let message: String
     public let action: AgentAction
     public let impact: ImpactLevel
 
-    public enum ImpactLevel {
+    public enum ImpactLevel: Sendable {
         case low
         case medium
         case high

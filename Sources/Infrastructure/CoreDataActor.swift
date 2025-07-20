@@ -142,7 +142,7 @@ public actor CoreDataActor {
 
         return try await withCheckedThrowingContinuation { continuation in
             context.perform {
-                Task {
+                Task { @Sendable in
                     do {
                         let result = try await block(context)
 
@@ -163,7 +163,7 @@ public actor CoreDataActor {
     public func performViewContextTask<T: Sendable>(_ block: @Sendable @escaping (NSManagedObjectContext) async throws -> T) async throws -> T {
         try await withCheckedThrowingContinuation { continuation in
             viewContext.perform {
-                Task {
+                Task { @Sendable in
                     do {
                         let result = try await block(self.viewContext)
                         continuation.resume(returning: result)
@@ -210,54 +210,67 @@ public actor CoreDataActor {
         }
     }
     
-    /// Import data from JSON export format
+    /// Import data from JSON export format  
     public func importFromJSON(_ exportData: [String: [[String: Any]]]) async throws {
-        try await performBackgroundTask { @Sendable context in
-            nonisolated(unsafe) let exportData = exportData
-            var objectIDMap: [String: NSManagedObject] = [:]
+        let context = createBackgroundContext()
+        
+        return try await withCheckedThrowingContinuation { continuation in
+            context.perform {
+                do {
+                    var objectIDMap: [String: NSManagedObject] = [:]
 
-            // First pass: Create all objects
-            for (entityName, objects) in exportData {
-                guard let entity = NSEntityDescription.entity(forEntityName: entityName, in: context) else {
-                    continue
-                }
+                    // First pass: Create all objects
+                    for (entityName, objects) in exportData {
+                        guard let entity = NSEntityDescription.entity(forEntityName: entityName, in: context) else {
+                            continue
+                        }
 
-                for objectData in objects {
-                    let object = NSManagedObject(entity: entity, insertInto: context)
+                        for objectData in objects {
+                            let object = NSManagedObject(entity: entity, insertInto: context)
 
-                    // Import attributes only
-                    for (key, attribute) in entity.attributesByName {
-                        if let value = objectData[key] {
-                            if attribute.attributeType == .dateAttributeType,
-                               let timestamp = value as? TimeInterval
-                            {
-                                object.setValue(Date(timeIntervalSince1970: timestamp), forKey: key)
-                            } else if attribute.attributeType == .binaryDataAttributeType,
-                                      let base64String = value as? String,
-                                      let data = Data(base64Encoded: base64String)
-                            {
-                                object.setValue(data, forKey: key)
-                            } else {
-                                object.setValue(value, forKey: key)
+                            // Import attributes only
+                            for (key, attribute) in entity.attributesByName {
+                                if let value = objectData[key] {
+                                    if attribute.attributeType == .dateAttributeType,
+                                       let timestamp = value as? TimeInterval
+                                    {
+                                        object.setValue(Date(timeIntervalSince1970: timestamp), forKey: key)
+                                    } else if attribute.attributeType == .binaryDataAttributeType,
+                                              let base64String = value as? String,
+                                              let data = Data(base64Encoded: base64String)
+                                    {
+                                        object.setValue(data, forKey: key)
+                                    } else {
+                                        object.setValue(value, forKey: key)
+                                    }
+                                }
+                            }
+
+                            // Store object for relationship mapping
+                            if let idString = objectData["objectID"] as? String {
+                                objectIDMap[idString] = object
                             }
                         }
                     }
 
-                    // Store object for relationship mapping
-                    if let idString = objectData["objectID"] as? String {
-                        objectIDMap[idString] = object
+                    // Second pass: Restore relationships
+                    // Note: This is simplified - in production, you'd need more sophisticated relationship mapping
+
+                    if context.hasChanges {
+                        try context.save()
                     }
+                    
+                    // Reset view context to pick up changes
+                    Task { @Sendable in
+                        await self.reset()
+                    }
+                    
+                    continuation.resume()
+                } catch {
+                    continuation.resume(throwing: error)
                 }
             }
-
-            // Second pass: Restore relationships
-            // Note: This is simplified - in production, you'd need more sophisticated relationship mapping
-
-            try context.save()
         }
-        
-        // Reset view context to pick up changes
-        await reset()
     }
 }
 

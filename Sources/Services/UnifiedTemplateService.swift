@@ -4,7 +4,7 @@ import Foundation
 
 // MARK: - Document Template Model
 
-public struct DocumentTemplate: Identifiable, Codable, Equatable {
+public struct DocumentTemplate: Identifiable, Codable, Equatable, Sendable {
     public let metadata: UnifiedTemplateMetadata
     public let structure: DocumentStructure
     public let style: DocumentStyle
@@ -18,7 +18,7 @@ public struct DocumentTemplate: Identifiable, Codable, Equatable {
     }
 }
 
-public struct UnifiedTemplateMetadata: Codable, Equatable {
+public struct UnifiedTemplateMetadata: Codable, Equatable, Sendable {
     public let id: String
     public let name: String
     public let description: String
@@ -49,7 +49,7 @@ public struct UnifiedTemplateMetadata: Codable, Equatable {
     }
 }
 
-public struct DocumentStructure: Codable, Equatable {
+public struct DocumentStructure: Codable, Equatable, Sendable {
     public let sections: [DocumentSection]
 
     public init(sections: [DocumentSection]) {
@@ -57,7 +57,7 @@ public struct DocumentStructure: Codable, Equatable {
     }
 }
 
-public struct DocumentSection: Codable, Equatable {
+public struct DocumentSection: Codable, Equatable, Sendable {
     public let id: String
     public let title: String
     public let description: String?
@@ -82,7 +82,7 @@ public struct DocumentSection: Codable, Equatable {
     }
 }
 
-public struct DocumentField: Codable, Equatable {
+public struct DocumentField: Codable, Equatable, Sendable {
     public let id: String
     public let label: String
     public let type: FieldType
@@ -91,7 +91,7 @@ public struct DocumentField: Codable, Equatable {
     public let isRequired: Bool
     public let validation: FieldValidation?
 
-    public enum FieldType: String, Codable, Equatable {
+    public enum FieldType: String, Codable, Equatable, Sendable {
         case text
         case multilineText
         case number
@@ -120,7 +120,7 @@ public struct DocumentField: Codable, Equatable {
     }
 }
 
-public struct FieldValidation: Codable, Equatable {
+public struct FieldValidation: Codable, Equatable, Sendable {
     public let pattern: String?
     public let minLength: Int?
     public let maxLength: Int?
@@ -129,13 +129,13 @@ public struct FieldValidation: Codable, Equatable {
     public let errorMessage: String
 }
 
-public struct DocumentStyle: Codable, Equatable {
+public struct DocumentStyle: Codable, Equatable, Sendable {
     public let font: String
     public let fontSize: Double
     public let lineSpacing: Double
     public let margins: Margins
 
-    public struct Margins: Codable, Equatable {
+    public struct Margins: Codable, Equatable, Sendable {
         public let top: Double
         public let bottom: Double
         public let left: Double
@@ -163,38 +163,38 @@ public struct DocumentStyle: Codable, Equatable {
 }
 
 /// Unified Template Service consolidating all template operations
-public struct UnifiedTemplateService {
+public struct UnifiedTemplateService: Sendable {
     // Template loading
-    public var loadTemplate: (TemplateIdentifier) async throws -> DocumentTemplate
-    public var loadAllTemplates: (TemplateCategory?) async throws -> [DocumentTemplate]
+    public var loadTemplate: @Sendable (TemplateIdentifier) async throws -> DocumentTemplate
+    public var loadAllTemplates: @Sendable (TemplateCategory?) async throws -> [DocumentTemplate]
 
     // Template management
-    public var saveCustomTemplate: (DocumentTemplate) async throws -> Void
-    public var deleteCustomTemplate: (String) async throws -> Void
-    public var updateTemplate: (DocumentTemplate) async throws -> Void
+    public var saveCustomTemplate: @Sendable (DocumentTemplate) async throws -> Void
+    public var deleteCustomTemplate: @Sendable (String) async throws -> Void
+    public var updateTemplate: @Sendable (DocumentTemplate) async throws -> Void
 
     // Template search and filtering
-    public var searchTemplates: (String, TemplateCategory?) async throws -> [DocumentTemplate]
-    public var getTemplatesByCategory: (TemplateCategory) async throws -> [DocumentTemplate]
-    public var getRecentTemplates: (Int) async -> [DocumentTemplate]
-    public var getFavoriteTemplates: () async -> [DocumentTemplate]
+    public var searchTemplates: @Sendable (String, TemplateCategory?) async throws -> [DocumentTemplate]
+    public var getTemplatesByCategory: @Sendable (TemplateCategory) async throws -> [DocumentTemplate]
+    public var getRecentTemplates: @Sendable (Int) async -> [DocumentTemplate]
+    public var getFavoriteTemplates: @Sendable () async -> [DocumentTemplate]
 
     // Template metadata
-    public var toggleFavorite: (String) async throws -> Void
-    public var recordTemplateUsage: (String) async throws -> Void
-    public var getTemplateStatistics: (String) async -> TemplateStatistics?
+    public var toggleFavorite: @Sendable (String) async throws -> Void
+    public var recordTemplateUsage: @Sendable (String) async throws -> Void
+    public var getTemplateStatistics: @Sendable (String) async -> TemplateStatistics?
 
     // Import/Export
-    public var exportTemplate: (String) async throws -> Data
-    public var importTemplate: (Data) async throws -> DocumentTemplate
+    public var exportTemplate: @Sendable (String) async throws -> Data
+    public var importTemplate: @Sendable (Data) async throws -> DocumentTemplate
 
     // Validation
-    public var validateTemplate: (DocumentTemplate) async -> [ValidationIssue]
+    public var validateTemplate: @Sendable (DocumentTemplate) async -> [ValidationIssue]
 }
 
 // MARK: - Unified Template Models
 
-public struct TemplateIdentifier: Equatable, Codable {
+public struct TemplateIdentifier: Equatable, Codable, Sendable {
     public let id: String
     public let category: TemplateCategory
     public let version: String?
@@ -206,7 +206,7 @@ public struct TemplateIdentifier: Equatable, Codable {
     }
 }
 
-public enum TemplateCategory: String, CaseIterable, Codable {
+public enum TemplateCategory: String, CaseIterable, Codable, Sendable {
     case standard
     case dataFreedom
     case custom
@@ -230,7 +230,7 @@ public enum TemplateCategory: String, CaseIterable, Codable {
     }
 }
 
-public struct TemplateStatistics: Equatable {
+public struct TemplateStatistics: Equatable, Sendable {
     public let usageCount: Int
     public let lastUsed: Date?
     public let averageGenerationTime: TimeInterval

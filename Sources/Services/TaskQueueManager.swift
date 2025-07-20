@@ -154,7 +154,7 @@ public actor TaskQueueManager {
 
 // MARK: - Supporting Types
 
-public struct QueuedTask: Equatable, Identifiable {
+public struct QueuedTask: Equatable, Identifiable, Sendable {
     public let id: UUID
     public let task: AgentTask
     public let priority: TaskPriority
@@ -182,7 +182,7 @@ public struct QueuedTask: Equatable, Identifiable {
     }
 }
 
-public enum TaskPriority: Int, Comparable {
+public enum TaskPriority: Int, Comparable, Sendable {
     case low = 0
     case normal = 1
     case high = 2
@@ -193,11 +193,21 @@ public enum TaskPriority: Int, Comparable {
     }
 }
 
-public enum TaskStatus: Equatable {
+public struct TaskError: Error, Equatable, Sendable {
+    public let message: String
+    public let code: String?
+    
+    public init(message: String, code: String? = nil) {
+        self.message = message
+        self.code = code
+    }
+}
+
+public enum TaskStatus: Equatable, Sendable {
     case queued
     case executing
     case completed
-    case failed(Error)
+    case failed(TaskError)
     case cancelled
 
     public static func == (lhs: TaskStatus, rhs: TaskStatus) -> Bool {
@@ -208,7 +218,7 @@ public enum TaskStatus: Equatable {
              (.cancelled, .cancelled):
             true
         case let (.failed(lhsError), .failed(rhsError)):
-            lhsError.localizedDescription == rhsError.localizedDescription
+            lhsError == rhsError
         default:
             false
         }

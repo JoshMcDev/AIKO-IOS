@@ -423,9 +423,7 @@ public struct DocumentAnalysisFeature {
                             requirements,
                             uploadedDocs
                         )
-                        if let id = acquisition.id {
-                            await send(.acquisitionCreated(id))
-                        }
+                        await send(.acquisitionCreated(acquisition.id))
                     } catch {
                         await send(.analysisError("Failed to create acquisition: \(error.localizedDescription)"))
                     }
@@ -497,15 +495,11 @@ public struct DocumentAnalysisFeature {
                 state.conversationHistory.append("AIKO: Welcome back! I have loaded your acquisition. You have \(generatedCount) generated documents and \(uploadedCount) uploaded files. How may I assist you with this acquisition?")
 
                 // Load any uploaded files
-                state.uploadedDocuments = acquisition.uploadedFilesArray.compactMap { file in
-                    guard let fileName = file.fileName,
-                          let data = file.data,
-                          let uploadDate = file.uploadDate else { return nil }
-
+                state.uploadedDocuments = acquisition.uploadedFilesArray.map { file in
                     return UploadedDocument(
-                        fileName: fileName,
-                        data: data,
-                        uploadDate: uploadDate,
+                        fileName: file.fileName,
+                        data: file.data,
+                        uploadDate: file.uploadDate,
                         contentSummary: file.contentSummary
                     )
                 }

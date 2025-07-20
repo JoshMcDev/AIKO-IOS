@@ -1,7 +1,7 @@
 import AppCore
 import ComposableArchitecture
 import Foundation
-import SwiftAnthropic
+@preconcurrency import SwiftAnthropic
 
 /// Parallel document generation service that processes multiple documents concurrently
 public struct ParallelDocumentGenerator: Sendable {
@@ -203,7 +203,8 @@ public struct ParallelDocumentGenerator: Sendable {
 
             let batchDocuments = try await withThrowingTaskGroup(of: GeneratedDocument?.self) { group in
                 for documentType in batchTypes {
-                    group.addTask {
+                    group.addTask { @Sendable in
+                        nonisolated(unsafe) let service = anthropicService
                         do {
                             return try await generateSingleDocument(
                                 documentType: documentType,
@@ -211,7 +212,7 @@ public struct ParallelDocumentGenerator: Sendable {
                                 template: templates[documentType],
                                 systemPrompt: preloadedData.systemPrompts[documentType],
                                 profile: profile,
-                                anthropicService: anthropicService
+                                anthropicService: service
                             )
                         } catch {
                             // Log error but don't fail the entire batch
@@ -264,7 +265,8 @@ public struct ParallelDocumentGenerator: Sendable {
 
             let batchDocuments = try await withThrowingTaskGroup(of: GeneratedDocument?.self) { group in
                 for dfDocumentType in batchTypes {
-                    group.addTask {
+                    group.addTask { @Sendable in
+                        nonisolated(unsafe) let service = anthropicService
                         do {
                             return try await generateSingleDFDocument(
                                 dfDocumentType: dfDocumentType,
@@ -272,7 +274,7 @@ public struct ParallelDocumentGenerator: Sendable {
                                 template: templates[dfDocumentType],
                                 systemPrompt: preloadedData.dfSystemPrompts[dfDocumentType],
                                 profile: profile,
-                                anthropicService: anthropicService
+                                anthropicService: service
                             )
                         } catch {
                             // Log error but don't fail the entire batch

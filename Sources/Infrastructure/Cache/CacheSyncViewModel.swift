@@ -53,8 +53,11 @@ final class CacheSyncViewModel: ObservableObject {
     }
 
     deinit {
-        // Safe to access updateTimer in deinit since we're just invalidating it
-        updateTimer?.invalidate()
+        // Invalidate timer directly
+        if let timer = updateTimer {
+            timer.invalidate()
+        }
+        updateTimer = nil
     }
 
     /// Start monitoring sync status

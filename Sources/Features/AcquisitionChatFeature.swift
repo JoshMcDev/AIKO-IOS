@@ -101,7 +101,7 @@ public struct AcquisitionChatFeature: Sendable {
         case readyToGenerate
     }
 
-    public struct UploadedDocument: Equatable, Identifiable {
+    public struct UploadedDocument: Equatable, Identifiable, Sendable {
         public let id = UUID()
         public let fileName: String
         public let data: Data
@@ -195,7 +195,7 @@ public struct AcquisitionChatFeature: Sendable {
         }
     }
 
-    public enum MessageRole: Equatable {
+    public enum MessageRole: Equatable, Sendable {
         case user
         case assistant
     }
@@ -381,7 +381,7 @@ public struct AcquisitionChatFeature: Sendable {
                         [] // No uploaded documents from chat yet
                     )
 
-                    await send(.acquisitionSaved(acquisition.id!))
+                    await send(.acquisitionSaved(acquisition.id))
                 }
 
             case let .acquisitionSaved(id):

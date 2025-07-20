@@ -507,7 +507,7 @@ struct APIKeyStepView: View {
     let onUpdateAPIKey: (String) -> Void
     let onToggleShowAPIKey: (Bool) -> Void
     let onValidate: () -> Void
-    let onToggleFaceID: (Bool) -> Void
+    let onToggleFaceID: @Sendable (Bool) -> Void
 
     @State private var localAPIKey: String = ""
 

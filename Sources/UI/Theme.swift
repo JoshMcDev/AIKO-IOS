@@ -6,24 +6,7 @@ public enum Theme {
     // MARK: - Colors
 
     public enum Colors {
-        @Dependency(\.themeService) nonisolated(unsafe) private static var themeService
-
-        public static var aikoBackground: Color {
-            themeService.backgroundColor()
-        }
-
-        public static var aikoCard: Color {
-            themeService.cardColor()
-        }
-
-        public static var aikoSecondary: Color {
-            themeService.secondaryColor()
-        }
-
-        public static var aikoTertiary: Color {
-            themeService.tertiaryColor()
-        }
-
+        // Safe static colors that don't depend on external services
         public static let aikoPrimary = Color.blue
         public static let aikoPrimaryGradientStart = Color.blue
         public static let aikoPrimaryGradientEnd = Color.purple
@@ -33,6 +16,31 @@ public enum Theme {
         public static let aikoError = Color.red
 
         public static let aikoAccent = Color.purple
+        
+        // Dynamic colors that require dependency injection - accessed via Environment
+        @MainActor
+        public static var aikoBackground: Color {
+            @Dependency(\.themeService) var themeService
+            return themeService.backgroundColor()
+        }
+
+        @MainActor
+        public static var aikoCard: Color {
+            @Dependency(\.themeService) var themeService
+            return themeService.cardColor()
+        }
+
+        @MainActor
+        public static var aikoSecondary: Color {
+            @Dependency(\.themeService) var themeService
+            return themeService.secondaryColor()
+        }
+
+        @MainActor
+        public static var aikoTertiary: Color {
+            @Dependency(\.themeService) var themeService
+            return themeService.tertiaryColor()
+        }
     }
 
     // MARK: - Typography

@@ -58,7 +58,8 @@ public final class CoreDataStack: @unchecked Sendable {
     // MARK: - Batch Operations
 
     public func batchDelete(_ type: (some NSManagedObject).Type, predicate: NSPredicate? = nil) async throws {
-        _ = try await coreDataActor.batchDelete(type, predicate: predicate)
+        nonisolated(unsafe) let pred = predicate
+        _ = try await coreDataActor.batchDelete(type, predicate: pred)
     }
 
     // MARK: - Export/Import Operations

@@ -4,7 +4,7 @@ import LocalAuthentication
 
 /// Handles app authentication state and biometric authentication
 @Reducer
-public struct AuthenticationFeature {
+public struct AuthenticationFeature: Sendable {
     // MARK: - State
 
     @ObservableState

@@ -815,9 +815,10 @@ public final class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol, @un
             throw DocumentParserError.unsupportedFormat
         }
 
+        nonisolated(unsafe) let hints = withHints
         let comprehensiveContext = try await extractor.extractComprehensiveContext(
             from: documentData,
-            withHints: withHints
+            withHints: hints
         )
 
         // Log extraction summary for debugging
@@ -1173,10 +1174,12 @@ public final class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol, @un
         )
 
         // Process feedback
+        nonisolated(unsafe) let autoFilled = autoFilledValue
+        nonisolated(unsafe) let user = userValue
         await autoFillEngine.processUserFeedback(
             field: field,
-            autoFilledValue: autoFilledValue,
-            userValue: userValue,
+            autoFilledValue: autoFilled,
+            userValue: user,
             wasAccepted: wasAccepted,
             context: context
         )

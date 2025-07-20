@@ -26,6 +26,67 @@ public final class SmartDefaultsEngine: @unchecked Sendable {
     private let cacheExpirationMinutes: TimeInterval = 5
     private let minConfidenceThreshold: Float = 0.65
 
+    // MARK: - Helper Functions
+    
+    /// Convert various value types to ResponseValue for FieldDefault
+    private func convertToResponseValue(_ value: Any) -> UserResponse.ResponseValue {
+        switch value {
+        case let string as String:
+            return convertStringToResponseValue(string)
+        case let bool as Bool:
+            return .boolean(bool)
+        case let int as Int:
+            return .numeric(Decimal(int))
+        case let double as Double:
+            return .numeric(Decimal(double))
+        case let decimal as Decimal:
+            return .numeric(decimal)
+        case let date as Date:
+            return .date(date)
+        case let uuid as UUID:
+            return .document(uuid)
+        default:
+            // For any other type, convert to string representation
+            return .text(String(describing: value))
+        }
+    }
+    
+    /// Convert string value to ResponseValue for FieldDefault
+    private func convertStringToResponseValue(_ value: String) -> UserResponse.ResponseValue {
+        // Try to infer the type from the string content
+        if value.isEmpty {
+            return .text("")
+        }
+        
+        // Check for boolean values
+        if value.lowercased() == "true" || value.lowercased() == "false" {
+            return .boolean(Bool(value.lowercased()) ?? false)
+        }
+        
+        // Check for numeric values
+        if let decimal = Decimal(string: value) {
+            return .numeric(decimal)
+        }
+        
+        // Check for date values (basic ISO format)
+        if value.contains("-") && value.count >= 10 {
+            let formatter = ISO8601DateFormatter()
+            if let date = formatter.date(from: value) {
+                return .date(date)
+            }
+        }
+        
+        // Check for UUID values
+        if value.count == 36 && value.contains("-") {
+            if let uuid = UUID(uuidString: value) {
+                return .document(uuid)
+            }
+        }
+        
+        // Default to text
+        return .text(value)
+    }
+
     // MARK: - Initialization
 
     public init(
@@ -195,9 +256,9 @@ public final class SmartDefaultsEngine: @unchecked Sendable {
         let interaction = APEUserInteraction(
             sessionId: context.sessionId,
             field: field,
-            suggestedValue: suggestedValue,
+            suggestedValue: convertToResponseValue(suggestedValue),
             acceptedSuggestion: wasAccepted,
-            finalValue: acceptedValue,
+            finalValue: convertToResponseValue(acceptedValue) ?? .text(String(describing: acceptedValue)),
             timeToRespond: context.responseTime ?? 0,
             documentContext: !context.extractedData.isEmpty
         )
@@ -288,7 +349,7 @@ public final class SmartDefaultsEngine: @unchecked Sendable {
         guard let contextualDefault = contextualDefaults[field] else { return nil }
 
         return FieldDefault(
-            value: contextualDefault.value,
+            value: convertToResponseValue(contextualDefault.value),
             confidence: contextualDefault.confidence,
             source: .contextual
         )
@@ -329,7 +390,7 @@ public final class SmartDefaultsEngine: @unchecked Sendable {
 
         // Convert to FieldDefault
         return FieldDefault(
-            value: smartDefault.value,
+            value: convertStringToResponseValue(smartDefault.value),
             confidence: Float(smartDefault.confidence),
             source: mapProviderSource(smartDefault.source)
         )
@@ -345,7 +406,7 @@ public final class SmartDefaultsEngine: @unchecked Sendable {
         for key in variations {
             if let value = context.extractedData[key], !value.isEmpty {
                 return FieldDefault(
-                    value: value,
+                    value: convertStringToResponseValue(value),
                     confidence: 0.9, // High confidence for extracted data
                     source: .documentContext
                 )
@@ -665,6 +726,28 @@ public extension SmartDefaultsEngine {
             suggestedFields: suggested,
             mustAskFields: orderedMustAsk
         )
+    }
+    
+    /// Helper function to convert Any value to UserResponse.ResponseValue
+    private func convertToResponseValue(_ value: Any) -> UserResponse.ResponseValue? {
+        switch value {
+        case let stringValue as String:
+            return .text(stringValue)
+        case let boolValue as Bool:
+            return .boolean(boolValue)
+        case let dateValue as Date:
+            return .date(dateValue)
+        case let decimalValue as Decimal:
+            return .numeric(decimalValue)
+        case let doubleValue as Double:
+            return .numeric(Decimal(doubleValue))
+        case let intValue as Int:
+            return .numeric(Decimal(intValue))
+        case let uuidValue as UUID:
+            return .document(uuidValue)
+        default:
+            return nil
+        }
     }
 }
 

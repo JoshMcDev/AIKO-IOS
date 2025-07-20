@@ -5,7 +5,7 @@ import Foundation
 public actor CacheInvalidationStrategy {
     // MARK: - Invalidation Rules
 
-    public struct InvalidationRule {
+    public struct InvalidationRule: Sendable {
         let id: UUID
         let name: String
         let trigger: InvalidationTrigger
@@ -30,7 +30,7 @@ public actor CacheInvalidationStrategy {
         }
     }
 
-    public enum InvalidationTrigger {
+    public enum InvalidationTrigger: Sendable {
         case timeElapsed(TimeInterval)
         case eventOccurred(EventType)
         case dependencyChanged(String)
@@ -38,7 +38,7 @@ public actor CacheInvalidationStrategy {
         case patternDetected(String)
         case manualTrigger
 
-        public enum EventType: String {
+        public enum EventType: String, Sendable {
             case objectUpdated
             case objectDeleted
             case schemaChanged
@@ -47,7 +47,7 @@ public actor CacheInvalidationStrategy {
             case systemRestart
         }
 
-        public enum ThresholdType: String {
+        public enum ThresholdType: String, Sendable {
             case memoryUsage
             case cacheSize
             case errorRate
@@ -55,7 +55,7 @@ public actor CacheInvalidationStrategy {
         }
     }
 
-    public enum InvalidationScope {
+    public enum InvalidationScope: Sendable {
         case all
         case objectType(ObjectType)
         case actionType(ActionType)
@@ -72,6 +72,7 @@ public actor CacheInvalidationStrategy {
     private var dependencyGraph = DependencyGraph()
     private var eventHistory: [InvalidationEvent] = []
     private let maxHistorySize = 1000
+    private var hasSetupDefaultRules = false
 
     @Dependency(\.objectActionCache) private var cache
     @Dependency(\.date) private var date
@@ -79,10 +80,7 @@ public actor CacheInvalidationStrategy {
     // MARK: - Initialization
 
     public init() {
-        // Set up default rules
-        Task {
-            await setupDefaultRules()
-        }
+        // Default rules will be set up on first use to avoid unstructured tasks in init
     }
 
     // MARK: - Rule Management
@@ -121,6 +119,9 @@ public actor CacheInvalidationStrategy {
 
     /// Process an invalidation event
     public func processEvent(_ event: InvalidationEvent) async {
+        // Ensure default rules are set up
+        await ensureDefaultRulesSetup()
+        
         // Record event
         recordEvent(event)
 
@@ -163,6 +164,12 @@ public actor CacheInvalidationStrategy {
     }
 
     // MARK: - Private Methods
+
+    private func ensureDefaultRulesSetup() async {
+        guard !hasSetupDefaultRules else { return }
+        hasSetupDefaultRules = true
+        await setupDefaultRules()
+    }
 
     private func setupDefaultRules() async {
         // Time-based invalidation for different object types
@@ -226,10 +233,7 @@ public actor CacheInvalidationStrategy {
     private func executeInvalidation(rule: InvalidationRule, event: InvalidationEvent) async {
         let predicate = buildPredicate(for: rule.scope)
 
-        // Get cache reference
-        @Dependency(\.objectActionCache) var cache
-
-        // Perform invalidation
+        // Perform invalidation using the actor's cache property
         await cache.invalidate(matching: predicate)
 
         // Log invalidation
@@ -435,8 +439,8 @@ public actor CacheInvalidationStrategy {
 
 // MARK: - Supporting Types
 
-public struct InvalidationEvent {
-    public enum EventType {
+public struct InvalidationEvent: Sendable {
+    public enum EventType: Sendable {
         case time
         case event(String)
         case threshold(String, Double)
@@ -448,11 +452,11 @@ public struct InvalidationEvent {
     let type: EventType
     let scope: CacheInvalidationStrategy.InvalidationScope
     let timestamp: Date
-    let metadata: [String: Any]
+    let metadata: [String: any Sendable]
 }
 
-public struct ChangeDescriptor {
-    public enum ChangeType {
+public struct ChangeDescriptor: Sendable {
+    public enum ChangeType: Sendable {
         case create
         case update
         case delete
@@ -466,15 +470,15 @@ public struct ChangeDescriptor {
     let timestamp: Date
 }
 
-struct InvalidationStrategy {
+struct InvalidationStrategy: Sendable {
     var fullInvalidation: [String] = []
     var selectiveInvalidation: [String] = []
     var patternBasedInvalidation: String?
     var requiresFullRebuild = false
 }
 
-struct InvalidationPlan {
-    enum Step {
+struct InvalidationPlan: Sendable {
+    enum Step: Sendable {
         case invalidate(scope: CacheInvalidationStrategy.InvalidationScope)
         case invalidateSelective(objectId: String)
         case clearAll
@@ -488,7 +492,7 @@ struct InvalidationPlan {
     }
 }
 
-struct InvalidationLog {
+struct InvalidationLog: Sendable {
     let ruleId: UUID
     let ruleName: String
     let event: InvalidationEvent
@@ -498,6 +502,8 @@ struct InvalidationLog {
 
 // MARK: - Dependency Graph
 
+// Note: DependencyGraph is actor-isolated and only accessed from within CacheInvalidationStrategy actor,
+// so it's safe from concurrent access even though it's not marked as Sendable.
 private class DependencyGraph {
     private var adjacencyList: [String: Set<String>] = [:]
     private var reverseAdjacencyList: [String: Set<String>] = [:]

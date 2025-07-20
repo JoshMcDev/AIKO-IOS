@@ -42,9 +42,11 @@ struct WorkflowPromptsView: View {
                 AutomationControlsSection(
                     settings: viewStore.automationSettings,
                     onToggleAutomation: { enabled in
-                        var settings = viewStore.automationSettings
-                        settings.enabled = enabled
-                        viewStore.send(.updateAutomationSettings(settings))
+                        Task { @MainActor in
+                            var settings = viewStore.automationSettings
+                            settings.enabled = enabled
+                            viewStore.send(.updateAutomationSettings(settings))
+                        }
                     },
                     onShowSettings: {
                         viewStore.send(.toggleAutomationSettings(true))

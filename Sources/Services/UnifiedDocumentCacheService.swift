@@ -4,7 +4,7 @@ import CryptoKit
 import Foundation
 
 /// Unified Document Cache Service combining standard, encrypted, and adaptive caching
-public struct UnifiedDocumentCacheService {
+public struct UnifiedDocumentCacheService: Sendable {
     // Core cache operations
     public var cacheDocument: (GeneratedDocument) async throws -> Void
     public var getCachedDocument: (DocumentType, String) async -> GeneratedDocument?
@@ -33,7 +33,7 @@ public struct UnifiedDocumentCacheService {
 
 // MARK: - Cache Configuration
 
-public struct CacheConfiguration: Codable, Equatable {
+public struct CacheConfiguration: Codable, Equatable, Sendable {
     public let mode: CacheMode
     public let encryptionEnabled: Bool
     public let adaptiveSizingEnabled: Bool

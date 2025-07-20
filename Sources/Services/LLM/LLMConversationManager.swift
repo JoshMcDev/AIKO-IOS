@@ -294,7 +294,7 @@ public struct LLMConversation: Identifiable, Codable, Equatable {
 
 // MARK: - Conversation Context
 
-public struct LLMConversationContext: Codable, Equatable {
+public struct LLMConversationContext: Codable, Equatable, Sendable {
     public var acquisitionType: AcquisitionType?
     public var uploadedDocuments: [LLMDocumentReference]
     public var extractedData: [String: String]
@@ -316,7 +316,7 @@ public struct LLMConversationContext: Codable, Equatable {
     }
 }
 
-public struct LLMDocumentReference: Codable, Equatable {
+public struct LLMDocumentReference: Codable, Equatable, Sendable {
     public let id: UUID
     public let name: String
     public let type: String
@@ -330,7 +330,7 @@ public struct LLMDocumentReference: Codable, Equatable {
     }
 }
 
-public struct LLMUserProfile: Codable, Equatable {
+public struct LLMUserProfile: Codable, Equatable, Sendable {
     public let userId: String
     public let organizationUnit: String
     public let role: String
@@ -349,7 +349,7 @@ public struct LLMUserProfile: Codable, Equatable {
     }
 }
 
-public struct OrganizationalContext: Codable, Equatable {
+public struct OrganizationalContext: Codable, Equatable, Sendable {
     public let fiscalYear: String
     public let department: String
     public let location: String

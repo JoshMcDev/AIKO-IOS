@@ -65,7 +65,8 @@ public actor FormIntelligenceAdapter {
 
     /// Learn from form submission patterns
     public func learnFromSubmission(_ formData: GovernmentFormData, _ outcome: SubmissionOutcome) async throws {
-        try await learnFromSubmissionImpl(formData, outcome)
+        nonisolated(unsafe) let data = formData
+        try await learnFromSubmissionImpl(data, outcome)
     }
 
     /// Generate form insights based on usage patterns

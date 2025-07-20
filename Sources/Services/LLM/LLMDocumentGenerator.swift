@@ -347,7 +347,7 @@ public final class LLMDocumentGenerator: @unchecked Sendable {
 
 // MARK: - Supporting Types
 
-public struct LLMDocumentGenerationContext {
+public struct LLMDocumentGenerationContext: Sendable {
     public let conversationContext: LLMConversationContext
     public let acquisitionType: AcquisitionType?
     public let vendorInfo: APEVendorInfo?
@@ -372,7 +372,7 @@ public struct LLMDocumentGenerationContext {
     }
 }
 
-public struct LLMGeneratedDocument: Identifiable {
+public struct LLMGeneratedDocument: Identifiable, Sendable {
     public let id: UUID
     public let type: DocumentType
     public let title: String
@@ -381,14 +381,14 @@ public struct LLMGeneratedDocument: Identifiable {
     public let metadata: [String: String]
 }
 
-public struct LLMDocumentSection: Identifiable {
+public struct LLMDocumentSection: Identifiable, Sendable {
     public let id: UUID
     public let title: String
     public var content: String
     public let metadata: [String: String]
 }
 
-public enum ImprovementType {
+public enum ImprovementType: Sendable {
     case compliance
     case clarity
     case completeness
@@ -396,18 +396,18 @@ public enum ImprovementType {
     case formatting
 }
 
-public struct ReviewedDocument {
+public struct ReviewedDocument: Sendable {
     public let feedback: [ReviewFeedback]
     public let suggestions: [String]
     public let overallAssessment: String
 }
 
-public struct ReviewFeedback {
+public struct ReviewFeedback: Sendable {
     public let type: FeedbackType
     public let message: String
     public let lineNumber: Int?
 
-    public enum FeedbackType {
+    public enum FeedbackType: Sendable {
         case error
         case warning
         case suggestion
@@ -416,7 +416,7 @@ public struct ReviewFeedback {
 
 // MARK: - Document Template Library
 
-public class DocumentTemplateLibrary {
+public class DocumentTemplateLibrary: @unchecked Sendable {
     private var templates: [DocumentType: LLMDocumentTemplate] = [:]
 
     init() {
@@ -529,7 +529,7 @@ public class DocumentTemplateLibrary {
     }
 }
 
-public struct LLMDocumentTemplate {
+public struct LLMDocumentTemplate: Sendable {
     public let id: String
     public let documentTitle: String
     public let systemPrompt: String
@@ -563,7 +563,7 @@ public struct LLMDocumentTemplate {
     }
 }
 
-public struct DocumentSectionTemplate {
+public struct DocumentSectionTemplate: Sendable {
     public let title: String
     public let prompt: String
     public let contextRequirements: [String]?

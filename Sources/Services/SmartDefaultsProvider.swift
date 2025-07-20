@@ -52,7 +52,7 @@ public class SmartDefaultsProvider: @unchecked Sendable {
         public let daysUntilFYEnd: Int
     }
 
-    public struct OrganizationalRule: Equatable {
+    public struct OrganizationalRule: Equatable, Sendable {
         public let field: String
         public let condition: String
         public let value: String

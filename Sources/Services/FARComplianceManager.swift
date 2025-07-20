@@ -45,13 +45,13 @@ public enum ContractType: String, CaseIterable, Sendable {
     case indefiniteDelivery = "indefinite_delivery"
 }
 
-public struct FARValidationRequest {
+public struct FARValidationRequest: Sendable {
     public let documentType: DocumentType
     public let content: String
     public let contractValue: Double
     public let contractType: ContractType
     public let isCommercialItem: Bool
-    public let additionalContext: [String: Any]
+    public let additionalContext: [String: String]
 
     public init(
         documentType: DocumentType,
@@ -59,7 +59,7 @@ public struct FARValidationRequest {
         contractValue: Double,
         contractType: ContractType,
         isCommercialItem: Bool,
-        additionalContext: [String: Any] = [:]
+        additionalContext: [String: String] = [:]
     ) {
         self.documentType = documentType
         self.content = content

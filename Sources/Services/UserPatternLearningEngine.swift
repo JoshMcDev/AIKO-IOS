@@ -18,6 +18,44 @@ public final class UserPatternLearningEngine: @unchecked Sendable {
     private var _confidenceThresholds: [RequirementField: Float] = [:]
 
     // Thread-safe accessors
+    
+    // MARK: - Helper Functions
+    
+    /// Convert string value to ResponseValue for FieldDefault
+    private func convertToResponseValue(_ value: String) -> UserResponse.ResponseValue {
+        // Try to infer the type from the string content
+        if value.isEmpty {
+            return .text("")
+        }
+        
+        // Check for boolean values
+        if value.lowercased() == "true" || value.lowercased() == "false" {
+            return .boolean(Bool(value.lowercased()) ?? false)
+        }
+        
+        // Check for numeric values
+        if let decimal = Decimal(string: value) {
+            return .numeric(decimal)
+        }
+        
+        // Check for date values (basic ISO format)
+        if value.contains("-") && value.count >= 10 {
+            let formatter = ISO8601DateFormatter()
+            if let date = formatter.date(from: value) {
+                return .date(date)
+            }
+        }
+        
+        // Check for UUID values
+        if value.count == 36 && value.contains("-") {
+            if let uuid = UUID(uuidString: value) {
+                return .document(uuid)
+            }
+        }
+        
+        // Default to text
+        return .text(value)
+    }
     private var patternHistory: [RequirementField: [PatternData]] {
         get { queue.sync { _patternHistory } }
         set { queue.async(flags: .barrier) { self._patternHistory = newValue } }
@@ -170,7 +208,7 @@ public final class UserPatternLearningEngine: @unchecked Sendable {
 
         if let best = weightedValues.max(by: { $0.value < $1.value }) {
             return FieldDefault(
-                value: best.key,
+                value: convertToResponseValue(best.key),
                 confidence: best.value * 0.9, // Slightly reduce confidence for time-based predictions
                 source: .userPattern
             )
@@ -342,7 +380,7 @@ public final class UserPatternLearningEngine: @unchecked Sendable {
 
         let bestDefault = bestValue.map { value in
             FieldDefault(
-                value: value,
+                value: convertToResponseValue(value),
                 confidence: confidence,
                 source: determineSource(patterns: recentPatterns)
             )
@@ -627,7 +665,7 @@ public final class UserPatternLearningEngine: @unchecked Sendable {
 
     private func combinePredicitions(_ predictions: [FieldDefault]) -> FieldDefault {
         guard !predictions.isEmpty else {
-            return FieldDefault(value: "", confidence: 0, source: .systemDefault)
+            return FieldDefault(value: convertToResponseValue(""), confidence: 0, source: .systemDefault)
         }
 
         // If all predictions agree, high confidence
@@ -657,7 +695,7 @@ public final class UserPatternLearningEngine: @unchecked Sendable {
             let confidence = best.value / totalWeight
 
             return FieldDefault(
-                value: best.key,
+                value: convertToResponseValue(best.key),
                 confidence: confidence,
                 source: .userPattern
             )

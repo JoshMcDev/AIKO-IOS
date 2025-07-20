@@ -1,6 +1,6 @@
 import CryptoKit
 import Foundation
-import Security
+@preconcurrency import Security
 
 /// Enhanced API Key Manager with rotation, encryption, and certificate pinning
 public actor EnhancedAPIKeyManager {
@@ -310,7 +310,7 @@ public extension URLSession {
 public final class PinnedSessionDelegate: NSObject, URLSessionDelegate {
     public func urlSession(_: URLSession,
                            didReceive challenge: URLAuthenticationChallenge,
-                           completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void)
+                           completionHandler: @escaping @Sendable (URLSession.AuthChallengeDisposition, URLCredential?) -> Void)
     {
         guard challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
               let serverTrust = challenge.protectionSpace.serverTrust,
@@ -321,20 +321,17 @@ public final class PinnedSessionDelegate: NSObject, URLSessionDelegate {
         }
 
         Task { @Sendable in
-            nonisolated(unsafe) let serverTrust = serverTrust
-            nonisolated(unsafe) let completionHandler = completionHandler
-            nonisolated(unsafe) let host = challenge.protectionSpace.host
-            
+            nonisolated(unsafe) let handler = completionHandler
             let isValid = await EnhancedAPIKeyManager.shared.validateCertificatePin(
-                for: host,
+                for: challenge.protectionSpace.host,
                 serverTrust: serverTrust
             )
 
             if isValid {
                 let credential = URLCredential(trust: serverTrust)
-                completionHandler(.useCredential, credential)
+                handler(.useCredential, credential)
             } else {
-                completionHandler(.cancelAuthenticationChallenge, nil)
+                handler(.cancelAuthenticationChallenge, nil)
             }
         }
     }
