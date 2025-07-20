@@ -25,23 +25,36 @@
     }
 
     public extension FontScalingServiceClient {
-        @MainActor
         static var iOS: Self {
             let client = iOSFontScalingServiceClient()
 
             return Self(
                 _scaledFontSize: { baseSize, textStyle, sizeCategory in
-                    await client.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: sizeCategory)
+                    // Run synchronously on MainActor since we need to return immediately
+                    if Thread.isMainThread {
+                        return client.service.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: sizeCategory)
+                    } else {
+                        return DispatchQueue.main.sync {
+                            client.service.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: sizeCategory)
+                        }
+                    }
                 },
                 _supportsUIFontMetrics: {
-                    await client.supportsUIFontMetrics()
+                    // Run synchronously on MainActor since we need to return immediately
+                    if Thread.isMainThread {
+                        return client.service.supportsUIFontMetrics()
+                    } else {
+                        return DispatchQueue.main.sync {
+                            client.service.supportsUIFontMetrics()
+                        }
+                    }
                 }
             )
         }
     }
 
     // Convenience static accessor
-    public enum iOSFontScalingServiceClient {
+    public enum iOSFontScalingServiceClientLive {
         public static let live = FontScalingServiceClient.iOS
     }
 #endif

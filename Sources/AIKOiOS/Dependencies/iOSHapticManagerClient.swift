@@ -84,41 +84,63 @@
     public extension HapticManagerClient {
         @MainActor
         static var iOSLive: Self {
-            let client = iOSHapticManagerClient()
+            let manager = iOSHapticManager()
 
             return Self(
                 impact: { style in
-                    await client.impact(style)
+                    Task {
+                        await manager.impact(style)
+                    }
                 },
                 notification: { type in
-                    await client.notification(type)
+                    Task {
+                        await manager.notification(type)
+                    }
                 },
                 selection: {
-                    await client.selection()
+                    Task {
+                        await manager.selection()
+                    }
                 },
                 buttonTap: {
-                    await client.buttonTap()
+                    Task {
+                        await manager.buttonTap()
+                    }
                 },
                 toggleSwitch: {
-                    await client.toggleSwitch()
+                    Task {
+                        await manager.toggleSwitch()
+                    }
                 },
                 successAction: {
-                    await client.successAction()
+                    Task {
+                        await manager.successAction()
+                    }
                 },
                 errorAction: {
-                    await client.errorAction()
+                    Task {
+                        await manager.errorAction()
+                    }
                 },
                 warningAction: {
-                    await client.warningAction()
+                    Task {
+                        await manager.warningAction()
+                    }
                 },
                 dragStarted: {
-                    await client.dragStarted()
+                    Task {
+                        await manager.dragStarted()
+                    }
                 },
                 dragEnded: {
-                    await client.dragEnded()
+                    Task {
+                        await manager.dragEnded()
+                    }
                 },
                 refresh: {
-                    await client.refresh()
+                    Task {
+                        await manager.refresh()
+                    }
                 }
             )
         }

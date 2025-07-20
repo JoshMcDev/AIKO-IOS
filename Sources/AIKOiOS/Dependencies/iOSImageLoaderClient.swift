@@ -52,34 +52,34 @@
     public extension ImageLoaderClient {
         static let iOSLive = Self(
             loadImage: { data in
-                let client = iOSImageLoaderClient()
-                return await client.loadImage(from: data)
+                let service = iOSImageLoader()
+                return service.loadImage(from: data)
             },
             loadImageFromData: { data in
-                let client = iOSImageLoaderClient()
-                return await client.loadImageFromData(data)
+                let service = iOSImageLoader()
+                return service.loadImage(from: data)
             },
             createImage: { platformImage in
-                let client = iOSImageLoaderClient()
-                return await client.createImage(from: platformImage)
+                let service = iOSImageLoader()
+                return service.createImage(from: platformImage)
             },
             loadImageFromBundle: { name, ext, bundle in
-                let client = iOSImageLoaderClient()
-                return await client.loadImageFromBundle(named: name, withExtension: ext, in: bundle)
+                let service = iOSImageLoader()
+                return service.loadImage(named: name, withExtension: ext, in: bundle)
             },
             loadImageFromFile: { path in
-                let client = iOSImageLoaderClient()
-                return await client.loadImageFromFile(path)
+                let service = iOSImageLoader()
+                return service.loadImageFromFile(path)
             },
             convertToSwiftUIImage: { platformImage in
-                let client = iOSImageLoaderClient()
-                return await client.convertToSwiftUIImage(platformImage)
+                let service = iOSImageLoader()
+                return service.convertToSwiftUIImage(platformImage)
             }
         )
     }
 
     // Convenience static accessor
-    public enum iOSImageLoaderClient {
+    public enum iOSImageLoaderClientLive {
         public static let live = ImageLoaderClient.iOSLive
     }
 #endif

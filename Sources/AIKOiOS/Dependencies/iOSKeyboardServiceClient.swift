@@ -51,34 +51,29 @@
     public extension KeyboardServiceClient {
         static let iOSLive = Self(
             defaultKeyboardType: {
-                let client = iOSKeyboardServiceClient()
-                return await client.defaultKeyboardType()
+                return .default
             },
             emailKeyboardType: {
-                let client = iOSKeyboardServiceClient()
-                return await client.emailKeyboardType()
+                return .email
             },
             numberKeyboardType: {
-                let client = iOSKeyboardServiceClient()
-                return await client.numberKeyboardType()
+                return .number
             },
             phoneKeyboardType: {
-                let client = iOSKeyboardServiceClient()
-                return await client.phoneKeyboardType()
+                return .phone
             },
             urlKeyboardType: {
-                let client = iOSKeyboardServiceClient()
-                return await client.urlKeyboardType()
+                return .url
             },
             supportsKeyboardTypes: {
-                let client = iOSKeyboardServiceClient()
-                return await client.supportsKeyboardTypes()
+                let service = iOSKeyboardService()
+                return service.supportsKeyboardTypes
             }
         )
     }
 
     // Convenience static accessor
-    public enum iOSKeyboardServiceClient {
+    public enum iOSKeyboardServiceClientLive {
         public static let live = KeyboardServiceClient.iOSLive
     }
 #endif
