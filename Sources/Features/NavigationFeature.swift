@@ -200,7 +200,7 @@ public struct MenuItem: Equatable, Identifiable, Sendable {
         MenuItem(id: "sam", title: "SAM.gov Lookup", icon: "building.2", destination: .samGovLookup),
         MenuItem(id: "smartDefaults", title: "Smart Defaults Demo", icon: "wand.and.stars", destination: .smartDefaultsDemo),
         MenuItem(id: "guide", title: "User Guide", icon: "book", destination: .userGuide),
-        MenuItem(id: "settings", title: "Settings", icon: "gear", destination: .settings),
+        MenuItem(id: "settings", title: "Settings", icon: "gear", destination: .settings)
     ]
 }
 

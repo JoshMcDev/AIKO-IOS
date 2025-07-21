@@ -335,7 +335,7 @@ public struct RequirementsRefinementDialog: View {
             question: "What are the key performance metrics or success criteria?",
             helpText: "How will you measure successful delivery?",
             inputType: .text
-        ),
+        )
     ]
 
     public var body: some View {

@@ -117,7 +117,7 @@ public struct FormSelectionView: View {
     }
 
     // MARK: - Computed Properties
-    
+
     private func loadAvailableForms() async {
         let forms = await formMappingService.getFormsForTemplate(documentType)
         let formSelections = forms.map { form in
@@ -335,8 +335,7 @@ public struct FormSelectionView: View {
     private func generateFormNotes(_ form: FormDefinition) -> String? {
         if let threshold = form.threshold,
            let amount = templateData.data["totalAmount"] as? Double,
-           amount > threshold
-        {
+           amount > threshold {
             return "Amount exceeds form threshold of \(formatCurrency(threshold))"
         }
         return nil

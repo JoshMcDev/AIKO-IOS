@@ -58,7 +58,7 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
                         inputPricePerMillion: 0.5,
                         outputPricePerMillion: 1.5
                     )
-                ),
+                )
             ]
         )
     }
@@ -116,7 +116,7 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
         var contents: [[String: Any]] = []
 
         // Add system instruction if provided
-        var systemInstruction: String? = nil
+        var systemInstruction: String?
         if let systemPrompt = request.systemPrompt {
             systemInstruction = systemPrompt
         }
@@ -126,7 +126,7 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
             let role = message.role == .assistant ? "model" : "user"
             contents.append([
                 "role": role,
-                "parts": [["text": message.content]],
+                "parts": [["text": message.content]]
             ])
         }
 
@@ -135,8 +135,8 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
             "contents": contents,
             "generationConfig": [
                 "temperature": request.temperature,
-                "maxOutputTokens": request.maxTokens ?? 8192,
-            ],
+                "maxOutputTokens": request.maxTokens ?? 8192
+            ]
         ]
 
         if let systemInstruction {
@@ -225,7 +225,7 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
                         let role = message.role == .assistant ? "model" : "user"
                         contents.append([
                             "role": role,
-                            "parts": [["text": message.content]],
+                            "parts": [["text": message.content]]
                         ])
                     }
 
@@ -234,8 +234,8 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
                         "contents": contents,
                         "generationConfig": [
                             "temperature": request.temperature,
-                            "maxOutputTokens": request.maxTokens ?? 8192,
-                        ],
+                            "maxOutputTokens": request.maxTokens ?? 8192
+                        ]
                     ]
 
                     if let systemPrompt = request.systemPrompt {
@@ -269,8 +269,7 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
                                let content = firstCandidate["content"] as? [String: Any],
                                let parts = content["parts"] as? [[String: Any]],
                                let firstPart = parts.first,
-                               let text = firstPart["text"] as? String
-                            {
+                               let text = firstPart["text"] as? String {
                                 continuation.yield(LLMStreamChunk(delta: text))
 
                                 if let finishReason = firstCandidate["finishReason"] as? String {
@@ -300,7 +299,7 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
 
         let body: [String: Any] = [
             "model": "models/embedding-001",
-            "content": ["parts": [["text": text]]],
+            "content": ["parts": [["text": text]]]
         ]
 
         let endpoint = "\(baseURL)/models/embedding-001:embedContent?key=\(config.apiKey ?? "")"
@@ -333,7 +332,7 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
         }
 
         let body: [String: Any] = [
-            "contents": [["parts": [["text": text]]]],
+            "contents": [["parts": [["text": text]]]]
         ]
 
         let endpoint = "\(baseURL)/models/gemini-pro:countTokens?key=\(config.apiKey ?? "")"

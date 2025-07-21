@@ -2,7 +2,6 @@
     import Accelerate
     import AppCore
     @preconcurrency import CoreImage
-    import CoreImage.CIFilterBuiltins
     import Foundation
     import UIKit
     import Vision
@@ -579,23 +578,24 @@
             // Both modes are available on iOS with Core Image
             true
         }
-        
+
         // MARK: - OCR Methods
-        
+
         func extractText(_ imageData: Data, options: DocumentImageProcessor.OCROptions) async throws -> DocumentImageProcessor.OCRResult {
             guard isOCRAvailable() else {
                 throw ProcessingError.ocrNotAvailable
             }
-            
+
             let startTime = CFAbsoluteTimeGetCurrent()
-            
+
             guard let uiImage = UIImage(data: imageData),
-                  let cgImage = uiImage.cgImage else {
+                  let cgImage = uiImage.cgImage
+            else {
                 throw ProcessingError.invalidImageData
             }
-            
+
             let imageSize = CGSize(width: cgImage.width, height: cgImage.height)
-            
+
             // Update progress: Starting OCR preprocessing
             options.progressCallback?(OCRProgress(
                 currentStep: .preprocessing,
@@ -603,23 +603,23 @@
                 overallProgress: 0.0,
                 estimatedTimeRemaining: 3.0
             ))
-            
+
             // Create Vision text recognition request
             let request = VNRecognizeTextRequest()
             request.recognitionLevel = options.recognitionLevel == .fast ? .fast : .accurate
             request.revision = options.revision
             request.minimumTextHeight = options.minimumTextHeight
-            
+
             // Set up language preferences
-            if !options.automaticLanguageDetection && options.language != .automatic {
+            if !options.automaticLanguageDetection, options.language != .automatic {
                 request.recognitionLanguages = [options.language.rawValue]
             }
-            
+
             // Add custom words if provided
             if !options.customWords.isEmpty {
                 request.customWords = options.customWords
             }
-            
+
             // Update progress: Starting text detection
             options.progressCallback?(OCRProgress(
                 currentStep: .textDetection,
@@ -627,19 +627,19 @@
                 overallProgress: 0.2,
                 estimatedTimeRemaining: 2.5
             ))
-            
+
             // Perform OCR
             let requestHandler = VNImageRequestHandler(cgImage: cgImage, options: [:])
-            
+
             return try await withCheckedThrowingContinuation { continuation in
                 do {
                     try requestHandler.perform([request])
-                    
+
                     guard let results = request.results else {
                         continuation.resume(throwing: ProcessingError.textDetectionFailed)
                         return
                     }
-                    
+
                     // Update progress: Processing recognition results
                     options.progressCallback?(OCRProgress(
                         currentStep: .textRecognition,
@@ -648,10 +648,10 @@
                         estimatedTimeRemaining: 1.0,
                         recognizedTextCount: results.count
                     ))
-                    
+
                     // Process results
                     let extractedTextElements = processVisionResults(results, imageSize: imageSize)
-                    
+
                     // Update progress: Language detection
                     options.progressCallback?(OCRProgress(
                         currentStep: .languageDetection,
@@ -659,10 +659,10 @@
                         overallProgress: 0.8,
                         estimatedTimeRemaining: 0.5
                     ))
-                    
+
                     // Detect languages
                     let detectedLanguages = detectLanguages(from: extractedTextElements)
-                    
+
                     // Update progress: Post-processing
                     options.progressCallback?(OCRProgress(
                         currentStep: .postprocessing,
@@ -670,16 +670,16 @@
                         overallProgress: 0.9,
                         estimatedTimeRemaining: 0.2
                     ))
-                    
+
                     // Create full text
-                    let fullText = extractedTextElements.map { $0.text }.joined(separator: "\n")
-                    
+                    let fullText = extractedTextElements.map(\.text).joined(separator: "\n")
+
                     // Calculate overall confidence
                     let overallConfidence = extractedTextElements.isEmpty ? 0.0 :
-                        extractedTextElements.map { $0.confidence }.reduce(0, +) / Double(extractedTextElements.count)
-                    
+                        extractedTextElements.map(\.confidence).reduce(0, +) / Double(extractedTextElements.count)
+
                     let processingTime = CFAbsoluteTimeGetCurrent() - startTime
-                    
+
                     // Final progress update
                     options.progressCallback?(OCRProgress(
                         currentStep: .postprocessing,
@@ -688,7 +688,7 @@
                         estimatedTimeRemaining: 0.0,
                         recognizedTextCount: extractedTextElements.count
                     ))
-                    
+
                     let ocrResult = DocumentImageProcessor.OCRResult(
                         extractedText: extractedTextElements,
                         fullText: fullText,
@@ -697,23 +697,23 @@
                         processingTime: processingTime,
                         imageSize: imageSize
                     )
-                    
+
                     continuation.resume(returning: ocrResult)
-                    
+
                 } catch {
                     continuation.resume(throwing: ProcessingError.ocrFailed(error.localizedDescription))
                 }
             }
         }
-        
+
         func extractStructuredData(
-            _ imageData: Data, 
-            documentType: DocumentImageProcessor.DocumentType, 
+            _ imageData: Data,
+            documentType: DocumentImageProcessor.DocumentType,
             options: DocumentImageProcessor.OCROptions
         ) async throws -> DocumentImageProcessor.StructuredOCRResult {
             // First perform standard OCR
             let ocrResult = try await extractText(imageData, options: options)
-            
+
             // Update progress: Structure analysis
             options.progressCallback?(OCRProgress(
                 currentStep: .structureAnalysis,
@@ -722,20 +722,20 @@
                 estimatedTimeRemaining: 0.5,
                 recognizedTextCount: ocrResult.extractedText.count
             ))
-            
+
             // Extract structured fields based on document type
             let extractedFields = await extractStructuredFields(
                 from: ocrResult,
                 documentType: documentType
             )
-            
+
             // Calculate structure confidence based on field extraction success
             let structureConfidence = calculateStructureConfidence(
                 extractedFields: extractedFields,
                 documentType: documentType,
                 ocrConfidence: ocrResult.confidence
             )
-            
+
             return DocumentImageProcessor.StructuredOCRResult(
                 documentType: documentType,
                 extractedFields: extractedFields,
@@ -743,32 +743,32 @@
                 structureConfidence: structureConfidence
             )
         }
-        
+
         func isOCRAvailable() -> Bool {
             // OCR is available on iOS 13.0+ with Vision framework
             if #available(iOS 13.0, *) {
-                return true
+                true
             } else {
-                return false
+                false
             }
         }
-        
+
         // MARK: - OCR Helper Methods
-        
+
         private func processVisionResults(_ results: [VNRecognizedTextObservation], imageSize: CGSize) -> [DocumentImageProcessor.ExtractedText] {
-            return results.compactMap { observation -> DocumentImageProcessor.ExtractedText? in
+            results.compactMap { observation -> DocumentImageProcessor.ExtractedText? in
                 guard let topCandidate = observation.topCandidates(1).first else { return nil }
-                
+
                 // Convert Vision's normalized coordinates to image coordinates
                 let boundingBox = convertToImageCoordinates(
                     normalizedBox: observation.boundingBox,
                     imageSize: imageSize
                 )
-                
+
                 // Character boxes are not available in this Vision API version
                 // Use empty array for now - this is optional data
                 let characterBoxes: [CGRect] = []
-                
+
                 return DocumentImageProcessor.ExtractedText(
                     text: topCandidate.string,
                     confidence: Double(topCandidate.confidence),
@@ -778,7 +778,7 @@
                 )
             }
         }
-        
+
         private func convertToImageCoordinates(normalizedBox: CGRect, imageSize: CGSize) -> CGRect {
             // Vision uses normalized coordinates (0-1) with origin at bottom-left
             // Convert to image coordinates with origin at top-left
@@ -786,80 +786,80 @@
             let y = (1.0 - normalizedBox.origin.y - normalizedBox.size.height) * imageSize.height
             let width = normalizedBox.size.width * imageSize.width
             let height = normalizedBox.size.height * imageSize.height
-            
+
             return CGRect(x: x, y: y, width: width, height: height)
         }
-        
+
         private func detectLanguages(from extractedText: [DocumentImageProcessor.ExtractedText]) -> [DocumentImageProcessor.OCRLanguage] {
             // Simple language detection based on character patterns
             // In a production implementation, this could use more sophisticated methods
-            let allText = extractedText.map { $0.text }.joined(separator: " ")
-            
+            let allText = extractedText.map(\.text).joined(separator: " ")
+
             // Detect common language patterns
             var detectedLanguages: Set<DocumentImageProcessor.OCRLanguage> = []
-            
+
             // Check for English (default)
             if !allText.isEmpty {
                 detectedLanguages.insert(.english)
             }
-            
+
             // Check for other languages based on character sets
             if allText.contains(where: { "àáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ".contains($0) }) {
                 detectedLanguages.insert(.french)
             }
-            
+
             if allText.contains(where: { "äöüßÄÖÜ".contains($0) }) {
                 detectedLanguages.insert(.german)
             }
-            
+
             if allText.contains(where: { "áéíóúüñÁÉÍÓÚÜÑ".contains($0) }) {
                 detectedLanguages.insert(.spanish)
             }
-            
+
             // Check for CJK characters
             if allText.contains(where: { char in
                 let scalar = char.unicodeScalars.first!
-                return (0x4E00...0x9FFF).contains(scalar.value) // CJK Unified Ideographs
+                return (0x4E00 ... 0x9FFF).contains(scalar.value) // CJK Unified Ideographs
             }) {
                 detectedLanguages.insert(.chinese)
             }
-            
+
             return Array(detectedLanguages)
         }
-        
+
         private func extractStructuredFields(
             from ocrResult: DocumentImageProcessor.OCRResult,
             documentType: DocumentImageProcessor.DocumentType
         ) async -> [String: DocumentImageProcessor.StructuredFieldValue] {
             let fullText = ocrResult.fullText
             var fields: [String: DocumentImageProcessor.StructuredFieldValue] = [:]
-            
+
             switch documentType {
             case .invoice:
                 fields = await extractInvoiceFields(from: fullText, extractedText: ocrResult.extractedText)
-                
+
             case .receipt:
                 fields = await extractReceiptFields(from: fullText, extractedText: ocrResult.extractedText)
-                
+
             case .businessCard:
                 fields = await extractBusinessCardFields(from: fullText, extractedText: ocrResult.extractedText)
-                
+
             case .form:
                 fields = await extractFormFields(from: fullText, extractedText: ocrResult.extractedText)
-                
+
             case .idDocument:
                 fields = await extractIDDocumentFields(from: fullText, extractedText: ocrResult.extractedText)
-                
+
             case .contract:
                 fields = await extractContractFields(from: fullText, extractedText: ocrResult.extractedText)
-                
+
             case .generic:
                 fields = ["content": .string(fullText)]
             }
-            
+
             return fields
         }
-        
+
         private func calculateStructureConfidence(
             extractedFields: [String: Any],
             documentType: DocumentImageProcessor.DocumentType,
@@ -867,116 +867,116 @@
         ) -> Double {
             // Base confidence starts with OCR confidence
             var structureConfidence = ocrConfidence
-            
+
             // Adjust based on extracted fields success
             let expectedFieldCount = getExpectedFieldCount(for: documentType)
             let extractedFieldCount = extractedFields.count
-            
+
             if expectedFieldCount > 0 {
                 let fieldSuccessRate = min(1.0, Double(extractedFieldCount) / Double(expectedFieldCount))
                 structureConfidence = (structureConfidence + fieldSuccessRate) / 2.0
             }
-            
+
             return structureConfidence
         }
-        
+
         private func getExpectedFieldCount(for documentType: DocumentImageProcessor.DocumentType) -> Int {
             switch documentType {
-            case .invoice: return 6 // invoice_number, date, total, etc.
-            case .receipt: return 4 // store, total, date, items
-            case .businessCard: return 5 // name, company, phone, email, address
-            case .form: return 3 // variable fields
-            case .idDocument: return 4 // name, number, date, address
-            case .contract: return 3 // parties, date, terms
-            case .generic: return 1 // just content
+            case .invoice: 6 // invoice_number, date, total, etc.
+            case .receipt: 4 // store, total, date, items
+            case .businessCard: 5 // name, company, phone, email, address
+            case .form: 3 // variable fields
+            case .idDocument: 4 // name, number, date, address
+            case .contract: 3 // parties, date, terms
+            case .generic: 1 // just content
             }
         }
-        
+
         // MARK: - Document Type Specific Extractors
-        
-        private func extractInvoiceFields(from text: String, extractedText: [DocumentImageProcessor.ExtractedText]) async -> [String: DocumentImageProcessor.StructuredFieldValue] {
+
+        private func extractInvoiceFields(from text: String, extractedText _: [DocumentImageProcessor.ExtractedText]) async -> [String: DocumentImageProcessor.StructuredFieldValue] {
             var fields: [String: DocumentImageProcessor.StructuredFieldValue] = [:]
-            
+
             // Extract invoice number
             if let invoiceNumber = text.firstMatch(of: /(?:Invoice|INV|#)\s*:?\s*([A-Z0-9-]+)/.ignoresCase())?.1 {
                 fields["invoice_number"] = .string(String(invoiceNumber))
             }
-            
+
             // Extract dates
             if let date = text.firstMatch(of: /(\d{1,2}\/\d{1,2}\/\d{4}|\d{4}-\d{2}-\d{2})/)?.0 {
                 fields["date"] = .string(String(date))
             }
-            
+
             // Extract total amount
             if let total = text.firstMatch(of: /(?:Total|Amount|Due)\s*:?\s*\$?(\d+\.?\d*)/)?.1 {
                 fields["total_amount"] = .string("$" + String(total))
             }
-            
+
             return fields
         }
-        
-        private func extractReceiptFields(from text: String, extractedText: [DocumentImageProcessor.ExtractedText]) async -> [String: DocumentImageProcessor.StructuredFieldValue] {
+
+        private func extractReceiptFields(from text: String, extractedText _: [DocumentImageProcessor.ExtractedText]) async -> [String: DocumentImageProcessor.StructuredFieldValue] {
             var fields: [String: DocumentImageProcessor.StructuredFieldValue] = [:]
-            
+
             // Find store name (usually at the top)
             let lines = text.components(separatedBy: .newlines).filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
             if let firstLine = lines.first {
                 fields["store_name"] = .string(firstLine.trimmingCharacters(in: .whitespacesAndNewlines))
             }
-            
+
             // Extract total
             if let total = text.firstMatch(of: /(?:Total|Amount)\s*:?\s*\$?(\d+\.?\d*)/)?.1 {
                 fields["total"] = .string("$" + String(total))
             }
-            
+
             return fields
         }
-        
-        private func extractBusinessCardFields(from text: String, extractedText: [DocumentImageProcessor.ExtractedText]) async -> [String: DocumentImageProcessor.StructuredFieldValue] {
+
+        private func extractBusinessCardFields(from text: String, extractedText _: [DocumentImageProcessor.ExtractedText]) async -> [String: DocumentImageProcessor.StructuredFieldValue] {
             var fields: [String: DocumentImageProcessor.StructuredFieldValue] = [:]
-            
+
             // Extract phone number
             if let phone = text.firstMatch(of: /(\+?1?[-.\s]?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4})/)?.0 {
                 fields["phone"] = .string(String(phone))
             }
-            
+
             // Extract email
             if let email = text.firstMatch(of: /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/)?.0 {
                 fields["email"] = .string(String(email))
             }
-            
+
             return fields
         }
-        
-        private func extractFormFields(from text: String, extractedText: [DocumentImageProcessor.ExtractedText]) async -> [String: DocumentImageProcessor.StructuredFieldValue] {
+
+        private func extractFormFields(from text: String, extractedText _: [DocumentImageProcessor.ExtractedText]) async -> [String: DocumentImageProcessor.StructuredFieldValue] {
             var fields: [String: DocumentImageProcessor.StructuredFieldValue] = [:]
-            
+
             // Generic form field extraction
             fields["content"] = .string(text)
-            
+
             return fields
         }
-        
-        private func extractIDDocumentFields(from text: String, extractedText: [DocumentImageProcessor.ExtractedText]) async -> [String: DocumentImageProcessor.StructuredFieldValue] {
+
+        private func extractIDDocumentFields(from text: String, extractedText _: [DocumentImageProcessor.ExtractedText]) async -> [String: DocumentImageProcessor.StructuredFieldValue] {
             var fields: [String: DocumentImageProcessor.StructuredFieldValue] = [:]
-            
+
             // Extract ID number
             if let idNumber = text.firstMatch(of: /(?:ID|License|Number)\s*:?\s*([A-Z0-9]+)/)?.1 {
                 fields["id_number"] = .string(String(idNumber))
             }
-            
+
             return fields
         }
-        
-        private func extractContractFields(from text: String, extractedText: [DocumentImageProcessor.ExtractedText]) async -> [String: DocumentImageProcessor.StructuredFieldValue] {
+
+        private func extractContractFields(from text: String, extractedText _: [DocumentImageProcessor.ExtractedText]) async -> [String: DocumentImageProcessor.StructuredFieldValue] {
             var fields: [String: DocumentImageProcessor.StructuredFieldValue] = [:]
-            
+
             // Extract contract parties
             if let parties = text.firstMatch(of: /between\s+(.+?)\s+and\s+(.+?)[\.,]/.ignoresCase()) {
                 fields["party_1"] = .string(String(parties.1).trimmingCharacters(in: .whitespacesAndNewlines))
                 fields["party_2"] = .string(String(parties.2).trimmingCharacters(in: .whitespacesAndNewlines))
             }
-            
+
             return fields
         }
 

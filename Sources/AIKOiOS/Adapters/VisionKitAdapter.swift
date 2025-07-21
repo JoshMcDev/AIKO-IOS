@@ -170,7 +170,7 @@
             let pageData: [(image: UIImage, index: Int)] = (0..<pageCount).map { index in
                 (scan.imageOfPage(at: index), index)
             }
-            
+
             Task { @MainActor in
                 let document = self.convertScanToDocument(pageData: pageData)
                 self.handleDelegateDismissal(controller, with: .success(document))

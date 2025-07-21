@@ -136,7 +136,7 @@ public struct DocumentGenerationFeature: @unchecked Sendable {
                                performanceMonitor = self.performanceMonitor] send in
                         do {
                             // Start performance monitoring session
-                            let _ = await performanceMonitor.startSession()
+                            _ = await performanceMonitor.startSession()
                             var documents: [GeneratedDocument] = []
                             let context = await ActionContext(
                                 userId: (try? userProfileService.loadProfile())?.id.uuidString ?? "anonymous",

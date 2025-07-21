@@ -234,7 +234,7 @@ public struct GeneratedDocument: Identifiable, Equatable, Codable, Sendable {
         }
         return nil
     }
-    
+
     /// File type string representation for compatibility with existing code
     public var fileType: String {
         switch documentCategory {

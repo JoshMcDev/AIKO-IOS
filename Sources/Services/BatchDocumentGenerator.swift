@@ -477,8 +477,7 @@ public struct BatchDocumentGenerator: Sendable {
             let endMarker = "[END_DOCUMENT_\(index + 1)]"
 
             if let startRange = fullResponse.range(of: startMarker),
-               let endRange = fullResponse.range(of: endMarker)
-            {
+               let endRange = fullResponse.range(of: endMarker) {
                 let contentStart = fullResponse.index(startRange.upperBound, offsetBy: 1)
                 let contentEnd = fullResponse.index(endRange.lowerBound, offsetBy: -1)
 
@@ -525,8 +524,7 @@ public struct BatchDocumentGenerator: Sendable {
             let endMarker = "[END_DF_DOCUMENT_\(index + 1)]"
 
             if let startRange = fullResponse.range(of: startMarker),
-               let endRange = fullResponse.range(of: endMarker)
-            {
+               let endRange = fullResponse.range(of: endMarker) {
                 let contentStart = fullResponse.index(startRange.upperBound, offsetBy: 1)
                 let contentEnd = fullResponse.index(endRange.lowerBound, offsetBy: -1)
 

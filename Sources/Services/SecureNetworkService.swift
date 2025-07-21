@@ -100,8 +100,7 @@ public final class SecureNetworkService: ObservableObject {
                 // Check for rate limiting
                 if httpResponse.statusCode == 429 {
                     if let retryAfter = httpResponse.value(forHTTPHeaderField: "Retry-After"),
-                       let retrySeconds = Double(retryAfter)
-                    {
+                       let retrySeconds = Double(retryAfter) {
                         try await Task.sleep(nanoseconds: UInt64(retrySeconds * 1_000_000_000))
                         continue
                     }
@@ -138,7 +137,7 @@ public final class SecureNetworkService: ObservableObject {
         let components = [
             request.httpMethod ?? "",
             request.url?.absoluteString ?? "",
-            String(Date().timeIntervalSince1970),
+            String(Date().timeIntervalSince1970)
         ]
         return components.joined(separator: ":").data(using: .utf8)?.base64EncodedString() ?? ""
     }

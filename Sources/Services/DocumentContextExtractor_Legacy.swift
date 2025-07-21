@@ -128,7 +128,7 @@ public final class DocumentContextExtractor: @unchecked Sendable {
         if totalPrice == nil {
             let pricePatterns = [
                 #"(?:Total|Grand Total|Total Price|Total Cost)[\s:]+\$?([\d,]+\.?\d*)"#,
-                #"\$?([\d,]+\.?\d*)[\s]+(?:Total|total)"#,
+                #"\$?([\d,]+\.?\d*)[\s]+(?:Total|total)"#
             ]
 
             for pattern in pricePatterns {
@@ -150,15 +150,13 @@ public final class DocumentContextExtractor: @unchecked Sendable {
             for match in matches.prefix(10) { // Limit to 10 line items
                 if let descRange = Range(match.range(at: 1), in: document.extractedText),
                    let qtyRange = Range(match.range(at: 2), in: document.extractedText),
-                   let priceRange = Range(match.range(at: 3), in: document.extractedText)
-                {
+                   let priceRange = Range(match.range(at: 3), in: document.extractedText) {
                     let description = String(document.extractedText[descRange]).trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
                     let quantityStr = String(document.extractedText[qtyRange])
                     let priceStr = String(document.extractedText[priceRange]).replacingOccurrences(of: ",", with: "")
 
                     if let quantity = Int(quantityStr),
-                       let unitPrice = Decimal(string: priceStr)
-                    {
+                       let unitPrice = Decimal(string: priceStr) {
                         lineItems.append(APELineItem(
                             id: UUID(),
                             description: description,
@@ -190,7 +188,7 @@ public final class DocumentContextExtractor: @unchecked Sendable {
         let techPatterns = [
             #"(?:Technical Requirements|Specifications|Specs)[\s:]+(.+?)(?:\n\n|$)"#,
             #"(?:Performance Requirements)[\s:]+(.+?)(?:\n\n|$)"#,
-            #"(?:Standards|Compliance)[\s:]+(.+?)(?:\n\n|$)"#,
+            #"(?:Standards|Compliance)[\s:]+(.+?)(?:\n\n|$)"#
         ]
 
         for pattern in techPatterns {
@@ -235,14 +233,14 @@ public final class DocumentContextExtractor: @unchecked Sendable {
             "MM-dd-yyyy",
             "MMM dd, yyyy",
             "MMMM dd, yyyy",
-            "yyyy-MM-dd",
+            "yyyy-MM-dd"
         ]
 
         // Look for specific date contexts
         let datePatterns = [
             ("Quote Date", #"(?:Quote Date|Date of Quote|Quotation Date)[\s:]+(.+?)(?:\n|$)"#),
             ("Valid Until", #"(?:Valid Until|Valid Through|Expires|Expiration)[\s:]+(.+?)(?:\n|$)"#),
-            ("Delivery", #"(?:Delivery Date|Delivery|Required by|Due Date)[\s:]+(.+?)(?:\n|$)"#),
+            ("Delivery", #"(?:Delivery Date|Delivery|Required by|Due Date)[\s:]+(.+?)(?:\n|$)"#)
         ]
 
         for (dateType, pattern) in datePatterns {
@@ -284,7 +282,7 @@ public final class DocumentContextExtractor: @unchecked Sendable {
         let termPatterns = [
             #"(?:Special Conditions|Terms and Conditions|Notes)[\s:]+(.+?)(?:\n\n|$)"#,
             #"(?:Important|Note|Notice)[\s:]+(.+?)(?:\n|$)"#,
-            #"(?:Warranty|Guarantee)[\s:]+(.+?)(?:\n|$)"#,
+            #"(?:Warranty|Guarantee)[\s:]+(.+?)(?:\n|$)"#
         ]
 
         for pattern in termPatterns {

@@ -24,7 +24,7 @@ public final class LLMManager: ObservableObject {
         "openai",
         "azure-openai",
         "gemini",
-        "local",
+        "local"
     ]
 
     // MARK: - Initialization
@@ -43,7 +43,7 @@ public final class LLMManager: ObservableObject {
             OpenAIProvider(),
             GeminiProvider(),
             AzureOpenAIProvider(),
-            LocalModelProvider(),
+            LocalModelProvider()
         ]
 
         for provider in availableProviders {
@@ -62,8 +62,7 @@ public final class LLMManager: ObservableObject {
         // Find first configured provider in priority order
         for providerId in providerPriority {
             if configuredProviders.contains(providerId),
-               let provider = providerInstances[providerId]
-            {
+               let provider = providerInstances[providerId] {
                 let isValid = await provider.isConfigured
                 if isValid {
                     activeProvider = provider

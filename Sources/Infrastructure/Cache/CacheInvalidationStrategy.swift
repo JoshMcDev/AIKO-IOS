@@ -121,7 +121,7 @@ public actor CacheInvalidationStrategy {
     public func processEvent(_ event: InvalidationEvent) async {
         // Ensure default rules are set up
         await ensureDefaultRulesSetup()
-        
+
         // Record event
         recordEvent(event)
 

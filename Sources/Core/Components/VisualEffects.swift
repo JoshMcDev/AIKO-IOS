@@ -106,7 +106,7 @@ struct GlassmorphicView<Content: View>: View {
                                 Color.black.opacity(0.05),
                             colorScheme == .dark ?
                                 Color.white.opacity(0.02) :
-                                Color.black.opacity(0.02),
+                                Color.black.opacity(0.02)
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -120,7 +120,7 @@ struct GlassmorphicView<Content: View>: View {
                     LinearGradient(
                         colors: [
                             Color.white.opacity(0.3),
-                            Color.white.opacity(0.1),
+                            Color.white.opacity(0.1)
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -294,7 +294,7 @@ struct FloatingActionButton: View {
                         LinearGradient(
                             colors: [
                                 style.backgroundColor,
-                                style.backgroundColor.opacity(0.8),
+                                style.backgroundColor.opacity(0.8)
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
@@ -328,8 +328,8 @@ struct EmptyStateView: View {
     let icon: String
     let title: String
     let message: String
-    var actionTitle: String? = nil
-    var action: (() -> Void)? = nil
+    var actionTitle: String?
+    var action: (() -> Void)?
 
     @State private var iconRotation = 0.0
     @State private var iconScale = 1.0
@@ -343,7 +343,7 @@ struct EmptyStateView: View {
                         LinearGradient(
                             colors: [
                                 Color.blue.opacity(0.1),
-                                Color.blue.opacity(0.05),
+                                Color.blue.opacity(0.05)
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
@@ -406,33 +406,32 @@ struct EmptyStateView: View {
     }
 }
 
-// MARK: - Progress Indicator
+// MARK: - Progress Components
+// Note: Consolidated progress components that integrate with AppCore ProgressState
+// For advanced progress tracking with phases and steps, use ProgressIndicatorView from AppCore
 
-struct CustomProgressIndicator: View {
+/// Simplified progress indicator for basic visual feedback
+struct BasicProgressIndicator: View {
     let progress: Double
-    let style: ProgressStyle
+    let style: BasicProgressStyle
 
-    @State private var isAnimating = false
-
-    enum ProgressStyle {
+    enum BasicProgressStyle {
         case linear
         case circular
-        case wave
     }
 
     var body: some View {
         switch style {
         case .linear:
-            LinearProgressIndicator(progress: progress)
+            BasicLinearProgress(progress: progress)
         case .circular:
-            CircularProgressView(progress: progress)
-        case .wave:
-            LinearProgressIndicator(progress: progress) // Wave not implemented yet
+            BasicCircularProgress(progress: progress)
         }
     }
 }
 
-struct CircularProgressView: View {
+/// Basic circular progress view for simple use cases
+struct BasicCircularProgress: View {
     let progress: Double
 
     var body: some View {
@@ -441,16 +440,18 @@ struct CircularProgressView: View {
                 .stroke(Color.gray.opacity(0.2), lineWidth: 4)
 
             Circle()
-                .trim(from: 0, to: CGFloat(min(progress, 1.0)))
+                .trim(from: 0, to: CGFloat(min(max(progress, 0.0), 1.0)))
                 .stroke(Color.blue, style: StrokeStyle(lineWidth: 4, lineCap: .round))
                 .rotationEffect(.degrees(-90))
                 .animation(.easeOut, value: progress)
         }
         .frame(width: 50, height: 50)
+        .accessibilityValue("\(Int(progress * 100)) percent complete")
     }
 }
 
-struct LinearProgressIndicator: View {
+/// Basic linear progress view with enhanced visual effects
+struct BasicLinearProgress: View {
     let progress: Double
 
     var body: some View {
@@ -461,7 +462,7 @@ struct LinearProgressIndicator: View {
                     .fill(Color.gray.opacity(0.2))
                     .frame(height: 8)
 
-                // Progress
+                // Progress fill with bounds checking
                 RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
                     .fill(
                         LinearGradient(
@@ -470,20 +471,20 @@ struct LinearProgressIndicator: View {
                             endPoint: .trailing
                         )
                     )
-                    .frame(width: geometry.size.width * progress, height: 8)
+                    .frame(width: geometry.size.width * min(max(progress, 0.0), 1.0), height: 8)
                     .animation(AnimationSystem.Spring.smooth, value: progress)
 
-                // Shimmer effect
+                // Shimmer effect for active progress
                 if progress > 0, progress < 1 {
                     RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
                         .fill(Color.white.opacity(0.4))
                         .frame(width: 30, height: 8)
-                        .offset(x: geometry.size.width * progress - 15)
+                        .offset(x: geometry.size.width * min(max(progress, 0.0), 1.0) - 15)
                         .shimmer(duration: 1.5, bounce: true)
                 }
             }
         }
         .frame(height: 8)
-        .accessibilityValue("\(Int(progress * 100)) percent complete")
+        .accessibilityValue("\(Int(min(max(progress, 0.0), 1.0) * 100)) percent complete")
     }
 }

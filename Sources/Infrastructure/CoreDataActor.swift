@@ -209,11 +209,11 @@ public actor CoreDataActor {
             self.viewContext.reset()
         }
     }
-    
+
     /// Import data from JSON export format  
     public func importFromJSON(_ exportData: [String: [[String: Any]]]) async throws {
         let context = createBackgroundContext()
-        
+
         return try await withCheckedThrowingContinuation { continuation in
             context.perform {
                 do {
@@ -232,13 +232,11 @@ public actor CoreDataActor {
                             for (key, attribute) in entity.attributesByName {
                                 if let value = objectData[key] {
                                     if attribute.attributeType == .dateAttributeType,
-                                       let timestamp = value as? TimeInterval
-                                    {
+                                       let timestamp = value as? TimeInterval {
                                         object.setValue(Date(timeIntervalSince1970: timestamp), forKey: key)
                                     } else if attribute.attributeType == .binaryDataAttributeType,
                                               let base64String = value as? String,
-                                              let data = Data(base64Encoded: base64String)
-                                    {
+                                              let data = Data(base64Encoded: base64String) {
                                         object.setValue(data, forKey: key)
                                     } else {
                                         object.setValue(value, forKey: key)
@@ -259,12 +257,12 @@ public actor CoreDataActor {
                     if context.hasChanges {
                         try context.save()
                     }
-                    
+
                     // Reset view context to pick up changes
                     Task { @Sendable in
                         await self.reset()
                     }
-                    
+
                     continuation.resume()
                 } catch {
                     continuation.resume(throwing: error)

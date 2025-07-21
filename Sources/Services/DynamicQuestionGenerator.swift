@@ -93,7 +93,7 @@ public final class DynamicQuestionGenerator: @unchecked Sendable {
                     responseType: .text,
                     validation: ValidationRule(type: .required, errorMessage: "Location is required for construction"),
                     priority: .critical
-                ),
+                )
             ])
 
         case .researchAndDevelopment:
@@ -211,7 +211,7 @@ public final class DynamicQuestionGenerator: @unchecked Sendable {
                 prompt: "Do you have a preferred vendor? (Leave blank if not)",
                 responseType: .text,
                 priority: .medium
-            ),
+            )
         ])
 
         // Type-specific additional questions

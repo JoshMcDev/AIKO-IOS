@@ -495,7 +495,7 @@ actor DocumentEncryptionManager {
             kSecAttrService as String: keychainService,
             kSecAttrAccount as String: "master_encryption_key",
             kSecValueData as String: combinedData,
-            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
         ]
 
         SecItemDelete(query as CFDictionary)
@@ -512,7 +512,7 @@ actor DocumentEncryptionManager {
             kSecAttrService as String: keychainService,
             kSecAttrAccount as String: "master_encryption_key",
             kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne,
+            kSecMatchLimit as String: kSecMatchLimitOne
         ]
 
         var result: AnyObject?

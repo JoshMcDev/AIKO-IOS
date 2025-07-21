@@ -276,7 +276,7 @@ public enum FARReferenceService {
             related: ["FAR 13.106", "FAR 13.201"],
             dfar: ["DFARS 213.003"],
             description: "Simplified acquisition threshold"
-        ),
+        )
     ]
 
     /// Get FAR reference for a document type

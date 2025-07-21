@@ -314,7 +314,7 @@ private func checkGrammarIssues(text: String, corrections: inout [SpellCheckServ
     // Check for common grammar patterns (simplified)
     let grammarPatterns = [
         ("\\ba\\s+[aeiouAEIOU]", "an"), // "a" before vowel
-        ("\\ban\\s+[bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ]", "a"), // "an" before consonant
+        ("\\ban\\s+[bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ]", "a") // "an" before consonant
     ]
 
     for (pattern, _) in grammarPatterns {
@@ -353,7 +353,7 @@ actor CustomDictionary {
         // Additional government terms
         "AIKO", "CLINs", "SLINs", "PIID", "FPDS-NG", "GSAR", "AIDAR", "VAAR",
         "solicitation", "presolicitation", "synopsis", "amendment", "modification",
-        "subcontracting", "teaming", "novation", "ratification", "termination",
+        "subcontracting", "teaming", "novation", "ratification", "termination"
     ]
 
     func contains(_ word: String) -> Bool {

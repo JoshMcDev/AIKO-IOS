@@ -249,8 +249,8 @@ public actor DocumentGenerationPerformanceMonitor {
     // MARK: - Benchmarking
 
     public func runBenchmark() async throws -> BenchmarkResult {
-        let _ = [DocumentType.sow, DocumentType.marketResearch, DocumentType.evaluationPlan]
-        let _ = "Benchmark test: Cloud computing services for data analytics platform"
+        _ = [DocumentType.sow, DocumentType.marketResearch, DocumentType.evaluationPlan]
+        _ = "Benchmark test: Cloud computing services for data analytics platform"
 
         var results: [BenchmarkTestResult] = []
 

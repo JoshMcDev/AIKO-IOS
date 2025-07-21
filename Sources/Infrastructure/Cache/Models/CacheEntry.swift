@@ -184,25 +184,6 @@ struct OfflineCacheMetadata: Codable {
 
     /// Expiration date
     let expiresAt: Date?
-
-    /// Initialize metadata for a cache entry
-    init(
-        key: String,
-        size: Int64,
-        contentType: CacheContentType,
-        createdAt: Date,
-        lastAccessed: Date,
-        accessCount: Int,
-        expiresAt: Date?
-    ) {
-        self.key = key
-        self.size = size
-        self.contentType = contentType
-        self.createdAt = createdAt
-        self.lastAccessed = lastAccessed
-        self.accessCount = accessCount
-        self.expiresAt = expiresAt
-    }
 }
 
 /// Cache configuration metadata for management

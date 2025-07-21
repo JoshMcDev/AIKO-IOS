@@ -164,7 +164,7 @@ extension DocumentScannerClient: DependencyKey {
                     ScannedPage(
                         imageData: Data(),
                         pageNumber: 1
-                    ),
+                    )
                 ],
                 title: "Test Document"
             )
@@ -197,7 +197,7 @@ extension DocumentScannerClient: DependencyKey {
                         confidence: 0.9,
                         boundingBox: CGRect(x: 0, y: 0, width: 100, height: 20),
                         fieldType: .text
-                    ),
+                    )
                 ],
                 documentStructure: DocumentStructure(
                     paragraphs: [
@@ -206,7 +206,7 @@ extension DocumentScannerClient: DependencyKey {
                             boundingBox: CGRect(x: 0, y: 0, width: 200, height: 40),
                             confidence: 0.85,
                             textType: .body
-                        ),
+                        )
                     ],
                     layout: .document
                 ),
@@ -586,11 +586,11 @@ public enum ScannerDocumentType: String, CaseIterable, Equatable, Sendable {
     case correspondence = "Correspondence"
     case certification = "Certification"
     case unknown = "Unknown"
-    
+
     public var displayName: String {
         rawValue
     }
-    
+
     public var category: DocumentCategory {
         switch self {
         case .contract, .amendment:
@@ -609,7 +609,7 @@ public enum ScannerDocumentType: String, CaseIterable, Equatable, Sendable {
             .unknown
         }
     }
-    
+
     public enum DocumentCategory: String, CaseIterable, Sendable {
         case planning = "Planning"
         case solicitation = "Solicitation"
@@ -634,7 +634,7 @@ public struct ScannerDocumentContext: Equatable, Sendable {
     public let recommendations: [Recommendation]
     public let confidence: Double
     public let processingTime: TimeInterval
-    
+
     public init(
         documentType: ScannerDocumentType = .unknown,
         extractedEntities: [DocumentEntity] = [],
@@ -664,7 +664,7 @@ public struct DocumentEntity: Equatable, Sendable {
     public let confidence: Double
     public let sourceLocation: CGRect?
     public let metadata: [String: String]
-    
+
     public init(
         id: String = UUID().uuidString,
         type: EntityType,
@@ -680,7 +680,7 @@ public struct DocumentEntity: Equatable, Sendable {
         self.sourceLocation = sourceLocation
         self.metadata = metadata
     }
-    
+
     public enum EntityType: String, CaseIterable, Sendable {
         case vendor = "Vendor"
         case contract = "Contract"
@@ -704,7 +704,7 @@ public struct EntityRelationship: Equatable, Sendable {
     public let toEntityId: String
     public let relationshipType: RelationshipType
     public let confidence: Double
-    
+
     public init(
         id: String = UUID().uuidString,
         fromEntityId: String,
@@ -718,7 +718,7 @@ public struct EntityRelationship: Equatable, Sendable {
         self.relationshipType = relationshipType
         self.confidence = confidence
     }
-    
+
     public enum RelationshipType: String, CaseIterable, Sendable {
         case contractedBy = "Contracted By"
         case requirementFor = "Requirement For"
@@ -740,7 +740,7 @@ public struct ComplianceAnalysis: Equatable, Sendable {
     public let agencyCompliance: RegulationCompliance
     public let identifiedIssues: [ComplianceIssue]
     public let recommendations: [ComplianceRecommendation]
-    
+
     public init(
         overallCompliance: ComplianceLevel = .unknown,
         farCompliance: RegulationCompliance = RegulationCompliance(),
@@ -756,7 +756,7 @@ public struct ComplianceAnalysis: Equatable, Sendable {
         self.identifiedIssues = identifiedIssues
         self.recommendations = recommendations
     }
-    
+
     public enum ComplianceLevel: String, CaseIterable, Sendable {
         case compliant = "Compliant"
         case partiallyCompliant = "Partially Compliant"
@@ -774,7 +774,7 @@ public struct RegulationCompliance: Equatable, Sendable {
     public let missingClauses: [String]
     public let conflictingClauses: [String]
     public let confidence: Double
-    
+
     public init(
         regulation: String = "",
         compliance: ComplianceAnalysis.ComplianceLevel = .unknown,
@@ -801,7 +801,7 @@ public struct ComplianceIssue: Equatable, Sendable {
     public let regulation: String
     public let clause: String?
     public let recommendation: String?
-    
+
     public init(
         id: String = UUID().uuidString,
         severity: Severity,
@@ -819,7 +819,7 @@ public struct ComplianceIssue: Equatable, Sendable {
         self.clause = clause
         self.recommendation = recommendation
     }
-    
+
     public enum Severity: String, CaseIterable, Sendable {
         case critical = "Critical"
         case high = "High"
@@ -827,7 +827,7 @@ public struct ComplianceIssue: Equatable, Sendable {
         case low = "Low"
         case informational = "Informational"
     }
-    
+
     public enum Category: String, CaseIterable, Sendable {
         case clause = "Missing Clause"
         case format = "Format Issue"
@@ -846,7 +846,7 @@ public struct ComplianceRecommendation: Equatable, Sendable {
     public let rationale: String
     public let regulation: String
     public let estimatedImpact: Impact
-    
+
     public init(
         id: String = UUID().uuidString,
         priority: Priority,
@@ -862,7 +862,7 @@ public struct ComplianceRecommendation: Equatable, Sendable {
         self.regulation = regulation
         self.estimatedImpact = estimatedImpact
     }
-    
+
     public enum Priority: String, CaseIterable, Sendable {
         case immediate = "Immediate"
         case high = "High"
@@ -870,7 +870,7 @@ public struct ComplianceRecommendation: Equatable, Sendable {
         case low = "Low"
         case optional = "Optional"
     }
-    
+
     public enum Impact: String, CaseIterable, Sendable {
         case high = "High Impact"
         case medium = "Medium Impact"
@@ -888,7 +888,7 @@ public struct RiskFactor: Equatable, Sendable {
     public let mitigation: String?
     public let probability: Double // 0.0 to 1.0
     public let impact: Double // 0.0 to 1.0
-    
+
     public init(
         id: String = UUID().uuidString,
         type: RiskType,
@@ -906,7 +906,7 @@ public struct RiskFactor: Equatable, Sendable {
         self.probability = probability
         self.impact = impact
     }
-    
+
     public enum RiskType: String, CaseIterable, Sendable {
         case financial = "Financial"
         case schedule = "Schedule"
@@ -918,7 +918,7 @@ public struct RiskFactor: Equatable, Sendable {
         case reputation = "Reputation"
         case other = "Other"
     }
-    
+
     public enum RiskSeverity: String, CaseIterable, Sendable {
         case critical = "Critical"
         case high = "High"
@@ -926,7 +926,7 @@ public struct RiskFactor: Equatable, Sendable {
         case low = "Low"
         case negligible = "Negligible"
     }
-    
+
     /// Calculated risk score based on probability and impact
     public var riskScore: Double {
         probability * impact
@@ -943,7 +943,7 @@ public struct Recommendation: Equatable, Sendable {
     public let action: String
     public let rationale: String
     public let estimatedEffort: EstimatedEffort
-    
+
     public init(
         id: String = UUID().uuidString,
         type: RecommendationType,
@@ -963,7 +963,7 @@ public struct Recommendation: Equatable, Sendable {
         self.rationale = rationale
         self.estimatedEffort = estimatedEffort
     }
-    
+
     public enum RecommendationType: String, CaseIterable, Sendable {
         case process = "Process Improvement"
         case compliance = "Compliance Enhancement"
@@ -975,7 +975,7 @@ public struct Recommendation: Equatable, Sendable {
         case automation = "Automation Opportunity"
         case other = "Other"
     }
-    
+
     public enum Priority: String, CaseIterable, Sendable {
         case critical = "Critical"
         case high = "High"
@@ -983,7 +983,7 @@ public struct Recommendation: Equatable, Sendable {
         case low = "Low"
         case optional = "Optional"
     }
-    
+
     public enum EstimatedEffort: String, CaseIterable, Sendable {
         case minimal = "Minimal (< 1 hour)"
         case low = "Low (1-4 hours)"

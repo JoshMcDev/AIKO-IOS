@@ -6,7 +6,7 @@ import ComposableArchitecture
 /// Sendable wrapper for SwiftUI Font.TextStyle
 public struct SendableTextStyle: Sendable {
     public let rawValue: String
-    
+
     public init(_ textStyle: Font.TextStyle) {
         switch textStyle {
         case .largeTitle: self.rawValue = "largeTitle"
@@ -23,7 +23,7 @@ public struct SendableTextStyle: Sendable {
         @unknown default: self.rawValue = "body"
         }
     }
-    
+
     public var textStyle: Font.TextStyle {
         switch rawValue {
         case "largeTitle": return .largeTitle
@@ -45,7 +45,7 @@ public struct SendableTextStyle: Sendable {
 /// Sendable wrapper for SwiftUI ContentSizeCategory
 public struct SendableContentSizeCategory: Sendable {
     public let rawValue: String
-    
+
     public init(_ sizeCategory: ContentSizeCategory) {
         switch sizeCategory {
         case .extraSmall: self.rawValue = "extraSmall"
@@ -63,7 +63,7 @@ public struct SendableContentSizeCategory: Sendable {
         @unknown default: self.rawValue = "large"
         }
     }
-    
+
     public var sizeCategory: ContentSizeCategory {
         switch rawValue {
         case "extraSmall": return .extraSmall

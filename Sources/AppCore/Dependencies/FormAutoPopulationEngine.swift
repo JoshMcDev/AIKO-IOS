@@ -8,13 +8,13 @@ import Foundation
 public struct FormAutoPopulationEngine: Sendable {
     /// Extracts form data from a scanned document and maps to known form types
     public var extractFormData: @Sendable (ScannedDocument) async throws -> FormAutoPopulationResult
-    
+
     /// Validates extracted data against form field requirements
     public var validateFormData: @Sendable (GovernmentFormData, FormType) async throws -> ValidationResult
-    
+
     /// Gets supported form types for auto-population
     public var getSupportedFormTypes: @Sendable () -> [FormType] = { [] }
-    
+
     /// Estimates confidence for auto-population success
     public var estimatePopulationConfidence: @Sendable (ScannedDocument) async throws -> Double
 }
@@ -29,7 +29,7 @@ public struct FormAutoPopulationResult: Equatable, Sendable {
     public let populatedFields: [ExtractedPopulatedField]
     public let processingTime: TimeInterval
     public let warnings: [String]
-    
+
     public init(
         extractedData: GovernmentFormData,
         suggestedFormType: FormType? = nil,
@@ -45,12 +45,12 @@ public struct FormAutoPopulationResult: Equatable, Sendable {
         self.processingTime = processingTime
         self.warnings = warnings
     }
-    
+
     /// Returns true if auto-population is recommended based on confidence
     public var isRecommendedForAutoPopulation: Bool {
         confidence >= 0.85 && populatedFields.count >= 3
     }
-    
+
     /// Returns high-confidence fields suitable for auto-population
     public var highConfidenceFields: [ExtractedPopulatedField] {
         populatedFields.filter { $0.confidence >= 0.9 }
@@ -70,7 +70,7 @@ public struct GovernmentFormData: Equatable, Sendable {
     public let lineItems: [LineItem]
     public let certifications: [CertificationInfo]
     public let metadata: [String: String]
-    
+
     public init(
         vendorInfo: VendorInfo? = nil,
         contractInfo: ContractInfo? = nil,
@@ -107,7 +107,7 @@ public struct VendorInfo: Equatable, Sendable {
     public let website: String?
     public let businessType: BusinessType?
     public let socioeconomicCategories: [SocioeconomicCategory]
-    
+
     public init(
         name: String,
         duns: String? = nil,
@@ -129,7 +129,7 @@ public struct VendorInfo: Equatable, Sendable {
         self.businessType = businessType
         self.socioeconomicCategories = socioeconomicCategories
     }
-    
+
     public enum BusinessType: String, CaseIterable, Sendable {
         case smallBusiness = "Small Business"
         case largeBusiness = "Large Business"
@@ -140,7 +140,7 @@ public struct VendorInfo: Equatable, Sendable {
         case eightA = "8(a) Small Business"
         case unknown = "Unknown"
     }
-    
+
     public enum SocioeconomicCategory: String, CaseIterable, Sendable {
         case wosb = "WOSB"
         case edwosb = "EDWOSB"
@@ -164,7 +164,7 @@ public struct ContractInfo: Equatable, Sendable {
     public let placeOfPerformance: ExtractedAddress?
     public let contractType: ContractType?
     public let competitionType: CompetitionType?
-    
+
     public init(
         contractNumber: String? = nil,
         solicitation: String? = nil,
@@ -184,7 +184,7 @@ public struct ContractInfo: Equatable, Sendable {
         self.contractType = contractType
         self.competitionType = competitionType
     }
-    
+
     public enum ContractType: String, CaseIterable, Sendable {
         case firmFixedPrice = "Firm Fixed Price"
         case fixedPriceIncentive = "Fixed Price Incentive"
@@ -193,7 +193,7 @@ public struct ContractInfo: Equatable, Sendable {
         case laborHour = "Labor Hour"
         case indefiniteDelivery = "Indefinite Delivery"
     }
-    
+
     public enum CompetitionType: String, CaseIterable, Sendable {
         case fullAndOpen = "Full and Open Competition"
         case setAside = "Set Aside"
@@ -213,7 +213,7 @@ public struct ContactInfo: Equatable, Sendable {
     public let emailAddress: String?
     public let address: ExtractedAddress?
     public let role: ContactRole?
-    
+
     public init(
         name: String,
         title: String? = nil,
@@ -231,7 +231,7 @@ public struct ContactInfo: Equatable, Sendable {
         self.address = address
         self.role = role
     }
-    
+
     public enum ContactRole: String, CaseIterable, Sendable {
         case contracting = "Contracting Officer"
         case technical = "Technical Point of Contact"
@@ -253,7 +253,7 @@ public struct LineItem: Equatable, Sendable {
     public let totalPrice: Decimal?
     public let clin: String?
     public let deliveryDate: Date?
-    
+
     public init(
         lineNumber: String? = nil,
         description: String,
@@ -285,7 +285,7 @@ public struct CertificationInfo: Equatable, Sendable {
     public let issueDate: Date?
     public let expirationDate: Date?
     public let status: CertificationStatus
-    
+
     public init(
         certificationType: CertificationType,
         issuingAuthority: String? = nil,
@@ -301,7 +301,7 @@ public struct CertificationInfo: Equatable, Sendable {
         self.expirationDate = expirationDate
         self.status = status
     }
-    
+
     public enum CertificationType: String, CaseIterable, Sendable {
         case sba8a = "SBA 8(a)"
         case wosb = "WOSB"
@@ -312,7 +312,7 @@ public struct CertificationInfo: Equatable, Sendable {
         case security = "Security Clearance"
         case other = "Other"
     }
-    
+
     public enum CertificationStatus: String, CaseIterable, Sendable {
         case active = "Active"
         case expired = "Expired"
@@ -332,7 +332,7 @@ public struct ExtractedPopulatedField: Equatable, Sendable {
     public let confidence: Double
     public let sourceText: String?
     public let sourceLocation: CGRect?
-    
+
     public init(
         fieldName: String,
         fieldType: FieldType,
@@ -364,7 +364,7 @@ public enum FormType: String, CaseIterable, Sendable {
     case sf1408 = "SF 1408"
     case sf1442 = "SF 1442"
     case custom = "Custom Form"
-    
+
     public var displayName: String {
         switch self {
         case .dd1155: return "DD 1155 - Request and Authorization for TDY Travel"
@@ -390,7 +390,7 @@ public struct ValidationResult: Equatable, Sendable {
     public let invalidFields: [ValidationError]
     public let warnings: [ValidationWarning]
     public let completeness: Double // 0.0 to 1.0
-    
+
     public init(
         isValid: Bool,
         validatedFields: [String] = [],
@@ -414,7 +414,7 @@ public struct ValidationError: Equatable, Sendable {
     public let errorType: ErrorType
     public let message: String
     public let suggestedValue: String?
-    
+
     public init(
         fieldName: String,
         errorType: ErrorType,
@@ -426,7 +426,7 @@ public struct ValidationError: Equatable, Sendable {
         self.message = message
         self.suggestedValue = suggestedValue
     }
-    
+
     public enum ErrorType: String, CaseIterable, Sendable {
         case required = "Required Field Missing"
         case format = "Invalid Format"
@@ -444,7 +444,7 @@ public struct ValidationWarning: Equatable, Sendable {
     public let warningType: WarningType
     public let message: String
     public let recommendation: String?
-    
+
     public init(
         fieldName: String,
         warningType: WarningType,
@@ -456,7 +456,7 @@ public struct ValidationWarning: Equatable, Sendable {
         self.message = message
         self.recommendation = recommendation
     }
-    
+
     public enum WarningType: String, CaseIterable, Sendable {
         case confidence = "Low Confidence"
         case incomplete = "Incomplete Data"
@@ -477,7 +477,7 @@ extension FormAutoPopulationEngine: DependencyKey {
                 dates: document.pages.first?.ocrResult?.extractedMetadata.dates ?? [],
                 amounts: document.pages.first?.ocrResult?.extractedMetadata.currencies ?? []
             )
-            
+
             return FormAutoPopulationResult(
                 extractedData: extractedData,
                 confidence: 0.85,
@@ -505,14 +505,14 @@ extension FormAutoPopulationEngine: DependencyKey {
             0.85
         }
     )
-    
+
     public static let testValue: Self = Self(
         extractFormData: { _ in
             let extractedData = GovernmentFormData(
                 vendorInfo: VendorInfo(name: "Test Vendor"),
                 contractInfo: ContractInfo(contractNumber: "TEST-123")
             )
-            
+
             return FormAutoPopulationResult(
                 extractedData: extractedData,
                 suggestedFormType: .sf1449,

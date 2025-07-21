@@ -38,7 +38,7 @@ final class DataTransformationService: @unchecked Sendable {
             sourceData: templateData.data,
             rules: mappingRules
         )
-        
+
         // Convert Any values to String
         var transformedData: [String: String] = [:]
         for (key, value) in mappedData {
@@ -115,8 +115,7 @@ final class DataTransformationService: @unchecked Sendable {
         if let quantityStr = data["quantity"],
            let unitPriceStr = data["unitPrice"],
            let quantity = Double(quantityStr),
-           let unitPrice = Double(unitPriceStr)
-        {
+           let unitPrice = Double(unitPriceStr) {
             result["extendedPrice"] = String(quantity * unitPrice)
         }
 
@@ -288,8 +287,7 @@ final class DataTransformationService: @unchecked Sendable {
         // Format currency values
         for (key, value) in result {
             if key.contains("Amount") || key.contains("Price") || key.contains("Value"),
-               let number = Double(value)
-            {
+               let number = Double(value) {
                 result[key] = currencyFormatter.string(from: NSNumber(value: number)) ?? "$0.00"
             }
         }

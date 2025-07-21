@@ -2,7 +2,6 @@ import AppCore
 import CoreData
 import Foundation
 
-
 /// Repository for Acquisition domain aggregate
 public final class AcquisitionRepository: @unchecked Sendable {
     // MARK: - Private Properties
@@ -133,7 +132,7 @@ public final class AcquisitionRepository: @unchecked Sendable {
                 query, query
             )
             request.sortDescriptors = [NSSortDescriptor(keyPath: \Acquisition.createdDate, ascending: false)]
-            
+
             let entities = try context.fetch(request)
             return entities.map { $0.toAppCoreModel() }
         }

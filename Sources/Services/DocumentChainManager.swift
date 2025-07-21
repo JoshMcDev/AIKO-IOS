@@ -198,7 +198,7 @@ extension DocumentChainManager: DependencyKey {
                 try? await CoreDataStack.shared.actor.performViewContextTask { context in
                     let fetchRequest: NSFetchRequest<CoreDataAcquisition> = CoreDataAcquisition.fetchRequest()
                     fetchRequest.predicate = NSPredicate(format: "id == %@", acquisitionId as CVarArg)
-                    
+
                     if let acquisition = try context.fetch(fetchRequest).first {
                         try acquisition.setDocumentChainCodable(chain)
                         if context.hasChanges {
@@ -249,7 +249,7 @@ extension DocumentChainManager: DependencyKey {
                 try? await CoreDataStack.shared.actor.performViewContextTask { context in
                     let fetchRequest: NSFetchRequest<CoreDataAcquisition> = CoreDataAcquisition.fetchRequest()
                     fetchRequest.predicate = NSPredicate(format: "id == %@", acquisitionId as CVarArg)
-                    
+
                     if let acquisition = try context.fetch(fetchRequest).first {
                         try acquisition.setDocumentChainCodable(updatedChain)
                         if context.hasChanges {

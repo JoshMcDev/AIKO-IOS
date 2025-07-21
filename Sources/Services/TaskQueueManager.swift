@@ -196,7 +196,7 @@ public enum TaskPriority: Int, Comparable, Sendable {
 public struct TaskError: Error, Equatable, Sendable {
     public let message: String
     public let code: String?
-    
+
     public init(message: String, code: String? = nil) {
         self.message = message
         self.code = code

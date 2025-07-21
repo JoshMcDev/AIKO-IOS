@@ -39,12 +39,12 @@ public struct Acquisition: Identifiable, Equatable, Sendable {
 public extension Acquisition {
     /// Status alias for convenience
     typealias Status = AcquisitionStatus
-    
+
     /// Uploaded files sorted by upload date (most recent first)
     var uploadedFilesArray: [UploadedDocument] {
         uploadedFiles.sorted { $0.uploadDate > $1.uploadDate }
     }
-    
+
     /// Generated files sorted by creation date (most recent first) 
     var generatedFilesArray: [GeneratedDocument] {
         generatedFiles.sorted { $0.createdAt > $1.createdAt }

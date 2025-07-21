@@ -12,7 +12,7 @@
 
     /// Base implementation for MainActor-isolated services with UIKit integration
     @MainActor
-    open class MainActorServiceBase: NSObject, MainActorService, Sendable {
+    open class MainActorServiceBase: NSObject, MainActorService {
         /// UIManager handles all MainActor-isolated UI operations
         @MainActor
         public final class UIManager: ObservableObject {

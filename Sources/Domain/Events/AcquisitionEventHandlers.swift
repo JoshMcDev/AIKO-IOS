@@ -24,7 +24,7 @@ public struct DocumentAddedEventHandler: DomainEventHandler {
             entityId: event.aggregateId,
             details: [
                 "documentId": event.documentId.uuidString,
-                "documentType": event.documentType,
+                "documentType": event.documentType
             ]
         )
 
@@ -67,7 +67,7 @@ public struct AcquisitionStatusChangedEventHandler: DomainEventHandler {
             entityId: event.aggregateId,
             details: [
                 "fromStatus": event.fromStatus.rawValue,
-                "toStatus": event.toStatus.rawValue,
+                "toStatus": event.toStatus.rawValue
             ]
         )
 
@@ -121,7 +121,7 @@ public struct DocumentRemovedEventHandler: DomainEventHandler {
             action: "DOCUMENT_REMOVED",
             entityId: event.aggregateId,
             details: [
-                "documentId": event.documentId.uuidString,
+                "documentId": event.documentId.uuidString
             ]
         )
 

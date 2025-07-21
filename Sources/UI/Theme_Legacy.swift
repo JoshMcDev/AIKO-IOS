@@ -16,7 +16,7 @@ public enum Theme {
         public static let aikoError = Color.red
 
         public static let aikoAccent = Color.purple
-        
+
         // Dynamic colors that require dependency injection - accessed via Environment
         @MainActor
         public static var aikoBackground: Color {

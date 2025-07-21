@@ -142,7 +142,7 @@ public struct DocumentExecutionFeature: Sendable {
                                     fieldType: .multilineText,
                                     placeholder: "Enter detailed objectives...",
                                     isRequired: true
-                                ),
+                                )
                             ]
 
                             await send(.informationCheckCompleted(false, questions))

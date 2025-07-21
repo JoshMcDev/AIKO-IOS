@@ -12,19 +12,19 @@ public struct DocumentContextExtractor: Sendable {
         _ pageImageData: [Data],
         _ hints: [String: Any]
     ) async throws -> ScannerDocumentContext
-    
+
     /// Analyzes document structure and relationships
     public var analyzeDocumentStructure: @Sendable ([OCRResult]) async throws -> DocumentStructure
-    
+
     /// Extracts entities and relationships from document text
     public var extractEntitiesAndRelationships: @Sendable (String) async throws -> ([DocumentEntity], [EntityRelationship])
-    
+
     /// Performs compliance analysis against regulations
     public var analyzeCompliance: @Sendable (ScannerDocumentContext) async throws -> ComplianceAnalysis
-    
+
     /// Identifies risk factors in document content
     public var identifyRiskFactors: @Sendable (ScannerDocumentContext) async throws -> [RiskFactor]
-    
+
     /// Generates recommendations based on analysis
     public var generateRecommendations: @Sendable (ScannerDocumentContext) async throws -> [Recommendation]
 }
@@ -36,33 +36,33 @@ extension DocumentContextExtractor: DependencyKey {
         extractComprehensiveContext: { ocrResults, pageImageData, hints in
             // Live implementation would perform sophisticated ML/AI analysis
             // For now, return mock comprehensive context based on OCR results
-            
+
             let sessionId = hints["session_id"] as? String ?? UUID().uuidString
             let source = hints["source"] as? String ?? "unknown"
             let totalPages = hints["total_pages"] as? Int ?? pageImageData.count
-            
+
             // Combine all OCR text for analysis
             let combinedText = ocrResults.map(\.fullText).joined(separator: "\n")
-            
+
             // Extract basic entities
             let entities = extractBasicEntities(from: combinedText)
-            
+
             // Determine document type based on content
             let documentType = determineDocumentType(from: combinedText)
-            
+
             // Create basic compliance analysis
             let compliance = ComplianceAnalysis(
                 overallCompliance: .unknown,
                 farCompliance: RegulationCompliance(regulation: "FAR"),
                 dfarsCompliance: RegulationCompliance(regulation: "DFARS")
             )
-            
+
             // Basic risk assessment
             let riskFactors = identifyBasicRisks(from: combinedText)
-            
+
             // Generate basic recommendations
             let recommendations = generateBasicRecommendations(for: documentType)
-            
+
             return ScannerDocumentContext(
                 documentType: documentType,
                 extractedEntities: entities,
@@ -95,7 +95,7 @@ extension DocumentContextExtractor: DependencyKey {
             return context.recommendations
         }
     )
-    
+
     public static let testValue: Self = Self(
         extractComprehensiveContext: { _, _, _ in
             ScannerDocumentContext(
@@ -209,13 +209,13 @@ extension DocumentContextExtractor: DependencyKey {
 
 private func extractBasicEntities(from text: String) -> [DocumentEntity] {
     var entities: [DocumentEntity] = []
-    
+
     // Extract vendor names (simple heuristic)
     let vendorPatterns = ["Inc\\.|Corp\\.|LLC|Company|Corporation"]
     for pattern in vendorPatterns {
         let regex = try? NSRegularExpression(pattern: "\\b\\w+\\s+\\w*\\s*\(pattern)\\b")
         let matches = regex?.matches(in: text, range: NSRange(text.startIndex..., in: text))
-        
+
         for match in matches ?? [] {
             if let range = Range(match.range, in: text) {
                 let vendorName = String(text[range])
@@ -227,11 +227,11 @@ private func extractBasicEntities(from text: String) -> [DocumentEntity] {
             }
         }
     }
-    
+
     // Extract contract numbers
     let contractRegex = try? NSRegularExpression(pattern: "\\b[A-Z]{2,}-\\d{4,}\\b")
     let contractMatches = contractRegex?.matches(in: text, range: NSRange(text.startIndex..., in: text))
-    
+
     for match in contractMatches ?? [] {
         if let range = Range(match.range, in: text) {
             let contractNumber = String(text[range])
@@ -242,11 +242,11 @@ private func extractBasicEntities(from text: String) -> [DocumentEntity] {
             ))
         }
     }
-    
+
     // Extract amounts
     let amountRegex = try? NSRegularExpression(pattern: "\\$[\\d,]+(?:\\.\\d{2})?")
     let amountMatches = amountRegex?.matches(in: text, range: NSRange(text.startIndex..., in: text))
-    
+
     for match in amountMatches ?? [] {
         if let range = Range(match.range, in: text) {
             let amount = String(text[range])
@@ -257,13 +257,13 @@ private func extractBasicEntities(from text: String) -> [DocumentEntity] {
             ))
         }
     }
-    
+
     return entities
 }
 
 private func determineDocumentType(from text: String) -> ScannerDocumentType {
     let lowercasedText = text.lowercased()
-    
+
     if lowercasedText.contains("solicitation") || lowercasedText.contains("rfp") || lowercasedText.contains("rfq") {
         return .solicitation
     } else if lowercasedText.contains("contract") || lowercasedText.contains("agreement") {
@@ -286,7 +286,7 @@ private func determineDocumentType(from text: String) -> ScannerDocumentType {
 private func identifyBasicRisks(from text: String) -> [RiskFactor] {
     var risks: [RiskFactor] = []
     let lowercasedText = text.lowercased()
-    
+
     // Financial risks
     if lowercasedText.contains("cost overrun") || lowercasedText.contains("budget") {
         risks.append(RiskFactor(
@@ -297,7 +297,7 @@ private func identifyBasicRisks(from text: String) -> [RiskFactor] {
             impact: 0.6
         ))
     }
-    
+
     // Schedule risks
     if lowercasedText.contains("delay") || lowercasedText.contains("schedule") {
         risks.append(RiskFactor(
@@ -308,7 +308,7 @@ private func identifyBasicRisks(from text: String) -> [RiskFactor] {
             impact: 0.5
         ))
     }
-    
+
     // Compliance risks
     if lowercasedText.contains("compliance") || lowercasedText.contains("regulation") {
         risks.append(RiskFactor(
@@ -319,7 +319,7 @@ private func identifyBasicRisks(from text: String) -> [RiskFactor] {
             impact: 0.8
         ))
     }
-    
+
     return risks
 }
 

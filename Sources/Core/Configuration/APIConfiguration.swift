@@ -51,7 +51,7 @@ public final class KeychainManager: @unchecked Sendable {
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
             kSecAttrAccount as String: key,
-            kSecValueData as String: data,
+            kSecValueData as String: data
         ]
 
         SecItemDelete(query as CFDictionary)
@@ -64,7 +64,7 @@ public final class KeychainManager: @unchecked Sendable {
             kSecAttrService as String: service,
             kSecAttrAccount as String: key,
             kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne,
+            kSecMatchLimit as String: kSecMatchLimitOne
         ]
 
         var result: AnyObject?
@@ -77,7 +77,7 @@ public final class KeychainManager: @unchecked Sendable {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
-            kSecAttrAccount as String: key,
+            kSecAttrAccount as String: key
         ]
 
         return SecItemDelete(query as CFDictionary) == errSecSuccess

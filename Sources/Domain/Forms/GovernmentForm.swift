@@ -106,8 +106,8 @@ open class BaseGovernmentForm: GovernmentForm, Equatable {
                 "createdDate": metadata.createdDate.timeIntervalSince1970,
                 "agency": metadata.agency,
                 "purpose": metadata.purpose,
-                "authority": metadata.authority as Any,
-            ],
+                "authority": metadata.authority as Any
+            ]
         ]
     }
 }

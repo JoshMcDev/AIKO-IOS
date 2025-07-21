@@ -9,8 +9,8 @@
             return Self(
                 _scaledFontSize: { baseSize, sendableTextStyle, sendableSizeCategory in
                     service.scaledFontSize(
-                        for: baseSize, 
-                        textStyle: sendableTextStyle.textStyle, 
+                        for: baseSize,
+                        textStyle: sendableTextStyle.textStyle,
                         sizeCategory: sendableSizeCategory.sizeCategory
                     )
                 },

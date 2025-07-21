@@ -67,7 +67,7 @@ public func demonstrateDistributedCache() async throws {
 
     let profiles = [
         "profile:user-456": UserProfile(id: "user-456", name: "Bob Jones", preferences: [:]),
-        "profile:user-789": UserProfile(id: "user-789", name: "Charlie Brown", preferences: [:]),
+        "profile:user-789": UserProfile(id: "user-789", name: "Charlie Brown", preferences: [:])
     ]
 
     print("   Setting multiple profiles...")

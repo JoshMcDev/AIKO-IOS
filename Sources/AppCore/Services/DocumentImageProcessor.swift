@@ -16,22 +16,22 @@ public struct DocumentImageProcessor: Sendable {
 
     /// Check if processing mode is available
     public var isProcessingModeAvailable: @Sendable (ProcessingMode) -> Bool = { _ in false }
-    
+
     /// Extract text from document image using OCR
     public var extractText: @Sendable (Data, OCROptions) async throws -> OCRResult
-    
+
     /// Extract structured data from document image
     public var extractStructuredData: @Sendable (Data, DocumentType, OCROptions) async throws -> StructuredOCRResult
-    
+
     /// Check if OCR is available on the current platform
     public var isOCRAvailable: @Sendable () -> Bool = { false }
 }
 
 // MARK: - Processing Types
 
-extension DocumentImageProcessor {
+public extension DocumentImageProcessor {
     /// Processing modes for document enhancement
-    public enum ProcessingMode: String, CaseIterable, Equatable, Sendable {
+    enum ProcessingMode: String, CaseIterable, Equatable, Sendable {
         case basic
         case enhanced
         case documentScanner = "document_scanner"
@@ -46,7 +46,7 @@ extension DocumentImageProcessor {
     }
 
     /// Processing options and configuration
-    public struct ProcessingOptions: Sendable {
+    struct ProcessingOptions: Sendable {
         public let progressCallback: (@Sendable (ProcessingProgress) -> Void)?
         public let qualityTarget: QualityTarget
         public let preserveColors: Bool
@@ -66,7 +66,7 @@ extension DocumentImageProcessor {
     }
 
     /// Quality targets for processing
-    public enum QualityTarget: String, CaseIterable, Equatable, Sendable {
+    enum QualityTarget: String, CaseIterable, Equatable, Sendable {
         case speed
         case balanced
         case quality
@@ -81,7 +81,7 @@ extension DocumentImageProcessor {
     }
 
     /// Processing result with quality metrics
-    public struct ProcessingResult: Equatable, Sendable {
+    struct ProcessingResult: Equatable, Sendable {
         public let processedImageData: Data
         public let qualityMetrics: QualityMetrics
         public let processingTime: TimeInterval
@@ -101,7 +101,7 @@ extension DocumentImageProcessor {
     }
 
     /// Quality assessment metrics
-    public struct QualityMetrics: Equatable, Sendable {
+    struct QualityMetrics: Equatable, Sendable {
         public let overallConfidence: Double // 0.0 to 1.0
         public let sharpnessScore: Double // 0.0 to 1.0
         public let contrastScore: Double // 0.0 to 1.0
@@ -131,11 +131,11 @@ extension DocumentImageProcessor {
             self.recommendedForOCR = recommendedForOCR
         }
     }
-    
+
     // MARK: - OCR Types
-    
+
     /// OCR processing options
-    public struct OCROptions: Equatable, Sendable {
+    struct OCROptions: Equatable, Sendable {
         public let language: OCRLanguage
         public let recognitionLevel: RecognitionLevel
         public let progressCallback: (@Sendable (OCRProgress) -> Void)?
@@ -143,7 +143,7 @@ extension DocumentImageProcessor {
         public let minimumTextHeight: Float
         public let customWords: [String]
         public let revision: Int
-        
+
         public init(
             language: OCRLanguage = .english,
             recognitionLevel: RecognitionLevel = .accurate,
@@ -161,19 +161,19 @@ extension DocumentImageProcessor {
             self.customWords = customWords
             self.revision = revision
         }
-        
+
         public static func == (lhs: OCROptions, rhs: OCROptions) -> Bool {
             lhs.language == rhs.language &&
-            lhs.recognitionLevel == rhs.recognitionLevel &&
-            lhs.automaticLanguageDetection == rhs.automaticLanguageDetection &&
-            lhs.minimumTextHeight == rhs.minimumTextHeight &&
-            lhs.customWords == rhs.customWords &&
-            lhs.revision == rhs.revision
+                lhs.recognitionLevel == rhs.recognitionLevel &&
+                lhs.automaticLanguageDetection == rhs.automaticLanguageDetection &&
+                lhs.minimumTextHeight == rhs.minimumTextHeight &&
+                lhs.customWords == rhs.customWords &&
+                lhs.revision == rhs.revision
         }
     }
-    
+
     /// OCR language options
-    public enum OCRLanguage: String, CaseIterable, Equatable, Sendable {
+    enum OCRLanguage: String, CaseIterable, Equatable, Sendable {
         case english = "en-US"
         case spanish = "es-ES"
         case french = "fr-FR"
@@ -184,7 +184,7 @@ extension DocumentImageProcessor {
         case japanese = "ja-JP"
         case korean = "ko-KR"
         case automatic = "auto"
-        
+
         public var displayName: String {
             switch self {
             case .english: "English"
@@ -200,12 +200,12 @@ extension DocumentImageProcessor {
             }
         }
     }
-    
+
     /// OCR recognition level
-    public enum RecognitionLevel: String, CaseIterable, Equatable, Sendable {
+    enum RecognitionLevel: String, CaseIterable, Equatable, Sendable {
         case fast
         case accurate
-        
+
         public var displayName: String {
             switch self {
             case .fast: "Fast"
@@ -213,9 +213,9 @@ extension DocumentImageProcessor {
             }
         }
     }
-    
+
     /// Document types for structured OCR
-    public enum DocumentType: String, CaseIterable, Equatable, Sendable {
+    enum DocumentType: String, CaseIterable, Equatable, Sendable {
         case generic
         case invoice
         case receipt
@@ -223,7 +223,7 @@ extension DocumentImageProcessor {
         case form
         case idDocument = "id_document"
         case contract
-        
+
         public var displayName: String {
             switch self {
             case .generic: "Generic Document"
@@ -236,16 +236,16 @@ extension DocumentImageProcessor {
             }
         }
     }
-    
+
     /// OCR result with extracted text and metadata
-    public struct OCRResult: Equatable, Sendable {
+    struct OCRResult: Equatable, Sendable {
         public let extractedText: [ExtractedText]
         public let fullText: String
         public let confidence: Double
         public let detectedLanguages: [OCRLanguage]
         public let processingTime: TimeInterval
         public let imageSize: CGSize
-        
+
         public init(
             extractedText: [ExtractedText],
             fullText: String,
@@ -262,15 +262,15 @@ extension DocumentImageProcessor {
             self.imageSize = imageSize
         }
     }
-    
+
     /// Individual extracted text element with positioning and confidence
-    public struct ExtractedText: Equatable, Sendable {
+    struct ExtractedText: Equatable, Sendable {
         public let text: String
         public let confidence: Double
         public let boundingBox: CGRect
         public let characterBoxes: [CGRect]
         public let detectedLanguage: OCRLanguage?
-        
+
         public init(
             text: String,
             confidence: Double,
@@ -285,48 +285,48 @@ extension DocumentImageProcessor {
             self.detectedLanguage = detectedLanguage
         }
     }
-    
+
     /// Structured field value that is Sendable
-    public enum StructuredFieldValue: Equatable, Sendable {
+    enum StructuredFieldValue: Equatable, Sendable {
         case string(String)
         case number(Double)
         case bool(Bool)
         case array([String])
         case dictionary([String: String])
-        
+
         public var stringValue: String? {
-            if case .string(let value) = self { return value }
+            if case let .string(value) = self { return value }
             return nil
         }
-        
+
         public var numberValue: Double? {
-            if case .number(let value) = self { return value }
+            if case let .number(value) = self { return value }
             return nil
         }
-        
+
         public var boolValue: Bool? {
-            if case .bool(let value) = self { return value }
+            if case let .bool(value) = self { return value }
             return nil
         }
-        
+
         public var arrayValue: [String]? {
-            if case .array(let value) = self { return value }
+            if case let .array(value) = self { return value }
             return nil
         }
-        
+
         public var dictionaryValue: [String: String]? {
-            if case .dictionary(let value) = self { return value }
+            if case let .dictionary(value) = self { return value }
             return nil
         }
     }
-    
+
     /// Structured OCR result for specific document types
-    public struct StructuredOCRResult: Equatable, Sendable {
+    struct StructuredOCRResult: Equatable, Sendable {
         public let documentType: DocumentType
         public let extractedFields: [String: StructuredFieldValue]
         public let ocrResult: OCRResult
         public let structureConfidence: Double
-        
+
         public init(
             documentType: DocumentType,
             extractedFields: [String: StructuredFieldValue],
@@ -348,7 +348,7 @@ public struct OCRProgress: Equatable, Sendable {
     public let overallProgress: Double // 0.0 to 1.0
     public let estimatedTimeRemaining: TimeInterval?
     public let recognizedTextCount: Int
-    
+
     public init(
         currentStep: OCRStep,
         stepProgress: Double,
@@ -366,13 +366,13 @@ public struct OCRProgress: Equatable, Sendable {
 
 /// OCR processing steps
 public enum OCRStep: String, CaseIterable, Equatable, Sendable {
-    case preprocessing = "preprocessing"
+    case preprocessing
     case textDetection = "text_detection"
     case textRecognition = "text_recognition"
     case languageDetection = "language_detection"
     case structureAnalysis = "structure_analysis"
-    case postprocessing = "postprocessing"
-    
+    case postprocessing
+
     public var displayName: String {
         switch self {
         case .preprocessing: "Preprocessing Image"
@@ -479,10 +479,10 @@ extension DocumentImageProcessor: DependencyKey {
             return baseTime * max(1.0, sizeMultiplier)
         },
         isProcessingModeAvailable: { _ in true },
-        extractText: { data, options in
+        extractText: { _, options in
             // Simulate OCR processing delay
             try await Task.sleep(nanoseconds: 200_000_000) // 0.2 seconds
-            
+
             // Simulate progress updates
             options.progressCallback?(OCRProgress(
                 currentStep: .textRecognition,
@@ -490,7 +490,7 @@ extension DocumentImageProcessor: DependencyKey {
                 overallProgress: 0.5,
                 recognizedTextCount: 10
             ))
-            
+
             // Mock extracted text
             let extractedText = [
                 DocumentImageProcessor.ExtractedText(
@@ -508,7 +508,7 @@ extension DocumentImageProcessor: DependencyKey {
                     detectedLanguage: .english
                 )
             ]
-            
+
             return DocumentImageProcessor.OCRResult(
                 extractedText: extractedText,
                 fullText: "Sample extracted text from test image\nSecond line of text",
@@ -521,10 +521,10 @@ extension DocumentImageProcessor: DependencyKey {
         extractStructuredData: { data, documentType, options in
             // First extract text
             let ocrResult = try await Self.testValue.extractText(data, options)
-            
+
             // Mock structured fields based on document type
             var extractedFields: [String: DocumentImageProcessor.StructuredFieldValue] = [:]
-            
+
             switch documentType {
             case .invoice:
                 extractedFields = [
@@ -547,7 +547,7 @@ extension DocumentImageProcessor: DependencyKey {
             default:
                 extractedFields = ["content": .string(ocrResult.fullText)]
             }
-            
+
             return DocumentImageProcessor.StructuredOCRResult(
                 documentType: documentType,
                 extractedFields: extractedFields,

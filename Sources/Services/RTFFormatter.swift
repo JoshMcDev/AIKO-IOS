@@ -15,7 +15,7 @@ public enum RTFFormatter {
         let rtfData = try? attributedString.data(
             from: NSRange(location: 0, length: attributedString.length),
             documentAttributes: [
-                .documentType: NSAttributedString.DocumentType.rtf,
+                .documentType: NSAttributedString.DocumentType.rtf
             ]
         )
 
@@ -52,7 +52,7 @@ public enum RTFFormatter {
             var processedLine = line
             var attributes: [NSAttributedString.Key: Any] = [
                 .font: regularFont,
-                .paragraphStyle: paragraphStyle,
+                .paragraphStyle: paragraphStyle
             ]
 
             // Check for headings
@@ -95,7 +95,7 @@ public enum RTFFormatter {
                 let content = String(processedLine.dropFirst(2))
                 bulletLine.append(NSAttributedString(string: content, attributes: [
                     .font: regularFont,
-                    .paragraphStyle: bulletParagraphStyle,
+                    .paragraphStyle: bulletParagraphStyle
                 ]))
 
                 attributedString.append(bulletLine)

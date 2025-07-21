@@ -12,7 +12,7 @@ import os.log
 /// Main @MainActor coordinator for document scanning operations
 /// Consolidates VisionKit usage and integrates with existing AIKO processing pipeline
 @MainActor
-public final class DocumentScannerServiceImpl: ObservableObject, Sendable {
+public final class DocumentScannerServiceImpl: ObservableObject {
     // MARK: - Dependencies
 
     @Dependency(\.documentImageProcessor) private var imageProcessor
@@ -377,7 +377,7 @@ public final class DocumentScannerServiceImpl: ObservableObject, Sendable {
         logger.debug("Generating processing recommendations for \(assessments.count) assessments")
 
         let averageScore = assessments.map(\.overallScore).reduce(0, +) / Double(assessments.count)
-        let _ = assessments.flatMap(\.issues)
+        _ = assessments.flatMap(\.issues)
         let allRecommendations = assessments.flatMap(\.recommendations)
 
         // Determine recommended mode based on quality scores

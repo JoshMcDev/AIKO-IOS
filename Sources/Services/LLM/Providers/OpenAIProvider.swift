@@ -78,7 +78,7 @@ public final class OpenAIProvider: LLMProviderProtocol, @unchecked Sendable {
                         inputPricePerMillion: 0.15,
                         outputPricePerMillion: 0.6
                     )
-                ),
+                )
             ]
         )
     }
@@ -146,7 +146,7 @@ public final class OpenAIProvider: LLMProviderProtocol, @unchecked Sendable {
             if let functionCall = message.functionCall {
                 msg["function_call"] = [
                     "name": functionCall.name,
-                    "arguments": functionCall.arguments,
+                    "arguments": functionCall.arguments
                 ]
             }
             return msg
@@ -156,7 +156,7 @@ public final class OpenAIProvider: LLMProviderProtocol, @unchecked Sendable {
         var body: [String: Any] = [
             "model": request.model,
             "messages": messages,
-            "temperature": request.temperature,
+            "temperature": request.temperature
         ]
 
         if let maxTokens = request.maxTokens {
@@ -168,7 +168,7 @@ public final class OpenAIProvider: LLMProviderProtocol, @unchecked Sendable {
                 [
                     "name": function.name,
                     "description": function.description,
-                    "parameters": function.parameters,
+                    "parameters": function.parameters
                 ]
             }
         }
@@ -287,7 +287,7 @@ public final class OpenAIProvider: LLMProviderProtocol, @unchecked Sendable {
                         "model": request.model,
                         "messages": messages,
                         "temperature": request.temperature,
-                        "stream": true,
+                        "stream": true
                     ]
 
                     if let maxTokens = request.maxTokens {
@@ -327,8 +327,7 @@ public final class OpenAIProvider: LLMProviderProtocol, @unchecked Sendable {
                                let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                                let choices = json["choices"] as? [[String: Any]],
                                let firstChoice = choices.first,
-                               let delta = firstChoice["delta"] as? [String: Any]
-                            {
+                               let delta = firstChoice["delta"] as? [String: Any] {
                                 if let content = delta["content"] as? String {
                                     continuation.yield(LLMStreamChunk(delta: content))
                                 }
@@ -359,7 +358,7 @@ public final class OpenAIProvider: LLMProviderProtocol, @unchecked Sendable {
 
         let body: [String: Any] = [
             "model": "text-embedding-3-small",
-            "input": text,
+            "input": text
         ]
 
         var urlRequest = URLRequest(url: URL(string: "\(baseURL)/embeddings")!)

@@ -263,7 +263,7 @@ struct SharedAppIconView<Services: AppViewPlatformServices>: View {
                         LinearGradient(
                             gradient: Gradient(colors: [
                                 Color(red: 1.0, green: 0.5, blue: 0.2),
-                                Color(red: 0.2, green: 0.4, blue: 0.8),
+                                Color(red: 0.2, green: 0.4, blue: 0.8)
                             ]),
                             startPoint: .bottomLeading,
                             endPoint: .topTrailing

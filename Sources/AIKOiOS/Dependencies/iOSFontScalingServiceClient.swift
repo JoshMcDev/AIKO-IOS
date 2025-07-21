@@ -35,8 +35,8 @@
                     // Run synchronously on MainActor since we need to return immediately
                     MainActor.assumeIsolated {
                         client.service.scaledFontSize(
-                            for: baseSize, 
-                            textStyle: sendableTextStyle.textStyle, 
+                            for: baseSize,
+                            textStyle: sendableTextStyle.textStyle,
                             sizeCategory: sendableSizeCategory.sizeCategory
                         )
                     }

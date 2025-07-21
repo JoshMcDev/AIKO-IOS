@@ -11,7 +11,7 @@ struct SAMGovLookupView: View {
     @State private var searchEntries: [SearchEntry] = [
         SearchEntry(),
         SearchEntry(),
-        SearchEntry(),
+        SearchEntry()
     ]
 
     @Dependency(\.samGovService) var samGovService
@@ -67,7 +67,7 @@ struct SAMGovLookupView: View {
                                 colors: [
                                     Color(red: 0.698, green: 0.132, blue: 0.203),
                                     Color.white,
-                                    Color(red: 0.0, green: 0.125, blue: 0.698),
+                                    Color(red: 0.0, green: 0.125, blue: 0.698)
                                 ],
                                 startPoint: .leading,
                                 endPoint: .trailing
@@ -725,8 +725,7 @@ struct EntityDetailView: View {
 
             // Architect-Engineer Qualifications
             if let aeInfo = entity.architectEngineerQualifications,
-               aeInfo.hasArchitectEngineerResponses
-            {
+               aeInfo.hasArchitectEngineerResponses {
                 VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
                     Text("Architect-Engineer Qualifications")
                         .font(.headline)

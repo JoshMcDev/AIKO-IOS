@@ -1,49 +1,49 @@
 import ComposableArchitecture
 import Foundation
 
-/* 
-============================================================================
-TDD RETROFIT RUBRIC - Phase 4.2.2 VisionKit Document Scanner Integration
-============================================================================
+/*
+ ============================================================================
+ TDD RETROFIT RUBRIC - Phase 4.2.2 VisionKit Document Scanner Integration
+ ============================================================================
 
-MEASURES OF EFFECTIVENESS (MoE):
-✓ TCA Compilation Success: Reducer compiles with explicit parameter types
-✓ Effect Type Safety: Effect.none and Effect.send() return correct types
-✓ Async/Await Correctness: All do-catch patterns work with TCA effects
-✓ Property Access Validity: ComprehensiveDocumentContext mapping succeeds
+ MEASURES OF EFFECTIVENESS (MoE):
+ ✓ TCA Compilation Success: Reducer compiles with explicit parameter types
+ ✓ Effect Type Safety: Effect.none and Effect.send() return correct types
+ ✓ Async/Await Correctness: All do-catch patterns work with TCA effects
+ ✓ Property Access Validity: ComprehensiveDocumentContext mapping succeeds
 
-MEASURES OF PERFORMANCE (MoP):
-✓ Build Time: < 30 seconds for clean swift build
-✓ Compilation Errors: Zero errors/warnings in DocumentScannerFeature.swift
-✓ Test Coverage: 100% coverage for 4 fix categories via validation tests
-✓ Type Safety: All Effect returns properly typed with no implicit conversions
+ MEASURES OF PERFORMANCE (MoP):
+ ✓ Build Time: < 30 seconds for clean swift build
+ ✓ Compilation Errors: Zero errors/warnings in DocumentScannerFeature.swift
+ ✓ Test Coverage: 100% coverage for 4 fix categories via validation tests
+ ✓ Type Safety: All Effect returns properly typed with no implicit conversions
 
-DEFINITION OF SUCCESS (DoS):
-✓ All 4 fix categories have corresponding validation tests
-✓ TCA TestStore patterns validate reducer behavior correctly
-✓ swift build succeeds with zero compilation errors
-✓ All async Effect chains execute without deadlocks or crashes
+ DEFINITION OF SUCCESS (DoS):
+ ✓ All 4 fix categories have corresponding validation tests
+ ✓ TCA TestStore patterns validate reducer behavior correctly
+ ✓ swift build succeeds with zero compilation errors
+ ✓ All async Effect chains execute without deadlocks or crashes
 
-DEFINITION OF DONE (DoD):
-✓ All TDD workflow markers present: /tdd → /dev → /green → /refactor → /qa
-✓ Test suite passes in GREEN state with 100% success rate
-✓ QA report generated with build metrics and test coverage
-✓ Project_tasks.md updated with TDD completion status
-✓ No regressions in existing VisionKit integration functionality
+ DEFINITION OF DONE (DoD):
+ ✓ All TDD workflow markers present: /tdd → /dev → /green → /refactor → /qa
+ ✓ Test suite passes in GREEN state with 100% success rate
+ ✓ QA report generated with build metrics and test coverage
+ ✓ Project_tasks.md updated with TDD completion status
+ ✓ No regressions in existing VisionKit integration functionality
 
-QA REPORT:
-- Build Status: SUCCESS (5.68s)
-- Compilation Errors: 0
-- Compilation Warnings: 0  
-- TCA Syntax Validation: PASS (4 test categories)
-- Type Safety: PASS (explicit parameter types)
-- Effect Handling: PASS (proper async/await patterns)
-- Property Mapping: PASS (context extraction working)
+ QA REPORT:
+ - Build Status: SUCCESS (5.68s)
+ - Compilation Errors: 0
+ - Compilation Warnings: 0
+ - TCA Syntax Validation: PASS (4 test categories)
+ - Type Safety: PASS (explicit parameter types)
+ - Effect Handling: PASS (proper async/await patterns)
+ - Property Mapping: PASS (context extraction working)
 
-<!-- /tdd complete -->
-<!-- /refactor ready -->
-<!-- /qa complete -->
-*/
+ <!-- /tdd complete -->
+ <!-- /refactor ready -->
+ <!-- /qa complete -->
+ */
 
 // MARK: - Document Scanner Feature (Platform-Agnostic)
 
@@ -87,7 +87,7 @@ public struct DocumentScannerFeature: Sendable {
         public var autoExtractContext: Bool = true
         public var extractedDocumentContext: ScannerDocumentContext?
         public var isExtractingContext: Bool = false
-        
+
         // Phase 4.2.2: Smart Auto-Population Features
         public var autoPopulationResults: FormAutoPopulationResult?
         public var isAutoPopulating: Bool = false
@@ -111,7 +111,7 @@ public struct DocumentScannerFeature: Sendable {
         }
 
         public var processedPagesCount: Int {
-            scannedPages.filter { $0.processingState == .completed }.count
+            scannedPages.count(where: { $0.processingState == .completed })
         }
 
         public var totalPagesCount: Int {
@@ -196,7 +196,7 @@ public struct DocumentScannerFeature: Sendable {
         case toggleAutoExtractContext(Bool)
         case extractDocumentContext
         case documentContextExtracted(Result<ScannerDocumentContext, Error>)
-        
+
         // Phase 4.2.2: Smart Auto-Population Actions
         case autoPopulateForm(ScannedDocument)
         case autoPopulationCompleted(Result<FormAutoPopulationResult, Error>)
@@ -217,6 +217,12 @@ public struct DocumentScannerFeature: Sendable {
         // Navigation
         case dismissScanner
 
+        // Progress Tracking (Phase 4.3: Progress Feedback Integration)
+        case startProgressTracking(ProgressSessionConfig)
+        case completeProgressTracking(UUID)
+        case cancelProgressTracking(UUID)
+        case _progressFeedbackReceived(ProgressFeedbackFeature.Action)
+
         // Internal
         case _setProcessingAllPages(Bool)
         case _setProcessingComplete(ScannedPage.ID)
@@ -231,6 +237,7 @@ public struct DocumentScannerFeature: Sendable {
     @Dependency(\.uuid) var uuid
     @Dependency(\.documentContextExtractor) var contextExtractor
     @Dependency(\.formAutoPopulationEngine) var formAutoPopulationEngine
+    @Dependency(\.progressClient) var progressClient
 
     // MARK: - Initializer
 
@@ -363,7 +370,7 @@ public struct DocumentScannerFeature: Sendable {
                 return Effect.run { [enableEnhancement = state.enableImageEnhancement, enableOCR = state.enableOCR, useEnhancedOCR = state.useEnhancedOCR] send in
                     // Phase 4.2.2: Enhanced VisionKit Integration
                     // Use DocumentImageProcessor.documentScanner mode for VisionKit scanned images
-                    
+
                     // Enhancement with .documentScanner mode
                     if enableEnhancement {
                         do {
@@ -620,65 +627,65 @@ public struct DocumentScannerFeature: Sendable {
                 // Use the document context extractor for processing
                 return Effect.run { [contextExtractor = self.contextExtractor, scannedPages = state.scannedPages] send in
                     do {
-                            // Convert scanned pages to OCR results and image data
-                            let ocrResults = Array(scannedPages).compactMap { page -> OCRResult? in
-                                guard let ocrResult = page.ocrResult else {
-                                    // Create a basic OCR result if we only have text
-                                    if let ocrText = page.ocrText {
-                                        return OCRResult(
-                                            fullText: ocrText,
-                                            confidence: page.qualityScore ?? 0.8
-                                        )
-                                    }
-                                    return nil
+                        // Convert scanned pages to OCR results and image data
+                        let ocrResults = Array(scannedPages).compactMap { page -> OCRResult? in
+                            guard let ocrResult = page.ocrResult else {
+                                // Create a basic OCR result if we only have text
+                                if let ocrText = page.ocrText {
+                                    return OCRResult(
+                                        fullText: ocrText,
+                                        confidence: page.qualityScore ?? 0.8
+                                    )
                                 }
-                                return ocrResult
+                                return nil
                             }
-
-                            let pageImageData = Array(scannedPages).map { page in
-                                page.enhancedImageData ?? page.imageData
-                            }
-
-                            let hints: [String: Any] = [
-                                "session_id": sessionID.uuidString,
-                                "source": "document_scanner",
-                                "total_pages": scannedPages.count,
-                                "processing_mode": "scanner_integration",
-                            ]
-
-                            // Extract comprehensive document context
-                            let comprehensiveContext = try await contextExtractor.extractComprehensiveContext(
-                                from: ocrResults,
-                                pageImageData: pageImageData,
-                                withHints: hints
-                            )
-                            
-                            // Convert ComprehensiveDocumentContext to ScannerDocumentContext
-                            // Extract entities from comprehensive context
-                            var entities: [DocumentEntity] = []
-                            if let vendorName = comprehensiveContext.extractedContext.vendorInfo?.name {
-                                entities.append(DocumentEntity(
-                                    type: .vendor,
-                                    value: vendorName,
-                                    confidence: comprehensiveContext.confidence
-                                ))
-                            }
-                            
-                            let scannerContext = ScannerDocumentContext(
-                                documentType: .unknown, // TODO: Map from comprehensive context
-                                extractedEntities: entities,
-                                relationships: [],
-                                compliance: ComplianceAnalysis(overallCompliance: .unknown),
-                                riskFactors: [],
-                                recommendations: [],
-                                confidence: comprehensiveContext.confidence,
-                                processingTime: Date().timeIntervalSince(comprehensiveContext.extractionDate)
-                            )
-                            
-                            await send(.documentContextExtracted(.success(scannerContext)))
-                        } catch {
-                            await send(.documentContextExtracted(.failure(error)))
+                            return ocrResult
                         }
+
+                        let pageImageData = Array(scannedPages).map { page in
+                            page.enhancedImageData ?? page.imageData
+                        }
+
+                        let hints: [String: Any] = [
+                            "session_id": sessionID.uuidString,
+                            "source": "document_scanner",
+                            "total_pages": scannedPages.count,
+                            "processing_mode": "scanner_integration"
+                        ]
+
+                        // Extract comprehensive document context
+                        let comprehensiveContext = try await contextExtractor.extractComprehensiveContext(
+                            from: ocrResults,
+                            pageImageData: pageImageData,
+                            withHints: hints
+                        )
+
+                        // Convert ComprehensiveDocumentContext to ScannerDocumentContext
+                        // Extract entities from comprehensive context
+                        var entities: [DocumentEntity] = []
+                        if let vendorName = comprehensiveContext.extractedContext.vendorInfo?.name {
+                            entities.append(DocumentEntity(
+                                type: .vendor,
+                                value: vendorName,
+                                confidence: comprehensiveContext.confidence
+                            ))
+                        }
+
+                        let scannerContext = ScannerDocumentContext(
+                            documentType: .unknown, // TODO: Map from comprehensive context
+                            extractedEntities: entities,
+                            relationships: [],
+                            compliance: ComplianceAnalysis(overallCompliance: .unknown),
+                            riskFactors: [],
+                            recommendations: [],
+                            confidence: comprehensiveContext.confidence,
+                            processingTime: Date().timeIntervalSince(comprehensiveContext.extractionDate)
+                        )
+
+                        await send(.documentContextExtracted(.success(scannerContext)))
+                    } catch {
+                        await send(.documentContextExtracted(.failure(error)))
+                    }
                 }
 
             case let .documentContextExtracted(.success(context)):
@@ -689,12 +696,12 @@ public struct DocumentScannerFeature: Sendable {
             case let .documentContextExtracted(.failure(error)):
                 state.isExtractingContext = false
                 return Effect.send(.showError("Context extraction failed: \(error.localizedDescription)"))
-                
+
             // MARK: Phase 4.2.2 Smart Auto-Population
-            
+
             case let .autoPopulateForm(document):
                 state.isAutoPopulating = true
-                
+
                 return Effect.run { send in
                     do {
                         let result = try await formAutoPopulationEngine.extractFormData(document)
@@ -703,12 +710,12 @@ public struct DocumentScannerFeature: Sendable {
                         await send(.autoPopulationCompleted(.failure(error)))
                     }
                 }
-                
+
             case let .autoPopulationCompleted(.success(result)):
                 state.isAutoPopulating = false
                 state.autoPopulationResults = result
                 return Effect.none
-                
+
             case let .autoPopulationCompleted(.failure(error)):
                 state.isAutoPopulating = false
                 return Effect.send(.showError("Auto-population failed: \(error.localizedDescription)"))
@@ -851,6 +858,36 @@ public struct DocumentScannerFeature: Sendable {
                 if state.currentProcessingPage == pageId {
                     state.currentProcessingPage = nil
                 }
+                return Effect.none
+
+            // MARK: Progress Tracking
+
+            case let .startProgressTracking(config):
+                // Start a new progress session for document scanning
+                return Effect.run { send in
+                    _ = await progressClient.createSession(config)
+                    // Store session ID in state (would need to add this to state)
+                    // For now, we'll just start the session
+                    await send(._progressFeedbackReceived(.startSession(config)))
+                }
+
+            case let .completeProgressTracking(sessionId):
+                // Complete the progress tracking session
+                return Effect.run { send in
+                    await progressClient.completeSession(sessionId)
+                    await send(._progressFeedbackReceived(.completeSession(sessionId)))
+                }
+
+            case let .cancelProgressTracking(sessionId):
+                // Cancel the progress tracking session
+                return Effect.run { send in
+                    await progressClient.cancelSession(sessionId)
+                    await send(._progressFeedbackReceived(.cancelSession(sessionId)))
+                }
+
+            case ._progressFeedbackReceived:
+                // Handle progress feedback actions - for now, just log them
+                // In a full implementation, this would sync with the ProgressFeedbackFeature
                 return Effect.none
             }
         }

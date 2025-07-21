@@ -8,7 +8,7 @@ struct EnhancedCard<Content: View>: View {
     let content: () -> Content
     var style: CardStyle = .elevated
     var isInteractive: Bool = false
-    var onTap: (() -> Void)? = nil
+    var onTap: (() -> Void)?
 
     @State private var isPressed = false
     @State private var isHovered = false
@@ -93,7 +93,7 @@ struct EnhancedCard<Content: View>: View {
             LinearGradient(
                 colors: [
                     Color.gray.opacity(0.1),
-                    Color.gray.opacity(0.1).opacity(0.95),
+                    Color.gray.opacity(0.1).opacity(0.95)
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
@@ -106,7 +106,7 @@ struct EnhancedCard<Content: View>: View {
             LinearGradient(
                 colors: [
                     colorScheme == .dark ? Color.blue.opacity(0.2) : Color.blue.opacity(0.1),
-                    colorScheme == .dark ? Color.purple.opacity(0.2) : Color.purple.opacity(0.1),
+                    colorScheme == .dark ? Color.purple.opacity(0.2) : Color.purple.opacity(0.1)
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
@@ -130,7 +130,7 @@ struct EnhancedCard<Content: View>: View {
                 LinearGradient(
                     colors: [
                         Color.white.opacity(0.1),
-                        Color.white.opacity(0.05),
+                        Color.white.opacity(0.05)
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
@@ -148,7 +148,7 @@ struct EnhancedCard<Content: View>: View {
                     LinearGradient(
                         colors: [
                             Color.blue.opacity(0.3),
-                            Color.blue.opacity(0.1),
+                            Color.blue.opacity(0.1)
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -162,7 +162,7 @@ struct EnhancedCard<Content: View>: View {
                     LinearGradient(
                         colors: [
                             Color.white.opacity(0.3),
-                            Color.white.opacity(0.1),
+                            Color.white.opacity(0.1)
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing

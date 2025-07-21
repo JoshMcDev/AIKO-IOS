@@ -252,7 +252,7 @@ public final class ContextualAnalyzer: @unchecked Sendable {
         default:
             textResponse = nil
         }
-        
+
         if let text = textResponse {
             insight.certaintyLevel = analyzeCertainty(in: text)
             insight.requiresClarification = detectClarificationNeeds(in: text)

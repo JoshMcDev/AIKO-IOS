@@ -82,7 +82,7 @@ final class RequirementsDataTests: XCTestCase {
     func testVendorInfoIntegration() {
         var requirements = RequirementsData()
         
-        let vendorInfo = VendorInfo(
+        let vendorInfo = APEVendorInfo(
             name: "Test Vendor",
             uei: "ABC123456789",
             cage: "12345",

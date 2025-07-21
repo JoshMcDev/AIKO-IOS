@@ -159,7 +159,7 @@ private func buildDependencyGraph() -> [DocumentType: [DocumentDependency]] {
             targetDocumentType: .acquisitionPlan,
             dataFields: ["market_analysis", "vendor_capabilities", "cost_estimates"],
             isRequired: false
-        ),
+        )
     ]
 
     // SOW/SOO/PWS dependencies
@@ -175,7 +175,7 @@ private func buildDependencyGraph() -> [DocumentType: [DocumentDependency]] {
             targetDocumentType: .sow,
             dataFields: ["acquisition_strategy", "timeline", "deliverables"],
             isRequired: false
-        ),
+        )
     ]
 
     graph[.soo] = [
@@ -184,7 +184,7 @@ private func buildDependencyGraph() -> [DocumentType: [DocumentDependency]] {
             targetDocumentType: .soo,
             dataFields: ["objectives", "desired_outcomes"],
             isRequired: false
-        ),
+        )
     ]
 
     graph[.pws] = [
@@ -193,7 +193,7 @@ private func buildDependencyGraph() -> [DocumentType: [DocumentDependency]] {
             targetDocumentType: .pws,
             dataFields: ["performance_standards", "metrics"],
             isRequired: false
-        ),
+        )
     ]
 
     // QASP dependencies
@@ -209,7 +209,7 @@ private func buildDependencyGraph() -> [DocumentType: [DocumentDependency]] {
             targetDocumentType: .qasp,
             dataFields: ["deliverables", "acceptance_criteria"],
             isRequired: false
-        ),
+        )
     ]
 
     // Cost Estimate dependencies
@@ -225,7 +225,7 @@ private func buildDependencyGraph() -> [DocumentType: [DocumentDependency]] {
             targetDocumentType: .costEstimate,
             dataFields: ["market_rates", "vendor_pricing"],
             isRequired: false
-        ),
+        )
     ]
 
     // Evaluation Plan dependencies
@@ -241,7 +241,7 @@ private func buildDependencyGraph() -> [DocumentType: [DocumentDependency]] {
             targetDocumentType: .evaluationPlan,
             dataFields: ["acquisition_strategy", "source_selection_method"],
             isRequired: false
-        ),
+        )
     ]
 
     // RFQ/RFP dependencies
@@ -263,7 +263,7 @@ private func buildDependencyGraph() -> [DocumentType: [DocumentDependency]] {
             targetDocumentType: .requestForQuote,
             dataFields: ["evaluation_criteria", "submission_requirements"],
             isRequired: true
-        ),
+        )
     ]
 
     graph[.requestForProposal] = [
@@ -284,7 +284,7 @@ private func buildDependencyGraph() -> [DocumentType: [DocumentDependency]] {
             targetDocumentType: .requestForProposal,
             dataFields: ["budget_range", "cost_evaluation_factors"],
             isRequired: false
-        ),
+        )
     ]
 
     // Contract dependencies
@@ -306,7 +306,7 @@ private func buildDependencyGraph() -> [DocumentType: [DocumentDependency]] {
             targetDocumentType: .contractScaffold,
             dataFields: ["performance_requirements", "deliverables"],
             isRequired: true
-        ),
+        )
     ]
 
     // COR Appointment dependencies
@@ -322,7 +322,7 @@ private func buildDependencyGraph() -> [DocumentType: [DocumentDependency]] {
             targetDocumentType: .corAppointment,
             dataFields: ["surveillance_duties", "reporting_requirements"],
             isRequired: false
-        ),
+        )
     ]
 
     return graph

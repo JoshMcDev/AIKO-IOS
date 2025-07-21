@@ -19,8 +19,8 @@ struct ProfileTextField: View {
     #else
         var keyboardType: String = "default"
     #endif
-    var error: String? = nil
-    var helpText: String? = nil
+    var error: String?
+    var helpText: String?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {

@@ -125,8 +125,7 @@ public class UserPatternLearner {
         // Get insights for each field
         for field in formFields {
             if let insight = await getInsights(for: field, context: context),
-               insight.confidence >= 0.7
-            {
+               insight.confidence >= 0.7 {
                 defaults[field] = insight.suggestedValue
             }
         }
@@ -277,11 +276,7 @@ public class UserPatternLearner {
 
     private func formatTimeAgo(_ date: Date) -> String {
         let days = Calendar.current.dateComponents([.day], from: date, to: Date()).day ?? 0
-        if days == 0 { return "today" }
-        else if days == 1 { return "yesterday" }
-        else if days < 7 { return "this week" }
-        else if days < 30 { return "in the last month" }
-        else { return "in the last \(days / 30) months" }
+        if days == 0 { return "today" } else if days == 1 { return "yesterday" } else if days < 7 { return "this week" } else if days < 30 { return "in the last month" } else { return "in the last \(days / 30) months" }
     }
 
     private func determinePatternType(field: String, value _: String) -> UserPattern.PatternType {

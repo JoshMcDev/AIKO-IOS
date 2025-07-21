@@ -12,7 +12,7 @@
             // The live implementations are already set as liveValue in their respective files
             // This function serves as a registration point but actual registration happens
             // through the DependencyKey.liveValue static properties
-            
+
             // All macOS-specific implementations are automatically registered via:
             // - VoiceRecordingClient.macOSLive
             // - HapticManagerClient.macOSLive

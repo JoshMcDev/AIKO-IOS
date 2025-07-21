@@ -85,7 +85,7 @@ public struct AgenticChatFeature {
                 return .run { [message] send in
                     @Dependency(\.naturalLanguageProcessor) var nlp
                     @Dependency(\.agenticEngine) var agenticEngine
-                    
+
                     // Process user intent
                     let intent = try await nlp.processAcquisitionIntent(message.content)
                     await send(.intentRecognized(intent))
@@ -321,8 +321,7 @@ public struct AgenticChatFeature {
         case .identifyVendors:
             // Create vendor comparison card
             if let vendorData = output as? [String: Any],
-               let vendors = vendorData["vendors"] as? [String]
-            {
+               let vendors = vendorData["vendors"] as? [String] {
                 let vendorInfos = vendors.map { name in
                     VendorInfo(
                         name: name,
@@ -341,8 +340,7 @@ public struct AgenticChatFeature {
         case .monitorCompliance:
             // Create compliance card
             if let complianceData = output as? [String: Any],
-               let score = complianceData["complianceScore"] as? Double
-            {
+               let score = complianceData["complianceScore"] as? Double {
                 return MessageCard(
                     type: .compliance,
                     title: "Compliance Status",
@@ -428,8 +426,8 @@ public struct ChatMessage: Equatable, Identifiable, @unchecked Sendable {
     public let attributedContent: NSAttributedString
     public let timestamp: Date
     public var isStatus: Bool = false
-    public var approvalRequest: ApprovalRequest? = nil
-    public var card: MessageCard? = nil
+    public var approvalRequest: ApprovalRequest?
+    public var card: MessageCard?
 
     public init(id: UUID = UUID(), role: MessageRole, content: String, timestamp: Date = Date(), isStatus: Bool = false, approvalRequest: ApprovalRequest? = nil, card: MessageCard? = nil) {
         self.id = id
@@ -694,7 +692,7 @@ extension NaturalLanguageProcessor: DependencyKey {
                 [
                     "What's the estimated budget?",
                     "When do you need this completed?",
-                    "Are there any special requirements?",
+                    "Are there any special requirements?"
                 ]
             }
         )

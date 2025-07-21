@@ -265,7 +265,7 @@ private func generateSampleSmartDefaults(context _: SmartDefaultContext) async -
             status: .suggested,
             reasoning: "Your usual POC for supplies",
             alternatives: ["Jane Doe, x5678"]
-        ),
+        )
     ]
 }
 

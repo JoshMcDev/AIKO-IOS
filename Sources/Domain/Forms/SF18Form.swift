@@ -105,7 +105,7 @@ public struct RequestInfo: ValueObject {
             "issueDate": issueDate.timeIntervalSince1970,
             "requisitionNumber": requisitionNumber?.value as Any,
             "responseDeadline": responseDeadline.timeIntervalSince1970,
-            "pageCount": pageCount,
+            "pageCount": pageCount
         ]
     }
 }
@@ -189,11 +189,11 @@ public struct ItemsSection: ValueObject {
                     "quantity": item.quantity,
                     "unit": item.unit,
                     "unitPrice": item.unitPrice?.amount as Any,
-                    "estimatedCost": item.estimatedCost?.amount as Any,
+                    "estimatedCost": item.estimatedCost?.amount as Any
                 ]
             },
             "totalEstimatedCost": totalEstimatedCost?.amount as Any,
-            "currency": totalEstimatedCost?.currency.rawValue as Any,
+            "currency": totalEstimatedCost?.currency.rawValue as Any
         ]
     }
 }
@@ -260,7 +260,7 @@ public struct SF18DeliveryInformation: ValueObject {
             "deliveryDays": deliveryDays as Any,
             "deliveryAddress": deliveryAddress.formatted,
             "deliveryTerms": deliveryTerms.rawValue,
-            "fobPoint": fobPoint.rawValue,
+            "fobPoint": fobPoint.rawValue
         ]
     }
 }
@@ -333,19 +333,19 @@ public struct SolicitationInformation: ValueObject {
                 "name": issuingOffice.name,
                 "address": issuingOffice.address.formatted,
                 "phoneNumber": issuingOffice.phoneNumber?.value as Any,
-                "faxNumber": issuingOffice.faxNumber as Any,
+                "faxNumber": issuingOffice.faxNumber as Any
             ],
             "contractingOfficer": [
                 "name": contractingOfficer.name,
                 "title": contractingOfficer.title,
                 "phoneNumber": contractingOfficer.phoneNumber.value,
-                "email": contractingOfficer.email?.value as Any,
+                "email": contractingOfficer.email?.value as Any
             ],
             "telephoneQuotesAccepted": telephoneQuotesAccepted,
             "depositRequired": depositRequired,
             "depositAmount": depositAmount?.amount as Any,
             "depositCurrency": depositAmount?.currency.rawValue as Any,
-            "depositAccount": depositAccount as Any,
+            "depositAccount": depositAccount as Any
         ]
     }
 }

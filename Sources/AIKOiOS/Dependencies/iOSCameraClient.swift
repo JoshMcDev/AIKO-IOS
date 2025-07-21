@@ -135,8 +135,7 @@
                 imagePickerController.cameraDevice = currentPosition == .front ? .front : .rear
 
                 if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                   let rootViewController = windowScene.windows.first?.rootViewController
-                {
+                   let rootViewController = windowScene.windows.first?.rootViewController {
                     rootViewController.present(imagePickerController, animated: true)
                 } else {
                     self.captureCompletion?(.failure(CameraError.unknownError("Failed to present camera interface")))
@@ -157,8 +156,7 @@
             picker.dismiss(animated: true)
 
             if let image = info[.originalImage] as? UIImage,
-               let imageData = image.jpegData(compressionQuality: 0.8)
-            {
+               let imageData = image.jpegData(compressionQuality: 0.8) {
                 let photo = CapturedPhoto(
                     id: UUID(),
                     imageData: imageData,

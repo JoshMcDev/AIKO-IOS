@@ -7,7 +7,7 @@ public struct PopulationResult: Equatable, Sendable {
     public let processingTime: TimeInterval
     public let requiresManualReview: Bool
     public let summary: PopulationSummary
-    
+
     public init(
         populatedFields: [FormPopulatedField],
         overallConfidence: Double,
@@ -32,7 +32,7 @@ public struct FormPopulatedField: Equatable, Sendable {
     public let requiresManualReview: Bool
     public let originalValue: String?
     public let populatedValue: String
-    
+
     public init(
         formField: FormField,
         wasAutoFilled: Bool,
@@ -59,7 +59,7 @@ public struct PopulationSummary: Equatable, Sendable {
     public let manualReviewCount: Int
     public let criticalFieldCount: Int
     public let autoFillRate: Double
-    
+
     public init(from populatedFields: [FormPopulatedField]) {
         self.totalFields = populatedFields.count
         self.autoFilledCount = populatedFields.filter { $0.wasAutoFilled }.count

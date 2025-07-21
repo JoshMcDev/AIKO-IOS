@@ -39,8 +39,6 @@ extension AcquisitionService: DependencyKey {
         // Always use repository-based implementation as part of Phase 4 migration
         .repositoryBased
     }
-    
-
 
     public static var testValue: AcquisitionService {
         liveValue

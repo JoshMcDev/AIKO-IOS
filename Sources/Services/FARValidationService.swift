@@ -20,7 +20,7 @@ final class FARValidationService: @unchecked Sendable {
                 validation: { data in
                     data["deliveryDate"] != nil ? .passed : .failed("Delivery date is required")
                 }
-            ),
+            )
         ],
 
         .sf1449: [
@@ -43,7 +43,7 @@ final class FARValidationService: @unchecked Sendable {
                     let missingClauses = requiredClauses.filter { !clauses.contains($0) }
                     return missingClauses.isEmpty ? .passed : .failed("Missing required clauses: \(missingClauses.joined(separator: ", "))")
                 }
-            ),
+            )
         ],
 
         .sf44: [
@@ -65,8 +65,8 @@ final class FARValidationService: @unchecked Sendable {
                     let validMethods = ["Government Purchase Card", "Cash", "Check"]
                     return validMethods.contains(paymentMethod) ? .passed : .failed("Invalid payment method for micro-purchase")
                 }
-            ),
-        ],
+            )
+        ]
     ]
 
     // MARK: - Public Methods

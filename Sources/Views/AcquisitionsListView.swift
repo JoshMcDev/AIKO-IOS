@@ -29,9 +29,9 @@ public struct AcquisitionsListView: View {
                 }
         }
     }
-    
+
     // MARK: - Private Helper Views
-    
+
     @ViewBuilder
     private func contentView(viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>) -> some View {
         VStack(spacing: 0) {
@@ -39,7 +39,7 @@ public struct AcquisitionsListView: View {
             mainContent(viewStore: viewStore)
         }
     }
-    
+
     @ViewBuilder
     private func searchFilterBar(viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>) -> some View {
         SearchFilterBar(
@@ -57,7 +57,7 @@ public struct AcquisitionsListView: View {
             )
         )
     }
-    
+
     @ViewBuilder
     private func mainContent(viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>) -> some View {
         if viewStore.isLoading {
@@ -68,7 +68,7 @@ public struct AcquisitionsListView: View {
             acquisitionsListView(viewStore: viewStore)
         }
     }
-    
+
     private var loadingView: some View {
         VStack {
             Spacer()
@@ -77,7 +77,7 @@ public struct AcquisitionsListView: View {
             Spacer()
         }
     }
-    
+
     @ViewBuilder
     private func acquisitionsListView(viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>) -> some View {
         ScrollView {
@@ -92,7 +92,7 @@ public struct AcquisitionsListView: View {
             .padding(Theme.Spacing.lg)
         }
     }
-    
+
     @ViewBuilder
     private func acquisitionCard(
         acquisition: AppCore.Acquisition,
@@ -112,58 +112,58 @@ public struct AcquisitionsListView: View {
             onCancelRename: { viewStore.send(.cancelRename) }
         )
     }
-    
+
     // MARK: - Private Helper Methods
-    
+
     private func newNameBinding(viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>) -> Binding<String> {
         viewStore.binding(
             get: \.newAcquisitionName,
             send: AcquisitionsListFeature.Action.updateNewAcquisitionName
         )
     }
-    
+
     private func errorBinding(viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>) -> Binding<Bool> {
         viewStore.binding(
             get: { $0.error != nil },
             send: { _ in .clearError }
         )
     }
-    
+
     private func handleOpenAcquisition(
         acquisition: AppCore.Acquisition,
         viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>
     ) {
         viewStore.send(.openAcquisition(acquisition.id))
     }
-    
+
     private func handleDeleteAcquisition(
         acquisition: AppCore.Acquisition,
         viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>
     ) {
         viewStore.send(.deleteAcquisition(acquisition.id))
     }
-    
+
     private func handleShareDocument(
         acquisition: AppCore.Acquisition,
         viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>
     ) {
         viewStore.send(.shareDocument(acquisition.id))
     }
-    
+
     private func handleShareContractFile(
         acquisition: AppCore.Acquisition,
         viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>
     ) {
         viewStore.send(.shareContractFile(acquisition.id))
     }
-    
+
     private func handleRenameAcquisition(
         acquisition: AppCore.Acquisition,
         viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>
     ) {
         viewStore.send(.renameAcquisition(acquisition.id))
     }
-    
+
     private func handleDuplicateAcquisition(
         acquisition: AppCore.Acquisition,
         viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>

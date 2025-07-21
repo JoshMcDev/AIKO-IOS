@@ -236,6 +236,9 @@ public struct SessionMetadata: Equatable, Sendable {
     public var errorCount: Int
     public var warningCount: Int
 
+    // Progress Tracking
+    public var progressSessionId: UUID?
+
     // Timestamps
     public var firstPageScannedAt: Date?
     public var lastPageAddedAt: Date?
@@ -262,6 +265,7 @@ public struct SessionMetadata: Equatable, Sendable {
         qualityScores: [Double] = [],
         errorCount: Int = 0,
         warningCount: Int = 0,
+        progressSessionId: UUID? = nil,
         firstPageScannedAt: Date? = nil,
         lastPageAddedAt: Date? = nil,
         completedAt: Date? = nil,
@@ -282,6 +286,7 @@ public struct SessionMetadata: Equatable, Sendable {
         self.qualityScores = qualityScores
         self.errorCount = errorCount
         self.warningCount = warningCount
+        self.progressSessionId = progressSessionId
         self.firstPageScannedAt = firstPageScannedAt
         self.lastPageAddedAt = lastPageAddedAt
         self.completedAt = completedAt

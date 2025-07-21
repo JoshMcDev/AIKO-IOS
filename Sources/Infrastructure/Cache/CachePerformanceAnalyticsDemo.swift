@@ -149,7 +149,7 @@ private func generateSimulatedEvents(count: Int) -> [CacheAccessEvent] {
         "document:template:invoice",
         "config:system:main",
         "session:active:abc",
-        "data:report:monthly",
+        "data:report:monthly"
     ]
 
     // Generate events with realistic patterns
@@ -186,7 +186,7 @@ private func generateSimulatedEvents(count: Int) -> [CacheAccessEvent] {
             dataSize: Int.random(in: 100 ... 10000),
             metadata: [
                 "source": "demo",
-                "userId": "user-\(i % 10)",
+                "userId": "user-\(i % 10)"
             ]
         ))
     }

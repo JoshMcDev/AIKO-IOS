@@ -193,7 +193,7 @@ extension FARComplianceService: DependencyKey {
                         priority: .recommended,
                         farJustification: "FAR 37.6 - Mock justification",
                         description: "Mock PWS recommendation"
-                    ),
+                    )
                 ]
             },
             validateCompliance: { _, _ in

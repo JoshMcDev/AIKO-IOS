@@ -290,7 +290,7 @@ extension SLATemplateService: DependencyKey {
                             measurementMethod: "Real-time monitoring",
                             target: "< 5ms",
                             criticalThreshold: "20ms"
-                        ),
+                        )
                     ]
 
                 case .cloudComputing:
@@ -322,7 +322,7 @@ extension SLATemplateService: DependencyKey {
                             measurementMethod: "Performance monitoring",
                             target: "< 2 minutes",
                             criticalThreshold: "5 minutes"
-                        ),
+                        )
                     ]
 
                 default:
@@ -340,7 +340,7 @@ extension SLATemplateService: DependencyKey {
                             measurementMethod: "Performance monitoring",
                             target: "Varies by service",
                             criticalThreshold: "2x target"
-                        ),
+                        )
                     ]
                 }
             }
@@ -396,7 +396,7 @@ private let telecommunicationsSLATemplate = SLATemplate(
             97.0% - 97.99%      | 20%
             Below 97.0%         | 30%
             """
-        ),
+        )
     ],
     metrics: [],
     penalties: [
@@ -409,7 +409,7 @@ private let telecommunicationsSLATemplate = SLATemplate(
             metric: "MTTR",
             threshold: "> 4 hours",
             penalty: "5% credit per hour over threshold"
-        ),
+        )
     ]
 )
 
@@ -460,7 +460,7 @@ private let cloudComputingSLATemplate = SLATemplate(
             Severity 3 (Non-Production): 4 hours
             Severity 4 (General Inquiry): 24 hours
             """
-        ),
+        )
     ],
     metrics: [],
     penalties: []
@@ -508,7 +508,7 @@ private let dataCenterSLATemplate = SLATemplate(
             - Meet-me room access
             - Cross-connect completion: 24 hours
             """
-        ),
+        )
     ],
     metrics: [],
     penalties: []
@@ -568,7 +568,7 @@ private let cybersecuritySLATemplate = SLATemplate(
             - High/Medium: Within 24 hours
             - Remediation tracking provided
             """
-        ),
+        )
     ],
     metrics: [],
     penalties: []
@@ -621,7 +621,7 @@ private let logisticsSLATemplate = SLATemplate(
             - Credit processing: 5 business days
             - Restocking: Within 72 hours
             """
-        ),
+        )
     ],
     metrics: [],
     penalties: []
@@ -670,7 +670,7 @@ private let itSupportSLATemplate = SLATemplate(
             - Customer satisfaction: > 90%
             - Ticket backlog: < 5% of monthly volume
             """
-        ),
+        )
     ],
     metrics: [],
     penalties: []
@@ -718,7 +718,7 @@ private let softwareDevelopmentSLATemplate = SLATemplate(
             - Technical debt: 20% of capacity
             - Knowledge transfer: Quarterly
             """
-        ),
+        )
     ],
     metrics: [],
     penalties: []
@@ -766,7 +766,7 @@ private let networkServicesSLATemplate = SLATemplate(
             - Standard Business (AF3): Medium priority
             - Best Effort (BE): Standard delivery
             """
-        ),
+        )
     ],
     metrics: [],
     penalties: []
@@ -816,7 +816,7 @@ private let satelliteCommunicationsSLATemplate = SLATemplate(
             - Remote terminal support: 24/7
             - Spare equipment: 4-hour delivery
             """
-        ),
+        )
     ],
     metrics: [],
     penalties: []
@@ -865,7 +865,7 @@ private let managedServicesSLATemplate = SLATemplate(
             - Annual strategic planning
             - SLA performance metrics
             """
-        ),
+        )
     ],
     metrics: [],
     penalties: []
@@ -882,7 +882,7 @@ public extension SLATemplateService {
                     name: "Test SLA",
                     description: "Test template",
                     sections: [
-                        SLASection(title: "Test Section", content: "Test content"),
+                        SLASection(title: "Test Section", content: "Test content")
                     ],
                     metrics: [],
                     penalties: []

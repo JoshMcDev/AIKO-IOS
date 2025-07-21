@@ -1,4 +1,5 @@
 import ComposableArchitecture
+import CoreData
 import XCTest
 @testable import AppCore
 
@@ -136,39 +137,44 @@ final class DocumentScannerFeatureTests: XCTestCase {
             DocumentScannerFeature()
         } withDependencies: {
             $0.formAutoPopulationEngine.extractFormData = { document in
-                FormAutoPopulationResult(
-                    extractedData: ExtractedFormData(
-                        vendorInfo: VendorInfo(
-                            name: "ACME Corporation",
-                            address: "123 Main St, Anytown USA",
-                            uei: "ABC123456789",
-                            cage: "1A2B3",
-                            confidence: 0.95
-                        ),
-                        totalAmount: ExtractedCurrency(
-                            amount: Decimal(1500.00),
-                            currency: "USD",
-                            originalText: "$1,500.00",
-                            confidence: 0.92
-                        ),
-                        dates: [
-                            ExtractedDate(
-                                date: Date(),
-                                originalText: "01/21/2025",
-                                confidence: 0.88
-                            )
-                        ],
-                        formType: .dd1155
-                    ),
-                    confidence: 0.87,
-                    suggestedFields: [
+                // Use the test value implementation pattern
+                let extractedData = GovernmentFormData.create(
+                    formType: GovernmentFormData.FormType.dd1155,
+                    formNumber: "DD1155",
+                    revision: "1.0",
+                    formData: try! JSONEncoder().encode([
                         "vendor_name": "ACME Corporation",
                         "total_amount": "$1,500.00",
-                        "delivery_date": "01/21/2025"
-                    ],
-                    criticalFields: [
-                        "total_amount": "$1,500.00",
-                        "vendor_uei": "ABC123456789"
+                        "delivery_date": "01/21/2025",
+                        "vendor_uei": "ABC123456789",
+                        "cage": "1A2B3"
+                    ]),
+                    in: NSManagedObjectContext() // Mock context for test
+                )
+                
+                return FormAutoPopulationResult(
+                    extractedData: extractedData,
+                    suggestedFormType: .dd1155,
+                    confidence: 0.87,
+                    populatedFields: [
+                        ExtractedPopulatedField(
+                            fieldName: "vendor_name",
+                            fieldType: DocumentFormField.FieldType.text,
+                            extractedValue: "ACME Corporation",
+                            confidence: 0.95
+                        ),
+                        ExtractedPopulatedField(
+                            fieldName: "total_amount",
+                            fieldType: DocumentFormField.FieldType.currency,
+                            extractedValue: "$1,500.00",
+                            confidence: 0.92
+                        ),
+                        ExtractedPopulatedField(
+                            fieldName: "delivery_date",
+                            fieldType: DocumentFormField.FieldType.date,
+                            extractedValue: "01/21/2025",
+                            confidence: 0.88
+                        )
                     ]
                 )
             }
@@ -184,16 +190,26 @@ final class DocumentScannerFeatureTests: XCTestCase {
             // TDD Requirement: >85% confidence for auto-population
             XCTAssertGreaterThan(result?.confidence ?? 0.0, 0.85)
             
-            // TDD Requirement: Vendor information extracted
-            XCTAssertNotNil(result?.extractedData.vendorInfo)
-            XCTAssertEqual(result?.extractedData.vendorInfo?.name, "ACME Corporation")
+            // TDD Requirement: Form type detection  
+            XCTAssertEqual(result?.suggestedFormType, .dd1155)
             
-            // TDD Requirement: Financial data extracted
-            XCTAssertNotNil(result?.extractedData.totalAmount)
-            XCTAssertEqual(result?.extractedData.totalAmount?.amount, Decimal(1500.00))
+            // TDD Requirement: Extracted data structure
+            XCTAssertNotNil(result?.extractedData)
+            XCTAssertEqual(result?.extractedData.formType, GovernmentFormData.FormType.dd1155)
+            XCTAssertEqual(result?.extractedData.formNumber, "DD1155")
             
-            // TDD Requirement: Form type detection
-            XCTAssertEqual(result?.extractedData.formType, .dd1155)
+            // TDD Requirement: Populated fields validation
+            XCTAssertGreaterThan(result?.populatedFields.count ?? 0, 0)
+            
+            // Check specific populated fields
+            let vendorField = result?.populatedFields.first { $0.fieldName == "vendor_name" }
+            XCTAssertNotNil(vendorField)
+            XCTAssertEqual(vendorField?.extractedValue, "ACME Corporation")
+            XCTAssertGreaterThan(vendorField?.confidence ?? 0.0, 0.9)
+            
+            let amountField = result?.populatedFields.first { $0.fieldName == "total_amount" }
+            XCTAssertNotNil(amountField)
+            XCTAssertEqual(amountField?.extractedValue, "$1,500.00")
         }
         
         // This test will FAIL until auto-population is implemented
@@ -395,13 +411,13 @@ final class DocumentScannerFeatureTests: XCTestCase {
         ]
         
         // Test that validation tests pass for property mapping logic
-        let result = DocumentContextExtractor.testValue.extractComprehensiveContext([], [], [:])
+        let result = await DocumentContextExtractor.testValue.extractComprehensiveContext([], [], [:])
         
         // Verify ScannerDocumentContext creation works
-        XCTAssertNotNil(try await result)
+        XCTAssertNotNil(result)
         
         // Verify entity extraction pattern
-        let context = try await result
+        let context = result
         let vendorEntities = context.extractedEntities.filter { $0.type == .vendor }
         XCTAssertNotNil(vendorEntities)
         XCTAssertEqual(vendorEntities.first?.value, "Test Vendor Corp")

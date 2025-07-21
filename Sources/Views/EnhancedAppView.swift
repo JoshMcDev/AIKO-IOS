@@ -1356,7 +1356,7 @@ struct EnhancedUploadedDocumentCard: View {
             AccessibilityActionModifier.AccessibilityAction(
                 name: "Remove",
                 action: onRemove
-            ),
+            )
         ])
     }
 

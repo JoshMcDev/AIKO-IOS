@@ -577,8 +577,7 @@ public struct DocumentAnalysisFeature {
                         // Save automation settings
                         let encoder = JSONEncoder()
                         if let settingsData = try? encoder.encode(settings),
-                           let settingsString = String(data: settingsData, encoding: .utf8)
-                        {
+                           let settingsString = String(data: settingsData, encoding: .utf8) {
                             let collectedData = CollectedData(data: ["automationSettings": settingsString])
                             try await workflowEngine.collectData(acquisitionId, collectedData)
                         }
@@ -739,14 +738,13 @@ public struct DocumentAnalysisFeature {
         let patterns = [
             "COMPLETENESS ASSESSMENT: (\\d+)",
             "completeness.*?(\\d+)",
-            "score.*?(\\d+)",
+            "score.*?(\\d+)"
         ]
 
         for pattern in patterns {
             if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
                let match = regex.firstMatch(in: response, options: [], range: NSRange(location: 0, length: response.count)),
-               let scoreRange = Range(match.range(at: 1), in: response)
-            {
+               let scoreRange = Range(match.range(at: 1), in: response) {
                 if let score = Int(response[scoreRange]) {
                     return score
                 }

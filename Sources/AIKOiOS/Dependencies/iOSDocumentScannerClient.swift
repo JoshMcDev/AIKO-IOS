@@ -334,7 +334,7 @@
                     fieldType: mapFieldType(formField.fieldType)
                 )
             }
-            
+
             return OCRResult(
                 fullText: fullText.trimmingCharacters(in: .whitespacesAndNewlines),
                 confidence: overallConfidence,
@@ -377,7 +377,7 @@
             let datePatterns = [
                 "\\d{1,2}/\\d{1,2}/\\d{4}",
                 "\\d{1,2}-\\d{1,2}-\\d{4}",
-                "\\b\\w+ \\d{1,2}, \\d{4}\\b",
+                "\\b\\w+ \\d{1,2}, \\d{4}\\b"
             ]
 
             for pattern in datePatterns {
@@ -706,7 +706,7 @@
                 "MM/dd/yyyy",
                 "MM-dd-yyyy",
                 "MMMM dd, yyyy",
-                "MMM dd, yyyy",
+                "MMM dd, yyyy"
             ]
 
             for format in formatters {

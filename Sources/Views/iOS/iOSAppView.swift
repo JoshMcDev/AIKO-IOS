@@ -117,8 +117,7 @@
             // Method 1: Try loading from bundle with different approaches
             if let url = Bundle.main.url(forResource: "AppIcon", withExtension: "png"),
                let data = try? Data(contentsOf: url),
-               let uiImage = UIImage(data: data)
-            {
+               let uiImage = UIImage(data: data) {
                 return Image(uiImage: uiImage)
             }
 
@@ -135,8 +134,7 @@
             // Method 4: Try from module bundle (for SPM)
             if let bundleURL = Bundle.module.url(forResource: "AppIcon", withExtension: "png"),
                let data = try? Data(contentsOf: bundleURL),
-               let uiImage = UIImage(data: data)
-            {
+               let uiImage = UIImage(data: data) {
                 return Image(uiImage: uiImage)
             }
 
@@ -171,7 +169,7 @@
                 .plainText,
                 .rtf,
                 UTType("com.microsoft.word.doc") ?? .data,
-                UTType("org.openxmlformats.wordprocessingml.document") ?? .data,
+                UTType("org.openxmlformats.wordprocessingml.document") ?? .data
             ])
             picker.delegate = context.coordinator
             picker.allowsMultipleSelection = true
@@ -253,7 +251,7 @@
 
         func makeUIViewController(context _: Context) -> UIViewController {
             let adapter = VisionKitAdapter()
-            
+
             // Set completion handler
             adapter.uiManager.setCompletion { (result: VisionKitAdapter.ScanResult) in
                 switch result {
@@ -319,8 +317,7 @@
 
             func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
                 if let image = info[.originalImage] as? UIImage,
-                   let imageData = image.jpegData(compressionQuality: 0.8)
-                {
+                   let imageData = image.jpegData(compressionQuality: 0.8) {
                     DispatchQueue.main.async {
                         self.parent.onImagePicked(imageData)
                     }

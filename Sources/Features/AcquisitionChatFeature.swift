@@ -127,7 +127,7 @@ public struct AcquisitionChatFeature: Sendable {
                 estimatedValue,
                 performancePeriod,
                 requirementType,
-                businessNeed,
+                businessNeed
             ]
             let filledFields = fields.filter { !$0.isEmpty }.count
             return Double(filledFields) / Double(fields.count)
@@ -842,7 +842,7 @@ public struct AcquisitionChatFeature: Sendable {
 
             Let me gather some key information to help generate the right documents:
 
-            **What is the estimated dollar value** of this acquisition? 
+            **What is the estimated dollar value** of this acquisition?
             (This helps determine the appropriate procurement method)
             """
 
@@ -882,7 +882,7 @@ public struct AcquisitionChatFeature: Sendable {
                  **Market Research Report** - Ready to generate
                  **Requirements Document** - Ready to generate
 
-                Would you like to provide **technical requirements or specifications**? 
+                Would you like to provide **technical requirements or specifications**?
                 This will help me prepare more detailed documents like the Statement of Work.
 
                 *(You can type "skip" to proceed with document generation)*
@@ -1023,7 +1023,7 @@ public struct AcquisitionChatFeature: Sendable {
         // Convert to AICompletionRequest
         let messages = [
             AIMessage.user("""
-                Based on the current phase of acquisition planning (\(phase)) and the user's input, 
+                Based on the current phase of acquisition planning (\(phase)) and the user's input,
                 provide a response that:
                 1. Acknowledges and processes their input
                 2. Updates the requirements data as appropriate
@@ -1033,7 +1033,7 @@ public struct AcquisitionChatFeature: Sendable {
 
                 Current user input: \(input)
 
-                IMPORTANT: 
+                IMPORTANT:
                 - When you have enough information to predict values, present them clearly
                 - Ask for explicit confirmation before marking documents as ready
                 - If user responds with "yes", "correct", "confirm" or similar, treat as confirmation

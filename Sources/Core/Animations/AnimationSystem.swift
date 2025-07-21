@@ -97,7 +97,7 @@ struct ShimmerModifier: ViewModifier {
                         colors: [
                             Color.white.opacity(0),
                             Color.white.opacity(0.3),
-                            Color.white.opacity(0),
+                            Color.white.opacity(0)
                         ],
                         startPoint: .leading,
                         endPoint: .trailing

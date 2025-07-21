@@ -8,7 +8,7 @@
     public final class iOSEmailService: DelegateServiceTemplate<EmailComposeResult>, EmailServiceProtocol {
         @MainActor
         public static let shared = iOSEmailService()
-        
+
         override public init() {
             super.init()
         }

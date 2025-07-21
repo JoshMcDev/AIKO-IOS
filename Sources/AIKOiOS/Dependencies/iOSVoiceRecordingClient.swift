@@ -36,7 +36,7 @@
     @MainActor
     private class iOSAudioRecorder: NSObject {
         static let shared = iOSAudioRecorder()
-        
+
         private var audioRecorder: AVAudioRecorder?
         private let audioSession: AVAudioSession
         private let audioEngine = AVAudioEngine()

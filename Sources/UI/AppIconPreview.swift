@@ -45,7 +45,7 @@ struct AppIconPreview: View, @unchecked Sendable {
         let paths = [
             "/Users/J/Documents/GitHub/AIKO-IOS/Sources/Resources/AppIcon.png",
             "/Users/J/Documents/GitHub/AIKO-IOS/Sources/UI/AppIcon.png",
-            "/Users/J/Documents/GitHub/AIKO-IOS/AIKO/AIKO/Assets.xcassets/AppIcon.appiconset/AppIcon.png",
+            "/Users/J/Documents/GitHub/AIKO-IOS/AIKO/AIKO/Assets.xcassets/AppIcon.appiconset/AppIcon.png"
         ]
 
         for path in paths {

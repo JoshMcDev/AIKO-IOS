@@ -89,7 +89,7 @@ public struct ExtractedContext: Equatable, Sendable {
 }
 
 /// Adaptive Prompting Engine vendor information
-public struct APEVendorInfo: Equatable, Sendable {
+public struct APEVendorInfo: Equatable, Sendable, Codable {
     public var name: String?
     public var address: String?
     public var phone: String?

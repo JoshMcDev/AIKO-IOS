@@ -39,7 +39,7 @@ public struct AcquisitionChatFeatureEnhanced {
                 content: """
                 # Welcome to AIKO Acquisition Assistant
 
-                I'll help you create a new acquisition by gathering the essential information needed. 
+                I'll help you create a new acquisition by gathering the essential information needed.
 
                 **You can:**
                 - Upload documents (quotes, specs, invoices) and I'll extract information automatically
@@ -569,23 +569,23 @@ private struct UnsafeAdaptivePromptingEngineWrapper: AdaptivePromptingEngineProt
     private var engine: AdaptivePromptingEngine {
         AdaptivePromptingEngine()
     }
-    
+
     nonisolated func startConversation(with context: ConversationContext) async -> ConversationSession {
         return await engine.startConversation(with: context)
     }
-    
+
     nonisolated func processUserResponse(_ response: UserResponse, in session: ConversationSession) async throws -> NextPrompt? {
         return try await engine.processUserResponse(response, in: session)
     }
-    
+
     nonisolated func extractContextFromDocuments(_ documents: [ParsedDocument]) async throws -> ExtractedContext {
         return try await engine.extractContextFromDocuments(documents)
     }
-    
+
     nonisolated func learnFromInteraction(_ interaction: APEUserInteraction) async {
         await engine.learnFromInteraction(interaction)
     }
-    
+
     nonisolated func getSmartDefaults(for field: RequirementField) async -> FieldDefault? {
         return await engine.getSmartDefaults(for: field)
     }

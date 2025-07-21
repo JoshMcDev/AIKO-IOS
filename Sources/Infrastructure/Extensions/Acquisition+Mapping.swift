@@ -115,7 +115,7 @@ extension GeneratedFile {
             // Default to SOW if type cannot be determined
             documentType = .sow
         }
-        
+
         return GeneratedDocument(
             id: id ?? UUID(),
             title: fileName ?? "",

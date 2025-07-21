@@ -10,11 +10,11 @@ import Perception
 @MainActor
 public struct DocumentScannerView: View {
     @Perception.Bindable public var store: StoreOf<DocumentScannerFeature>
-    
+
     public init(store: StoreOf<DocumentScannerFeature>) {
         self.store = store
     }
-    
+
     public var body: some View {
         WithPerceptionTracking {
             VStack(spacing: 0) {
@@ -56,9 +56,9 @@ public struct DocumentScannerView: View {
             }
         }
     }
-    
+
     // MARK: - VisionKit Document Camera View
-    
+
     @ViewBuilder
     private var documentCameraView: some View {
         if VNDocumentCameraViewController.isSupported {
@@ -78,16 +78,16 @@ public struct DocumentScannerView: View {
                 Image(systemName: "camera.viewfinder")
                     .font(.system(size: 60))
                     .foregroundColor(.secondary)
-                
+
                 Text("Document Scanning Not Available")
                     .font(.title2)
                     .fontWeight(.semibold)
-                
+
                 Text("Document scanning is not supported on this device.")
                     .font(.body)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
-                
+
                 Button("Dismiss") {
                     store.send(.scannerDidCancel)
                 }
@@ -96,29 +96,29 @@ public struct DocumentScannerView: View {
             .padding()
         }
     }
-    
+
     // MARK: - Empty State View
-    
+
     private var emptyStateView: some View {
         VStack(spacing: 24) {
             Spacer()
-            
+
             VStack(spacing: 16) {
                 Image(systemName: "doc.viewfinder")
                     .font(.system(size: 80))
                     .foregroundColor(.accentColor)
-                
+
                 Text("Scan Documents")
                     .font(.title)
                     .fontWeight(.semibold)
-                
+
                 Text("Capture high-quality scans with automatic edge detection and enhancement.")
                     .font(.body)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
             }
-            
+
             VStack(spacing: 12) {
                 // Main scan button
                 Button {
@@ -131,7 +131,7 @@ public struct DocumentScannerView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(!store.cameraPermissionGranted)
-                
+
                 // Quick scan button
                 if store.cameraPermissionGranted {
                     Button {
@@ -144,23 +144,23 @@ public struct DocumentScannerView: View {
                 }
             }
             .padding(.horizontal, 40)
-            
+
             // Permission status
             if !store.cameraPermissionGranted && store.cameraPermissionChecked {
                 VStack(spacing: 8) {
                     Image(systemName: "camera.fill.badge.ellipsis")
                         .font(.system(size: 30))
                         .foregroundColor(.orange)
-                    
+
                     Text("Camera Permission Required")
                         .font(.headline)
                         .foregroundColor(.orange)
-                    
+
                     Text("To scan documents, please allow camera access in Settings.")
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
-                    
+
                     Button("Open Settings") {
                         if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                             UIApplication.shared.open(settingsURL)
@@ -174,20 +174,20 @@ public struct DocumentScannerView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .padding(.horizontal)
             }
-            
+
             Spacer()
         }
     }
-    
+
     // MARK: - Scanned Pages View
-    
+
     private var scannedPagesView: some View {
         VStack(spacing: 0) {
             // Progress view for processing
             if store.isProcessingAllPages || store.isAutoPopulating {
                 processingProgressView
             }
-            
+
             // Pages list
             List {
                 ForEach(store.scannedPages) { page in
@@ -222,40 +222,40 @@ public struct DocumentScannerView: View {
                 }
             }
             .listStyle(.plain)
-            
+
             // Bottom action bar
             if store.hasScannedPages {
                 bottomActionBar
             }
         }
     }
-    
+
     // MARK: - Processing Progress View
-    
+
     private var processingProgressView: some View {
         VStack(spacing: 8) {
             if store.isProcessingAllPages {
                 HStack {
                     ProgressView()
                         .scaleEffect(0.8)
-                    
+
                     Text("Processing \(store.processedPagesCount) of \(store.totalPagesCount) pages...")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     Spacer()
                 }
             }
-            
+
             if store.isAutoPopulating {
                 HStack {
                     ProgressView()
                         .scaleEffect(0.8)
-                    
+
                     Text("Analyzing document for auto-population...")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     Spacer()
                 }
             }
@@ -264,9 +264,9 @@ public struct DocumentScannerView: View {
         .padding(.vertical, 8)
         .background(Color(UIColor.systemGray6))
     }
-    
+
     // MARK: - Bottom Action Bar
-    
+
     private var bottomActionBar: some View {
         WithPerceptionTracking {
             VStack(spacing: 12) {
@@ -277,7 +277,7 @@ public struct DocumentScannerView: View {
                     set: { store.send(.updateDocumentTitle($0)) }
                 ))
                     .textFieldStyle(.roundedBorder)
-                
+
                 Button {
                     store.send(.scanButtonTapped)
                 } label: {
@@ -286,7 +286,7 @@ public struct DocumentScannerView: View {
                         .foregroundColor(.accentColor)
                 }
             }
-            
+
             // Action buttons
             HStack(spacing: 12) {
                 // Selection mode toggle
@@ -299,9 +299,9 @@ public struct DocumentScannerView: View {
                     )
                 }
                 .buttonStyle(.bordered)
-                
+
                 Spacer()
-                
+
                 // Process all pages
                 if !store.isProcessingAllPages {
                     Button {
@@ -311,7 +311,7 @@ public struct DocumentScannerView: View {
                     }
                     .buttonStyle(.bordered)
                 }
-                
+
                 // Save to document pipeline
                 Button {
                     store.send(.saveToDocumentPipeline)
@@ -333,9 +333,9 @@ public struct DocumentScannerView: View {
             }
         }
     }
-    
+
     // MARK: - Toolbar Content
-    
+
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
@@ -351,9 +351,9 @@ public struct DocumentScannerView: View {
                                 .tag(mode)
                         }
                     }
-                    
+
                     Divider()
-                    
+
                     // Processing options
                     Toggle("Image Enhancement", isOn: Binding(
                         get: { store.enableImageEnhancement },
@@ -367,9 +367,9 @@ public struct DocumentScannerView: View {
                         get: { store.useEnhancedOCR },
                         set: { store.send(.toggleEnhancedOCR($0)) }
                     ))
-                    
+
                     Divider()
-                    
+
                     // Quality settings
                     Picker("Scan Quality", selection: Binding(
                         get: { store.scanQuality },
@@ -379,7 +379,7 @@ public struct DocumentScannerView: View {
                             Text(quality.title).tag(quality)
                         }
                     }
-                    
+
                     // Processing mode
                     Picker("Processing Mode", selection: Binding(
                         get: { store.processingMode },
@@ -389,13 +389,13 @@ public struct DocumentScannerView: View {
                             Text(mode.title).tag(mode)
                         }
                     }
-                    
+
                 } label: {
                     Image(systemName: "ellipsis.circle")
                 }
             }
         }
-        
+
         // Quick scan button in navigation
         ToolbarItem(placement: .topBarLeading) {
             if store.cameraPermissionGranted && !store.isQuickScanning {
@@ -418,7 +418,7 @@ private struct DocumentPageRow: View {
     let onTap: () -> Void
     let onDelete: () -> Void
     let onRetry: () -> Void
-    
+
     var body: some View {
         HStack(spacing: 12) {
             // Selection indicator
@@ -427,7 +427,7 @@ private struct DocumentPageRow: View {
                     .foregroundColor(isSelected ? .accentColor : .secondary)
                     .font(.title3)
             }
-            
+
             // Page thumbnail
             AsyncImage(url: nil) { _ in
                 // Placeholder for page thumbnail
@@ -448,15 +448,15 @@ private struct DocumentPageRow: View {
                             .scaleEffect(0.7)
                     }
             }
-            
+
             // Page info
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Text("Page \(page.pageNumber)")
                         .font(.headline)
-                    
+
                     Spacer()
-                    
+
                     // Processing status
                     switch page.processingState {
                     case .pending:
@@ -484,32 +484,32 @@ private struct DocumentPageRow: View {
                         .foregroundColor(.red)
                     }
                 }
-                
+
                 // Quality score
                 if let qualityScore = page.qualityScore {
                     HStack {
                         Text("Quality:")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        
+
                         QualityIndicator(score: qualityScore)
                     }
                 }
-                
+
                 // OCR status
                 if let ocrResult = page.ocrResult {
                     HStack {
                         Image(systemName: "text.magnifyingglass")
                             .font(.caption)
                             .foregroundColor(.blue)
-                        
+
                         Text("OCR: \(Int(ocrResult.confidence * 100))% confidence")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
             }
-            
+
             Spacer()
         }
         .contentShape(Rectangle())
@@ -520,7 +520,7 @@ private struct DocumentPageRow: View {
             Button("Delete", role: .destructive) {
                 onDelete()
             }
-            
+
             if case .failed = page.processingState {
                 Button("Retry") {
                     onRetry()
@@ -535,7 +535,7 @@ private struct DocumentPageRow: View {
 
 private struct QualityIndicator: View {
     let score: Double
-    
+
     private var color: Color {
         switch score {
         case 0.8...: return .green
@@ -543,7 +543,7 @@ private struct QualityIndicator: View {
         default: return .red
         }
     }
-    
+
     private var label: String {
         switch score {
         case 0.8...: return "Excellent"
@@ -551,13 +551,13 @@ private struct QualityIndicator: View {
         default: return "Poor"
         }
     }
-    
+
     var body: some View {
         HStack(spacing: 4) {
             RoundedRectangle(cornerRadius: 2)
                 .fill(color)
                 .frame(width: 30, height: 4)
-            
+
             Text(label)
                 .font(.caption)
                 .foregroundColor(color)
@@ -569,41 +569,41 @@ private struct QualityIndicator: View {
 
 private struct VisionKitDocumentCameraView: UIViewControllerRepresentable {
     let completion: (VisionKitAdapter.ScanResult) -> Void
-    
+
     func makeUIViewController(context: Context) -> VNDocumentCameraViewController {
         let adapter = VisionKitAdapter()
         let controller = adapter.createDocumentCameraViewController()
-        
+
         // Set up completion handling through coordinator
         context.coordinator.completion = completion
         context.coordinator.adapter = adapter
-        
+
         return controller
     }
-    
+
     func updateUIViewController(_: VNDocumentCameraViewController, context: Context) {
         // No updates needed
     }
-    
+
     func makeCoordinator() -> Coordinator {
         Coordinator(completion: completion)
     }
-    
+
     class Coordinator: NSObject, VNDocumentCameraViewControllerDelegate {
         var completion: (VisionKitAdapter.ScanResult) -> Void
         var adapter: VisionKitAdapter?
-        
+
         init(completion: @escaping (VisionKitAdapter.ScanResult) -> Void) {
             self.completion = completion
         }
-        
+
         func documentCameraViewController(
             _ controller: VNDocumentCameraViewController,
             didFinishWith scan: VNDocumentCameraScan
         ) {
             // Convert VNDocumentCameraScan to ScannedDocument
             var pages: [ScannedPage] = []
-            
+
             for i in 0..<scan.pageCount {
                 let image = scan.imageOfPage(at: i)
                 if let imageData = image.jpegData(compressionQuality: 0.9) {
@@ -615,20 +615,20 @@ private struct VisionKitDocumentCameraView: UIViewControllerRepresentable {
                     pages.append(page)
                 }
             }
-            
+
             let document = ScannedDocument(
                 id: UUID(),
                 pages: pages,
                 scannedAt: Date()
             )
-            
+
             completion(.success(document))
         }
-        
+
         func documentCameraViewControllerDidCancel(_ controller: VNDocumentCameraViewController) {
             completion(.cancelled)
         }
-        
+
         func documentCameraViewController(
             _ controller: VNDocumentCameraViewController,
             didFailWithError error: Error
@@ -647,7 +647,7 @@ private extension ScannerMode {
         case .quickScan: return "Quick Scan"
         }
     }
-    
+
     var systemImage: String {
         switch self {
         case .fullEdit: return "doc.text.image"

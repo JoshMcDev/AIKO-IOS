@@ -223,7 +223,7 @@ struct AcquisitionChatView: View {
     }
 }
 
-@MainActor 
+@MainActor
 private func generateChatHistoryContent(viewStore: ViewStore<AcquisitionChatFeature.State, AcquisitionChatFeature.Action>) -> String {
     var content = """
     Acquisition Chat History

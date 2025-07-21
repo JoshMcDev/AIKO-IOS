@@ -296,7 +296,7 @@ private let wizardSteps: [String: WizardStep] = [
         answerType: .yesNo,
         options: nil,
         nextStepLogic: { _ in nil }
-    ),
+    )
 ]
 
 // MARK: - Live Value
@@ -384,14 +384,14 @@ extension FARPart12Wizard: DependencyKey {
     private static func generateJustification(from _: [String: WizardAnswer], isCommercial: Bool) -> String {
         if isCommercial {
             """
-            Based on market research and analysis, this acquisition meets the definition of a commercial item under FAR 2.101. 
-            The item/service is of a type customarily used by the general public or non-governmental entities for purposes 
+            Based on market research and analysis, this acquisition meets the definition of a commercial item under FAR 2.101.
+            The item/service is of a type customarily used by the general public or non-governmental entities for purposes
             other than governmental purposes, and has been sold, leased, or licensed to the general public.
             """
         } else {
             """
-            After thorough market research and analysis, this acquisition does not meet the criteria for commercial item 
-            determination under FAR 2.101. The item/service requires significant customization or modifications that 
+            After thorough market research and analysis, this acquisition does not meet the criteria for commercial item
+            determination under FAR 2.101. The item/service requires significant customization or modifications that
             fundamentally alter its commercial nature, or is not offered in the commercial marketplace.
             """
         }
@@ -410,7 +410,7 @@ extension FARPart12Wizard: DependencyKey {
                 "52.212-2 Evaluation—Commercial Items",
                 "52.212-3 Offeror Representations and Certifications—Commercial Items",
                 "52.212-4 Contract Terms and Conditions—Commercial Items",
-                "52.212-5 Contract Terms and Conditions Required to Implement Statutes or Executive Orders—Commercial Items",
+                "52.212-5 Contract Terms and Conditions Required to Implement Statutes or Executive Orders—Commercial Items"
             ]
         case .notCommercial:
             ["Standard FAR Part 15 clauses apply"]
@@ -426,31 +426,31 @@ extension FARPart12Wizard: DependencyKey {
                 "Use FAR Part 12 procedures",
                 "Apply streamlined solicitation process",
                 "Minimize government-unique requirements",
-                "Consider firm-fixed-price contract type",
+                "Consider firm-fixed-price contract type"
             ]
         case .commercialService:
             [
                 "Use commercial service acquisition procedures",
                 "Consider performance-based approach",
-                "Apply commercial quality standards",
+                "Apply commercial quality standards"
             ]
         case .modifiedCommercial:
             [
                 "Document modifications clearly",
                 "Ensure modifications are minor",
-                "Maintain commercial pricing structure",
+                "Maintain commercial pricing structure"
             ]
         case .notCommercial:
             [
                 "Use FAR Part 15 procedures",
                 "Conduct detailed cost analysis",
-                "Apply full competition requirements",
+                "Apply full competition requirements"
             ]
         case .hybrid:
             [
                 "Segregate commercial and non-commercial elements",
                 "Apply appropriate procedures to each element",
-                "Document determination for each component",
+                "Document determination for each component"
             ]
         }
     }
@@ -503,7 +503,7 @@ extension FARPart12Wizard: DependencyKey {
         \(determination.risks.map { "   - \($0)" }.joined(separator: "\n"))
 
         8. CONTRACTING OFFICER DETERMINATION:
-        Based on the above analysis, I have determined that this acquisition \(determination.isCommercialItem ? "qualifies" : "does not qualify") 
+        Based on the above analysis, I have determined that this acquisition \(determination.isCommercialItem ? "qualifies" : "does not qualify")
         as a commercial item under FAR 2.101. \(determination.isCommercialItem ? "FAR Part 12 procedures shall be used." : "FAR Part 15 procedures shall be used.")
 
 

@@ -124,7 +124,7 @@ public actor EnhancedAPIKeyManager {
         // Production pins (these should be updated with actual certificate pins)
         certificatePins = [
             "api.anthropic.com": "abc123def456...", // Replace with actual pin
-            "api.openai.com": "ghi789jkl012...", // Replace with actual pin
+            "api.openai.com": "ghi789jkl012..." // Replace with actual pin
         ]
     }
 
@@ -214,7 +214,7 @@ public actor EnhancedAPIKeyManager {
             kSecAttrService as String: keychainService,
             kSecAttrAccount as String: identifier,
             kSecValueData as String: data,
-            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
         ]
 
         // Delete existing item
@@ -233,7 +233,7 @@ public actor EnhancedAPIKeyManager {
             kSecAttrService as String: keychainService,
             kSecAttrAccount as String: identifier,
             kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne,
+            kSecMatchLimit as String: kSecMatchLimitOne
         ]
 
         var result: AnyObject?
@@ -250,7 +250,7 @@ public actor EnhancedAPIKeyManager {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: keychainService,
-            kSecAttrAccount as String: identifier,
+            kSecAttrAccount as String: identifier
         ]
 
         return SecItemDelete(query as CFDictionary) == errSecSuccess
@@ -310,8 +310,7 @@ public extension URLSession {
 public final class PinnedSessionDelegate: NSObject, URLSessionDelegate {
     public func urlSession(_: URLSession,
                            didReceive challenge: URLAuthenticationChallenge,
-                           completionHandler: @escaping @Sendable (URLSession.AuthChallengeDisposition, URLCredential?) -> Void)
-    {
+                           completionHandler: @escaping @Sendable (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         guard challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
               let serverTrust = challenge.protectionSpace.serverTrust,
               true

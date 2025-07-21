@@ -184,7 +184,7 @@ public final class DocumentRepository: @unchecked Sendable {
         let request = AcquisitionDocument.fetchRequest()
 
         var predicates: [NSPredicate] = [
-            NSPredicate(format: "content CONTAINS[cd] %@", query),
+            NSPredicate(format: "content CONTAINS[cd] %@", query)
         ]
 
         if let acquisitionId {

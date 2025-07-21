@@ -109,7 +109,7 @@ public final class MockDocumentContextExtractionService: DocumentContextExtracti
                         quantity: 2,
                         unitPrice: Decimal(500.25),
                         totalPrice: Decimal(1000.50)
-                    ),
+                    )
                 ]
             ),
             technicalDetails: ["High-quality mock product with test specifications"],
@@ -121,7 +121,7 @@ public final class MockDocumentContextExtractionService: DocumentContextExtracti
             confidence: [
                 "overall": 0.85,
                 "vendor": 0.9,
-                "pricing": 0.8,
+                "pricing": 0.8
             ]
         )
 

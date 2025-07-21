@@ -5,7 +5,7 @@ public struct ExtractedFormData: Equatable, Sendable {
     public let fields: [FormField]
     public let confidence: ConfidenceScore
     public let metadata: ExtractionMetadata
-    
+
     public init(
         fields: [FormField],
         confidence: ConfidenceScore,
@@ -15,11 +15,11 @@ public struct ExtractedFormData: Equatable, Sendable {
         self.confidence = confidence
         self.metadata = metadata
     }
-    
+
     public var highConfidenceFields: [FormField] {
         return fields.filter { $0.confidence.isHighConfidence }
     }
-    
+
     public var criticalFields: [FormField] {
         return fields.filter { $0.isCritical }
     }
@@ -32,7 +32,7 @@ public struct ExtractionMetadata: Equatable, Sendable {
     public let ocrConfidence: Double
     public let imageQuality: Double
     public let timestamp: Date
-    
+
     public init(
         processingTime: TimeInterval,
         formType: FormType,

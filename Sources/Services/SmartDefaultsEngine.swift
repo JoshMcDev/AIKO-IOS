@@ -27,7 +27,7 @@ public final class SmartDefaultsEngine: @unchecked Sendable {
     private let minConfidenceThreshold: Float = 0.65
 
     // MARK: - Helper Functions
-    
+
     /// Convert various value types to ResponseValue for FieldDefault
     private func convertToResponseValue(_ value: Any) -> UserResponse.ResponseValue {
         switch value {
@@ -50,24 +50,24 @@ public final class SmartDefaultsEngine: @unchecked Sendable {
             return .text(String(describing: value))
         }
     }
-    
+
     /// Convert string value to ResponseValue for FieldDefault
     private func convertStringToResponseValue(_ value: String) -> UserResponse.ResponseValue {
         // Try to infer the type from the string content
         if value.isEmpty {
             return .text("")
         }
-        
+
         // Check for boolean values
         if value.lowercased() == "true" || value.lowercased() == "false" {
             return .boolean(Bool(value.lowercased()) ?? false)
         }
-        
+
         // Check for numeric values
         if let decimal = Decimal(string: value) {
             return .numeric(decimal)
         }
-        
+
         // Check for date values (basic ISO format)
         if value.contains("-") && value.count >= 10 {
             let formatter = ISO8601DateFormatter()
@@ -75,14 +75,14 @@ public final class SmartDefaultsEngine: @unchecked Sendable {
                 return .date(date)
             }
         }
-        
+
         // Check for UUID values
         if value.count == 36 && value.contains("-") {
             if let uuid = UUID(uuidString: value) {
                 return .document(uuid)
             }
         }
-        
+
         // Default to text
         return .text(value)
     }
@@ -462,13 +462,13 @@ public final class SmartDefaultsEngine: @unchecked Sendable {
             .projectTitle,
             .estimatedValue,
             .requiredDate,
-            .vendorName,
+            .vendorName
         ]
 
         let highPriorityFields: Set<RequirementField> = [
             .fundingSource,
             .contractType,
-            .performanceLocation,
+            .performanceLocation
         ]
 
         return fields.sorted { lhs, rhs in
@@ -727,7 +727,7 @@ public extension SmartDefaultsEngine {
             mustAskFields: orderedMustAsk
         )
     }
-    
+
     /// Helper function to convert Any value to UserResponse.ResponseValue
     private func convertToResponseValue(_ value: Any) -> UserResponse.ResponseValue? {
         switch value {

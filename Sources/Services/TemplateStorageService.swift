@@ -167,7 +167,7 @@ extension TemplateStorageService: DependencyKey {
 
     public static var testValue: TemplateStorageService {
         let storage = TestTemplateStorage()
-        
+
         return TemplateStorageService(
             saveTemplate: { template in
                 await storage.saveTemplate(template)
@@ -200,31 +200,31 @@ actor TestTemplateStorage {
     private var savedTemplates: [CustomTemplate] = []
     private var editedTemplates: [DocumentType: String] = [:]
     private var officeTemplates: [OfficeTemplate] = []
-    
+
     func saveTemplate(_ template: CustomTemplate) {
         savedTemplates.append(template)
     }
-    
+
     func loadTemplates() -> [CustomTemplate] {
         return savedTemplates
     }
-    
+
     func deleteTemplate(_ id: UUID) {
         savedTemplates.removeAll { $0.id == id }
     }
-    
+
     func saveEditedTemplate(_ documentType: DocumentType, _ content: String) {
         editedTemplates[documentType] = content
     }
-    
+
     func loadEditedTemplate(_ documentType: DocumentType) -> String? {
         return editedTemplates[documentType]
     }
-    
+
     func saveOfficeTemplate(_ template: OfficeTemplate) {
         officeTemplates.append(template)
     }
-    
+
     func loadOfficeTemplates(_ documentType: DocumentType) -> [OfficeTemplate] {
         return officeTemplates.filter { $0.documentType == documentType }
     }

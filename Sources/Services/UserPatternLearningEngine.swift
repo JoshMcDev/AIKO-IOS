@@ -18,26 +18,26 @@ public final class UserPatternLearningEngine: @unchecked Sendable {
     private var _confidenceThresholds: [RequirementField: Float] = [:]
 
     // Thread-safe accessors
-    
+
     // MARK: - Helper Functions
-    
+
     /// Convert string value to ResponseValue for FieldDefault
     private func convertToResponseValue(_ value: String) -> UserResponse.ResponseValue {
         // Try to infer the type from the string content
         if value.isEmpty {
             return .text("")
         }
-        
+
         // Check for boolean values
         if value.lowercased() == "true" || value.lowercased() == "false" {
             return .boolean(Bool(value.lowercased()) ?? false)
         }
-        
+
         // Check for numeric values
         if let decimal = Decimal(string: value) {
             return .numeric(decimal)
         }
-        
+
         // Check for date values (basic ISO format)
         if value.contains("-") && value.count >= 10 {
             let formatter = ISO8601DateFormatter()
@@ -45,14 +45,14 @@ public final class UserPatternLearningEngine: @unchecked Sendable {
                 return .date(date)
             }
         }
-        
+
         // Check for UUID values
         if value.count == 36 && value.contains("-") {
             if let uuid = UUID(uuidString: value) {
                 return .document(uuid)
             }
         }
-        
+
         // Default to text
         return .text(value)
     }
@@ -708,8 +708,7 @@ public final class UserPatternLearningEngine: @unchecked Sendable {
 
     private func loadPatterns() {
         if let data = UserDefaults.standard.data(forKey: persistenceKey),
-           let decoded = try? JSONDecoder().decode([String: [PatternData]].self, from: data)
-        {
+           let decoded = try? JSONDecoder().decode([String: [PatternData]].self, from: data) {
             // Convert string keys back to RequirementField
             for (key, value) in decoded {
                 if let field = RequirementField(rawValue: key) {
@@ -721,16 +720,14 @@ public final class UserPatternLearningEngine: @unchecked Sendable {
 
     private func loadContextualPatterns() {
         if let data = UserDefaults.standard.data(forKey: contextPersistenceKey),
-           let decoded = try? JSONDecoder().decode([ContextualPattern].self, from: data)
-        {
+           let decoded = try? JSONDecoder().decode([ContextualPattern].self, from: data) {
             contextualPatterns = decoded
         }
     }
 
     private func loadFieldRelationships() {
         if let data = UserDefaults.standard.data(forKey: relationshipPersistenceKey),
-           let decoded = try? JSONDecoder().decode([FieldRelationship].self, from: data)
-        {
+           let decoded = try? JSONDecoder().decode([FieldRelationship].self, from: data) {
             fieldRelationships = decoded
         }
     }
@@ -1021,8 +1018,7 @@ extension UserPatternLearningEngine {
         // Combine insights
         if let weighted = bestWeighted,
            let cluster = bestCluster,
-           weighted.key == cluster.representative
-        {
+           weighted.key == cluster.representative {
             // Strong agreement
             return (weighted.key, min(weighted.value * 1.2, 1.0))
         } else if let weighted = bestWeighted {
@@ -1183,7 +1179,7 @@ extension UserPatternLearningEngine {
                 "dayOfWeek": pattern.sessionContext?.dayOfWeek ?? 0,
                 "hasDocuments": pattern.hadDocumentContext,
                 "responseTime": pattern.timeToRespond,
-                "confidence": pattern.confidence,
+                "confidence": pattern.confidence
             ]
             return (features, pattern.value)
         }

@@ -96,7 +96,7 @@ public class DocumentContextExtractorEnhanced: @unchecked Sendable {
             (["vendor_phone", "phone", "contact_phone", "telephone"], \APEVendorInfo.phone),
             (["vendor_address", "address", "location"], \APEVendorInfo.address),
             (["uei", "sam_uei"], \APEVendorInfo.uei),
-            (["cage", "cage_code"], \APEVendorInfo.cage),
+            (["cage", "cage_code"], \APEVendorInfo.cage)
         ]
 
         for (patterns, keyPath) in vendorMappings {
@@ -141,7 +141,7 @@ public class DocumentContextExtractorEnhanced: @unchecked Sendable {
         let dateMappings: [(patterns: [String], handler: (Date) -> Void)] = [
             (["quote_date", "estimate_date", "date"], { dates.quoteDate = $0; hasData = true }),
             (["valid_until", "expires", "expiration", "validity"], { dates.validUntil = $0; hasData = true }),
-            (["delivery_date", "required_date", "due_date", "need_by"], { dates.deliveryDate = $0; hasData = true }),
+            (["delivery_date", "required_date", "due_date", "need_by"], { dates.deliveryDate = $0; hasData = true })
         ]
 
         for (patterns, handler) in dateMappings {
@@ -169,7 +169,7 @@ public class DocumentContextExtractorEnhanced: @unchecked Sendable {
         // Technical field patterns
         let technicalPatterns = [
             "technical_features", "features", "specifications", "specs",
-            "requirements", "capabilities", "description", "details",
+            "requirements", "capabilities", "description", "details"
         ]
 
         for object in result.valueObjects {
@@ -178,8 +178,7 @@ public class DocumentContextExtractorEnhanced: @unchecked Sendable {
                 if object.dataType == .array {
                     // Handle array of features
                     if let arrayData = object.value.data(using: .utf8),
-                       let features = try? JSONDecoder().decode([String].self, from: arrayData)
-                    {
+                       let features = try? JSONDecoder().decode([String].self, from: arrayData) {
                         details.append(contentsOf: features)
                     }
                 } else if object.dataType == .text, object.value.count > 20 {
@@ -198,7 +197,7 @@ public class DocumentContextExtractorEnhanced: @unchecked Sendable {
         // Look for government/compliance related fields
         let specialPatterns = [
             "haipe_compatible", "security_clearance", "compliance",
-            "certifications", "special_requirements", "notes",
+            "certifications", "special_requirements", "notes"
         ]
 
         for object in result.valueObjects {
@@ -324,7 +323,7 @@ public class DocumentContextExtractorEnhanced: @unchecked Sendable {
         let formatters: [DateFormatter] = [
             DateFormatter.mmddyyyy,
             DateFormatter.yyyymmdd,
-            DateFormatter.mmmddyyyy,
+            DateFormatter.mmmddyyyy
         ]
 
         for formatter in formatters {

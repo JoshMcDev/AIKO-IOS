@@ -132,7 +132,7 @@ public final class AcquisitionServiceImpl: BaseService, @unchecked Sendable {
 
         // Determine required documents based on regulations
         let statusString = acquisition.status.rawValue
-        let _ = try await regulationEngine.determineRequiredDocuments(
+        _ = try await regulationEngine.determineRequiredDocuments(
             for: statusString,
             amount: Decimal(0) // Default amount since Acquisition doesn't have estimatedValue
         )
@@ -168,7 +168,7 @@ public final class AcquisitionServiceImpl: BaseService, @unchecked Sendable {
             // TODO: Implement required documents determination logic
             // For now, generate a basic document chain based on acquisition type
             let documentTypes: [DocumentType] = [.sow, .costEstimate, .acquisitionPlan]
-            
+
             for docType in documentTypes {
                 let context = GenerationContext(
                     acquisition: acquisition,

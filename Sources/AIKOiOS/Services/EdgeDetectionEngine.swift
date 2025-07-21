@@ -204,7 +204,7 @@
                         CGPoint(
                             x: bestObservation.bottomLeft.x * imageSize.width,
                             y: (1.0 - bestObservation.bottomLeft.y) * imageSize.height
-                        ),
+                        )
                     ]
 
                     // Calculate document bounds
@@ -245,7 +245,7 @@
                     CGPoint(x: imageSize.width * 0.1, y: imageSize.height * 0.1),
                     CGPoint(x: imageSize.width * 0.9, y: imageSize.height * 0.1),
                     CGPoint(x: imageSize.width * 0.9, y: imageSize.height * 0.9),
-                    CGPoint(x: imageSize.width * 0.1, y: imageSize.height * 0.9),
+                    CGPoint(x: imageSize.width * 0.1, y: imageSize.height * 0.9)
                 ]
             }
             cornerFilter.setValue(edgeMap, forKey: kCIInputImageKey)
@@ -258,7 +258,7 @@
                     CGPoint(x: imageSize.width * 0.1, y: imageSize.height * 0.1),
                     CGPoint(x: imageSize.width * 0.9, y: imageSize.height * 0.1),
                     CGPoint(x: imageSize.width * 0.9, y: imageSize.height * 0.9),
-                    CGPoint(x: imageSize.width * 0.1, y: imageSize.height * 0.9),
+                    CGPoint(x: imageSize.width * 0.1, y: imageSize.height * 0.9)
                 ]
             }
 
@@ -268,7 +268,7 @@
                 CGPoint(x: imageSize.width * 0.05, y: imageSize.height * 0.05),
                 CGPoint(x: imageSize.width * 0.95, y: imageSize.height * 0.05),
                 CGPoint(x: imageSize.width * 0.95, y: imageSize.height * 0.95),
-                CGPoint(x: imageSize.width * 0.05, y: imageSize.height * 0.95),
+                CGPoint(x: imageSize.width * 0.05, y: imageSize.height * 0.95)
             ]
         }
 
@@ -295,7 +295,7 @@
 
             // Check if corners form a reasonable quadrilateral
             let area = calculateQuadrilateralArea(corners)
-            let _ = calculateQuadrilateralPerimeter(corners)
+            _ = calculateQuadrilateralPerimeter(corners)
 
             // Aspect ratio check (documents are typically rectangular)
             let width = max(corners[1].x - corners[0].x, corners[2].x - corners[3].x)

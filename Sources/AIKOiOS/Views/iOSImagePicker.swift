@@ -40,8 +40,7 @@
 
             public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
                 if let image = info[.originalImage] as? UIImage,
-                   let imageData = image.jpegData(compressionQuality: 0.8)
-                {
+                   let imageData = image.jpegData(compressionQuality: 0.8) {
                     parent.onImagePicked(imageData)
                 }
                 picker.dismiss(animated: true)
@@ -70,7 +69,7 @@
 
         public func makeUIViewController(context _: Context) -> UIViewController {
             let adapter = VisionKitAdapter()
-            
+
             // Set up the completion handler
             adapter.uiManager.setCompletion { (result: VisionKitAdapter.ScanResult) in
                 switch result {
@@ -83,7 +82,7 @@
                     self.onCancel()
                 }
             }
-            
+
             // Create and return the document camera view controller directly
             return adapter.createDocumentCameraViewController()
         }

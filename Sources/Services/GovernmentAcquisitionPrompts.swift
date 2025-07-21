@@ -351,7 +351,7 @@ public enum GovernmentAcquisitionPrompts {
         switch phase {
         case .initial:
             chatInstructions += """
-            Your goal is to gather initial information about the acquisition requirement. 
+            Your goal is to gather initial information about the acquisition requirement.
 
             Key objectives:
             - Start with understanding the core need
