@@ -1,6 +1,6 @@
 #if os(iOS)
     import AppCore
-    import SwiftUI
+    @preconcurrency import SwiftUI
     import UIKit
 
     public final class iOSFontScalingService: FontScalingServiceProtocol {

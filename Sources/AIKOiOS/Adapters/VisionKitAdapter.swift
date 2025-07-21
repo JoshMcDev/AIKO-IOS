@@ -11,7 +11,7 @@
     public final class VisionKitAdapter: DelegateServiceTemplate<VisionKitAdapter.ScanResult> {
         // MARK: - Types
 
-        public enum ScanResult {
+        public enum ScanResult: Sendable {
             case success(ScannedDocument)
             case cancelled
             case failed(Error)
@@ -128,11 +128,10 @@
         }
 
         @MainActor
-        private func convertScanToDocument(_ scan: VNDocumentCameraScan) -> ScannedDocument {
+        private func convertScanToDocument(pageData: [(image: UIImage, index: Int)]) -> ScannedDocument {
             var pages: [ScannedPage] = []
 
-            for pageIndex in 0 ..< scan.pageCount {
-                let image = scan.imageOfPage(at: pageIndex)
+            for (image, pageIndex) in pageData {
 
                 // Use quality setting from configuration
                 let compressionQuality: CGFloat = switch configuration.qualityMode {
@@ -166,8 +165,14 @@
             _ controller: VNDocumentCameraViewController,
             didFinishWith scan: VNDocumentCameraScan
         ) {
+            // Extract scan data before entering MainActor context to avoid data race
+            let pageCount = scan.pageCount
+            let pageData: [(image: UIImage, index: Int)] = (0..<pageCount).map { index in
+                (scan.imageOfPage(at: index), index)
+            }
+            
             Task { @MainActor in
-                let document = self.convertScanToDocument(scan)
+                let document = self.convertScanToDocument(pageData: pageData)
                 self.handleDelegateDismissal(controller, with: .success(document))
             }
         }

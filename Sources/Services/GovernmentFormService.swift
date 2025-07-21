@@ -104,7 +104,7 @@ public actor GovernmentFormService: DomainService {
 
         // Update entity in Core Data
         try await coreDataActor.performBackgroundTask { context in
-            let entity = try GovernmentFormData.fetchById(id, in: context)
+            let entity = GovernmentFormData.fetchById(id, in: context)
             guard let formEntity = entity else {
                 throw ServiceError.notFound("Form entity not found")
             }
@@ -124,7 +124,7 @@ public actor GovernmentFormService: DomainService {
         }
 
         try await coreDataActor.performBackgroundTask { context in
-            let entity = try GovernmentFormData.fetchById(id, in: context)
+            let entity = GovernmentFormData.fetchById(id, in: context)
             guard let formEntity = entity else {
                 throw ServiceError.notFound("Form entity not found")
             }
@@ -143,7 +143,7 @@ public actor GovernmentFormService: DomainService {
         }
 
         try await coreDataActor.performBackgroundTask { context in
-            let entity = try GovernmentFormData.fetchById(id, in: context)
+            let entity = GovernmentFormData.fetchById(id, in: context)
             guard let formEntity = entity else {
                 throw ServiceError.notFound("Form entity not found")
             }

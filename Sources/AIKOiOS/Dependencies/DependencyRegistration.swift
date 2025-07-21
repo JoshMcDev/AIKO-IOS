@@ -11,8 +11,8 @@
         /// @deprecated Use iOSDependencyRegistration.configureForLaunch() instead
         @MainActor
         public static func registerAll() {
-            // Delegate to the new registration system
-            iOSDependencyRegistration.configureForLaunch()
+            // Migration complete - this method is now a no-op
+            // All registration has been moved to individual service clients
         }
     }
 #endif

@@ -70,19 +70,22 @@
 
         public func makeUIViewController(context _: Context) -> UIViewController {
             let adapter = VisionKitAdapter()
-            let documentCameraView = adapter.createDocumentCameraView { result in
+            
+            // Set up the completion handler
+            adapter.uiManager.setCompletion { (result: VisionKitAdapter.ScanResult) in
                 switch result {
                 case let .success(document):
                     // Convert the first scanned page to data for backward compatibility
                     if let firstPage = document.pages.first {
-                        onDocumentScanned(firstPage.imageData)
+                        self.onDocumentScanned(firstPage.imageData)
                     }
                 case .cancelled, .failed:
-                    onCancel()
+                    self.onCancel()
                 }
             }
-
-            return documentCameraView.makeUIViewController(context: Context(coordinator: documentCameraView.makeCoordinator(), transaction: Transaction()))
+            
+            // Create and return the document camera view controller directly
+            return adapter.createDocumentCameraViewController()
         }
 
         public func updateUIViewController(_: UIViewController, context _: Context) {}

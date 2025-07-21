@@ -4,8 +4,9 @@
     import Foundation
 
     /// iOS Clipboard Service Client using SimpleServiceTemplate
+    @MainActor
     public final class iOSClipboardServiceClient: SimpleServiceTemplate {
-        private let service = iOSClipboardService()
+        private lazy var service = iOSClipboardService()
 
         override public init() {
             super.init()
@@ -38,27 +39,38 @@
 
     public extension ClipboardServiceClient {
         static let iOSLive = Self(
-            copyText: { text in
-                let client = iOSClipboardServiceClient()
-                await client.copyText(text)
+            copyText: { @Sendable text in
+                await Task { @MainActor in
+                    let client = iOSClipboardServiceClient()
+                    await client.copyText(text)
+                }.value
             },
-            copyData: { data, type in
-                let client = iOSClipboardServiceClient()
-                await client.copyData(data, type: type)
+            copyData: { @Sendable data, type in
+                await Task { @MainActor in
+                    let client = iOSClipboardServiceClient()
+                    await client.copyData(data, type: type)
+                }.value
             },
-            getText: {
-                let client = iOSClipboardServiceClient()
-                return await client.getText()
+            getText: { @Sendable in
+                await Task { @MainActor in
+                    let client = iOSClipboardServiceClient()
+                    return await client.getText()
+                }.value
             },
-            hasContent: { type in
-                let client = iOSClipboardServiceClient()
-                return await client.hasContent(ofType: type)
+            hasContent: { @Sendable type in
+                await Task { @MainActor in
+                    let client = iOSClipboardServiceClient()
+                    return await client.hasContent(ofType: type)
+                }.value
             }
         )
     }
 
     // Convenience static accessor
-    public enum iOSClipboardServiceClient {
-        public static let live = ClipboardServiceClient.iOSLive
+    public enum iOSClipboardServiceClientAccessor {
+        @MainActor
+        public static var live: ClipboardServiceClient {
+            ClipboardServiceClient.iOSLive
+        }
     }
 #endif

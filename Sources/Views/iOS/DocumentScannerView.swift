@@ -1,4 +1,5 @@
 #if os(iOS)
+    import AIKOiOS
     import AppCore
     import ComposableArchitecture
     import SwiftUI
@@ -531,7 +532,9 @@
 
         func makeUIViewController(context _: Context) -> UIViewController {
             let adapter = VisionKitAdapter()
-            let documentCameraView = adapter.createDocumentCameraView { result in
+            
+            // Set completion handler
+            adapter.uiManager.setCompletion { (result: VisionKitAdapter.ScanResult) in
                 switch result {
                 case let .success(document):
                     completion(.success(document))
@@ -541,8 +544,9 @@
                     completion(.failure(error))
                 }
             }
-
-            return documentCameraView.makeUIViewController(context: Context(coordinator: documentCameraView.makeCoordinator(), transaction: Transaction()))
+            
+            // Return the actual UIViewController
+            return adapter.createDocumentCameraViewController()
         }
 
         func updateUIViewController(_: UIViewController, context _: Context) {}

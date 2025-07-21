@@ -1,11 +1,12 @@
 #if os(iOS)
     import AppCore
     import ComposableArchitecture
-    import SwiftUI
+    @preconcurrency import SwiftUI
 
     /// iOS Font Scaling Service Client using SimpleServiceTemplate
     public final class iOSFontScalingServiceClient: SimpleServiceTemplate {
-        private let service = iOSFontScalingService()
+        @MainActor
+        internal lazy var service = iOSFontScalingService()
 
         override public init() {
             super.init()
@@ -25,28 +26,25 @@
     }
 
     public extension FontScalingServiceClient {
+        @MainActor
         static var iOS: Self {
             let client = iOSFontScalingServiceClient()
 
             return Self(
-                _scaledFontSize: { baseSize, textStyle, sizeCategory in
+                _scaledFontSize: { baseSize, sendableTextStyle, sendableSizeCategory in
                     // Run synchronously on MainActor since we need to return immediately
-                    if Thread.isMainThread {
-                        return client.service.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: sizeCategory)
-                    } else {
-                        return DispatchQueue.main.sync {
-                            client.service.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: sizeCategory)
-                        }
+                    MainActor.assumeIsolated {
+                        client.service.scaledFontSize(
+                            for: baseSize, 
+                            textStyle: sendableTextStyle.textStyle, 
+                            sizeCategory: sendableSizeCategory.sizeCategory
+                        )
                     }
                 },
                 _supportsUIFontMetrics: {
                     // Run synchronously on MainActor since we need to return immediately
-                    if Thread.isMainThread {
-                        return client.service.supportsUIFontMetrics()
-                    } else {
-                        return DispatchQueue.main.sync {
-                            client.service.supportsUIFontMetrics()
-                        }
+                    MainActor.assumeIsolated {
+                        client.service.supportsUIFontMetrics()
                     }
                 }
             )
@@ -55,6 +53,9 @@
 
     // Convenience static accessor
     public enum iOSFontScalingServiceClientLive {
-        public static let live = FontScalingServiceClient.iOS
+        @MainActor
+        public static var live: FontScalingServiceClient {
+            FontScalingServiceClient.iOS
+        }
     }
 #endif

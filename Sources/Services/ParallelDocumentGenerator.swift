@@ -203,7 +203,7 @@ public struct ParallelDocumentGenerator: Sendable {
             let batchDocuments = try await withThrowingTaskGroup(of: GeneratedDocument?.self) { group in
                 for documentType in batchTypes {
                     group.addTask { @Sendable in
-                        nonisolated(unsafe) let provider = aiProvider
+                        let provider = aiProvider
                         do {
                             return try await generateSingleDocument(
                                 documentType: documentType,
@@ -264,7 +264,7 @@ public struct ParallelDocumentGenerator: Sendable {
             let batchDocuments = try await withThrowingTaskGroup(of: GeneratedDocument?.self) { group in
                 for dfDocumentType in batchTypes {
                     group.addTask { @Sendable in
-                        nonisolated(unsafe) let provider = aiProvider
+                        let provider = aiProvider
                         do {
                             return try await generateSingleDFDocument(
                                 dfDocumentType: dfDocumentType,

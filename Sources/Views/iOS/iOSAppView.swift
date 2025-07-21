@@ -1,4 +1,5 @@
 #if os(iOS)
+    import AIKOiOS
     import AppCore
     import ComposableArchitecture
     import SwiftUI
@@ -79,12 +80,13 @@
     }
 
     /// iOS implementation of platform services
-    struct iOSAppViewServices: AppViewPlatformServices {
+    struct iOSAppViewServices: @preconcurrency AppViewPlatformServices {
         typealias NavigationStack = AnyView
         typealias DocumentPickerView = iOSDocumentPicker
         typealias ImagePickerView = iOSImagePicker
         typealias ShareView = ShareSheetView
 
+        @MainActor
         func makeNavigationStack(@ViewBuilder content: @escaping () -> some View) -> AnyView {
             AnyView(iOSNavigationStack(content: content))
         }
@@ -97,6 +99,7 @@
             iOSImagePicker(onImagePicked: onImagePicked)
         }
 
+        @MainActor
         func makeShareSheet(items: [Any]) -> ShareSheetView? {
             ShareSheetView(items: items)
         }
@@ -250,7 +253,9 @@
 
         func makeUIViewController(context _: Context) -> UIViewController {
             let adapter = VisionKitAdapter()
-            let documentCameraView = adapter.createDocumentCameraView { result in
+            
+            // Set completion handler
+            adapter.uiManager.setCompletion { (result: VisionKitAdapter.ScanResult) in
                 switch result {
                 case let .success(document):
                     var documents: [(Data, String)] = []
@@ -271,7 +276,8 @@
                 }
             }
 
-            return documentCameraView.makeUIViewController(context: Context(coordinator: documentCameraView.makeCoordinator(), transaction: Transaction()))
+            // Return the actual UIViewController
+            return adapter.createDocumentCameraViewController()
         }
 
         func updateUIViewController(_: UIViewController, context _: Context) {}

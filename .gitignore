@@ -24,6 +24,11 @@ node_modules/
 # OS specific
 .DS_Store
 .build/
+.build-xcode/
+DerivedData/
+.swiftpm/xcode/package.xcworkspace/xcuserdata/
+*.xcuserstate
+xcuserdata/
 
 # Task files
 tasks.json

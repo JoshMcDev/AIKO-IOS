@@ -9,23 +9,23 @@
 
     public extension VoiceRecordingClient {
         static var iOSLive: Self {
-            let recorder = iOSAudioRecorder()
-
             return Self(
                 checkPermissions: {
-                    recorder.checkPermissions()
+                    MainActor.assumeIsolated {
+                        iOSAudioRecorder.shared.checkPermissions()
+                    }
                 },
                 requestPermissions: {
-                    await recorder.requestPermissions()
+                    await iOSAudioRecorder.shared.requestPermissions()
                 },
                 startRecording: {
-                    try await recorder.startRecording()
+                    try await iOSAudioRecorder.shared.startRecording()
                 },
                 stopRecording: {
-                    try await recorder.stopRecording()
+                    try await iOSAudioRecorder.shared.stopRecording()
                 },
                 cancelRecording: {
-                    try await recorder.cancelRecording()
+                    try await iOSAudioRecorder.shared.cancelRecording()
                 }
             )
         }
@@ -33,7 +33,10 @@
 
     // MARK: - iOS Audio Recorder Implementation
 
+    @MainActor
     private class iOSAudioRecorder: NSObject {
+        static let shared = iOSAudioRecorder()
+        
         private var audioRecorder: AVAudioRecorder?
         private let audioSession: AVAudioSession
         private let audioEngine = AVAudioEngine()

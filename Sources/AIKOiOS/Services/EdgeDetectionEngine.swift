@@ -43,7 +43,7 @@
         func detectEdges(
             in image: CIImage,
             progressCallback: (@Sendable (Double) -> Void)? = nil
-        ) throws -> EdgeDetectionResult {
+        ) async throws -> EdgeDetectionResult {
             let startTime = CFAbsoluteTimeGetCurrent()
 
             // Step 1: Preprocess image for edge detection (20% of work)
@@ -56,7 +56,7 @@
 
             // Step 3: Detect document corners using Vision (30% of work)
             progressCallback?(0.9)
-            let (corners, documentBounds) = try detectDocumentCorners(in: image, edgeMap: edgeMap)
+            let (corners, documentBounds) = try await detectDocumentCorners(in: image, edgeMap: edgeMap)
 
             // Step 4: Calculate confidence (10% of work)
             progressCallback?(1.0)
@@ -79,18 +79,22 @@
             var result = image
 
             // Convert to grayscale for edge detection
-            let grayscaleFilter = CIFilter.colorControls()
-            grayscaleFilter.inputImage = result
-            grayscaleFilter.saturation = 0.0
-            grayscaleFilter.contrast = 1.2
+            guard let grayscaleFilter = CIFilter(name: "CIColorControls") else {
+                throw EdgeDetectionError.processingFailed("Failed to create color controls filter")
+            }
+            grayscaleFilter.setValue(result, forKey: kCIInputImageKey)
+            grayscaleFilter.setValue(0.0, forKey: "inputSaturation")
+            grayscaleFilter.setValue(1.2, forKey: "inputContrast")
             if let output = grayscaleFilter.outputImage {
                 result = output
             }
 
             // Apply Gaussian blur to reduce noise before edge detection
-            let blurFilter = CIFilter.gaussianBlur()
-            blurFilter.inputImage = result
-            blurFilter.radius = 1.0
+            guard let blurFilter = CIFilter(name: "CIGaussianBlur") else {
+                throw EdgeDetectionError.processingFailed("Failed to create gaussian blur filter")
+            }
+            blurFilter.setValue(result, forKey: kCIInputImageKey)
+            blurFilter.setValue(1.0, forKey: "inputRadius")
             if let output = blurFilter.outputImage {
                 result = output
             }
@@ -102,48 +106,54 @@
 
         private func performEdgeDetection(_ image: CIImage) throws -> CIImage {
             // Primary edge detection using Sobel operator
-            let sobelFilter = CIFilter.convolution3X3()
-            sobelFilter.inputImage = image
+            guard let sobelFilter = CIFilter(name: "CIConvolution3X3") else {
+                throw EdgeDetectionError.processingFailed("Failed to create convolution filter")
+            }
+            sobelFilter.setValue(image, forKey: kCIInputImageKey)
             // Sobel X kernel for vertical edges
-            sobelFilter.weights = CIVector(values: [-1, 0, 1, -2, 0, 2, -1, 0, 1], count: 9)
-            sobelFilter.bias = 0.5
+            sobelFilter.setValue(CIVector(values: [-1, 0, 1, -2, 0, 2, -1, 0, 1], count: 9), forKey: "inputWeights")
+            sobelFilter.setValue(0.5, forKey: "inputBias")
 
             guard let sobelX = sobelFilter.outputImage else {
                 throw EdgeDetectionError.processingFailed("Sobel X filter failed")
             }
 
             // Sobel Y kernel for horizontal edges
-            sobelFilter.weights = CIVector(values: [-1, -2, -1, 0, 0, 0, 1, 2, 1], count: 9)
-            sobelFilter.inputImage = image
+            sobelFilter.setValue(CIVector(values: [-1, -2, -1, 0, 0, 0, 1, 2, 1], count: 9), forKey: "inputWeights")
+            sobelFilter.setValue(image, forKey: kCIInputImageKey)
 
             guard let sobelY = sobelFilter.outputImage else {
                 throw EdgeDetectionError.processingFailed("Sobel Y filter failed")
             }
 
             // Combine X and Y gradients using magnitude
-            let magnitudeFilter = CIFilter.additionCompositing()
-            magnitudeFilter.inputImage = sobelX
-            magnitudeFilter.backgroundImage = sobelY
+            guard let magnitudeFilter = CIFilter(name: "CIAdditionCompositing") else {
+                throw EdgeDetectionError.processingFailed("Failed to create addition compositing filter")
+            }
+            magnitudeFilter.setValue(sobelX, forKey: kCIInputImageKey)
+            magnitudeFilter.setValue(sobelY, forKey: kCIInputBackgroundImageKey)
 
             guard var edgeMap = magnitudeFilter.outputImage else {
                 throw EdgeDetectionError.processingFailed("Edge magnitude combination failed")
             }
 
             // Enhance edges with morphological operations
-            let morphologyFilter = CIFilter.morphologyRectangle()
-            morphologyFilter.inputImage = edgeMap
-            morphologyFilter.width = 2
-            morphologyFilter.height = 2
-            if let enhanced = morphologyFilter.outputImage {
-                edgeMap = enhanced
+            if let morphologyFilter = CIFilter(name: "CIMorphologyRectangleMinimum") {
+                morphologyFilter.setValue(edgeMap, forKey: kCIInputImageKey)
+                morphologyFilter.setValue(2, forKey: "inputWidth")
+                morphologyFilter.setValue(2, forKey: "inputHeight")
+                if let enhanced = morphologyFilter.outputImage {
+                    edgeMap = enhanced
+                }
             }
 
             // Apply threshold to get binary edge map
-            let thresholdFilter = CIFilter.colorThreshold()
-            thresholdFilter.inputImage = edgeMap
-            thresholdFilter.threshold = 0.3
-            if let thresholded = thresholdFilter.outputImage {
-                edgeMap = thresholded
+            if let thresholdFilter = CIFilter(name: "CIColorThreshold") {
+                thresholdFilter.setValue(edgeMap, forKey: kCIInputImageKey)
+                thresholdFilter.setValue(0.3, forKey: "inputThreshold")
+                if let thresholded = thresholdFilter.outputImage {
+                    edgeMap = thresholded
+                }
             }
 
             return edgeMap
@@ -154,7 +164,7 @@
         private func detectDocumentCorners(
             in originalImage: CIImage,
             edgeMap: CIImage
-        ) throws -> ([CGPoint], CGRect?) {
+        ) async throws -> ([CGPoint], CGRect?) {
             // Convert CIImage to CGImage for Vision processing
             guard let cgImage = context.createCGImage(originalImage, from: originalImage.extent) else {
                 throw EdgeDetectionError.processingFailed("Failed to create CGImage for corner detection")
@@ -229,12 +239,20 @@
 
         private func detectCornersFromEdgeMap(_ edgeMap: CIImage, imageSize: CGSize) -> [CGPoint] {
             // Fallback corner detection using Harris corner detector
-            let cornerFilter = CIFilter.convolution3X3()
-            cornerFilter.inputImage = edgeMap
+            guard let cornerFilter = CIFilter(name: "CIConvolution3X3") else {
+                // Return default corners if filter creation fails
+                return [
+                    CGPoint(x: imageSize.width * 0.1, y: imageSize.height * 0.1),
+                    CGPoint(x: imageSize.width * 0.9, y: imageSize.height * 0.1),
+                    CGPoint(x: imageSize.width * 0.9, y: imageSize.height * 0.9),
+                    CGPoint(x: imageSize.width * 0.1, y: imageSize.height * 0.9),
+                ]
+            }
+            cornerFilter.setValue(edgeMap, forKey: kCIInputImageKey)
             // Harris corner detection kernel (simplified)
-            cornerFilter.weights = CIVector(values: [1, -2, 1, -2, 4, -2, 1, -2, 1], count: 9)
+            cornerFilter.setValue(CIVector(values: [1, -2, 1, -2, 4, -2, 1, -2, 1], count: 9), forKey: "inputWeights")
 
-            guard let cornerResponse = cornerFilter.outputImage else {
+            guard cornerFilter.outputImage != nil else {
                 // Return default corners if corner detection fails
                 return [
                     CGPoint(x: imageSize.width * 0.1, y: imageSize.height * 0.1),
@@ -277,7 +295,7 @@
 
             // Check if corners form a reasonable quadrilateral
             let area = calculateQuadrilateralArea(corners)
-            let perimeter = calculateQuadrilateralPerimeter(corners)
+            let _ = calculateQuadrilateralPerimeter(corners)
 
             // Aspect ratio check (documents are typically rectangular)
             let width = max(corners[1].x - corners[0].x, corners[2].x - corners[3].x)
@@ -325,9 +343,11 @@
 
         private func calculateImageStatistics(_ image: CIImage) -> (mean: Double, standardDeviation: Double) {
             // Convert to grayscale for analysis
-            let grayscaleFilter = CIFilter.colorControls()
-            grayscaleFilter.inputImage = image
-            grayscaleFilter.saturation = 0.0
+            guard let grayscaleFilter = CIFilter(name: "CIColorControls") else {
+                return (mean: 0.5, standardDeviation: 0.2)
+            }
+            grayscaleFilter.setValue(image, forKey: kCIInputImageKey)
+            grayscaleFilter.setValue(0, forKey: "inputSaturation")
 
             guard let grayscaleImage = grayscaleFilter.outputImage,
                   let cgImage = context.createCGImage(grayscaleImage, from: grayscaleImage.extent)
@@ -401,6 +421,7 @@
         case processingFailed(String)
         case invalidInput
         case gpuNotAvailable
+        case filterCreationFailed
 
         var errorDescription: String? {
             switch self {
@@ -410,6 +431,8 @@
                 "Invalid input image for edge detection"
             case .gpuNotAvailable:
                 "GPU acceleration not available for edge detection"
+            case .filterCreationFailed:
+                "Failed to create Core Image filter"
             }
         }
     }

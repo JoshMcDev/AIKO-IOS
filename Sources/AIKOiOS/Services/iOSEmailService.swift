@@ -6,12 +6,26 @@
 
     /// iOS implementation of EmailServiceProtocol
     public final class iOSEmailService: DelegateServiceTemplate<EmailComposeResult>, EmailServiceProtocol {
+        @MainActor
+        public static let shared = iOSEmailService()
+        
         override public init() {
             super.init()
         }
 
         nonisolated public var canSendEmail: Bool {
-            MFMailComposeViewController.canSendMail()
+            // MFMailComposeViewController.canSendMail() must be called on main thread
+            if Thread.isMainThread {
+                return MainActor.assumeIsolated {
+                    MFMailComposeViewController.canSendMail()
+                }
+            } else {
+                return DispatchQueue.main.sync {
+                    MainActor.assumeIsolated {
+                        MFMailComposeViewController.canSendMail()
+                    }
+                }
+            }
         }
 
         nonisolated public func sendEmail(

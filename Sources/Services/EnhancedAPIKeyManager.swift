@@ -321,7 +321,6 @@ public final class PinnedSessionDelegate: NSObject, URLSessionDelegate {
         }
 
         Task { @Sendable in
-            nonisolated(unsafe) let handler = completionHandler
             let isValid = await EnhancedAPIKeyManager.shared.validateCertificatePin(
                 for: challenge.protectionSpace.host,
                 serverTrust: serverTrust
@@ -329,9 +328,9 @@ public final class PinnedSessionDelegate: NSObject, URLSessionDelegate {
 
             if isValid {
                 let credential = URLCredential(trust: serverTrust)
-                handler(.useCredential, credential)
+                completionHandler(.useCredential, credential)
             } else {
-                handler(.cancelAuthenticationChallenge, nil)
+                completionHandler(.cancelAuthenticationChallenge, nil)
             }
         }
     }

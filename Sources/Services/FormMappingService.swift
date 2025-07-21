@@ -56,9 +56,7 @@ public actor FormMappingService {
 
         do {
             // 1. Validate template data
-            nonisolated(unsafe) let validator = validationService
-            nonisolated(unsafe) let data = templateData
-            try await validator.validateTemplateData(data)
+            try await validationService.validateTemplateData(templateData)
 
             // 2. Get form definition
             guard let formDefinition = availableForms.first(where: { $0.formType == formType }) else {
@@ -66,22 +64,20 @@ public actor FormMappingService {
             }
 
             // 3. Perform mapping
-            nonisolated(unsafe) let engine = mappingEngine
-            let mappingRules = try await engine.getMappingRules(
-                from: data.documentType,
+            let mappingRules = try await mappingEngine.getMappingRules(
+                from: templateData.documentType,
                 to: formType
             )
 
             // 4. Transform data
-            nonisolated(unsafe) let transformer = transformationService
-            let transformedData = try await transformer.transform(
-                templateData: data,
+            let transformedData = try await transformationService.transform(
+                templateData: templateData,
                 using: mappingRules,
                 targetForm: formDefinition
             )
 
             // 5. Validate FAR compliance
-            let complianceResult = try await validator.validateFARCompliance(
+            let complianceResult = try await validationService.validateFARCompliance(
                 formData: transformedData,
                 formType: formType
             )
@@ -115,8 +111,7 @@ public actor FormMappingService {
             throw FormMappingError.formNotFound(formType)
         }
 
-        nonisolated(unsafe) let repository = formRepository
-        return try await repository.generateBlankForm(formDefinition)
+        return try await formRepository.generateBlankForm(formDefinition)
     }
 
     /// Get form preview URL
@@ -128,8 +123,7 @@ public actor FormMappingService {
 
     private func loadAvailableForms() async {
         do {
-            nonisolated(unsafe) let repository = formRepository
-            availableForms = try await repository.loadFormDefinitions()
+            availableForms = try await formRepository.loadFormDefinitions()
         } catch {
             self.error = FormMappingError.loadingFailed(error)
         }

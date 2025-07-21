@@ -7,8 +7,12 @@
         static let macOS: Self = {
             let service = macOSFontScalingService()
             return Self(
-                _scaledFontSize: { baseSize, textStyle, sizeCategory in
-                    service.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: sizeCategory)
+                _scaledFontSize: { baseSize, sendableTextStyle, sendableSizeCategory in
+                    service.scaledFontSize(
+                        for: baseSize, 
+                        textStyle: sendableTextStyle.textStyle, 
+                        sizeCategory: sendableSizeCategory.sizeCategory
+                    )
                 },
                 _supportsUIFontMetrics: { service.supportsUIFontMetrics() }
             )

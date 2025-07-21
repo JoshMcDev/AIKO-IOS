@@ -1,34 +1,19 @@
 #if os(iOS)
-    import AppCore
-    import ComposableArchitecture
-    import Foundation
+import AppCore
+import ComposableArchitecture
+import Foundation
 
-    // MARK: - iOS Dependency Registration
-
-    /// Registers all iOS-specific dependencies
-    public enum iOSDependencyRegistration {
-        @MainActor
-        public static func registerDependencies() {
-            // Register the live DocumentImageProcessor implementation
-            DocumentImageProcessor.liveValue = DocumentImageProcessor.live
-
-            // Register the live DocumentScannerClient implementation
-            DocumentScannerClient.liveValue = iOSDocumentScannerClient.live
-        }
+/// Configures iOS-specific dependency implementations for launch
+public enum iOSDependencyRegistration {
+    /// Configure all iOS dependencies for app launch
+    @MainActor
+    public static func configureForLaunch() {
+        // Dependencies are now configured via their respective client implementations
+        // Each client provides its own static accessor (e.g., .iOS, .live)
+        // No explicit registration needed as dependencies use @DependencyClient
+        
+        // This method serves as a centralized place to perform any iOS-specific
+        // initialization that might be needed at app launch
     }
-
-    // MARK: - iOS App Entry Point Extension
-
-    public extension iOSDependencyRegistration {
-        /// Call this at app startup to ensure all iOS dependencies are properly configured
-        @MainActor
-        static func configureForLaunch() {
-            registerDependencies()
-
-            // Log successful configuration
-            print("✅ iOS dependencies registered successfully")
-            print("   - DocumentImageProcessor: Live implementation")
-            print("   - DocumentScannerClient: iOS implementation")
-        }
-    }
+}
 #endif

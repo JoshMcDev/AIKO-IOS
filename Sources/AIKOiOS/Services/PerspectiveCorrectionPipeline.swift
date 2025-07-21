@@ -195,7 +195,7 @@
             // Harris corner detection kernel
             cornerFilter.weights = CIVector(values: [1, -2, 1, -2, 4, -2, 1, -2, 1], count: 9)
 
-            guard let cornerResponse = cornerFilter.outputImage else {
+            guard cornerFilter.outputImage != nil else {
                 return approximateCorner // Return original if refinement fails
             }
 

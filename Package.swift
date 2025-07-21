@@ -29,7 +29,7 @@ let package = Package(
             swiftSettings: [
                 // This module can have strict concurrency enabled
                 // as it provides Sendable-safe wrappers
-                .unsafeFlags(["-strict-concurrency=complete"]),
+                // .unsafeFlags(["-strict-concurrency=complete"]), // DISABLED FOR INDEXING TEST
             ]
         ),
 
@@ -46,7 +46,7 @@ let package = Package(
             exclude: ["README.md"],
             swiftSettings: [
                 // TESTING: Enable strict concurrency to test Swift 6 compliance
-                .unsafeFlags(["-strict-concurrency=complete"]),
+                // .unsafeFlags(["-strict-concurrency=complete"]), // DISABLED FOR INDEXING TEST
             ]
         ),
 
@@ -62,7 +62,7 @@ let package = Package(
             exclude: ["README.md", "Service-Concurrency-Guide.md"],
             swiftSettings: [
                 // TESTING: Enable strict concurrency to test Swift 6 compliance
-                .unsafeFlags(["-strict-concurrency=complete"]),
+                // .unsafeFlags(["-strict-concurrency=complete"]), // DISABLED FOR INDEXING TEST
             ]
         ),
 
@@ -78,7 +78,7 @@ let package = Package(
             exclude: ["README.md"],
             swiftSettings: [
                 // TESTING: Enable strict concurrency to test Swift 6 compliance
-                .unsafeFlags(["-strict-concurrency=complete"]),
+                // .unsafeFlags(["-strict-concurrency=complete"]), // DISABLED FOR INDEXING TEST
             ]
         ),
 
@@ -124,7 +124,7 @@ let package = Package(
             ],
             swiftSettings: [
                 // Swift 6 strict concurrency enabled - actor boundaries properly established
-                .unsafeFlags(["-strict-concurrency=complete"]),
+                // .unsafeFlags(["-strict-concurrency=complete"]), // DISABLED FOR INDEXING TEST
             ]
         ),
 

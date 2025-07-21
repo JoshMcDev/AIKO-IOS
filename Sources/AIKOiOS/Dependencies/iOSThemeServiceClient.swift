@@ -74,39 +74,44 @@
 
     public extension ThemeServiceClient {
         static let iOS: Self = {
-            let client = iOSThemeServiceClient()
+            let service = iOSThemeService()
             return Self(
                 _backgroundColor: {
-                    await client.backgroundColor()
+                    service.backgroundColor()
                 },
                 _cardColor: {
-                    await client.cardColor()
+                    service.cardColor()
                 },
                 _secondaryColor: {
-                    await client.secondaryColor()
+                    service.secondaryColor()
                 },
                 _tertiaryColor: {
-                    await client.tertiaryColor()
+                    service.tertiaryColor()
                 },
                 _groupedBackground: {
-                    await client.groupedBackground()
+                    service.groupedBackground()
                 },
                 _groupedSecondaryBackground: {
-                    await client.groupedSecondaryBackground()
+                    service.groupedSecondaryBackground()
                 },
                 _groupedTertiaryBackground: {
-                    await client.groupedTertiaryBackground()
+                    service.groupedTertiaryBackground()
                 },
                 _applyNavigationBarHidden: { view in
-                    await client.applyNavigationBarHidden(to: view)
+                    service.applyNavigationBarHidden(to: view)
                 },
                 _applyDarkNavigationBar: { view in
-                    await client.applyDarkNavigationBar(to: view)
+                    service.applyDarkNavigationBar(to: view)
                 },
                 _applySheet: { view in
-                    await client.applySheet(to: view)
+                    service.applySheet(to: view)
                 }
             )
         }()
+    }
+
+    // Convenience static accessor
+    public enum iOSThemeServiceClientLive {
+        public static let live = ThemeServiceClient.iOS
     }
 #endif

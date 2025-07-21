@@ -482,7 +482,7 @@ public struct DocumentAnalysisFeature {
             case let .acquisitionLoaded(acquisition, workflowContext):
                 state.isLoadingAcquisition = false
                 state.currentAcquisitionId = acquisition.id
-                state.currentAcquisitionTitle = acquisition.title ?? ""
+                state.currentAcquisitionTitle = acquisition.title
                 state.requirements = "" // Keep input field empty when loading acquisition
                 state.workflowContext = workflowContext
                 state.suggestedPrompts = workflowContext.suggestedPrompts

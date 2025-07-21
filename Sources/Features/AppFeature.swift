@@ -411,11 +411,13 @@ public struct AppFeature: Sendable {
                 return .none
 
             case let .openURL(url):
-                #if os(iOS)
-                    UIApplication.shared.open(url)
-                #else
-                    NSWorkspace.shared.open(url)
-                #endif
+                Task { @MainActor in
+                    #if os(iOS)
+                        UIApplication.shared.open(url)
+                    #else
+                        NSWorkspace.shared.open(url)
+                    #endif
+                }
                 return .none
 
             case let .showProfile(show):

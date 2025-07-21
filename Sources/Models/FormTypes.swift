@@ -91,7 +91,7 @@ public struct FormDefinition: Identifiable, Codable, Sendable {
 // MARK: - Template Data
 
 /// Data structure for template information to be mapped to forms
-public struct TemplateData: Codable {
+public struct TemplateData: Codable, @unchecked Sendable {
     public let documentType: DocumentType
     public let data: [String: Any]
     public let metadata: TemplateMetadata?
@@ -132,7 +132,7 @@ public struct TemplateData: Codable {
 }
 
 /// Metadata for template information
-public struct TemplateMetadata: Codable {
+public struct TemplateMetadata: Codable, Sendable {
     public let templateId: String
     public let version: String
     public let createdDate: Date

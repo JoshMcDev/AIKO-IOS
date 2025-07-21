@@ -12,7 +12,7 @@
             content: String,
             suggestedFileName: String,
             allowedFileTypes _: [String],
-            completion: @escaping (Result<URL, Error>) -> Void
+            completion: @escaping @Sendable (Result<URL, Error>) -> Void
         ) {
             Task { @MainActor in
                 guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
@@ -44,7 +44,7 @@
 
         public func openFile(
             allowedFileTypes: [String],
-            completion: @escaping (URL?) -> Void
+            completion: @escaping @Sendable (URL?) -> Void
         ) {
             Task { @MainActor in
                 guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
@@ -75,9 +75,9 @@
 
     // Helper delegate for document picker
     private class DocumentPickerDelegate: NSObject, UIDocumentPickerDelegate {
-        let completion: (URL?) -> Void
+        let completion: @Sendable (URL?) -> Void
 
-        init(completion: @escaping (URL?) -> Void) {
+        init(completion: @escaping @Sendable (URL?) -> Void) {
             self.completion = completion
         }
 

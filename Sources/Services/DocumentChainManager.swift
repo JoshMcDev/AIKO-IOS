@@ -195,13 +195,16 @@ extension DocumentChainManager: DependencyKey {
                 await chainStorage.setChain(acquisitionId, chain)
 
                 // Store in Core Data
-                let context = CoreDataStack.shared.viewContext
-                let fetchRequest: NSFetchRequest<CoreDataAcquisition> = CoreDataAcquisition.fetchRequest()
-                fetchRequest.predicate = NSPredicate(format: "id == %@", acquisitionId as CVarArg)
-
-                if let acquisition = try? context.fetch(fetchRequest).first {
-                    try? acquisition.setDocumentChainCodable(chain)
-                    try? await CoreDataStack.shared.save()
+                try? await CoreDataStack.shared.actor.performViewContextTask { context in
+                    let fetchRequest: NSFetchRequest<CoreDataAcquisition> = CoreDataAcquisition.fetchRequest()
+                    fetchRequest.predicate = NSPredicate(format: "id == %@", acquisitionId as CVarArg)
+                    
+                    if let acquisition = try context.fetch(fetchRequest).first {
+                        try acquisition.setDocumentChainCodable(chain)
+                        if context.hasChanges {
+                            try context.save()
+                        }
+                    }
                 }
 
                 return chain
@@ -243,13 +246,16 @@ extension DocumentChainManager: DependencyKey {
                 await chainStorage.setChain(acquisitionId, updatedChain)
 
                 // Update Core Data with chain metadata
-                let context = CoreDataStack.shared.viewContext
-                let fetchRequest: NSFetchRequest<CoreDataAcquisition> = CoreDataAcquisition.fetchRequest()
-                fetchRequest.predicate = NSPredicate(format: "id == %@", acquisitionId as CVarArg)
-
-                if let acquisition = try? context.fetch(fetchRequest).first {
-                    try? acquisition.setDocumentChainCodable(updatedChain)
-                    try? await CoreDataStack.shared.save()
+                try? await CoreDataStack.shared.actor.performViewContextTask { context in
+                    let fetchRequest: NSFetchRequest<CoreDataAcquisition> = CoreDataAcquisition.fetchRequest()
+                    fetchRequest.predicate = NSPredicate(format: "id == %@", acquisitionId as CVarArg)
+                    
+                    if let acquisition = try context.fetch(fetchRequest).first {
+                        try acquisition.setDocumentChainCodable(updatedChain)
+                        if context.hasChanges {
+                            try context.save()
+                        }
+                    }
                 }
 
                 return updatedChain

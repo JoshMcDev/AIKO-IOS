@@ -3,7 +3,7 @@ import Combine
 import Foundation
 
 /// Repository for managing government form definitions and templates
-final class FormRepository {
+final class FormRepository: Sendable {
     // MARK: - Properties
 
     private let baseURL = "https://www.gsa.gov/forms"
@@ -246,7 +246,7 @@ enum FormRepositoryError: LocalizedError {
 
 // MARK: - Form Cache Manager
 
-final class FormCacheManager {
+final class FormCacheManager: @unchecked Sendable {
     private let cache = NSCache<NSString, NSData>()
     private let definitionsKey = "form_definitions"
 

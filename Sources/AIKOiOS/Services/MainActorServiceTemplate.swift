@@ -57,7 +57,7 @@
 
     /// Template for services with delegate patterns (like MFMailComposeViewController)
     @MainActor
-    open class DelegateServiceTemplate<Result>: MainActorServiceBase {
+    open class DelegateServiceTemplate<Result: Sendable>: MainActorServiceBase {
         /// Runs a presented controller and waits for delegate callback
         public func runPresentedController(
             _ controller: some UIViewController,

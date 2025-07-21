@@ -360,13 +360,13 @@ struct AppSheetPresentation<Services: AppViewPlatformServices>: ViewModifier {
                     if let acquisition = viewStore.downloadTargetAcquisition {
                         DownloadOptionsSheet(
                             acquisition: AppCore.Acquisition(
-                                id: acquisition.id ?? UUID(),
-                                title: acquisition.title ?? "",
-                                requirements: acquisition.requirements ?? "",
+                                id: acquisition.id,
+                                title: acquisition.title,
+                                requirements: acquisition.requirements,
                                 projectNumber: acquisition.projectNumber,
                                 status: .draft, // TODO: Map actual status
-                                createdDate: acquisition.createdDate ?? Date(),
-                                lastModifiedDate: acquisition.lastModifiedDate ?? Date()
+                                createdDate: acquisition.createdDate,
+                                lastModifiedDate: acquisition.lastModifiedDate
                             ),
                             onDismiss: { viewStore.send(.hideDownloadOptions) }
                         )

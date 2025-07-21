@@ -5,7 +5,8 @@
 
     /// iOS File Service Client using SimpleServiceTemplate
     public final class iOSFileServiceClient: SimpleServiceTemplate {
-        private let service = iOSFileService()
+        @MainActor
+        private lazy var service = iOSFileService()
 
         override public init() {
             super.init()
@@ -61,7 +62,10 @@
     }
 
     // Convenience static accessor
-    public enum iOSFileServiceClient {
-        public static let live = FileServiceClient.iOSLive
+    public enum iOSFileServiceClientAccessor {
+        @MainActor
+        public static var live: FileServiceClient {
+            FileServiceClient.iOSLive
+        }
     }
 #endif
