@@ -32,7 +32,7 @@ public enum DocumentScannerMigrationHelper {
                 let processedPage = try await service.processPage(
                     tempPage,
                     .basic,
-                    ProcessingOptions()
+                    DocumentImageProcessor.ProcessingOptions()
                 )
 
                 return processedPage.enhancedImageData ?? data
@@ -50,9 +50,9 @@ public enum DocumentScannerMigrationHelper {
                     options
                 )
 
-                return processedPage.processingResult ?? ProcessingResult(
+                return processedPage.processingResult ?? DocumentImageProcessor.ProcessingResult(
                     processedImageData: data,
-                    qualityMetrics: QualityMetrics(
+                    qualityMetrics: DocumentImageProcessor.QualityMetrics(
                         overallConfidence: 0.8,
                         sharpnessScore: 0.8,
                         contrastScore: 0.8,
@@ -163,14 +163,14 @@ public enum DocumentScannerPerformanceIntegration {
 public struct DocumentScannerServiceConfiguration: Sendable {
     public let enablePerformanceMonitoring: Bool
     public let maxConcurrentSessions: Int
-    public let defaultProcessingMode: ProcessingMode
+    public let defaultProcessingMode: DocumentImageProcessor.ProcessingMode
     public let enableQualityAssessment: Bool
     public let enableAutoEnhancement: Bool
 
     public init(
         enablePerformanceMonitoring: Bool = true,
         maxConcurrentSessions: Int = 5,
-        defaultProcessingMode: ProcessingMode = .basic,
+        defaultProcessingMode: DocumentImageProcessor.ProcessingMode = .basic,
         enableQualityAssessment: Bool = true,
         enableAutoEnhancement: Bool = true
     ) {

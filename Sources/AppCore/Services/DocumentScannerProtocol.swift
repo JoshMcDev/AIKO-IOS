@@ -40,10 +40,10 @@ public struct DocumentScannerService: Sendable {
 
     /// Processes scanned pages using existing DocumentImageProcessor
     /// Integrates with Phase 4.1 advanced processing pipeline
-    public var processPages: @Sendable ([ScannedPage], ProcessingMode, ProcessingOptions) async throws -> [ScannedPage]
+    public var processPages: @Sendable ([ScannedPage], DocumentImageProcessor.ProcessingMode, DocumentImageProcessor.ProcessingOptions) async throws -> [ScannedPage]
 
     /// Processes a single page with progress tracking
-    public var processPage: @Sendable (ScannedPage, ProcessingMode, ProcessingOptions) async throws -> ScannedPage
+    public var processPage: @Sendable (ScannedPage, DocumentImageProcessor.ProcessingMode, DocumentImageProcessor.ProcessingOptions) async throws -> ScannedPage
 
     // MARK: - OCR Integration
 
@@ -60,7 +60,7 @@ public struct DocumentScannerService: Sendable {
     public var assessPageQuality: @Sendable (ScannedPage) async throws -> QualityAssessment
 
     /// Provides processing recommendations based on quality assessment
-    public var getProcessingRecommendations: @Sendable ([QualityAssessment]) -> ProcessingRecommendations = { _ in ProcessingRecommendations(recommendedMode: .basic, recommendedOptions: ProcessingOptions(), estimatedProcessingTime: 1.0, confidenceScore: 0.8) }
+    public var getProcessingRecommendations: @Sendable ([QualityAssessment]) -> ProcessingRecommendations = { _ in ProcessingRecommendations(recommendedMode: .basic, recommendedOptions: DocumentImageProcessor.ProcessingOptions(), estimatedProcessingTime: 1.0, confidenceScore: 0.8) }
 
     // MARK: - Session Management
 
@@ -85,7 +85,7 @@ public struct DocumentScannerService: Sendable {
     public var getPerformanceInsights: @Sendable () async -> PerformanceInsights = { PerformanceInsights(averageScanTime: 1.0, averageProcessingTime: 2.0, averageQualityScore: 0.8) }
 
     /// Estimates processing time for given configuration
-    public var estimateProcessingTime: @Sendable (Int, ProcessingMode) async -> TimeInterval = { _, _ in 1.0 }
+    public var estimateProcessingTime: @Sendable (Int, DocumentImageProcessor.ProcessingMode) async -> TimeInterval = { _, _ in 1.0 }
 }
 
 // MARK: - Supporting Types
@@ -113,7 +113,7 @@ public enum VisionKitFeature: String, CaseIterable, Sendable {
 public struct QualityAssessment: Equatable, Sendable {
     public let pageId: ScannedPage.ID
     public let overallScore: Double // 0.0 to 1.0
-    public let qualityMetrics: QualityMetrics
+    public let qualityMetrics: DocumentImageProcessor.QualityMetrics
     public let issues: [QualityIssue]
     public let recommendations: [QualityRecommendation]
     public let assessmentTime: Date
@@ -121,7 +121,7 @@ public struct QualityAssessment: Equatable, Sendable {
     public init(
         pageId: ScannedPage.ID,
         overallScore: Double,
-        qualityMetrics: QualityMetrics,
+        qualityMetrics: DocumentImageProcessor.QualityMetrics,
         issues: [QualityIssue] = [],
         recommendations: [QualityRecommendation] = [],
         assessmentTime: Date = Date()
@@ -211,15 +211,15 @@ public enum RecommendationPriority: String, CaseIterable, Equatable, Sendable {
 
 /// Processing recommendations based on quality assessments
 public struct ProcessingRecommendations: Equatable, Sendable {
-    public let recommendedMode: ProcessingMode
-    public let recommendedOptions: ProcessingOptions
+    public let recommendedMode: DocumentImageProcessor.ProcessingMode
+    public let recommendedOptions: DocumentImageProcessor.ProcessingOptions
     public let qualityImprovements: [QualityRecommendation]
     public let estimatedProcessingTime: TimeInterval
     public let confidenceScore: Double // 0.0 to 1.0
 
     public init(
-        recommendedMode: ProcessingMode,
-        recommendedOptions: ProcessingOptions,
+        recommendedMode: DocumentImageProcessor.ProcessingMode,
+        recommendedOptions: DocumentImageProcessor.ProcessingOptions,
         qualityImprovements: [QualityRecommendation] = [],
         estimatedProcessingTime: TimeInterval,
         confidenceScore: Double
@@ -239,7 +239,7 @@ public struct ScanningMetrics: Equatable, Sendable {
     public let pagesScanned: Int
     public let averagePageSize: Double // bytes
     public let qualityScores: [Double]
-    public let processingMode: ProcessingMode?
+    public let processingMode: DocumentImageProcessor.ProcessingMode?
     public let deviceModel: String
     public let osVersion: String
     public let timestamp: Date
@@ -250,7 +250,7 @@ public struct ScanningMetrics: Equatable, Sendable {
         pagesScanned: Int,
         averagePageSize: Double,
         qualityScores: [Double],
-        processingMode: ProcessingMode? = nil,
+        processingMode: DocumentImageProcessor.ProcessingMode? = nil,
         deviceModel: String,
         osVersion: String,
         timestamp: Date = Date()
@@ -399,7 +399,7 @@ extension DocumentScannerService: DependencyKey {
             QualityAssessment(
                 pageId: page.id,
                 overallScore: 0.85,
-                qualityMetrics: QualityMetrics(
+                qualityMetrics: DocumentImageProcessor.QualityMetrics(
                     overallConfidence: 0.85,
                     sharpnessScore: 0.8,
                     contrastScore: 0.9,
@@ -412,7 +412,7 @@ extension DocumentScannerService: DependencyKey {
         getProcessingRecommendations: { _ in
             ProcessingRecommendations(
                 recommendedMode: .basic,
-                recommendedOptions: ProcessingOptions(),
+                recommendedOptions: DocumentImageProcessor.ProcessingOptions(),
                 estimatedProcessingTime: 1.0,
                 confidenceScore: 0.8
             )

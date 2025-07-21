@@ -38,10 +38,10 @@ public struct ScannedPage: Equatable, Sendable, Identifiable {
     public var processingState: ProcessingState
 
     // Phase 4.1: Quality and Processing Tracking
-    public var qualityMetrics: QualityMetrics?
+    public var qualityMetrics: DocumentImageProcessor.QualityMetrics?
     public var enhancementApplied: Bool = false
-    public var processingMode: ProcessingMode?
-    public var processingResult: ProcessingResult?
+    public var processingMode: DocumentImageProcessor.ProcessingMode?
+    public var processingResult: DocumentImageProcessor.ProcessingResult?
 
     public init(
         id: UUID = UUID(),
@@ -52,10 +52,10 @@ public struct ScannedPage: Equatable, Sendable, Identifiable {
         ocrResult: OCRResult? = nil,
         pageNumber: Int,
         processingState: ProcessingState = .pending,
-        qualityMetrics: QualityMetrics? = nil,
+        qualityMetrics: DocumentImageProcessor.QualityMetrics? = nil,
         enhancementApplied: Bool = false,
-        processingMode: ProcessingMode? = nil,
-        processingResult: ProcessingResult? = nil
+        processingMode: DocumentImageProcessor.ProcessingMode? = nil,
+        processingResult: DocumentImageProcessor.ProcessingResult? = nil
     ) {
         self.id = id
         self.imageData = imageData
@@ -125,7 +125,7 @@ public struct DocumentScannerClient: Sendable {
     public var enhanceImage: @Sendable (Data) async throws -> Data
 
     /// Enhances a scanned image with advanced processing modes and progress callbacks
-    public var enhanceImageAdvanced: @Sendable (Data, ProcessingMode, ProcessingOptions) async throws -> ProcessingResult
+    public var enhanceImageAdvanced: @Sendable (Data, DocumentImageProcessor.ProcessingMode, DocumentImageProcessor.ProcessingOptions) async throws -> DocumentImageProcessor.ProcessingResult
 
     /// Performs Optical Character Recognition on image data (legacy)
     public var performOCR: @Sendable (Data) async throws -> String
@@ -143,10 +143,10 @@ public struct DocumentScannerClient: Sendable {
     public var isScanningAvailable: @Sendable () -> Bool = { false }
 
     /// Estimates processing time for given image and mode
-    public var estimateProcessingTime: @Sendable (Data, ProcessingMode) async throws -> TimeInterval = { _, _ in 1.0 }
+    public var estimateProcessingTime: @Sendable (Data, DocumentImageProcessor.ProcessingMode) async throws -> TimeInterval = { _, _ in 1.0 }
 
     /// Checks if a processing mode is available
-    public var isProcessingModeAvailable: @Sendable (ProcessingMode) -> Bool = { _ in false }
+    public var isProcessingModeAvailable: @Sendable (DocumentImageProcessor.ProcessingMode) -> Bool = { _ in false }
 
     /// Checks camera permissions for document scanning
     public var checkCameraPermissions: @Sendable () async -> Bool = { false }
@@ -171,9 +171,9 @@ extension DocumentScannerClient: DependencyKey {
         },
         enhanceImage: { data in data },
         enhanceImageAdvanced: { data, _, _ in
-            ProcessingResult(
+            DocumentImageProcessor.ProcessingResult(
                 processedImageData: data,
-                qualityMetrics: QualityMetrics(
+                qualityMetrics: DocumentImageProcessor.QualityMetrics(
                     overallConfidence: 0.85,
                     sharpnessScore: 0.8,
                     contrastScore: 0.9,
@@ -566,6 +566,430 @@ public struct ExtractedCurrency: Equatable, Sendable {
         self.currency = currency
         self.originalText = originalText
         self.confidence = confidence
+    }
+}
+
+// MARK: - Processing Types
+
+// MARK: - Additional Processing Types for Document Scanner Context
+
+/// Enhanced document type classification for scanner context
+public enum ScannerDocumentType: String, CaseIterable, Equatable, Sendable {
+    case contract = "Contract"
+    case solicitation = "Solicitation"
+    case amendment = "Amendment"
+    case invoice = "Invoice"
+    case receipt = "Receipt"
+    case specification = "Specification"
+    case statement = "Statement of Work"
+    case evaluation = "Evaluation"
+    case correspondence = "Correspondence"
+    case certification = "Certification"
+    case unknown = "Unknown"
+    
+    public var displayName: String {
+        rawValue
+    }
+    
+    public var category: DocumentCategory {
+        switch self {
+        case .contract, .amendment:
+            .award
+        case .solicitation:
+            .solicitation
+        case .invoice, .receipt:
+            .financial
+        case .specification, .statement:
+            .technical
+        case .evaluation:
+            .evaluation
+        case .correspondence, .certification:
+            .administrative
+        case .unknown:
+            .unknown
+        }
+    }
+    
+    public enum DocumentCategory: String, CaseIterable, Sendable {
+        case planning = "Planning"
+        case solicitation = "Solicitation"
+        case award = "Award"
+        case technical = "Technical"
+        case financial = "Financial"
+        case evaluation = "Evaluation"
+        case administrative = "Administrative"
+        case unknown = "Unknown"
+    }
+}
+
+// MARK: - Document Context Extraction Types
+
+/// Scanner-specific document context extracted through advanced analysis
+public struct ScannerDocumentContext: Equatable, Sendable {
+    public let documentType: ScannerDocumentType
+    public let extractedEntities: [DocumentEntity]
+    public let relationships: [EntityRelationship]
+    public let compliance: ComplianceAnalysis
+    public let riskFactors: [RiskFactor]
+    public let recommendations: [Recommendation]
+    public let confidence: Double
+    public let processingTime: TimeInterval
+    
+    public init(
+        documentType: ScannerDocumentType = .unknown,
+        extractedEntities: [DocumentEntity] = [],
+        relationships: [EntityRelationship] = [],
+        compliance: ComplianceAnalysis = ComplianceAnalysis(),
+        riskFactors: [RiskFactor] = [],
+        recommendations: [Recommendation] = [],
+        confidence: Double = 0.0,
+        processingTime: TimeInterval = 0
+    ) {
+        self.documentType = documentType
+        self.extractedEntities = extractedEntities
+        self.relationships = relationships
+        self.compliance = compliance
+        self.riskFactors = riskFactors
+        self.recommendations = recommendations
+        self.confidence = confidence
+        self.processingTime = processingTime
+    }
+}
+
+/// Document entity extracted from context analysis
+public struct DocumentEntity: Equatable, Sendable {
+    public let id: String
+    public let type: EntityType
+    public let value: String
+    public let confidence: Double
+    public let sourceLocation: CGRect?
+    public let metadata: [String: String]
+    
+    public init(
+        id: String = UUID().uuidString,
+        type: EntityType,
+        value: String,
+        confidence: Double,
+        sourceLocation: CGRect? = nil,
+        metadata: [String: String] = [:]
+    ) {
+        self.id = id
+        self.type = type
+        self.value = value
+        self.confidence = confidence
+        self.sourceLocation = sourceLocation
+        self.metadata = metadata
+    }
+    
+    public enum EntityType: String, CaseIterable, Sendable {
+        case vendor = "Vendor"
+        case contract = "Contract"
+        case amount = "Amount"
+        case date = "Date"
+        case requirement = "Requirement"
+        case clause = "Clause"
+        case specification = "Specification"
+        case deliverable = "Deliverable"
+        case contact = "Contact"
+        case location = "Location"
+        case certification = "Certification"
+        case other = "Other"
+    }
+}
+
+/// Relationship between document entities
+public struct EntityRelationship: Equatable, Sendable {
+    public let id: String
+    public let fromEntityId: String
+    public let toEntityId: String
+    public let relationshipType: RelationshipType
+    public let confidence: Double
+    
+    public init(
+        id: String = UUID().uuidString,
+        fromEntityId: String,
+        toEntityId: String,
+        relationshipType: RelationshipType,
+        confidence: Double
+    ) {
+        self.id = id
+        self.fromEntityId = fromEntityId
+        self.toEntityId = toEntityId
+        self.relationshipType = relationshipType
+        self.confidence = confidence
+    }
+    
+    public enum RelationshipType: String, CaseIterable, Sendable {
+        case contractedBy = "Contracted By"
+        case requirementFor = "Requirement For"
+        case deliveredBy = "Delivered By"
+        case dependsOn = "Depends On"
+        case governs = "Governs"
+        case references = "References"
+        case modifies = "Modifies"
+        case supersedes = "Supersedes"
+        case other = "Other"
+    }
+}
+
+/// Compliance analysis for documents
+public struct ComplianceAnalysis: Equatable, Sendable {
+    public let overallCompliance: ComplianceLevel
+    public let farCompliance: RegulationCompliance
+    public let dfarsCompliance: RegulationCompliance
+    public let agencyCompliance: RegulationCompliance
+    public let identifiedIssues: [ComplianceIssue]
+    public let recommendations: [ComplianceRecommendation]
+    
+    public init(
+        overallCompliance: ComplianceLevel = .unknown,
+        farCompliance: RegulationCompliance = RegulationCompliance(),
+        dfarsCompliance: RegulationCompliance = RegulationCompliance(),
+        agencyCompliance: RegulationCompliance = RegulationCompliance(),
+        identifiedIssues: [ComplianceIssue] = [],
+        recommendations: [ComplianceRecommendation] = []
+    ) {
+        self.overallCompliance = overallCompliance
+        self.farCompliance = farCompliance
+        self.dfarsCompliance = dfarsCompliance
+        self.agencyCompliance = agencyCompliance
+        self.identifiedIssues = identifiedIssues
+        self.recommendations = recommendations
+    }
+    
+    public enum ComplianceLevel: String, CaseIterable, Sendable {
+        case compliant = "Compliant"
+        case partiallyCompliant = "Partially Compliant"
+        case nonCompliant = "Non-Compliant"
+        case unknown = "Unknown"
+        case notApplicable = "Not Applicable"
+    }
+}
+
+/// Regulation-specific compliance information
+public struct RegulationCompliance: Equatable, Sendable {
+    public let regulation: String
+    public let compliance: ComplianceAnalysis.ComplianceLevel
+    public let applicableClauses: [String]
+    public let missingClauses: [String]
+    public let conflictingClauses: [String]
+    public let confidence: Double
+    
+    public init(
+        regulation: String = "",
+        compliance: ComplianceAnalysis.ComplianceLevel = .unknown,
+        applicableClauses: [String] = [],
+        missingClauses: [String] = [],
+        conflictingClauses: [String] = [],
+        confidence: Double = 0.0
+    ) {
+        self.regulation = regulation
+        self.compliance = compliance
+        self.applicableClauses = applicableClauses
+        self.missingClauses = missingClauses
+        self.conflictingClauses = conflictingClauses
+        self.confidence = confidence
+    }
+}
+
+/// Compliance issue identified in analysis
+public struct ComplianceIssue: Equatable, Sendable {
+    public let id: String
+    public let severity: Severity
+    public let category: Category
+    public let description: String
+    public let regulation: String
+    public let clause: String?
+    public let recommendation: String?
+    
+    public init(
+        id: String = UUID().uuidString,
+        severity: Severity,
+        category: Category,
+        description: String,
+        regulation: String,
+        clause: String? = nil,
+        recommendation: String? = nil
+    ) {
+        self.id = id
+        self.severity = severity
+        self.category = category
+        self.description = description
+        self.regulation = regulation
+        self.clause = clause
+        self.recommendation = recommendation
+    }
+    
+    public enum Severity: String, CaseIterable, Sendable {
+        case critical = "Critical"
+        case high = "High"
+        case medium = "Medium"
+        case low = "Low"
+        case informational = "Informational"
+    }
+    
+    public enum Category: String, CaseIterable, Sendable {
+        case clause = "Missing Clause"
+        case format = "Format Issue"
+        case content = "Content Issue"
+        case procedure = "Procedure Violation"
+        case documentation = "Documentation Issue"
+        case other = "Other"
+    }
+}
+
+/// Compliance recommendation
+public struct ComplianceRecommendation: Equatable, Sendable {
+    public let id: String
+    public let priority: Priority
+    public let action: String
+    public let rationale: String
+    public let regulation: String
+    public let estimatedImpact: Impact
+    
+    public init(
+        id: String = UUID().uuidString,
+        priority: Priority,
+        action: String,
+        rationale: String,
+        regulation: String,
+        estimatedImpact: Impact
+    ) {
+        self.id = id
+        self.priority = priority
+        self.action = action
+        self.rationale = rationale
+        self.regulation = regulation
+        self.estimatedImpact = estimatedImpact
+    }
+    
+    public enum Priority: String, CaseIterable, Sendable {
+        case immediate = "Immediate"
+        case high = "High"
+        case medium = "Medium"
+        case low = "Low"
+        case optional = "Optional"
+    }
+    
+    public enum Impact: String, CaseIterable, Sendable {
+        case high = "High Impact"
+        case medium = "Medium Impact"
+        case low = "Low Impact"
+        case minimal = "Minimal Impact"
+    }
+}
+
+/// Risk factor identified in document analysis
+public struct RiskFactor: Equatable, Sendable {
+    public let id: String
+    public let type: RiskType
+    public let severity: RiskSeverity
+    public let description: String
+    public let mitigation: String?
+    public let probability: Double // 0.0 to 1.0
+    public let impact: Double // 0.0 to 1.0
+    
+    public init(
+        id: String = UUID().uuidString,
+        type: RiskType,
+        severity: RiskSeverity,
+        description: String,
+        mitigation: String? = nil,
+        probability: Double = 0.5,
+        impact: Double = 0.5
+    ) {
+        self.id = id
+        self.type = type
+        self.severity = severity
+        self.description = description
+        self.mitigation = mitigation
+        self.probability = probability
+        self.impact = impact
+    }
+    
+    public enum RiskType: String, CaseIterable, Sendable {
+        case financial = "Financial"
+        case schedule = "Schedule"
+        case performance = "Performance"
+        case compliance = "Compliance"
+        case technical = "Technical"
+        case operational = "Operational"
+        case legal = "Legal"
+        case reputation = "Reputation"
+        case other = "Other"
+    }
+    
+    public enum RiskSeverity: String, CaseIterable, Sendable {
+        case critical = "Critical"
+        case high = "High"
+        case medium = "Medium"
+        case low = "Low"
+        case negligible = "Negligible"
+    }
+    
+    /// Calculated risk score based on probability and impact
+    public var riskScore: Double {
+        probability * impact
+    }
+}
+
+/// General recommendation from document analysis
+public struct Recommendation: Equatable, Sendable {
+    public let id: String
+    public let type: RecommendationType
+    public let priority: Priority
+    public let title: String
+    public let description: String
+    public let action: String
+    public let rationale: String
+    public let estimatedEffort: EstimatedEffort
+    
+    public init(
+        id: String = UUID().uuidString,
+        type: RecommendationType,
+        priority: Priority,
+        title: String,
+        description: String,
+        action: String,
+        rationale: String,
+        estimatedEffort: EstimatedEffort = .medium
+    ) {
+        self.id = id
+        self.type = type
+        self.priority = priority
+        self.title = title
+        self.description = description
+        self.action = action
+        self.rationale = rationale
+        self.estimatedEffort = estimatedEffort
+    }
+    
+    public enum RecommendationType: String, CaseIterable, Sendable {
+        case process = "Process Improvement"
+        case compliance = "Compliance Enhancement"
+        case efficiency = "Efficiency Gain"
+        case riskMitigation = "Risk Mitigation"
+        case costSaving = "Cost Saving"
+        case qualityImprovement = "Quality Improvement"
+        case documentation = "Documentation"
+        case automation = "Automation Opportunity"
+        case other = "Other"
+    }
+    
+    public enum Priority: String, CaseIterable, Sendable {
+        case critical = "Critical"
+        case high = "High"
+        case medium = "Medium"
+        case low = "Low"
+        case optional = "Optional"
+    }
+    
+    public enum EstimatedEffort: String, CaseIterable, Sendable {
+        case minimal = "Minimal (< 1 hour)"
+        case low = "Low (1-4 hours)"
+        case medium = "Medium (1-2 days)"
+        case high = "High (3-5 days)"
+        case extensive = "Extensive (> 1 week)"
     }
 }
 

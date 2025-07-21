@@ -25,7 +25,7 @@
                     let result = try await imageProcessor.processImage(
                         imageData,
                         .basic,
-                        ProcessingOptions()
+                        DocumentImageProcessor.ProcessingOptions()
                     )
                     return result.processedImageData
                 },
@@ -121,14 +121,14 @@
                 let processingResult = try await imageProcessor.processImage(
                     imageData,
                     .enhanced,
-                    ProcessingOptions(optimizeForOCR: true)
+                    DocumentImageProcessor.ProcessingOptions(optimizeForOCR: true)
                 )
                 enhancedImageData = processingResult.processedImageData
             } else {
                 let processingResult = try await imageProcessor.processImage(
                     imageData,
                     .basic,
-                    ProcessingOptions(optimizeForOCR: true)
+                    DocumentImageProcessor.ProcessingOptions(optimizeForOCR: true)
                 )
                 enhancedImageData = processingResult.processedImageData
             }

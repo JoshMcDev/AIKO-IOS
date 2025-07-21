@@ -39,7 +39,7 @@
             let edgeDetectionResult: EdgeDetectionEngine.EdgeDetectionResult?
             let perspectiveCorrectionResult: PerspectiveCorrectionPipeline.PerspectiveCorrectionResult?
             let performanceMetrics: PerformanceMetrics
-            let qualityMetrics: QualityMetrics
+            let qualityMetrics: DocumentImageProcessor.QualityMetrics
         }
 
         // MARK: - Initialization
@@ -75,7 +75,7 @@
         /// - Returns: DocumentProcessingResult with processed image and metrics
         func processDocument(
             _ image: CIImage,
-            options: ProcessingOptions
+            options: DocumentImageProcessor.ProcessingOptions
         ) async throws -> DocumentProcessingResult {
             let startTime = CFAbsoluteTimeGetCurrent()
             let performanceMonitor = PerformanceMonitor()
@@ -199,7 +199,7 @@
             processedImage: CIImage,
             edgeDetectionResult: EdgeDetectionEngine.EdgeDetectionResult,
             perspectiveCorrectionResult: PerspectiveCorrectionPipeline.PerspectiveCorrectionResult
-        ) -> QualityMetrics {
+        ) -> DocumentImageProcessor.QualityMetrics {
             // Calculate basic quality metrics
             let sharpnessScore = calculateSharpness(processedImage)
             let contrastScore = calculateContrast(processedImage)
@@ -225,7 +225,7 @@
                 textClarity > 0.6 &&
                 perspectiveCorrectionAccuracy > 0.8
 
-            return QualityMetrics(
+            return DocumentImageProcessor.QualityMetrics(
                 overallConfidence: overallConfidence,
                 sharpnessScore: sharpnessScore,
                 contrastScore: contrastScore,

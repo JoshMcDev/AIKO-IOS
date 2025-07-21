@@ -43,7 +43,7 @@
             documentProcessingPipeline = DocumentProcessingPipeline()
         }
 
-        func processImage(_ imageData: Data, mode: ProcessingMode, options: ProcessingOptions) async throws -> ProcessingResult {
+        func processImage(_ imageData: Data, mode: DocumentImageProcessor.ProcessingMode, options: DocumentImageProcessor.ProcessingOptions) async throws -> DocumentImageProcessor.ProcessingResult {
             let startTime = CFAbsoluteTimeGetCurrent()
             var appliedFilters: [String] = []
 
@@ -66,11 +66,11 @@
 
         private func performProcessing(
             ciImage: CIImage,
-            mode: ProcessingMode,
-            options: ProcessingOptions,
+            mode: DocumentImageProcessor.ProcessingMode,
+            options: DocumentImageProcessor.ProcessingOptions,
             appliedFilters: inout [String],
             startTime: CFAbsoluteTime
-        ) async throws -> ProcessingResult {
+        ) async throws -> DocumentImageProcessor.ProcessingResult {
             var processedImage = ciImage
             let totalSteps = mode == .documentScanner ? 8 : (mode == .enhanced ? 6 : 3)
             var currentStepIndex = 0
@@ -165,7 +165,7 @@
 
             let processingTime = CFAbsoluteTimeGetCurrent() - startTime
 
-            return ProcessingResult(
+            return DocumentImageProcessor.ProcessingResult(
                 processedImageData: finalImageData,
                 qualityMetrics: qualityMetrics,
                 processingTime: processingTime,
@@ -175,7 +175,7 @@
 
         // MARK: - Processing Steps
 
-        private func performPreprocessing(_ image: CIImage, options _: ProcessingOptions) throws -> CIImage {
+        private func performPreprocessing(_ image: CIImage, options _: DocumentImageProcessor.ProcessingOptions) throws -> CIImage {
             var result = image
 
             // Correct orientation if needed
@@ -197,7 +197,7 @@
             return result
         }
 
-        private func performBasicEnhancement(_ image: CIImage, options: ProcessingOptions) throws -> CIImage {
+        private func performBasicEnhancement(_ image: CIImage, options: DocumentImageProcessor.ProcessingOptions) throws -> CIImage {
             var result = image
 
             // Contrast and brightness adjustment
@@ -221,7 +221,7 @@
             return result
         }
 
-        private func performAdvancedEnhancement(_ image: CIImage, options: ProcessingOptions) throws -> CIImage {
+        private func performAdvancedEnhancement(_ image: CIImage, options: DocumentImageProcessor.ProcessingOptions) throws -> CIImage {
             var result = image
 
             // Advanced tone mapping
@@ -253,7 +253,7 @@
             return result
         }
 
-        private func performDenoising(_ image: CIImage, options _: ProcessingOptions) throws -> CIImage {
+        private func performDenoising(_ image: CIImage, options _: DocumentImageProcessor.ProcessingOptions) throws -> CIImage {
             var result = image
 
             // Noise reduction using median filter
@@ -275,7 +275,7 @@
             return result
         }
 
-        private func performBasicSharpening(_ image: CIImage, options _: ProcessingOptions) throws -> CIImage {
+        private func performBasicSharpening(_ image: CIImage, options _: DocumentImageProcessor.ProcessingOptions) throws -> CIImage {
             let sharpenFilter = CIFilter.sharpenLuminance()
             sharpenFilter.inputImage = image
             sharpenFilter.sharpness = 0.4
@@ -283,7 +283,7 @@
             return sharpenFilter.outputImage ?? image
         }
 
-        private func performAdvancedSharpening(_ image: CIImage, options _: ProcessingOptions) throws -> CIImage {
+        private func performAdvancedSharpening(_ image: CIImage, options _: DocumentImageProcessor.ProcessingOptions) throws -> CIImage {
             var result = image
 
             // Multi-scale sharpening
@@ -311,7 +311,7 @@
             return result
         }
 
-        private func performOCROptimization(_ image: CIImage, options _: ProcessingOptions) throws -> CIImage {
+        private func performOCROptimization(_ image: CIImage, options _: DocumentImageProcessor.ProcessingOptions) throws -> CIImage {
             var result = image
 
             // Increase contrast specifically for text recognition
@@ -340,11 +340,11 @@
         private func performDocumentScannerProcessing(
             ciImage: CIImage,
             originalImage _: CIImage,
-            options: ProcessingOptions,
+            options: DocumentImageProcessor.ProcessingOptions,
             appliedFilters: inout [String],
             startTime: CFAbsoluteTime,
             updateProgress: (ProcessingStep, Double) -> Void
-        ) async throws -> ProcessingResult {
+        ) async throws -> DocumentImageProcessor.ProcessingResult {
             var processedImage = ciImage
 
             // Step 2: Edge Detection
@@ -399,7 +399,7 @@
 
             let processingTime = CFAbsoluteTimeGetCurrent() - startTime
 
-            return ProcessingResult(
+            return DocumentImageProcessor.ProcessingResult(
                 processedImageData: finalImageData,
                 qualityMetrics: qualityMetrics,
                 processingTime: processingTime,
@@ -409,7 +409,7 @@
 
         // MARK: - Quality Analysis
 
-        private func analyzeQuality(_ processedImage: CIImage, originalImage _: CIImage) throws -> QualityMetrics {
+        private func analyzeQuality(_ processedImage: CIImage, originalImage _: CIImage) throws -> DocumentImageProcessor.QualityMetrics {
             // Calculate various quality metrics
             let sharpnessScore = calculateSharpness(processedImage)
             let contrastScore = calculateContrast(processedImage)
@@ -426,7 +426,7 @@
 
             let recommendedForOCR = overallConfidence > 0.7 && textClarity > 0.6
 
-            return QualityMetrics(
+            return DocumentImageProcessor.QualityMetrics(
                 overallConfidence: overallConfidence,
                 sharpnessScore: sharpnessScore,
                 contrastScore: contrastScore,
@@ -550,7 +550,7 @@
 
         // MARK: - Time Estimation
 
-        func estimateProcessingTime(_ imageData: Data, mode: ProcessingMode) async throws -> TimeInterval {
+        func estimateProcessingTime(_ imageData: Data, mode: DocumentImageProcessor.ProcessingMode) async throws -> TimeInterval {
             let imageSize = Double(imageData.count)
             let megabytes = imageSize / 1_000_000.0
 
@@ -566,7 +566,7 @@
             return baseTime * sizeMultiplier * performanceFactor
         }
 
-        func isProcessingModeAvailable(_: ProcessingMode) -> Bool {
+        func isProcessingModeAvailable(_: DocumentImageProcessor.ProcessingMode) -> Bool {
             // Both modes are available on iOS with Core Image
             true
         }

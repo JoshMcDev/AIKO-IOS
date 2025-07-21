@@ -575,8 +575,8 @@ public struct OCRInputMetadata: Sendable {
     public let sessionID: DocumentSessionID
     public let pageNumber: Int
     public let originalPageID: UUID
-    public let qualityMetrics: QualityMetrics?
-    public let processingMode: ProcessingMode?
+    public let qualityMetrics: DocumentImageProcessor.QualityMetrics?
+    public let processingMode: DocumentImageProcessor.ProcessingMode?
     public let enhancementApplied: Bool
     public let originalConfidence: Double?
 
@@ -584,8 +584,8 @@ public struct OCRInputMetadata: Sendable {
         sessionID: DocumentSessionID,
         pageNumber: Int,
         originalPageID: UUID,
-        qualityMetrics: QualityMetrics? = nil,
-        processingMode: ProcessingMode? = nil,
+        qualityMetrics: DocumentImageProcessor.QualityMetrics? = nil,
+        processingMode: DocumentImageProcessor.ProcessingMode? = nil,
         enhancementApplied: Bool = false,
         originalConfidence: Double? = nil
     ) {

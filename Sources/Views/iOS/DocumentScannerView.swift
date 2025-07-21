@@ -205,7 +205,7 @@
                         get: { viewStore.processingMode },
                         set: { viewStore.send(.updateProcessingMode($0)) }
                     )) {
-                        ForEach(ProcessingMode.allCases, id: \.self) { mode in
+                        ForEach(DocumentImageProcessor.ProcessingMode.allCases, id: \.self) { mode in
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(mode.displayName)
                                     .font(.headline)

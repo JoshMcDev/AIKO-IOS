@@ -6,6 +6,8 @@
 **Architecture**: SwiftUI + The Composable Architecture (TCA)  
 **Progress**: 25% Complete (5/20 Main Tasks) - Phase 4.2 Document Scanner
 
+## ALWAYS use Bash (cd /Users/J/aiko && xcodebuild -scheme AIKO -destination "platform=iOS Simulator,name=iPhone 16 Pro" -skipPackagePluginValidation build 2>&1 | grep -E "(error:|…)
+
 ## 🏆 Recent Major Achievements (January 2025)
 
 ### Phase 4.1 - Enhanced Image Processing ✅ COMPLETE

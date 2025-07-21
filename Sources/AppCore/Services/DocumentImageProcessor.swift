@@ -20,45 +20,114 @@ public struct DocumentImageProcessor: Sendable {
 
 // MARK: - Processing Types
 
-/// Processing modes for document enhancement
-public enum ProcessingMode: String, CaseIterable, Equatable, Sendable {
-    case basic
-    case enhanced
-    case documentScanner = "document_scanner"
+extension DocumentImageProcessor {
+    /// Processing modes for document enhancement
+    public enum ProcessingMode: String, CaseIterable, Equatable, Sendable {
+        case basic
+        case enhanced
+        case documentScanner = "document_scanner"
 
-    public var displayName: String {
-        switch self {
-        case .basic: "Basic Enhancement"
-        case .enhanced: "Advanced Enhancement"
-        case .documentScanner: "Document Scanner"
+        public var displayName: String {
+            switch self {
+            case .basic: "Basic Enhancement"
+            case .enhanced: "Advanced Enhancement"
+            case .documentScanner: "Document Scanner"
+            }
         }
     }
-}
 
-/// Processing options and configuration
-public struct ProcessingOptions: Sendable {
-    public let progressCallback: (@Sendable (ProcessingProgress) -> Void)?
-    public let qualityTarget: QualityTarget
-    public let preserveColors: Bool
-    public let optimizeForOCR: Bool
+    /// Processing options and configuration
+    public struct ProcessingOptions: Sendable {
+        public let progressCallback: (@Sendable (ProcessingProgress) -> Void)?
+        public let qualityTarget: QualityTarget
+        public let preserveColors: Bool
+        public let optimizeForOCR: Bool
 
-    public init(
-        progressCallback: (@Sendable (ProcessingProgress) -> Void)? = nil,
-        qualityTarget: QualityTarget = .balanced,
-        preserveColors: Bool = true,
-        optimizeForOCR: Bool = true
-    ) {
-        self.progressCallback = progressCallback
-        self.qualityTarget = qualityTarget
-        self.preserveColors = preserveColors
-        self.optimizeForOCR = optimizeForOCR
+        public init(
+            progressCallback: (@Sendable (ProcessingProgress) -> Void)? = nil,
+            qualityTarget: QualityTarget = .balanced,
+            preserveColors: Bool = true,
+            optimizeForOCR: Bool = true
+        ) {
+            self.progressCallback = progressCallback
+            self.qualityTarget = qualityTarget
+            self.preserveColors = preserveColors
+            self.optimizeForOCR = optimizeForOCR
+        }
+    }
+
+    /// Quality targets for processing
+    public enum QualityTarget: String, CaseIterable, Equatable, Sendable {
+        case speed
+        case balanced
+        case quality
+
+        public var displayName: String {
+            switch self {
+            case .speed: "Fast"
+            case .balanced: "Balanced"
+            case .quality: "High Quality"
+            }
+        }
+    }
+
+    /// Processing result with quality metrics
+    public struct ProcessingResult: Equatable, Sendable {
+        public let processedImageData: Data
+        public let qualityMetrics: QualityMetrics
+        public let processingTime: TimeInterval
+        public let appliedFilters: [String]
+
+        public init(
+            processedImageData: Data,
+            qualityMetrics: QualityMetrics,
+            processingTime: TimeInterval,
+            appliedFilters: [String]
+        ) {
+            self.processedImageData = processedImageData
+            self.qualityMetrics = qualityMetrics
+            self.processingTime = processingTime
+            self.appliedFilters = appliedFilters
+        }
+    }
+
+    /// Quality assessment metrics
+    public struct QualityMetrics: Equatable, Sendable {
+        public let overallConfidence: Double // 0.0 to 1.0
+        public let sharpnessScore: Double // 0.0 to 1.0
+        public let contrastScore: Double // 0.0 to 1.0
+        public let noiseLevel: Double // 0.0 to 1.0
+        public let textClarity: Double // 0.0 to 1.0
+        public let edgeDetectionConfidence: Double? // 0.0 to 1.0, nil if not performed
+        public let perspectiveCorrectionAccuracy: Double? // 0.0 to 1.0, nil if not performed
+        public let recommendedForOCR: Bool
+
+        public init(
+            overallConfidence: Double,
+            sharpnessScore: Double,
+            contrastScore: Double,
+            noiseLevel: Double,
+            textClarity: Double,
+            edgeDetectionConfidence: Double? = nil,
+            perspectiveCorrectionAccuracy: Double? = nil,
+            recommendedForOCR: Bool
+        ) {
+            self.overallConfidence = overallConfidence
+            self.sharpnessScore = sharpnessScore
+            self.contrastScore = contrastScore
+            self.noiseLevel = noiseLevel
+            self.textClarity = textClarity
+            self.edgeDetectionConfidence = edgeDetectionConfidence
+            self.perspectiveCorrectionAccuracy = perspectiveCorrectionAccuracy
+            self.recommendedForOCR = recommendedForOCR
+        }
     }
 }
 
 // MARK: - ProcessingOptions Equatable Conformance
 
-extension ProcessingOptions: Equatable {
-    public static func == (lhs: ProcessingOptions, rhs: ProcessingOptions) -> Bool {
+extension DocumentImageProcessor.ProcessingOptions: Equatable {
+    public static func == (lhs: DocumentImageProcessor.ProcessingOptions, rhs: DocumentImageProcessor.ProcessingOptions) -> Bool {
         // Compare all fields except progressCallback (functions can't be compared)
         lhs.qualityTarget == rhs.qualityTarget &&
             lhs.preserveColors == rhs.preserveColors &&
@@ -111,73 +180,6 @@ public enum ProcessingStep: String, CaseIterable, Equatable, Sendable {
     }
 }
 
-/// Quality targets for processing
-public enum QualityTarget: String, CaseIterable, Equatable, Sendable {
-    case speed
-    case balanced
-    case quality
-
-    public var displayName: String {
-        switch self {
-        case .speed: "Fast"
-        case .balanced: "Balanced"
-        case .quality: "High Quality"
-        }
-    }
-}
-
-/// Processing result with quality metrics
-public struct ProcessingResult: Equatable, Sendable {
-    public let processedImageData: Data
-    public let qualityMetrics: QualityMetrics
-    public let processingTime: TimeInterval
-    public let appliedFilters: [String]
-
-    public init(
-        processedImageData: Data,
-        qualityMetrics: QualityMetrics,
-        processingTime: TimeInterval,
-        appliedFilters: [String]
-    ) {
-        self.processedImageData = processedImageData
-        self.qualityMetrics = qualityMetrics
-        self.processingTime = processingTime
-        self.appliedFilters = appliedFilters
-    }
-}
-
-/// Quality assessment metrics
-public struct QualityMetrics: Equatable, Sendable {
-    public let overallConfidence: Double // 0.0 to 1.0
-    public let sharpnessScore: Double // 0.0 to 1.0
-    public let contrastScore: Double // 0.0 to 1.0
-    public let noiseLevel: Double // 0.0 to 1.0
-    public let textClarity: Double // 0.0 to 1.0
-    public let edgeDetectionConfidence: Double? // 0.0 to 1.0, nil if not performed
-    public let perspectiveCorrectionAccuracy: Double? // 0.0 to 1.0, nil if not performed
-    public let recommendedForOCR: Bool
-
-    public init(
-        overallConfidence: Double,
-        sharpnessScore: Double,
-        contrastScore: Double,
-        noiseLevel: Double,
-        textClarity: Double,
-        edgeDetectionConfidence: Double? = nil,
-        perspectiveCorrectionAccuracy: Double? = nil,
-        recommendedForOCR: Bool
-    ) {
-        self.overallConfidence = overallConfidence
-        self.sharpnessScore = sharpnessScore
-        self.contrastScore = contrastScore
-        self.noiseLevel = noiseLevel
-        self.textClarity = textClarity
-        self.edgeDetectionConfidence = edgeDetectionConfidence
-        self.perspectiveCorrectionAccuracy = perspectiveCorrectionAccuracy
-        self.recommendedForOCR = recommendedForOCR
-    }
-}
-
 // MARK: - Dependency Registration
 
 extension DocumentImageProcessor: DependencyKey {
@@ -195,9 +197,9 @@ extension DocumentImageProcessor: DependencyKey {
                 overallProgress: 0.5
             ))
 
-            return ProcessingResult(
+            return DocumentImageProcessor.ProcessingResult(
                 processedImageData: data,
-                qualityMetrics: QualityMetrics(
+                qualityMetrics: DocumentImageProcessor.QualityMetrics(
                     overallConfidence: 0.85,
                     sharpnessScore: 0.8,
                     contrastScore: 0.9,

@@ -58,7 +58,7 @@ import Foundation
                 let result = try await documentScanner.enhanceImageAdvanced(
                     imageData,
                     .basic,
-                    ProcessingOptions(
+                    DocumentImageProcessor.ProcessingOptions(
                         qualityTarget: .speed,
                         preserveColors: true,
                         optimizeForOCR: true
@@ -96,7 +96,7 @@ import Foundation
                 let result = try await documentScanner.enhanceImageAdvanced(
                     imageData,
                     .enhanced,
-                    ProcessingOptions(
+                    DocumentImageProcessor.ProcessingOptions(
                         qualityTarget: .quality,
                         preserveColors: false, // Better for OCR
                         optimizeForOCR: true
@@ -154,7 +154,7 @@ import Foundation
                 let result = try await documentScanner.enhanceImageAdvanced(
                     imageData,
                     .enhanced,
-                    ProcessingOptions(
+                    DocumentImageProcessor.ProcessingOptions(
                         progressCallback: progressCallback,
                         qualityTarget: .balanced,
                         preserveColors: true,
@@ -181,13 +181,13 @@ import Foundation
                 let basicResult = try await documentScanner.enhanceImageAdvanced(
                     imageData,
                     .basic,
-                    ProcessingOptions(qualityTarget: .speed)
+                    DocumentImageProcessor.ProcessingOptions(qualityTarget: .speed)
                 )
 
                 let enhancedResult = try await documentScanner.enhanceImageAdvanced(
                     imageData,
                     .enhanced,
-                    ProcessingOptions(qualityTarget: .quality)
+                    DocumentImageProcessor.ProcessingOptions(qualityTarget: .quality)
                 )
 
                 print("Quality Comparison:")
@@ -242,7 +242,7 @@ import Foundation
                 let result = try await documentScanner.enhanceImageAdvanced(
                     scannedPage.imageData,
                     .enhanced,
-                    ProcessingOptions(
+                    DocumentImageProcessor.ProcessingOptions(
                         progressCallback: { progress in
                             print("   Processing: \(String(format: "%.0f", progress.overallProgress * 100))%")
                         },

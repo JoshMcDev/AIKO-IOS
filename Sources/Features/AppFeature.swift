@@ -112,6 +112,7 @@ public struct AppFeature: Sendable {
     public enum MenuItem: String, CaseIterable, Equatable, Sendable {
         case myProfile = "My Profile"
         case myAcquisitions = "My Acquisitions"
+        case documentScanner = "Document Scanner"
         case quickReferences = "Quick Links"
         case searchTemplates = "Search Document Templates"
         case userGuide = "User Guide"
@@ -121,6 +122,7 @@ public struct AppFeature: Sendable {
             switch self {
             case .myProfile: "person.crop.circle.fill"
             case .myAcquisitions: "clock.arrow.circlepath"
+            case .documentScanner: "doc.text.viewfinder"
             case .quickReferences: "link.circle.fill"
             case .searchTemplates: "doc.text.magnifyingglass"
             case .userGuide: "questionmark.circle.fill"
@@ -132,6 +134,7 @@ public struct AppFeature: Sendable {
             switch self {
             case .myProfile: "Your profile information"
             case .myAcquisitions: "View your requirement history"
+            case .documentScanner: "Scan documents for acquisition contracts"
             case .quickReferences: "Access useful acquisition resources"
             case .searchTemplates: "Browse all document templates"
             case .userGuide: "Learn how to use AIKO"
@@ -378,6 +381,9 @@ public struct AppFeature: Sendable {
                     state.showingMenu = false
                 case .myAcquisitions:
                     state.showingAcquisitions = true
+                    state.showingMenu = false
+                case .documentScanner:
+                    state.showingDocumentScanner = true
                     state.showingMenu = false
                 case .quickReferences:
                     state.showingQuickReferences = true

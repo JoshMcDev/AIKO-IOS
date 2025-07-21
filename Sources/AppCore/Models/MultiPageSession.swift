@@ -168,12 +168,12 @@ public enum SessionState: String, CaseIterable, Equatable, Sendable {
 
 /// Configuration settings for a multi-page scanning session
 public struct SessionConfiguration: Equatable, Sendable {
-    public var processingMode: ProcessingMode
+    public var processingMode: DocumentImageProcessor.ProcessingMode
     public var enableImageEnhancement: Bool
     public var enableOCR: Bool
     public var enableEnhancedOCR: Bool
     public var autoProcessPages: Bool
-    public var qualityTarget: QualityTarget
+    public var qualityTarget: DocumentImageProcessor.QualityTarget
     public var maxPagesPerSession: Int
     public var autoSaveInterval: TimeInterval // seconds
 
@@ -184,12 +184,12 @@ public struct SessionConfiguration: Equatable, Sendable {
     public var qualityAssessmentEnabled: Bool
 
     public init(
-        processingMode: ProcessingMode = .basic,
+        processingMode: DocumentImageProcessor.ProcessingMode = .basic,
         enableImageEnhancement: Bool = true,
         enableOCR: Bool = true,
         enableEnhancedOCR: Bool = true,
         autoProcessPages: Bool = true,
-        qualityTarget: QualityTarget = .balanced,
+        qualityTarget: DocumentImageProcessor.QualityTarget = .balanced,
         maxPagesPerSession: Int = 50,
         autoSaveInterval: TimeInterval = 30.0,
         preserveColors: Bool = true,
@@ -212,8 +212,8 @@ public struct SessionConfiguration: Equatable, Sendable {
     }
 
     /// Returns ProcessingOptions based on current configuration
-    public func createProcessingOptions() -> ProcessingOptions {
-        ProcessingOptions(
+    public func createProcessingOptions() -> DocumentImageProcessor.ProcessingOptions {
+        DocumentImageProcessor.ProcessingOptions(
             progressCallback: nil, // Will be set during actual processing
             qualityTarget: qualityTarget,
             preserveColors: preserveColors,

@@ -238,8 +238,8 @@ public final class DocumentScannerServiceImpl: ObservableObject, Sendable {
     /// Processes scanned pages using existing DocumentImageProcessor
     public func processPages(
         _ pages: [ScannedPage],
-        _ mode: ProcessingMode,
-        _ options: ProcessingOptions
+        _ mode: DocumentImageProcessor.ProcessingMode,
+        _ options: DocumentImageProcessor.ProcessingOptions
     ) async throws -> [ScannedPage] {
         logger.info("Processing \(pages.count) pages with mode: \(mode.rawValue)")
 
@@ -260,8 +260,8 @@ public final class DocumentScannerServiceImpl: ObservableObject, Sendable {
     /// Processes a single page with progress tracking
     public func processPage(
         _ page: ScannedPage,
-        _ mode: ProcessingMode,
-        _ options: ProcessingOptions
+        _ mode: DocumentImageProcessor.ProcessingMode,
+        _ options: DocumentImageProcessor.ProcessingOptions
     ) async throws -> ScannedPage {
         logger.debug("Processing page: \(page.id)")
 
@@ -356,7 +356,7 @@ public final class DocumentScannerServiceImpl: ObservableObject, Sendable {
         }
 
         // Otherwise, process the page to get quality metrics
-        let options = ProcessingOptions(qualityTarget: .quality)
+        let options = DocumentImageProcessor.ProcessingOptions(qualityTarget: .quality)
         let result = try await imageProcessor.processImage(
             page.imageData,
             .basic,
@@ -381,10 +381,10 @@ public final class DocumentScannerServiceImpl: ObservableObject, Sendable {
         let allRecommendations = assessments.flatMap(\.recommendations)
 
         // Determine recommended mode based on quality scores
-        let recommendedMode: ProcessingMode = averageScore < 0.7 ? .enhanced : .basic
+        let recommendedMode: DocumentImageProcessor.ProcessingMode = averageScore < 0.7 ? .enhanced : .basic
 
         // Create processing options
-        let options = ProcessingOptions(
+        let options = DocumentImageProcessor.ProcessingOptions(
             qualityTarget: averageScore < 0.6 ? .quality : .balanced,
             optimizeForOCR: true
         )
@@ -484,7 +484,7 @@ public final class DocumentScannerServiceImpl: ObservableObject, Sendable {
     }
 
     /// Estimates processing time for given configuration
-    public func estimateProcessingTime(_ pageCount: Int, _ mode: ProcessingMode) async -> TimeInterval {
+    public func estimateProcessingTime(_ pageCount: Int, _ mode: DocumentImageProcessor.ProcessingMode) async -> TimeInterval {
         let baseTime: TimeInterval = mode == .enhanced ? 8.0 : 3.0
         let estimatedTime = baseTime * Double(pageCount)
 
@@ -526,7 +526,7 @@ public final class DocumentScannerServiceImpl: ObservableObject, Sendable {
         }
     }
 
-    private func generateQualityIssues(from metrics: QualityMetrics) -> [QualityIssue] {
+    private func generateQualityIssues(from metrics: DocumentImageProcessor.QualityMetrics) -> [QualityIssue] {
         var issues: [QualityIssue] = []
 
         if metrics.sharpnessScore < 0.6 {
@@ -548,7 +548,7 @@ public final class DocumentScannerServiceImpl: ObservableObject, Sendable {
         return issues
     }
 
-    private func generateRecommendations(from metrics: QualityMetrics) -> [QualityRecommendation] {
+    private func generateRecommendations(from metrics: DocumentImageProcessor.QualityMetrics) -> [QualityRecommendation] {
         var recommendations: [QualityRecommendation] = []
 
         if metrics.overallConfidence < 0.6 {

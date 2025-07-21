@@ -2,6 +2,7 @@
 > **Adaptive Intelligence for Kontract Optimization**
 > **Project-Specific Claude Code Configuration**
 
+## ALWAYS use Bash (cd /Users/J/aiko && xcodebuild -scheme AIKO -destination "platform=iOS Simulator,name=iPhone 16 Pro" -skipPackagePluginValidation build 2>&1 | grep -E "(error:|…)
 ---
 
 ## 🎯 Project Overview
