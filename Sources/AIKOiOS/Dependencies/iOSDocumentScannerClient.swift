@@ -324,10 +324,21 @@
             let processingTime = Date().timeIntervalSince(startTime)
             let overallConfidence = confidenceScores.isEmpty ? 0.0 : confidenceScores.reduce(0, +) / Double(confidenceScores.count)
 
+            // Convert FormField to DocumentFormField
+            let documentFormFields = formFields.map { formField in
+                DocumentFormField(
+                    label: formField.name,
+                    value: formField.value,
+                    confidence: formField.confidence.value,
+                    boundingBox: formField.boundingBox ?? CGRect.zero,
+                    fieldType: mapFieldType(formField.fieldType)
+                )
+            }
+            
             return OCRResult(
                 fullText: fullText.trimmingCharacters(in: .whitespacesAndNewlines),
                 confidence: overallConfidence,
-                recognizedFields: formFields,
+                recognizedFields: documentFormFields,
                 documentStructure: DocumentStructure(
                     paragraphs: textRegions.filter { $0.textType == .body },
                     tables: tables,
@@ -450,11 +461,11 @@
 
                         if !label.isEmpty, !value.isEmpty {
                             formFields.append(FormField(
-                                label: label,
+                                name: label,
                                 value: value,
-                                confidence: Double(candidate.confidence),
-                                boundingBox: observation.boundingBox,
-                                fieldType: determineFieldType(value)
+                                confidence: ConfidenceScore(value: Double(candidate.confidence)),
+                                fieldType: determineFieldType(value),
+                                boundingBox: observation.boundingBox
                             ))
                         }
                     }
@@ -464,33 +475,40 @@
             return formFields
         }
 
-        private static func determineFieldType(_ value: String) -> FormField.FieldType {
-            // Email pattern
-            if value.contains("@") && value.contains(".") {
-                return .email
-            }
-
-            // Phone pattern
-            if value.range(of: "\\b\\d{3}[-.]?\\d{3}[-.]?\\d{4}\\b", options: .regularExpression) != nil {
-                return .phone
-            }
-
+        private static func determineFieldType(_ value: String) -> FieldType {
             // Currency pattern
             if value.hasPrefix("$") || value.range(of: "\\$[\\d,]+\\.?\\d*", options: .regularExpression) != nil {
                 return .currency
             }
 
             // Date pattern
-            if value.range(of: "\\d{1,2}/\\d{1,2}/\\d{4}", options: .regularExpression) != nil {
+            if value.range(of: "\\d{1,2}[/-]\\d{1,2}[/-]\\d{4}", options: .regularExpression) != nil {
                 return .date
             }
 
-            // Number pattern
+            // Number pattern  
             if Double(value.replacingOccurrences(of: ",", with: "")) != nil {
                 return .number
             }
 
             return .text
+        }
+
+        /// Maps FormField.FieldType to DocumentFormField.FieldType
+        private static func mapFieldType(_ formFieldType: FieldType) -> DocumentFormField.FieldType {
+            switch formFieldType {
+            case .text:
+                return .text
+            case .number:
+                return .number
+            case .currency:
+                return .currency
+            case .date:
+                return .date
+            case .cageCode, .uei, .contractType, .fundingSource, .estimatedValue:
+                // Government-specific fields map to text for document form representation
+                return .text
+            }
         }
 
         private static func determineDocumentLayout(

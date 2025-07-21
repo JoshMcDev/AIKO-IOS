@@ -10,7 +10,7 @@ public struct FormAutoPopulationEngine: Sendable {
     public var extractFormData: @Sendable (ScannedDocument) async throws -> FormAutoPopulationResult
     
     /// Validates extracted data against form field requirements
-    public var validateFormData: @Sendable (ExtractedFormData, FormType) async throws -> ValidationResult
+    public var validateFormData: @Sendable (GovernmentFormData, FormType) async throws -> ValidationResult
     
     /// Gets supported form types for auto-population
     public var getSupportedFormTypes: @Sendable () -> [FormType] = { [] }
@@ -23,18 +23,18 @@ public struct FormAutoPopulationEngine: Sendable {
 
 /// Result of form auto-population processing
 public struct FormAutoPopulationResult: Equatable, Sendable {
-    public let extractedData: ExtractedFormData
+    public let extractedData: GovernmentFormData
     public let suggestedFormType: FormType?
     public let confidence: Double
-    public let populatedFields: [PopulatedField]
+    public let populatedFields: [ExtractedPopulatedField]
     public let processingTime: TimeInterval
     public let warnings: [String]
     
     public init(
-        extractedData: ExtractedFormData,
+        extractedData: GovernmentFormData,
         suggestedFormType: FormType? = nil,
         confidence: Double,
-        populatedFields: [PopulatedField] = [],
+        populatedFields: [ExtractedPopulatedField] = [],
         processingTime: TimeInterval = 0,
         warnings: [String] = []
     ) {
@@ -52,15 +52,15 @@ public struct FormAutoPopulationResult: Equatable, Sendable {
     }
     
     /// Returns high-confidence fields suitable for auto-population
-    public var highConfidenceFields: [PopulatedField] {
+    public var highConfidenceFields: [ExtractedPopulatedField] {
         populatedFields.filter { $0.confidence >= 0.9 }
     }
 }
 
 // MARK: - Extracted Form Data
 
-/// Structured data extracted from scanned documents
-public struct ExtractedFormData: Equatable, Sendable {
+/// Comprehensive government form data extracted from scanned documents
+public struct GovernmentFormData: Equatable, Sendable {
     public let vendorInfo: VendorInfo?
     public let contractInfo: ContractInfo?
     public let dates: [ExtractedDate]
@@ -325,9 +325,9 @@ public struct CertificationInfo: Equatable, Sendable {
 // MARK: - Populated Field
 
 /// A field that has been populated with extracted data
-public struct PopulatedField: Equatable, Sendable {
+public struct ExtractedPopulatedField: Equatable, Sendable {
     public let fieldName: String
-    public let fieldType: FormField.FieldType
+    public let fieldType: FieldType
     public let extractedValue: String
     public let confidence: Double
     public let sourceText: String?
@@ -335,7 +335,7 @@ public struct PopulatedField: Equatable, Sendable {
     
     public init(
         fieldName: String,
-        fieldType: FormField.FieldType,
+        fieldType: FieldType,
         extractedValue: String,
         confidence: Double,
         sourceText: String? = nil,
@@ -472,7 +472,7 @@ extension FormAutoPopulationEngine: DependencyKey {
         extractFormData: { document in
             // Live implementation would use sophisticated ML/AI processing
             // For now, return mock data based on document content
-            let extractedData = ExtractedFormData(
+            let extractedData = GovernmentFormData(
                 vendorInfo: VendorInfo(name: "Mock Vendor Inc."),
                 dates: document.pages.first?.ocrResult?.extractedMetadata.dates ?? [],
                 amounts: document.pages.first?.ocrResult?.extractedMetadata.currencies ?? []
@@ -482,7 +482,7 @@ extension FormAutoPopulationEngine: DependencyKey {
                 extractedData: extractedData,
                 confidence: 0.85,
                 populatedFields: [
-                    PopulatedField(
+                    ExtractedPopulatedField(
                         fieldName: "Vendor Name",
                         fieldType: .text,
                         extractedValue: "Mock Vendor Inc.",
@@ -508,7 +508,7 @@ extension FormAutoPopulationEngine: DependencyKey {
     
     public static let testValue: Self = Self(
         extractFormData: { _ in
-            let extractedData = ExtractedFormData(
+            let extractedData = GovernmentFormData(
                 vendorInfo: VendorInfo(name: "Test Vendor"),
                 contractInfo: ContractInfo(contractNumber: "TEST-123")
             )
@@ -518,7 +518,7 @@ extension FormAutoPopulationEngine: DependencyKey {
                 suggestedFormType: .sf1449,
                 confidence: 0.9,
                 populatedFields: [
-                    PopulatedField(
+                    ExtractedPopulatedField(
                         fieldName: "Test Field",
                         fieldType: .text,
                         extractedValue: "Test Value",

@@ -191,7 +191,7 @@ extension DocumentScannerClient: DependencyKey {
                 fullText: "Test OCR Text",
                 confidence: 0.85,
                 recognizedFields: [
-                    FormField(
+                    DocumentFormField(
                         label: "Test Field",
                         value: "Test Value",
                         confidence: 0.9,
@@ -236,7 +236,7 @@ public extension DependencyValues {
 public struct OCRResult: Equatable, Sendable {
     public let fullText: String
     public let confidence: Double // Overall OCR confidence 0.0 to 1.0
-    public let recognizedFields: [FormField]
+    public let recognizedFields: [DocumentFormField]
     public let documentStructure: DocumentStructure
     public let extractedMetadata: ExtractedMetadata
     public let processingTime: TimeInterval
@@ -244,7 +244,7 @@ public struct OCRResult: Equatable, Sendable {
     public init(
         fullText: String,
         confidence: Double,
-        recognizedFields: [FormField] = [],
+        recognizedFields: [DocumentFormField] = [],
         documentStructure: DocumentStructure = DocumentStructure(),
         extractedMetadata: ExtractedMetadata = ExtractedMetadata(),
         processingTime: TimeInterval = 0
@@ -258,8 +258,8 @@ public struct OCRResult: Equatable, Sendable {
     }
 }
 
-/// Detected form field with position and confidence
-public struct FormField: Equatable, Sendable {
+/// Detected form field with position and confidence (from document scanning)
+public struct DocumentFormField: Equatable, Sendable {
     public let label: String
     public let value: String
     public let confidence: Double

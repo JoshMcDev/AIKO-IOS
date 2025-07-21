@@ -5,6 +5,7 @@
 **Date**: January 21, 2025  
 **Status**: In Progress (Phases 1-3.5 Complete, Phase 4.1 Complete, Swift 6 Migration Complete, Task 4.2.1 Complete)  
 
+## ALWAYS use Bash(cd /Users/J/aiko && xcodebuild -scheme AIKO -destination "platform=iOS Simulator,name=iPhone 16 Pro" -skipPackagePluginValidation build 2>&1 | grep -E "(error:|…)
 ---
 
 ## 🎯 Project Vision

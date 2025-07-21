@@ -170,6 +170,10 @@ private class FailingMockAIProvider: AIProvider, @unchecked Sendable {
     func complete(_ request: AICompletionRequest) async throws -> AICompletionResponse {
         throw MockProviderError.simulatedFailure
     }
+    
+    func streamComplete(_ request: AICompletionRequest) async throws -> AsyncThrowingStream<AIStreamEvent, any Error> {
+        throw MockProviderError.simulatedFailure
+    }
 }
 
 private enum MockProviderError: Error {

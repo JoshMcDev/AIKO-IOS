@@ -474,7 +474,7 @@ extension DocumentScannerFeatureTests {
             fullText: "Mock OCR Text Content",
             confidence: confidence,
             recognizedFields: [
-                FormField(
+                DocumentFormField(
                     label: "Vendor Name",
                     value: "ACME Corporation",
                     confidence: confidence,
