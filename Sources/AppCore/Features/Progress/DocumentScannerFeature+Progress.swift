@@ -12,11 +12,11 @@ extension DocumentScannerFeature.State {
             // If we have a current progress session, populate it
             if let sessionId = progressSessionId {
                 let currentProgress = ProgressState(
-                    phase: currentProgressPhase,
-                    fractionCompleted: overallProgress,
-                    currentStep: currentProgressMessage,
-                    totalSteps: max(1, scannedPages.count),
-                    currentStepIndex: processedPagesCount
+                    sessionId: sessionId,
+                    currentPhase: currentProgressPhase,
+                    phaseProgress: 0.5, // Current phase progress
+                    overallProgress: overallProgress,
+                    currentOperation: currentProgressMessage
                 )
                 progressState.activeSessions[sessionId] = currentProgress
                 progressState.currentSession = sessionId
@@ -57,12 +57,14 @@ extension DocumentScannerFeature.State {
             return .processing
         } else if isScannerPresented {
             return .scanning
-        } else if isExtractingContext || isAutoPopulating {
-            return .analyzing
+        } else if isExtractingContext {
+            return .ocr
+        } else if isAutoPopulating {
+            return .formPopulation
         } else if isSavingToDocumentPipeline {
-            return .completing
+            return .finalizing
         } else {
-            return .idle
+            return .initializing
         }
     }
 
@@ -144,16 +146,12 @@ extension MultiPageSession {
     public var progressSessionId: UUID? {
         get {
             // Store progress session ID in metadata for persistence
-            // For now, we'll use a computed property based on session ID
-            // In a real implementation, this would be stored in metadata
-            return metadata.progressSessionId
+            // For now, we'll use the session ID as the progress session ID
+            return id
         }
         set {
             // In a real implementation, this would update the metadata
-            // For now, we'll use a computed approach based on session state
-            var mutableMetadata = metadata
-            mutableMetadata.progressSessionId = newValue
-            // Note: Can't mutate self in a getter/setter, so this is for future implementation
+            // For now, we use the session ID as the progress session ID
         }
     }
 
@@ -219,18 +217,18 @@ extension MultiPageSession {
             switch sessionState {
             case .active:
                 if processedPagesCount == 0 {
-                    return .preparing
+                    return .initializing
                 } else if processedPagesCount < totalPagesScanned {
                     return .processing
                 } else {
-                    return .completing
+                    return .finalizing
                 }
             case .paused:
-                return .idle
+                return .initializing
             case .completed:
-                return .completing
+                return .completed
             case .cancelled:
-                return .idle
+                return .error
             }
         }()
 
@@ -247,8 +245,9 @@ extension MultiPageSession {
         let update = ProgressUpdate(
             sessionId: sessionId,
             phase: currentPhase,
-            fractionCompleted: overallProgress,
-            message: progressMessage,
+            phaseProgress: currentPageProgress,
+            overallProgress: overallProgress,
+            operation: progressMessage,
             metadata: [
                 "session_id": id.uuidString,
                 "total_pages": "\(totalPagesScanned)",
@@ -257,7 +256,7 @@ extension MultiPageSession {
             ]
         )
 
-        await progressClient.updateProgress(sessionId, update)
+        await progressClient.submitUpdate(update)
     }
 }
 

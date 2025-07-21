@@ -51,22 +51,16 @@ public struct ProgressFeedbackFeature: Sendable {
             switch action {
             case let .startSession(config):
                 return .run { send in
-                    // Create the session through the client
-                    _ = await progressClient.createSession(config)
+                    // Start the session through the client
+                    let sessionId = UUID()
+                    _ = await progressClient.startSession(sessionId, config)
                     await send(._sessionCreated)
                 }
 
             case ._sessionCreated:
                 // Create a session with proper initial state
                 let sessionId = UUID()
-                let config = ProgressSessionConfig.defaultSinglePageScan // For tests
-                let initialState = ProgressState(
-                    phase: .preparing,
-                    fractionCompleted: 0.0,
-                    currentStep: "Initializing...",
-                    totalSteps: config.expectedPhases.count,
-                    currentStepIndex: 0
-                )
+                let initialState = ProgressState.initial(sessionId: sessionId)
 
                 state.activeSessions[sessionId] = initialState
                 if state.currentSession == nil {
@@ -75,9 +69,9 @@ public struct ProgressFeedbackFeature: Sendable {
 
                 return .none
 
-            case let .updateProgress(sessionId, update):
+            case let .updateProgress(_, update):
                 return .run { _ in
-                    await progressClient.updateProgress(sessionId, update)
+                    await progressClient.submitUpdate(update)
                 }
 
             case let ._progressReceived(sessionId, progressState):
@@ -88,14 +82,14 @@ public struct ProgressFeedbackFeature: Sendable {
                 state.activeSessions[sessionId] = progressState
 
                 // Check if we should announce progress (25% increments)
-                let currentPercent = Int(progressState.fractionCompleted * 100)
+                let currentPercent = Int(progressState.overallProgress * 100)
                 let lastAnnouncedPercent = state.lastAnnouncedProgress[sessionId] ?? -1
 
                 let shouldAnnounce = (currentPercent >= 25 && currentPercent % 25 == 0 && currentPercent > lastAnnouncedPercent)
 
                 if shouldAnnounce {
                     state.lastAnnouncedProgress[sessionId] = currentPercent
-                    let announcement = progressState.accessibilityLabel
+                    let announcement = "\(progressState.currentPhase.displayName): \(currentPercent)% complete"
                     state.accessibilityAnnouncements.append(announcement)
                     return .send(._announceProgress)
                 }

@@ -574,7 +574,7 @@ public struct ExtractedCurrency: Equatable, Sendable {
 // MARK: - Additional Processing Types for Document Scanner Context
 
 /// Enhanced document type classification for scanner context
-public enum ScannerDocumentType: String, CaseIterable, Equatable, Sendable {
+public enum ScannerDocumentType: String, CaseIterable, Equatable, Sendable, Codable {
     case contract = "Contract"
     case solicitation = "Solicitation"
     case amendment = "Amendment"

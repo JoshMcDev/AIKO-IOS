@@ -43,28 +43,28 @@ struct DetailedProgressView: View {
         VStack(alignment: .leading, spacing: 12) {
             // Phase and current step
             HStack {
-                Image(systemName: progressState.phase.systemImageName)
+                Image(systemName: progressState.currentPhase.systemImageName)
                     .foregroundColor(.accentColor)
-                Text(progressState.phase.displayName)
+                Text(progressState.currentPhase.displayName)
                     .font(.headline)
                 Spacer()
-                Text("\(Int(progressState.fractionCompleted * 100))%")
+                Text("\(Int(progressState.overallProgress * 100))%")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
 
             // Progress bar
-            ProgressView(value: progressState.fractionCompleted)
+            ProgressView(value: progressState.overallProgress)
                 .progressViewStyle(LinearProgressViewStyle())
 
             // Current step description
-            Text(progressState.currentStep)
+            Text(progressState.currentOperation)
                 .font(.caption)
                 .foregroundColor(.secondary)
 
-            // Step counter
-            if progressState.totalSteps > 1 {
-                Text("Step \(progressState.currentStepIndex + 1) of \(progressState.totalSteps)")
+            // Phase progress indicator
+            if progressState.phaseProgress < 1.0 {
+                Text("Phase Progress: \(Int(progressState.phaseProgress * 100))%")
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }
@@ -82,14 +82,14 @@ struct CompactProgressView: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            Image(systemName: progressState.phase.systemImageName)
+            Image(systemName: progressState.currentPhase.systemImageName)
                 .foregroundColor(.accentColor)
                 .frame(width: 16, height: 16)
 
-            ProgressView(value: progressState.fractionCompleted)
+            ProgressView(value: progressState.overallProgress)
                 .frame(height: 4)
 
-            Text("\(Int(progressState.fractionCompleted * 100))%")
+            Text("\(Int(progressState.overallProgress * 100))%")
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .monospacedDigit()
@@ -108,16 +108,16 @@ struct AccessibleProgressView: View {
         VStack(alignment: .leading, spacing: 16) {
             // Large, high-contrast phase indicator
             HStack {
-                Image(systemName: progressState.phase.systemImageName)
+                Image(systemName: progressState.currentPhase.systemImageName)
                     .font(.title)
                     .foregroundColor(.primary)
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(progressState.phase.displayName)
+                    Text(progressState.currentPhase.displayName)
                         .font(.title2)
                         .fontWeight(.semibold)
 
-                    Text("\(Int(progressState.fractionCompleted * 100))% Complete")
+                    Text("\(Int(progressState.overallProgress * 100))% Complete")
                         .font(.title3)
                         .foregroundColor(.secondary)
                 }
@@ -126,18 +126,18 @@ struct AccessibleProgressView: View {
             }
 
             // Large progress bar
-            ProgressView(value: progressState.fractionCompleted)
+            ProgressView(value: progressState.overallProgress)
                 .scaleEffect(x: 1, y: 2, anchor: .center)
                 .progressViewStyle(LinearProgressViewStyle())
 
             // Clear step description
-            Text(progressState.currentStep)
+            Text(progressState.currentOperation)
                 .font(.body)
                 .foregroundColor(.primary)
 
-            // Step information
-            if progressState.totalSteps > 1 {
-                Text("Step \(progressState.currentStepIndex + 1) of \(progressState.totalSteps)")
+            // Phase progress information
+            if progressState.phaseProgress < 1.0 {
+                Text("Phase Progress: \(Int(progressState.phaseProgress * 100))%")
                     .font(.callout)
                     .foregroundColor(.secondary)
                     .fontWeight(.medium)

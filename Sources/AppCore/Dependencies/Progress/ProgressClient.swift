@@ -1,303 +1,239 @@
 import ComposableArchitecture
-@preconcurrency import Combine
 import Foundation
 
-/// Client for managing progress tracking sessions across the AIKO application
-/// 
-/// This client provides a unified interface for tracking progress of long-running operations
-/// such as document scanning, processing, and analysis. It supports:
-/// - Session-based progress tracking with unique identifiers
-/// - Real-time progress updates through Combine publishers
-/// - Accessibility-first progress reporting
-/// - Thread-safe operations with Swift 6 concurrency
-///
-/// **Usage Example:**
-/// ```swift
-/// let session = await progressClient.createSession(.defaultSinglePageScan)
-/// await progressClient.updateProgress(session.id, ProgressUpdate(phase: .scanning, fraction: 0.3))
-/// await progressClient.completeSession(session.id)
-/// ```
+/// TCA dependency client for progress tracking operations
 @DependencyClient
 public struct ProgressClient: Sendable {
-    /// Create a new progress tracking session
-    /// - Parameter config: Configuration for the progress session including expected phases and steps
-    /// - Returns: A new progress session with unique identifier and publisher for real-time updates
-    public var createSession: @Sendable (ProgressSessionConfig) async -> ProgressSession = { _ in .mock }
-
-    /// Update progress for an active session
-    /// - Parameters:
-    ///   - sessionId: Unique identifier of the progress session
-    ///   - update: Progress update containing new phase, fraction, and step information
-    public var updateProgress: @Sendable (UUID, ProgressUpdate) async -> Void = { _, _ in }
-
-    /// Complete a progress session successfully
-    /// - Parameter sessionId: Unique identifier of the progress session to complete
-    public var completeSession: @Sendable (UUID) async -> Void = { _ in }
-
-    /// Cancel a progress session (operation was interrupted or failed)
-    /// - Parameter sessionId: Unique identifier of the progress session to cancel
+    /// Start a new progress tracking session
+    public var startSession: @Sendable (UUID, ProgressSessionConfig?) async -> AsyncStream<ProgressUpdate> = { _, _ in AsyncStream { _ in } }
+    
+    /// Submit a progress update for a session
+    public var submitUpdate: @Sendable (ProgressUpdate) async -> Void = { _ in }
+    
+    /// Cancel a progress tracking session
     public var cancelSession: @Sendable (UUID) async -> Void = { _ in }
-
-    /// Get the current state for an active session
-    /// - Parameter sessionId: Unique identifier of the progress session
-    /// - Returns: Current progress state, or nil if session doesn't exist
-    public var getCurrentState: @Sendable (UUID) async -> ProgressState? = { _ in nil }
-
-    /// Check if a session is currently active and accepting updates
-    /// - Parameter sessionId: Unique identifier of the progress session
-    /// - Returns: True if the session exists and is active
-    public var isSessionActive: @Sendable (UUID) async -> Bool = { _ in false }
-}
-
-/// Represents an active progress tracking session
-/// 
-/// A progress session provides real-time updates for long-running operations.
-/// Each session has a unique identifier and publishes progress state changes
-/// through a Combine publisher for SwiftUI integration.
-///
-/// **Key Features:**
-/// - Unique session identifier for tracking multiple concurrent operations
-/// - Configuration-based setup defining expected phases and steps
-/// - Real-time publisher for live progress updates in the UI
-/// - Thread-safe design compatible with Swift 6 strict concurrency
-public struct ProgressSession: Sendable, Identifiable, Equatable {
-    /// Unique identifier for this progress session
-    public let id: UUID
-
-    /// Configuration used to create this session
-    public let config: ProgressSessionConfig
-
-    /// Publisher that emits progress state updates in real-time
-    public nonisolated(unsafe) let progressPublisher: AnyPublisher<ProgressState, Never>
-
-    /// Timestamp when this session was created
-    public let createdAt: Date
-
-    public init(
-        config: ProgressSessionConfig,
-        progressPublisher: AnyPublisher<ProgressState, Never>
-    ) {
-        // STUB IMPLEMENTATION - Basic initialization
-        self.id = UUID()
-        self.config = config
-        self.progressPublisher = progressPublisher
-        self.createdAt = Date()
-    }
-
-    public static func == (lhs: ProgressSession, rhs: ProgressSession) -> Bool {
-        lhs.id == rhs.id
-    }
-
-    public static let mock = ProgressSession(
-        config: .defaultSinglePageScan,
-        progressPublisher: Just(ProgressState(
-            phase: .idle,
-            fractionCompleted: 0.0,
-            currentStep: "Ready"
-        )).eraseToAnyPublisher()
-    )
-}
-
-extension ProgressClient: DependencyKey {
-    public static let liveValue: ProgressClient = {
-        // Shared state for live implementation
-        let sessionManager = LiveProgressSessionManager()
-
-        return ProgressClient(
-            createSession: { config in
-                await sessionManager.createSession(config: config)
-            },
-            updateProgress: { sessionId, update in
-                await sessionManager.updateProgress(sessionId: sessionId, update: update)
-            },
-            completeSession: { sessionId in
-                await sessionManager.completeSession(sessionId: sessionId)
-            },
-            cancelSession: { sessionId in
-                await sessionManager.cancelSession(sessionId: sessionId)
-            },
-            getCurrentState: { sessionId in
-                await sessionManager.getCurrentState(sessionId: sessionId)
-            },
-            isSessionActive: { sessionId in
-                await sessionManager.isSessionActive(sessionId: sessionId)
-            }
-        )
-    }()
-
-    public static let testValue: ProgressClient = {
-        // Shared state for test implementation
-        let sessionManager = TestProgressSessionManager()
-
-        return ProgressClient(
-            createSession: { config in
-                await sessionManager.createSession(config: config)
-            },
-            updateProgress: { sessionId, update in
-                await sessionManager.updateProgress(sessionId: sessionId, update: update)
-            },
-            completeSession: { sessionId in
-                await sessionManager.completeSession(sessionId: sessionId)
-            },
-            cancelSession: { sessionId in
-                await sessionManager.cancelSession(sessionId: sessionId)
-            },
-            getCurrentState: { sessionId in
-                await sessionManager.getCurrentState(sessionId: sessionId)
-            },
-            isSessionActive: { sessionId in
-                await sessionManager.isSessionActive(sessionId: sessionId)
-            }
-        )
-    }()
+    
+    /// Complete a progress tracking session
+    public var completeSession: @Sendable (UUID) async -> Void = { _ in }
+    
+    /// Get current state for a session
+    public var getSessionState: @Sendable (UUID) async -> ProgressState? = { _ in nil }
+    
+    /// Get all active session IDs
+    public var getActiveSessions: @Sendable () async -> [UUID] = { [] }
+    
+    /// Check if progress tracking is available
+    public var isAvailable: @Sendable () -> Bool = { false }
 }
 
 // MARK: - Live Implementation
 
-@MainActor
-private final class LiveProgressSessionManager {
-    private var activeSessions: [UUID: (ProgressState, CurrentValueSubject<ProgressState, Never>)] = [:]
-
-    func createSession(config: ProgressSessionConfig) -> ProgressSession {
-        let sessionId = UUID()
-        let initialState = ProgressState(
-            phase: .preparing,
-            fractionCompleted: 0.0,
-            currentStep: "Initializing...",
-            totalSteps: config.expectedPhases.count,
-            currentStepIndex: 0
+extension ProgressClient: DependencyKey {
+    public static let liveValue: Self = {
+        let engine = ProgressTrackingEngine()
+        
+        // Start cleanup timer
+        Task {
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 30_000_000_000) // 30 seconds
+                await engine.cleanupExpiredSessions()
+            }
+        }
+        
+        return Self(
+            startSession: { sessionId, config in
+                await engine.startSession(
+                    sessionId: sessionId,
+                    config: config ?? .balanced
+                )
+            },
+            submitUpdate: { update in
+                await engine.submitUpdate(update)
+            },
+            cancelSession: { sessionId in
+                await engine.cancelSession(sessionId)
+            },
+            completeSession: { sessionId in
+                await engine.completeSession(sessionId)
+            },
+            getSessionState: { sessionId in
+                await engine.getSessionState(sessionId)
+            },
+            getActiveSessions: {
+                await engine.getActiveSessions()
+            },
+            isAvailable: { true }
         )
-
-        let subject = CurrentValueSubject<ProgressState, Never>(initialState)
-        activeSessions[sessionId] = (initialState, subject)
-
-        return ProgressSession(
-            id: sessionId,
-            config: config,
-            progressPublisher: subject.eraseToAnyPublisher(),
-            createdAt: Date()
-        )
-    }
-
-    func updateProgress(sessionId: UUID, update: ProgressUpdate) {
-        guard let (_, subject) = activeSessions[sessionId] else { return }
-
-        let newState = ProgressState(
-            phase: update.phase,
-            fractionCompleted: update.fractionCompleted,
-            currentStep: update.message
-        )
-
-        activeSessions[sessionId] = (newState, subject)
-        subject.send(newState)
-    }
-
-    func completeSession(sessionId: UUID) {
-        guard let (_, subject) = activeSessions[sessionId] else { return }
-
-        subject.send(completion: .finished)
-        activeSessions.removeValue(forKey: sessionId)
-    }
-
-    func cancelSession(sessionId: UUID) {
-        guard let (_, subject) = activeSessions[sessionId] else { return }
-
-        subject.send(completion: .finished)
-        activeSessions.removeValue(forKey: sessionId)
-    }
-
-    func getCurrentState(sessionId: UUID) async -> ProgressState? {
-        return activeSessions[sessionId]?.0
-    }
-
-    func isSessionActive(sessionId: UUID) async -> Bool {
-        return activeSessions[sessionId] != nil
-    }
+    }()
+    
+    public static let testValue: Self = Self(
+        startSession: { sessionId, config in
+            AsyncStream { continuation in
+                // Send initial update
+                let initialUpdate = ProgressUpdate.phaseTransition(
+                    sessionId: sessionId,
+                    to: .initializing
+                )
+                continuation.yield(initialUpdate)
+                
+                // Simulate progress updates
+                Task {
+                    let phases: [ProgressPhase] = [.scanning, .processing, .ocr, .formPopulation, .completed]
+                    
+                    for (index, phase) in phases.enumerated() {
+                        try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
+                        
+                        if phase == .completed {
+                            let completionUpdate = ProgressUpdate.completion(sessionId: sessionId)
+                            continuation.yield(completionUpdate)
+                            continuation.finish()
+                        } else {
+                            // Phase transition
+                            let transitionUpdate = ProgressUpdate.phaseTransition(
+                                sessionId: sessionId,
+                                to: phase
+                            )
+                            continuation.yield(transitionUpdate)
+                            
+                            // Progress within phase
+                            for progress in stride(from: 0.2, through: 1.0, by: 0.2) {
+                                try? await Task.sleep(nanoseconds: 50_000_000) // 0.05 seconds
+                                
+                                let progressUpdate = ProgressUpdate.phaseUpdate(
+                                    sessionId: sessionId,
+                                    phase: phase,
+                                    phaseProgress: progress
+                                )
+                                continuation.yield(progressUpdate)
+                            }
+                        }
+                    }
+                }
+                
+                continuation.onTermination = { _ in
+                    // Cleanup handled by continuation finishing
+                }
+            }
+        },
+        submitUpdate: { _ in
+            // Test implementation - updates are handled by the stream
+        },
+        cancelSession: { _ in
+            // Test implementation - cancellation handled by stream termination
+        },
+        completeSession: { _ in
+            // Test implementation - completion handled by the stream
+        },
+        getSessionState: { sessionId in
+            // Return mock state for testing
+            ProgressState.initial(sessionId: sessionId)
+        },
+        getActiveSessions: {
+            // Return empty for test
+            []
+        },
+        isAvailable: { true }
+    )
+    
+    public static let previewValue: Self = testValue
 }
 
-// MARK: - Test Implementation
+// MARK: - Dependency Registration
 
-private final class TestProgressSessionManager: @unchecked Sendable {
-    private let lock = NSLock()
-    private var activeSessions: [UUID: ProgressState] = [:]
-
-    func createSession(config: ProgressSessionConfig) -> ProgressSession {
-        let sessionId = UUID()
-        let initialState = ProgressState(
-            phase: .preparing,
-            fractionCompleted: 0.0,
-            currentStep: "Initializing...",
-            totalSteps: config.expectedPhases.count,
-            currentStepIndex: 0
-        )
-
-        lock.withLock {
-            activeSessions[sessionId] = initialState
-        }
-
-        let subject = CurrentValueSubject<ProgressState, Never>(initialState)
-
-        let session = ProgressSession(
-            id: sessionId,
-            config: config,
-            progressPublisher: subject.eraseToAnyPublisher(),
-            createdAt: Date()
-        )
-
-        return session
-    }
-
-    func updateProgress(sessionId: UUID, update: ProgressUpdate) {
-        lock.withLock {
-            guard activeSessions[sessionId] != nil else { return }
-
-            let newState = ProgressState(
-                phase: update.phase,
-                fractionCompleted: update.fractionCompleted,
-                currentStep: update.message
-            )
-
-            activeSessions[sessionId] = newState
-        }
-    }
-
-    func completeSession(sessionId: UUID) {
-        lock.withLock {
-            activeSessions.removeValue(forKey: sessionId)
-        }
-    }
-
-    func cancelSession(sessionId: UUID) {
-        lock.withLock {
-            activeSessions.removeValue(forKey: sessionId)
-        }
-    }
-
-    func getCurrentState(sessionId: UUID) async -> ProgressState? {
-        return lock.withLock {
-            return activeSessions[sessionId]
-        }
-    }
-
-    func isSessionActive(sessionId: UUID) async -> Bool {
-        return lock.withLock {
-            return activeSessions[sessionId] != nil
-        }
-    }
-}
-
-extension ProgressSession {
-    init(id: UUID, config: ProgressSessionConfig, progressPublisher: AnyPublisher<ProgressState, Never>, createdAt: Date) {
-        self.id = id
-        self.config = config
-        self.progressPublisher = progressPublisher
-        self.createdAt = createdAt
-    }
-}
-
-extension DependencyValues {
-    public var progressClient: ProgressClient {
+public extension DependencyValues {
+    var progressClient: ProgressClient {
         get { self[ProgressClient.self] }
         set { self[ProgressClient.self] = newValue }
+    }
+}
+
+// MARK: - Convenience Extensions
+
+public extension ProgressClient {
+    /// Start a session with default configuration
+    func startSession(_ sessionId: UUID) async -> AsyncStream<ProgressUpdate> {
+        await startSession(sessionId, .balanced)
+    }
+    
+    /// Submit a phase transition update
+    func submitPhaseTransition(
+        sessionId: UUID,
+        to phase: ProgressPhase,
+        metadata: [String: String] = [:]
+    ) async {
+        let update = ProgressUpdate.phaseTransition(
+            sessionId: sessionId,
+            to: phase,
+            metadata: metadata
+        )
+        await submitUpdate(update)
+    }
+    
+    /// Submit a progress update within the current phase
+    func submitPhaseProgress(
+        sessionId: UUID,
+        phase: ProgressPhase,
+        progress: Double,
+        operation: String? = nil,
+        estimatedTimeRemaining: TimeInterval? = nil
+    ) async {
+        let update = ProgressUpdate.phaseUpdate(
+            sessionId: sessionId,
+            phase: phase,
+            phaseProgress: progress,
+            operation: operation,
+            estimatedTimeRemaining: estimatedTimeRemaining
+        )
+        await submitUpdate(update)
+    }
+    
+    /// Submit an error update
+    func submitError(
+        sessionId: UUID,
+        phase: ProgressPhase,
+        phaseProgress: Double,
+        error: String,
+        metadata: [String: String] = [:]
+    ) async {
+        let update = ProgressUpdate.error(
+            sessionId: sessionId,
+            phase: phase,
+            phaseProgress: phaseProgress,
+            error: error,
+            metadata: metadata
+        )
+        await submitUpdate(update)
+    }
+    
+    /// Track progress from another client's progress callback
+    func trackProgressCallback<T>(
+        sessionId: UUID,
+        phase: ProgressPhase,
+        operation: @escaping () async throws -> T,
+        progressMapper: @escaping (Double) -> Double = { $0 }
+    ) async throws -> T {
+        // Submit phase transition
+        await submitPhaseTransition(sessionId: sessionId, to: phase)
+        
+        // Execute operation with progress tracking
+        do {
+            let result = try await operation()
+            // Submit completion for this phase
+            await submitPhaseProgress(
+                sessionId: sessionId,
+                phase: phase,
+                progress: 1.0
+            )
+            return result
+        } catch {
+            // Submit error
+            await submitError(
+                sessionId: sessionId,
+                phase: phase,
+                phaseProgress: 0.5,
+                error: error.localizedDescription
+            )
+            throw error
+        }
     }
 }
