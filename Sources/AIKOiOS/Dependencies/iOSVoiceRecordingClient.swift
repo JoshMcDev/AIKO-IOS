@@ -9,7 +9,7 @@
 
     public extension VoiceRecordingClient {
         static var iOSLive: Self {
-            return Self(
+            Self(
                 checkPermissions: {
                     MainActor.assumeIsolated {
                         iOSAudioRecorder.shared.checkPermissions()

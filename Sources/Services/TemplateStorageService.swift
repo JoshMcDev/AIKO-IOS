@@ -206,7 +206,7 @@ actor TestTemplateStorage {
     }
 
     func loadTemplates() -> [CustomTemplate] {
-        return savedTemplates
+        savedTemplates
     }
 
     func deleteTemplate(_ id: UUID) {
@@ -218,7 +218,7 @@ actor TestTemplateStorage {
     }
 
     func loadEditedTemplate(_ documentType: DocumentType) -> String? {
-        return editedTemplates[documentType]
+        editedTemplates[documentType]
     }
 
     func saveOfficeTemplate(_ template: OfficeTemplate) {
@@ -226,7 +226,7 @@ actor TestTemplateStorage {
     }
 
     func loadOfficeTemplates(_ documentType: DocumentType) -> [OfficeTemplate] {
-        return officeTemplates.filter { $0.documentType == documentType }
+        officeTemplates.filter { $0.documentType == documentType }
     }
 }
 

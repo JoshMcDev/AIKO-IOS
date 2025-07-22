@@ -287,11 +287,11 @@ struct RequirementsProgressView: View {
     let documentReadiness: [DocumentType: Bool]
 
     var readyDocuments: Int {
-        documentReadiness.values.filter { $0 }.count
+        documentReadiness.values.count(where: { $0 })
     }
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.sm) {
+        VStack(spacing: Theme.Spacing.small) {
             // Progress Bar
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
@@ -337,16 +337,16 @@ struct AcquisitionChatBubble: View {
     let message: AcquisitionChatFeature.ChatMessage
 
     var body: some View {
-        HStack(alignment: .top, spacing: Theme.Spacing.sm) {
+        HStack(alignment: .top, spacing: Theme.Spacing.small) {
             VStack(alignment: message.role == .user ? .trailing : .leading, spacing: 4) {
                 Text(message.role == .user ? "You" : "AIKO")
                     .font(.caption)
                     .foregroundColor(.secondary)
 
                 DocumentRichTextView(content: message.content)
-                    .padding(Theme.Spacing.md)
+                    .padding(Theme.Spacing.medium)
                     .background(
-                        RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                        RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
                             .fill(message.role == .user ? Theme.Colors.aikoAccent : Theme.Colors.aikoSecondary)
                     )
                     .frame(maxWidth: .infinity, alignment: message.role == .user ? .trailing : .leading)
@@ -383,7 +383,7 @@ struct TypingIndicator: View {
         }
         .padding()
         .background(
-            RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
                 .fill(Theme.Colors.aikoSecondary)
         )
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -398,14 +398,14 @@ struct QuickActionsBar: View {
     let onSelectSpecific: () -> Void
 
     var body: some View {
-        HStack(spacing: Theme.Spacing.md) {
+        HStack(spacing: Theme.Spacing.medium) {
             Button(action: onGenerateAll) {
                 Label("Generate All", systemImage: "wand.and.stars")
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, Theme.Spacing.sm)
+                    .padding(.vertical, Theme.Spacing.small)
                     .background(
                         LinearGradient(
                             gradient: Gradient(colors: [.blue, .purple]),
@@ -413,7 +413,7 @@ struct QuickActionsBar: View {
                             endPoint: .trailing
                         )
                     )
-                    .cornerRadius(Theme.CornerRadius.md)
+                    .cornerRadius(Theme.CornerRadius.medium)
             }
 
             Button(action: onSelectSpecific) {
@@ -422,13 +422,13 @@ struct QuickActionsBar: View {
                     .fontWeight(.semibold)
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, Theme.Spacing.sm)
+                    .padding(.vertical, Theme.Spacing.small)
                     .background(Theme.Colors.aikoSecondary)
-                    .cornerRadius(Theme.CornerRadius.md)
+                    .cornerRadius(Theme.CornerRadius.medium)
             }
         }
         .padding(.horizontal)
-        .padding(.vertical, Theme.Spacing.sm)
+        .padding(.vertical, Theme.Spacing.small)
         .background(Theme.Colors.aikoBackground.opacity(0.9))
     }
 }
@@ -461,17 +461,17 @@ struct ChatInputArea: View {
                         Text("...")
                             .font(.body)
                             .foregroundColor(.gray)
-                            .padding(.leading, Theme.Spacing.lg)
-                            .padding(.vertical, Theme.Spacing.md)
+                            .padding(.leading, Theme.Spacing.large)
+                            .padding(.vertical, Theme.Spacing.medium)
                             .allowsHitTesting(false)
                     }
 
                     TextField("", text: $text, axis: .vertical)
                         .textFieldStyle(PlainTextFieldStyle())
                         .foregroundColor(.white)
-                        .padding(.leading, Theme.Spacing.lg)
-                        .padding(.vertical, Theme.Spacing.md)
-                        .padding(.trailing, Theme.Spacing.sm)
+                        .padding(.leading, Theme.Spacing.large)
+                        .padding(.vertical, Theme.Spacing.medium)
+                        .padding(.trailing, Theme.Spacing.small)
                         .lineLimit(1 ... 4)
                         .disabled(isProcessing)
                         .onSubmit {
@@ -482,7 +482,7 @@ struct ChatInputArea: View {
                 }
 
                 // Action buttons
-                HStack(spacing: Theme.Spacing.sm) {
+                HStack(spacing: Theme.Spacing.small) {
                     // Enhance prompt button
                     Button(action: {
                         if !text.isEmpty {
@@ -565,8 +565,8 @@ struct ChatInputArea: View {
                     .scaleEffect(text.isEmpty ? 1.0 : 1.1)
                     .animation(.easeInOut(duration: 0.2), value: text.isEmpty)
                 }
-                .padding(.trailing, Theme.Spacing.md)
-                .padding(.vertical, Theme.Spacing.sm)
+                .padding(.trailing, Theme.Spacing.medium)
+                .padding(.vertical, Theme.Spacing.small)
             }
             .background(
                 RoundedRectangle(cornerRadius: 24)
@@ -576,8 +576,8 @@ struct ChatInputArea: View {
                             .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                     )
             )
-            .padding(.horizontal, Theme.Spacing.lg)
-            .padding(.vertical, Theme.Spacing.lg)
+            .padding(.horizontal, Theme.Spacing.large)
+            .padding(.vertical, Theme.Spacing.large)
             .background(Theme.Colors.aikoBackground)
         }
         .alert("Add Reference", isPresented: $showingReferenceInput) {

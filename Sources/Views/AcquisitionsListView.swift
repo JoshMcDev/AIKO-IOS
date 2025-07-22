@@ -178,9 +178,9 @@ extension View {
     @ViewBuilder
     func applyNavigationConfiguration() -> some View {
         #if os(iOS)
-        self.navigationBarTitleDisplayMode(.large)
+            navigationBarTitleDisplayMode(.large)
         #else
-        self
+            self
         #endif
     }
 }

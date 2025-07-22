@@ -18,7 +18,7 @@ public struct MultiPageSession: Equatable, Sendable, Identifiable {
     // Session Progress Tracking
     public var totalPagesScanned: Int { pages.count }
     public var processedPagesCount: Int {
-        pages.filter { $0.processingState == .completed }.count
+        pages.count(where: { $0.processingState == .completed })
     }
 
     public var averageQualityScore: Double {

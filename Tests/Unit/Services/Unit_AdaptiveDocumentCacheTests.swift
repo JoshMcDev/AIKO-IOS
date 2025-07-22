@@ -4,13 +4,6 @@ import XCTest
 
 @MainActor
 final class AdaptiveDocumentCacheTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
-    }
-
-    override func tearDown() {
-        super.tearDown()
-    }
 
     // MARK: - Initialization Tests
 

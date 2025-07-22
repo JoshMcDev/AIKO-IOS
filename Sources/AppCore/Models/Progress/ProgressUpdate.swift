@@ -4,28 +4,28 @@ import Foundation
 public struct ProgressUpdate: Equatable, Sendable {
     /// Unique identifier for the progress session
     public let sessionId: UUID
-    
+
     /// Timestamp when the update was created
     public let timestamp: Date
-    
+
     /// Current workflow phase
     public let phase: ProgressPhase
-    
+
     /// Progress within the current phase (0.0 to 1.0)
     public let phaseProgress: Double
-    
+
     /// Overall progress across all phases (0.0 to 1.0)
     public let overallProgress: Double
-    
+
     /// Current operation description
     public let operation: String
-    
+
     /// Optional metadata for additional context
     public let metadata: [String: String]
-    
+
     /// Estimated time remaining in seconds
     public let estimatedTimeRemaining: TimeInterval?
-    
+
     public init(
         sessionId: UUID,
         timestamp: Date = Date(),
@@ -60,7 +60,7 @@ public extension ProgressUpdate {
         estimatedTimeRemaining: TimeInterval? = nil
     ) -> ProgressUpdate {
         let overallProgress = calculateOverallProgress(phase: phase, phaseProgress: phaseProgress)
-        
+
         return ProgressUpdate(
             sessionId: sessionId,
             phase: phase,
@@ -71,7 +71,7 @@ public extension ProgressUpdate {
             estimatedTimeRemaining: estimatedTimeRemaining
         )
     }
-    
+
     /// Create a phase transition update
     static func phaseTransition(
         sessionId: UUID,
@@ -79,7 +79,7 @@ public extension ProgressUpdate {
         metadata: [String: String] = [:]
     ) -> ProgressUpdate {
         let overallProgress = calculateOverallProgress(phase: phase, phaseProgress: 0.0)
-        
+
         return ProgressUpdate(
             sessionId: sessionId,
             phase: phase,
@@ -88,13 +88,13 @@ public extension ProgressUpdate {
             metadata: metadata
         )
     }
-    
+
     /// Create a completion update
     static func completion(
         sessionId: UUID,
         metadata: [String: String] = [:]
     ) -> ProgressUpdate {
-        return ProgressUpdate(
+        ProgressUpdate(
             sessionId: sessionId,
             phase: .completed,
             phaseProgress: 1.0,
@@ -103,7 +103,7 @@ public extension ProgressUpdate {
             estimatedTimeRemaining: 0
         )
     }
-    
+
     /// Create an error update
     static func error(
         sessionId: UUID,
@@ -115,9 +115,9 @@ public extension ProgressUpdate {
         var errorMetadata = metadata
         errorMetadata["error"] = error
         errorMetadata["failed_phase"] = phase.rawValue
-        
+
         let overallProgress = calculateOverallProgress(phase: phase, phaseProgress: phaseProgress)
-        
+
         return ProgressUpdate(
             sessionId: sessionId,
             phase: .error,
@@ -133,21 +133,21 @@ public extension ProgressUpdate {
 
 private func calculateOverallProgress(phase: ProgressPhase, phaseProgress: Double) -> Double {
     let phases: [ProgressPhase] = [.initializing, .scanning, .processing, .ocr, .formPopulation, .finalizing]
-    
+
     guard let currentIndex = phases.firstIndex(of: phase) else {
         return phase == .completed ? 1.0 : 0.0
     }
-    
+
     // Calculate progress based on completed phases plus current phase progress
-    var totalProgress: Double = 0.0
-    
+    var totalProgress = 0.0
+
     // Add progress from completed phases
-    for i in 0..<currentIndex {
+    for i in 0 ..< currentIndex {
         totalProgress += phases[i].relativeDuration
     }
-    
+
     // Add progress within current phase
     totalProgress += phases[currentIndex].relativeDuration * phaseProgress
-    
+
     return min(1.0, totalProgress)
 }

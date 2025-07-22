@@ -367,16 +367,16 @@ public enum FormType: String, CaseIterable, Sendable {
 
     public var displayName: String {
         switch self {
-        case .dd1155: return "DD 1155 - Request and Authorization for TDY Travel"
-        case .sf1449: return "SF 1449 - Solicitation/Contract/Order"
-        case .sf18: return "SF 18 - Request for Quotations"
-        case .sf26: return "SF 26 - Award/Contract"
-        case .sf30: return "SF 30 - Amendment of Solicitation/Modification"
-        case .sf33: return "SF 33 - Solicitation, Offer and Award"
-        case .sf44: return "SF 44 - Purchase Order-Invoice-Voucher"
-        case .sf1408: return "SF 1408 - Preaward Survey of Prospective Contractor"
-        case .sf1442: return "SF 1442 - Solicitation, Offer and Award"
-        case .custom: return "Custom Form"
+        case .dd1155: "DD 1155 - Request and Authorization for TDY Travel"
+        case .sf1449: "SF 1449 - Solicitation/Contract/Order"
+        case .sf18: "SF 18 - Request for Quotations"
+        case .sf26: "SF 26 - Award/Contract"
+        case .sf30: "SF 30 - Amendment of Solicitation/Modification"
+        case .sf33: "SF 33 - Solicitation, Offer and Award"
+        case .sf44: "SF 44 - Purchase Order-Invoice-Voucher"
+        case .sf1408: "SF 1408 - Preaward Survey of Prospective Contractor"
+        case .sf1442: "SF 1442 - Solicitation, Offer and Award"
+        case .custom: "Custom Form"
         }
     }
 }
@@ -468,7 +468,7 @@ public struct ValidationWarning: Equatable, Sendable {
 // MARK: - Dependency Registration
 
 extension FormAutoPopulationEngine: DependencyKey {
-    public static let liveValue: Self = Self(
+    public static let liveValue: Self = .init(
         extractFormData: { document in
             // Live implementation would use sophisticated ML/AI processing
             // For now, return mock data based on document content
@@ -506,7 +506,7 @@ extension FormAutoPopulationEngine: DependencyKey {
         }
     )
 
-    public static let testValue: Self = Self(
+    public static let testValue: Self = .init(
         extractFormData: { _ in
             let extractedData = GovernmentFormData(
                 vendorInfo: VendorInfo(name: "Test Vendor"),

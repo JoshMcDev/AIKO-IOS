@@ -1,7 +1,7 @@
 import Foundation
 
 /// Requirements data structure for acquisition processing
-/// 
+///
 /// This model captures all the essential information needed for government acquisition
 /// and procurement processes, supporting both automatic extraction from documents
 /// and manual input through adaptive prompting interfaces.
@@ -69,7 +69,7 @@ public struct DocumentAttachment: Equatable, Sendable, Codable, Identifiable {
     public let fileSize: Int
     public let mimeType: String
     public let uploadDate: Date
-    
+
     public init(
         id: UUID = UUID(),
         fileName: String,
@@ -92,7 +92,7 @@ public struct DocumentReference: Equatable, Sendable {
     public let type: DocumentType
     public let url: URL?
     public let uploadDate: Date
-    
+
     public init(
         id: UUID = UUID(),
         name: String,
@@ -114,60 +114,60 @@ public extension RequirementsData {
     /// Check if requirements data is complete with minimum required fields
     var isComplete: Bool {
         projectTitle != nil &&
-        estimatedValue != nil &&
-        businessNeed != nil
+            estimatedValue != nil &&
+            businessNeed != nil
     }
-    
+
     /// Validate estimated value is positive
     var isValidEstimatedValue: Bool {
         guard let value = estimatedValue else { return false }
         return value > 0
     }
-    
+
     /// Validate required date is in the future
     var isValidRequiredDate: Bool {
         guard let date = requiredDate else { return true } // Optional field
         return date > Date()
     }
-    
+
     /// Add a technical requirement if not already present
     mutating func addTechnicalRequirement(_ requirement: String) {
         if !technicalRequirements.contains(requirement) {
             technicalRequirements.append(requirement)
         }
     }
-    
+
     /// Remove a technical requirement
     mutating func removeTechnicalRequirement(_ requirement: String) {
         technicalRequirements.removeAll { $0 == requirement }
     }
-    
+
     /// Add an attachment
     mutating func addAttachment(_ attachment: DocumentAttachment) {
         attachments.append(attachment)
     }
-    
+
     /// Remove an attachment by ID
     mutating func removeAttachment(_ id: UUID) {
         attachments.removeAll { $0.id == id }
     }
-    
+
     /// Generate formatted string representation
     func toFormattedString() -> String {
         var result = ""
-        
+
         if let title = projectTitle {
             result += "Project: \(title)\n"
         }
-        
+
         if let value = estimatedValue {
             result += "Value: \(value)\n"
         }
-        
+
         if let need = businessNeed {
             result += "Need: \(need)\n"
         }
-        
+
         return result
     }
 }

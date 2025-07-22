@@ -147,7 +147,7 @@ final class ComprehensiveTestRunner: XCTestCase {
             ("Document Chain Storage", tests.testDocumentChainStorage),
             ("Document Chain Codable", tests.testDocumentChainCodable),
             ("Chain Manager Integration", tests.testDocumentChainManagerIntegration),
-            ("Large Chain Performance", tests.testLargeChainPerformance),
+            ("Large Chain Performance", tests.testLargeChainPerformance)
         ]
 
         for (testName, testMethod) in chainTests {
@@ -187,7 +187,7 @@ final class ComprehensiveTestRunner: XCTestCase {
             ("Error Alert Dismissal", tests.testErrorAlertDismissal),
             ("Multiple Error Scenarios", tests.testMultipleErrorScenarios),
             ("User Interaction Flow", tests.testErrorAlertWithUserInteraction),
-            ("Rapid Alert Handling", tests.testRapidErrorAlerts),
+            ("Rapid Alert Handling", tests.testRapidErrorAlerts)
         ]
 
         for (testName, testMethod) in alertTests {
@@ -228,7 +228,7 @@ final class ComprehensiveTestRunner: XCTestCase {
             ("Document Download", tests.testDocumentDownload),
             ("Document Email", tests.testDocumentEmail),
             ("Complete Workflow", tests.testCompleteDocumentWorkflow),
-            ("Large Document Handling", tests.testLargeDocumentHandling),
+            ("Large Document Handling", tests.testLargeDocumentHandling)
         ]
 
         for (testName, testMethod) in docTests {

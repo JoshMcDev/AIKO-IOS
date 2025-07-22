@@ -136,7 +136,7 @@ public class AdaptiveDataExtractor: @unchecked Sendable {
             documentSignature: documentSignature
         )
 
-        // 6. Map to database  
+        // 6. Map to database
         let databaseMappings = try await mapToDatabase(extractedObjects)
 
         return AdaptiveExtractionResult(

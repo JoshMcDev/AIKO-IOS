@@ -2,15 +2,15 @@ import Foundation
 
 /// Phases in the document scanning and processing workflow
 public enum ProgressPhase: String, CaseIterable, Equatable, Sendable {
-    case initializing = "initializing"
-    case scanning = "scanning"
-    case processing = "processing"
-    case ocr = "ocr"
+    case initializing
+    case scanning
+    case processing
+    case ocr
     case formPopulation = "form_population"
-    case finalizing = "finalizing"
-    case completed = "completed"
-    case error = "error"
-    
+    case finalizing
+    case completed
+    case error
+
     /// Human-readable display name for the phase
     public var displayName: String {
         switch self {
@@ -32,7 +32,7 @@ public enum ProgressPhase: String, CaseIterable, Equatable, Sendable {
             "Error"
         }
     }
-    
+
     /// User-friendly operation description
     public var operationDescription: String {
         switch self {
@@ -54,27 +54,27 @@ public enum ProgressPhase: String, CaseIterable, Equatable, Sendable {
             "An error occurred"
         }
     }
-    
+
     /// Expected relative duration for progress estimation
     public var relativeDuration: Double {
         switch self {
         case .initializing:
-            0.05  // 5%
+            0.05 // 5%
         case .scanning:
-            0.25  // 25%
+            0.25 // 25%
         case .processing:
-            0.20  // 20%
+            0.20 // 20%
         case .ocr:
-            0.30  // 30%
+            0.30 // 30%
         case .formPopulation:
-            0.15  // 15%
+            0.15 // 15%
         case .finalizing:
-            0.05  // 5%
+            0.05 // 5%
         case .completed, .error:
             0.0
         }
     }
-    
+
     /// Whether this phase can be cancelled by the user
     public var canCancel: Bool {
         switch self {
@@ -84,12 +84,12 @@ public enum ProgressPhase: String, CaseIterable, Equatable, Sendable {
             true
         }
     }
-    
+
     /// Whether this phase is a terminal state
     public var isTerminal: Bool {
         self == .completed || self == .error
     }
-    
+
     /// SF Symbol name for visual representation
     public var systemImageName: String {
         switch self {

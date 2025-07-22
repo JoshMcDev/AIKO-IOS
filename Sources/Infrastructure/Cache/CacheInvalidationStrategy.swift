@@ -208,25 +208,25 @@ public actor CacheInvalidationStrategy {
     private func matches(event: InvalidationEvent, trigger: InvalidationTrigger) -> Bool {
         switch (event.type, trigger) {
         case let (.time, .timeElapsed(interval)):
-            return event.metadata["elapsed"] as? TimeInterval ?? 0 >= interval
+            event.metadata["elapsed"] as? TimeInterval ?? 0 >= interval
 
         case let (.event(eventType), .eventOccurred(triggerType)):
-            return eventType == triggerType.rawValue
+            eventType == triggerType.rawValue
 
         case let (.threshold(type, value), .thresholdReached(triggerType, threshold)):
-            return type == triggerType.rawValue && value >= threshold
+            type == triggerType.rawValue && value >= threshold
 
         case let (.dependency(key), .dependencyChanged(pattern)):
-            return key.contains(pattern) || pattern == "*"
+            key.contains(pattern) || pattern == "*"
 
         case let (.pattern(detected), .patternDetected(expected)):
-            return detected == expected
+            detected == expected
 
         case (.manual, .manualTrigger):
-            return true
+            true
 
         default:
-            return false
+            false
         }
     }
 

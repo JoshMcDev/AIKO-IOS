@@ -305,7 +305,7 @@ final class DocumentParserValidatorTests: XCTestCase {
 
         let lineItems = [
             LineItem(description: "Test Item 1", quantity: 5, unitPrice: 10.00, totalPrice: 50.00),
-            LineItem(description: "Test Item 2", quantity: 3, unitPrice: 20.00, totalPrice: 60.00),
+            LineItem(description: "Test Item 2", quantity: 3, unitPrice: 20.00, totalPrice: 60.00)
         ]
 
         let data = ExtractedData(
@@ -327,7 +327,7 @@ final class DocumentParserValidatorTests: XCTestCase {
     func testValidateExtractedData_EmptyLineItemDescription_ThrowsError() {
         // Given
         let lineItems = [
-            LineItem(description: "", quantity: 5, unitPrice: 10.00, totalPrice: 50.00),
+            LineItem(description: "", quantity: 5, unitPrice: 10.00, totalPrice: 50.00)
         ]
 
         let data = ExtractedData(lineItems: lineItems)
@@ -352,7 +352,7 @@ final class DocumentParserValidatorTests: XCTestCase {
     func testValidateExtractedData_ZeroQuantityLineItem_ThrowsError() {
         // Given
         let lineItems = [
-            LineItem(description: "Test Item", quantity: 0, unitPrice: 10.00, totalPrice: 0.00),
+            LineItem(description: "Test Item", quantity: 0, unitPrice: 10.00, totalPrice: 0.00)
         ]
 
         let data = ExtractedData(lineItems: lineItems)

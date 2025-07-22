@@ -26,7 +26,7 @@ class FARPart53TestRunner {
         generateReport()
     }
 
-    private func testRFQToSF18() {
+    func testRFQToSF18() {
         print("=== Testing Scenario 1: RFQ to SF 18 ===")
 
         var details: [String] = []
@@ -80,7 +80,7 @@ class FARPart53TestRunner {
         print()
     }
 
-    private func testContractToSF1449() {
+    func testContractToSF1449() {
         print("=== Testing Scenario 2: Contract to SF 1449 ===")
 
         var details: [String] = []
@@ -126,7 +126,7 @@ class FARPart53TestRunner {
         print()
     }
 
-    private func testMicroPurchaseToSF44() {
+    func testMicroPurchaseToSF44() {
         print("=== Testing Scenario 3: Micro-purchase to SF 44 ===")
 
         var details: [String] = []
@@ -172,7 +172,7 @@ class FARPart53TestRunner {
         print()
     }
 
-    private func testAmendmentToSF30() {
+    func testAmendmentToSF30() {
         print("=== Testing Scenario 4: Amendment to SF 30 ===")
 
         var details: [String] = []

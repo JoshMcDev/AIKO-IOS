@@ -1,10 +1,10 @@
+import Combine
 import ComposableArchitecture
 import Foundation
-import Combine
 
 // Progress integration for DocumentScannerFeature
-extension DocumentScannerFeature.State {
-    public var progressFeedback: ProgressFeedbackFeature.State {
+public extension DocumentScannerFeature.State {
+    var progressFeedback: ProgressFeedbackFeature.State {
         get {
             // Return a state based on current scanning/processing progress
             var progressState = ProgressFeedbackFeature.State()
@@ -30,7 +30,7 @@ extension DocumentScannerFeature.State {
                let _ = newValue.activeSessions[currentSession] {
                 // Update our progress tracking based on the progress state
                 // This allows for bidirectional sync
-                self._progressSessionId = currentSession
+                _progressSessionId = currentSession
             }
         }
     }
@@ -46,29 +46,29 @@ extension DocumentScannerFeature.State {
         }
     }
 
-    public var progressSessionId: UUID? {
+    var progressSessionId: UUID? {
         get { _progressSessionId }
         set { _progressSessionId = newValue }
     }
 
     // Computed progress properties
-    public var currentProgressPhase: ProgressPhase {
+    var currentProgressPhase: ProgressPhase {
         if isProcessingAllPages {
-            return .processing
+            .processing
         } else if isScannerPresented {
-            return .scanning
+            .scanning
         } else if isExtractingContext {
-            return .ocr
+            .ocr
         } else if isAutoPopulating {
-            return .formPopulation
+            .formPopulation
         } else if isSavingToDocumentPipeline {
-            return .finalizing
+            .finalizing
         } else {
-            return .initializing
+            .initializing
         }
     }
 
-    public var overallProgress: Double {
+    var overallProgress: Double {
         guard !scannedPages.isEmpty else { return 0.0 }
 
         if isProcessingAllPages {
@@ -91,7 +91,7 @@ extension DocumentScannerFeature.State {
         }
     }
 
-    public var currentProgressMessage: String {
+    var currentProgressMessage: String {
         if isProcessingAllPages {
             if let currentPageId = currentProcessingPage {
                 let pageIndex = scannedPages.firstIndex { $0.id == currentPageId } ?? 0
@@ -112,23 +112,23 @@ extension DocumentScannerFeature.State {
     }
 }
 
-extension DocumentScannerFeature.Action {
+public extension DocumentScannerFeature.Action {
     // Progress feedback action integration
-    public static func progressFeedback(_ action: ProgressFeedbackFeature.Action) -> Self {
+    static func progressFeedback(_ action: ProgressFeedbackFeature.Action) -> Self {
         // Map progress actions to document scanner actions where appropriate
         switch action {
-        case .startSession(let config):
+        case let .startSession(config):
             // Start progress tracking for scanning session
-            return .startProgressTracking(config)
-        case .completeSession(let sessionId):
+            .startProgressTracking(config)
+        case let .completeSession(sessionId):
             // Complete progress tracking
-            return .completeProgressTracking(sessionId)
-        case .cancelSession(let sessionId):
+            .completeProgressTracking(sessionId)
+        case let .cancelSession(sessionId):
             // Cancel progress tracking
-            return .cancelProgressTracking(sessionId)
+            .cancelProgressTracking(sessionId)
         default:
             // For other progress actions, we can use a generic progress update action
-            return ._progressFeedbackReceived(action)
+            ._progressFeedbackReceived(action)
         }
     }
 
@@ -141,13 +141,13 @@ extension DocumentScannerFeature.Action {
 
 // MARK: - Progress Integration Extensions for MultiPageSession
 
-extension MultiPageSession {
+public extension MultiPageSession {
     /// Progress session ID for tracking multi-page scanning progress
-    public var progressSessionId: UUID? {
+    var progressSessionId: UUID? {
         get {
             // Store progress session ID in metadata for persistence
             // For now, we'll use the session ID as the progress session ID
-            return id
+            id
         }
         set {
             // In a real implementation, this would update the metadata
@@ -156,7 +156,7 @@ extension MultiPageSession {
     }
 
     /// Current page scanning progress (0.0 - 1.0)
-    public var currentPageProgress: Double {
+    var currentPageProgress: Double {
         get {
             // Current page progress based on processing state
             guard !pages.isEmpty else { return 0.0 }
@@ -186,7 +186,7 @@ extension MultiPageSession {
     }
 
     /// Overall session progress including all pages
-    public var overallProgress: Double {
+    var overallProgress: Double {
         guard !pages.isEmpty else { return 0.0 }
 
         // Calculate progress based on completed pages
@@ -206,41 +206,37 @@ extension MultiPageSession {
     }
 
     /// Updates progress for the current scanning session
-    public func updateProgress(
+    func updateProgress(
         currentPageProgress: Double,
         using progressClient: ProgressClient
     ) async {
         guard let sessionId = progressSessionId else { return }
 
         // Create progress update based on current session state
-        let currentPhase: ProgressPhase = {
-            switch sessionState {
-            case .active:
-                if processedPagesCount == 0 {
-                    return .initializing
-                } else if processedPagesCount < totalPagesScanned {
-                    return .processing
-                } else {
-                    return .finalizing
-                }
-            case .paused:
-                return .initializing
-            case .completed:
-                return .completed
-            case .cancelled:
-                return .error
-            }
-        }()
-
-        let progressMessage: String = {
-            if totalPagesScanned == 0 {
-                return "Preparing to scan..."
+        let currentPhase: ProgressPhase = switch sessionState {
+        case .active:
+            if processedPagesCount == 0 {
+                .initializing
             } else if processedPagesCount < totalPagesScanned {
-                return "Processing page \(processedPagesCount + 1) of \(totalPagesScanned)"
+                .processing
             } else {
-                return "Finalizing document..."
+                .finalizing
             }
-        }()
+        case .paused:
+            .initializing
+        case .completed:
+            .completed
+        case .cancelled:
+            .error
+        }
+
+        let progressMessage = if totalPagesScanned == 0 {
+            "Preparing to scan..."
+        } else if processedPagesCount < totalPagesScanned {
+            "Processing page \(processedPagesCount + 1) of \(totalPagesScanned)"
+        } else {
+            "Finalizing document..."
+        }
 
         let update = ProgressUpdate(
             sessionId: sessionId,
@@ -261,4 +257,5 @@ extension MultiPageSession {
 }
 
 // MARK: - Progress Integration with Existing DocumentImageProcessor
+
 // Note: DocumentImageProcessor.ProcessingProgress already exists and is used by the existing implementation

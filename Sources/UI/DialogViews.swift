@@ -16,7 +16,7 @@ public struct LLMConfirmationDialog: View {
             SwiftUI.NavigationView {
                 VStack(spacing: 0) {
                     // Header
-                    VStack(spacing: Theme.Spacing.md) {
+                    VStack(spacing: Theme.Spacing.medium) {
                         Image(systemName: "brain.head.profile")
                             .font(.system(size: 48))
                             .foregroundColor(.blue)
@@ -29,12 +29,12 @@ public struct LLMConfirmationDialog: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    .padding(.top, Theme.Spacing.lg)
-                    .padding(.horizontal, Theme.Spacing.lg)
+                    .padding(.top, Theme.Spacing.large)
+                    .padding(.horizontal, Theme.Spacing.large)
 
                     if viewStore.analysis.isAnalyzingRequirements {
                         // Loading state
-                        VStack(spacing: Theme.Spacing.lg) {
+                        VStack(spacing: Theme.Spacing.large) {
                             ProgressView()
                                 .progressViewStyle(CircularProgressViewStyle(tint: .blue))
                                 .scaleEffect(1.5)
@@ -47,22 +47,22 @@ public struct LLMConfirmationDialog: View {
                     } else {
                         // Main Content
                         ScrollView {
-                            VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
+                            VStack(alignment: .leading, spacing: Theme.Spacing.extraLarge) {
                                 // LLM Response
-                                VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                                VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                                     Text("Analysis")
                                         .font(.headline)
                                         .fontWeight(.semibold)
 
                                     Text(viewStore.analysis.llmResponse)
                                         .font(.body)
-                                        .padding(Theme.Spacing.lg)
+                                        .padding(Theme.Spacing.large)
                                         .background(Theme.Colors.aikoSecondary)
-                                        .cornerRadius(Theme.CornerRadius.md)
+                                        .cornerRadius(Theme.CornerRadius.medium)
                                 }
 
                                 // Document Status Summary with grouping
-                                VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                                VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                                     Text("Document Status")
                                         .font(.headline)
                                         .fontWeight(.semibold)
@@ -73,7 +73,7 @@ public struct LLMConfirmationDialog: View {
 
                                     // Ready documents
                                     if let readyDocs = groupedStatuses[.ready]?.sorted(by: { $0.rawValue < $1.rawValue }), !readyDocs.isEmpty {
-                                        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                                        VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                                             Label("Ready to Generate", systemImage: "checkmark.circle.fill")
                                                 .font(.caption)
                                                 .foregroundColor(.green)
@@ -89,12 +89,12 @@ public struct LLMConfirmationDialog: View {
                                                 }
                                             }
                                         }
-                                        .padding(.bottom, Theme.Spacing.sm)
+                                        .padding(.bottom, Theme.Spacing.small)
                                     }
 
                                     // Needs more info documents
                                     if let needsInfoDocs = groupedStatuses[.needsMoreInfo]?.sorted(by: { $0.rawValue < $1.rawValue }), !needsInfoDocs.isEmpty {
-                                        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                                        VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                                             Label("Needs More Information", systemImage: "exclamationmark.circle.fill")
                                                 .font(.caption)
                                                 .foregroundColor(.yellow)
@@ -110,12 +110,12 @@ public struct LLMConfirmationDialog: View {
                                                 }
                                             }
                                         }
-                                        .padding(.bottom, Theme.Spacing.sm)
+                                        .padding(.bottom, Theme.Spacing.small)
                                     }
 
                                     // Not ready documents
                                     if let notReadyDocs = groupedStatuses[.notReady]?.sorted(by: { $0.rawValue < $1.rawValue }), !notReadyDocs.isEmpty {
-                                        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                                        VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                                             Label("Not Ready", systemImage: "xmark.circle.fill")
                                                 .font(.caption)
                                                 .foregroundColor(.red)
@@ -134,13 +134,13 @@ public struct LLMConfirmationDialog: View {
                                         }
                                     }
                                 }
-                                .padding(Theme.Spacing.lg)
+                                .padding(Theme.Spacing.large)
                                 .background(Theme.Colors.aikoSecondary)
-                                .cornerRadius(Theme.CornerRadius.md)
+                                .cornerRadius(Theme.CornerRadius.medium)
 
                                 Spacer(minLength: 100)
                             }
-                            .padding(.horizontal, Theme.Spacing.lg)
+                            .padding(.horizontal, Theme.Spacing.large)
                         }
 
                         // Confirm Button
@@ -151,7 +151,7 @@ public struct LLMConfirmationDialog: View {
                                 Button(action: {
                                     viewStore.send(.analysis(.confirmRequirements(true)))
                                 }) {
-                                    HStack(spacing: Theme.Spacing.md) {
+                                    HStack(spacing: Theme.Spacing.medium) {
                                         Image(systemName: "checkmark.circle.fill")
                                             .font(.title3)
 
@@ -168,11 +168,11 @@ public struct LLMConfirmationDialog: View {
                                             endPoint: .trailing
                                         )
                                     )
-                                    .cornerRadius(Theme.CornerRadius.lg)
+                                    .cornerRadius(Theme.CornerRadius.large)
                                     .shadow(color: .green.opacity(0.3), radius: 8, x: 0, y: 4)
                                 }
-                                .padding(.horizontal, Theme.Spacing.lg)
-                                .padding(.vertical, Theme.Spacing.lg)
+                                .padding(.horizontal, Theme.Spacing.large)
+                                .padding(.vertical, Theme.Spacing.large)
                                 .background(Color.black)
                             }
                         }
@@ -218,9 +218,9 @@ public struct DocumentRecommendationDialog: View {
     public var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             SwiftUI.NavigationView {
-                VStack(spacing: Theme.Spacing.xl) {
+                VStack(spacing: Theme.Spacing.extraLarge) {
                     // Header
-                    VStack(spacing: Theme.Spacing.md) {
+                    VStack(spacing: Theme.Spacing.medium) {
                         Image(systemName: "doc.text.magnifyingglass")
                             .font(.system(size: 48))
                             .foregroundColor(.blue)
@@ -234,11 +234,11 @@ public struct DocumentRecommendationDialog: View {
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                     }
-                    .padding(.top, Theme.Spacing.lg)
+                    .padding(.top, Theme.Spacing.large)
 
                     // Recommended Documents with categories
                     ScrollView {
-                        VStack(spacing: Theme.Spacing.md) {
+                        VStack(spacing: Theme.Spacing.medium) {
                             let documentsByCategory = Dictionary(grouping: viewStore.analysis.recommendedDocuments) { documentType in
                                 if [.sow, .soo, .pws, .qasp, .rrd].contains(documentType) {
                                     "Requirements & Planning"
@@ -253,15 +253,15 @@ public struct DocumentRecommendationDialog: View {
 
                             ForEach(documentsByCategory.keys.sorted(), id: \.self) { category in
                                 if let documents = documentsByCategory[category] {
-                                    VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                                    VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                                         Text(category)
                                             .font(.caption)
                                             .fontWeight(.semibold)
                                             .foregroundColor(.secondary)
-                                            .padding(.leading, Theme.Spacing.sm)
+                                            .padding(.leading, Theme.Spacing.small)
 
                                         ForEach(documents.sorted(by: { $0.rawValue < $1.rawValue }), id: \.self) { documentType in
-                                            HStack(spacing: Theme.Spacing.lg) {
+                                            HStack(spacing: Theme.Spacing.large) {
                                                 Image(systemName: documentType.icon)
                                                     .font(.title2)
                                                     .foregroundColor(.blue)
@@ -308,7 +308,7 @@ public struct DocumentRecommendationDialog: View {
                     Spacer()
 
                     // Action Buttons
-                    VStack(spacing: Theme.Spacing.md) {
+                    VStack(spacing: Theme.Spacing.medium) {
                         Button(action: {
                             viewStore.send(.generateRecommendedDocuments)
                         }) {
@@ -323,10 +323,10 @@ public struct DocumentRecommendationDialog: View {
                         }
                         .aikoButton(variant: .secondary, size: .medium)
                     }
-                    .padding(.horizontal, Theme.Spacing.lg)
-                    .padding(.bottom, Theme.Spacing.lg)
+                    .padding(.horizontal, Theme.Spacing.large)
+                    .padding(.bottom, Theme.Spacing.large)
                 }
-                .padding(.horizontal, Theme.Spacing.lg)
+                .padding(.horizontal, Theme.Spacing.large)
                 .background(Theme.Colors.aikoBackground)
                 .modifier(NavigationBarHiddenModifier())
             }
@@ -346,9 +346,9 @@ public struct DeliveryOptionsDialog: View {
     public var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             SwiftUI.NavigationView {
-                VStack(spacing: Theme.Spacing.xl) {
+                VStack(spacing: Theme.Spacing.extraLarge) {
                     // Header
-                    VStack(spacing: Theme.Spacing.md) {
+                    VStack(spacing: Theme.Spacing.medium) {
                         Image(systemName: "square.and.arrow.up")
                             .font(.system(size: 48))
                             .foregroundColor(.blue)
@@ -362,10 +362,10 @@ public struct DeliveryOptionsDialog: View {
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                     }
-                    .padding(.top, Theme.Spacing.lg)
+                    .padding(.top, Theme.Spacing.large)
 
                     // Generated Documents Summary
-                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                         let documents = viewStore.generatedDocuments
                         let documentCount = documents.count
                         Text("Generated Documents (\(documentCount))")
@@ -394,12 +394,12 @@ public struct DeliveryOptionsDialog: View {
                     Spacer()
 
                     // Delivery Options
-                    VStack(spacing: Theme.Spacing.md) {
+                    VStack(spacing: Theme.Spacing.medium) {
                         ForEach(DocumentDeliveryFeature.DeliveryOption.allCases, id: \.self) { option in
                             Button(action: {
                                 viewStore.send(.delivery(.deliverDocuments(option)))
                             }) {
-                                HStack(spacing: Theme.Spacing.lg) {
+                                HStack(spacing: Theme.Spacing.large) {
                                     Image(systemName: option.icon)
                                         .font(.title2)
                                         .frame(width: 32, height: 32)
@@ -413,21 +413,21 @@ public struct DeliveryOptionsDialog: View {
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                                 }
-                                .padding(Theme.Spacing.lg)
+                                .padding(Theme.Spacing.large)
                                 .background(Theme.Colors.aikoCard)
-                                .cornerRadius(Theme.CornerRadius.lg)
+                                .cornerRadius(Theme.CornerRadius.large)
                                 .overlay(
-                                    RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+                                    RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
                                         .stroke(Color.blue.opacity(0.3), lineWidth: 1)
                                 )
                             }
                             .buttonStyle(PlainButtonStyle())
                         }
                     }
-                    .padding(.horizontal, Theme.Spacing.lg)
-                    .padding(.bottom, Theme.Spacing.lg)
+                    .padding(.horizontal, Theme.Spacing.large)
+                    .padding(.bottom, Theme.Spacing.large)
                 }
-                .padding(.horizontal, Theme.Spacing.lg)
+                .padding(.horizontal, Theme.Spacing.large)
                 .background(Theme.Colors.aikoBackground)
                 .modifier(NavigationBarHiddenModifier())
             }
@@ -448,9 +448,9 @@ public struct EmailConfirmationDialog: View {
     public var body: some View {
         SwiftUI.NavigationView {
             WithViewStore(store, observe: \.delivery) { viewStore in
-                VStack(spacing: Theme.Spacing.xl) {
+                VStack(spacing: Theme.Spacing.extraLarge) {
                     // Header
-                    VStack(spacing: Theme.Spacing.md) {
+                    VStack(spacing: Theme.Spacing.medium) {
                         Image(systemName: "envelope.circle")
                             .font(.system(size: 48))
                             .foregroundColor(.blue)
@@ -464,10 +464,10 @@ public struct EmailConfirmationDialog: View {
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                     }
-                    .padding(.top, Theme.Spacing.lg)
+                    .padding(.top, Theme.Spacing.large)
 
                     // Email Options
-                    VStack(spacing: Theme.Spacing.md) {
+                    VStack(spacing: Theme.Spacing.medium) {
                         // Profile Email Option (if available)
                         if !viewStore.userProfileEmail.isEmpty {
                             EmailOptionButton(
@@ -490,7 +490,7 @@ public struct EmailConfirmationDialog: View {
 
                         // Custom Email Input
                         if viewStore.selectedEmailOption == .different || viewStore.selectedEmailOption == .noProfile {
-                            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                            VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                                 Text("Email Address")
                                     .font(.subheadline)
                                     .fontWeight(.semibold)
@@ -514,7 +514,7 @@ public struct EmailConfirmationDialog: View {
                     Spacer()
 
                     // Action Buttons
-                    VStack(spacing: Theme.Spacing.md) {
+                    VStack(spacing: Theme.Spacing.medium) {
                         Button(action: {
                             viewStore.send(.delivery(.sendDocumentsViaEmail))
                         }) {
@@ -530,10 +530,10 @@ public struct EmailConfirmationDialog: View {
                         }
                         .aikoButton(variant: .ghost, size: .medium)
                     }
-                    .padding(.horizontal, Theme.Spacing.lg)
-                    .padding(.bottom, Theme.Spacing.lg)
+                    .padding(.horizontal, Theme.Spacing.large)
+                    .padding(.bottom, Theme.Spacing.large)
                 }
-                .padding(.horizontal, Theme.Spacing.lg)
+                .padding(.horizontal, Theme.Spacing.large)
                 .background(Theme.Colors.aikoBackground)
                 .modifier(NavigationBarHiddenModifier())
             }
@@ -558,7 +558,7 @@ struct EmailOptionButton: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: Theme.Spacing.lg) {
+            HStack(spacing: Theme.Spacing.large) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
                         .font(.subheadline)
@@ -576,11 +576,11 @@ struct EmailOptionButton: View {
                     .foregroundColor(isSelected ? .blue : .secondary)
                     .font(.title3)
             }
-            .padding(Theme.Spacing.lg)
+            .padding(Theme.Spacing.large)
             .background(Theme.Colors.aikoCard)
-            .cornerRadius(Theme.CornerRadius.lg)
+            .cornerRadius(Theme.CornerRadius.large)
             .overlay(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
                     .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
             )
         }

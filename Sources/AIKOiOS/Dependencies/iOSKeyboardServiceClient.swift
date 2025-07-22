@@ -51,19 +51,19 @@
     public extension KeyboardServiceClient {
         static let iOSLive = Self(
             defaultKeyboardType: {
-                return .default
+                .default
             },
             emailKeyboardType: {
-                return .email
+                .email
             },
             numberKeyboardType: {
-                return .number
+                .number
             },
             phoneKeyboardType: {
-                return .phone
+                .phone
             },
             urlKeyboardType: {
-                return .url
+                .url
             },
             supportsKeyboardTypes: {
                 let service = iOSKeyboardService()

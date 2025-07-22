@@ -235,7 +235,7 @@ final class AdaptivePromptingEngineTests: XCTestCase {
                     value: "25000.00",
                     confidence: 0.85,
                     location: ExtractedLocation(page: 1, boundingBox: nil)
-                ),
+                )
             ],
             relationships: [],
             tables: [],

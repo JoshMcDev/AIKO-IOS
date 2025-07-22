@@ -27,9 +27,8 @@ let package = Package(
             path: "Sources/AikoCompat",
             exclude: ["README.md"],
             swiftSettings: [
-                // This module can have strict concurrency enabled
-                // as it provides Sendable-safe wrappers
-                // .unsafeFlags(["-strict-concurrency=complete"]), // DISABLED FOR INDEXING TEST
+                // Swift 6 strict concurrency enabled - provides Sendable-safe wrappers
+                .unsafeFlags(["-strict-concurrency=complete"]),
             ]
         ),
 
@@ -45,8 +44,8 @@ let package = Package(
             path: "Sources/AppCore",
             exclude: ["README.md"],
             swiftSettings: [
-                // TESTING: Enable strict concurrency to test Swift 6 compliance
-                // .unsafeFlags(["-strict-concurrency=complete"]), // DISABLED FOR INDEXING TEST
+                // Swift 6 strict concurrency enabled for platform-agnostic core
+                .unsafeFlags(["-strict-concurrency=complete"]),
             ]
         ),
 
@@ -61,8 +60,8 @@ let package = Package(
             path: "Sources/AIKOiOS",
             exclude: ["README.md", "Service-Concurrency-Guide.md"],
             swiftSettings: [
-                // TESTING: Enable strict concurrency to test Swift 6 compliance
-                // .unsafeFlags(["-strict-concurrency=complete"]), // DISABLED FOR INDEXING TEST
+                // Swift 6 strict concurrency enabled for iOS platform
+                .unsafeFlags(["-strict-concurrency=complete"]),
             ]
         ),
 
@@ -77,8 +76,8 @@ let package = Package(
             path: "Sources/AIKOmacOS",
             exclude: ["README.md"],
             swiftSettings: [
-                // TESTING: Enable strict concurrency to test Swift 6 compliance
-                // .unsafeFlags(["-strict-concurrency=complete"]), // DISABLED FOR INDEXING TEST
+                // Swift 6 strict concurrency enabled for macOS platform
+                .unsafeFlags(["-strict-concurrency=complete"]),
             ]
         ),
 
@@ -99,7 +98,6 @@ let package = Package(
                 "AIKOmacOS", // Exclude AIKOmacOS subdirectory
                 "AikoCompat", // Exclude AikoCompat subdirectory
                 "Models/CoreData/FORM_MIGRATION_GUIDE.md",
-                "Resources/Regulations", // Exclude HTML regulation files
                 "Resources/Clauses/clauseSelectionEngine.ts",
                 "Resources/Clauses/ClauseSelectionEngine.md",
                 "Resources/Clauses/ClauseDatabase.json",
@@ -124,7 +122,7 @@ let package = Package(
             ],
             swiftSettings: [
                 // Swift 6 strict concurrency enabled - actor boundaries properly established
-                // .unsafeFlags(["-strict-concurrency=complete"]), // DISABLED FOR INDEXING TEST
+                .unsafeFlags(["-strict-concurrency=complete"]),
             ]
         ),
 
@@ -134,6 +132,7 @@ let package = Package(
             name: "AppCoreTests",
             dependencies: [
                 "AppCore",
+                "AIKO",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Tests/AppCoreTests"

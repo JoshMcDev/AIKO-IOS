@@ -243,14 +243,13 @@ public final class ContextualAnalyzer: @unchecked Sendable {
         insight.responseSpeed = categorizeResponseSpeed(response.timestamp.timeIntervalSinceNow)
 
         // Check for uncertainty indicators
-        var textResponse: String?
-        switch response.value {
-        case .text(let text):
-            textResponse = text
-        case .selection(let selection):
-            textResponse = selection
+        let textResponse: String? = switch response.value {
+        case let .text(text):
+            text
+        case let .selection(selection):
+            selection
         default:
-            textResponse = nil
+            nil
         }
 
         if let text = textResponse {

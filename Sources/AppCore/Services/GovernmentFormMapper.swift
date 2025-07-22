@@ -41,15 +41,15 @@ public struct GovernmentFormMapper: Sendable {
     public func validateField(_ field: FormField) -> FieldValidationResult {
         switch field.fieldType {
         case .cageCode:
-            return fieldValidator.validateCAGECode(field.value)
+            fieldValidator.validateCAGECode(field.value)
         case .uei:
-            return fieldValidator.validateUEI(field.value)
+            fieldValidator.validateUEI(field.value)
         case .currency:
-            return fieldValidator.validateCurrency(field.value)
+            fieldValidator.validateCurrency(field.value)
         case .date:
-            return fieldValidator.validateDate(field.value)
+            fieldValidator.validateDate(field.value)
         default:
-            return FieldValidationResult(isValid: true, errors: [])
+            FieldValidationResult(isValid: true, errors: [])
         }
     }
 }
@@ -58,7 +58,7 @@ public struct GovernmentFormMapper: Sendable {
 
 extension GovernmentFormMapper {
     /// Extract field value using regex pattern and cleanup rules
-    internal func extractFieldValue(
+    func extractFieldValue(
         from text: String,
         pattern: String,
         removePatterns: [String] = [],
@@ -74,14 +74,14 @@ extension GovernmentFormMapper {
     }
 
     /// Create field with common properties
-    internal func createField(
+    func createField(
         name: String,
         value: String,
         confidence: Double,
         fieldType: FieldType,
         isCritical: Bool = true
     ) -> FormField {
-        return FormField(
+        FormField(
             name: name,
             value: value,
             confidence: ConfidenceScore(value: confidence),

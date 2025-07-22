@@ -1,5 +1,5 @@
-import ComposableArchitecture
 import Combine
+import ComposableArchitecture
 import Foundation
 
 /// TCA Feature for managing progress feedback across the application
@@ -13,12 +13,12 @@ public struct ProgressFeedbackFeature: Sendable {
         public var lastAnnouncedProgress: [UUID: Int] = [:]
 
         public var currentProgress: ProgressState? {
-            guard let currentSession = currentSession else { return nil }
+            guard let currentSession else { return nil }
             return activeSessions[currentSession]
         }
 
         public var isActive: Bool {
-            return !activeSessions.isEmpty
+            !activeSessions.isEmpty
         }
 
         public init() {}

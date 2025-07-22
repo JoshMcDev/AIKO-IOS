@@ -122,7 +122,7 @@
             let textStyles: [Font.TextStyle] = [
                 .largeTitle, .title, .title2, .title3,
                 .headline, .subheadline, .body, .callout,
-                .footnote, .caption, .caption2,
+                .footnote, .caption, .caption2
             ]
 
             for textStyle in textStyles {
@@ -146,7 +146,7 @@
                 .extraLarge, .extraExtraLarge, .extraExtraExtraLarge,
                 .accessibilityMedium, .accessibilityLarge,
                 .accessibilityExtraLarge, .accessibilityExtraExtraLarge,
-                .accessibilityExtraExtraExtraLarge,
+                .accessibilityExtraExtraExtraLarge
             ]
 
             for sizeCategory in sizeCategories {

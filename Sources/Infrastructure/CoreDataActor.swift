@@ -69,11 +69,12 @@ public actor CoreDataActor {
     // MARK: - CRUD Operations
 
     // MARK: - DEPRECATED METHODS REMOVED
+
     // The following methods were removed due to Sendable conformance violations:
     // - fetch<T: NSManagedObject>(_:) -> [T]
     // - fetchObject<T: NSManagedObject>(ofType:objectID:) -> T?
     // - create<T: NSManagedObject>(_:) -> T
-    // 
+    //
     // Use performViewContextTask or performBackgroundTask instead to keep
     // Core Data entities within actor boundaries and maintain Sendable compliance.
 
@@ -210,7 +211,7 @@ public actor CoreDataActor {
         }
     }
 
-    /// Import data from JSON export format  
+    /// Import data from JSON export format
     public func importFromJSON(_ exportData: [String: [[String: Any]]]) async throws {
         let context = createBackgroundContext()
 

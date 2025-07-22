@@ -51,7 +51,11 @@
             documentProcessingPipeline = DocumentProcessingPipeline()
         }
 
-        func processImage(_ imageData: Data, mode: DocumentImageProcessor.ProcessingMode, options: DocumentImageProcessor.ProcessingOptions) async throws -> DocumentImageProcessor.ProcessingResult {
+        func processImage(
+            _ imageData: Data, 
+            mode: DocumentImageProcessor.ProcessingMode, 
+            options: DocumentImageProcessor.ProcessingOptions
+        ) async throws -> DocumentImageProcessor.ProcessingResult {
             let startTime = CFAbsoluteTimeGetCurrent()
             var appliedFilters: [String] = []
 

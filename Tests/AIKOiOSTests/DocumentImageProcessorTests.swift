@@ -291,24 +291,24 @@ final class DocumentImageProcessorTests: XCTestCase {
 
     func testOCRAvailability() async throws {
         @Dependency(\.documentImageProcessor) var processor
-        
+
         // Test OCR availability - this should pass
         XCTAssertTrue(processor.isOCRAvailable(), "OCR should be available on iOS 13.0+")
     }
 
     func testBasicTextExtraction() async throws {
         @Dependency(\.documentImageProcessor) var processor
-        
+
         let imageData = createSampleImageWithText()
         let options = DocumentImageProcessor.OCROptions(
             language: .english,
             recognitionLevel: .accurate
         )
-        
+
         // This test will FAIL initially because the actual OCR implementation
         // needs to be connected to the live implementation
         let result = try await processor.extractText(imageData, options)
-        
+
         // Verify OCR result structure
         XCTAssertFalse(result.extractedText.isEmpty, "Should extract at least some text")
         XCTAssertFalse(result.fullText.isEmpty, "Full text should not be empty")
@@ -316,13 +316,13 @@ final class DocumentImageProcessorTests: XCTestCase {
         XCTAssertLessThanOrEqual(result.confidence, 1.0, "Confidence should not exceed 1.0")
         XCTAssertGreaterThan(result.processingTime, 0.0, "Processing time should be recorded")
         XCTAssertFalse(result.detectedLanguages.isEmpty, "Should detect at least one language")
-        
+
         // Verify extracted text elements
         for extractedText in result.extractedText {
             XCTAssertFalse(extractedText.text.isEmpty, "Extracted text should not be empty")
             XCTAssertGreaterThan(extractedText.confidence, 0.0, "Text confidence should be greater than 0")
             XCTAssertLessThanOrEqual(extractedText.confidence, 1.0, "Text confidence should not exceed 1.0")
-            
+
             // Verify bounding box is valid
             XCTAssertGreaterThan(extractedText.boundingBox.width, 0, "Bounding box width should be positive")
             XCTAssertGreaterThan(extractedText.boundingBox.height, 0, "Bounding box height should be positive")
@@ -331,28 +331,28 @@ final class DocumentImageProcessorTests: XCTestCase {
 
     func testOCRProgressReporting() async throws {
         @Dependency(\.documentImageProcessor) var processor
-        
+
         let imageData = createSampleImageWithText()
         var progressUpdates: [OCRProgress] = []
-        
+
         let options = DocumentImageProcessor.OCROptions(
             progressCallback: { progress in
                 progressUpdates.append(progress)
             },
             recognitionLevel: .accurate
         )
-        
+
         // This test will FAIL initially - OCR progress reporting needs implementation
         let result = try await processor.extractText(imageData, options)
-        
+
         // Verify progress was reported
         XCTAssertFalse(progressUpdates.isEmpty, "Progress updates should be reported")
-        
+
         // Verify progress sequence includes expected steps
         let reportedSteps = Set(progressUpdates.map { $0.currentStep })
         XCTAssertTrue(reportedSteps.contains(.preprocessing), "Should report preprocessing step")
         XCTAssertTrue(reportedSteps.contains(.textRecognition), "Should report text recognition step")
-        
+
         // Verify progress values are valid
         for progress in progressUpdates {
             XCTAssertGreaterThanOrEqual(progress.stepProgress, 0.0, "Step progress should be >= 0")
@@ -361,30 +361,30 @@ final class DocumentImageProcessorTests: XCTestCase {
             XCTAssertLessThanOrEqual(progress.overallProgress, 1.0, "Overall progress should be <= 1")
             XCTAssertGreaterThanOrEqual(progress.recognizedTextCount, 0, "Recognized text count should be >= 0")
         }
-        
+
         // Verify final progress shows completion
         if let lastProgress = progressUpdates.last {
             XCTAssertEqual(lastProgress.overallProgress, 1.0, accuracy: 0.01, "Final progress should be 100%")
         }
-        
+
         XCTAssertFalse(result.processedImageData.isEmpty)
     }
 
     func testLanguageDetection() async throws {
         @Dependency(\.documentImageProcessor) var processor
-        
+
         let imageData = createSampleImageWithText()
         let options = DocumentImageProcessor.OCROptions(
             automaticLanguageDetection: true,
             language: .automatic
         )
-        
+
         // This test will FAIL initially - language detection needs proper implementation
         let result = try await processor.extractText(imageData, options)
-        
+
         // Verify language detection
         XCTAssertFalse(result.detectedLanguages.isEmpty, "Should detect at least one language")
-        
+
         // For English text, should detect English
         if result.fullText.contains("Sample") || result.fullText.contains("text") {
             XCTAssertTrue(result.detectedLanguages.contains(.english), "Should detect English language")
@@ -393,28 +393,28 @@ final class DocumentImageProcessorTests: XCTestCase {
 
     func testStructuredDataExtractionInvoice() async throws {
         @Dependency(\.documentImageProcessor) var processor
-        
+
         let imageData = createSampleInvoiceImage()
         let options = DocumentImageProcessor.OCROptions(
             language: .english,
             recognitionLevel: .accurate
         )
-        
+
         // This test will FAIL initially - structured data extraction needs implementation
         let result = try await processor.extractStructuredData(imageData, .invoice, options)
-        
+
         // Verify structured result
         XCTAssertEqual(result.documentType, .invoice, "Document type should be invoice")
         XCTAssertGreaterThan(result.structureConfidence, 0.0, "Structure confidence should be > 0")
         XCTAssertLessThanOrEqual(result.structureConfidence, 1.0, "Structure confidence should be <= 1")
-        
+
         // Verify OCR result is included
         XCTAssertFalse(result.ocrResult.fullText.isEmpty, "OCR result should contain text")
-        
+
         // Verify invoice-specific fields are extracted
         let fields = result.extractedFields
         XCTAssertFalse(fields.isEmpty, "Should extract some structured fields")
-        
+
         // Look for typical invoice fields
         let expectedFields = ["invoice_number", "date", "total_amount", "total", "amount"]
         let hasExpectedField = expectedFields.contains { fields.keys.contains($0) }
@@ -423,20 +423,20 @@ final class DocumentImageProcessorTests: XCTestCase {
 
     func testStructuredDataExtractionReceipt() async throws {
         @Dependency(\.documentImageProcessor) var processor
-        
+
         let imageData = createSampleReceiptImage()
         let options = DocumentImageProcessor.OCROptions(
             language: .english,
             recognitionLevel: .fast
         )
-        
+
         // This test will FAIL initially - receipt extraction needs implementation
         let result = try await processor.extractStructuredData(imageData, .receipt, options)
-        
+
         // Verify structured result
         XCTAssertEqual(result.documentType, .receipt, "Document type should be receipt")
         XCTAssertGreaterThan(result.structureConfidence, 0.0, "Structure confidence should be > 0")
-        
+
         // Verify receipt-specific fields
         let fields = result.extractedFields
         let expectedFields = ["store_name", "total", "amount", "date"]
@@ -446,19 +446,19 @@ final class DocumentImageProcessorTests: XCTestCase {
 
     func testStructuredDataExtractionBusinessCard() async throws {
         @Dependency(\.documentImageProcessor) var processor
-        
+
         let imageData = createSampleBusinessCardImage()
         let options = DocumentImageProcessor.OCROptions(
             language: .english,
             recognitionLevel: .accurate
         )
-        
+
         // This test will FAIL initially - business card extraction needs implementation
         let result = try await processor.extractStructuredData(imageData, .businessCard, options)
-        
+
         // Verify structured result
         XCTAssertEqual(result.documentType, .businessCard, "Document type should be business card")
-        
+
         // Verify business card specific fields
         let fields = result.extractedFields
         let expectedFields = ["name", "company", "phone", "email", "title"]
@@ -468,21 +468,21 @@ final class DocumentImageProcessorTests: XCTestCase {
 
     func testOCRWithDifferentLanguages() async throws {
         @Dependency(\.documentImageProcessor) var processor
-        
+
         let imageData = createSampleImageWithText()
-        
+
         // Test different language settings
         let languages: [DocumentImageProcessor.OCRLanguage] = [.english, .spanish, .french]
-        
+
         for language in languages {
             let options = DocumentImageProcessor.OCROptions(
                 language: language,
                 automaticLanguageDetection: false
             )
-            
+
             // This test will FAIL initially - language-specific OCR needs implementation
             let result = try await processor.extractText(imageData, options)
-            
+
             XCTAssertFalse(result.fullText.isEmpty, "Should extract text for language: \(language.displayName)")
             XCTAssertGreaterThan(result.confidence, 0.0, "Should have confidence > 0 for language: \(language.displayName)")
         }
@@ -490,21 +490,21 @@ final class DocumentImageProcessorTests: XCTestCase {
 
     func testOCRWithDifferentRecognitionLevels() async throws {
         @Dependency(\.documentImageProcessor) var processor
-        
+
         let imageData = createSampleImageWithText()
-        
+
         // Test both recognition levels
         let fastOptions = DocumentImageProcessor.OCROptions(recognitionLevel: .fast)
         let accurateOptions = DocumentImageProcessor.OCROptions(recognitionLevel: .accurate)
-        
+
         // This test will FAIL initially - recognition level handling needs implementation
         let fastResult = try await processor.extractText(imageData, fastOptions)
         let accurateResult = try await processor.extractText(imageData, accurateOptions)
-        
+
         // Both should produce results
         XCTAssertFalse(fastResult.fullText.isEmpty, "Fast recognition should extract text")
         XCTAssertFalse(accurateResult.fullText.isEmpty, "Accurate recognition should extract text")
-        
+
         // Accurate mode might take longer (though not guaranteed)
         XCTAssertGreaterThan(fastResult.processingTime, 0, "Fast mode should record processing time")
         XCTAssertGreaterThan(accurateResult.processingTime, 0, "Accurate mode should record processing time")
@@ -512,11 +512,11 @@ final class DocumentImageProcessorTests: XCTestCase {
 
     func testOCRErrorHandling() async throws {
         @Dependency(\.documentImageProcessor) var processor
-        
+
         // Test with invalid image data
         let invalidData = Data("invalid image data".utf8)
         let options = DocumentImageProcessor.OCROptions()
-        
+
         do {
             // This test will FAIL initially - error handling needs implementation
             _ = try await processor.extractText(invalidData, options)
@@ -532,7 +532,7 @@ final class DocumentImageProcessorTests: XCTestCase {
                 }
             }
         }
-        
+
         // Test with empty image data
         let emptyData = Data()
         do {
@@ -545,15 +545,15 @@ final class DocumentImageProcessorTests: XCTestCase {
 
     func testOCRCustomWords() async throws {
         @Dependency(\.documentImageProcessor) var processor
-        
+
         let imageData = createSampleImageWithText()
         let options = DocumentImageProcessor.OCROptions(
             customWords: ["CustomWord", "SpecialTerm", "BrandName"]
         )
-        
+
         // This test will FAIL initially - custom words handling needs implementation
         let result = try await processor.extractText(imageData, options)
-        
+
         // Should complete without error even with custom words
         XCTAssertFalse(result.fullText.isEmpty, "Should extract text with custom words")
         XCTAssertGreaterThan(result.confidence, 0.0, "Should have confidence with custom words")
@@ -596,27 +596,27 @@ final class DocumentImageProcessorTests: XCTestCase {
 
         return data
     }
-    
+
     private func createSampleImageWithText() -> Data {
         let size = CGSize(width: 400, height: 300)
-        
+
         UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
         defer { UIGraphicsEndImageContext() }
-        
+
         guard let context = UIGraphicsGetCurrentContext() else {
             return Data()
         }
-        
+
         // Create white background
         context.setFillColor(UIColor.white.cgColor)
         context.fill(CGRect(origin: .zero, size: size))
-        
+
         // Add text using Core Graphics
         let textAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 16),
             .foregroundColor: UIColor.black
         ]
-        
+
         let lines = [
             "Sample Document Text",
             "This is a test document",
@@ -624,46 +624,47 @@ final class DocumentImageProcessorTests: XCTestCase {
             "Line 4 with numbers: 123.45",
             "Contact: test@example.com"
         ]
-        
+
         var yPosition: CGFloat = 50
         for line in lines {
             let textSize = line.size(withAttributes: textAttributes)
             line.draw(at: CGPoint(x: 20, y: yPosition), withAttributes: textAttributes)
             yPosition += textSize.height + 10
         }
-        
+
         guard let image = UIGraphicsGetImageFromCurrentImageContext(),
-              let data = image.jpegData(compressionQuality: 0.9) else {
+              let data = image.jpegData(compressionQuality: 0.9)
+        else {
             return Data()
         }
-        
+
         return data
     }
-    
+
     private func createSampleInvoiceImage() -> Data {
         let size = CGSize(width: 400, height: 500)
-        
+
         UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
         defer { UIGraphicsEndImageContext() }
-        
+
         guard let context = UIGraphicsGetCurrentContext() else {
             return Data()
         }
-        
+
         // Create white background
         context.setFillColor(UIColor.white.cgColor)
         context.fill(CGRect(origin: .zero, size: size))
-        
+
         let textAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 14),
             .foregroundColor: UIColor.black
         ]
-        
+
         let titleAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.boldSystemFont(ofSize: 18),
             .foregroundColor: UIColor.black
         ]
-        
+
         let invoiceLines = [
             ("INVOICE", titleAttributes),
             ("", textAttributes),
@@ -680,7 +681,7 @@ final class DocumentImageProcessorTests: XCTestCase {
             ("Tax: $125.00", textAttributes),
             ("Total: $1,375.00", textAttributes)
         ]
-        
+
         var yPosition: CGFloat = 30
         for (line, attributes) in invoiceLines {
             if !line.isEmpty {
@@ -691,39 +692,40 @@ final class DocumentImageProcessorTests: XCTestCase {
                 yPosition += 10
             }
         }
-        
+
         guard let image = UIGraphicsGetImageFromCurrentImageContext(),
-              let data = image.jpegData(compressionQuality: 0.9) else {
+              let data = image.jpegData(compressionQuality: 0.9)
+        else {
             return Data()
         }
-        
+
         return data
     }
-    
+
     private func createSampleReceiptImage() -> Data {
         let size = CGSize(width: 300, height: 400)
-        
+
         UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
         defer { UIGraphicsEndImageContext() }
-        
+
         guard let context = UIGraphicsGetCurrentContext() else {
             return Data()
         }
-        
+
         // Create white background
         context.setFillColor(UIColor.white.cgColor)
         context.fill(CGRect(origin: .zero, size: size))
-        
+
         let textAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 12),
             .foregroundColor: UIColor.black
         ]
-        
+
         let titleAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.boldSystemFont(ofSize: 16),
             .foregroundColor: UIColor.black
         ]
-        
+
         let receiptLines = [
             ("GROCERY STORE", titleAttributes),
             ("123 Shopping Plaza", textAttributes),
@@ -741,7 +743,7 @@ final class DocumentImageProcessorTests: XCTestCase {
             ("Tax:          $0.86", textAttributes),
             ("Total:       $11.63", textAttributes)
         ]
-        
+
         var yPosition: CGFloat = 20
         for (line, attributes) in receiptLines {
             if !line.isEmpty {
@@ -753,49 +755,50 @@ final class DocumentImageProcessorTests: XCTestCase {
                 yPosition += 8
             }
         }
-        
+
         guard let image = UIGraphicsGetImageFromCurrentImageContext(),
-              let data = image.jpegData(compressionQuality: 0.9) else {
+              let data = image.jpegData(compressionQuality: 0.9)
+        else {
             return Data()
         }
-        
+
         return data
     }
-    
+
     private func createSampleBusinessCardImage() -> Data {
         let size = CGSize(width: 350, height: 200)
-        
+
         UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
         defer { UIGraphicsEndImageContext() }
-        
+
         guard let context = UIGraphicsGetCurrentContext() else {
             return Data()
         }
-        
+
         // Create white background
         context.setFillColor(UIColor.white.cgColor)
         context.fill(CGRect(origin: .zero, size: size))
-        
+
         // Add border
         context.setStrokeColor(UIColor.gray.cgColor)
         context.setLineWidth(2)
         context.stroke(CGRect(x: 5, y: 5, width: size.width - 10, height: size.height - 10))
-        
+
         let nameAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.boldSystemFont(ofSize: 18),
             .foregroundColor: UIColor.black
         ]
-        
+
         let titleAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 14),
             .foregroundColor: UIColor.darkGray
         ]
-        
+
         let contactAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 12),
             .foregroundColor: UIColor.black
         ]
-        
+
         let cardInfo = [
             ("John Smith", nameAttributes),
             ("Senior Software Engineer", titleAttributes),
@@ -805,7 +808,7 @@ final class DocumentImageProcessorTests: XCTestCase {
             ("(555) 987-6543", contactAttributes),
             ("www.techsolutions.com", contactAttributes)
         ]
-        
+
         var yPosition: CGFloat = 30
         for (line, attributes) in cardInfo {
             if !line.isEmpty {
@@ -816,12 +819,13 @@ final class DocumentImageProcessorTests: XCTestCase {
                 yPosition += 10
             }
         }
-        
+
         guard let image = UIGraphicsGetImageFromCurrentImageContext(),
-              let data = image.jpegData(compressionQuality: 0.9) else {
+              let data = image.jpegData(compressionQuality: 0.9)
+        else {
             return Data()
         }
-        
+
         return data
     }
 }

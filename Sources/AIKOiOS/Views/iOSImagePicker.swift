@@ -76,10 +76,10 @@
                 case let .success(document):
                     // Convert the first scanned page to data for backward compatibility
                     if let firstPage = document.pages.first {
-                        self.onDocumentScanned(firstPage.imageData)
+                        onDocumentScanned(firstPage.imageData)
                     }
                 case .cancelled, .failed:
-                    self.onCancel()
+                    onCancel()
                 }
             }
 

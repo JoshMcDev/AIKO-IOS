@@ -32,7 +32,7 @@ public struct DocumentContextExtractor: Sendable {
 // MARK: - Dependency Registration
 
 extension DocumentContextExtractor: DependencyKey {
-    public static let liveValue: Self = Self(
+    public static let liveValue: Self = .init(
         extractComprehensiveContext: { ocrResults, pageImageData, hints in
             // Live implementation would perform sophisticated ML/AI analysis
             // For now, return mock comprehensive context based on OCR results
@@ -86,17 +86,17 @@ extension DocumentContextExtractor: DependencyKey {
             return (entities, relationships)
         },
         analyzeCompliance: { context in
-            return context.compliance
+            context.compliance
         },
         identifyRiskFactors: { context in
-            return context.riskFactors
+            context.riskFactors
         },
         generateRecommendations: { context in
-            return context.recommendations
+            context.recommendations
         }
     )
 
-    public static let testValue: Self = Self(
+    public static let testValue: Self = .init(
         extractComprehensiveContext: { _, _, _ in
             ScannerDocumentContext(
                 documentType: .contract,
@@ -326,7 +326,7 @@ private func identifyBasicRisks(from text: String) -> [RiskFactor] {
 private func generateBasicRecommendations(for documentType: ScannerDocumentType) -> [Recommendation] {
     switch documentType {
     case .contract:
-        return [
+        [
             Recommendation(
                 type: .compliance,
                 priority: .high,
@@ -337,7 +337,7 @@ private func generateBasicRecommendations(for documentType: ScannerDocumentType)
             )
         ]
     case .solicitation:
-        return [
+        [
             Recommendation(
                 type: .process,
                 priority: .medium,
@@ -348,7 +348,7 @@ private func generateBasicRecommendations(for documentType: ScannerDocumentType)
             )
         ]
     default:
-        return [
+        [
             Recommendation(
                 type: .documentation,
                 priority: .low,

@@ -128,7 +128,7 @@ struct SettingsDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.extraLarge) {
                 switch section {
                 case .general:
                     GeneralSettingsView(store: store)
@@ -160,9 +160,9 @@ struct GeneralSettingsView: View {
 
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 SettingsSection(title: "Appearance") {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                         // Theme
                         HStack {
                             Text("Theme")
@@ -183,7 +183,7 @@ struct GeneralSettingsView: View {
                         HStack {
                             Text("Accent Color")
                             Spacer()
-                            HStack(spacing: Theme.Spacing.sm) {
+                            HStack(spacing: Theme.Spacing.small) {
                                 ForEach(SettingsFeature.AccentColor.allCases, id: \.self) { color in
                                     Circle()
                                         .fill(color.color)
@@ -222,7 +222,7 @@ struct GeneralSettingsView: View {
                 }
 
                 SettingsSection(title: "Security") {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                         HStack {
                             Image(systemName: "faceid")
                                 .font(.title3)
@@ -240,7 +240,7 @@ struct GeneralSettingsView: View {
                 }
 
                 SettingsSection(title: "Behavior") {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                         Toggle("Enable Auto-save", isOn: viewStore.binding(
                             get: { $0.appSettings.autoSaveEnabled },
                             send: { .toggleAutoSave($0) }
@@ -271,7 +271,7 @@ struct GeneralSettingsView: View {
                 }
 
                 SettingsSection(title: "File Handling") {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                         HStack {
                             Text("Default file format")
                             Spacer()
@@ -290,7 +290,7 @@ struct GeneralSettingsView: View {
                 }
 
                 SettingsSection(title: "Backup & Restore") {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                         // Backup settings
                         Toggle("Enable automatic backup", isOn: viewStore.binding(
                             get: { $0.appSettings.backupEnabled },
@@ -342,7 +342,7 @@ struct GeneralSettingsView: View {
                         }
 
                         Divider()
-                            .padding(.vertical, Theme.Spacing.sm)
+                            .padding(.vertical, Theme.Spacing.small)
 
                         // Restore button
                         HStack {
@@ -397,10 +397,10 @@ struct APISettingsView: View {
 
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 // Model Information
                 SettingsSection(title: "AI Model") {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                         HStack {
                             Image(systemName: "cpu")
                                 .foregroundColor(Theme.Colors.aikoAccent)
@@ -420,7 +420,7 @@ struct APISettingsView: View {
 
                 // SAM.gov API Key
                 SettingsSection(title: "SAM.gov API") {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                         HStack {
                             Text("SAM.gov API Key")
                             Spacer()
@@ -443,7 +443,7 @@ struct APISettingsView: View {
 
                 // API Keys Management
                 SettingsSection(title: "Anthropic API Keys") {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                         // Header with Add button
                         HStack {
                             Text("Manage Anthropic API Keys")
@@ -538,7 +538,7 @@ struct APIKeyRow: View {
                             .foregroundColor(.green)
                     }
                 }
-                .padding(.vertical, Theme.Spacing.xs)
+                .padding(.vertical, Theme.Spacing.extraSmall)
             }
             .buttonStyle(PlainButtonStyle())
 
@@ -548,9 +548,9 @@ struct APIKeyRow: View {
             }
         }
         .padding(.horizontal)
-        .padding(.vertical, Theme.Spacing.sm)
+        .padding(.vertical, Theme.Spacing.small)
         .background(
-            RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                 .fill(isSelected ? Theme.Colors.aikoAccent.opacity(0.1) : Color.clear)
         )
     }
@@ -572,20 +572,20 @@ struct AddAPIKeyView: View {
 
     var body: some View {
         SwiftUI.NavigationView {
-            VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 Text("Add a new API key")
                     .font(.title2)
                     .fontWeight(.bold)
                     .padding(.top)
 
-                VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                     Text("Key Name")
                         .font(.headline)
                     TextField("", text: $keyName, prompt: Text("...").foregroundColor(.gray))
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                 }
 
-                VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                     Text("API Key")
                         .font(.headline)
                     HStack {
@@ -644,9 +644,9 @@ struct DocumentSettingsView: View {
 
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 SettingsSection(title: "Template Settings") {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                         HStack {
                             Text("Default template set")
                             Spacer()
@@ -665,7 +665,7 @@ struct DocumentSettingsView: View {
                 }
 
                 SettingsSection(title: "Document Features") {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                         Toggle("Include metadata", isOn: viewStore.binding(
                             get: { $0.documentSettings.includeMetadata },
                             send: { .toggleIncludeMetadata($0) }
@@ -694,9 +694,9 @@ struct NotificationSettingsView: View {
 
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 SettingsSection(title: "Notification Preferences") {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                         Toggle("Enable notifications", isOn: viewStore.binding(
                             get: { $0.notificationSettings.enableNotifications },
                             send: { .toggleNotifications($0) }
@@ -715,9 +715,9 @@ struct DataPrivacySettingsView: View {
 
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 SettingsSection(title: "Privacy") {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                         Toggle("Share analytics data", isOn: viewStore.binding(
                             get: { $0.dataPrivacySettings.analyticsEnabled },
                             send: { .toggleAnalytics($0) }
@@ -730,7 +730,7 @@ struct DataPrivacySettingsView: View {
                 }
 
                 SettingsSection(title: "Data Management") {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                         HStack {
                             Button("Export All Data") {
                                 viewStore.send(.exportData)
@@ -754,9 +754,9 @@ struct AdvancedSettingsView: View {
 
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 SettingsSection(title: "Developer Options") {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                         Toggle("Enable debug mode", isOn: viewStore.binding(
                             get: { $0.advancedSettings.debugModeEnabled },
                             send: { .toggleDebugMode($0) }
@@ -770,7 +770,7 @@ struct AdvancedSettingsView: View {
                 }
 
                 SettingsSection(title: "Performance") {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                         Button("Clear Cache") {
                             viewStore.send(.clearCache)
                         }
@@ -778,7 +778,7 @@ struct AdvancedSettingsView: View {
                 }
 
                 SettingsSection(title: "Output Settings") {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                         // Output Format
                         HStack {
                             Text("Output format")
@@ -802,9 +802,9 @@ struct AdvancedSettingsView: View {
                 }
 
                 SettingsSection(title: "AI Model Settings") {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                         // Temperature
-                        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                        VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                             HStack {
                                 Text("Model Temperature")
                                 Spacer()
@@ -830,7 +830,7 @@ struct AdvancedSettingsView: View {
                         Divider()
 
                         // Output Length
-                        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                        VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                             HStack {
                                 Text("Output length")
                                 Spacer()
@@ -886,7 +886,7 @@ struct SettingsSection<Content: View>: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
             Text(title)
                 .font(.headline)
                 .foregroundColor(.primary)
@@ -905,7 +905,7 @@ struct ExportProgressView: View {
     let progress: Double
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.lg) {
+        VStack(spacing: Theme.Spacing.large) {
             ProgressView(value: progress)
                 .progressViewStyle(LinearProgressViewStyle())
 
@@ -926,7 +926,7 @@ struct BackupProgressView: View {
     let progress: Double
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.lg) {
+        VStack(spacing: Theme.Spacing.large) {
             ProgressView(value: progress)
                 .progressViewStyle(LinearProgressViewStyle())
 

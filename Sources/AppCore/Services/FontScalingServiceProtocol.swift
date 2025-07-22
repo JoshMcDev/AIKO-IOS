@@ -9,35 +9,35 @@ public struct SendableTextStyle: Sendable {
 
     public init(_ textStyle: Font.TextStyle) {
         switch textStyle {
-        case .largeTitle: self.rawValue = "largeTitle"
-        case .title: self.rawValue = "title"
-        case .title2: self.rawValue = "title2"
-        case .title3: self.rawValue = "title3"
-        case .headline: self.rawValue = "headline"
-        case .subheadline: self.rawValue = "subheadline"
-        case .body: self.rawValue = "body"
-        case .callout: self.rawValue = "callout"
-        case .footnote: self.rawValue = "footnote"
-        case .caption: self.rawValue = "caption"
-        case .caption2: self.rawValue = "caption2"
-        @unknown default: self.rawValue = "body"
+        case .largeTitle: rawValue = "largeTitle"
+        case .title: rawValue = "title"
+        case .title2: rawValue = "title2"
+        case .title3: rawValue = "title3"
+        case .headline: rawValue = "headline"
+        case .subheadline: rawValue = "subheadline"
+        case .body: rawValue = "body"
+        case .callout: rawValue = "callout"
+        case .footnote: rawValue = "footnote"
+        case .caption: rawValue = "caption"
+        case .caption2: rawValue = "caption2"
+        @unknown default: rawValue = "body"
         }
     }
 
     public var textStyle: Font.TextStyle {
         switch rawValue {
-        case "largeTitle": return .largeTitle
-        case "title": return .title
-        case "title2": return .title2
-        case "title3": return .title3
-        case "headline": return .headline
-        case "subheadline": return .subheadline
-        case "body": return .body
-        case "callout": return .callout
-        case "footnote": return .footnote
-        case "caption": return .caption
-        case "caption2": return .caption2
-        default: return .body
+        case "largeTitle": .largeTitle
+        case "title": .title
+        case "title2": .title2
+        case "title3": .title3
+        case "headline": .headline
+        case "subheadline": .subheadline
+        case "body": .body
+        case "callout": .callout
+        case "footnote": .footnote
+        case "caption": .caption
+        case "caption2": .caption2
+        default: .body
         }
     }
 }
@@ -48,37 +48,37 @@ public struct SendableContentSizeCategory: Sendable {
 
     public init(_ sizeCategory: ContentSizeCategory) {
         switch sizeCategory {
-        case .extraSmall: self.rawValue = "extraSmall"
-        case .small: self.rawValue = "small"
-        case .medium: self.rawValue = "medium"
-        case .large: self.rawValue = "large"
-        case .extraLarge: self.rawValue = "extraLarge"
-        case .extraExtraLarge: self.rawValue = "extraExtraLarge"
-        case .extraExtraExtraLarge: self.rawValue = "extraExtraExtraLarge"
-        case .accessibilityMedium: self.rawValue = "accessibilityMedium"
-        case .accessibilityLarge: self.rawValue = "accessibilityLarge"
-        case .accessibilityExtraLarge: self.rawValue = "accessibilityExtraLarge"
-        case .accessibilityExtraExtraLarge: self.rawValue = "accessibilityExtraExtraLarge"
-        case .accessibilityExtraExtraExtraLarge: self.rawValue = "accessibilityExtraExtraExtraLarge"
-        @unknown default: self.rawValue = "large"
+        case .extraSmall: rawValue = "extraSmall"
+        case .small: rawValue = "small"
+        case .medium: rawValue = "medium"
+        case .large: rawValue = "large"
+        case .extraLarge: rawValue = "extraLarge"
+        case .extraExtraLarge: rawValue = "extraExtraLarge"
+        case .extraExtraExtraLarge: rawValue = "extraExtraExtraLarge"
+        case .accessibilityMedium: rawValue = "accessibilityMedium"
+        case .accessibilityLarge: rawValue = "accessibilityLarge"
+        case .accessibilityExtraLarge: rawValue = "accessibilityExtraLarge"
+        case .accessibilityExtraExtraLarge: rawValue = "accessibilityExtraExtraLarge"
+        case .accessibilityExtraExtraExtraLarge: rawValue = "accessibilityExtraExtraExtraLarge"
+        @unknown default: rawValue = "large"
         }
     }
 
     public var sizeCategory: ContentSizeCategory {
         switch rawValue {
-        case "extraSmall": return .extraSmall
-        case "small": return .small
-        case "medium": return .medium
-        case "large": return .large
-        case "extraLarge": return .extraLarge
-        case "extraExtraLarge": return .extraExtraLarge
-        case "extraExtraExtraLarge": return .extraExtraExtraLarge
-        case "accessibilityMedium": return .accessibilityMedium
-        case "accessibilityLarge": return .accessibilityLarge
-        case "accessibilityExtraLarge": return .accessibilityExtraLarge
-        case "accessibilityExtraExtraLarge": return .accessibilityExtraExtraLarge
-        case "accessibilityExtraExtraExtraLarge": return .accessibilityExtraExtraExtraLarge
-        default: return .large
+        case "extraSmall": .extraSmall
+        case "small": .small
+        case "medium": .medium
+        case "large": .large
+        case "extraLarge": .extraLarge
+        case "extraExtraLarge": .extraExtraLarge
+        case "extraExtraExtraLarge": .extraExtraExtraLarge
+        case "accessibilityMedium": .accessibilityMedium
+        case "accessibilityLarge": .accessibilityLarge
+        case "accessibilityExtraLarge": .accessibilityExtraLarge
+        case "accessibilityExtraExtraLarge": .accessibilityExtraExtraLarge
+        case "accessibilityExtraExtraExtraLarge": .accessibilityExtraExtraExtraLarge
+        default: .large
         }
     }
 }

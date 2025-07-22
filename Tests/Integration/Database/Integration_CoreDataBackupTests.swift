@@ -58,7 +58,7 @@ final class CoreDataBackupTests: XCTestCase {
         let testBackup: [String: Any] = [
             "acquisitions": [],
             "templates": [],
-            "generations": [],
+            "generations": []
         ]
 
         do {

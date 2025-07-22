@@ -13,14 +13,14 @@
             super.init()
         }
 
-        nonisolated public var canSendEmail: Bool {
+        public nonisolated var canSendEmail: Bool {
             // MFMailComposeViewController.canSendMail() must be called on main thread
             if Thread.isMainThread {
-                return MainActor.assumeIsolated {
+                MainActor.assumeIsolated {
                     MFMailComposeViewController.canSendMail()
                 }
             } else {
-                return DispatchQueue.main.sync {
+                DispatchQueue.main.sync {
                     MainActor.assumeIsolated {
                         MFMailComposeViewController.canSendMail()
                     }
@@ -28,7 +28,7 @@
             }
         }
 
-        nonisolated public func sendEmail(
+        public nonisolated func sendEmail(
             to recipients: [String],
             subject: String,
             body: String,
@@ -52,7 +52,7 @@
             }
         }
 
-        nonisolated public func showEmailComposer(
+        public nonisolated func showEmailComposer(
             recipients: [String],
             subject: String,
             body: String,

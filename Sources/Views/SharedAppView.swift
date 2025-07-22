@@ -101,6 +101,12 @@ public struct SharedAppView<Services: AppViewPlatformServices>: View {
             .modifier(NavigationBarHiddenModifier())
             .preferredColorScheme(.dark)
             .ignoresSafeArea(.keyboard) // Allow keyboard to overlay content
+            .floatingActionButton(
+                store: store.scope(
+                    state: \.globalScan,
+                    action: \.globalScan
+                )
+            )
 
             // Menu overlay
             if viewStore.showingMenu {

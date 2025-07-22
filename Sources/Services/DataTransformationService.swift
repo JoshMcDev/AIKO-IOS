@@ -310,7 +310,6 @@ final class DataTransformationService: @unchecked Sendable {
         let randomSuffix = String(format: "%04d", Int.random(in: 0 ... 9999))
         return "REQ-\(year)-\(randomSuffix)"
     }
-
 }
 
 // MARK: - Supporting Types

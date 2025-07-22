@@ -239,9 +239,9 @@ public struct GeneratedDocument: Identifiable, Equatable, Codable, Sendable {
     public var fileType: String {
         switch documentCategory {
         case let .standard(docType):
-            return docType.rawValue
+            docType.rawValue
         case let .determinationFinding(dfType):
-            return dfType.rawValue
+            dfType.rawValue
         }
     }
 

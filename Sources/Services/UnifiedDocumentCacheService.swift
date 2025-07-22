@@ -546,8 +546,8 @@ private actor MetricsCollector {
     }
 
     func getMetrics() async -> CacheMetrics {
-        let hits = operations.filter { $0.type == .hit }.count
-        let misses = operations.filter { $0.type == .miss }.count
+        let hits = operations.count(where: { $0.type == .hit })
+        let misses = operations.count(where: { $0.type == .miss })
         let total = hits + misses
 
         let hitRate = total > 0 ? Double(hits) / Double(total) : 0.0

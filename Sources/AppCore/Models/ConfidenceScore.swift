@@ -11,15 +11,15 @@ public struct ConfidenceScore: Equatable, Sendable {
     }
 
     public var isHighConfidence: Bool {
-        return value >= 0.85
+        value >= 0.85
     }
 
     public var isMediumConfidence: Bool {
-        return value >= 0.65 && value < 0.85
+        value >= 0.65 && value < 0.85
     }
 
     public var isLowConfidence: Bool {
-        return value < 0.65
+        value < 0.65
     }
 
     public var threshold: ConfidenceThreshold {
@@ -31,15 +31,15 @@ public struct ConfidenceScore: Equatable, Sendable {
 
 /// Confidence thresholds for decision making
 public enum ConfidenceThreshold: String, CaseIterable, Equatable, Sendable {
-    case high = "high"      // ≥0.85 - Auto-fill
-    case medium = "medium"  // 0.65-0.85 - Suggest
-    case low = "low"        // <0.65 - Manual review
+    case high // ≥0.85 - Auto-fill
+    case medium // 0.65-0.85 - Suggest
+    case low // <0.65 - Manual review
 
     public var autoFillThreshold: Double {
         switch self {
-        case .high: return 0.85
-        case .medium: return 0.65
-        case .low: return 0.0
+        case .high: 0.85
+        case .medium: 0.65
+        case .low: 0.0
         }
     }
 }

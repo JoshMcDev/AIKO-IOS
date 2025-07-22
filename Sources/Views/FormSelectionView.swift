@@ -133,7 +133,7 @@ public struct FormSelectionView: View {
             )
         }
         await MainActor.run {
-            self.availableForms = formSelections
+            availableForms = formSelections
         }
     }
 
@@ -325,9 +325,9 @@ public struct FormSelectionView: View {
     private func calculateComplianceScore(_ form: FormDefinition) -> Double {
         // Calculate how well the template matches the form
         let requiredFieldsCount = form.requiredFields.count
-        let matchingFields = form.requiredFields.filter { field in
+        let matchingFields = form.requiredFields.count(where: { field in
             templateData.data[field] != nil
-        }.count
+        })
 
         return requiredFieldsCount > 0 ? Double(matchingFields) / Double(requiredFieldsCount) : 0.5
     }

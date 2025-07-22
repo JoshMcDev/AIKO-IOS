@@ -42,17 +42,17 @@ public struct ConfidenceCalculator: Sendable {
     private func calculatePatternMatchScore(for fieldType: FieldType) -> Double {
         switch fieldType {
         case .text:
-            return 0.8 // Lower confidence for free-form text
+            0.8 // Lower confidence for free-form text
         case .cageCode, .uei, .currency, .date:
-            return 0.9 // Higher confidence for structured/validated fields
+            0.9 // Higher confidence for structured/validated fields
         default:
-            return 0.85 // Medium confidence for other field types
+            0.85 // Medium confidence for other field types
         }
     }
 
     /// Clamp confidence value to valid range [0.0, 1.0]
     private func clampConfidence(_ value: Double) -> Double {
-        return min(1.0, max(0.0, value))
+        min(1.0, max(0.0, value))
     }
 
     /// Create confidence factors dictionary for debugging and analysis
@@ -62,7 +62,7 @@ public struct ConfidenceCalculator: Sendable {
         patternMatch: Double,
         validation: Double
     ) -> [String: Double] {
-        return [
+        [
             "ocr": ocr,
             "image_quality": imageQuality,
             "pattern_match": patternMatch,
@@ -80,8 +80,8 @@ public struct ConfidenceCalculator: Sendable {
         }
 
         let averageConfidence = fields.reduce(0.0) { $0 + $1.confidence.value } / Double(fields.count)
-        let criticalFieldCount = fields.filter { $0.isCritical }.count
-        let highConfidenceCount = fields.filter { $0.confidence.value >= 0.8 }.count
+        let criticalFieldCount = fields.count(where: { $0.isCritical })
+        let highConfidenceCount = fields.count(where: { $0.confidence.value >= 0.8 })
 
         // Boost confidence if we have high-confidence critical fields
         let confidenceBoost = criticalFieldCount > 0 && highConfidenceCount > 0 ? 0.1 : 0.0
@@ -114,17 +114,17 @@ public struct ConfidenceCalculator: Sendable {
     private func getConfidenceThreshold(for threshold: ConfidenceThreshold) -> Double {
         switch threshold {
         case .high:
-            return 0.85
+            0.85
         case .medium:
-            return 0.65
+            0.65
         case .low:
-            return 0.5
+            0.5
         }
     }
 
     /// Determine if field requires manual review
     public func requiresManualReview(field: FormField) -> Bool {
-        return field.isCritical ||
+        field.isCritical ||
             field.confidence.value < getConfidenceThreshold(for: .medium) ||
             !field.isValidFormField
     }

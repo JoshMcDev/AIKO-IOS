@@ -1,17 +1,17 @@
-import Foundation
 import AppCore
 import ComposableArchitecture
+import Foundation
 
 // MARK: - Test Store Extensions
 
 public extension TestStore {
     /// Send an action and wait for effects to complete
-    func send(_ action: Action, timeout: TimeInterval = 1.0) async {
-        await send(action) { state in
+    func send(_ action: Action, timeout _: TimeInterval = 1.0) async {
+        await send(action) { _ in
             // State assertion closure
         }
     }
-    
+
     /// Send multiple actions in sequence
     func send(_ actions: [Action]) async {
         for action in actions {
@@ -24,9 +24,9 @@ public extension TestStore {
 
 public extension Date {
     static func testDate(_ timeInterval: TimeInterval = 0) -> Date {
-        Date(timeIntervalSince1970: 1640995200 + timeInterval) // 2022-01-01 00:00:00 UTC
+        Date(timeIntervalSince1970: 1_640_995_200 + timeInterval) // 2022-01-01 00:00:00 UTC
     }
-    
+
     static var testNow: Date {
         testDate()
     }
@@ -53,9 +53,9 @@ public extension Array where Element: Equatable {
 public extension String {
     static func random(length: Int = 10) -> String {
         let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        return String((0..<length).map { _ in letters.randomElement()! })
+        return String((0 ..< length).map { _ in letters.randomElement()! })
     }
-    
+
     var isValidEmail: Bool {
         let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
         let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
@@ -67,18 +67,18 @@ public extension String {
 
 public actor MockTaskManager {
     private var tasks: [String: Task<Void, Never>] = [:]
-    
+
     public init() {}
-    
+
     public func addTask(id: String, task: Task<Void, Never>) {
         tasks[id] = task
     }
-    
+
     public func cancelTask(id: String) {
         tasks[id]?.cancel()
         tasks.removeValue(forKey: id)
     }
-    
+
     public func cancelAllTasks() {
         tasks.values.forEach { $0.cancel() }
         tasks.removeAll()
@@ -95,17 +95,17 @@ public enum TestAssertions {
         message: String = "Condition was not met within timeout"
     ) async throws {
         let startTime = Date()
-        
+
         while Date().timeIntervalSince(startTime) < timeout {
             if condition() {
                 return
             }
             try await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
         }
-        
+
         throw AssertionError(message)
     }
-    
+
     public static func assertThrows<T>(
         _ expression: @escaping () async throws -> T,
         expectedError: (Error) -> Bool = { _ in true },
@@ -124,11 +124,11 @@ public enum TestAssertions {
 
 public struct AssertionError: Error, LocalizedError {
     public let message: String
-    
+
     public init(_ message: String) {
         self.message = message
     }
-    
+
     public var errorDescription: String? {
         message
     }
@@ -145,18 +145,18 @@ public enum PerformanceTesting {
         let duration = Date().timeIntervalSince(startTime)
         return (result, duration)
     }
-    
+
     public static func measureAverageTime<T>(
         iterations: Int = 10,
         operation: () async throws -> T
     ) async rethrows -> TimeInterval {
         var totalTime: TimeInterval = 0
-        
-        for _ in 0..<iterations {
+
+        for _ in 0 ..< iterations {
             let (_, duration) = try await measure(operation)
             totalTime += duration
         }
-        
+
         return totalTime / Double(iterations)
     }
 }

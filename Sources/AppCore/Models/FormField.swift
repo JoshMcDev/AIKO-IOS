@@ -32,12 +32,12 @@ public struct FormField: Equatable, Sendable {
     // GREEN phase - basic implementation to pass accuracy tests
     public var isAccurate: Bool {
         // Simple heuristic: high confidence fields are considered accurate
-        return confidence.value >= 0.8
+        confidence.value >= 0.8
     }
 
     public var isValidFormField: Bool {
         // GREEN phase - basic validation for form fields
-        return !name.isEmpty && !value.isEmpty && confidence.value > 0.0
+        !name.isEmpty && !value.isEmpty && confidence.value > 0.0
     }
 }
 
@@ -52,6 +52,7 @@ public enum FieldType: String, CaseIterable, Equatable, Sendable {
     case contractType
     case fundingSource
     case estimatedValue
+    case address
 }
 
 // FormType moved to Dependencies/FormAutoPopulationEngine.swift to avoid duplication

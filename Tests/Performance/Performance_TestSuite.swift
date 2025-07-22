@@ -55,19 +55,19 @@ final class PerformanceTestSuite: XCTestCase {
             Task {
                 // Concurrent allocations
                 await withTaskGroup(of: Void.self) { group in
-                    for i in 0 ..< 100 {
+                    for index in 0 ..< 100 {
                         group.addTask {
-                            let data = Data(repeating: UInt8(i), count: 1024)
-                            await pool.store(data, for: "\(i)")
+                            let data = Data(repeating: UInt8(index), count: 1024)
+                            await pool.store(data, for: "\(index)")
                         }
                     }
                 }
 
                 // Concurrent retrievals
                 await withTaskGroup(of: Data?.self) { group in
-                    for i in 0 ..< 100 {
+                    for index in 0 ..< 100 {
                         group.addTask {
-                            await pool.retrieve(for: "\(i)")
+                            await pool.retrieve(for: "\(index)")
                         }
                     }
 
@@ -93,12 +93,12 @@ final class PerformanceTestSuite: XCTestCase {
         )
 
         // Prepare test documents
-        let documents = (0 ..< largeDataSetSize).map { i in
+        let documents = (0 ..< largeDataSetSize).map { documentIndex in
             CachedDocument(
                 id: UUID(),
-                data: Data(repeating: UInt8(i % 256), count: 1024),
+                data: Data(repeating: UInt8(documentIndex % 256), count: 1024),
                 metadata: DocumentMetadata(
-                    title: "Document \(i)",
+                    title: "Document \(documentIndex)",
                     size: 1024,
                     mimeType: "text/plain",
                     createdAt: Date(),
@@ -142,16 +142,16 @@ final class PerformanceTestSuite: XCTestCase {
 
             Task {
                 // Fill cache beyond capacity
-                for i in 0 ..< 200 {
+                for documentIndex in 0 ..< 200 {
                     let document = CachedDocument(
                         id: UUID(),
-                        data: Data(repeating: UInt8(i), count: 100 * 1024), // 100KB each
+                        data: Data(repeating: UInt8(documentIndex), count: 100 * 1024), // 100KB each
                         metadata: DocumentMetadata(
-                            title: "Large Document \(i)",
+                            title: "Large Document \(documentIndex)",
                             size: 100 * 1024,
                             mimeType: "application/octet-stream",
-                            createdAt: Date().addingTimeInterval(TimeInterval(i)),
-                            lastAccessedAt: Date().addingTimeInterval(TimeInterval(i))
+                            createdAt: Date().addingTimeInterval(TimeInterval(documentIndex)),
+                            lastAccessedAt: Date().addingTimeInterval(TimeInterval(documentIndex))
                         )
                     )
                     try? await cache.store(document: document)
@@ -174,14 +174,14 @@ final class PerformanceTestSuite: XCTestCase {
         let optimizer = OptimizedLLMService()
 
         // Create test prompts
-        let prompts = (0 ..< 100).map { i in
+        let prompts = (0 ..< 100).map { promptIndex in
             LLMRequest(
                 id: UUID(),
-                prompt: "Test prompt \(i)",
+                prompt: "Test prompt \(promptIndex)",
                 model: "claude-3-opus",
                 maxTokens: 100,
                 temperature: 0.7,
-                metadata: ["index": i]
+                metadata: ["index": promptIndex]
             )
         }
 
@@ -191,8 +191,8 @@ final class PerformanceTestSuite: XCTestCase {
             Task {
                 // Process in batches
                 let batchSize = 10
-                for i in stride(from: 0, to: prompts.count, by: batchSize) {
-                    let batch = Array(prompts[i ..< min(i + batchSize, prompts.count)])
+                for batchStartIndex in stride(from: 0, to: prompts.count, by: batchSize) {
+                    let batch = Array(prompts[batchStartIndex ..< min(batchStartIndex + batchSize, prompts.count)])
                     _ = await optimizer.processBatch(batch)
                 }
 
@@ -207,10 +207,10 @@ final class PerformanceTestSuite: XCTestCase {
         let cache = LLMResponseCache()
 
         // Generate test responses
-        let responses = (0 ..< 500).map { i in
+        let responses = (0 ..< 500).map { responseIndex in
             CachedLLMResponse(
-                requestHash: "hash_\(i)",
-                response: "Response content \(i)",
+                requestHash: "hash_\(responseIndex)",
+                response: "Response content \(responseIndex)",
                 model: "claude-3-opus",
                 timestamp: Date(),
                 tokenCount: 50
@@ -274,12 +274,12 @@ final class PerformanceTestSuite: XCTestCase {
 
             Task {
                 // Mixed operations
-                let documents = (0 ..< 200).map { i in
+                let documents = (0 ..< 200).map { documentIndex in
                     CachedDocument(
                         id: UUID(),
-                        data: Data("Content \(i)".utf8),
+                        data: Data("Content \(documentIndex)".utf8),
                         metadata: DocumentMetadata(
-                            title: "Doc \(i)",
+                            title: "Doc \(documentIndex)",
                             size: 100,
                             mimeType: "text/plain",
                             createdAt: Date(),
@@ -332,8 +332,8 @@ final class PerformanceTestSuite: XCTestCase {
 
             Task {
                 // Simulate user interactions
-                for i in 0 ..< 100 {
-                    let action = i % 5
+                for actionIndex in 0 ..< 100 {
+                    let action = actionIndex % 5
 
                     switch action {
                     case 0:
@@ -368,7 +368,7 @@ final class PerformanceTestSuite: XCTestCase {
             Data(repeating: 0, count: 1024), // 1KB
             Data(repeating: 0, count: 10 * 1024), // 10KB
             Data(repeating: 0, count: 100 * 1024), // 100KB
-            Data(repeating: 0, count: 1024 * 1024), // 1MB
+            Data(repeating: 0, count: 1024 * 1024) // 1MB
         ]
 
         for (index, documentData) in documents.enumerated() {
@@ -411,7 +411,7 @@ final class PerformanceTestSuite: XCTestCase {
                     "performance work statement",
                     "evaluation",
                     "far compliant",
-                    "template",
+                    "template"
                 ]
 
                 for query in queries {
@@ -440,13 +440,13 @@ final class PerformanceTestSuite: XCTestCase {
             Task {
                 await withTaskGroup(of: Void.self) { group in
                     // Concurrent writes
-                    for i in 0 ..< concurrentTasks {
+                    for taskIndex in 0 ..< concurrentTasks {
                         group.addTask {
                             let document = CachedDocument(
                                 id: UUID(),
-                                data: Data("Concurrent \(i)".utf8),
+                                data: Data("Concurrent \(taskIndex)".utf8),
                                 metadata: DocumentMetadata(
-                                    title: "Concurrent \(i)",
+                                    title: "Concurrent \(taskIndex)",
                                     size: 100,
                                     mimeType: "text/plain",
                                     createdAt: Date(),
@@ -485,14 +485,14 @@ final class PerformanceTestSuite: XCTestCase {
 
             Task {
                 // Fill memory aggressively
-                for i in 0 ..< 1000 {
+                for memoryTestIndex in 0 ..< 1000 {
                     autoreleasepool {
-                        let largeData = Data(repeating: UInt8(i % 256), count: 100 * 1024) // 100KB each
+                        let largeData = Data(repeating: UInt8(memoryTestIndex % 256), count: 100 * 1024) // 100KB each
                         let document = CachedDocument(
                             id: UUID(),
                             data: largeData,
                             metadata: DocumentMetadata(
-                                title: "Large \(i)",
+                                title: "Large \(memoryTestIndex)",
                                 size: Int64(largeData.count),
                                 mimeType: "application/octet-stream",
                                 createdAt: Date(),

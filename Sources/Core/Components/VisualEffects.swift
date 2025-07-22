@@ -236,92 +236,6 @@ extension View {
     }
 }
 
-// MARK: - Floating Action Button
-
-struct FloatingActionButton: View {
-    let icon: String
-    let action: () -> Void
-    var style: FABStyle = .primary
-
-    @State private var isPressed = false
-    @State private var isAnimating = false
-    @Dependency(\.hapticManager) var hapticManager
-
-    enum FABStyle {
-        case primary
-        case secondary
-        case destructive
-
-        var backgroundColor: Color {
-            switch self {
-            case .primary: .blue
-            case .secondary: .gray
-            case .destructive: .red
-            }
-        }
-
-        var foregroundColor: Color {
-            switch self {
-            case .primary, .destructive: .white
-            case .secondary: .blue
-            }
-        }
-    }
-
-    var body: some View {
-        Button(action: {
-            hapticManager.impact(.medium)
-            withAnimation(AnimationSystem.Spring.bouncy) {
-                isAnimating = true
-            }
-            action()
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                isAnimating = false
-            }
-        }) {
-            ZStack {
-                // Shadow layer
-                Circle()
-                    .fill(style.backgroundColor.opacity(0.3))
-                    .frame(width: 56, height: 56)
-                    .blur(radius: isPressed ? 5 : 10)
-                    .offset(y: isPressed ? 2 : 5)
-
-                // Main button
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                style.backgroundColor,
-                                style.backgroundColor.opacity(0.8)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: 56, height: 56)
-
-                // Icon
-                Image(systemName: icon)
-                    .font(.system(size: 24, weight: .medium))
-                    .foregroundColor(style.foregroundColor)
-                    .rotationEffect(.degrees(isAnimating ? 45 : 0))
-                    .scaleEffect(isAnimating ? 1.1 : 1.0)
-            }
-        }
-        .buttonStyle(.plain)
-        .scaleEffect(isPressed ? 0.95 : 1.0)
-        .onLongPressGesture(minimumDuration: .infinity) {} onPressingChanged: { pressing in
-            withAnimation(AnimationSystem.microScale) {
-                isPressed = pressing
-            }
-        }
-        .accessibilityLabel("Action button")
-        .accessibilityHint("Tap to perform action")
-    }
-}
-
 // MARK: - Empty State View
 
 struct EmptyStateView: View {
@@ -407,6 +321,7 @@ struct EmptyStateView: View {
 }
 
 // MARK: - Progress Components
+
 // Note: Consolidated progress components that integrate with AppCore ProgressState
 // For advanced progress tracking with phases and steps, use ProgressIndicatorView from AppCore
 

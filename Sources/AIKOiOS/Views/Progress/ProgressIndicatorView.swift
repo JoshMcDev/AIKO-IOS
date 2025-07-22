@@ -1,6 +1,6 @@
-import SwiftUI
-import ComposableArchitecture
 import AppCore
+import ComposableArchitecture
+import SwiftUI
 
 /// Main progress indicator view that switches between different presentation styles
 public struct ProgressIndicatorView: View {

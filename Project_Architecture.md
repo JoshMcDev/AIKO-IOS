@@ -1,25 +1,25 @@
 # AIKO Architecture Guide
 
-**Date**: January 19, 2025  
+**Date**: July 22, 2025  
 **Version**: 5.2 (Enhanced Document Processing)  
-**Progress**: 25% Complete (5/20 Main Tasks) - Phase 4.2 Document Scanner
+**Progress**: 43% Complete (20/46 Main Tasks) - Phase 4 Complete, Phase 5 GraphRAG System Implementation
 
-## Recent Major Achievements (January 2025)
+## Recent Major Achievements (July 2025)
 
-### Phase 4.1 - Enhanced Image Processing ✅ COMPLETE
-- **Core Image API Modernization**: Fixed deprecation warnings, implemented modern filter patterns with Metal GPU acceleration
-- **Swift Concurrency Compliance**: Actor-based ProgressTracker for thread-safe progress reporting
-- **Enhanced Processing Modes**: Basic and enhanced image processing with quality metrics and confidence scoring
-- **OCR Optimization**: Specialized filters for text recognition and document clarity improvements
-- **Performance Improvements**: Processing time estimation with < 2 seconds per page target achieved
-- **Comprehensive Testing**: Full test suite for DocumentImageProcessor functionality
+### Phase 4.2 - Professional Document Scanner ✅ COMPLETE
+- **One-Tap Scanning Architecture**: Implemented GlobalScanFeature with floating action button accessible from all 19 app screens
+- **Real-Time Progress Architecture**: Sub-200ms latency progress tracking with ProgressBridge integration and actor-based concurrency
+- **Multi-Page Session Management**: Complete ScanSession models with SessionEngine actor and BatchProcessor for concurrent processing
+- **VisionKit Integration**: Professional scanner with edge detection, perspective correction, and enhanced OCR pipeline
+- **Smart Form Auto-Population**: Core form auto-population feature with confidence-based field mapping and intelligent data extraction
+- **Build Excellence**: Clean build architecture (16.45s build time, 0 errors, 1 minor warning) with full SwiftLint/SwiftFormat compliance
 
-### Phase 3.5 - Triple Architecture Migration ✅ COMPLETE
-- **Major Cleanup Achievement**: **Eliminated 153+ platform conditionals** for dramatically improved maintainability
-- **Clean Platform Separation**: Migrated all iOS/macOS conditionals to proper platform-specific modules
-- **Dependency Injection**: All platform services now use clean dependency injection patterns
-- **Platform-Specific Clients**: VoiceRecordingClient, HapticManagerClient with iOS/macOS implementations
-- **Zero Conditionals in AppCore**: Achieved complete platform-agnostic core business logic
+### Swift 6 Migration Architecture ✅ 80% COMPLETE
+- **Module-by-Module Strategy**: 4/5 targets now fully Swift 6 strict concurrency compliant with systematic migration approach
+- **Actor-Based Concurrency**: Modern Swift concurrency patterns with CoreDataActor and service layer actors
+- **Sendable Conformance**: Comprehensive Sendable implementations across data models and service boundaries
+- **Platform Separation Success**: Clean module boundaries enabled successful concurrency migration
+- **Final Sprint Phase**: Established patterns ready for main AIKO target completion
 
 ## Overview
 
@@ -30,7 +30,7 @@ AIKO is built using a modern, scalable architecture that leverages SwiftUI and T
 1. **Unidirectional Data Flow**: All state changes flow through reducers
 2. **Composition Over Inheritance**: Features are composed of smaller, reusable components
 3. **Testability First**: Every component is designed to be easily testable
-4. **Platform Agnostic**: Shared code between iOS and macOS platforms
+4. **Platform Separation**: Clean iOS/macOS separation with shared AppCore and platform-specific implementations
 5. **Progressive Disclosure**: UI complexity revealed based on user needs
 
 ## Architecture Layers
@@ -88,34 +88,57 @@ struct AcquisitionFlow {
 ### 3. Service Layer
 
 ```swift
-actor DocumentProcessor {
-    func processDocument(_ url: URL) async throws -> ExtractedData {
-        // Document processing logic
+// Phase 4.2 - Enhanced Document Processing Architecture
+actor DocumentImageProcessor {
+    func processImage(_ image: UIImage, mode: ProcessingMode) async throws -> ProcessedImage {
+        // Enhanced Core Image processing with Metal GPU acceleration
+        // OCR optimization filters for improved text recognition
     }
 }
 
-class AdaptivePromptingEngine {
-    func generateQuestions(from data: ExtractedData) -> [Question] {
-        // Adaptive question generation
+actor VisionKitScannerService {
+    func scanDocument() async throws -> [ProcessedImage] {
+        // Professional scanner with edge detection and perspective correction
+        // Multi-page scanning with session management
+    }
+}
+
+// Phase 5 - GraphRAG Intelligence Architecture (Implementation in Progress)
+actor LFM2Service {
+    private var model: MLModel? // LFM2-700M-GGUF Q6_K (612MB)
+    
+    func generateEmbedding(text: String) async throws -> [Float] {
+        // On-device embedding generation for regulation text
+    }
+}
+
+actor VectorSearchService {
+    func search(query: String, maxResults: Int = 10) async throws -> [SearchResult] {
+        // Semantic search through ObjectBox vector database
+        // Sub-second response times with 90%+ relevance
     }
 }
 ```
 
 **Responsibilities:**
-- Core business logic
-- External API integration
-- Data processing
-- Algorithm implementation
+- Enhanced document processing with Core Image and Metal GPU acceleration
+- Professional scanning with VisionKit integration and multi-page session management
+- On-device AI intelligence with LFM2-700M model for embedding generation
+- Semantic search through ObjectBox vector database with sub-second performance
+- Auto-update regulation pipeline with GitHub API integration
+- Universal LLM provider integration with dynamic discovery
 
 ### 4. Data Layer
 
 ```swift
+// Core Data Models
 @Model
 class AcquisitionDocument {
     var id: UUID
     var title: String
     var uploadDate: Date
     var extractedData: Data?
+    var scanSessionData: Data? // Phase 4.2: Multi-page scan sessions
     
     init(title: String) {
         self.id = UUID()
@@ -123,13 +146,26 @@ class AcquisitionDocument {
         self.uploadDate = Date()
     }
 }
+
+// Phase 5: GraphRAG Vector Database Schema
+@Entity
+class RegulationEmbedding {
+    @Id var id: Id = 0
+    var regulationNumber: String = ""
+    var content: String = ""
+    var embedding: [Float] = [] // 768 dimensions for LFM2
+    var lastUpdated: Date = Date()
+    var source: String = "official" // "official" or "personal"
+    var contentHash: String = ""
+}
 ```
 
 **Responsibilities:**
-- Data persistence (Core Data)
-- Cloud synchronization (CloudKit)
-- Local caching
-- Data migration
+- Document persistence with Core Data and enhanced scan session storage
+- Vector database storage with ObjectBox for regulation embeddings
+- Local-only data storage (no cloud synchronization for privacy)
+- Smart caching for regulation content and processed embeddings
+- Data migration support for schema updates
 
 ## Key Architectural Patterns
 

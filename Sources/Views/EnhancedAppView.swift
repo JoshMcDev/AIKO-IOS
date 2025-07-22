@@ -356,7 +356,7 @@ struct EnhancedHeaderView: View {
             }
         }
         .padding(.horizontal, Theme.Spacing.lg)
-        .padding(.vertical, Theme.Spacing.md)
+        .padding(.vertical, Theme.Spacing.medium)
         .background(
             GlassmorphicView {
                 Color.black
@@ -510,11 +510,11 @@ struct EnhancedChatHistoryView: View {
     let isLoading: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
             ResponsiveText(content: "Chat History", style: .headline)
                 .accessibleHeader(label: "Chat History", level: .h2)
 
-            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                 ForEach(Array(messages.enumerated()), id: \.offset) { index, message in
                     EnhancedChatBubble(
                         message: message,
@@ -529,13 +529,13 @@ struct EnhancedChatHistoryView: View {
                 }
 
                 if isLoading {
-                    HStack(spacing: Theme.Spacing.sm) {
+                    HStack(spacing: Theme.Spacing.small) {
                         LoadingDotsView(dotSize: 8, color: .blue)
                         ResponsiveText(content: "AIKO is thinking...", style: .caption)
                             .foregroundColor(.secondary)
                     }
-                    .padding(.horizontal, Theme.Spacing.md)
-                    .padding(.vertical, Theme.Spacing.sm)
+                    .padding(.horizontal, Theme.Spacing.medium)
+                    .padding(.vertical, Theme.Spacing.small)
                     .accessibilityLabel("AIKO is processing your request")
                 }
             }
@@ -567,7 +567,7 @@ struct EnhancedChatBubble: View {
     }
 
     var body: some View {
-        HStack(alignment: .top, spacing: Theme.Spacing.sm) {
+        HStack(alignment: .top, spacing: Theme.Spacing.small) {
             if !isUser {
                 ZStack {
                     Circle()
@@ -592,8 +592,8 @@ struct EnhancedChatBubble: View {
                 .foregroundColor(.secondary)
 
                 ResponsiveText(content: cleanMessage, style: .body)
-                    .padding(.horizontal, Theme.Spacing.md)
-                    .padding(.vertical, Theme.Spacing.sm)
+                    .padding(.horizontal, Theme.Spacing.medium)
+                    .padding(.vertical, Theme.Spacing.small)
                     .background(
                         RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
                             .fill(isUser ? Theme.Colors.aikoAccent : Theme.Colors.aikoSecondary)
@@ -657,7 +657,7 @@ struct EnhancedDocumentTypesSection: View {
                         .textFieldStyle(.plain)
                         .foregroundColor(.white)
                 }
-                .padding(.horizontal, Theme.Spacing.sm)
+                .padding(.horizontal, Theme.Spacing.small)
                 .padding(.vertical, Theme.Spacing.xs)
                 .background(
                     Capsule()
@@ -668,7 +668,7 @@ struct EnhancedDocumentTypesSection: View {
             }
 
             // Category cards with enhanced styling
-            VStack(spacing: Theme.Spacing.md) {
+            VStack(spacing: Theme.Spacing.medium) {
                 ForEach(DocumentCategory.allCases, id: \.self) { category in
                     EnhancedDocumentCategoryCard(
                         category: category,
@@ -732,7 +732,7 @@ struct EnhancedDocumentCategoryCard: View {
         if category == .determinationFindings {
             selectedDFTypes.count
         } else {
-            documentTypes.filter { selectedTypes.contains($0) }.count
+            documentTypes.count(where: { selectedTypes.contains($0) })
         }
     }
 
@@ -826,7 +826,7 @@ struct EnhancedDocumentCategoryCard: View {
             // Expanded document list with staggered animation
             if isExpanded {
                 if category == .determinationFindings {
-                    VStack(spacing: Theme.Spacing.sm) {
+                    VStack(spacing: Theme.Spacing.small) {
                         ForEach(Array(DFDocumentType.allCases.enumerated()), id: \.element) { index, dfType in
                             EnhancedDFDocumentCard(
                                 dfDocumentType: dfType,
@@ -847,9 +847,9 @@ struct EnhancedDocumentCategoryCard: View {
                             )
                         }
                     }
-                    .padding(.top, Theme.Spacing.sm)
+                    .padding(.top, Theme.Spacing.small)
                 } else {
-                    VStack(spacing: Theme.Spacing.sm) {
+                    VStack(spacing: Theme.Spacing.small) {
                         ForEach(Array(documentTypes.enumerated()), id: \.element) { index, docType in
                             EnhancedDocumentTypeCard(
                                 documentType: docType,
@@ -869,7 +869,7 @@ struct EnhancedDocumentCategoryCard: View {
                             )
                         }
                     }
-                    .padding(.top, Theme.Spacing.sm)
+                    .padding(.top, Theme.Spacing.small)
                 }
             }
         }
@@ -916,7 +916,7 @@ struct EnhancedDocumentTypeCard: View {
 
     var body: some View {
         AnimatedButton(action: onToggle) {
-            HStack(spacing: Theme.Spacing.md) {
+            HStack(spacing: Theme.Spacing.medium) {
                 // Animated status indicator
                 StatusIndicator(status: status)
                     .accessibilityLabel("Status: \(status.accessibilityLabel)")
@@ -954,8 +954,8 @@ struct EnhancedDocumentTypeCard: View {
                         .transition(.scale.combined(with: .opacity))
                 }
             }
-            .padding(.horizontal, Theme.Spacing.md)
-            .padding(.vertical, Theme.Spacing.sm)
+            .padding(.horizontal, Theme.Spacing.medium)
+            .padding(.vertical, Theme.Spacing.small)
             .background(
                 EnhancedCard(
                     content: {
@@ -983,7 +983,7 @@ struct EnhancedDFDocumentCard: View {
 
     var body: some View {
         AnimatedButton(action: onToggle) {
-            HStack(spacing: Theme.Spacing.md) {
+            HStack(spacing: Theme.Spacing.medium) {
                 // Status with pulse animation when no acquisition
                 StatusIndicator(
                     status: hasAcquisition ? .ready : .notReady,
@@ -1019,8 +1019,8 @@ struct EnhancedDFDocumentCard: View {
                         .frame(width: 20, height: 20)
                 }
             }
-            .padding(.horizontal, Theme.Spacing.md)
-            .padding(.vertical, Theme.Spacing.sm)
+            .padding(.horizontal, Theme.Spacing.medium)
+            .padding(.vertical, Theme.Spacing.small)
             .background(
                 EnhancedCard(
                     content: {
@@ -1100,11 +1100,11 @@ struct AppEnhancedInputArea: View {
             Divider()
                 .background(Color.gray.opacity(0.3 as Double))
 
-            VStack(spacing: Theme.Spacing.md) {
+            VStack(spacing: Theme.Spacing.medium) {
                 // Uploaded documents carousel
                 if !uploadedDocuments.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: Theme.Spacing.sm) {
+                        HStack(spacing: Theme.Spacing.small) {
                             ForEach(uploadedDocuments) { document in
                                 EnhancedUploadedDocumentCard(
                                     document: document,
@@ -1143,8 +1143,8 @@ struct AppEnhancedInputArea: View {
                             .textFieldStyle(.plain)
                             .foregroundColor(.white)
                             .padding(.leading, Theme.Spacing.lg)
-                            .padding(.vertical, Theme.Spacing.md)
-                            .padding(.trailing, Theme.Spacing.sm)
+                            .padding(.vertical, Theme.Spacing.medium)
+                            .padding(.trailing, Theme.Spacing.small)
                             .lineLimit(1 ... 4)
                             .focused($isInputFocused)
                             .background(
@@ -1158,7 +1158,7 @@ struct AppEnhancedInputArea: View {
                     }
 
                     // Enhanced action buttons
-                    HStack(spacing: Theme.Spacing.sm) {
+                    HStack(spacing: Theme.Spacing.small) {
                         // Enhance prompt with sparkle animation
                         AnimatedButton(action: {
                             if !requirements.isEmpty {
@@ -1259,8 +1259,8 @@ struct AppEnhancedInputArea: View {
                                 "Enter requirements or upload documents first"
                         )
                     }
-                    .padding(.trailing, Theme.Spacing.md)
-                    .padding(.vertical, Theme.Spacing.sm)
+                    .padding(.trailing, Theme.Spacing.medium)
+                    .padding(.vertical, Theme.Spacing.small)
                 }
                 .background(
                     RoundedRectangle(cornerRadius: 24)
@@ -1308,7 +1308,7 @@ struct EnhancedUploadedDocumentCard: View {
     @State private var isHovered = false
 
     var body: some View {
-        HStack(spacing: Theme.Spacing.sm) {
+        HStack(spacing: Theme.Spacing.small) {
             // Animated file icon
             Image(systemName: fileIcon(for: document.fileName))
                 .font(.title3)
@@ -1336,8 +1336,8 @@ struct EnhancedUploadedDocumentCard: View {
                     .transition(.scale)
             }
         }
-        .padding(.horizontal, Theme.Spacing.md)
-        .padding(.vertical, Theme.Spacing.sm)
+        .padding(.horizontal, Theme.Spacing.medium)
+        .padding(.vertical, Theme.Spacing.small)
         .background(
             EnhancedCard(content: {
                 Color.clear
@@ -1413,7 +1413,7 @@ struct EnhancedMenuView: View {
 
                     // Menu items with enhanced styling
                     ScrollView {
-                        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                        VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                             WithViewStore(store, observe: { $0 }) { viewStore in
                                 ForEach(AppFeature.MenuItem.allCases, id: \.self) { item in
                                     EnhancedMenuItemRow(
@@ -1430,13 +1430,13 @@ struct EnhancedMenuView: View {
                                 }
                             }
                         }
-                        .padding(Theme.Spacing.md)
+                        .padding(Theme.Spacing.medium)
                     }
 
                     Spacer()
 
                     // Footer with version info
-                    VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                         Divider()
                             .background(Color.gray.opacity(0.3))
 
@@ -1545,7 +1545,7 @@ struct EnhancedProfileSection: View {
     @Dependency(\.imageLoader) var imageLoader
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.md) {
+        VStack(spacing: Theme.Spacing.medium) {
             // Profile image with animation
             ZStack {
                 Circle()
@@ -1616,7 +1616,7 @@ struct EnhancedMenuItemRow: View {
 
     var body: some View {
         AnimatedButton(action: action) {
-            HStack(spacing: Theme.Spacing.md) {
+            HStack(spacing: Theme.Spacing.medium) {
                 // Icon with animation
                 Image(systemName: item.icon)
                     .font(.title3)
@@ -1642,8 +1642,8 @@ struct EnhancedMenuItemRow: View {
                         ))
                 }
             }
-            .padding(.horizontal, Theme.Spacing.md)
-            .padding(.vertical, Theme.Spacing.sm)
+            .padding(.horizontal, Theme.Spacing.medium)
+            .padding(.vertical, Theme.Spacing.small)
             .background(
                 RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
                     .fill(isSelected ? Theme.Colors.aikoPrimary.opacity(0.2) : Color.clear)

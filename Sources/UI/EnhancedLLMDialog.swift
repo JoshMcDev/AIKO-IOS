@@ -30,7 +30,7 @@ public struct EnhancedLLMDialog: View {
     // MARK: - Header View
 
     private var headerView: some View {
-        VStack(spacing: Theme.Spacing.md) {
+        VStack(spacing: Theme.Spacing.medium) {
             Image(systemName: "brain.head.profile")
                 .font(.system(size: 48))
                 .foregroundColor(.blue)
@@ -43,20 +43,20 @@ public struct EnhancedLLMDialog: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
         }
-        .padding(.top, Theme.Spacing.lg)
-        .padding(.horizontal, Theme.Spacing.lg)
+        .padding(.top, Theme.Spacing.large)
+        .padding(.horizontal, Theme.Spacing.large)
     }
 
     // MARK: - Analysis Summary View
 
     private func analysisSummaryView(viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.extraLarge) {
                 analysisSection(viewStore: viewStore)
                 confidenceSection(viewStore: viewStore)
                 recommendedDocumentsSection(viewStore: viewStore)
             }
-            .padding(.horizontal, Theme.Spacing.lg)
+            .padding(.horizontal, Theme.Spacing.large)
             .padding(.bottom, 120)
         }
     }
@@ -64,16 +64,16 @@ public struct EnhancedLLMDialog: View {
     // MARK: - Analysis Section
 
     private func analysisSection(viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
             Label("Initial Analysis", systemImage: "doc.text.magnifyingglass")
                 .font(.headline)
                 .fontWeight(.semibold)
 
             Text(viewStore.analysis.llmResponse)
                 .font(.body)
-                .padding(Theme.Spacing.lg)
+                .padding(Theme.Spacing.large)
                 .background(Theme.Colors.aikoSecondary)
-                .cornerRadius(Theme.CornerRadius.md)
+                .cornerRadius(Theme.CornerRadius.medium)
         }
     }
 
@@ -82,7 +82,7 @@ public struct EnhancedLLMDialog: View {
     @ViewBuilder
     private func confidenceSection(viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> some View {
         if let confidence = calculateConfidence(viewStore) {
-            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                 Label("Confidence Level", systemImage: "gauge")
                     .font(.headline)
                     .fontWeight(.semibold)
@@ -100,9 +100,9 @@ public struct EnhancedLLMDialog: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-            .padding(Theme.Spacing.lg)
+            .padding(Theme.Spacing.large)
             .background(Theme.Colors.aikoSecondary)
-            .cornerRadius(Theme.CornerRadius.md)
+            .cornerRadius(Theme.CornerRadius.medium)
         }
     }
 
@@ -111,7 +111,7 @@ public struct EnhancedLLMDialog: View {
     @ViewBuilder
     private func recommendedDocumentsSection(viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> some View {
         if !viewStore.analysis.recommendedDocuments.isEmpty {
-            VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                 Label("Recommended Documents (\(viewStore.analysis.recommendedDocuments.count))",
                       systemImage: "doc.badge.checkmark")
                     .font(.headline)
@@ -134,9 +134,9 @@ public struct EnhancedLLMDialog: View {
                         .foregroundColor(.secondary)
                 }
             }
-            .padding(Theme.Spacing.lg)
+            .padding(Theme.Spacing.large)
             .background(Theme.Colors.aikoSecondary)
-            .cornerRadius(Theme.CornerRadius.md)
+            .cornerRadius(Theme.CornerRadius.medium)
         }
     }
 
@@ -146,7 +146,7 @@ public struct EnhancedLLMDialog: View {
         VStack(spacing: 0) {
             Divider()
 
-            VStack(spacing: Theme.Spacing.md) {
+            VStack(spacing: Theme.Spacing.medium) {
                 refineRequirementsButton(viewStore: viewStore)
                 manualSelectionButton(viewStore: viewStore)
 
@@ -156,8 +156,8 @@ public struct EnhancedLLMDialog: View {
 
                 cancelButton(viewStore: viewStore)
             }
-            .padding(.horizontal, Theme.Spacing.lg)
-            .padding(.vertical, Theme.Spacing.lg)
+            .padding(.horizontal, Theme.Spacing.large)
+            .padding(.vertical, Theme.Spacing.large)
             .background(Color.black)
         }
     }
@@ -169,7 +169,7 @@ public struct EnhancedLLMDialog: View {
             viewStore.send(.analysis(.confirmRequirements(true)))
             // TODO: Handle refinement mode transition
         }) {
-            VStack(spacing: Theme.Spacing.sm) {
+            VStack(spacing: Theme.Spacing.small) {
                 HStack {
                     Image(systemName: "bubble.left.and.bubble.right.fill")
                         .font(.title3)
@@ -186,7 +186,7 @@ public struct EnhancedLLMDialog: View {
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(Theme.Spacing.lg)
+            .padding(Theme.Spacing.large)
             .frame(maxWidth: .infinity)
             .background(
                 LinearGradient(
@@ -196,7 +196,7 @@ public struct EnhancedLLMDialog: View {
                 )
             )
             .foregroundColor(.white)
-            .cornerRadius(Theme.CornerRadius.lg)
+            .cornerRadius(Theme.CornerRadius.large)
         }
     }
 
@@ -205,7 +205,7 @@ public struct EnhancedLLMDialog: View {
             viewStore.send(.analysis(.confirmRequirements(false)))
             viewStore.send(.analysis(.showDocumentPicker(true)))
         }) {
-            VStack(spacing: Theme.Spacing.sm) {
+            VStack(spacing: Theme.Spacing.small) {
                 HStack {
                     Image(systemName: "hand.tap.fill")
                         .font(.title3)
@@ -222,14 +222,14 @@ public struct EnhancedLLMDialog: View {
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(Theme.Spacing.lg)
+            .padding(Theme.Spacing.large)
             .frame(maxWidth: .infinity)
             .background(Theme.Colors.aikoCard)
             .overlay(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
                     .stroke(Color.blue.opacity(0.3), lineWidth: 1)
             )
-            .cornerRadius(Theme.CornerRadius.lg)
+            .cornerRadius(Theme.CornerRadius.large)
         }
     }
 
@@ -247,7 +247,7 @@ public struct EnhancedLLMDialog: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-            .padding(Theme.Spacing.md)
+            .padding(Theme.Spacing.medium)
             .frame(maxWidth: .infinity)
             .foregroundColor(.blue)
         }
@@ -261,13 +261,13 @@ public struct EnhancedLLMDialog: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
         }
-        .padding(.top, Theme.Spacing.sm)
+        .padding(.top, Theme.Spacing.small)
     }
 
     // MARK: - Helper Functions
 
     private func calculateConfidence(_ viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> Double? {
-        let readyCount = viewStore.status.documentReadinessStatus.values.filter { $0 == .ready }.count
+        let readyCount = viewStore.status.documentReadinessStatus.values.count(where: { $0 == .ready })
         let totalCount = viewStore.status.documentReadinessStatus.count
 
         guard totalCount > 0 else { return nil }
@@ -381,7 +381,7 @@ public struct RequirementsRefinementDialog: View {
 
             VStack(spacing: 0) {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.extraLarge) {
                         questionHeader(question: question)
 
                         QuestionInputView(
@@ -404,7 +404,7 @@ public struct RequirementsRefinementDialog: View {
     // MARK: - Question Header
 
     private func questionHeader(question: RefinementQuestion) -> some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
             Text("Question \(currentQuestion + 1) of \(refinementQuestions.count)")
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -422,7 +422,7 @@ public struct RequirementsRefinementDialog: View {
     // MARK: - Navigation Buttons
 
     private func navigationButtons(viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> some View {
-        HStack(spacing: Theme.Spacing.md) {
+        HStack(spacing: Theme.Spacing.medium) {
             if currentQuestion > 0 {
                 Button("Previous") {
                     withAnimation {
@@ -509,7 +509,7 @@ struct QuestionInputView: View {
                 .frame(minHeight: 100)
                 .padding(8)
                 .background(Theme.Colors.aikoSecondary)
-                .cornerRadius(Theme.CornerRadius.md)
+                .cornerRadius(Theme.CornerRadius.medium)
 
         case .currency:
             HStack {
@@ -521,17 +521,17 @@ struct QuestionInputView: View {
             }
             .padding()
             .background(Theme.Colors.aikoSecondary)
-            .cornerRadius(Theme.CornerRadius.md)
+            .cornerRadius(Theme.CornerRadius.medium)
 
         case .date:
             DatePicker("Select date", selection: .constant(Date()), displayedComponents: .date)
                 .datePickerStyle(GraphicalDatePickerStyle())
                 .padding()
                 .background(Theme.Colors.aikoSecondary)
-                .cornerRadius(Theme.CornerRadius.md)
+                .cornerRadius(Theme.CornerRadius.medium)
 
         case let .multipleChoice(options):
-            VStack(spacing: Theme.Spacing.sm) {
+            VStack(spacing: Theme.Spacing.small) {
                 ForEach(options, id: \.self) { option in
                     Button(action: {
                         if answer.contains(option) {
@@ -551,7 +551,7 @@ struct QuestionInputView: View {
                         }
                         .padding()
                         .background(Theme.Colors.aikoSecondary)
-                        .cornerRadius(Theme.CornerRadius.md)
+                        .cornerRadius(Theme.CornerRadius.medium)
                     }
                 }
             }

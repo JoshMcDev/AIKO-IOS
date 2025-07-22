@@ -153,7 +153,7 @@ final class CacheInvalidationTests: XCTestCase {
                 objectType: .document,
                 objectId: "prod-doc-001",
                 context: ActionContext(userId: "test", sessionId: "test-session")
-            ),
+            )
         ]
 
         let dummyResult = ActionResult(
@@ -207,7 +207,7 @@ final class CacheInvalidationTests: XCTestCase {
                 changeType: .delete,
                 changedFields: [],
                 timestamp: Date()
-            ),
+            )
         ]
 
         // Test smart invalidation

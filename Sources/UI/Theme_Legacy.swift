@@ -61,21 +61,21 @@ public enum Theme {
     // MARK: - Spacing
 
     public enum Spacing {
-        public static let xs: CGFloat = 4
-        public static let sm: CGFloat = 8
-        public static let md: CGFloat = 16
-        public static let lg: CGFloat = 24
-        public static let xl: CGFloat = 32
+        public static let extraSmall: CGFloat = 4
+        public static let small: CGFloat = 8
+        public static let medium: CGFloat = 16
+        public static let large: CGFloat = 24
+        public static let extraLarge: CGFloat = 32
         public static let xxl: CGFloat = 40
     }
 
     // MARK: - Corner Radius
 
     public enum CornerRadius {
-        public static let sm: CGFloat = 8
-        public static let md: CGFloat = 12
-        public static let lg: CGFloat = 16
-        public static let xl: CGFloat = 24
+        public static let small: CGFloat = 8
+        public static let medium: CGFloat = 12
+        public static let large: CGFloat = 16
+        public static let extraLarge: CGFloat = 24
     }
 }
 
@@ -127,10 +127,10 @@ public struct AIKOButtonStyle: ButtonStyle, Sendable {
             .frame(height: size.height)
             .background(backgroundColor)
             .overlay(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
                     .stroke(borderColor, lineWidth: borderWidth)
             )
-            .cornerRadius(Theme.CornerRadius.md)
+            .cornerRadius(Theme.CornerRadius.medium)
             .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
             .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
     }
@@ -198,7 +198,7 @@ public struct AIKOCardModifier: ViewModifier, Sendable {
         content
             .padding(padding)
             .background(Theme.Colors.aikoCard)
-            .cornerRadius(Theme.CornerRadius.lg)
+            .cornerRadius(Theme.CornerRadius.large)
             .shadow(
                 color: shadow ? .black.opacity(0.1) : .clear,
                 radius: shadow ? 8 : 0,
@@ -218,7 +218,7 @@ public struct AIKOLoadingView: View, Sendable {
     }
 
     public var body: some View {
-        VStack(spacing: Theme.Spacing.lg) {
+        VStack(spacing: Theme.Spacing.large) {
             ProgressView()
                 .progressViewStyle(CircularProgressViewStyle(tint: Theme.Colors.aikoAccent))
                 .scaleEffect(1.5)
@@ -265,7 +265,10 @@ public struct AIKOSheetModifier: ViewModifier, Sendable {
 // MARK: - View Extensions
 
 public extension View {
-    func aikoCard(padding: EdgeInsets = EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16), shadow: Bool = true) -> some View {
+    func aikoCard(
+        padding: EdgeInsets = EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16),
+        shadow: Bool = true
+    ) -> some View {
         modifier(AIKOCardModifier(padding: padding, shadow: shadow))
     }
 

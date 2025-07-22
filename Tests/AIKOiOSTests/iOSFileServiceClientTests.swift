@@ -108,7 +108,7 @@
 
             // Results may fail in test environment, but should complete without crashing
             switch saveResult {
-            case .success(_), .failure:
+            case .success, .failure:
                 XCTAssertTrue(true, "Save operation completed")
             }
 
@@ -127,7 +127,7 @@
                 ("txt", "Plain text content"),
                 ("json", "{\"key\": \"value\"}"),
                 ("md", "# Markdown Content"),
-                ("csv", "name,value\ntest,123"),
+                ("csv", "name,value\ntest,123")
             ]
 
             for (fileType, content) in testCases {
@@ -156,7 +156,7 @@
                 ["txt"],
                 ["pdf", "doc", "docx"],
                 ["jpg", "png", "gif"],
-                ["txt", "md", "pdf"],
+                ["txt", "md", "pdf"]
             ]
 
             for types in allowedTypes {

@@ -41,13 +41,13 @@ struct ProfileTextField: View {
                     .textFieldStyle(PlainTextFieldStyle())
                     .font(.body)
                     .foregroundColor(.white)
-                    .padding(.horizontal, Theme.Spacing.sm)
-                    .padding(.vertical, Theme.Spacing.sm)
+                    .padding(.horizontal, Theme.Spacing.small)
+                    .padding(.vertical, Theme.Spacing.small)
                     .background(
-                        RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                        RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                             .fill(Color.white.opacity(0.1))
                             .overlay(
-                                RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                                RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                                     .stroke(error != nil ? Color.red : Color.clear, lineWidth: 1)
                             )
                     )
@@ -61,10 +61,10 @@ struct ProfileTextField: View {
                     .font(.body)
                     .foregroundColor(text.isEmpty ? .secondary : .white)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, Theme.Spacing.sm)
-                    .padding(.vertical, Theme.Spacing.sm)
+                    .padding(.horizontal, Theme.Spacing.small)
+                    .padding(.vertical, Theme.Spacing.small)
                     .background(
-                        RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                        RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                             .fill(Color.white.opacity(0.05))
                     )
             }
@@ -109,10 +109,10 @@ struct ProfileTextEditor: View {
                     .font(.body)
                     .foregroundColor(.white)
                     .scrollContentBackground(.hidden)
-                    .padding(Theme.Spacing.sm)
+                    .padding(Theme.Spacing.small)
                     .frame(minHeight: 80, maxHeight: 120)
                     .background(
-                        RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                        RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                             .fill(Color.white.opacity(0.1))
                     )
             } else {
@@ -120,9 +120,9 @@ struct ProfileTextEditor: View {
                     .font(.body)
                     .foregroundColor(text.isEmpty ? .secondary : .white)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(Theme.Spacing.sm)
+                    .padding(Theme.Spacing.small)
                     .background(
-                        RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                        RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                             .fill(Color.white.opacity(0.05))
                     )
             }
@@ -200,7 +200,7 @@ struct AddressSectionView: View {
                 isEditing: isEditing
             )
 
-            HStack(spacing: Theme.Spacing.md) {
+            HStack(spacing: Theme.Spacing.medium) {
                 AddressFieldView(
                     title: "City",
                     text: .init(
@@ -229,7 +229,7 @@ struct AddressSectionView: View {
                 .frame(maxWidth: 100)
             }
 
-            HStack(spacing: Theme.Spacing.md) {
+            HStack(spacing: Theme.Spacing.medium) {
                 AddressFieldView(
                     title: "ZIP Code",
                     text: .init(
@@ -310,9 +310,9 @@ struct AddressSectionView: View {
                         .font(.caption)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(Theme.Spacing.sm)
+                        .padding(Theme.Spacing.small)
                         .background(
-                            RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                            RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                                 .fill(Color.green.opacity(0.1))
                         )
                 }
@@ -371,7 +371,7 @@ struct OrganizationLogoView: View {
                                     .resizable()
                                     .scaledToFit()
                                     .frame(height: 60)
-                                    .cornerRadius(Theme.CornerRadius.sm)
+                                    .cornerRadius(Theme.CornerRadius.small)
                             }
                         #else
                             if let nsImage = NSImage(data: logoData) {
@@ -379,11 +379,11 @@ struct OrganizationLogoView: View {
                                     .resizable()
                                     .scaledToFit()
                                     .frame(height: 60)
-                                    .cornerRadius(Theme.CornerRadius.sm)
+                                    .cornerRadius(Theme.CornerRadius.small)
                             }
                         #endif
                     } else {
-                        RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                        RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                             .fill(Color.white.opacity(0.1))
                             .frame(width: 100, height: 60)
                             .overlay(
@@ -424,17 +424,17 @@ struct ProfileSectionView<Content: View>: View {
     @ViewBuilder let content: () -> Content
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
             Label(title, systemImage: icon)
                 .font(.headline)
                 .foregroundColor(.white)
 
-            VStack(spacing: Theme.Spacing.md) {
+            VStack(spacing: Theme.Spacing.medium) {
                 content()
             }
-            .padding(Theme.Spacing.lg)
+            .padding(Theme.Spacing.large)
             .background(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
                     .fill(Theme.Colors.aikoSecondary)
             )
         }
@@ -447,7 +447,7 @@ struct ProfileCompletionView: View {
     let profile: UserProfile
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.md) {
+        VStack(spacing: Theme.Spacing.medium) {
             HStack {
                 Text("Profile Completion")
                     .font(.headline)
@@ -480,9 +480,9 @@ struct ProfileCompletionView: View {
                     .foregroundColor(.secondary)
             }
         }
-        .padding(Theme.Spacing.lg)
+        .padding(Theme.Spacing.large)
         .background(
-            RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
                 .fill(Theme.Colors.aikoSecondary)
         )
     }
@@ -502,12 +502,12 @@ struct ProfileCompletionView: View {
             VStack {
                 Spacer()
 
-                VStack(spacing: Theme.Spacing.lg) {
+                VStack(spacing: Theme.Spacing.large) {
                     Text("Choose Image Source")
                         .font(.headline)
                         .foregroundColor(.white)
 
-                    VStack(spacing: Theme.Spacing.md) {
+                    VStack(spacing: Theme.Spacing.medium) {
                         Button(action: {
                             imageSourceType = .camera
                             showingImagePicker = true
@@ -517,7 +517,7 @@ struct ProfileCompletionView: View {
                                 .padding()
                                 .background(Theme.Colors.aikoPrimary)
                                 .foregroundColor(.white)
-                                .cornerRadius(Theme.CornerRadius.sm)
+                                .cornerRadius(Theme.CornerRadius.small)
                         }
 
                         Button(action: {
@@ -529,7 +529,7 @@ struct ProfileCompletionView: View {
                                 .padding()
                                 .background(Theme.Colors.aikoSecondary)
                                 .foregroundColor(.white)
-                                .cornerRadius(Theme.CornerRadius.sm)
+                                .cornerRadius(Theme.CornerRadius.small)
                         }
 
                         Button("Cancel", role: .cancel) {
@@ -540,7 +540,7 @@ struct ProfileCompletionView: View {
                         .foregroundColor(.white)
                     }
                 }
-                .padding(Theme.Spacing.xl)
+                .padding(Theme.Spacing.extraLarge)
 
                 Spacer()
             }

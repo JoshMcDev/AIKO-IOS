@@ -24,7 +24,7 @@ final class CriticalPathPerformanceTests: XCTestCase {
                     clauseNumber: "52.212-4",
                     title: "Contract Terms and Conditions",
                     isRequired: true
-                ),
+                )
             ],
             estimatedValue: 100_000,
             acquisitionMethod: .competitive
@@ -78,7 +78,7 @@ final class CriticalPathPerformanceTests: XCTestCase {
                 let searchEntries = [
                     "ABC Corporation",
                     "XYZ Industries LLC",
-                    "123 Federal Contractors Inc",
+                    "123 Federal Contractors Inc"
                 ]
 
                 // 2. Concurrent lookups
@@ -384,7 +384,7 @@ final class CriticalPathPerformanceTests: XCTestCase {
         [
             "Create Performance Work Statement",
             "Add Quality Assurance Surveillance Plan",
-            "Include Performance Metrics",
+            "Include Performance Metrics"
         ]
     }
 
@@ -427,7 +427,7 @@ final class CriticalPathPerformanceTests: XCTestCase {
         return [
             "requiresAuthentication": true,
             "defaultDocumentType": "pws",
-            "enableAdaptiveCaching": true,
+            "enableAdaptiveCaching": true
         ]
     }
 }

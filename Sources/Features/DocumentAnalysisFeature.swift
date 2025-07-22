@@ -496,7 +496,7 @@ public struct DocumentAnalysisFeature {
 
                 // Load any uploaded files
                 state.uploadedDocuments = acquisition.uploadedFilesArray.map { file in
-                    return UploadedDocument(
+                    UploadedDocument(
                         fileName: file.fileName,
                         data: file.data,
                         uploadDate: file.uploadDate,

@@ -310,7 +310,7 @@ private actor PatternStorage {
             $0.actionType == .automationEnabled || $0.actionType == .automationDisabled
         }
 
-        let enabledCount = automationActions.filter { $0.actionType == .automationEnabled }.count
+        let enabledCount = automationActions.count(where: { $0.actionType == .automationEnabled })
         let totalCount = automationActions.count
 
         patterns.automationPreference = totalCount > 0 ? Double(enabledCount) / Double(totalCount) : 0.5

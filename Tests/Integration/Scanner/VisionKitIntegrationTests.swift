@@ -54,7 +54,7 @@ final class VisionKitIntegrationTests: XCTestCase {
                     pages: [
                         ScannedPage(imageData: Data([0xFF, 0xD8, 0xFF, 0xD9]), pageNumber: 1),
                         ScannedPage(imageData: Data([0xFF, 0xD8, 0xFF, 0xD9]), pageNumber: 2),
-                        ScannedPage(imageData: Data([0xFF, 0xD8, 0xFF, 0xD9]), pageNumber: 3),
+                        ScannedPage(imageData: Data([0xFF, 0xD8, 0xFF, 0xD9]), pageNumber: 3)
                     ],
                     title: "Multi-page Test Document"
                 )
@@ -151,7 +151,7 @@ final class VisionKitIntegrationTests: XCTestCase {
 
         // Test user cancellation scenario
         do {
-            let _ = try await errorHandlingScannerClient.scan()
+            _ = try await errorHandlingScannerClient.scan()
             XCTFail("Should handle user cancellation")
         } catch DocumentScannerError.userCancelled {
             // Expected error handling path
@@ -163,7 +163,7 @@ final class VisionKitIntegrationTests: XCTestCase {
         // Test invalid image data scenario
         do {
             let invalidImageData = Data()
-            let _ = try await errorHandlingScannerClient.enhanceImage(invalidImageData)
+            _ = try await errorHandlingScannerClient.enhanceImage(invalidImageData)
             XCTFail("Should handle invalid image data")
         } catch DocumentScannerError.invalidImageData {
             XCTAssertTrue(true, "Invalid image data handled correctly")
@@ -204,7 +204,7 @@ final class VisionKitIntegrationTests: XCTestCase {
         // Test cancellation handling (GREEN phase)
         let scanTask = Task {
             do {
-                let _ = try await cancellableScannerClient.scan()
+                _ = try await cancellableScannerClient.scan()
                 XCTFail("Scan should be cancelled")
             } catch DocumentScannerError.userCancelled {
                 expectation.fulfill()
@@ -318,7 +318,7 @@ final class VisionKitIntegrationTests: XCTestCase {
 
             // Should fail gracefully without permissions
             do {
-                let _ = try await documentScannerClient.scan()
+                _ = try await documentScannerClient.scan()
                 XCTFail("Scanning should not work without permissions")
             } catch DocumentScannerError.scanningNotAvailable {
                 XCTAssertTrue(true, "Correctly handles denied permissions")
@@ -364,7 +364,7 @@ final class VisionKitIntegrationTests: XCTestCase {
 
         // GREEN PHASE: Permission denial integration working
         do {
-            let _ = try await documentScannerClient.scan()
+            _ = try await documentScannerClient.scan()
             XCTFail("Should throw scanning not available error")
         } catch DocumentScannerError.scanningNotAvailable {
             XCTAssertTrue(true, "Permission denial handled correctly")
@@ -392,7 +392,7 @@ final class VisionKitIntegrationTests: XCTestCase {
                 expectation.fulfill()
                 return ScannedDocument(
                     pages: [
-                        ScannedPage(imageData: Data(), pageNumber: 1),
+                        ScannedPage(imageData: Data(), pageNumber: 1)
                     ]
                 )
             },
@@ -494,7 +494,7 @@ final class VisionKitIntegrationTests: XCTestCase {
             Task {
                 do {
                     let startTime = CFAbsoluteTimeGetCurrent()
-                    let _ = try await documentScannerClient.scan()
+                    _ = try await documentScannerClient.scan()
                     let endTime = CFAbsoluteTimeGetCurrent()
 
                     let scanTime = endTime - startTime

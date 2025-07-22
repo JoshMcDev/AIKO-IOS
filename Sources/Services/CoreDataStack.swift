@@ -35,8 +35,9 @@ public final class CoreDataStack: @unchecked Sendable {
     }
 
     // MARK: - DEPRECATED METHODS REMOVED
+
     // The following methods were removed due to Sendable conformance violations:
-    // - fetch<T: NSManagedObject>(_:) -> [T] 
+    // - fetch<T: NSManagedObject>(_:) -> [T]
     // - create<T: NSManagedObject>(_:) -> T
     // - delete(_ object:)
     //

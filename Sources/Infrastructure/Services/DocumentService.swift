@@ -173,7 +173,7 @@ public final class AcquisitionServiceImpl: BaseService, @unchecked Sendable {
                 let context = GenerationContext(
                     acquisition: acquisition,
                     previousDocuments: documents,
-                    regulations: []  // TODO: implement regulations
+                    regulations: [] // TODO: implement regulations
                 )
 
                 let document = try await documentService.generateDocument(
@@ -202,7 +202,7 @@ public final class AcquisitionServiceImpl: BaseService, @unchecked Sendable {
     }
 
     public func findByDateRange(from startDate: Date, to endDate: Date) async throws -> [AppCore.Acquisition] {
-        return try await repository.findByDateRange(from: startDate, to: endDate)
+        try await repository.findByDateRange(from: startDate, to: endDate)
     }
 
     private func notifyStakeholders(id: UUID) async {

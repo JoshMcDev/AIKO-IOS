@@ -313,12 +313,12 @@ struct InteractiveDocumentCard: View {
 
                     if showingDetails {
                         Divider()
-                            .padding(.vertical, Theme.Spacing.xs)
+                            .padding(.vertical, Theme.Spacing.extraSmall)
 
-                        VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+                        VStack(alignment: .leading, spacing: Theme.Spacing.extraSmall) {
                             // Example fields - replace with actual document fields
                             ForEach(["Field 1", "Field 2", "Field 3"], id: \.self) { field in
-                                HStack(spacing: Theme.Spacing.xs) {
+                                HStack(spacing: Theme.Spacing.extraSmall) {
                                     Circle()
                                         .fill(Color.blue.opacity(0.3))
                                         .frame(width: 6, height: 6)

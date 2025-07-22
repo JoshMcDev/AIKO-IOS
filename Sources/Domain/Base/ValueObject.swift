@@ -224,8 +224,7 @@ public struct RequirementDescription: ValueObject {
 
     public var wordCount: Int {
         value.components(separatedBy: .whitespacesAndNewlines)
-            .filter { !$0.isEmpty }
-            .count
+            .count(where: { !$0.isEmpty })
     }
 }
 

@@ -6,7 +6,7 @@
     public final class iOSAccessibilityService: AccessibilityServiceProtocol {
         public init() {}
 
-        nonisolated public func announceNotification(_ message: String, priority: AccessibilityAnnouncementPriority) {
+        public nonisolated func announceNotification(_ message: String, priority: AccessibilityAnnouncementPriority) {
             Task { @MainActor in
                 let announcement = AttributedString(message)
 

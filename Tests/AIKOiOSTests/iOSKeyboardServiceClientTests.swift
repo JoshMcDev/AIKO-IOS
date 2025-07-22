@@ -119,7 +119,7 @@
                 client.emailKeyboardType(),
                 client.numberKeyboardType(),
                 client.phoneKeyboardType(),
-                client.urlKeyboardType(),
+                client.urlKeyboardType()
             ]
 
             let expectedTypes: [PlatformKeyboardType] = [.default, .email, .number, .phone, .url]

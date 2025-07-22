@@ -8,13 +8,13 @@ struct WelcomeStepView: View {
     let profile: UserProfile
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.xl) {
+        VStack(spacing: Theme.Spacing.extraLarge) {
             Image(systemName: "doc.text.fill")
                 .font(.system(size: 80))
                 .foregroundColor(Theme.Colors.aikoAccent)
-                .padding(.bottom, Theme.Spacing.xl)
+                .padding(.bottom, Theme.Spacing.extraLarge)
 
-            VStack(spacing: Theme.Spacing.md) {
+            VStack(spacing: Theme.Spacing.medium) {
                 Text("Welcome to AIKO")
                     .font(.title)
                     .fontWeight(.bold)
@@ -25,7 +25,7 @@ struct WelcomeStepView: View {
                     .foregroundColor(Theme.Colors.aikoAccent)
             }
 
-            VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 FeatureRow(
                     icon: "sparkles",
                     title: "AI-Powered Document Generation",
@@ -50,7 +50,7 @@ struct WelcomeStepView: View {
                     description: "Generate complete contract packages instantly"
                 )
             }
-            .padding(.vertical, Theme.Spacing.xl)
+            .padding(.vertical, Theme.Spacing.extraLarge)
 
             Text("Let's set up your profile to get started")
                 .font(.body)
@@ -66,7 +66,7 @@ struct FeatureRow: View {
     let description: String
 
     var body: some View {
-        HStack(alignment: .top, spacing: Theme.Spacing.md) {
+        HStack(alignment: .top, spacing: Theme.Spacing.medium) {
             Image(systemName: icon)
                 .font(.title2)
                 .foregroundColor(Theme.Colors.aikoAccent)
@@ -100,7 +100,7 @@ struct PersonalInfoStepView: View {
     @Dependency(\.imageLoader) var imageLoader
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.xl) {
+        VStack(spacing: Theme.Spacing.extraLarge) {
             // Profile Image
             Button(action: onUpdateProfileImage) {
                 ZStack {
@@ -128,9 +128,9 @@ struct PersonalInfoStepView: View {
                     }
                 }
             }
-            .padding(.bottom, Theme.Spacing.lg)
+            .padding(.bottom, Theme.Spacing.large)
 
-            VStack(spacing: Theme.Spacing.lg) {
+            VStack(spacing: Theme.Spacing.large) {
                 OnboardingTextField(
                     title: "Full Name",
                     placeholder: "John Smith",
@@ -184,7 +184,7 @@ struct ContactInfoStepView: View {
     @State private var alternatePhone: String = ""
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.lg) {
+        VStack(spacing: Theme.Spacing.large) {
             OnboardingTextField(
                 title: "Email",
                 placeholder: "john.smith@agency.gov",
@@ -242,7 +242,7 @@ struct OrganizationInfoStepView: View {
     @Dependency(\.imageLoader) var imageLoader
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.lg) {
+        VStack(spacing: Theme.Spacing.large) {
             OnboardingTextField(
                 title: "Organization Name",
                 placeholder: "Department of Defense",
@@ -261,7 +261,7 @@ struct OrganizationInfoStepView: View {
             )
 
             // Organization Logo
-            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                 Text("Organization Logo")
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -273,9 +273,9 @@ struct OrganizationInfoStepView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(height: 80)
-                            .cornerRadius(Theme.CornerRadius.sm)
+                            .cornerRadius(Theme.CornerRadius.small)
                     } else {
-                        RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                        RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                             .fill(Theme.Colors.aikoSecondary)
                             .frame(height: 80)
                             .overlay(
@@ -316,7 +316,7 @@ struct AddressesStepView: View {
     @State private var selectedTab: ProfileFeature.State.AddressType = .administeredBy
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.lg) {
+        VStack(spacing: Theme.Spacing.large) {
             // Tab selector
             HStack(spacing: 0) {
                 ForEach(ProfileFeature.State.AddressType.allCases, id: \.self) { type in
@@ -326,7 +326,7 @@ struct AddressesStepView: View {
                             .fontWeight(selectedTab == type ? .semibold : .regular)
                             .foregroundColor(selectedTab == type ? .white : .secondary)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, Theme.Spacing.sm)
+                            .padding(.vertical, Theme.Spacing.small)
                             .background(
                                 selectedTab == type ? Theme.Colors.aikoAccent : Color.clear
                             )
@@ -334,7 +334,7 @@ struct AddressesStepView: View {
                 }
             }
             .background(Theme.Colors.aikoSecondary)
-            .cornerRadius(Theme.CornerRadius.sm)
+            .cornerRadius(Theme.CornerRadius.small)
 
             // Address form
             OnboardingAddressForm(
@@ -395,9 +395,9 @@ struct ReviewStepView: View {
     @Dependency(\.imageLoader) var imageLoader
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.extraLarge) {
             // Profile summary
-            HStack(spacing: Theme.Spacing.lg) {
+            HStack(spacing: Theme.Spacing.large) {
                 if let imageData = profile.profileImageData,
                    let image = imageLoader.loadImage(imageData) {
                     image
@@ -509,9 +509,9 @@ struct APIKeyStepView: View {
     @State private var localAPIKey: String = ""
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.extraLarge) {
             // Instructions
-            VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                 Text("To generate documents with AI, you'll need an Anthropic API key.")
                     .font(.body)
                     .foregroundColor(.white)
@@ -529,11 +529,11 @@ struct APIKeyStepView: View {
                     .font(.subheadline)
                     .foregroundColor(Theme.Colors.aikoAccent)
                 }
-                .padding(.vertical, Theme.Spacing.xs)
+                .padding(.vertical, Theme.Spacing.extraSmall)
             }
 
             // API Key Input
-            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                 HStack {
                     Text("API Key")
                         .font(.headline)
@@ -611,7 +611,7 @@ struct APIKeyStepView: View {
             }
 
             // Info box
-            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                 HStack {
                     Image(systemName: "info.circle")
                         .foregroundColor(Theme.Colors.aikoAccent)
@@ -628,7 +628,7 @@ struct APIKeyStepView: View {
             }
             .padding()
             .background(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
                     .fill(Theme.Colors.aikoSecondary.opacity(0.3))
             )
 
@@ -645,7 +645,7 @@ struct APIKeyStepView: View {
 extension APIKeyStepView {
     @ViewBuilder
     func faceIDSection(isEnabled: Bool, onToggle: @escaping @Sendable (Bool) -> Void) -> some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.small) {
             HStack {
                 Image(systemName: "faceid")
                     .font(.title2)
@@ -667,7 +667,7 @@ extension APIKeyStepView {
         }
         .padding()
         .background(
-            RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
                 .fill(Theme.Colors.aikoSecondary.opacity(0.3))
         )
     }
@@ -711,9 +711,9 @@ struct OnboardingTextField: View {
                 .textFieldStyle(PlainTextFieldStyle())
                 .font(.body)
                 .foregroundColor(.white)
-                .padding(Theme.Spacing.md)
+                .padding(Theme.Spacing.medium)
                 .background(
-                    RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                    RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                         .fill(Theme.Colors.aikoSecondary)
                 )
                 .keyboardConfiguration(keyboardType, supportsTypes: keyboardService.supportsKeyboardTypes())
@@ -744,14 +744,14 @@ struct OnboardingTextEditor: View {
                     Text("...")
                         .font(.body)
                         .foregroundColor(.gray)
-                        .padding(Theme.Spacing.md)
+                        .padding(Theme.Spacing.medium)
                 }
 
                 TextEditor(text: $text)
                     .font(.body)
                     .foregroundColor(.white)
                     .scrollContentBackground(.hidden)
-                    .padding(Theme.Spacing.sm)
+                    .padding(Theme.Spacing.small)
                     .frame(minHeight: 100)
             }
             .background(
@@ -781,7 +781,7 @@ struct OnboardingAddressForm: View {
     @State private var email: String = ""
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.md) {
+        VStack(spacing: Theme.Spacing.medium) {
             OnboardingTextEditor(
                 title: "Address Description",
                 placeholder: "Enter any special instructions or notes about this address...",
@@ -804,7 +804,7 @@ struct OnboardingAddressForm: View {
                 onCommit: { _ in updateAddress() }
             )
 
-            HStack(spacing: Theme.Spacing.md) {
+            HStack(spacing: Theme.Spacing.medium) {
                 OnboardingTextField(
                     title: "City",
                     placeholder: "Washington",
@@ -824,7 +824,7 @@ struct OnboardingAddressForm: View {
                 .frame(maxWidth: 80)
             }
 
-            HStack(spacing: Theme.Spacing.md) {
+            HStack(spacing: Theme.Spacing.medium) {
                 OnboardingTextField(
                     title: "ZIP Code",
                     placeholder: "20001",
@@ -894,18 +894,18 @@ struct ReviewSection<Content: View>: View {
     @ViewBuilder let content: () -> Content
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.small) {
             Text(title)
                 .font(.headline)
                 .foregroundColor(.white)
 
-            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                 content()
             }
-            .padding(Theme.Spacing.md)
+            .padding(Theme.Spacing.medium)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                     .fill(Theme.Colors.aikoSecondary)
             )
         }
@@ -936,7 +936,7 @@ struct InfoBox: View {
     let text: String
 
     var body: some View {
-        HStack(alignment: .top, spacing: Theme.Spacing.sm) {
+        HStack(alignment: .top, spacing: Theme.Spacing.small) {
             Image(systemName: icon)
                 .font(.caption)
                 .foregroundColor(.blue)
@@ -946,10 +946,10 @@ struct InfoBox: View {
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(Theme.Spacing.md)
+        .padding(Theme.Spacing.medium)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                 .fill(Color.blue.opacity(0.1))
         )
     }

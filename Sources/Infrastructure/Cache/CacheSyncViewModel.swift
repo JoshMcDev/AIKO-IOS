@@ -40,7 +40,7 @@ final class CacheSyncViewModel: ObservableObject {
     private let cacheManager = OfflineCacheManager.shared
 
     /// Timer for periodic updates
-    nonisolated(unsafe) private var updateTimer: Timer?
+    private nonisolated(unsafe) var updateTimer: Timer?
 
     init() {
         // Start monitoring

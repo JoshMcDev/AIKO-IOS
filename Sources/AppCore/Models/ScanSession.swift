@@ -11,7 +11,7 @@ public struct ScanSession: Equatable, Sendable {
     public var batchOperationState: BatchOperationState
     public var lastError: ScanError?
     public var metadata: ScanSessionMetadata
-    
+
     public init(
         id: UUID = UUID(),
         pages: IdentifiedArrayOf<SessionPage> = [],
@@ -41,7 +41,7 @@ public struct SessionPage: Identifiable, Equatable, Sendable {
     public var pageMetadata: PageMetadata
     public var processingStatus: PageProcessingStatus
     public var order: Int
-    
+
     public init(
         id: UUID = UUID(),
         documentID: String? = nil,
@@ -68,11 +68,12 @@ public struct SessionPage: Identifiable, Equatable, Sendable {
 }
 
 // MARK: - SessionPage Codable Implementation
+
 extension SessionPage: Codable {
     private enum CodingKeys: String, CodingKey {
         case id, documentID, imageData, thumbnailData, enhancedImageData, ocrText, pageMetadata, processingStatus, order
     }
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(UUID.self, forKey: .id)
@@ -87,7 +88,7 @@ extension SessionPage: Codable {
         // Skip ocrResult as it's not Codable due to CGRect dependencies
         ocrResult = nil
     }
-    
+
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
@@ -104,11 +105,12 @@ extension SessionPage: Codable {
 }
 
 // MARK: - ScanSession Codable Implementation
+
 extension ScanSession: Codable {
     private enum CodingKeys: String, CodingKey {
         case id, pages, status, batchOperationState, metadata
     }
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(UUID.self, forKey: .id)
@@ -119,7 +121,7 @@ extension ScanSession: Codable {
         // Skip lastError as ScanError is not easily Codable
         lastError = nil
     }
-    
+
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
@@ -139,17 +141,17 @@ public enum SessionStatus: String, CaseIterable, Equatable, Sendable, Codable {
     case completed = "Completed"
     case failed = "Failed"
     case recovered = "Recovered"
-    
+
     public var displayName: String {
         rawValue
     }
-    
+
     public var isActive: Bool {
         switch self {
         case .ready, .capturing, .processing, .recovered:
-            return true
+            true
         case .completed, .failed:
-            return false
+            false
         }
     }
 }
@@ -161,26 +163,26 @@ public enum BatchOperationState: Equatable, Sendable, Codable {
     case paused(completedCount: Int, total: Int)
     case failed(completedCount: Int, total: Int, error: String)
     case completed(total: Int)
-    
+
     public var progress: Double {
         switch self {
         case .idle:
-            return 0.0
-        case .inProgress(let completed, let total),
-             .paused(let completed, let total),
-             .failed(let completed, let total, _):
-            return total > 0 ? Double(completed) / Double(total) : 0.0
+            0.0
+        case let .inProgress(completed, total),
+             let .paused(completed, total),
+             let .failed(completed, total, _):
+            total > 0 ? Double(completed) / Double(total) : 0.0
         case .completed:
-            return 1.0
+            1.0
         }
     }
-    
+
     public var isProcessing: Bool {
         switch self {
         case .inProgress:
-            return true
+            true
         default:
-            return false
+            false
         }
     }
 }
@@ -191,26 +193,26 @@ public enum PageProcessingStatus: Equatable, Sendable, Codable {
     case processing
     case processed
     case failed(String)
-    
+
     public var displayName: String {
         switch self {
         case .pending:
-            return "Pending"
+            "Pending"
         case .processing:
-            return "Processing"
+            "Processing"
         case .processed:
-            return "Processed"
+            "Processed"
         case .failed:
-            return "Failed"
+            "Failed"
         }
     }
-    
+
     public var isCompleted: Bool {
         switch self {
         case .processed:
-            return true
+            true
         default:
-            return false
+            false
         }
     }
 }
@@ -224,7 +226,7 @@ public struct ScanSessionMetadata: Equatable, Sendable, Codable {
     public var lastAutosaveCheckpoint: Date?
     public var sessionTags: [String]
     public var customFields: [String: String]
-    
+
     public init(
         creationDate: Date = Date(),
         modificationDate: Date = Date(),
@@ -251,7 +253,7 @@ public struct PageMetadata: Equatable, Sendable, Codable {
     public var qualityScore: Double?
     public var detectedFeatures: [String]
     public var processingNotes: String?
-    
+
     public init(
         captureDate: Date = Date(),
         captureSource: CaptureSource = .camera,
@@ -273,7 +275,7 @@ public enum CaptureSource: String, CaseIterable, Equatable, Sendable, Codable {
     case fileImport = "File Import"
     case scanner = "Scanner"
     case unknown = "Unknown"
-    
+
     public var displayName: String {
         rawValue
     }
@@ -289,25 +291,25 @@ public enum ScanError: LocalizedError, Equatable, Sendable, Codable {
     case storageError(String)
     case invalidPageOrder
     case sessionCorrupted
-    
+
     public var errorDescription: String? {
         switch self {
         case .sessionNotFound:
-            return "Scan session not found"
-        case .pageNotFound(let id):
-            return "Page with ID \(id) not found in session"
-        case .processingFailed(let reason):
-            return "Page processing failed: \(reason)"
-        case .batchOperationFailed(let reason):
-            return "Batch operation failed: \(reason)"
-        case .recoveryFailed(let reason):
-            return "Session recovery failed: \(reason)"
-        case .storageError(let reason):
-            return "Storage error: \(reason)"
+            "Scan session not found"
+        case let .pageNotFound(id):
+            "Page with ID \(id) not found in session"
+        case let .processingFailed(reason):
+            "Page processing failed: \(reason)"
+        case let .batchOperationFailed(reason):
+            "Batch operation failed: \(reason)"
+        case let .recoveryFailed(reason):
+            "Session recovery failed: \(reason)"
+        case let .storageError(reason):
+            "Storage error: \(reason)"
         case .invalidPageOrder:
-            return "Invalid page order specified"
+            "Invalid page order specified"
         case .sessionCorrupted:
-            return "Scan session data is corrupted"
+            "Scan session data is corrupted"
         }
     }
 }
@@ -319,32 +321,32 @@ public extension ScanSession {
     var pageCount: Int {
         pages.count
     }
-    
+
     /// Number of processed pages
     var processedPageCount: Int {
         pages.count { $0.processingStatus.isCompleted }
     }
-    
+
     /// Session completion percentage
     var completionProgress: Double {
         pageCount > 0 ? Double(processedPageCount) / Double(pageCount) : 0.0
     }
-    
+
     /// Check if all pages are processed
     var isFullyProcessed: Bool {
-        !pages.isEmpty && pages.allSatisfy { $0.processingStatus.isCompleted }
+        !pages.isEmpty && pages.allSatisfy(\.processingStatus.isCompleted)
     }
-    
+
     /// Get pages by processing status
     func pages(withStatus status: PageProcessingStatus) -> [SessionPage] {
         pages.filter { $0.processingStatus == status }
     }
-    
+
     /// Get next page to process
     var nextPageToProcess: SessionPage? {
         pages.first { $0.processingStatus == .pending }
     }
-    
+
     /// Update modification date
     mutating func touch() {
         metadata.modificationDate = Date()
@@ -372,13 +374,13 @@ public extension PageProcessingStatus {
     func toProcessingState() -> ScannedPage.ProcessingState {
         switch self {
         case .pending:
-            return .pending
+            .pending
         case .processing:
-            return .processing
+            .processing
         case .processed:
-            return .completed
-        case .failed(let reason):
-            return .failed(reason)
+            .completed
+        case let .failed(reason):
+            .failed(reason)
         }
     }
 }

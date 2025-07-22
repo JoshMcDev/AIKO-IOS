@@ -20,60 +20,60 @@ public protocol ThemeServiceProtocol: Sendable {
 
 @DependencyClient
 public struct ThemeServiceClient: Sendable {
-    public var _backgroundColor: @Sendable () -> Color = { .black }
-    public var _cardColor: @Sendable () -> Color = { .gray }
-    public var _secondaryColor: @Sendable () -> Color = { .gray }
-    public var _tertiaryColor: @Sendable () -> Color = { .gray }
+    public var backgroundColorProvider: @Sendable () -> Color = { .black }
+    public var cardColorProvider: @Sendable () -> Color = { .gray }
+    public var secondaryColorProvider: @Sendable () -> Color = { .gray }
+    public var tertiaryColorProvider: @Sendable () -> Color = { .gray }
 
-    public var _groupedBackground: @Sendable () -> Color = { .gray }
-    public var _groupedSecondaryBackground: @Sendable () -> Color = { .gray }
-    public var _groupedTertiaryBackground: @Sendable () -> Color = { .gray }
+    public var groupedBackgroundProvider: @Sendable () -> Color = { .gray }
+    public var groupedSecondaryBackgroundProvider: @Sendable () -> Color = { .gray }
+    public var groupedTertiaryBackgroundProvider: @Sendable () -> Color = { .gray }
 
-    public var _applyNavigationBarHidden: @Sendable (AnyView) -> AnyView = { view in view }
-    public var _applyDarkNavigationBar: @Sendable (AnyView) -> AnyView = { view in view }
-    public var _applySheet: @Sendable (AnyView) -> AnyView = { view in view }
+    public var navigationBarHiddenApplier: @Sendable (AnyView) -> AnyView = { view in view }
+    public var darkNavigationBarApplier: @Sendable (AnyView) -> AnyView = { view in view }
+    public var sheetApplier: @Sendable (AnyView) -> AnyView = { view in view }
 }
 
 // Protocol conformance
 extension ThemeServiceClient: ThemeServiceProtocol {
     public func backgroundColor() -> Color {
-        _backgroundColor()
+        backgroundColorProvider()
     }
 
     public func cardColor() -> Color {
-        _cardColor()
+        cardColorProvider()
     }
 
     public func secondaryColor() -> Color {
-        _secondaryColor()
+        secondaryColorProvider()
     }
 
     public func tertiaryColor() -> Color {
-        _tertiaryColor()
+        tertiaryColorProvider()
     }
 
     public func groupedBackground() -> Color {
-        _groupedBackground()
+        groupedBackgroundProvider()
     }
 
     public func groupedSecondaryBackground() -> Color {
-        _groupedSecondaryBackground()
+        groupedSecondaryBackgroundProvider()
     }
 
     public func groupedTertiaryBackground() -> Color {
-        _groupedTertiaryBackground()
+        groupedTertiaryBackgroundProvider()
     }
 
     public func applyNavigationBarHidden(to view: AnyView) -> AnyView {
-        _applyNavigationBarHidden(view)
+        navigationBarHiddenApplier(view)
     }
 
     public func applyDarkNavigationBar(to view: AnyView) -> AnyView {
-        _applyDarkNavigationBar(view)
+        darkNavigationBarApplier(view)
     }
 
     public func applySheet(to view: AnyView) -> AnyView {
-        _applySheet(view)
+        sheetApplier(view)
     }
 }
 

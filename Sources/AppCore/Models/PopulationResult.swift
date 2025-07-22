@@ -61,10 +61,10 @@ public struct PopulationSummary: Equatable, Sendable {
     public let autoFillRate: Double
 
     public init(from populatedFields: [FormPopulatedField]) {
-        self.totalFields = populatedFields.count
-        self.autoFilledCount = populatedFields.filter { $0.wasAutoFilled }.count
-        self.manualReviewCount = populatedFields.filter { $0.requiresManualReview }.count
-        self.criticalFieldCount = populatedFields.filter { $0.isCritical }.count
-        self.autoFillRate = totalFields > 0 ? Double(autoFilledCount) / Double(totalFields) : 0.0
+        totalFields = populatedFields.count
+        autoFilledCount = populatedFields.count(where: { $0.wasAutoFilled })
+        manualReviewCount = populatedFields.count(where: { $0.requiresManualReview })
+        criticalFieldCount = populatedFields.count(where: { $0.isCritical })
+        autoFillRate = totalFields > 0 ? Double(autoFilledCount) / Double(totalFields) : 0.0
     }
 }

@@ -446,9 +446,9 @@ actor FARComplianceStorage {
         let minorWeight = 0.2
         let warningWeight = 0.1
 
-        let criticalCount = violations.filter { $0.severity == .critical }.count
-        let majorCount = violations.filter { $0.severity == .major }.count
-        let minorCount = violations.filter { $0.severity == .minor }.count
+        let criticalCount = violations.count(where: { $0.severity == .critical })
+        let majorCount = violations.count(where: { $0.severity == .major })
+        let minorCount = violations.count(where: { $0.severity == .minor })
 
         let deduction = (Double(criticalCount) * criticalWeight +
             Double(majorCount) * majorWeight +

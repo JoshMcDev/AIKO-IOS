@@ -19,6 +19,7 @@ public struct AppFeature: Sendable {
         public var acquisitionChat = AcquisitionChatFeature.State()
         public var settings = SettingsFeature.State()
         public var documentScanner = DocumentScannerFeature.State()
+        public var globalScan = GlobalScanFeature.State()
         public var isOnboardingCompleted: Bool = false
         public var hasProfile: Bool = false
         public var showingMenu: Bool = false
@@ -104,7 +105,8 @@ public struct AppFeature: Sendable {
                 lhs.isAuthenticating == rhs.isAuthenticating &&
                 lhs.isAuthenticated == rhs.isAuthenticated &&
                 lhs.authenticationError == rhs.authenticationError &&
-                lhs.errorAlert == rhs.errorAlert
+                lhs.errorAlert == rhs.errorAlert &&
+                lhs.globalScan == rhs.globalScan
             // Note: shareItems is intentionally excluded from equality check
         }
     }
@@ -242,6 +244,11 @@ public struct AppFeature: Sendable {
         case startQuickScan
         case documentScanner(DocumentScannerFeature.Action)
 
+        // Global Scan actions
+        case globalScan(GlobalScanFeature.Action)
+        case toggleGlobalScanVisibility(Bool)
+        case configureGlobalScan(GlobalScanConfiguration)
+
         // Face ID authentication actions
         case checkFaceIDAuthentication
         case authenticateWithFaceID
@@ -291,6 +298,10 @@ public struct AppFeature: Sendable {
 
         Scope(state: \.documentScanner, action: \.documentScanner) {
             DocumentScannerFeature()
+        }
+
+        Scope(state: \.globalScan, action: \.globalScan) {
+            GlobalScanFeature()
         }
 
         Reduce { state, action in
@@ -687,7 +698,7 @@ public struct AppFeature: Sendable {
                         shareContent = "Selected Documents from Acquisition: \(acquisition.title)\n\n"
 
                         let selectedDocs = acquisition.generatedFilesArray.filter { doc in
-                            return selectedDocumentsForShare.contains(doc.id)
+                            selectedDocumentsForShare.contains(doc.id)
                         }
 
                         for document in selectedDocs {
@@ -715,7 +726,7 @@ public struct AppFeature: Sendable {
                     } else {
                         // Add selected documents
                         let selectedDocs = acquisition.generatedFilesArray.filter { doc in
-                            return selectedDocumentsForShare.contains(doc.id)
+                            selectedDocumentsForShare.contains(doc.id)
                         }
 
                         for document in selectedDocs {
@@ -919,6 +930,34 @@ public struct AppFeature: Sendable {
             case .documentScanner:
                 // Other scanner actions are handled by the child reducer
                 return .none
+
+            // MARK: Global Scan
+
+            case .globalScan(.activateScanner):
+                // When global scan activates, ensure we don't have conflicts
+                // with existing scanner state
+                if state.showingDocumentScanner || state.showingQuickDocumentScanner {
+                    // Dismiss existing scanner first
+                    state.showingDocumentScanner = false
+                    state.showingQuickDocumentScanner = false
+                }
+                return .none
+
+            case .globalScan(.scannerCompleted):
+                // Global scan completed successfully
+                return .run { _ in
+                    // Optionally refresh acquisition data or show success feedback
+                }
+
+            case .globalScan:
+                // Other global scan actions handled by child reducer
+                return .none
+
+            case let .toggleGlobalScanVisibility(visible):
+                return .send(.globalScan(.setVisibility(visible)))
+
+            case let .configureGlobalScan(config):
+                return .send(.globalScan(.updateConfiguration(config)))
 
             case .errorAlert:
                 return .none

@@ -711,19 +711,19 @@ private func convertToParameterValues(_ params: [String: Any]) -> [String: Param
 private func convertToParameterValue(_ value: Any) -> ParameterValue {
     switch value {
     case let stringValue as String:
-        return .string(stringValue)
+        .string(stringValue)
     case let intValue as Int:
-        return .int(intValue)
+        .int(intValue)
     case let doubleValue as Double:
-        return .double(doubleValue)
+        .double(doubleValue)
     case let boolValue as Bool:
-        return .bool(boolValue)
+        .bool(boolValue)
     case let arrayValue as [Any]:
-        return .array(arrayValue.map(convertToParameterValue))
+        .array(arrayValue.map(convertToParameterValue))
     case let dictValue as [String: Any]:
-        return .dictionary(convertToParameterValues(dictValue))
+        .dictionary(convertToParameterValues(dictValue))
     default:
-        return .null
+        .null
     }
 }
 

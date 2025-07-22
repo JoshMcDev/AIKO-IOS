@@ -66,7 +66,7 @@ final class Unit_AcquisitionRepositoryTests: XCTestCase {
         let requirements = "Test requirements"
         let documents: [(fileName: String, data: Data, contentSummary: String?)] = [
             ("test1.pdf", Data("test1".utf8), "Summary 1"),
-            ("test2.docx", Data("test2".utf8), nil),
+            ("test2.docx", Data("test2".utf8), nil)
         ]
 
         // When
@@ -260,7 +260,7 @@ final class Unit_AcquisitionRepositoryTests: XCTestCase {
         // Given
         let documents: [(fileName: String, data: Data, contentSummary: String?)] = [
             ("doc1.pdf", Data("test1".utf8), "Doc 1"),
-            ("doc2.pdf", Data("test2".utf8), "Doc 2"),
+            ("doc2.pdf", Data("test2".utf8), "Doc 2")
         ]
         let acquisition = try await sut.createWithDocuments(
             title: "Test",

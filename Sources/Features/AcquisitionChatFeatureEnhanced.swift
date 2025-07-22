@@ -1,7 +1,7 @@
+import AikoCompat
 import AppCore
 import ComposableArchitecture
 import Foundation
-import AikoCompat
 
 // MARK: - Enhanced Acquisition Chat Feature with Adaptive Prompting
 
@@ -521,23 +521,23 @@ public enum EnhancedChatRole: Equatable {
 private func convertAnyToResponseValue(_ value: Any) -> UserResponse.ResponseValue {
     switch value {
     case let string as String:
-        return .text(string)
+        .text(string)
     case let number as NSNumber:
-        return .numeric(Decimal(number.doubleValue))
+        .numeric(Decimal(number.doubleValue))
     case let double as Double:
-        return .numeric(Decimal(double))
+        .numeric(Decimal(double))
     case let int as Int:
-        return .numeric(Decimal(int))
+        .numeric(Decimal(int))
     case let bool as Bool:
-        return .boolean(bool)
+        .boolean(bool)
     case let date as Date:
-        return .date(date)
+        .date(date)
     case let decimal as Decimal:
-        return .numeric(decimal)
+        .numeric(decimal)
     case let uuid as UUID:
-        return .document(uuid)
+        .document(uuid)
     default:
-        return .text(String(describing: value))
+        .text(String(describing: value))
     }
 }
 
@@ -559,7 +559,7 @@ private enum AdaptivePromptingEngineKey: DependencyKey {
     static var liveValue: any AdaptivePromptingEngineProtocol {
         // Create a mock instance that will be properly initialized when used in @MainActor context
         // This is a workaround for the synchronous DependencyKey requirement
-        return UnsafeAdaptivePromptingEngineWrapper()
+        UnsafeAdaptivePromptingEngineWrapper()
     }
 }
 
@@ -571,15 +571,15 @@ private struct UnsafeAdaptivePromptingEngineWrapper: AdaptivePromptingEngineProt
     }
 
     nonisolated func startConversation(with context: ConversationContext) async -> ConversationSession {
-        return await engine.startConversation(with: context)
+        await engine.startConversation(with: context)
     }
 
     nonisolated func processUserResponse(_ response: UserResponse, in session: ConversationSession) async throws -> NextPrompt? {
-        return try await engine.processUserResponse(response, in: session)
+        try await engine.processUserResponse(response, in: session)
     }
 
     nonisolated func extractContextFromDocuments(_ documents: [ParsedDocument]) async throws -> ExtractedContext {
-        return try await engine.extractContextFromDocuments(documents)
+        try await engine.extractContextFromDocuments(documents)
     }
 
     nonisolated func learnFromInteraction(_ interaction: APEUserInteraction) async {
@@ -587,7 +587,7 @@ private struct UnsafeAdaptivePromptingEngineWrapper: AdaptivePromptingEngineProt
     }
 
     nonisolated func getSmartDefaults(for field: RequirementField) async -> FieldDefault? {
-        return await engine.getSmartDefaults(for: field)
+        await engine.getSmartDefaults(for: field)
     }
 }
 

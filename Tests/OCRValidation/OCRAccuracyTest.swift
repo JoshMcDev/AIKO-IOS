@@ -10,10 +10,6 @@ final class OCRAccuracyTest: XCTestCase {
     let testImagePath = "/Users/J/Desktop/quote pic.jpeg"
     let testPDFPath = "/Users/J/Desktop/quote scan.pdf"
 
-    override func setUp() {
-        super.setUp()
-    }
-
     // MARK: - Test Image OCR
 
     func testImageOCRAccuracy() async throws {
@@ -188,11 +184,11 @@ final class OCRAccuracyTest: XCTestCase {
         let imageVendor = image.entities.first { $0.type == .vendor }?.value
         let pdfVendor = pdf.entities.first { $0.type == .vendor }?.value
 
-        if let iv = imageVendor, let pv = pdfVendor {
-            let similarity = stringSimilarity(iv, pv)
+        if let imageVendorValue = imageVendor, let pdfVendorValue = pdfVendor {
+            let similarity = stringSimilarity(imageVendorValue, pdfVendorValue)
             print("Vendor match: \(String(format: "%.2f%%", similarity * 100))")
-            print("  Image: \(iv)")
-            print("  PDF: \(pv)")
+            print("  Image: \(imageVendorValue)")
+            print("  PDF: \(pdfVendorValue)")
         }
 
         // Compare prices
@@ -214,9 +210,9 @@ final class OCRAccuracyTest: XCTestCase {
         }
     }
 
-    private func stringSimilarity(_ s1: String, _ s2: String) -> Double {
-        let longer = s1.count > s2.count ? s1 : s2
-        let shorter = s1.count > s2.count ? s2 : s1
+    private func stringSimilarity(_ firstString: String, _ secondString: String) -> Double {
+        let longer = firstString.count > secondString.count ? firstString : secondString
+        let shorter = firstString.count > secondString.count ? secondString : firstString
 
         if longer.count == 0 { return 1.0 }
 
@@ -224,35 +220,35 @@ final class OCRAccuracyTest: XCTestCase {
         return (Double(longer.count) - Double(editDistance)) / Double(longer.count)
     }
 
-    private func levenshteinDistance(_ s1: String, _ s2: String) -> Int {
-        let m = s1.count
-        let n = s2.count
+    private func levenshteinDistance(_ firstString: String, _ secondString: String) -> Int {
+        let firstLength = firstString.count
+        let secondLength = secondString.count
 
-        if m == 0 { return n }
-        if n == 0 { return m }
+        if firstLength == 0 { return secondLength }
+        if secondLength == 0 { return firstLength }
 
-        var matrix = Array(repeating: Array(repeating: 0, count: n + 1), count: m + 1)
+        var matrix = Array(repeating: Array(repeating: 0, count: secondLength + 1), count: firstLength + 1)
 
-        for i in 0 ... m {
-            matrix[i][0] = i
+        for rowIndex in 0 ... firstLength {
+            matrix[rowIndex][0] = rowIndex
         }
 
-        for j in 0 ... n {
-            matrix[0][j] = j
+        for columnIndex in 0 ... secondLength {
+            matrix[0][columnIndex] = columnIndex
         }
 
-        for i in 1 ... m {
-            for j in 1 ... n {
-                let cost = s1[s1.index(s1.startIndex, offsetBy: i - 1)] == s2[s2.index(s2.startIndex, offsetBy: j - 1)] ? 0 : 1
-                matrix[i][j] = min(
-                    matrix[i - 1][j] + 1,
-                    matrix[i][j - 1] + 1,
-                    matrix[i - 1][j - 1] + cost
+        for rowIndex in 1 ... firstLength {
+            for columnIndex in 1 ... secondLength {
+                let cost = firstString[firstString.index(firstString.startIndex, offsetBy: rowIndex - 1)] == secondString[secondString.index(secondString.startIndex, offsetBy: columnIndex - 1)] ? 0 : 1
+                matrix[rowIndex][columnIndex] = min(
+                    matrix[rowIndex - 1][columnIndex] + 1,
+                    matrix[rowIndex][columnIndex - 1] + 1,
+                    matrix[rowIndex - 1][columnIndex - 1] + cost
                 )
             }
         }
 
-        return matrix[m][n]
+        return matrix[firstLength][secondLength]
     }
 }
 

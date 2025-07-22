@@ -17,11 +17,11 @@ public struct ExtractedFormData: Equatable, Sendable {
     }
 
     public var highConfidenceFields: [FormField] {
-        return fields.filter { $0.confidence.isHighConfidence }
+        fields.filter(\.confidence.isHighConfidence)
     }
 
     public var criticalFields: [FormField] {
-        return fields.filter { $0.isCritical }
+        fields.filter(\.isCritical)
     }
 }
 

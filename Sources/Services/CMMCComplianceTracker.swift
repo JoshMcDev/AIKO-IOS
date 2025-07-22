@@ -154,11 +154,11 @@ private actor CMMCStatusStorage {
     }
 
     func getStatus(_ requirementId: String) -> (Bool, CMMCEvidence?)? {
-        return requirementStatus[requirementId]
+        requirementStatus[requirementId]
     }
 
     func getAllStatuses() -> [String: (Bool, CMMCEvidence?)] {
-        return requirementStatus
+        requirementStatus
     }
 }
 
@@ -225,7 +225,7 @@ extension CMMCComplianceTracker: DependencyKey {
             calculateComplianceScore: { @Sendable level in
                 let requirements = getCMMCRequirements(for: level)
                 let allStatuses = await storage.getAllStatuses()
-                let implementedCount = requirements.filter { allStatuses[$0.id]?.0 ?? false }.count
+                let implementedCount = requirements.count(where: { allStatuses[$0.id]?.0 ?? false })
                 return Double(implementedCount) / Double(requirements.count)
             },
 

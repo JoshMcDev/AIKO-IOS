@@ -1,17 +1,17 @@
-import Foundation
+import AikoCompat
 import AppCore
 import ComposableArchitecture
-import AikoCompat
+import Foundation
 
 // MARK: - Mock AI Provider Factory
 
-public final class MockAIProviderFactory {
+public enum MockAIProviderFactory {
     public static var mockProvider: MockAIProvider?
-    
+
     public static func setMockProvider(_ provider: MockAIProvider) {
         mockProvider = provider
     }
-    
+
     public static func reset() {
         mockProvider = nil
     }
@@ -23,17 +23,17 @@ public final class MockAIProvider: AIProvider, @unchecked Sendable {
     public var responses: [String] = []
     public var callCount = 0
     public var lastRequest: AICompletionRequest?
-    
+
     public init(responses: [String] = []) {
         self.responses = responses
     }
-    
+
     public func complete(_ request: AICompletionRequest) async throws -> AICompletionResponse {
         callCount += 1
         lastRequest = request
-        
+
         let response = responses.isEmpty ? "Mock response" : responses[min(callCount - 1, responses.count - 1)]
-        
+
         return AICompletionResponse(
             content: response,
             model: request.model,
@@ -69,7 +69,7 @@ public enum TestDataGenerator {
         data.technicalRequirements = ["Requirement 1", "Requirement 2"]
         return data
     }
-    
+
     public static func sampleGeneratedDocument() -> GeneratedDocument {
         GeneratedDocument(
             id: UUID(),
@@ -80,7 +80,7 @@ public enum TestDataGenerator {
             requirements: "Test requirements"
         )
     }
-    
+
     public static func sampleAcquisition() -> Acquisition {
         Acquisition(
             id: UUID(),
@@ -108,21 +108,21 @@ public enum TestUtilities {
             group.addTask {
                 try await operation()
             }
-            
+
             group.addTask {
                 try await Task.sleep(nanoseconds: UInt64(timeout * 1_000_000_000))
                 throw TimeoutError()
             }
-            
+
             for try await result in group {
                 group.cancelAll()
                 return result
             }
-            
+
             throw TimeoutError()
         }
     }
-    
+
     /// Creates a test store with mock dependencies
     public static func createTestStore<State, Action>(
         initialState: State,
@@ -155,33 +155,33 @@ public final class MockDocumentCacheService: DocumentCacheServiceProtocol, @unch
         lastCleanup: nil,
         mostAccessedDocumentTypes: []
     )
-    
+
     public init() {}
-    
+
     public func cacheDocument(_ document: GeneratedDocument) async throws {
         let key = "\(document.documentCategory.rawValue)-\(document.title)"
         cachedDocuments[key] = document
         statistics.totalCachedDocuments = cachedDocuments.count
     }
-    
+
     public func getCachedDocument(type: DocumentType, requirements: String) async -> GeneratedDocument? {
         let key = "\(type.rawValue)-\(requirements)"
         return cachedDocuments[key]
     }
-    
+
     public func clearCache() async throws {
         cachedDocuments.removeAll()
         statistics.totalCachedDocuments = 0
     }
-    
+
     public func getCacheStatistics() async -> CacheStatistics {
         statistics
     }
-    
+
     public func preloadFrequentDocuments() async throws {
         // Mock implementation
     }
-    
+
     public func optimizeCacheForMemory() async throws {
         // Mock implementation
     }
@@ -191,13 +191,13 @@ public final class MockDocumentCacheService: DocumentCacheServiceProtocol, @unch
 
 public final class MockAcquisitionService: AcquisitionServiceProtocol, @unchecked Sendable {
     public var acquisitions: [Acquisition] = []
-    
+
     public init() {}
-    
+
     public func createAcquisition(
         _ title: String,
         _ description: String,
-        _ uploadedDocuments: [UploadedDocument]
+        _: [UploadedDocument]
     ) async throws -> Acquisition {
         let acquisition = Acquisition(
             id: UUID(),
@@ -213,21 +213,21 @@ public final class MockAcquisitionService: AcquisitionServiceProtocol, @unchecke
         acquisitions.append(acquisition)
         return acquisition
     }
-    
+
     public func updateAcquisition(_ acquisition: Acquisition) async throws {
         if let index = acquisitions.firstIndex(where: { $0.id == acquisition.id }) {
             acquisitions[index] = acquisition
         }
     }
-    
+
     public func getAcquisition(id: UUID) async throws -> Acquisition? {
         acquisitions.first { $0.id == id }
     }
-    
+
     public func getAllAcquisitions() async throws -> [Acquisition] {
         acquisitions
     }
-    
+
     public func deleteAcquisition(id: UUID) async throws {
         acquisitions.removeAll { $0.id == id }
     }

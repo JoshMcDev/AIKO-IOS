@@ -1,7 +1,7 @@
+import AikoCompat
 import AppCore
 import ComposableArchitecture
 import Foundation
-import AikoCompat
 
 /// Batch document generation service that combines multiple document requests into single API calls
 public struct BatchDocumentGenerator: Sendable {

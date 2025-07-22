@@ -446,7 +446,7 @@ public class UserPatternLearner {
             .compactMap { Double($0.metadata["completionTime"] ?? "0") }
             .reduce(0.0, +) / Double(max(1, recentPatterns.count))
 
-        let reuseRate = Double(patterns.filter { $0.occurrences > 1 }.count) / Double(max(1, patterns.count))
+        let reuseRate = Double(patterns.count(where: { $0.occurrences > 1 })) / Double(max(1, patterns.count))
 
         return EfficiencyMetrics(
             averageCompletionTime: avgCompletionTime,

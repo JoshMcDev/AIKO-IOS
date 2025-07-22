@@ -117,6 +117,9 @@ public final class ConfidenceBasedAutoFillEngine: @unchecked Sendable {
         set { queue.async(flags: .barrier) { self._metrics = newValue } }
     }
 
+    // Government metrics tracking - placeholder for enhanced version
+    // var _governmentMetrics: GovernmentFormMetrics = .init()
+
     // MARK: - Initialization
 
     public init(

@@ -1,7 +1,7 @@
+import AikoCompat
 import AppCore
 import ComposableArchitecture
 import Foundation
-import AikoCompat
 
 public struct RequirementAnalyzer: Sendable {
     public var analyzeRequirements: @Sendable (String) async throws -> (response: String, recommendedDocuments: [DocumentType])
@@ -145,12 +145,12 @@ extension RequirementAnalyzer: DependencyKey {
 
                 let messages = [
                     AIMessage.user("""
-                        Please enhance and improve the following acquisition requirements prompt to make it more specific, comprehensive, and actionable for generating government contract documents. Keep the enhanced version clear and concise:
+                    Please enhance and improve the following acquisition requirements prompt to make it more specific, comprehensive, and actionable for generating government contract documents. Keep the enhanced version clear and concise:
 
-                        Original prompt: \(prompt)
+                    Original prompt: \(prompt)
 
-                        Enhanced prompt:
-                        """)
+                    Enhanced prompt:
+                    """)
                 ]
 
                 let request = AICompletionRequest(

@@ -107,13 +107,12 @@ extension GeneratedFile {
     /// Convert Core Data GeneratedFile to AppCore GeneratedDocument
     func toAppCoreModel() -> GeneratedDocument {
         // Determine document type from fileType
-        let documentType: DocumentType
-        if let fileType = fileType,
-           let docType = DocumentType.allCases.first(where: { $0.rawValue == fileType }) {
-            documentType = docType
+        let documentType: DocumentType = if let fileType,
+                                            let docType = DocumentType.allCases.first(where: { $0.rawValue == fileType }) {
+            docType
         } else {
             // Default to SOW if type cannot be determined
-            documentType = .sow
+            .sow
         }
 
         return GeneratedDocument(

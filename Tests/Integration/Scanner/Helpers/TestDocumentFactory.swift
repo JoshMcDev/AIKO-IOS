@@ -1,21 +1,20 @@
-import Foundation
+@testable import AIKOiOS
+@testable import AppCore
 import CoreGraphics
+import Foundation
 import ImageIO
 import UniformTypeIdentifiers
-@testable import AppCore
-@testable import AIKOiOS
 
 /// Factory for generating test documents with various quality levels and government form types
 /// Supports SF-18, SF-26, DD-1155 form templates for comprehensive testing
-public final class TestDocumentFactory {
-    
+public enum TestDocumentFactory {
     // MARK: - Document Types
-    
+
     public enum GovernmentFormType: String, CaseIterable {
         case sf18 = "SF-18"
-        case sf26 = "SF-26" 
+        case sf26 = "SF-26"
         case dd1155 = "DD-1155"
-        
+
         var displayName: String {
             switch self {
             case .sf18: return "Request and Authorization for Job Analysis"
@@ -23,18 +22,18 @@ public final class TestDocumentFactory {
             case .dd1155: return "Request and Receipt for Issue of Subsistence"
             }
         }
-        
+
         var expectedFields: [String] {
             switch self {
             case .sf18:
                 return [
                     "Employee Name",
-                    "Employee ID", 
+                    "Employee ID",
                     "Department",
                     "Position Title",
                     "Request Date",
                     "Supervisor Name",
-                    "Reason for Request"
+                    "Reason for Request",
                 ]
             case .sf26:
                 return [
@@ -43,7 +42,7 @@ public final class TestDocumentFactory {
                     "Job Title",
                     "Analysis Type",
                     "Priority Level",
-                    "Due Date"
+                    "Due Date",
                 ]
             case .dd1155:
                 return [
@@ -53,50 +52,50 @@ public final class TestDocumentFactory {
                     "Request Date",
                     "Items Requested",
                     "Quantity",
-                    "Authorizing Officer"
+                    "Authorizing Officer",
                 ]
             }
         }
     }
-    
+
     // MARK: - Document Quality Levels
-    
+
     public enum DocumentQuality: String, CaseIterable {
-        case clean = "clean"
-        case damaged = "damaged"
-        case rotated = "rotated"
-        case blurry = "blurry"
+        case clean
+        case damaged
+        case rotated
+        case blurry
         case lowContrast = "low_contrast"
-        case skewed = "skewed"
-        case handwritten = "handwritten"
-        
+        case skewed
+        case handwritten
+
         var confidenceRange: ClosedRange<Double> {
             switch self {
-            case .clean: return 0.95...1.0
-            case .damaged: return 0.6...0.8
-            case .rotated: return 0.8...0.9
-            case .blurry: return 0.5...0.7
-            case .lowContrast: return 0.6...0.8
-            case .skewed: return 0.7...0.85
-            case .handwritten: return 0.4...0.7
+            case .clean: return 0.95 ... 1.0
+            case .damaged: return 0.6 ... 0.8
+            case .rotated: return 0.8 ... 0.9
+            case .blurry: return 0.5 ... 0.7
+            case .lowContrast: return 0.6 ... 0.8
+            case .skewed: return 0.7 ... 0.85
+            case .handwritten: return 0.4 ... 0.7
             }
         }
-        
+
         var ocrAccuracyRange: ClosedRange<Double> {
             switch self {
-            case .clean: return 0.95...0.99
-            case .damaged: return 0.7...0.85
-            case .rotated: return 0.85...0.95
-            case .blurry: return 0.5...0.75
-            case .lowContrast: return 0.65...0.8
-            case .skewed: return 0.75...0.9
-            case .handwritten: return 0.4...0.7
+            case .clean: return 0.95 ... 0.99
+            case .damaged: return 0.7 ... 0.85
+            case .rotated: return 0.85 ... 0.95
+            case .blurry: return 0.5 ... 0.75
+            case .lowContrast: return 0.65 ... 0.8
+            case .skewed: return 0.75 ... 0.9
+            case .handwritten: return 0.4 ... 0.7
             }
         }
     }
-    
+
     // MARK: - Document Generation
-    
+
     /// Generate test document with specified form type and quality
     /// - Parameters:
     ///   - formType: Government form type to generate
@@ -108,14 +107,14 @@ public final class TestDocumentFactory {
         quality: DocumentQuality,
         pageCount: Int = 1
     ) -> ScannedDocument {
-        let pages = (1...pageCount).map { pageNumber in
+        let pages = (1 ... pageCount).map { pageNumber in
             generateTestPage(
                 formType: formType,
                 quality: quality,
                 pageNumber: pageNumber
             )
         }
-        
+
         return ScannedDocument(
             id: UUID(),
             pages: pages,
@@ -124,7 +123,7 @@ public final class TestDocumentFactory {
             confidence: randomConfidence(for: quality)
         )
     }
-    
+
     /// Generate a single test page
     /// - Parameters:
     ///   - formType: Government form type
@@ -138,7 +137,7 @@ public final class TestDocumentFactory {
     ) -> ScannedPage {
         let imageData = generateImageData(formType: formType, quality: quality)
         let processingResult = generateProcessingResult(formType: formType, quality: quality)
-        
+
         return ScannedPage(
             id: UUID(),
             imageData: imageData,
@@ -148,7 +147,7 @@ public final class TestDocumentFactory {
             confidence: randomConfidence(for: quality)
         )
     }
-    
+
     /// Generate sample text content based on form type and quality
     /// - Parameters:
     ///   - formType: Government form type
@@ -161,27 +160,27 @@ public final class TestDocumentFactory {
         let baseText = getSampleFormText(for: formType)
         return applyQualityEffects(to: baseText, quality: quality)
     }
-    
+
     /// Generate realistic image data for testing
     /// - Parameters:
     ///   - formType: Government form type
     ///   - quality: Quality level
     /// - Returns: Mock image data representing the document
     public static func generateImageData(
-        formType: GovernmentFormType,
+        formType _: GovernmentFormType,
         quality: DocumentQuality
     ) -> Data {
         // Generate a minimal but valid image format for testing
         // In a real implementation, this would create actual form templates
         let baseImageData = createMinimalJPEGData(
-            width: 612,  // Standard 8.5x11" at 72 DPI
+            width: 612, // Standard 8.5x11" at 72 DPI
             height: 792,
             quality: quality
         )
-        
+
         return baseImageData
     }
-    
+
     /// Generate processing result for a test document
     /// - Parameters:
     ///   - formType: Government form type
@@ -192,20 +191,20 @@ public final class TestDocumentFactory {
         quality: DocumentQuality
     ) -> DocumentImageProcessor.ProcessingResult {
         let confidence = randomConfidence(for: quality)
-        
+
         return DocumentImageProcessor.ProcessingResult(
             processedImageData: generateImageData(formType: formType, quality: quality),
             qualityMetrics: DocumentImageProcessor.QualityMetrics(
                 overallConfidence: confidence,
                 recommendedForOCR: confidence > 0.7
             ),
-            processingTime: Double.random(in: 0.1...2.0),
+            processingTime: Double.random(in: 0.1 ... 2.0),
             appliedFilters: getAppliedFilters(for: quality)
         )
     }
-    
+
     // MARK: - Batch Generation Helpers
-    
+
     /// Generate a batch of test documents with different qualities
     /// - Parameter formType: Government form type
     /// - Returns: Array of ScannedDocuments with varying qualities
@@ -216,7 +215,7 @@ public final class TestDocumentFactory {
             generateTestDocument(formType: formType, quality: quality)
         }
     }
-    
+
     /// Generate batch of documents for all form types
     /// - Parameter quality: Quality level for all documents
     /// - Returns: Array of ScannedDocuments for different form types
@@ -227,30 +226,30 @@ public final class TestDocumentFactory {
             generateTestDocument(formType: formType, quality: quality)
         }
     }
-    
+
     /// Generate comprehensive test suite with all combinations
     /// - Returns: Array of ScannedDocuments covering all form types and qualities
     public static func generateComprehensiveTestSuite() -> [ScannedDocument] {
         var documents: [ScannedDocument] = []
-        
+
         for formType in GovernmentFormType.allCases {
             for quality in DocumentQuality.allCases {
                 documents.append(generateTestDocument(formType: formType, quality: quality))
             }
         }
-        
+
         return documents
     }
-    
+
     // MARK: - Private Implementation
-    
+
     private static func getSampleFormText(for formType: GovernmentFormType) -> String {
         switch formType {
         case .sf18:
             return """
             REQUEST AND AUTHORIZATION FOR JOB ANALYSIS
             SF-18 (Rev. 10-83)
-            
+
             Employee Name: John A. Smith
             Employee ID: EMP123456
             Department: Information Technology
@@ -258,34 +257,34 @@ public final class TestDocumentFactory {
             Request Date: 03/15/2024
             Supervisor Name: Jane M. Johnson
             Reason for Request: Position reclassification review
-            
+
             I hereby request a job analysis for the above position.
-            
+
             Supervisor Signature: _________________ Date: _______
             """
-            
+
         case .sf26:
             return """
             REQUEST FOR JOB ANALYSIS
             SF-26 (Rev. 05-89)
-            
+
             Requestor Name: Michael R. Davis
             Organization: Federal Aviation Administration
             Job Title: Air Traffic Controller
             Analysis Type: Classification Review
             Priority Level: High
             Due Date: 04/30/2024
-            
+
             This request is being submitted for official classification review.
-            
+
             Authorized Official: _________________ Date: _______
             """
-            
+
         case .dd1155:
             return """
             REQUEST AND RECEIPT FOR ISSUE OF SUBSISTENCE
             DD FORM 1155, JUN 2003
-            
+
             Service Member Name: SSgt Robert K. Wilson
             Rank/Grade: E-5
             Unit: 23rd Fighter Wing
@@ -293,38 +292,38 @@ public final class TestDocumentFactory {
             Items Requested: MRE Meals, Type A Rations
             Quantity: 50 units
             Authorizing Officer: Capt. Sarah L. Martinez
-            
+
             For Official Use Only
-            
+
             Signature: _________________ Date: _______
             """
         }
     }
-    
+
     private static func applyQualityEffects(to text: String, quality: DocumentQuality) -> String {
         switch quality {
         case .clean:
             return text
         case .damaged:
             return text.replacingOccurrences(of: "a", with: "o")
-                      .replacingOccurrences(of: "e", with: "c")
+                .replacingOccurrences(of: "e", with: "c")
         case .rotated, .skewed:
             return text.replacingOccurrences(of: "0", with: "O")
-                      .replacingOccurrences(of: "1", with "l")
+                .replacingOccurrences(of: "1", with "l")
         case .blurry, .lowContrast:
             return text.replacingOccurrences(of: "m", with: "n")
-                      .replacingOccurrences(of: "r", with: "n")
+                .replacingOccurrences(of: "r", with: "n")
         case .handwritten:
             return text.replacingOccurrences(of: "Smith", with: "5m1th")
-                      .replacingOccurrences(of: "Date", with: "Oate")
+                .replacingOccurrences(of: "Date", with: "Oate")
         }
     }
-    
+
     private static func randomConfidence(for quality: DocumentQuality) -> Double {
         let range = quality.confidenceRange
         return Double.random(in: range)
     }
-    
+
     private static func getAppliedFilters(for quality: DocumentQuality) -> [String] {
         switch quality {
         case .clean:
@@ -343,32 +342,31 @@ public final class TestDocumentFactory {
             return ["morphological_closing", "contrast_enhancement", "noise_reduction"]
         }
     }
-    
-    private static func createMinimalJPEGData(width: Int, height: Int, quality: DocumentQuality) -> Data {
+
+    private static func createMinimalJPEGData(width _: Int, height _: Int, quality: DocumentQuality) -> Data {
         // Create minimal valid JPEG data for testing
         // In production, this would generate actual document images
         var jpegData = Data([
             0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46,
             0x49, 0x46, 0x00, 0x01, 0x01, 0x01, 0x00, 0x48,
-            0x00, 0x48, 0x00, 0x00
+            0x00, 0x48, 0x00, 0x00,
         ])
-        
+
         // Add some mock content to simulate different qualities
         let contentSize = quality == .clean ? 1024 : 512
         let mockContent = Data(repeating: 0x80, count: contentSize)
         jpegData.append(mockContent)
-        
+
         // JPEG end marker
         jpegData.append(Data([0xFF, 0xD9]))
-        
+
         return jpegData
     }
 }
 
 // MARK: - Extensions for Test Data Models
 
-extension ScannedDocument {
-    
+public extension ScannedDocument {
     /// Convenience initializer for testing
     /// - Parameters:
     ///   - id: Document identifier
@@ -376,7 +374,7 @@ extension ScannedDocument {
     ///   - documentType: Type of document (optional)
     ///   - createdAt: Creation timestamp (optional)
     ///   - confidence: Overall confidence score (optional)
-    public init(
+    init(
         id: UUID,
         pages: [ScannedPage],
         documentType: String? = nil,
@@ -391,8 +389,7 @@ extension ScannedDocument {
     }
 }
 
-extension ScannedPage {
-    
+public extension ScannedPage {
     /// Convenience initializer for testing
     /// - Parameters:
     ///   - id: Page identifier
@@ -401,7 +398,7 @@ extension ScannedPage {
     ///   - processingResult: Processing result (optional)
     ///   - extractedText: OCR extracted text (optional)
     ///   - confidence: Page confidence score (optional)
-    public init(
+    init(
         id: UUID,
         imageData: Data,
         pageNumber: Int,

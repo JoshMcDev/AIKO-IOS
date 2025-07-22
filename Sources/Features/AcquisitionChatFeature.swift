@@ -1,7 +1,7 @@
+import AikoCompat
 import AppCore
 import ComposableArchitecture
 import Foundation
-import AikoCompat
 
 @Reducer
 public struct AcquisitionChatFeature: Sendable {
@@ -129,7 +129,7 @@ public struct AcquisitionChatFeature: Sendable {
                 requirementType,
                 businessNeed
             ]
-            let filledFields = fields.filter { !$0.isEmpty }.count
+            let filledFields = fields.count(where: { !$0.isEmpty })
             return Double(filledFields) / Double(fields.count)
         }
 
@@ -576,12 +576,12 @@ public struct AcquisitionChatFeature: Sendable {
                         // Use AI to enhance the prompt
                         let messages = [
                             AIMessage.user("""
-                                Please enhance and improve the following prompt to make it clearer, more specific, and more effective for generating government contract documents. Keep the enhanced version concise but comprehensive:
+                            Please enhance and improve the following prompt to make it clearer, more specific, and more effective for generating government contract documents. Keep the enhanced version concise but comprehensive:
 
-                                Original prompt: \(input)
+                            Original prompt: \(input)
 
-                                Enhanced prompt:
-                                """)
+                            Enhanced prompt:
+                            """)
                         ]
 
                         let request = AICompletionRequest(
@@ -1023,37 +1023,37 @@ public struct AcquisitionChatFeature: Sendable {
         // Convert to AICompletionRequest
         let messages = [
             AIMessage.user("""
-                Based on the current phase of acquisition planning (\(phase)) and the user's input,
-                provide a response that:
-                1. Acknowledges and processes their input
-                2. Updates the requirements data as appropriate
-                3. Asks the next relevant question or provides guidance
-                4. Determines which documents are ready to generate
-                5. Recommends the next phase
+            Based on the current phase of acquisition planning (\(phase)) and the user's input,
+            provide a response that:
+            1. Acknowledges and processes their input
+            2. Updates the requirements data as appropriate
+            3. Asks the next relevant question or provides guidance
+            4. Determines which documents are ready to generate
+            5. Recommends the next phase
 
-                Current user input: \(input)
+            Current user input: \(input)
 
-                IMPORTANT:
-                - When you have enough information to predict values, present them clearly
-                - Ask for explicit confirmation before marking documents as ready
-                - If user responds with "yes", "correct", "confirm" or similar, treat as confirmation
-                - Update predicted values in your response
+            IMPORTANT:
+            - When you have enough information to predict values, present them clearly
+            - Ask for explicit confirmation before marking documents as ready
+            - If user responds with "yes", "correct", "confirm" or similar, treat as confirmation
+            - Update predicted values in your response
 
-                Response format when presenting predictions:
-                ```
-                Based on our discussion, I've prepared the following values:
+            Response format when presenting predictions:
+            ```
+            Based on our discussion, I've prepared the following values:
 
-                **Predicted Values:**
-                - Contract Type: [predicted value]
-                - Evaluation Method: [predicted value]
-                - Set-aside: [predicted value]
+            **Predicted Values:**
+            - Contract Type: [predicted value]
+            - Evaluation Method: [predicted value]
+            - Set-aside: [predicted value]
 
-                Please confirm if these are correct, or let me know what needs to be changed.
-                ```
+            Please confirm if these are correct, or let me know what needs to be changed.
+            ```
 
-                Respond in a conversational but professional manner as a government contracting expert.
-                Format your response using markdown for better readability.
-                """)
+            Respond in a conversational but professional manner as a government contracting expert.
+            Format your response using markdown for better readability.
+            """)
         ]
 
         let request = AICompletionRequest(

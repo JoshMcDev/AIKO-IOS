@@ -1,7 +1,7 @@
+import AikoCompat
 import AppCore
 import ComposableArchitecture
 import Foundation
-import AikoCompat
 
 public struct AIDocumentGenerator: Sendable {
     public var generateDocuments: @Sendable (String, Set<DocumentType>) async throws -> [GeneratedDocument]
@@ -40,8 +40,10 @@ extension AIDocumentGenerator: DependencyKey {
                         requirements: requirements,
                         profile: profile
                     ) {
+                        let dateString = Date().formatted(date: .abbreviated, time: .omitted)
+                        let title = "\(documentType.shortName) - \(dateString)"
                         let document = GeneratedDocument(
-                            title: "\(documentType.shortName) - \(Date().formatted(date: .abbreviated, time: .omitted))",
+                            title: title,
                             documentType: documentType,
                             content: cachedContent
                         )
@@ -66,7 +68,10 @@ extension AIDocumentGenerator: DependencyKey {
                         var processedTemplate = template
                         if let profile {
                             for (key, value) in profile.templateVariables {
-                                processedTemplate = processedTemplate.replacingOccurrences(of: "{{\(key)}}", with: value)
+                                processedTemplate = processedTemplate.replacingOccurrences(
+                                    of: "{{\(key)}}", 
+                                    with: value
+                                )
                             }
                         }
 
@@ -289,32 +294,35 @@ extension AIDocumentGenerator: DependencyKey {
 
         if documentType == .requestForProposal {
             return """
-            You are an expert federal contracting officer specializing in complex acquisitions and Request for Proposal (RFP) documents.
-            You have extensive experience with FAR Part 15 negotiated procurements and understand how to structure comprehensive RFPs.
-            Your RFPs include all required sections (A through M), clear evaluation criteria, and detailed instructions to offerors.
-            You excel at crafting requirements that encourage innovation while ensuring fair competition. Your documents are
-            professionally written, legally compliant, and designed to elicit high-quality proposals from industry.
+            You are an expert federal contracting officer specializing in complex acquisitions and Request for 
+            Proposal (RFP) documents. You have extensive experience with FAR Part 15 negotiated procurements and 
+            understand how to structure comprehensive RFPs. Your RFPs include all required sections (A through M), 
+            clear evaluation criteria, and detailed instructions to offerors. You excel at crafting requirements 
+            that encourage innovation while ensuring fair competition. Your documents are professionally written, 
+            legally compliant, and designed to elicit high-quality proposals from industry.
             \(formattingInstructions)
             """
         } else if documentType == .rrd {
             return """
-            You are AIKO, an expert federal contracting AI assistant conducting an interactive requirements refinement session.
-            Your role is to guide the user through a structured dialogue to gather, clarify, and refine their procurement requirements.
-            You should ask probing questions, identify gaps, suggest enhancements, and help transform vague needs into clear,
-            actionable requirements. Use your expertise in federal contracting to anticipate needs, identify risks, and recommend
-            best practices. The output should be a comprehensive Statement of Requirements that can serve as the foundation for
-            all subsequent procurement documents. Be conversational yet professional, and always explain the reasoning behind
-            your questions and recommendations to educate the user about federal procurement best practices.
+            You are AIKO, an expert federal contracting AI assistant conducting an interactive requirements 
+            refinement session. Your role is to guide the user through a structured dialogue to gather, clarify, 
+            and refine their procurement requirements. You should ask probing questions, identify gaps, suggest 
+            enhancements, and help transform vague needs into clear, actionable requirements. Use your expertise 
+            in federal contracting to anticipate needs, identify risks, and recommend best practices. The output 
+            should be a comprehensive Statement of Requirements that can serve as the foundation for all subsequent 
+            procurement documents. Be conversational yet professional, and always explain the reasoning behind your 
+            questions and recommendations to educate the user about federal procurement best practices.
             \(formattingInstructions)
             """
         } else if documentType == .evaluationPlan {
             return """
-            You are an expert federal contracting officer specializing in source selection and evaluation procedures.
-            You have extensive experience with FAR Part 12 commercial item acquisitions and FAR Part 15 negotiated procurements.
-            You understand how to develop comprehensive evaluation plans that ensure fair, transparent, and defensible source selections.
-            Your evaluation plans include clear criteria, detailed methodologies, and structured approaches that comply with FAR 52.212-1
-            and FAR 52.212-2 for commercial items. You excel at creating evaluation factors that align with acquisition objectives
-            while maintaining objectivity and consistency. Your documents are professionally written, legally compliant, and designed
+            You are an expert federal contracting officer specializing in source selection and evaluation 
+            procedures. You have extensive experience with FAR Part 12 commercial item acquisitions and FAR Part 15 
+            negotiated procurements. You understand how to develop comprehensive evaluation plans that ensure fair, 
+            transparent, and defensible source selections. Your evaluation plans include clear criteria, detailed 
+            methodologies, and structured approaches that comply with FAR 52.212-1 and FAR 52.212-2 for commercial 
+            items. You excel at creating evaluation factors that align with acquisition objectives while maintaining 
+            objectivity and consistency. Your documents are professionally written, legally compliant, and designed 
             to guide evaluation teams through complex source selections.
             \(formattingInstructions)
             """
@@ -763,7 +771,13 @@ extension AIDocumentGenerator: DependencyKey {
         }
     }
 
-    public static func createDFPrompt(for dfDocumentType: DFDocumentType, requirements: String, template: String, quickReference: String, profile _: UserProfile?) -> String {
+    public static func createDFPrompt(
+        for dfDocumentType: DFDocumentType,
+        requirements: String,
+        template: String,
+        quickReference: String,
+        profile _: UserProfile?
+    ) -> String {
         """
         You are creating a Determination and Findings (D&F) document for: \(dfDocumentType.rawValue)
 

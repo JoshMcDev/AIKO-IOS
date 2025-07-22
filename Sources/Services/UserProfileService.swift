@@ -75,7 +75,7 @@ private actor TestProfileStorage {
     private var savedProfile: UserProfile?
 
     func getProfile() -> UserProfile? {
-        return savedProfile
+        savedProfile
     }
 
     func setProfile(_ profile: UserProfile) {
@@ -87,7 +87,7 @@ private actor TestProfileStorage {
     }
 
     func hasProfile() -> Bool {
-        return savedProfile != nil
+        savedProfile != nil
     }
 }
 

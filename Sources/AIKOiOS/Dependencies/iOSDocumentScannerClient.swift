@@ -486,7 +486,7 @@
                 return .date
             }
 
-            // Number pattern  
+            // Number pattern
             if Double(value.replacingOccurrences(of: ",", with: "")) != nil {
                 return .number
             }
@@ -498,16 +498,16 @@
         private static func mapFieldType(_ formFieldType: FieldType) -> DocumentFormField.FieldType {
             switch formFieldType {
             case .text:
-                return .text
+                .text
             case .number:
-                return .number
+                .number
             case .currency:
-                return .currency
+                .currency
             case .date:
-                return .date
-            case .cageCode, .uei, .contractType, .fundingSource, .estimatedValue:
+                .date
+            case .cageCode, .uei, .contractType, .fundingSource, .estimatedValue, .address:
                 // Government-specific fields map to text for document form representation
-                return .text
+                .text
             }
         }
 

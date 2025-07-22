@@ -62,7 +62,7 @@ public actor GovernmentFormService: DomainService {
 
     /// Get all forms for an acquisition
     public func getForms(for acquisitionId: UUID) async throws -> [GovernmentFormModel] {
-        return try await coreDataActor.performViewContextTask { context in
+        try await coreDataActor.performViewContextTask { context in
             let entities = GovernmentFormData.fetchForAcquisition(acquisitionId, in: context)
             return entities.compactMap { GovernmentFormModel(from: $0) }
         }
@@ -70,7 +70,7 @@ public actor GovernmentFormService: DomainService {
 
     /// Get forms by type
     public func getForms(ofType type: String) async throws -> [GovernmentFormModel] {
-        return try await coreDataActor.performViewContextTask { context in
+        try await coreDataActor.performViewContextTask { context in
             let entities = GovernmentFormData.fetchByType(type, in: context)
             return entities.compactMap { GovernmentFormModel(from: $0) }
         }
@@ -78,7 +78,7 @@ public actor GovernmentFormService: DomainService {
 
     /// Get a specific form
     public func getForm(id: UUID) async throws -> GovernmentFormModel? {
-        return try await coreDataActor.performViewContextTask { context in
+        try await coreDataActor.performViewContextTask { context in
             let entity = GovernmentFormData.fetchById(id, in: context)
             return entity.flatMap { GovernmentFormModel(from: $0) }
         }

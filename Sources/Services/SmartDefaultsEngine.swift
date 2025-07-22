@@ -32,22 +32,22 @@ public final class SmartDefaultsEngine: @unchecked Sendable {
     private func convertToResponseValue(_ value: Any) -> UserResponse.ResponseValue {
         switch value {
         case let string as String:
-            return convertStringToResponseValue(string)
+            convertStringToResponseValue(string)
         case let bool as Bool:
-            return .boolean(bool)
+            .boolean(bool)
         case let int as Int:
-            return .numeric(Decimal(int))
+            .numeric(Decimal(int))
         case let double as Double:
-            return .numeric(Decimal(double))
+            .numeric(Decimal(double))
         case let decimal as Decimal:
-            return .numeric(decimal)
+            .numeric(decimal)
         case let date as Date:
-            return .date(date)
+            .date(date)
         case let uuid as UUID:
-            return .document(uuid)
+            .document(uuid)
         default:
             // For any other type, convert to string representation
-            return .text(String(describing: value))
+            .text(String(describing: value))
         }
     }
 
@@ -69,7 +69,7 @@ public final class SmartDefaultsEngine: @unchecked Sendable {
         }
 
         // Check for date values (basic ISO format)
-        if value.contains("-") && value.count >= 10 {
+        if value.contains("-"), value.count >= 10 {
             let formatter = ISO8601DateFormatter()
             if let date = formatter.date(from: value) {
                 return .date(date)
@@ -77,7 +77,7 @@ public final class SmartDefaultsEngine: @unchecked Sendable {
         }
 
         // Check for UUID values
-        if value.count == 36 && value.contains("-") {
+        if value.count == 36, value.contains("-") {
             if let uuid = UUID(uuidString: value) {
                 return .document(uuid)
             }
@@ -732,21 +732,21 @@ public extension SmartDefaultsEngine {
     private func convertToResponseValue(_ value: Any) -> UserResponse.ResponseValue? {
         switch value {
         case let stringValue as String:
-            return .text(stringValue)
+            .text(stringValue)
         case let boolValue as Bool:
-            return .boolean(boolValue)
+            .boolean(boolValue)
         case let dateValue as Date:
-            return .date(dateValue)
+            .date(dateValue)
         case let decimalValue as Decimal:
-            return .numeric(decimalValue)
+            .numeric(decimalValue)
         case let doubleValue as Double:
-            return .numeric(Decimal(doubleValue))
+            .numeric(Decimal(doubleValue))
         case let intValue as Int:
-            return .numeric(Decimal(intValue))
+            .numeric(Decimal(intValue))
         case let uuidValue as UUID:
-            return .document(uuidValue)
+            .document(uuidValue)
         default:
-            return nil
+            nil
         }
     }
 }

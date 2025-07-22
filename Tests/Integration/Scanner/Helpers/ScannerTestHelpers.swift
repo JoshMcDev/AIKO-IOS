@@ -1,30 +1,29 @@
-import XCTest
+@testable import AIKOiOS
+@testable import AppCore
 import ComposableArchitecture
 import Foundation
-@testable import AppCore
-@testable import AIKOiOS
+import XCTest
 
 /// Reusable test assertions and utilities for scanner workflow integration tests
 /// Following AIKO TCA patterns with async workflow support
 @MainActor
 public final class ScannerTestHelpers {
-    
     // MARK: - Common Test Timing
-    
+
     /// Standard timeout for scanner operations (meets <500ms requirement)
     public static let scannerPresentationTimeout: TimeInterval = 0.6
-    
+
     /// Timeout for OCR processing operations
     public static let ocrProcessingTimeout: TimeInterval = 10.0
-    
+
     /// Timeout for form auto-population operations
     public static let autoPopulationTimeout: TimeInterval = 5.0
-    
+
     /// Timeout for complete end-to-end workflow
     public static let endToEndWorkflowTimeout: TimeInterval = 15.0
-    
+
     // MARK: - Test Assertions for Scanner Workflows
-    
+
     /// Assert scanner presentation speed meets requirements (<500ms)
     /// - Parameters:
     ///   - startTime: Time when scanner tap occurred
@@ -37,14 +36,14 @@ public final class ScannerTestHelpers {
     ) {
         let elapsed = presentationTime.timeIntervalSince(startTime)
         XCTAssertLessThan(
-            elapsed, 
-            0.5, 
+            elapsed,
+            0.5,
             "Scanner presentation exceeded 500ms requirement: \(elapsed)s",
             file: file,
             line: line
         )
     }
-    
+
     /// Assert OCR accuracy meets requirements (>95%)
     /// - Parameters:
     ///   - extractedText: Text extracted by OCR
@@ -66,7 +65,7 @@ public final class ScannerTestHelpers {
             line: line
         )
     }
-    
+
     /// Assert auto-population success rate meets requirements (>85%)
     /// - Parameters:
     ///   - populatedFields: Number of successfully populated fields
@@ -83,7 +82,7 @@ public final class ScannerTestHelpers {
             XCTFail("Total fields must be greater than 0", file: file, line: line)
             return
         }
-        
+
         let successRate = Double(populatedFields) / Double(totalFields)
         XCTAssertGreaterThan(
             successRate,
@@ -93,7 +92,7 @@ public final class ScannerTestHelpers {
             line: line
         )
     }
-    
+
     /// Assert document quality metrics meet requirements
     /// - Parameter qualityMetrics: Quality metrics from DocumentImageProcessor
     public static func assertDocumentQuality(
@@ -109,7 +108,7 @@ public final class ScannerTestHelpers {
             file: file,
             line: line
         )
-        
+
         XCTAssertTrue(
             qualityMetrics.recommendedForOCR,
             "Document not recommended for OCR processing",
@@ -117,26 +116,26 @@ public final class ScannerTestHelpers {
             line: line
         )
     }
-    
+
     // MARK: - Common Setup/Teardown Helpers
-    
+
     /// Setup test dependencies for scanner workflow tests
     /// - Returns: Configured test dependencies
     public static func setupScannerTestDependencies() -> DependencyValues {
         var dependencies = DependencyValues()
-        
+
         // Mock DocumentImageProcessor with test values
         dependencies.documentImageProcessor = DocumentImageProcessor.testValue
-        
+
         // Mock scanner client with test implementation
         dependencies.documentScannerClient = .testValue
-        
+
         // Mock progress client for testing feedback
         dependencies.progressClient = .testValue
-        
+
         return dependencies
     }
-    
+
     /// Create test expectation for async scanner workflow
     /// - Parameters:
     ///   - description: Description for the expectation
@@ -150,7 +149,7 @@ public final class ScannerTestHelpers {
         expectation.expectedFulfillmentCount = expectedFulfillmentCount
         return expectation
     }
-    
+
     /// Wait for multiple expectations with scanner-appropriate timeout
     /// - Parameter expectations: Array of expectations to wait for
     public static func waitForScannerExpectations(
@@ -159,9 +158,9 @@ public final class ScannerTestHelpers {
     ) async {
         await fulfillment(of: expectations, timeout: timeout)
     }
-    
+
     // MARK: - Test Data Helpers
-    
+
     /// Create minimal valid JPEG test data
     /// - Returns: Minimal JPEG data for testing
     public static func createTestImageData() -> Data {
@@ -172,7 +171,7 @@ public final class ScannerTestHelpers {
             0x00, 0x48, 0x00, 0x00, 0xFF, 0xD9
         ])
     }
-    
+
     /// Create realistic test image data with document-like characteristics
     /// - Parameters:
     ///   - formType: Type of government form to simulate
@@ -186,7 +185,7 @@ public final class ScannerTestHelpers {
     ) -> Data {
         let width = quality == .high ? 2048 : 1024
         let height = quality == .high ? 2648 : 1324
-        
+
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         guard let context = CGContext(
             data: nil,
@@ -199,42 +198,42 @@ public final class ScannerTestHelpers {
         ) else {
             return createTestImageData() // Fallback to minimal test data
         }
-        
+
         // Fill with white background
         context.setFillColor(CGColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0))
         context.fill(CGRect(x: 0, y: 0, width: width, height: height))
-        
+
         // Add form-like content
         addMockFormContent(to: context, formType: formType, size: CGSize(width: width, height: height))
-        
+
         // Add noise if requested for robustness testing
         if includeNoise {
             addImageNoise(to: context, size: CGSize(width: width, height: height))
         }
-        
+
         guard let cgImage = context.makeImage() else {
             return createTestImageData() // Fallback to minimal test data
         }
-        
+
         #if os(iOS)
-        let image = UIImage(cgImage: cgImage)
-        return image.pngData() ?? createTestImageData()
+            let image = UIImage(cgImage: cgImage)
+            return image.pngData() ?? createTestImageData()
         #else
-        let image = NSImage(cgImage: cgImage, size: NSSize(width: width, height: height))
-        return image.tiffRepresentation ?? createTestImageData()
+            let image = NSImage(cgImage: cgImage, size: NSSize(width: width, height: height))
+            return image.tiffRepresentation ?? createTestImageData()
         #endif
     }
-    
+
     /// Create multi-page test document with various form types
     /// - Parameter pageCount: Number of pages to create
     /// - Returns: Array of ScannedPage objects
     public static func createMultiPageTestDocument(pageCount: Int = 3) -> [ScannedPage] {
         let formTypes: [GovernmentFormType] = [.sf18, .sf26, .dd1155]
-        
-        return (0..<pageCount).map { index in
+
+        return (0 ..< pageCount).map { index in
             let formType = formTypes[index % formTypes.count]
             let imageData = createGovernmentFormImageData(formType: formType)
-            
+
             return ScannedPage(
                 id: UUID(),
                 imageData: imageData,
@@ -242,7 +241,7 @@ public final class ScannerTestHelpers {
             )
         }
     }
-    
+
     /// Create mock OCR results for testing form population
     /// - Parameters:
     ///   - formType: Type of government form
@@ -253,16 +252,16 @@ public final class ScannerTestHelpers {
         accuracy: Double = 0.95
     ) -> OCRResult {
         let mockFields = createMockFormFields(for: formType)
-        
+
         return OCRResult(
             extractedText: createMockExtractedText(for: formType),
             confidence: accuracy,
             detectedFields: mockFields,
-            processingTime: TimeInterval.random(in: 0.5...2.0),
+            processingTime: TimeInterval.random(in: 0.5 ... 2.0),
             documentBounds: CGRect(x: 0, y: 0, width: 2048, height: 2648)
         )
     }
-    
+
     /// Create test ScannedPage with mock data
     /// - Parameters:
     ///   - pageNumber: Page number for the scanned page
@@ -278,9 +277,9 @@ public final class ScannerTestHelpers {
             pageNumber: pageNumber
         )
     }
-    
+
     // MARK: - Performance Testing Helpers
-    
+
     /// Measures async workflow performance with detailed metrics
     /// - Parameters:
     ///   - description: Description of the operation being measured
@@ -294,20 +293,20 @@ public final class ScannerTestHelpers {
     ) async throws -> PerformanceMetrics {
         var executionTimes: [TimeInterval] = []
         var memoryUsages: [UInt64] = []
-        
-        for _ in 0..<iterations {
+
+        for _ in 0 ..< iterations {
             let startTime = CFAbsoluteTimeGetCurrent()
             let startMemory = getCurrentMemoryUsage()
-            
-            let _ = try await operation()
-            
+
+            _ = try await operation()
+
             let endTime = CFAbsoluteTimeGetCurrent()
             let endMemory = getCurrentMemoryUsage()
-            
+
             executionTimes.append(endTime - startTime)
             memoryUsages.append(endMemory > startMemory ? endMemory - startMemory : 0)
         }
-        
+
         return PerformanceMetrics(
             description: description,
             executionTimes: executionTimes,
@@ -315,7 +314,7 @@ public final class ScannerTestHelpers {
             iterations: iterations
         )
     }
-    
+
     /// Creates expectation for async progress tracking
     /// - Parameters:
     ///   - expectedUpdates: Expected number of progress updates
@@ -323,66 +322,70 @@ public final class ScannerTestHelpers {
     /// - Returns: Expectation and progress handler closure
     public static func createProgressExpectation(
         expectedUpdates: Int,
-        timeout: TimeInterval = 10.0
+        timeout _: TimeInterval = 10.0
     ) -> (expectation: XCTestExpectation, progressHandler: (Any) -> Void) {
         let expectation = XCTestExpectation(description: "Progress updates received")
         expectation.expectedFulfillmentCount = expectedUpdates
-        
+
         var receivedUpdates: [Any] = []
-        
+
         let progressHandler: (Any) -> Void = { update in
             receivedUpdates.append(update)
             expectation.fulfill()
         }
-        
+
         return (expectation, progressHandler)
     }
-    
+
     // MARK: - Private Helpers
-    
+
     /// Calculate text similarity for OCR accuracy testing
     /// Uses Levenshtein distance for similarity calculation
     private static func calculateTextSimilarity(_ text1: String, _ text2: String) -> Double {
         guard !text1.isEmpty || !text2.isEmpty else { return 1.0 }
         guard !text1.isEmpty && !text2.isEmpty else { return 0.0 }
-        
+
         let distance = levenshteinDistance(text1, text2)
         let maxLength = max(text1.count, text2.count)
         return 1.0 - (Double(distance) / Double(maxLength))
     }
-    
+
     /// Calculate Levenshtein distance between two strings
-    private static func levenshteinDistance(_ s1: String, _ s2: String) -> Int {
-        let m = s1.count
-        let n = s2.count
-        
-        if m == 0 { return n }
-        if n == 0 { return m }
-        
-        let s1Array = Array(s1)
-        let s2Array = Array(s2)
-        
-        var matrix = Array(repeating: Array(repeating: 0, count: n + 1), count: m + 1)
-        
-        for i in 0...m { matrix[i][0] = i }
-        for j in 0...n { matrix[0][j] = j }
-        
-        for i in 1...m {
-            for j in 1...n {
-                let cost = s1Array[i-1] == s2Array[j-1] ? 0 : 1
-                matrix[i][j] = min(
-                    matrix[i-1][j] + 1,      // deletion
-                    matrix[i][j-1] + 1,      // insertion
-                    matrix[i-1][j-1] + cost  // substitution
+    private static func levenshteinDistance(_ firstString: String, _ secondString: String) -> Int {
+        let firstLength = firstString.count
+        let secondLength = secondString.count
+
+        if firstLength == 0 { return secondLength }
+        if secondLength == 0 { return firstLength }
+
+        let firstArray = Array(firstString)
+        let secondArray = Array(secondString)
+
+        var matrix = Array(repeating: Array(repeating: 0, count: secondLength + 1), count: firstLength + 1)
+
+        for rowIndex in 0 ... firstLength {
+            matrix[rowIndex][0] = rowIndex
+        }
+        for columnIndex in 0 ... secondLength {
+            matrix[0][columnIndex] = columnIndex
+        }
+
+        for rowIndex in 1 ... firstLength {
+            for columnIndex in 1 ... secondLength {
+                let cost = firstArray[rowIndex - 1] == secondArray[columnIndex - 1] ? 0 : 1
+                matrix[rowIndex][columnIndex] = min(
+                    matrix[rowIndex - 1][columnIndex] + 1, // deletion
+                    matrix[rowIndex][columnIndex - 1] + 1, // insertion
+                    matrix[rowIndex - 1][columnIndex - 1] + cost // substitution
                 )
             }
         }
-        
-        return matrix[m][n]
+
+        return matrix[firstLength][secondLength]
     }
-    
+
     // MARK: - Additional Helper Functions
-    
+
     /// Create mock form fields based on government form type
     private static func createMockFormFields(for formType: GovernmentFormType) -> [DocumentFormField] {
         switch formType {
@@ -429,7 +432,7 @@ public final class ScannerTestHelpers {
             ]
         }
     }
-    
+
     /// Create mock extracted text for government forms
     private static func createMockExtractedText(for formType: GovernmentFormType) -> String {
         switch formType {
@@ -454,7 +457,7 @@ public final class ScannerTestHelpers {
             """
         }
     }
-    
+
     /// Add mock form content to CGContext for realistic test images
     private static func addMockFormContent(
         to context: CGContext,
@@ -463,10 +466,10 @@ public final class ScannerTestHelpers {
     ) {
         // Set up text rendering (simplified for testing)
         context.setFillColor(CGColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0))
-        
+
         let headerY = size.height * 0.1
         let fieldStartY = size.height * 0.3
-        
+
         // Add form-specific visual elements (simplified rectangles for testing)
         switch formType {
         case .sf18:
@@ -475,40 +478,40 @@ public final class ScannerTestHelpers {
             // Add field areas
             context.fill(CGRect(x: 50, y: fieldStartY, width: 300, height: 20))
             context.fill(CGRect(x: 50, y: fieldStartY + 50, width: 250, height: 20))
-            
+
         case .sf26:
             context.fill(CGRect(x: 50, y: headerY, width: 180, height: 30))
             context.fill(CGRect(x: 50, y: fieldStartY, width: 280, height: 20))
-            
+
         case .dd1155:
             context.fill(CGRect(x: 50, y: headerY, width: 220, height: 30))
             context.fill(CGRect(x: 50, y: fieldStartY, width: 320, height: 20))
         }
     }
-    
+
     /// Add noise to image for robustness testing
     private static func addImageNoise(to context: CGContext, size: CGSize) {
         context.setFillColor(CGColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 0.3))
-        
-        for _ in 0..<100 {
-            let x = CGFloat.random(in: 0...size.width)
-            let y = CGFloat.random(in: 0...size.height)
-            let noise = CGRect(x: x, y: y, width: 2, height: 2)
+
+        for _ in 0 ..< 100 {
+            let xCoordinate = CGFloat.random(in: 0 ... size.width)
+            let yCoordinate = CGFloat.random(in: 0 ... size.height)
+            let noise = CGRect(x: xCoordinate, y: yCoordinate, width: 2, height: 2)
             context.fill(noise)
         }
     }
-    
+
     /// Get current memory usage for performance testing
     private static func getCurrentMemoryUsage() -> UInt64 {
         var taskInfo = task_vm_info_data_t()
         var count = mach_msg_type_number_t(MemoryLayout<task_vm_info>.size) / 4
-        
+
         let result = withUnsafeMutablePointer(to: &taskInfo) {
             $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
                 task_info(mach_task_self_, task_flavor_t(TASK_VM_INFO), $0, &count)
             }
         }
-        
+
         guard result == KERN_SUCCESS else { return 0 }
         return taskInfo.phys_footprint
     }
@@ -518,8 +521,8 @@ public final class ScannerTestHelpers {
 
 /// Government form types for testing
 public enum GovernmentFormType: CaseIterable {
-    case sf18   // Request and Authorization for TDY
-    case sf26   // Award/Contract
+    case sf18 // Request and Authorization for TDY
+    case sf26 // Award/Contract
     case dd1155 // Order for Supplies or Services
 }
 
@@ -534,11 +537,11 @@ public struct PerformanceMetrics {
     public let executionTimes: [TimeInterval]
     public let memoryDeltas: [UInt64]
     public let iterations: Int
-    
+
     public var averageExecutionTime: TimeInterval {
         executionTimes.reduce(0, +) / Double(iterations)
     }
-    
+
     public var averageMemoryDelta: UInt64 {
         memoryDeltas.reduce(0, +) / UInt64(iterations)
     }
@@ -546,11 +549,10 @@ public struct PerformanceMetrics {
 
 // MARK: - Extensions for Test Support
 
-extension TestStore where State == DocumentScannerFeature.State {
-    
+public extension TestStore where State == DocumentScannerFeature.State {
     /// Configure test store with scanner test dependencies
-    public func withScannerTestDependencies() -> TestStore<DocumentScannerFeature.State, DocumentScannerFeature.Action> {
-        return TestStore(initialState: self.state) {
+    func withScannerTestDependencies() -> TestStore<DocumentScannerFeature.State, DocumentScannerFeature.Action> {
+        return TestStore(initialState: state) {
             DocumentScannerFeature()
         } withDependencies: {
             let testDeps = ScannerTestHelpers.setupScannerTestDependencies()
@@ -559,10 +561,9 @@ extension TestStore where State == DocumentScannerFeature.State {
     }
 }
 
-extension XCTestExpectation {
-    
+public extension XCTestExpectation {
     /// Configure expectation with scanner-appropriate timeout
-    public func withScannerTimeout(_ timeout: TimeInterval = ScannerTestHelpers.endToEndWorkflowTimeout) -> Self {
+    func withScannerTimeout(_: TimeInterval = ScannerTestHelpers.endToEndWorkflowTimeout) -> Self {
         // Note: XCTestExpectation doesn't have a timeout property to set directly
         // The timeout is specified in the wait/fulfillment call
         return self

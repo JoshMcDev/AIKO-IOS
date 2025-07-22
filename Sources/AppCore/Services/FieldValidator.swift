@@ -47,7 +47,7 @@ public struct FieldValidator: Sendable {
     /// Comprehensive CAGE code validation
     public func validateCAGECode(_: String) -> FieldValidationResult {
         // RED phase - return invalid to fail tests
-        return FieldValidationResult(
+        FieldValidationResult(
             isValid: false,
             errors: ["RED phase - intentionally failing"],
             confidence: 0.0
@@ -57,7 +57,7 @@ public struct FieldValidator: Sendable {
     /// Comprehensive UEI validation
     public func validateUEI(_: String) -> FieldValidationResult {
         // RED phase - return invalid to fail tests
-        return FieldValidationResult(
+        FieldValidationResult(
             isValid: false,
             errors: ["RED phase - intentionally failing"],
             confidence: 0.0
@@ -67,7 +67,7 @@ public struct FieldValidator: Sendable {
     /// Comprehensive currency validation
     public func validateCurrency(_: String) -> FieldValidationResult {
         // RED phase - return invalid to fail tests
-        return FieldValidationResult(
+        FieldValidationResult(
             isValid: false,
             errors: ["RED phase - intentionally failing"],
             confidence: 0.0
@@ -77,7 +77,7 @@ public struct FieldValidator: Sendable {
     /// Comprehensive date validation
     public func validateDate(_: String) -> FieldValidationResult {
         // RED phase - return invalid to fail tests
-        return FieldValidationResult(
+        FieldValidationResult(
             isValid: false,
             errors: ["RED phase - intentionally failing"],
             confidence: 0.0

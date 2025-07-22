@@ -83,7 +83,7 @@ final class Phase4_2_QATests: XCTestCase {
                 qualityTarget: .balanced
             )
 
-            let _ = try await processor.processImage(testImageData, .enhanced, options)
+            _ = try await processor.processImage(testImageData, .enhanced, options)
 
             // Verify progress callback was called
             XCTAssertFalse(progressUpdates.isEmpty)

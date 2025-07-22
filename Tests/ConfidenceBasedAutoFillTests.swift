@@ -36,7 +36,7 @@ final class ConfidenceBasedAutoFillTests: XCTestCase {
             .projectTitle,
             .requiredDate,
             .performanceLocation,
-            .fundingSource,
+            .fundingSource
         ]
 
         let context = SmartDefaultContext(
@@ -46,7 +46,7 @@ final class ConfidenceBasedAutoFillTests: XCTestCase {
             acquisitionType: .supplies,
             extractedData: [
                 "projectTitle": "Office Supplies Q4",
-                "location": "Building A",
+                "location": "Building A"
             ],
             fiscalYear: "2024",
             fiscalQuarter: "Q4",
@@ -92,7 +92,7 @@ final class ConfidenceBasedAutoFillTests: XCTestCase {
             .estimatedValue, // Critical field - should suggest only
             .vendorName, // Low confidence - should skip
             .requiredDate, // Moderate confidence
-            .contractType, // High confidence from context
+            .contractType // High confidence from context
         ]
 
         let context = SmartDefaultContext(
@@ -101,7 +101,7 @@ final class ConfidenceBasedAutoFillTests: XCTestCase {
             organizationUnit: "Procurement",
             acquisitionType: .supplies,
             extractedData: [
-                "projectTitle": "Annual IT Equipment Refresh",
+                "projectTitle": "Annual IT Equipment Refresh"
             ],
             fiscalYear: "2024",
             fiscalQuarter: "Q3",

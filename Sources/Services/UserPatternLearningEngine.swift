@@ -39,7 +39,7 @@ public final class UserPatternLearningEngine: @unchecked Sendable {
         }
 
         // Check for date values (basic ISO format)
-        if value.contains("-") && value.count >= 10 {
+        if value.contains("-"), value.count >= 10 {
             let formatter = ISO8601DateFormatter()
             if let date = formatter.date(from: value) {
                 return .date(date)
@@ -47,7 +47,7 @@ public final class UserPatternLearningEngine: @unchecked Sendable {
         }
 
         // Check for UUID values
-        if value.count == 36 && value.contains("-") {
+        if value.count == 36, value.contains("-") {
             if let uuid = UUID(uuidString: value) {
                 return .document(uuid)
             }
@@ -56,6 +56,7 @@ public final class UserPatternLearningEngine: @unchecked Sendable {
         // Default to text
         return .text(value)
     }
+
     private var patternHistory: [RequirementField: [PatternData]] {
         get { queue.sync { _patternHistory } }
         set { queue.async(flags: .barrier) { self._patternHistory = newValue } }

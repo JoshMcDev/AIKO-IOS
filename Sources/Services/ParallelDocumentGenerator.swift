@@ -1,7 +1,7 @@
+import AikoCompat
 import AppCore
 import ComposableArchitecture
 import Foundation
-import AikoCompat
 
 /// Parallel document generation service that processes multiple documents concurrently
 public struct ParallelDocumentGenerator: Sendable {

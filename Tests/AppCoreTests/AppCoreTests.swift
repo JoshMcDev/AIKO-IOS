@@ -1,5 +1,5 @@
-import Testing
 @testable import AppCore
+import Testing
 
 struct AppCoreTests {
     @Test func example() {

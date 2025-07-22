@@ -424,7 +424,7 @@ public class FARUpdateService: ObservableObject {
         recommendations += "2. Update contract templates with new clause language\n"
         recommendations += "3. Notify contracting officers of critical changes\n"
 
-        let criticalCount = updates.filter { $0.impact == .critical }.count
+        let criticalCount = updates.count(where: { $0.impact == .critical })
         if criticalCount > 0 {
             recommendations += "4. **Immediate Action Required**: \(criticalCount) critical updates require immediate attention\n"
         }

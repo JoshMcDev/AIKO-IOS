@@ -313,13 +313,13 @@
             guard corners.count == 4 else { return 0.0 }
 
             // Shoelace formula for quadrilateral area
-            let x = corners.map(\.x)
-            let y = corners.map(\.y)
+            let xCoordinates = corners.map(\.x)
+            let yCoordinates = corners.map(\.y)
 
             var area = 0.0
-            for i in 0 ..< 4 {
-                let j = (i + 1) % 4
-                area += x[i] * y[j] - x[j] * y[i]
+            for cornerIndex in 0 ..< 4 {
+                let nextIndex = (cornerIndex + 1) % 4
+                area += xCoordinates[cornerIndex] * yCoordinates[nextIndex] - xCoordinates[nextIndex] * yCoordinates[cornerIndex]
             }
 
             return abs(area) / 2.0
@@ -329,11 +329,11 @@
             guard corners.count == 4 else { return 0.0 }
 
             var perimeter = 0.0
-            for i in 0 ..< 4 {
-                let j = (i + 1) % 4
-                let dx = corners[j].x - corners[i].x
-                let dy = corners[j].y - corners[i].y
-                perimeter += sqrt(dx * dx + dy * dy)
+            for cornerIndex in 0 ..< 4 {
+                let nextIndex = (cornerIndex + 1) % 4
+                let deltaX = corners[nextIndex].x - corners[cornerIndex].x
+                let deltaY = corners[nextIndex].y - corners[cornerIndex].y
+                perimeter += sqrt(deltaX * deltaX + deltaY * deltaY)
             }
 
             return perimeter
@@ -394,8 +394,8 @@
             var sum: Double = 0
             let pixelCount = width * height
 
-            for i in stride(from: 0, to: totalBytes, by: bytesPerPixel) {
-                let gray = Double(pixelData[i]) / 255.0
+            for byteIndex in stride(from: 0, to: totalBytes, by: bytesPerPixel) {
+                let gray = Double(pixelData[byteIndex]) / 255.0
                 sum += gray
             }
 
@@ -403,8 +403,8 @@
 
             // Calculate standard deviation
             var variance: Double = 0
-            for i in stride(from: 0, to: totalBytes, by: bytesPerPixel) {
-                let gray = Double(pixelData[i]) / 255.0
+            for byteIndex in stride(from: 0, to: totalBytes, by: bytesPerPixel) {
+                let gray = Double(pixelData[byteIndex]) / 255.0
                 let diff = gray - mean
                 variance += diff * diff
             }

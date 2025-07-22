@@ -78,7 +78,7 @@ final class ScreenNameUITests: XCTestCase {
         let devices = [
             PreviewDevice(rawValue: "iPhone 15 Pro"),
             PreviewDevice(rawValue: "iPhone SE"),
-            PreviewDevice(rawValue: "iPad Pro"),
+            PreviewDevice(rawValue: "iPad Pro")
         ]
 
         for device in devices {

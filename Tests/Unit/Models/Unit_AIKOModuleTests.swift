@@ -44,7 +44,7 @@ final class AIKOTests: XCTestCase {
                 title: "Test SOW",
                 documentType: .sow,
                 content: "Test document content for Statement of Work\n\nRequirements: Test requirements"
-            ),
+            )
         ])) {
             $0.isGenerating = false
             $0.generatedDocuments = [
@@ -52,7 +52,7 @@ final class AIKOTests: XCTestCase {
                     title: "Test SOW",
                     documentType: .sow,
                     content: "Test document content for Statement of Work\n\nRequirements: Test requirements"
-                ),
+                )
             ]
         }
     }

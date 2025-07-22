@@ -4,47 +4,47 @@ import Foundation
 public struct ProgressState: Equatable, Sendable {
     /// Unique identifier for this progress session
     public let sessionId: UUID
-    
+
     /// Current workflow phase
     public let currentPhase: ProgressPhase
-    
+
     /// Progress within the current phase (0.0 to 1.0)
     public let phaseProgress: Double
-    
+
     /// Overall progress across all phases (0.0 to 1.0)
     public let overallProgress: Double
-    
+
     /// Current operation description
     public let currentOperation: String
-    
+
     /// Estimated time remaining in seconds
     public let estimatedTimeRemaining: TimeInterval?
-    
+
     /// Processing speed metrics
     public let processingSpeed: ProcessingSpeed?
-    
+
     /// Error state information
     public let errorState: ProgressError?
-    
+
     /// Whether the operation can be cancelled
     public let canCancel: Bool
-    
+
     /// Session start time
     public let startTime: Date
-    
+
     /// Last update timestamp
     public let lastUpdateTime: Date
-    
+
     /// Number of updates received in this session
     public let updateCount: Int
-    
+
     /// Accessibility label for screen readers
     public var accessibilityLabel: String {
         let percentage = Int(overallProgress * 100)
         let timeRemaining = estimatedTimeRemaining.map { " Estimated time remaining: \(Int($0)) seconds" } ?? ""
         return "\(currentPhase.displayName). \(percentage)% complete. \(currentOperation)\(timeRemaining)"
     }
-    
+
     public init(
         sessionId: UUID,
         currentPhase: ProgressPhase,
@@ -80,7 +80,7 @@ public extension ProgressState {
     /// Create a new state by applying a progress update
     func applying(_ update: ProgressUpdate) -> ProgressState {
         let processingSpeed = calculateProcessingSpeed(from: update)
-        
+
         return ProgressState(
             sessionId: sessionId,
             currentPhase: update.phase,
@@ -96,10 +96,10 @@ public extension ProgressState {
             updateCount: updateCount + 1
         )
     }
-    
+
     /// Create initial state for a new session
     static func initial(sessionId: UUID) -> ProgressState {
-        return ProgressState(
+        ProgressState(
             sessionId: sessionId,
             currentPhase: .initializing,
             phaseProgress: 0.0,
@@ -109,10 +109,10 @@ public extension ProgressState {
             updateCount: 0
         )
     }
-    
+
     /// Create a completed state
     func completed() -> ProgressState {
-        return ProgressState(
+        ProgressState(
             sessionId: sessionId,
             currentPhase: .completed,
             phaseProgress: 1.0,
@@ -127,10 +127,10 @@ public extension ProgressState {
             updateCount: updateCount + 1
         )
     }
-    
+
     /// Create an error state
     func withError(_ error: ProgressError) -> ProgressState {
-        return ProgressState(
+        ProgressState(
             sessionId: sessionId,
             currentPhase: .error,
             phaseProgress: phaseProgress,
@@ -153,13 +153,13 @@ public extension ProgressState {
 public struct ProcessingSpeed: Equatable, Sendable {
     /// Operations per second
     public let operationsPerSecond: Double
-    
+
     /// Average update frequency in Hz
     public let updateFrequency: Double
-    
+
     /// Processing efficiency (0.0 to 1.0)
     public let efficiency: Double
-    
+
     public init(
         operationsPerSecond: Double,
         updateFrequency: Double,
@@ -175,16 +175,16 @@ public struct ProcessingSpeed: Equatable, Sendable {
 public struct ProgressError: Equatable, Sendable, LocalizedError {
     /// Error type
     public let type: ProgressErrorType
-    
+
     /// Human-readable error message
     public let message: String
-    
+
     /// Error metadata
     public let metadata: [String: String]
-    
+
     /// Whether the error is recoverable
     public let isRecoverable: Bool
-    
+
     public init(
         type: ProgressErrorType,
         message: String,
@@ -196,7 +196,7 @@ public struct ProgressError: Equatable, Sendable, LocalizedError {
         self.metadata = metadata
         self.isRecoverable = isRecoverable
     }
-    
+
     public var errorDescription: String? {
         message
     }
@@ -204,13 +204,13 @@ public struct ProgressError: Equatable, Sendable, LocalizedError {
 
 /// Types of progress errors
 public enum ProgressErrorType: String, CaseIterable, Equatable, Sendable {
-    case tracking = "tracking"
-    case cancelled = "cancelled"
-    case timeout = "timeout"
+    case tracking
+    case cancelled
+    case timeout
     case serviceFailure = "service_failure"
     case networkError = "network_error"
-    case unknown = "unknown"
-    
+    case unknown
+
     public var displayName: String {
         switch self {
         case .tracking:
@@ -234,35 +234,35 @@ public enum ProgressErrorType: String, CaseIterable, Equatable, Sendable {
 private extension ProgressState {
     func calculateProcessingSpeed(from update: ProgressUpdate) -> ProcessingSpeed? {
         guard updateCount > 0 else { return nil }
-        
+
         let elapsedTime = update.timestamp.timeIntervalSince(startTime)
         guard elapsedTime > 0 else { return nil }
-        
+
         let operationsPerSecond = update.overallProgress / elapsedTime
         let updateFrequency = Double(updateCount) / elapsedTime
         let efficiency = min(1.0, operationsPerSecond * 10) // Simple efficiency metric
-        
+
         return ProcessingSpeed(
             operationsPerSecond: operationsPerSecond,
             updateFrequency: updateFrequency,
             efficiency: efficiency
         )
     }
-    
+
     func extractError(from update: ProgressUpdate) -> ProgressError? {
         guard update.phase == .error,
-              let errorMessage = update.metadata["error"] else {
+              let errorMessage = update.metadata["error"]
+        else {
             return nil
         }
-        
-        let errorType: ProgressErrorType
-        if let typeString = update.metadata["error_type"],
-           let type = ProgressErrorType(rawValue: typeString) {
-            errorType = type
+
+        let errorType: ProgressErrorType = if let typeString = update.metadata["error_type"],
+                                              let type = ProgressErrorType(rawValue: typeString) {
+            type
         } else {
-            errorType = .unknown
+            .unknown
         }
-        
+
         return ProgressError(
             type: errorType,
             message: errorMessage,

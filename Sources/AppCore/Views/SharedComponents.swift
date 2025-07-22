@@ -59,7 +59,7 @@ public struct DocumentTypesSection: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.large) {
             // Acquisition name if loaded - centered
             if let acquisitionName = loadedAcquisitionDisplayName {
                 HStack {
@@ -75,7 +75,7 @@ public struct DocumentTypesSection: View {
             }
 
             // Header with search
-            HStack(spacing: Theme.Spacing.sm) {
+            HStack(spacing: Theme.Spacing.small) {
                 Label("Document Types", systemImage: "folder")
                     .font(.headline)
                     .fontWeight(.semibold)
@@ -92,7 +92,7 @@ public struct DocumentTypesSection: View {
             }
 
             // Category folders
-            VStack(spacing: Theme.Spacing.md) {
+            VStack(spacing: Theme.Spacing.medium) {
                 ForEach(DocumentCategory.allCases, id: \.self) { category in
                     DocumentCategoryFolder(
                         category: category,
@@ -142,19 +142,19 @@ public struct DocumentCategoryFolder: View {
         if category == .determinationFindings {
             selectedDFTypes.count
         } else {
-            documentTypes.filter { selectedTypes.contains($0) }.count
+            documentTypes.count(where: { selectedTypes.contains($0) })
         }
     }
 
     var readyCount: Int {
-        documentTypes.filter { documentStatus[$0] == .ready }.count
+        documentTypes.count(where: { documentStatus[$0] == .ready })
     }
 
     public var body: some View {
         VStack(spacing: 0) {
             // Folder header
             Button(action: onToggleExpanded) {
-                HStack(spacing: Theme.Spacing.lg) {
+                HStack(spacing: Theme.Spacing.large) {
                     // Category icon
                     Image(systemName: category.icon)
                         .font(.title2)
@@ -225,12 +225,12 @@ public struct DocumentCategoryFolder: View {
                         }
                     }
                 }
-                .padding(Theme.Spacing.lg)
+                .padding(Theme.Spacing.large)
                 .background(
-                    RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+                    RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
                         .fill(Theme.Colors.aikoSecondary)
                         .overlay(
-                            RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+                            RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
                                 .stroke(selectedCount > 0 ? Color.blue.opacity(0.5) : Color.clear, lineWidth: 2)
                         )
                 )
@@ -241,7 +241,7 @@ public struct DocumentCategoryFolder: View {
             if isExpanded {
                 if category == .determinationFindings {
                     // Show D&F document type cards
-                    VStack(spacing: Theme.Spacing.sm) {
+                    VStack(spacing: Theme.Spacing.small) {
                         ForEach(DFDocumentType.allCases) { dfDocumentType in
                             DFDocumentTypeCard(
                                 dfDocumentType: dfDocumentType,
@@ -254,10 +254,10 @@ public struct DocumentCategoryFolder: View {
                             .transition(.opacity.combined(with: .move(edge: .top)))
                         }
                     }
-                    .padding(.top, Theme.Spacing.sm)
+                    .padding(.top, Theme.Spacing.small)
                     .animation(.easeInOut(duration: 0.3), value: DFDocumentType.allCases)
                 } else {
-                    VStack(spacing: Theme.Spacing.sm) {
+                    VStack(spacing: Theme.Spacing.small) {
                         ForEach(documentTypes) { documentType in
                             DocumentTypeCard(
                                 documentType: documentType,
@@ -269,7 +269,7 @@ public struct DocumentCategoryFolder: View {
                             .transition(.opacity.combined(with: .move(edge: .top)))
                         }
                     }
-                    .padding(.top, Theme.Spacing.sm)
+                    .padding(.top, Theme.Spacing.small)
                     .animation(.easeInOut(duration: 0.3), value: documentTypes)
                 }
             }
@@ -304,7 +304,7 @@ public struct DocumentTypeCard: View {
 
     public var body: some View {
         Button(action: onToggle) {
-            HStack(spacing: Theme.Spacing.md) {
+            HStack(spacing: Theme.Spacing.medium) {
                 // Status indicator
                 Circle()
                     .fill(statusColor)
@@ -336,15 +336,15 @@ public struct DocumentTypeCard: View {
                     .font(.body)
                     .frame(width: 20, height: 20)
             }
-            .padding(.horizontal, Theme.Spacing.md)
-            .padding(.vertical, Theme.Spacing.sm)
+            .padding(.horizontal, Theme.Spacing.medium)
+            .padding(.vertical, Theme.Spacing.small)
             .frame(maxWidth: .infinity)
             .frame(height: 44) // Fixed single-field height
             .background(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
                     .fill(isSelected ? Color.blue.opacity(0.15) : Theme.Colors.aikoSecondary)
                     .overlay(
-                        RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                        RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
                             .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 1)
                     )
             )
@@ -366,7 +366,7 @@ public struct DFDocumentTypeCard: View {
 
     public var body: some View {
         Button(action: onToggle) {
-            HStack(spacing: Theme.Spacing.md) {
+            HStack(spacing: Theme.Spacing.medium) {
                 // Status indicator - Red when no acquisition loaded
                 Circle()
                     .fill(hasAcquisition ? Color.green : Color.red)
@@ -398,15 +398,15 @@ public struct DFDocumentTypeCard: View {
                     .font(.body)
                     .frame(width: 20, height: 20)
             }
-            .padding(.horizontal, Theme.Spacing.md)
-            .padding(.vertical, Theme.Spacing.sm)
+            .padding(.horizontal, Theme.Spacing.medium)
+            .padding(.vertical, Theme.Spacing.small)
             .frame(maxWidth: .infinity)
             .frame(height: 44) // Fixed single-field height
             .background(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
                     .fill(isSelected ? Color.blue.opacity(0.15) : Theme.Colors.aikoSecondary)
                     .overlay(
-                        RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                        RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
                             .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 1)
                     )
             )

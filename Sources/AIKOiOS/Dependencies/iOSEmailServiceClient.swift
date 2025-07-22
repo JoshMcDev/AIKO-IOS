@@ -3,8 +3,8 @@
     import ComposableArchitecture
     import Foundation
 
-    extension EmailServiceClient {
-        public static let iOSLive = Self(
+    public extension EmailServiceClient {
+        static let iOSLive = Self(
             canSendEmail: {
                 MainActor.assumeIsolated {
                     iOSEmailService.shared.canSendEmail

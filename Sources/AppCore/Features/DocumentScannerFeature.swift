@@ -84,7 +84,7 @@ public struct DocumentScannerFeature: Sendable {
         // Session management
         public var scanSession: ScanSession?
         public var stagingPage: SessionPage?
-        public var batchOperationStatus: BatchOperationStatus = BatchOperationStatus()
+        public var batchOperationStatus: BatchOperationStatus = .init()
 
         // Scanner configuration
         public var enableImageEnhancement: Bool = true
@@ -239,7 +239,7 @@ public struct DocumentScannerFeature: Sendable {
         case completeProgressTracking(UUID)
         case cancelProgressTracking(UUID)
         case progressUpdate(ProgressUpdate)
-        case _progressFeedbackReceived(ProgressFeedbackFeature.Action)
+        case progressFeedbackReceived(ProgressFeedbackFeature.Action)
 
         // Session management
         case initializeNewSession
@@ -252,15 +252,15 @@ public struct DocumentScannerFeature: Sendable {
         case sessionPagesReordered(ScanSession)
         case startBatchProcessing
         case batchProcessingStarted(ScanSession)
-        case pauseBatchProcessing  
+        case pauseBatchProcessing
         case resumeBatchProcessing
         case batchOperationProgress(Double)
         case batchOperationPageCompleted(SessionPage.ID, Result<Void, Error>)
         case restoreSession(ScanSession)
         case sessionRestored(ScanSession)
-        
+
         // Internal session actions
-        case _sessionEngineResponse(ScanSession)
+        case sessionEngineResponse(ScanSession)
 
         // Internal
         case _setProcessingAllPages(Bool)
@@ -967,30 +967,30 @@ public struct DocumentScannerFeature: Sendable {
                     _ = await progressClient.startSession(sessionId, config)
                     // Store session ID in state (would need to add this to state)
                     // For now, we'll just start the session
-                    await send(._progressFeedbackReceived(.startSession(config)))
+                    await send(.progressFeedbackReceived(.startSession(config)))
                 }
 
             case let .completeProgressTracking(sessionId):
                 // Complete the progress tracking session
                 return Effect.run { send in
                     await progressClient.completeSession(sessionId)
-                    await send(._progressFeedbackReceived(.completeSession(sessionId)))
+                    await send(.progressFeedbackReceived(.completeSession(sessionId)))
                 }
 
             case let .cancelProgressTracking(sessionId):
                 // Cancel the progress tracking session
                 return Effect.run { send in
                     await progressClient.cancelSession(sessionId)
-                    await send(._progressFeedbackReceived(.cancelSession(sessionId)))
+                    await send(.progressFeedbackReceived(.cancelSession(sessionId)))
                 }
 
             case let .progressUpdate(update):
                 // Forward progress updates to the ProgressFeedbackFeature if needed
                 // This allows the DocumentScannerFeature to receive real-time progress updates
                 // from the ProgressBridge and potentially update UI state based on progress
-                return Effect.send(._progressFeedbackReceived(.updateProgress(update.sessionId, update)))
+                return Effect.send(.progressFeedbackReceived(.updateProgress(update.sessionId, update)))
 
-            case ._progressFeedbackReceived:
+            case .progressFeedbackReceived:
                 // Handle progress feedback actions - for now, just log them
                 // In a full implementation, this would sync with the ProgressFeedbackFeature
                 return Effect.none
@@ -1091,13 +1091,13 @@ public struct DocumentScannerFeature: Sendable {
                 return Effect.run { send in
                     let session = try await sessionEngine.pauseBatchProcessing()
                     await batchProcessor.cancelBatch()
-                    await send(._sessionEngineResponse(session))
+                    await send(.sessionEngineResponse(session))
                 }
 
             case .resumeBatchProcessing:
                 return Effect.run { send in
                     let session = try await sessionEngine.resumeBatchProcessing()
-                    await send(._sessionEngineResponse(session))
+                    await send(.sessionEngineResponse(session))
                     // Restart batch processing from where we left off
                     await send(.startBatchProcessing)
                 }
@@ -1119,7 +1119,7 @@ public struct DocumentScannerFeature: Sendable {
                 case .success:
                     // Update session page status will be handled by SessionEngine
                     break
-                case .failure(let error):
+                case let .failure(error):
                     return Effect.send(.showError("Failed to process page: \(error.localizedDescription)"))
                 }
 
@@ -1151,10 +1151,10 @@ public struct DocumentScannerFeature: Sendable {
                 state.scannedPages = IdentifiedArrayOf(uniqueElements: scannedPages)
                 return Effect.none
 
-            case let ._sessionEngineResponse(session):
+            case let .sessionEngineResponse(session):
                 state.scanSession = session
                 // Update batch operation status based on session state
-                if case .inProgress(let completed, let total) = session.batchOperationState {
+                if case let .inProgress(completed, total) = session.batchOperationState {
                     state.batchOperationStatus = BatchOperationStatus(
                         isRunning: true,
                         progress: total > 0 ? Double(completed) / Double(total) : 0.0,
@@ -1256,90 +1256,90 @@ extension DocumentScannerFeature.Action: Equatable {
              (.dismissScanner, .dismissScanner):
             return true
 
-        case let (.setScannerPresented(l), .setScannerPresented(r)):
-            return l == r
+        case let (.setScannerPresented(left), .setScannerPresented(right)):
+            return left == right
 
-        case let (.processScanResults(l), .processScanResults(r)):
-            return l == r
+        case let (.processScanResults(left), .processScanResults(right)):
+            return left == right
 
-        case let (.deletePage(l), .deletePage(r)):
-            return l == r
+        case let (.deletePage(left), .deletePage(right)):
+            return left == right
 
-        case let (.reorderPages(l1, l2), .reorderPages(r1, r2)):
-            return l1 == r1 && l2 == r2
+        case let (.reorderPages(leftSource, leftDest), .reorderPages(rightSource, rightDest)):
+            return leftSource == rightSource && leftDest == rightDest
 
-        case let (.togglePageSelection(l), .togglePageSelection(r)):
-            return l == r
+        case let (.togglePageSelection(left), .togglePageSelection(right)):
+            return left == right
 
-        case let (.processPage(l), .processPage(r)):
-            return l == r
+        case let (.processPage(left), .processPage(right)):
+            return left == right
 
-        case let (.retryPageProcessing(l), .retryPageProcessing(r)):
-            return l == r
+        case let (.retryPageProcessing(left), .retryPageProcessing(right)):
+            return left == right
 
-        case let (.updateDocumentTitle(l), .updateDocumentTitle(r)):
-            return l == r
+        case let (.updateDocumentTitle(left), .updateDocumentTitle(right)):
+            return left == right
 
-        case let (.selectDocumentType(l), .selectDocumentType(r)):
-            return l == r
+        case let (.selectDocumentType(left), .selectDocumentType(right)):
+            return left == right
 
-        case let (.toggleImageEnhancement(l), .toggleImageEnhancement(r)):
-            return l == r
+        case let (.toggleImageEnhancement(left), .toggleImageEnhancement(right)):
+            return left == right
 
-        case let (.toggleOCR(l), .toggleOCR(r)):
-            return l == r
+        case let (.toggleOCR(left), .toggleOCR(right)):
+            return left == right
 
-        case let (.updateScanQuality(l), .updateScanQuality(r)):
-            return l == r
+        case let (.updateScanQuality(left), .updateScanQuality(right)):
+            return left == right
 
-        case let (.showError(l), .showError(r)):
-            return l == r
+        case let (.showError(left), .showError(right)):
+            return left == right
 
-        case let (._setProcessingAllPages(l), ._setProcessingAllPages(r)):
-            return l == r
+        case let (._setProcessingAllPages(left), ._setProcessingAllPages(right)):
+            return left == right
 
-        case let (._setProcessingComplete(l), ._setProcessingComplete(r)):
-            return l == r
+        case let (._setProcessingComplete(left), ._setProcessingComplete(right)):
+            return left == right
 
         // Result comparisons
-        case let (.scannerDidFinish(l), .scannerDidFinish(r)):
-            switch (l, r) {
-            case let (.success(lVal), .success(rVal)):
-                return lVal == rVal
-            case let (.failure(lErr), .failure(rErr)):
-                return (lErr as NSError) == (rErr as NSError)
+        case let (.scannerDidFinish(left), .scannerDidFinish(right)):
+            switch (left, right) {
+            case let (.success(leftVal), .success(rightVal)):
+                return leftVal == rightVal
+            case let (.failure(leftErr), .failure(rightErr)):
+                return (leftErr as NSError) == (rightErr as NSError)
             default:
                 return false
             }
 
-        case let (.pageEnhancementCompleted(lId, lResult), .pageEnhancementCompleted(rId, rResult)):
-            guard lId == rId else { return false }
-            switch (lResult, rResult) {
-            case let (.success(lVal), .success(rVal)):
-                return lVal == rVal
-            case let (.failure(lErr), .failure(rErr)):
-                return (lErr as NSError) == (rErr as NSError)
+        case let (.pageEnhancementCompleted(leftId, leftResult), .pageEnhancementCompleted(rightId, rightResult)):
+            guard leftId == rightId else { return false }
+            switch (leftResult, rightResult) {
+            case let (.success(leftVal), .success(rightVal)):
+                return leftVal == rightVal
+            case let (.failure(leftErr), .failure(rightErr)):
+                return (leftErr as NSError) == (rightErr as NSError)
             default:
                 return false
             }
 
-        case let (.pageOCRCompleted(lId, lResult), .pageOCRCompleted(rId, rResult)):
-            guard lId == rId else { return false }
-            switch (lResult, rResult) {
-            case let (.success(lVal), .success(rVal)):
-                return lVal == rVal
-            case let (.failure(lErr), .failure(rErr)):
-                return (lErr as NSError) == (rErr as NSError)
+        case let (.pageOCRCompleted(leftId, leftResult), .pageOCRCompleted(rightId, rightResult)):
+            guard leftId == rightId else { return false }
+            switch (leftResult, rightResult) {
+            case let (.success(leftVal), .success(rightVal)):
+                return leftVal == rightVal
+            case let (.failure(leftErr), .failure(rightErr)):
+                return (leftErr as NSError) == (rightErr as NSError)
             default:
                 return false
             }
 
-        case let (.documentSaved(l), .documentSaved(r)):
-            switch (l, r) {
+        case let (.documentSaved(left), .documentSaved(right)):
+            switch (left, right) {
             case (.success, .success):
                 return true
-            case let (.failure(lErr), .failure(rErr)):
-                return (lErr as NSError) == (rErr as NSError)
+            case let (.failure(leftErr), .failure(rightErr)):
+                return (leftErr as NSError) == (rightErr as NSError)
             default:
                 return false
             }

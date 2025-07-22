@@ -152,9 +152,9 @@ struct SmartDefaultsDemoFeature {
                 return .none
 
             case .updateMetrics:
-                state.metrics.autoFillCount = state.formFields.filter { $0.status == .autoFilled }.count
-                state.metrics.suggestedCount = state.formFields.filter { $0.status == .suggested }.count
-                state.metrics.manualCount = state.formFields.filter { $0.status == .manual }.count
+                state.metrics.autoFillCount = state.formFields.count(where: { $0.status == .autoFilled })
+                state.metrics.suggestedCount = state.formFields.count(where: { $0.status == .suggested })
+                state.metrics.manualCount = state.formFields.count(where: { $0.status == .manual })
                 state.metrics.learningProgress = Float(state.metrics.autoFillCount) / Float(max(state.formFields.count, 1))
                 return .none
             }

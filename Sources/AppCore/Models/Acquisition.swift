@@ -45,7 +45,7 @@ public extension Acquisition {
         uploadedFiles.sorted { $0.uploadDate > $1.uploadDate }
     }
 
-    /// Generated files sorted by creation date (most recent first) 
+    /// Generated files sorted by creation date (most recent first)
     var generatedFilesArray: [GeneratedDocument] {
         generatedFiles.sorted { $0.createdAt > $1.createdAt }
     }

@@ -6,7 +6,7 @@
     /// iOS Font Scaling Service Client using SimpleServiceTemplate
     public final class iOSFontScalingServiceClient: SimpleServiceTemplate {
         @MainActor
-        internal lazy var service = iOSFontScalingService()
+        lazy var service = iOSFontScalingService()
 
         override public init() {
             super.init()

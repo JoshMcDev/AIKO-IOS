@@ -1,5 +1,5 @@
-import Testing
 @testable import AIKOmacOS
+import Testing
 
 struct AIKOmacOSTests {
     @Test func example() {

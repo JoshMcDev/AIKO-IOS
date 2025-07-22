@@ -14,13 +14,6 @@ final class FeaturePerformanceTests: XCTestCase {
 
     let performanceTarget: TimeInterval = 0.2 // 200ms SLA
 
-    // MARK: - Setup
-
-    override func setUp() {
-        super.setUp()
-        // Setup test data
-    }
-
     // MARK: - Performance Tests
 
     func test_operationName_Performance_meetsTargetSLA() {
