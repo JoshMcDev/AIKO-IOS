@@ -98,7 +98,7 @@ actor APIRequestBatcher {
         """
 
         let messages = [
-            AIMessage.user(batchPrompt)
+            AIMessage.user(batchPrompt),
         ]
 
         let request = AICompletionRequest(
@@ -200,7 +200,7 @@ extension OptimizedRequirementAnalyzer: DependencyKey {
                     Original prompt: \(prompt)
 
                     Enhanced prompt:
-                    """)
+                    """),
                 ]
 
                 let request = AICompletionRequest(

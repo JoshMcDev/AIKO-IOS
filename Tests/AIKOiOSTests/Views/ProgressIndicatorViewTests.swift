@@ -118,7 +118,7 @@ final class ProgressIndicatorViewTests: XCTestCase {
             (.processing, "processing"),
             (.analyzing, "analyzing"),
             (.completing, "completing"),
-            (.idle, "idle")
+            (.idle, "idle"),
         ]
 
         for (phase, phaseName) in phases {
@@ -397,7 +397,7 @@ final class ProgressIndicatorViewTests: XCTestCase {
             (.large, "large"),
             (.xLarge, "xlarge"),
             (.xxLarge, "xxlarge"),
-            (.xxxLarge, "xxxlarge")
+            (.xxxLarge, "xxxlarge"),
         ]
 
         for (typeSize, sizeName) in typeSizes {
@@ -429,7 +429,7 @@ final class ProgressIndicatorViewTests: XCTestCase {
             (.accessibilityLarge, "a11y-large"),
             (.accessibilityExtraLarge, "a11y-xlarge"),
             (.accessibilityExtraExtraLarge, "a11y-xxlarge"),
-            (.accessibilityExtraExtraExtraLarge, "a11y-xxxlarge")
+            (.accessibilityExtraExtraExtraLarge, "a11y-xxxlarge"),
         ]
 
         for (typeSize, sizeName) in accessibilityTypeSizes {

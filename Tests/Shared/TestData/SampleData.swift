@@ -40,7 +40,7 @@ public enum SampleData {
             """,
             dateGenerated: .testDate(86400), // +1 day
             requirements: "IGCE requirements for test project"
-        )
+        ),
     ]
 
     // MARK: - Requirements Data
@@ -56,7 +56,7 @@ public enum SampleData {
             data.technicalRequirements = [
                 "Eco-friendly materials preferred",
                 "Bulk packaging required",
-                "Monthly delivery schedule"
+                "Monthly delivery schedule",
             ]
             data.placeOfPerformance = "123 Main St, Anytown, ST 12345"
             data.requiredDate = Calendar.current.date(byAdding: .month, value: 2, to: .testNow)
@@ -75,14 +75,14 @@ public enum SampleData {
                 "Network monitoring and maintenance",
                 "Help desk support during business hours",
                 "Security patch management",
-                "Backup and disaster recovery services"
+                "Backup and disaster recovery services",
             ]
             data.placeOfPerformance = "Government facility, secure environment"
             data.requiredDate = Calendar.current.date(byAdding: .month, value: 1, to: .testNow)
             data.acquisitionType = "Services"
             data.setAsideType = "Small Business"
             return data
-        }()
+        }(),
     ]
 
     // MARK: - Acquisitions
@@ -110,7 +110,7 @@ public enum SampleData {
             createdDate: .testDate(-86400), // -1 day
             lastModified: .testDate(),
             requirements: sampleRequirements[1]
-        )
+        ),
     ]
 
     // MARK: - Chat Messages
@@ -134,7 +134,7 @@ public enum SampleData {
         ChatMessage(
             role: .user,
             content: "We need standard office supplies - paper, pens, folders, etc. We need them delivered by the end of next month."
-        )
+        ),
     ]
 
     // MARK: - Uploaded Documents
@@ -154,7 +154,7 @@ public enum SampleData {
             data: Data("Sample Word document content".utf8),
             uploadDate: .testDate(1800), // +30 minutes
             documentType: .specification
-        )
+        ),
     ]
 
     // MARK: - Vendor Information
@@ -176,7 +176,7 @@ public enum SampleData {
             address: "789 Technology Blvd, Innovation Park, ST 98765",
             email: "contracts@techcorp.com",
             phone: "(555) 987-6543"
-        )
+        ),
     ]
 
     // MARK: - Cache Statistics
@@ -218,7 +218,7 @@ public enum SampleData {
         Your acquisition appears to be straightforward. The estimated value of $25,000 falls under the simplified acquisition threshold, which will streamline the procurement process.
 
         I recommend proceeding with the document generation. The process should take approximately 2-3 minutes.
-        """
+        """,
     ]
 }
 

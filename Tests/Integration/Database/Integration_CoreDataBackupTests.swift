@@ -58,7 +58,7 @@ final class CoreDataBackupTests: XCTestCase {
         let testBackup: [String: Any] = [
             "acquisitions": [],
             "templates": [],
-            "generations": []
+            "generations": [],
         ]
 
         do {
@@ -75,7 +75,7 @@ final class CoreDataBackupTests: XCTestCase {
 
             // MOE: Data integrity after import
             let verifyExport = try await coreDataStack.exportCoreDataToJSON()
-            metrics.moe = verifyExport.count > 0 ? 1.0 : 0.0
+            metrics.moe = !verifyExport.isEmpty ? 1.0 : 0.0
 
             XCTAssertTrue(metrics.passed, "Import test failed with score: \(metrics.overallScore)")
             print(" Import Performance - MOP: \(metrics.mop), MOE: \(metrics.moe), Score: \(metrics.overallScore)")

@@ -39,7 +39,7 @@ struct AcquisitionChatView: View {
         VStack(spacing: 0) {
             // Ambient status bar like AgenticChatView
             HStack(spacing: 12) {
-                if viewStore.activeTasks.count > 0 {
+                if !viewStore.activeTasks.isEmpty {
                     StatusPill(
                         text: "\(viewStore.activeTasks.count) Active",
                         color: .green

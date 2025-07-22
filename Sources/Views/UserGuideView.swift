@@ -242,7 +242,7 @@ struct GettingStartedContent: View {
                         "Voice input support",
                         "Document upload for analysis",
                         "Smart recommendations",
-                        "Automatic data population from your profile"
+                        "Automatic data population from your profile",
                     ]
                 )
             }
@@ -345,7 +345,7 @@ struct UnderstandingDocumentsContent: View {
                         ("PWS", "Performance Work Statement - Defines outcomes and standards"),
                         ("SOO", "Statement of Objectives - High-level objectives for contractor to propose solutions"),
                         ("RRD", "Requirements Review Document - Comprehensive requirements analysis"),
-                        ("QASP", "Quality Assurance Surveillance Plan - How to monitor contractor performance")
+                        ("QASP", "Quality Assurance Surveillance Plan - How to monitor contractor performance"),
                     ]
                 )
 
@@ -355,7 +355,7 @@ struct UnderstandingDocumentsContent: View {
                         ("Market Research Report", "Analysis of available solutions and vendors"),
                         ("Sources Sought", "Notice to find potential vendors"),
                         ("RFI", "Request for Information from industry"),
-                        ("Cost Estimate", "Independent government cost estimate")
+                        ("Cost Estimate", "Independent government cost estimate"),
                     ]
                 )
 
@@ -364,7 +364,7 @@ struct UnderstandingDocumentsContent: View {
                     documents: [
                         ("RFQ", "Request for Quote - For simple purchases"),
                         ("RFP", "Request for Proposal - For complex requirements"),
-                        ("Evaluation Plan", "How proposals will be evaluated")
+                        ("Evaluation Plan", "How proposals will be evaluated"),
                     ]
                 )
             }
@@ -471,7 +471,7 @@ struct ManagingProfileContent: View {
                         "**Contact Details**: Email and phone numbers",
                         "**Organization**: Agency name and DODAAC",
                         "**Addresses**: Default administered by, payment, and delivery addresses",
-                        "**Images**: Profile photo and organization logo (optional)"
+                        "**Images**: Profile photo and organization logo (optional)",
                     ]
                 )
 
@@ -511,7 +511,7 @@ struct TipsAndTricksContent: View {
                         "**Upload multiple documents** at once for comprehensive analysis",
                         "**Save frequently used requirements** in My Acquisitions",
                         "**Use keyboard shortcuts** (Cmd+N for new, Cmd+G to generate)",
-                        "**Batch generate** multiple document types at once"
+                        "**Batch generate** multiple document types at once",
                     ]
                 )
 
@@ -522,7 +522,7 @@ struct TipsAndTricksContent: View {
                         "Include performance metrics in your requirements",
                         "Review AI recommendations before generating",
                         "Use the appropriate document type for your procurement",
-                        "Keep your profile information up to date"
+                        "Keep your profile information up to date",
                     ]
                 )
 

@@ -250,7 +250,7 @@ public extension GovernmentFormService {
             GovernmentFormData.FormType.sf18,
             GovernmentFormData.FormType.sf26,
             GovernmentFormData.FormType.sf44,
-            GovernmentFormData.FormType.dd1155
+            GovernmentFormData.FormType.dd1155,
         ]
     }
 }

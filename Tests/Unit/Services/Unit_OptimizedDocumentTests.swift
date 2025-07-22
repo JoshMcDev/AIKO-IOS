@@ -51,12 +51,12 @@ final class OptimizedDocumentTests: XCTestCase {
 
         // Upload the compressed data
         await store.send(.documentsSelected([
-            (fileName: "large_document_optimized.pdf", data: compressedData)
+            (fileName: "large_document_optimized.pdf", data: compressedData),
         ])) { state in
             // Verify upload succeeded
             if let uploaded = state.uploadedDocuments.first {
                 // MOE: Data integrity maintained
-                metrics.moe = uploaded.data.count > 0 ? 1.0 : 0.0
+                metrics.moe = !uploaded.data.isEmpty ? 1.0 : 0.0
             }
         }
 

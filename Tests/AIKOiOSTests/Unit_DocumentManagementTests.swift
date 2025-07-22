@@ -251,7 +251,7 @@ final class DocumentManagementTests: XCTestCase {
         let startTime = Date()
 
         await chatStore.send(.documentsSelected([
-            (fileName: "requirements.pdf", data: Data("Requirements".utf8))
+            (fileName: "requirements.pdf", data: Data("Requirements".utf8)),
         ])) { state in
             if state.uploadedDocuments.count == 1 {
                 workflowSteps += 1
@@ -321,7 +321,7 @@ final class DocumentManagementTests: XCTestCase {
         let startTime = Date()
 
         await store.send(.documentsSelected([
-            (fileName: "large_document.pdf", data: largeData)
+            (fileName: "large_document.pdf", data: largeData),
         ])) { state in
             metrics.moe = state.uploadedDocuments.first?.data.count == largeData.count ? 1.0 : 0.0
         }

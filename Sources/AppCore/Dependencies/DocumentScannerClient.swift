@@ -164,7 +164,7 @@ extension DocumentScannerClient: DependencyKey {
                     ScannedPage(
                         imageData: Data(),
                         pageNumber: 1
-                    )
+                    ),
                 ],
                 title: "Test Document"
             )
@@ -197,7 +197,7 @@ extension DocumentScannerClient: DependencyKey {
                         confidence: 0.9,
                         boundingBox: CGRect(x: 0, y: 0, width: 100, height: 20),
                         fieldType: .text
-                    )
+                    ),
                 ],
                 documentStructure: DocumentStructure(
                     paragraphs: [
@@ -206,7 +206,7 @@ extension DocumentScannerClient: DependencyKey {
                             boundingBox: CGRect(x: 0, y: 0, width: 200, height: 40),
                             confidence: 0.85,
                             textType: .body
-                        )
+                        ),
                     ],
                     layout: .document
                 ),

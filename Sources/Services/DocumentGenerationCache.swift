@@ -60,7 +60,7 @@ public actor DocumentGenerationCache {
         var components = [
             "doc",
             documentType.rawValue,
-            requirements.hashValue.description
+            requirements.hashValue.description,
         ]
 
         if let profile {
@@ -74,7 +74,7 @@ public actor DocumentGenerationCache {
         var components = [
             "df",
             dfDocumentType.rawValue,
-            requirements.hashValue.description
+            requirements.hashValue.description,
         ]
 
         if let profile {

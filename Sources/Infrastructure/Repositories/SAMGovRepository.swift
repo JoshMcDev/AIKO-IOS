@@ -24,7 +24,7 @@ public final class SAMGovRepository: @unchecked Sendable {
             URLQueryItem(name: "api_key", value: apiKey),
             URLQueryItem(name: "q", value: query),
             URLQueryItem(name: "registrationStatus", value: "A"), // Active only
-            URLQueryItem(name: "includeSections", value: "entityRegistration,coreData,assertions,repsAndCerts,integrityInformation")
+            URLQueryItem(name: "includeSections", value: "entityRegistration,coreData,assertions,repsAndCerts,integrityInformation"),
         ]
 
         guard let url = components.url else {
@@ -69,7 +69,7 @@ public final class SAMGovRepository: @unchecked Sendable {
         var components = URLComponents(string: "\(baseURL)/entities/\(uei)")!
         components.queryItems = [
             URLQueryItem(name: "api_key", value: apiKey),
-            URLQueryItem(name: "includeSections", value: "entityRegistration,coreData,assertions,repsAndCerts,integrityInformation")
+            URLQueryItem(name: "includeSections", value: "entityRegistration,coreData,assertions,repsAndCerts,integrityInformation"),
         ]
 
         guard let url = components.url else {

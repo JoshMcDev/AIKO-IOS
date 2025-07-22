@@ -72,7 +72,7 @@
                         LinearGradient(
                             gradient: Gradient(colors: [
                                 Color.white.opacity(0.05),
-                                Color.clear
+                                Color.clear,
                             ]),
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing

@@ -1,11 +1,11 @@
-import SwiftUI
-import ComposableArchitecture
 import AppCore
+import ComposableArchitecture
+import SwiftUI
 
 #if canImport(UIKit)
-import UIKit
+    import UIKit
 #elseif canImport(AppKit)
-import AppKit
+    import AppKit
 #endif
 
 /*
@@ -52,7 +52,7 @@ public struct FloatingActionButton: View {
     @State private var rotationAngle: Double = 0.0
 
     // Drag gesture state
-    @State private var dragOffset: CGSize = .zero
+    @State private var dragOffset: CoreFoundation.CGSize = .zero
     @State private var isDragging: Bool = false
 
     // Layout constants
@@ -75,7 +75,7 @@ public struct FloatingActionButton: View {
                 })
                 .onChange(of: viewStore.dragOffset, perform: { offset in
                     withAnimation(.interpolatingSpring(stiffness: 400, damping: 25)) {
-                        dragOffset = offset
+                        dragOffset = CoreFoundation.CGSize(width: offset.width, height: offset.height)
                     }
                 })
                 .onChange(of: viewStore.isAnimating, perform: { isAnimating in
@@ -170,7 +170,7 @@ public struct FloatingActionButton: View {
         LinearGradient(
             colors: [
                 Color(.systemBlue).opacity(0.9),
-                Color(.systemBlue).opacity(0.7)
+                Color(.systemBlue).opacity(0.7),
             ],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
@@ -185,16 +185,16 @@ public struct FloatingActionButton: View {
         }
 
         dragOffset = value.translation
-        viewStore.send(.dragChanged(value.translation))
+        viewStore.send(.dragChanged(AppCore.CGSize(width: Double(value.translation.width), height: Double(value.translation.height))))
     }
 
     private func handleDragEnded(_ value: DragGesture.Value, viewStore: ViewStoreOf<GlobalScanFeature>) {
         let finalOffset = value.translation
-        viewStore.send(.dragEnded(finalOffset))
+        viewStore.send(.dragEnded(AppCore.CGSize(width: Double(finalOffset.width), height: Double(finalOffset.height))))
 
         // Reset local drag offset - the viewStore will handle final positioning
         withAnimation(.interpolatingSpring(stiffness: 300, damping: 30)) {
-            dragOffset = .zero
+            dragOffset = CoreFoundation.CGSize.zero
         }
     }
 
@@ -271,7 +271,7 @@ public struct FloatingActionButtonContainer: View {
         }
     }
 
-    private func calculatePosition(for position: FloatingPosition, in geometry: GeometryProxy) -> CGPoint {
+    private func calculatePosition(for position: FloatingPosition, in geometry: GeometryProxy) -> CoreFoundation.CGPoint {
         let buttonRadius: CGFloat = 28 // Half of button size
         let margin: CGFloat = 20
         let safeArea = geometry.safeAreaInsets
@@ -322,8 +322,8 @@ public struct FloatingActionButtonOverlay: ViewModifier {
 // MARK: - View Extension
 
 @available(iOS 14.0, macOS 11.0, *)
-extension View {
-    public func floatingActionButton(store: StoreOf<GlobalScanFeature>) -> some View {
+public extension View {
+    func floatingActionButton(store: StoreOf<GlobalScanFeature>) -> some View {
         modifier(FloatingActionButtonOverlay(store: store))
     }
 }
@@ -332,101 +332,101 @@ extension View {
 
 #if DEBUG
 
-// MARK: - Helper Views for Cross-Platform Colors
+    // MARK: - Helper Views for Cross-Platform Colors
 
-@available(iOS 14.0, macOS 11.0, *)
-private var backgroundColorView: some View {
-#if canImport(UIKit)
-    Color(UIColor.systemGray6)
-#else
-    Color(NSColor.controlBackgroundColor)
-#endif
-}
-
-@available(iOS 14.0, macOS 11.0, *)
-private var systemBackgroundColorView: some View {
-#if canImport(UIKit)
-    Color(UIColor.systemBackground)
-#else
-    Color(NSColor.controlBackgroundColor)
-#endif
-}
-
-struct FloatingActionButton_Previews: PreviewProvider {
-    static var previews: some View {
-        let store = Store(initialState: GlobalScanFeature.State()) {
-            GlobalScanFeature()
-        } withDependencies: {
-            $0.documentScanner = .previewValue
-            $0.camera = .testValue
-            $0.hapticManager = HapticManagerClient(
-                impact: { _ in },
-                notification: { _ in },
-                selection: {},
-                buttonTap: {},
-                toggleSwitch: {},
-                successAction: {},
-                errorAction: {},
-                warningAction: {},
-                dragStarted: {},
-                dragEnded: {},
-                refresh: {}
-            )
-        }
-
-        ZStack {
-            backgroundColorView
-                .ignoresSafeArea()
-
-            VStack {
-                Text("Main App Content")
-                    .font(.largeTitle)
-                Spacer()
-            }
-            .padding()
-        }
-        .floatingActionButton(store: store)
-        .previewDevice(.init(rawValue: "iPhone 15 Pro"))
-        .preferredColorScheme(.light)
+    @available(iOS 14.0, macOS 11.0, *)
+    private var backgroundColorView: some View {
+        #if canImport(UIKit)
+            Color(UIColor.systemGray6)
+        #else
+            Color(NSColor.controlBackgroundColor)
+        #endif
     }
-}
 
-struct FloatingActionButton_Dark_Previews: PreviewProvider {
-    static var previews: some View {
-        let store = Store(initialState: GlobalScanFeature.State()) {
-            GlobalScanFeature()
-        } withDependencies: {
-            $0.documentScanner = .previewValue
-            $0.camera = .testValue
-            $0.hapticManager = HapticManagerClient(
-                impact: { _ in },
-                notification: { _ in },
-                selection: {},
-                buttonTap: {},
-                toggleSwitch: {},
-                successAction: {},
-                errorAction: {},
-                warningAction: {},
-                dragStarted: {},
-                dragEnded: {},
-                refresh: {}
-            )
-        }
-
-        ZStack {
-            systemBackgroundColorView
-                .ignoresSafeArea()
-
-            VStack {
-                Text("App Content with Dark Theme")
-                    .font(.largeTitle)
-                Spacer()
-            }
-            .padding()
-        }
-        .floatingActionButton(store: store)
-        .previewDevice(.init(rawValue: "iPhone 15 Pro Max"))
-        .preferredColorScheme(.dark)
+    @available(iOS 14.0, macOS 11.0, *)
+    private var systemBackgroundColorView: some View {
+        #if canImport(UIKit)
+            Color(UIColor.systemBackground)
+        #else
+            Color(NSColor.controlBackgroundColor)
+        #endif
     }
-}
+
+    struct FloatingActionButton_Previews: PreviewProvider {
+        static var previews: some View {
+            let store = Store(initialState: GlobalScanFeature.State()) {
+                GlobalScanFeature()
+            } withDependencies: {
+                $0.documentScanner = .previewValue
+                $0.camera = .testValue
+                $0.hapticManager = HapticManagerClient(
+                    impact: { _ in },
+                    notification: { _ in },
+                    selection: {},
+                    buttonTap: {},
+                    toggleSwitch: {},
+                    successAction: {},
+                    errorAction: {},
+                    warningAction: {},
+                    dragStarted: {},
+                    dragEnded: {},
+                    refresh: {}
+                )
+            }
+
+            ZStack {
+                backgroundColorView
+                    .ignoresSafeArea()
+
+                VStack {
+                    Text("Main App Content")
+                        .font(.largeTitle)
+                    Spacer()
+                }
+                .padding()
+            }
+            .floatingActionButton(store: store)
+            .previewDevice(.init(rawValue: "iPhone 15 Pro"))
+            .preferredColorScheme(.light)
+        }
+    }
+
+    struct FloatingActionButton_Dark_Previews: PreviewProvider {
+        static var previews: some View {
+            let store = Store(initialState: GlobalScanFeature.State()) {
+                GlobalScanFeature()
+            } withDependencies: {
+                $0.documentScanner = .previewValue
+                $0.camera = .testValue
+                $0.hapticManager = HapticManagerClient(
+                    impact: { _ in },
+                    notification: { _ in },
+                    selection: {},
+                    buttonTap: {},
+                    toggleSwitch: {},
+                    successAction: {},
+                    errorAction: {},
+                    warningAction: {},
+                    dragStarted: {},
+                    dragEnded: {},
+                    refresh: {}
+                )
+            }
+
+            ZStack {
+                systemBackgroundColorView
+                    .ignoresSafeArea()
+
+                VStack {
+                    Text("App Content with Dark Theme")
+                        .font(.largeTitle)
+                    Spacer()
+                }
+                .padding()
+            }
+            .floatingActionButton(store: store)
+            .previewDevice(.init(rawValue: "iPhone 15 Pro Max"))
+            .preferredColorScheme(.dark)
+        }
+    }
 #endif

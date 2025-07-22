@@ -136,8 +136,8 @@ public struct PurchaseOrderSection: ValueObject {
                 "name": vendor.name,
                 "address": vendor.address.formatted,
                 "phoneNumber": vendor.phoneNumber?.value as Any,
-                "cageCode": vendor.cageCode?.value as Any
-            ]
+                "cageCode": vendor.cageCode?.value as Any,
+            ],
         ]
     }
 }
@@ -254,14 +254,14 @@ public struct SuppliesServicesSection: ValueObject {
                     "quantity": item.quantity,
                     "unit": item.unit,
                     "unitPrice": item.unitPrice.amount,
-                    "amount": item.amount.amount
+                    "amount": item.amount.amount,
                 ]
             },
             "subtotal": subtotal.amount,
             "tax": tax?.amount as Any,
             "shipping": shipping?.amount as Any,
             "total": total.amount,
-            "currency": total.currency.rawValue
+            "currency": total.currency.rawValue,
         ]
     }
 }
@@ -308,7 +308,7 @@ public struct ShippingSection: ValueObject {
             "dateShipped": dateShipped?.timeIntervalSince1970 as Any,
             "billOfLading": billOfLading as Any,
             "weight": weight as Any,
-            "shippingMethod": shippingMethod?.rawValue as Any
+            "shippingMethod": shippingMethod?.rawValue as Any,
         ]
     }
 }
@@ -341,7 +341,7 @@ public struct InvoiceSection: ValueObject {
             "invoiceNumber": invoiceNumber as Any,
             "invoiceDate": invoiceDate?.timeIntervalSince1970 as Any,
             "discountTerms": discountTerms as Any,
-            "remitTo": remitTo?.formatted as Any
+            "remitTo": remitTo?.formatted as Any,
         ]
     }
 }
@@ -413,7 +413,7 @@ public struct VoucherSection: ValueObject {
                 [
                     "amountPaid": partial.amountPaid.amount,
                     "balanceDue": partial.balanceDue.amount,
-                    "currency": partial.amountPaid.currency.rawValue
+                    "currency": partial.amountPaid.currency.rawValue,
                 ]
             } as Any,
             "checkNumber": checkNumber as Any,
@@ -423,9 +423,9 @@ public struct VoucherSection: ValueObject {
                 [
                     "name": p.name,
                     "address": p.address?.formatted as Any,
-                    "accountNumber": p.accountNumber as Any
+                    "accountNumber": p.accountNumber as Any,
                 ]
-            } as Any
+            } as Any,
         ]
     }
 }

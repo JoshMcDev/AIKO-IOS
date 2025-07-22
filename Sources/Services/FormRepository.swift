@@ -24,7 +24,7 @@ final class FormRepository: Sendable {
             supportedTemplates: [.requestForQuoteSimplified, .requestForQuote],
             requiredFields: [
                 "requisitionNumber", "dateIssued", "deliveryDate",
-                "itemDescription", "quantity", "unit", "unitPrice"
+                "itemDescription", "quantity", "unit", "unitPrice",
             ],
             farReference: "FAR 53.213",
             downloadURL: URL(string: "https://www.gsa.gov/forms/sf18.pdf"),
@@ -43,7 +43,7 @@ final class FormRepository: Sendable {
             requiredFields: [
                 "contractNumber", "solicitationNumber", "dateIssued",
                 "requisitionNumber", "deliveryTerms", "paymentTerms",
-                "itemDescription", "quantity", "unitPrice", "totalPrice"
+                "itemDescription", "quantity", "unitPrice", "totalPrice",
             ],
             farReference: "FAR 53.212",
             downloadURL: URL(string: "https://www.gsa.gov/forms/sf1449.pdf"),
@@ -61,7 +61,7 @@ final class FormRepository: Sendable {
             supportedTemplates: [.contractScaffold],
             requiredFields: [
                 "amendmentNumber", "effectiveDate", "contractNumber",
-                "modificationDescription", "changeAmount"
+                "modificationDescription", "changeAmount",
             ],
             farReference: "FAR 53.243",
             downloadURL: URL(string: "https://www.gsa.gov/forms/sf30.pdf"),
@@ -79,7 +79,7 @@ final class FormRepository: Sendable {
             supportedTemplates: [.contractScaffold],
             requiredFields: [
                 "contractNumber", "effectiveDate", "contractor",
-                "totalAmount", "performancePeriod"
+                "totalAmount", "performancePeriod",
             ],
             farReference: "FAR 53.214",
             downloadURL: URL(string: "https://www.gsa.gov/forms/sf26.pdf"),
@@ -112,7 +112,7 @@ final class FormRepository: Sendable {
             supportedTemplates: [.requestForQuote, .requestForQuoteSimplified],
             requiredFields: [
                 "orderNumber", "dateOrdered", "vendor",
-                "itemDescription", "quantity", "unitPrice", "totalAmount"
+                "itemDescription", "quantity", "unitPrice", "totalAmount",
             ],
             farReference: "FAR 53.213",
             downloadURL: URL(string: "https://www.gsa.gov/forms/sf44.pdf"),
@@ -130,7 +130,7 @@ final class FormRepository: Sendable {
             supportedTemplates: [.sow, .pws],
             requiredFields: [
                 "projectTitle", "projectLocation", "estimatedCost",
-                "performancePeriod", "firmName", "services"
+                "performancePeriod", "firmName", "services",
             ],
             farReference: "FAR 53.236-2",
             downloadURL: URL(string: "https://www.gsa.gov/forms/sf252.pdf"),
@@ -149,12 +149,12 @@ final class FormRepository: Sendable {
             requiredFields: [
                 "contractorName", "solicitationNumber", "surveyDate",
                 "technicalCapability", "productionCapacity", "qualityAssurance",
-                "financialCapability", "performanceRecord"
+                "financialCapability", "performanceRecord",
             ],
             farReference: "FAR 53.209",
             downloadURL: URL(string: "https://www.gsa.gov/forms/sf1408.pdf"),
             threshold: nil
-        )
+        ),
     ]
 
     // MARK: - Initialization

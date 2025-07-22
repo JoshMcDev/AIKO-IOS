@@ -251,13 +251,13 @@ private let accessControlLevel1Template = CMMCDomainTemplate(
                 "Document authorized user list",
                 "Implement account request/approval process",
                 "Configure system access controls",
-                "Remove default accounts"
+                "Remove default accounts",
             ],
             evidenceRequired: [
                 "User account list",
                 "Account management procedures",
                 "Access approval forms",
-                "System configuration screenshots"
+                "System configuration screenshots",
             ],
             commonTools: ["Active Directory", "LDAP", "Local user management"],
             estimatedEffort: "4-8 hours",
@@ -271,30 +271,30 @@ private let accessControlLevel1Template = CMMCDomainTemplate(
                 "Implement role-based access control",
                 "Configure least privilege access",
                 "Document permission matrix",
-                "Test access restrictions"
+                "Test access restrictions",
             ],
             evidenceRequired: [
                 "Role definitions",
                 "Permission matrix",
                 "RBAC configuration",
-                "Test results"
+                "Test results",
             ],
             commonTools: ["Group Policy", "ACLs", "Application permissions"],
             estimatedEffort: "8-16 hours",
             dependencies: ["AC.L1-3.1.1"]
-        )
+        ),
     ],
     commonImplementations: [
         "Active Directory Group Policy",
         "Role-Based Access Control (RBAC)",
         "Principle of Least Privilege",
-        "Access Control Lists (ACLs)"
+        "Access Control Lists (ACLs)",
     ],
     documentationNeeded: [
         "Access Control Policy",
         "User Account Management Procedures",
         "Authorization Matrix",
-        "Account Request Forms"
+        "Account Request Forms",
     ]
 )
 
@@ -311,13 +311,13 @@ private let accessControlLevel2Template = CMMCDomainTemplate(
                 "Map data flow diagrams",
                 "Implement data loss prevention",
                 "Configure boundary protections",
-                "Monitor unauthorized transfers"
+                "Monitor unauthorized transfers",
             ],
             evidenceRequired: [
                 "Data flow diagrams",
                 "DLP policies",
                 "Firewall rules",
-                "Monitoring logs"
+                "Monitoring logs",
             ],
             commonTools: ["DLP solutions", "Firewalls", "CASB", "Email gateways"],
             estimatedEffort: "40-80 hours",
@@ -331,30 +331,30 @@ private let accessControlLevel2Template = CMMCDomainTemplate(
                 "Define separation requirements",
                 "Redistribute responsibilities",
                 "Implement approval workflows",
-                "Document duty matrices"
+                "Document duty matrices",
             ],
             evidenceRequired: [
                 "Separation of duties matrix",
                 "Workflow documentation",
                 "Approval processes",
-                "Role assignments"
+                "Role assignments",
             ],
             commonTools: ["Workflow systems", "Ticketing systems", "Change management"],
             estimatedEffort: "16-32 hours",
             dependencies: ["AC.L1-3.1.2"]
-        )
+        ),
     ],
     commonImplementations: [
         "Data Loss Prevention (DLP)",
         "Network segmentation",
         "Separation of duties matrix",
-        "Workflow automation"
+        "Workflow automation",
     ],
     documentationNeeded: [
         "Data Flow Diagrams",
         "CUI Handling Procedures",
         "Separation of Duties Policy",
-        "Information Flow Enforcement Rules"
+        "Information Flow Enforcement Rules",
     ]
 )
 
@@ -371,30 +371,30 @@ private let accessControlLevel3Template = CMMCDomainTemplate(
                 "Configure TLS 1.2 or higher",
                 "Deploy certificate-based authentication",
                 "Enable perfect forward secrecy",
-                "Monitor encryption strength"
+                "Monitor encryption strength",
             ],
             evidenceRequired: [
                 "VPN configuration",
                 "Encryption policies",
                 "Certificate management",
-                "Cipher suite configuration"
+                "Cipher suite configuration",
             ],
             commonTools: ["VPN solutions", "PKI infrastructure", "SSL/TLS certificates"],
             estimatedEffort: "24-48 hours",
             dependencies: ["SC.L2-3.13.8", "IA.L2-3.5.3"]
-        )
+        ),
     ],
     commonImplementations: [
         "Enterprise VPN solutions",
         "PKI infrastructure",
         "Certificate-based authentication",
-        "Advanced encryption standards"
+        "Advanced encryption standards",
     ],
     documentationNeeded: [
         "Cryptographic Policy",
         "Remote Access Procedures",
         "Certificate Management Plan",
-        "Encryption Standards"
+        "Encryption Standards",
     ]
 )
 
@@ -411,13 +411,13 @@ private let identificationAuthLevel1Template = CMMCDomainTemplate(
                 "Assign unique device identifiers",
                 "Document service accounts",
                 "Create identification standards",
-                "Maintain identifier inventory"
+                "Maintain identifier inventory",
             ],
             evidenceRequired: [
                 "User ID standards",
                 "Device inventory",
                 "Service account list",
-                "Naming conventions"
+                "Naming conventions",
             ],
             commonTools: ["Identity management systems", "Asset management tools"],
             estimatedEffort: "8-16 hours",
@@ -431,30 +431,30 @@ private let identificationAuthLevel1Template = CMMCDomainTemplate(
                 "Configure password policies",
                 "Deploy authentication servers",
                 "Enable device authentication",
-                "Test authentication flows"
+                "Test authentication flows",
             ],
             evidenceRequired: [
                 "Authentication configuration",
                 "Password policy",
                 "Authentication logs",
-                "Test documentation"
+                "Test documentation",
             ],
             commonTools: ["Active Directory", "RADIUS", "LDAP", "802.1X"],
             estimatedEffort: "16-32 hours",
             dependencies: ["IA.L1-3.5.1"]
-        )
+        ),
     ],
     commonImplementations: [
         "Active Directory authentication",
         "Password complexity requirements",
         "Account lockout policies",
-        "Device certificates"
+        "Device certificates",
     ],
     documentationNeeded: [
         "Identification and Authentication Policy",
         "Password Standards",
         "Account Management Procedures",
-        "Device Registration Process"
+        "Device Registration Process",
     ]
 )
 
@@ -471,30 +471,30 @@ private let identificationAuthLevel2Template = CMMCDomainTemplate(
                 "Deploy MFA solution",
                 "Configure MFA policies",
                 "Enroll privileged users",
-                "Test MFA scenarios"
+                "Test MFA scenarios",
             ],
             evidenceRequired: [
                 "Privileged account inventory",
                 "MFA configuration",
                 "Enrollment records",
-                "MFA policy documentation"
+                "MFA policy documentation",
             ],
             commonTools: ["Microsoft Authenticator", "Duo", "RSA SecurID", "YubiKey"],
             estimatedEffort: "24-48 hours",
             dependencies: ["IA.L1-3.5.1", "IA.L1-3.5.2"]
-        )
+        ),
     ],
     commonImplementations: [
         "Time-based OTP (TOTP)",
         "SMS-based MFA",
         "Hardware tokens",
-        "Biometric authentication"
+        "Biometric authentication",
     ],
     documentationNeeded: [
         "MFA Policy",
         "Privileged Account Inventory",
         "MFA Enrollment Procedures",
-        "Backup Authentication Methods"
+        "Backup Authentication Methods",
     ]
 )
 
@@ -511,13 +511,13 @@ private let auditLevel2Template = CMMCDomainTemplate(
                 "Configure log retention",
                 "Centralize log collection",
                 "Protect log integrity",
-                "Document retention periods"
+                "Document retention periods",
             ],
             evidenceRequired: [
                 "Logging configuration",
                 "Retention policies",
                 "Log samples",
-                "Storage capacity planning"
+                "Storage capacity planning",
             ],
             commonTools: ["Syslog", "Windows Event Log", "SIEM", "Log management"],
             estimatedEffort: "16-32 hours",
@@ -531,30 +531,30 @@ private let auditLevel2Template = CMMCDomainTemplate(
                 "Correlate user sessions",
                 "Implement log analysis",
                 "Create audit trails",
-                "Test traceability"
+                "Test traceability",
             ],
             evidenceRequired: [
                 "User activity logs",
                 "Correlation rules",
                 "Audit trail samples",
-                "Traceability testing"
+                "Traceability testing",
             ],
             commonTools: ["SIEM solutions", "Log analyzers", "User behavior analytics"],
             estimatedEffort: "24-48 hours",
             dependencies: ["AU.L2-3.3.1", "IA.L1-3.5.1"]
-        )
+        ),
     ],
     commonImplementations: [
         "Centralized logging",
         "SIEM deployment",
         "Log correlation rules",
-        "Automated alerting"
+        "Automated alerting",
     ],
     documentationNeeded: [
         "Audit and Logging Policy",
         "Log Retention Schedule",
         "Audit Review Procedures",
-        "Incident Investigation Guide"
+        "Incident Investigation Guide",
     ]
 )
 
@@ -571,30 +571,30 @@ private let systemProtectionLevel1Template = CMMCDomainTemplate(
                 "Configure access rules",
                 "Enable traffic monitoring",
                 "Implement IDS/IPS",
-                "Document network diagram"
+                "Document network diagram",
             ],
             evidenceRequired: [
                 "Network diagrams",
                 "Firewall rules",
                 "IDS/IPS configuration",
-                "Traffic logs"
+                "Traffic logs",
             ],
             commonTools: ["Firewalls", "IDS/IPS", "Network monitors", "UTM devices"],
             estimatedEffort: "32-64 hours",
             dependencies: []
-        )
+        ),
     ],
     commonImplementations: [
         "Next-gen firewalls",
         "Intrusion detection systems",
         "Network segmentation",
-        "DMZ implementation"
+        "DMZ implementation",
     ],
     documentationNeeded: [
         "Network Security Policy",
         "Firewall Rule Matrix",
         "Network Diagrams",
-        "Boundary Protection Plan"
+        "Boundary Protection Plan",
     ]
 )
 
@@ -659,7 +659,7 @@ private func generateDetailedSteps(for _: CMMCRequirement) -> [ImplementationSte
             description: "Document procedures and collect evidence",
             expectedOutcome: "Complete documentation package",
             timeEstimate: "2-4 hours"
-        )
+        ),
     ]
 }
 
@@ -684,7 +684,7 @@ private func generateValidationChecklist(for _: CMMCRequirement) -> [String] {
         "Evidence demonstrates effectiveness",
         "Personnel are trained on procedures",
         "Control is integrated with other practices",
-        "Monitoring and metrics are in place"
+        "Monitoring and metrics are in place",
     ]
 }
 

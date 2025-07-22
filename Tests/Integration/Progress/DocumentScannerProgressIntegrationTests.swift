@@ -175,7 +175,7 @@ final class DocumentScannerProgressIntegrationTests: XCTestCase {
         let testPages = [
             createTestScannedPage(),
             createTestScannedPage(),
-            createTestScannedPage()
+            createTestScannedPage(),
         ]
 
         await store.send(.scanDocument(testPages))
@@ -405,7 +405,7 @@ final class DocumentScannerProgressIntegrationTests: XCTestCase {
 
         let testPages = [
             createTestScannedPage(),
-            createTestScannedPage()
+            createTestScannedPage(),
         ]
 
         // Start scanning

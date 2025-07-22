@@ -144,7 +144,7 @@ extension FARPart12ComplianceService: DependencyKey {
                 // Check for commercial item indicators
                 let commercialIndicators = [
                     "commercial", "cots", "catalog", "market price", "commercial service",
-                    "standard commercial", "commercially available", "gsa schedule"
+                    "standard commercial", "commercially available", "gsa schedule",
                 ]
 
                 let hasCommercialIndicators = commercialIndicators.contains { lowercaseContent.contains($0) }
@@ -177,7 +177,7 @@ extension FARPart12ComplianceService: DependencyKey {
                     "Certified Cost or Pricing Data",
                     "Truth in Negotiations Act",
                     "Detailed Manufacturing Processes",
-                    "Government Property Control"
+                    "Government Property Control",
                 ] : []
 
                 // Add recommendations
@@ -437,7 +437,7 @@ private func getCommercialItemClauses() -> [CommercialItemClause] {
             title: "Contract Terms and Conditions Required to Implement Statutes or Executive Orders",
             prescribedIn: "FAR 12.301(b)(5)",
             applicability: .always
-        )
+        ),
     ]
 }
 

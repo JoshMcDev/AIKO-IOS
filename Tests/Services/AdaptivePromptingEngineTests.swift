@@ -30,7 +30,7 @@ final class AdaptivePromptingEngineTests: XCTestCase {
 
         // Then
         XCTAssertEqual(session.state, .gatheringBasicInfo)
-        XCTAssertTrue(session.remainingQuestions.count > 0)
+        XCTAssertTrue(!session.remainingQuestions.isEmpty)
         XCTAssertTrue(session.questionHistory.isEmpty)
         XCTAssertEqual(session.confidence, .low)
     }
@@ -51,7 +51,7 @@ final class AdaptivePromptingEngineTests: XCTestCase {
         // Then
         XCTAssertEqual(session.state, .gatheringBasicInfo)
         // Should have fewer questions since we extracted data from document
-        XCTAssertTrue(session.remainingQuestions.count > 0)
+        XCTAssertTrue(!session.remainingQuestions.isEmpty)
     }
 
     // MARK: - User Response Processing Tests
@@ -117,8 +117,8 @@ final class AdaptivePromptingEngineTests: XCTestCase {
         // Then
         XCTAssertNotNil(context.vendorInfo)
         XCTAssertNotNil(context.pricing)
-        XCTAssertTrue(context.technicalDetails.count > 0)
-        XCTAssertTrue(context.confidence.count > 0)
+        XCTAssertTrue(!context.technicalDetails.isEmpty)
+        XCTAssertTrue(!context.confidence.isEmpty)
     }
 
     // MARK: - Smart Defaults Tests
@@ -235,7 +235,7 @@ final class AdaptivePromptingEngineTests: XCTestCase {
                     value: "25000.00",
                     confidence: 0.85,
                     location: ExtractedLocation(page: 1, boundingBox: nil)
-                )
+                ),
             ],
             relationships: [],
             tables: [],

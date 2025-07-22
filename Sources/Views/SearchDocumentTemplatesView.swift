@@ -90,7 +90,7 @@ public struct SearchDocumentTemplatesView: View {
                 ScrollView {
                     LazyVGrid(columns: [
                         GridItem(.flexible(), spacing: Theme.Spacing.medium),
-                        GridItem(.flexible(), spacing: Theme.Spacing.medium)
+                        GridItem(.flexible(), spacing: Theme.Spacing.medium),
                     ], spacing: Theme.Spacing.medium) {
                         // Filter and display document types
                         ForEach(filteredDocumentTypes, id: \.self) { documentType in

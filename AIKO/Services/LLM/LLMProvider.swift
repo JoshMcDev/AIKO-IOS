@@ -154,7 +154,7 @@ struct LLMModel: Identifiable, Codable, Equatable {
     let id: String
     let name: String
     let contextWindow: Int
-    var customEndpoint: String? = nil
+    var customEndpoint: String?
 
     /// Estimated cost per 1K tokens (in cents)
     var costPer1KTokens: (input: Double, output: Double) {

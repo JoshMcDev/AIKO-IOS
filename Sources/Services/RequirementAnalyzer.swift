@@ -57,7 +57,7 @@ extension RequirementAnalyzer: DependencyKey {
                 """
 
                 let messages = [
-                    AIMessage.user(analysisPrompt)
+                    AIMessage.user(analysisPrompt),
                 ]
 
                 let request = AICompletionRequest(
@@ -120,7 +120,7 @@ extension RequirementAnalyzer: DependencyKey {
                 """
 
                 let messages = [
-                    AIMessage.user(analysisPrompt)
+                    AIMessage.user(analysisPrompt),
                 ]
 
                 let request = AICompletionRequest(
@@ -150,7 +150,7 @@ extension RequirementAnalyzer: DependencyKey {
                     Original prompt: \(prompt)
 
                     Enhanced prompt:
-                    """)
+                    """),
                 ]
 
                 let request = AICompletionRequest(

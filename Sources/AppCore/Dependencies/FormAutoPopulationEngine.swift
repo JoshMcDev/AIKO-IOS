@@ -487,7 +487,7 @@ extension FormAutoPopulationEngine: DependencyKey {
                         fieldType: .text,
                         extractedValue: "Mock Vendor Inc.",
                         confidence: 0.9
-                    )
+                    ),
                 ]
             )
         },
@@ -523,7 +523,7 @@ extension FormAutoPopulationEngine: DependencyKey {
                         fieldType: .text,
                         extractedValue: "Test Value",
                         confidence: 0.95
-                    )
+                    ),
                 ]
             )
         },

@@ -506,7 +506,7 @@ extension DocumentImageProcessor: DependencyKey {
                     boundingBox: CGRect(x: 10, y: 35, width: 150, height: 20),
                     characterBoxes: [],
                     detectedLanguage: .english
-                )
+                ),
             ]
 
             return DocumentImageProcessor.OCRResult(
@@ -530,19 +530,19 @@ extension DocumentImageProcessor: DependencyKey {
                 extractedFields = [
                     "invoice_number": .string("INV-001"),
                     "total_amount": .string("$123.45"),
-                    "date": .string("2024-01-15")
+                    "date": .string("2024-01-15"),
                 ]
             case .receipt:
                 extractedFields = [
                     "store_name": .string("Test Store"),
                     "total": .string("$45.67"),
-                    "items": .array(["Item 1", "Item 2"])
+                    "items": .array(["Item 1", "Item 2"]),
                 ]
             case .businessCard:
                 extractedFields = [
                     "name": .string("John Doe"),
                     "company": .string("Test Company"),
-                    "phone": .string("+1-555-0123")
+                    "phone": .string("+1-555-0123"),
                 ]
             default:
                 extractedFields = ["content": .string(ocrResult.fullText)]

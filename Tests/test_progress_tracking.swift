@@ -1,23 +1,23 @@
 #!/usr/bin/env swift
 
-import Foundation
 import Combine
+import Foundation
 
 // Simple test to verify our progress tracking implementation works
 
 print("🧪 Testing Progress Tracking Implementation")
-print("==================================================") 
+print("==================================================")
 
 // Test 1: ProgressPhase functionality
 print("✅ Testing ProgressPhase enum...")
 enum ProgressPhase: String, CaseIterable {
-    case idle = "idle"
-    case preparing = "preparing"
-    case scanning = "scanning"
-    case processing = "processing"
-    case analyzing = "analyzing"
-    case completing = "completing"
-    
+    case idle
+    case preparing
+    case scanning
+    case processing
+    case analyzing
+    case completing
+
     var displayName: String {
         switch self {
         case .idle: return "Ready"
@@ -39,13 +39,13 @@ struct ProgressState {
     let phase: ProgressPhase
     let fractionCompleted: Double
     let currentStep: String
-    
+
     init(phase: ProgressPhase, fractionCompleted: Double, currentStep: String) {
         self.phase = phase
         self.fractionCompleted = max(0.0, min(1.0, fractionCompleted)) // Bounds checking
         self.currentStep = currentStep
     }
-    
+
     var accessibilityLabel: String {
         let percentage = Int(fractionCompleted * 100)
         return "\(phase.displayName): \(percentage)% complete. \(currentStep)"
@@ -67,7 +67,7 @@ struct ProgressSessionConfig {
     let expectedPhases: [ProgressPhase]
     let estimatedDuration: TimeInterval
     let enableAccessibilityAnnouncements: Bool
-    
+
     static let defaultSinglePageScan = ProgressSessionConfig(
         sessionType: "single_page_scan",
         expectedPhases: [.preparing, .scanning, .processing, .analyzing, .completing],
@@ -86,7 +86,7 @@ struct ProgressUpdate {
     let phase: ProgressPhase
     let fractionCompleted: Double
     let message: String?
-    
+
     init(sessionId: UUID, phase: ProgressPhase, fractionCompleted: Double, message: String? = nil) {
         self.sessionId = sessionId
         self.phase = phase
@@ -110,38 +110,38 @@ print("✅ Testing Progress Session Management...")
 actor ProgressSessionManager {
     private var activeSessions: [UUID: ProgressState] = [:]
     private var progressSubjects: [UUID: CurrentValueSubject<ProgressState, Never>] = [:]
-    
-    func createSession(config: ProgressSessionConfig) -> UUID {
+
+    func createSession(config _: ProgressSessionConfig) -> UUID {
         let sessionId = UUID()
         let initialState = ProgressState(
             phase: .preparing,
             fractionCompleted: 0.0,
             currentStep: "Initializing..."
         )
-        
+
         activeSessions[sessionId] = initialState
         progressSubjects[sessionId] = CurrentValueSubject(initialState)
-        
+
         return sessionId
     }
-    
+
     func updateProgress(sessionId: UUID, update: ProgressUpdate) {
         let newState = ProgressState(
             phase: update.phase,
             fractionCompleted: update.fractionCompleted,
             currentStep: update.message ?? "Processing..."
         )
-        
+
         activeSessions[sessionId] = newState
         progressSubjects[sessionId]?.send(newState)
     }
-    
+
     func completeSession(sessionId: UUID) {
         activeSessions.removeValue(forKey: sessionId)
         progressSubjects[sessionId]?.send(completion: .finished)
         progressSubjects.removeValue(forKey: sessionId)
     }
-    
+
     func getSessionCount() -> Int {
         return activeSessions.count
     }
@@ -153,7 +153,7 @@ Task {
     // Test session creation
     let testSessionId = await sessionManager.createSession(config: config)
     print("   Created session: \(testSessionId.uuidString.prefix(8))... ✅")
-    
+
     // Test progress updates
     await sessionManager.updateProgress(
         sessionId: testSessionId,
@@ -165,7 +165,7 @@ Task {
         )
     )
     print("   Updated progress: 30% ✅")
-    
+
     await sessionManager.updateProgress(
         sessionId: testSessionId,
         update: ProgressUpdate(
@@ -176,7 +176,7 @@ Task {
         )
     )
     print("   Updated progress: 80% ✅")
-    
+
     // Test session completion
     await sessionManager.completeSession(sessionId: testSessionId)
     let finalCount = await sessionManager.getSessionCount()
@@ -186,7 +186,7 @@ Task {
 print("\n🎯 Progress Tracking Implementation Test Results:")
 print("   ✅ ProgressPhase enum with display properties")
 print("   ✅ ProgressState with bounds validation")
-print("   ✅ ProgressSessionConfig with default configurations") 
+print("   ✅ ProgressSessionConfig with default configurations")
 print("   ✅ ProgressUpdate with validation")
 print("   ✅ Progress session management simulation")
 

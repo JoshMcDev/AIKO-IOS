@@ -296,7 +296,7 @@ private let wizardSteps: [String: WizardStep] = [
         answerType: .yesNo,
         options: nil,
         nextStepLogic: { _ in nil }
-    )
+    ),
 ]
 
 // MARK: - Live Value
@@ -410,7 +410,7 @@ extension FARPart12Wizard: DependencyKey {
                 "52.212-2 Evaluation—Commercial Items",
                 "52.212-3 Offeror Representations and Certifications—Commercial Items",
                 "52.212-4 Contract Terms and Conditions—Commercial Items",
-                "52.212-5 Contract Terms and Conditions Required to Implement Statutes or Executive Orders—Commercial Items"
+                "52.212-5 Contract Terms and Conditions Required to Implement Statutes or Executive Orders—Commercial Items",
             ]
         case .notCommercial:
             ["Standard FAR Part 15 clauses apply"]
@@ -426,31 +426,31 @@ extension FARPart12Wizard: DependencyKey {
                 "Use FAR Part 12 procedures",
                 "Apply streamlined solicitation process",
                 "Minimize government-unique requirements",
-                "Consider firm-fixed-price contract type"
+                "Consider firm-fixed-price contract type",
             ]
         case .commercialService:
             [
                 "Use commercial service acquisition procedures",
                 "Consider performance-based approach",
-                "Apply commercial quality standards"
+                "Apply commercial quality standards",
             ]
         case .modifiedCommercial:
             [
                 "Document modifications clearly",
                 "Ensure modifications are minor",
-                "Maintain commercial pricing structure"
+                "Maintain commercial pricing structure",
             ]
         case .notCommercial:
             [
                 "Use FAR Part 15 procedures",
                 "Conduct detailed cost analysis",
-                "Apply full competition requirements"
+                "Apply full competition requirements",
             ]
         case .hybrid:
             [
                 "Segregate commercial and non-commercial elements",
                 "Apply appropriate procedures to each element",
-                "Document determination for each component"
+                "Document determination for each component",
             ]
         }
     }

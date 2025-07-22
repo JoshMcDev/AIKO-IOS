@@ -321,7 +321,8 @@ public struct AgenticChatFeature {
         case .identifyVendors:
             // Create vendor comparison card
             if let vendorData = output as? [String: Any],
-               let vendors = vendorData["vendors"] as? [String] {
+               let vendors = vendorData["vendors"] as? [String]
+            {
                 let vendorInfos = vendors.map { name in
                     VendorInfo(
                         name: name,
@@ -340,7 +341,8 @@ public struct AgenticChatFeature {
         case .monitorCompliance:
             // Create compliance card
             if let complianceData = output as? [String: Any],
-               let score = complianceData["complianceScore"] as? Double {
+               let score = complianceData["complianceScore"] as? Double
+            {
                 return MessageCard(
                     type: .compliance,
                     title: "Compliance Status",
@@ -408,7 +410,7 @@ public struct AgenticChatFeature {
         }
 
         // Add queue-based suggestions
-        if state.taskQueueState.queueStatus.queuedTasks.count > 0 {
+        if !state.taskQueueState.queueStatus.queuedTasks.isEmpty {
             suggestions.append("View task queue (\(state.taskQueueState.queueStatus.queuedTasks.count) pending)")
         }
 
@@ -692,7 +694,7 @@ extension NaturalLanguageProcessor: DependencyKey {
                 [
                     "What's the estimated budget?",
                     "When do you need this completed?",
-                    "Are there any special requirements?"
+                    "Are there any special requirements?",
                 ]
             }
         )
@@ -743,7 +745,7 @@ struct AmbientStatusBar: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            if store.activeAcquisitions.count > 0 {
+            if !store.activeAcquisitions.isEmpty {
                 StatusPill(
                     text: "\(store.activeAcquisitions.count) Active",
                     color: .green

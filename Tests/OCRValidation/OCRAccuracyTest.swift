@@ -214,7 +214,7 @@ final class OCRAccuracyTest: XCTestCase {
         let longer = firstString.count > secondString.count ? firstString : secondString
         let shorter = firstString.count > secondString.count ? secondString : firstString
 
-        if longer.count == 0 { return 1.0 }
+        if longer.isEmpty { return 1.0 }
 
         let editDistance = levenshteinDistance(shorter, longer)
         return (Double(longer.count) - Double(editDistance)) / Double(longer.count)

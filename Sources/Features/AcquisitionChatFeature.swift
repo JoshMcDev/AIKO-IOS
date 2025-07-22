@@ -127,7 +127,7 @@ public struct AcquisitionChatFeature: Sendable {
                 estimatedValue,
                 performancePeriod,
                 requirementType,
-                businessNeed
+                businessNeed,
             ]
             let filledFields = fields.count(where: { !$0.isEmpty })
             return Double(filledFields) / Double(fields.count)
@@ -581,7 +581,7 @@ public struct AcquisitionChatFeature: Sendable {
                             Original prompt: \(input)
 
                             Enhanced prompt:
-                            """)
+                            """),
                         ]
 
                         let request = AICompletionRequest(
@@ -805,7 +805,7 @@ public struct AcquisitionChatFeature: Sendable {
                 // Check if we should generate new actions
                 if let actionSet = state.suggestedActions {
                     let availableActions = actionSet.availableActions(completedActionIds: state.completedActionIds)
-                    if availableActions.isEmpty, state.completedActionIds.count > 0 {
+                    if availableActions.isEmpty, !state.completedActionIds.isEmpty {
                         // All current actions completed, generate new ones
                         return .send(.generateFollowOnActions)
                     }
@@ -1053,7 +1053,7 @@ public struct AcquisitionChatFeature: Sendable {
 
             Respond in a conversational but professional manner as a government contracting expert.
             Format your response using markdown for better readability.
-            """)
+            """),
         ]
 
         let request = AICompletionRequest(

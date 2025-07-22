@@ -32,7 +32,7 @@ func testCacheAPI() async throws {
     let testItems = [
         ("batch1", TestDoc(id: "1", content: "First"), CacheContentType.json, false),
         ("batch2", TestDoc(id: "2", content: "Second"), CacheContentType.json, false),
-        ("batch3", TestDoc(id: "3", content: "Third"), CacheContentType.json, false)
+        ("batch3", TestDoc(id: "3", content: "Third"), CacheContentType.json, false),
     ]
 
     let batchResults = try await cacheManager.batchStore(testItems) { progress in

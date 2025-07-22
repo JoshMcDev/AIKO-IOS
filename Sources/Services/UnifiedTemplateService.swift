@@ -310,7 +310,8 @@ actor UnifiedTemplateStorage {
     func loadTemplate(identifier: TemplateIdentifier) async throws -> DocumentTemplate {
         // Check cache first
         if let cached = templateCache[identifier.id],
-           Date().timeIntervalSince(cached.cachedAt) < cacheExpiration {
+           Date().timeIntervalSince(cached.cachedAt) < cacheExpiration
+        {
             return cached.template
         }
 

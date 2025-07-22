@@ -6,7 +6,7 @@ final class AcquisitionChatFeatureTests: XCTestCase {
     func testInitialState() {
         let state = AcquisitionChatFeature.State()
 
-        XCTAssertTrue(state.messages.count > 0)
+        XCTAssertTrue(!state.messages.isEmpty)
         XCTAssertEqual(state.currentInput, "")
         XCTAssertFalse(state.isProcessing)
         XCTAssertEqual(state.currentPhase, .initial)
@@ -57,7 +57,7 @@ final class AcquisitionChatFeatureTests: XCTestCase {
             $0.testAIProvider = MockAIProvider(responses: [
                 "Great! I'll help you with office supplies.",
                 "What's your estimated budget?",
-                "Perfect! Let me analyze your requirements."
+                "Perfect! Let me analyze your requirements.",
             ])
         }
 

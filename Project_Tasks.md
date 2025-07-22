@@ -2,8 +2,8 @@
 
 ## 📊 Project Overview
 **Last Updated**: 2025-07-22  
-**Total Tasks**: 47 (22 completed, 25 pending)  
-**Completion Rate**: 47%
+**Total Tasks**: 52 (22 completed, 30 pending)  
+**Completion Rate**: 42% (Phase 5 GraphRAG expansion)
 
 ### Current Status
 - **Build Status**: ✅ Clean (Sources: 0 SwiftLint violations, Tests: 0 SwiftLint violations)
@@ -11,7 +11,8 @@
 - **Session Management**: ✅ Full multi-page support
 - **Code Quality**: ✅ All SwiftLint/SwiftFormat compliant across entire codebase
 - **Architecture**: ✅ TCA + Actor-based concurrency
-- **Latest Feature**: ✅ Compilation error fixes complete - all errors resolved
+- **Latest Feature**: ✅ Code quality remediation complete - 0 violations, clean build (0.27s)
+- **Git Status**: ✅ All changes committed and pushed to `newfeet` branch (ce510ac6)
 - **TDD Status**: ✅ Complete workflow (/prd → /conTS → /tdd → /dev → /green → /refactor → /qa)
 
 ---
@@ -153,7 +154,7 @@
 
 ---
 
-## 🚧 Pending Tasks (26/47)
+## 🚧 Pending Tasks (30/52)
 
 ### Phase 4: Enhanced Document & Media Management (1 task remaining)
 
@@ -172,7 +173,7 @@
     - Sharing and export capabilities across all media types
     - Integration with existing form auto-population workflow
 
-### Phase 5: GraphRAG Intelligence System Implementation (7 tasks)
+### Phase 5: GraphRAG Intelligence System Implementation (12 tasks)
 
 > **📋 Implementation Reference Note**: When beginning Phase 5 GraphRAG development, review the comprehensive PRD and implementation plan document: `AIKO_GraphRAG_PRD_Implementation_Plan.md` in the project root. This consensus-validated document (6/7 AI models approved) contains detailed technical requirements, 10-week implementation timeline, architecture specifications, and validated approach for the complete GraphRAG system integration.
 
@@ -192,23 +193,24 @@
     - Local vector search and retrieval with sub-second performance
     - Smart update detection (timestamps/hashes) for minimal data transfer
 
-- [ ] **Set up LFM2-700M-GGUF Q6_K Model Integration and Core ML Conversion**
+- [ ] **Convert LFM2-700M-GGUF Q6_K to Core ML Format and Embed in Project**
   - Priority: High
-  - Status: 🚧 Not started
-  - Description: Download LFM2-700M-GGUF Q6_K (612MB) from HuggingFace (LiquidAI/LFM2-700M-GGUF), convert to Core ML format, integrate into iOS app bundle. Model handles embedding generation for regulation text chunks.
-  - **Model Selection Rationale**: Q6_K provides optimal balance of quality vs size (612MB vs 1.49GB F16)
-  - **Expected Performance**: < 2 seconds per regulation chunk, optimized for edge deployment
+  - Status: 🚧 Ready to start - Model downloaded at /Users/J/Desktop  
+  - Description: **IMMEDIATE ACTION REQUIRED** - LFM2-700M-GGUF Q6_K (612MB) is ready for conversion. Convert to Core ML format and integrate into iOS app bundle for dual-domain GraphRAG (regulations + user records).
+  - **Model Location**: `/Users/J/Desktop/LFM2-700M-GGUF` (ready for conversion)
+  - **Target Integration**: Dual-namespace GraphRAG supporting both government regulations and user acquisition records
+  - **Expected Performance**: < 2 seconds per chunk, optimized for on-device processing
   - Technical Tasks:
-    - Download LFM2-700M-GGUF Q6_K variant from HuggingFace (official LiquidAI repo)
-    - Install Core ML conversion tools (coremltools, transformers)
-    - Convert GGUF → Core ML format with quantization preservation
-    - Add 612MB model to iOS app bundle at Sources/Resources/LFM2-700M-Q6K.mlmodel
-    - Create LFM2Service.swift wrapper for model inference
-    - Implement batch embedding generation (chunks of 512 tokens)
-    - Test embedding generation performance (target: < 2s per regulation)
-    - Validate embedding quality with semantic similarity tests
-    - Add model loading optimization for app startup
-    - Document memory usage patterns and optimization strategies
+    - ✅ Model downloaded (LiquidAI/LFM2-700M-GGUF Q6_K variant - 612MB)
+    - Install Core ML conversion tools: `pip install coremltools transformers torch`
+    - Convert GGUF → Core ML: `python convert_lfm2_to_coreml.py --input /Users/J/Desktop/LFM2-700M-GGUF --output LFM2-700M-Q6K.mlmodel`
+    - Add 612MB model to iOS app bundle at `Sources/Resources/LFM2-700M-Q6K.mlmodel`
+    - Create `LFM2Service.swift` actor wrapper for thread-safe model inference
+    - Implement dual-domain embedding generation (regulations + user records)
+    - Test embedding performance (target: < 2s per 512-token chunk)
+    - Validate semantic similarity quality across both domains
+    - Add model loading optimization with lazy initialization
+    - Document memory usage patterns (target: < 800MB peak during processing)
 
 - [ ] **Implement ObjectBox Semantic Index Vector Database with Auto-Update Support**
   - Priority: High  
@@ -311,6 +313,103 @@
     - Result ranking and presentation
     - Integration with chat interface
     - Context injection for LLM responses
+
+#### User Acquisition Records GraphRAG System (5 tasks)
+
+- [ ] **Implement User Acquisition Records GraphRAG Data Collection System**
+  - Priority: High
+  - Status: 🚧 Not started  
+  - Description: **NEW REQUIREMENT** - Apply GraphRAG strategy to user's acquisition workflow data including all generated documents, user queries, reports, and decision records. Creates comprehensive searchable knowledge base of user's work patterns and decisions.
+  - **Data Sources**: Generated forms (SF-1449, contracts), LLM chat history, user queries, reports, workflow decisions, Project_Tasks.md changes, TodoWrite interactions
+  - **Privacy Model**: All processing on-device, no external transmission, encrypted local storage
+  - **Integration**: Unified search across regulations AND user workflow data
+  - Technical Tasks:
+    - Create `UserRecordsEmbedding.swift` data model for workflow data storage
+    - Implement `UserRecordsProcessor.swift` for document generation event capture
+    - Add data collection hooks to document generation (SF-1449, contracts, reports)
+    - Create LLM chat history processing and embedding generation
+    - Implement TodoWrite and Project_Tasks.md change tracking
+    - Add user query pattern analysis and storage
+    - Create workflow decision capture system
+    - Build privacy-preserving local processing pipeline
+    - Add user data retention and deletion controls
+    - Implement user records backup and restore functionality
+
+- [ ] **Create Dual-Namespace ObjectBox Architecture (Regulations + UserRecords)**
+  - Priority: High
+  - Status: 🚧 Not started
+  - Description: Extend ObjectBox Semantic Index to support both government regulations and user workflow data in separate namespaces with unified search capability.
+  - **Architecture**: Single LFM2 model, dual ObjectBox namespaces, cross-domain search
+  - **Performance**: Sub-second search across combined datasets (regulations + user data)
+  - **Storage**: ~100MB regulations + ~50MB user data = ~150MB total vector database
+  - Technical Tasks:
+    - Design dual-namespace ObjectBox schema (regulations vs user_records)
+    - Create `UnifiedVectorDatabase.swift` service for cross-domain operations
+    - Implement namespace isolation with clear data separation
+    - Add unified similarity search across both domains
+    - Create search result ranking with domain indicators
+    - Implement cross-domain result correlation (regulation + user precedent)
+    - Add namespace-specific backup and restore
+    - Create unified search analytics and performance monitoring
+    - Implement data migration support for namespace changes
+    - Add unified database maintenance and optimization
+
+- [ ] **Build Privacy-Preserving User Workflow Data Processing Pipeline**
+  - Priority: High
+  - Status: 🚧 Not started
+  - Description: Create secure, on-device processing pipeline for user workflow data with complete privacy protection and user control over data retention.
+  - **Privacy Features**: On-device only, no external transmission, user-controlled retention, encrypted storage
+  - **Data Protection**: iOS Keychain integration, file system encryption, secure deletion
+  - **User Control**: Data export, selective deletion, processing pause/resume
+  - Technical Tasks:
+    - Create secure data ingestion from all AIKO features
+    - Implement encrypted local storage for user workflow embeddings
+    - Add secure deletion with cryptographic erasure
+    - Create user data export functionality (JSON, encrypted backup)
+    - Implement selective data retention (keep recent, archive old)
+    - Add processing pause/resume for user control
+    - Create user data analytics dashboard (local statistics only)
+    - Implement data anonymization for troubleshooting
+    - Add user consent management for data processing
+    - Create audit trail for user data operations
+
+- [ ] **Implement Unified Search Interface (Regulations + User Records)**
+  - Priority: High
+  - Status: 🚧 Not started
+  - Description: Build unified search interface that intelligently searches across both government regulations and user's workflow data, providing comprehensive context for decision making.
+  - **Search Capabilities**: Semantic search, cross-domain correlation, intelligent result ranking
+  - **User Experience**: Single search box, domain indicators, contextual results
+  - **Integration**: Seamless LLM chat integration with enhanced context
+  - Technical Tasks:
+    - Create `UnifiedSearchService.swift` for cross-domain queries
+    - Implement intelligent query routing (regulation-focused vs workflow-focused)
+    - Add search result ranking with domain relevance scoring
+    - Create search result presentation with clear domain indicators
+    - Implement cross-domain result correlation (related regulation + user precedent)
+    - Add search filters (domain, date range, document type, confidence threshold)
+    - Create search history with privacy protection
+    - Implement saved searches and search suggestions
+    - Add search analytics (query patterns, result effectiveness)
+    - Integrate with existing LLM chat for enhanced context injection
+
+- [ ] **Create User Workflow Intelligence and Pattern Recognition System**
+  - Priority: Medium
+  - Status: 🚧 Not started
+  - Description: Implement intelligent analysis of user workflow patterns to provide personalized insights and recommendations based on user's historical decisions and document generation patterns.
+  - **Intelligence Features**: Decision pattern analysis, workflow optimization suggestions, personalized recommendations
+  - **Learning System**: On-device ML for pattern recognition, privacy-preserving personalization
+  - **Integration**: Enhanced case-for-analysis with user precedent, smart form pre-population based on patterns
+  - Technical Tasks:
+    - Implement user decision pattern analysis
+    - Create workflow efficiency analytics
+    - Add personalized recommendation engine (local ML)
+    - Create smart form pre-population based on user patterns
+    - Implement timeline analysis of user decisions and outcomes
+    - Add workflow optimization suggestions
+    - Create user expertise area detection
+    - Implement predictive text for common user phrases/decisions
+    - Add workflow deviation detection and alerts
+    - Create user productivity analytics dashboard
 
 #### Phase 5 GraphRAG - Implementation Status
 **Core System Architecture**: ✅ Designed

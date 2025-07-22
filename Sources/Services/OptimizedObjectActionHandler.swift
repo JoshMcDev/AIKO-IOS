@@ -428,7 +428,7 @@ private func handleAnalyzeActionOptimized(_ action: ObjectAction, resources _: R
     let analysis: [String: Any] = [
         "objectType": action.objectType.rawValue,
         "insights": ["Pattern detected", "Optimization opportunity found"],
-        "score": 0.85
+        "score": 0.85,
     ]
     let data = try JSONSerialization.data(withJSONObject: analysis)
     return ActionOutput(type: .json, data: data, metadata: ["analyzed": "true"])
@@ -909,7 +909,7 @@ private enum DurationEstimator {
             .notify: 0.5,
             .customize: 1.5,
             .apply: 1.0,
-            .respond: 1.0
+            .respond: 1.0,
         ]
 
         let base = baseEstimates[actionType] ?? 1.0
@@ -937,7 +937,7 @@ private enum DurationEstimator {
             .userHistory: 0.8,
             .systemConfiguration: 1.2,
             .integrationEndpoint: 1.5,
-            .documentDraft: 1.2
+            .documentDraft: 1.2,
         ]
 
         let multiplier = complexityMultipliers[objectType] ?? 1.0
@@ -957,7 +957,7 @@ private enum CapabilityRequirements {
             .learn: [.machineLearning],
             .predict: [.machineLearning, .dataAnalysis],
             .adapt: [.machineLearning],
-            .optimize: [.machineLearning, .dataAnalysis]
+            .optimize: [.machineLearning, .dataAnalysis],
         ]
 
         return requirements[actionType] ?? []
@@ -970,7 +970,7 @@ private enum ParameterRequirements {
             .create: ["template", "name"],
             .update: ["fields"],
             .generate: ["format"],
-            .analyze: ["depth"]
+            .analyze: ["depth"],
         ]
 
         return requirements[actionType] ?? []

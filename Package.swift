@@ -103,6 +103,7 @@ let package = Package(
                 "Resources/Clauses/ClauseDatabase.json",
                 "Resources/Clauses/ClauseSelection_QuickReference.md",
                 "AIKOiOS/Service-Concurrency-Guide.md", // Exclude documentation file
+                "Services/ConfidenceBasedAutoFillEnhanced.swift.disabled", // Exclude disabled file
             ],
             resources: [
                 .copy("Resources/DFTemplates"),

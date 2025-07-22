@@ -5,10 +5,16 @@
     import UIKit
 
     public extension ScreenServiceClient {
-        static let iOS = Self(
+        static let iOS: ScreenServiceClient = .init(
             mainScreenBounds: {
                 MainActor.assumeIsolated {
-                    UIScreen.main.bounds
+                    let bounds = UIScreen.main.bounds
+                    return AppCore.CGRect(
+                        x: bounds.origin.x,
+                        y: bounds.origin.y,
+                        width: bounds.size.width,
+                        height: bounds.size.height
+                    )
                 }
             },
             mainScreenWidth: {

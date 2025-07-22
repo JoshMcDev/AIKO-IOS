@@ -58,7 +58,7 @@ public final class ClaudeProvider: LLMProviderProtocol, @unchecked Sendable {
                         inputPricePerMillion: 3.0,
                         outputPricePerMillion: 15.0
                     )
-                )
+                ),
             ]
         )
     }
@@ -120,7 +120,7 @@ public final class ClaudeProvider: LLMProviderProtocol, @unchecked Sendable {
                 ["role": message.role.rawValue, "content": message.content]
             },
             "max_tokens": request.maxTokens ?? 4096,
-            "temperature": request.temperature
+            "temperature": request.temperature,
         ]
 
         if let systemPrompt = request.systemPrompt {
@@ -202,7 +202,7 @@ public final class ClaudeProvider: LLMProviderProtocol, @unchecked Sendable {
                         },
                         "max_tokens": request.maxTokens ?? 4096,
                         "temperature": request.temperature,
-                        "stream": true
+                        "stream": true,
                     ]
 
                     if let systemPrompt = request.systemPrompt {
@@ -236,10 +236,12 @@ public final class ClaudeProvider: LLMProviderProtocol, @unchecked Sendable {
 
                             if let data = jsonString.data(using: .utf8),
                                let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                               let type = json["type"] as? String {
+                               let type = json["type"] as? String
+                            {
                                 if type == "content_block_delta",
                                    let delta = json["delta"] as? [String: Any],
-                                   let text = delta["text"] as? String {
+                                   let text = delta["text"] as? String
+                                {
                                     continuation.yield(LLMStreamChunk(delta: text))
                                 } else if type == "message_stop" {
                                     continuation.yield(LLMStreamChunk(delta: "", finishReason: .stop))

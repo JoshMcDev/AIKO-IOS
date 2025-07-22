@@ -400,7 +400,7 @@ public struct ParallelDocumentGenerator: Sendable {
 
         // Create messages
         let messages = [
-            AIMessage.user(prompt)
+            AIMessage.user(prompt),
         ]
 
         // Create request
@@ -495,7 +495,7 @@ public struct ParallelDocumentGenerator: Sendable {
 
         // Create messages
         let messages = [
-            AIMessage.user(prompt)
+            AIMessage.user(prompt),
         ]
 
         // Create request

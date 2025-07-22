@@ -109,7 +109,7 @@ public struct ContractOrderSection: ValueObject {
             "orderNumber": orderNumber?.value as Any,
             "effectiveDate": effectiveDate.timeIntervalSince1970,
             "totalAmount": totalAmount?.amount as Any,
-            "currency": totalAmount?.currency.rawValue as Any
+            "currency": totalAmount?.currency.rawValue as Any,
         ]
     }
 }
@@ -145,7 +145,8 @@ public struct SF1449SolicitationSection: ValueObject {
     public func validate() throws {
         if let issueDate,
            let responseDate,
-           responseDate <= issueDate {
+           responseDate <= issueDate
+        {
             throw FormError.validationFailed("Response date must be after issue date")
         }
     }
@@ -155,7 +156,7 @@ public struct SF1449SolicitationSection: ValueObject {
             "solicitationNumber": solicitationNumber?.value as Any,
             "issueDate": issueDate?.timeIntervalSince1970 as Any,
             "responseDate": responseDate?.timeIntervalSince1970 as Any,
-            "setAsideType": setAsideType?.rawValue as Any
+            "setAsideType": setAsideType?.rawValue as Any,
         ]
     }
 }
@@ -198,7 +199,7 @@ public struct ContractorSection: ValueObject {
             "cageCode": cageCode?.value as Any,
             "dunsNumber": dunsNumber?.value as Any,
             "taxId": taxId as Any,
-            "remittanceAddress": remittanceAddress?.formatted as Any
+            "remittanceAddress": remittanceAddress?.formatted as Any,
         ]
     }
 }
@@ -275,11 +276,11 @@ public struct ScheduleSection: ValueObject {
                     "quantity": item.quantity,
                     "unit": item.unit,
                     "unitPrice": item.unitPrice.amount,
-                    "totalPrice": item.totalPrice.amount
+                    "totalPrice": item.totalPrice.amount,
                 ]
             },
             "totalPrice": totalPrice.amount,
-            "currency": totalPrice.currency.rawValue
+            "currency": totalPrice.currency.rawValue,
         ]
     }
 }
@@ -321,7 +322,7 @@ public struct DeliverySection: ValueObject {
             "deliveryDate": deliveryDate?.timeIntervalSince1970 as Any,
             "deliveryDays": deliveryDays as Any,
             "deliveryAddress": deliveryAddress.formatted,
-            "fobPoint": fobPoint?.rawValue as Any
+            "fobPoint": fobPoint?.rawValue as Any,
         ]
     }
 }
@@ -358,7 +359,7 @@ public struct PaymentSection: ValueObject {
         [
             "paymentTerms": paymentTerms.rawValue,
             "paymentAddress": paymentAddress.formatted,
-            "invoiceAddress": invoiceAddress?.formatted as Any
+            "invoiceAddress": invoiceAddress?.formatted as Any,
         ]
     }
 }

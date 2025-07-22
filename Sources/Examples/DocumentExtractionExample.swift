@@ -33,7 +33,7 @@ class DocumentExtractionExample {
                 documentData,
                 withHints: [
                     "documentType": "vendor_quote",
-                    "expectedFields": ["vendor", "price", "delivery_date"]
+                    "expectedFields": ["vendor", "price", "delivery_date"],
                 ]
             )
 

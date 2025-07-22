@@ -561,7 +561,7 @@ final class FormAutoPopulationEngineTests: XCTestCase {
                 confidence: 0.95,
                 sourceText: "ACME Corporation",
                 sourceLocation: CGRect(x: 50, y: 250, width: 200, height: 20)
-            )
+            ),
         ]
     }
 
@@ -574,7 +574,7 @@ final class FormAutoPopulationEngineTests: XCTestCase {
                 confidence: 0.95,
                 sourceText: "1ABC5",
                 sourceLocation: CGRect(x: 50, y: 280, width: 80, height: 20)
-            )
+            ),
         ]
     }
 
@@ -595,7 +595,7 @@ final class FormAutoPopulationEngineTests: XCTestCase {
                 confidence: 0.94,
                 sourceText: "$2,450.00",
                 sourceLocation: CGRect(x: 250, y: 400, width: 100, height: 20)
-            )
+            ),
         ]
     }
 
@@ -717,7 +717,7 @@ final class FormAutoPopulationEngineTests: XCTestCase {
                 confidence: 0.80,
                 sourceText: "1234567",
                 sourceLocation: CGRect(x: 300, y: 400, width: 120, height: 20)
-            )
+            ),
         ]
     }
 }

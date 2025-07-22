@@ -82,7 +82,7 @@ final class BiometricAuthenticationTests: XCTestCase {
                 name: "Development",
                 key: "sk-ant-dev-456",
                 createdAt: Date()
-            )
+            ),
         ]
 
         XCTAssertEqual(settings.apiSettings.apiKeys.count, 2)

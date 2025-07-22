@@ -4,7 +4,6 @@ import XCTest
 
 @MainActor
 final class AdaptiveDocumentCacheTests: XCTestCase {
-
     // MARK: - Initialization Tests
 
     func testDefaultInitialization() async {

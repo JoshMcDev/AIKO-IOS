@@ -39,7 +39,8 @@
                     try await performEnhancedOCR(on: imageData)
                 },
                 generateThumbnail: { imageData, size in
-                    try await generateThumbnail(from: imageData, size: size)
+                    let uiKitSize = CoreFoundation.CGSize(width: size.width, height: size.height)
+                    return try await generateThumbnail(from: imageData, size: uiKitSize)
                 },
                 saveToDocumentPipeline: { pages in
                     try await saveToDocumentPipeline(pages)
@@ -168,7 +169,12 @@
 
                         textRegions.append(TextRegion(
                             text: candidate.string,
-                            boundingBox: observation.boundingBox,
+                            boundingBox: AppCore.CGRect(
+                                x: observation.boundingBox.origin.x,
+                                y: observation.boundingBox.origin.y,
+                                width: observation.boundingBox.size.width,
+                                height: observation.boundingBox.size.height
+                            ),
                             confidence: Double(candidate.confidence),
                             textType: .body
                         ))
@@ -278,11 +284,22 @@
                 confidenceScores.append(Double(candidate.confidence))
 
                 // Determine text type based on position and content
-                let textType = determineTextType(text: text, boundingBox: observation.boundingBox)
+                let uiKitBoundingBox = UIKit.CGRect(
+                    x: observation.boundingBox.origin.x,
+                    y: observation.boundingBox.origin.y,
+                    width: observation.boundingBox.size.width,
+                    height: observation.boundingBox.size.height
+                )
+                let textType = determineTextType(text: text, boundingBox: uiKitBoundingBox)
 
                 textRegions.append(TextRegion(
                     text: text,
-                    boundingBox: observation.boundingBox,
+                    boundingBox: AppCore.CGRect(
+                        x: observation.boundingBox.origin.x,
+                        y: observation.boundingBox.origin.y,
+                        width: observation.boundingBox.size.width,
+                        height: observation.boundingBox.size.height
+                    ),
                     confidence: Double(candidate.confidence),
                     textType: textType
                 ))
@@ -351,7 +368,7 @@
             )
         }
 
-        private static func determineTextType(text: String, boundingBox: CGRect) -> TextRegion.TextType {
+        private static func determineTextType(text: String, boundingBox: UIKit.CGRect) -> TextRegion.TextType {
             // Simple heuristics for text type detection
             let normalizedY = boundingBox.origin.y
 
@@ -377,7 +394,7 @@
             let datePatterns = [
                 "\\d{1,2}/\\d{1,2}/\\d{4}",
                 "\\d{1,2}-\\d{1,2}-\\d{4}",
-                "\\b\\w+ \\d{1,2}, \\d{4}\\b"
+                "\\b\\w+ \\d{1,2}, \\d{4}\\b",
             ]
 
             for pattern in datePatterns {
@@ -465,7 +482,12 @@
                                 value: value,
                                 confidence: ConfidenceScore(value: Double(candidate.confidence)),
                                 fieldType: determineFieldType(value),
-                                boundingBox: observation.boundingBox
+                                boundingBox: AppCore.CGRect(
+                                    x: observation.boundingBox.origin.x,
+                                    y: observation.boundingBox.origin.y,
+                                    width: observation.boundingBox.size.width,
+                                    height: observation.boundingBox.size.height
+                                )
                             ))
                         }
                     }
@@ -559,7 +581,7 @@
                 // Simple row detection based on Y position similarity
                 var rows: [[TableCell]] = []
                 var currentRow: [TableCell] = []
-                var lastY: CGFloat = -1
+                var lastY: UIKit.CGFloat = -1
 
                 for rectangle in sortedRectangles {
                     let y = rectangle.boundingBox.origin.y
@@ -580,7 +602,12 @@
 
                     currentRow.append(TableCell(
                         content: cellContent,
-                        boundingBox: rectangle.boundingBox,
+                        boundingBox: AppCore.CGRect(
+                            x: rectangle.boundingBox.origin.x,
+                            y: rectangle.boundingBox.origin.y,
+                            width: rectangle.boundingBox.size.width,
+                            height: rectangle.boundingBox.size.height
+                        ),
                         confidence: Double(matchingText?.topCandidates(1).first?.confidence ?? 0.5)
                     ))
 
@@ -596,9 +623,15 @@
                         result.union(rect.boundingBox)
                     }
 
+                    let appCoreBounds = AppCore.CGRect(
+                        x: tableBounds.origin.x,
+                        y: tableBounds.origin.y,
+                        width: tableBounds.size.width,
+                        height: tableBounds.size.height
+                    )
                     tables.append(Table(
                         rows: rows,
-                        boundingBox: tableBounds,
+                        boundingBox: appCoreBounds,
                         confidence: 0.7
                     ))
                 }
@@ -647,13 +680,23 @@
                     } else if currentListType != detectedType {
                         // End current list and start new one
                         if !listItems.isEmpty {
-                            let listBounds = listItems.reduce(CGRect.null) { result, item in
-                                result.union(item.boundingBox)
+                            let listBounds = listItems.reduce(into: UIKit.CGRect.null) { result, item in
+                                result = result.union(UIKit.CGRect(
+                                    x: item.boundingBox.origin.x,
+                                    y: item.boundingBox.origin.y,
+                                    width: item.boundingBox.size.width,
+                                    height: item.boundingBox.size.height
+                                ))
                             }
 
                             lists.append(List(
                                 items: listItems,
-                                boundingBox: listBounds,
+                                boundingBox: AppCore.CGRect(
+                                    x: listBounds.origin.x,
+                                    y: listBounds.origin.y,
+                                    width: listBounds.size.width,
+                                    height: listBounds.size.height
+                                ),
                                 listType: currentListType!
                             ))
 
@@ -670,13 +713,23 @@
                     ))
                 } else if !listItems.isEmpty {
                     // End current list
-                    let listBounds = listItems.reduce(CGRect.null) { result, item in
-                        result.union(item.boundingBox)
+                    let listBounds = listItems.reduce(into: UIKit.CGRect.null) { result, item in
+                        result = result.union(UIKit.CGRect(
+                            x: item.boundingBox.origin.x,
+                            y: item.boundingBox.origin.y,
+                            width: item.boundingBox.size.width,
+                            height: item.boundingBox.size.height
+                        ))
                     }
 
                     lists.append(List(
                         items: listItems,
-                        boundingBox: listBounds,
+                        boundingBox: AppCore.CGRect(
+                            x: listBounds.origin.x,
+                            y: listBounds.origin.y,
+                            width: listBounds.size.width,
+                            height: listBounds.size.height
+                        ),
                         listType: currentListType ?? .unordered
                     ))
 
@@ -687,13 +740,23 @@
 
             // Add final list if exists
             if !listItems.isEmpty {
-                let listBounds = listItems.reduce(CGRect.null) { result, item in
-                    result.union(item.boundingBox)
+                let listBounds = listItems.reduce(into: UIKit.CGRect.null) { result, item in
+                    result = result.union(UIKit.CGRect(
+                        x: item.boundingBox.origin.x,
+                        y: item.boundingBox.origin.y,
+                        width: item.boundingBox.size.width,
+                        height: item.boundingBox.size.height
+                    ))
                 }
 
                 lists.append(List(
                     items: listItems,
-                    boundingBox: listBounds,
+                    boundingBox: AppCore.CGRect(
+                        x: listBounds.origin.x,
+                        y: listBounds.origin.y,
+                        width: listBounds.size.width,
+                        height: listBounds.size.height
+                    ),
                     listType: currentListType ?? .unordered
                 ))
             }
@@ -706,7 +769,7 @@
                 "MM/dd/yyyy",
                 "MM-dd-yyyy",
                 "MMMM dd, yyyy",
-                "MMM dd, yyyy"
+                "MMM dd, yyyy",
             ]
 
             for format in formatters {
@@ -720,7 +783,7 @@
             return nil
         }
 
-        private static func generateThumbnail(from imageData: Data, size: CGSize) async throws -> Data {
+        private static func generateThumbnail(from imageData: Data, size: UIKit.CGSize) async throws -> Data {
             guard let image = UIImage(data: imageData) else {
                 throw DocumentScannerError.invalidImageData
             }

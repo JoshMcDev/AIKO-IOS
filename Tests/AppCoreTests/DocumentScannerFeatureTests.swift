@@ -11,7 +11,6 @@ import XCTest
 /// <!-- /green complete -->
 @MainActor
 final class DocumentScannerFeatureTests: XCTestCase {
-
     // MARK: - Core Scanner Functionality Tests (RED)
 
     /// Test Requirement: Scanner presentation <500ms from tap to VisionKit interface
@@ -40,7 +39,7 @@ final class DocumentScannerFeatureTests: XCTestCase {
             pages: [
                 ScannedPage(id: UUID(), imageData: Data("page1".utf8), pageNumber: 1),
                 ScannedPage(id: UUID(), imageData: Data("page2".utf8), pageNumber: 2),
-                ScannedPage(id: UUID(), imageData: Data("page3".utf8), pageNumber: 3)
+                ScannedPage(id: UUID(), imageData: Data("page3".utf8), pageNumber: 3),
             ],
             scannedAt: Date()
         )
@@ -122,7 +121,7 @@ final class DocumentScannerFeatureTests: XCTestCase {
                     id: UUID(),
                     imageData: Data("dd1155_form_image".utf8),
                     pageNumber: 1
-                )
+                ),
             ],
             scannedAt: Date()
         )
@@ -141,7 +140,7 @@ final class DocumentScannerFeatureTests: XCTestCase {
                         "total_amount": "$1,500.00",
                         "delivery_date": "01/21/2025",
                         "vendor_uei": "ABC123456789",
-                        "cage": "1A2B3"
+                        "cage": "1A2B3",
                     ]),
                     in: NSManagedObjectContext() // Mock context for test
                 )
@@ -168,7 +167,7 @@ final class DocumentScannerFeatureTests: XCTestCase {
                             fieldType: DocumentFormField.FieldType.date,
                             extractedValue: "01/21/2025",
                             confidence: 0.88
-                        )
+                        ),
                     ]
                 )
             }
@@ -219,7 +218,7 @@ final class DocumentScannerFeatureTests: XCTestCase {
             pages: [
                 ScannedPage(id: UUID(), imageData: Data("page1".utf8), pageNumber: 1),
                 ScannedPage(id: UUID(), imageData: Data("page2".utf8), pageNumber: 2),
-                ScannedPage(id: UUID(), imageData: Data("page3".utf8), pageNumber: 3)
+                ScannedPage(id: UUID(), imageData: Data("page3".utf8), pageNumber: 3),
             ],
             scannedAt: Date()
         )
@@ -402,7 +401,7 @@ final class DocumentScannerFeatureTests: XCTestCase {
                 id: UUID(),
                 imageData: Data("test".utf8),
                 pageNumber: 1
-            )
+            ),
         ]
 
         // Test that validation tests pass for property mapping logic
@@ -490,7 +489,7 @@ extension DocumentScannerFeatureTests {
                     confidence: confidence,
                     boundingBox: CGRect(x: 0, y: 0, width: 100, height: 20),
                     fieldType: .text
-                )
+                ),
             ],
             documentStructure: DocumentStructure(
                 paragraphs: [
@@ -499,7 +498,7 @@ extension DocumentScannerFeatureTests {
                         boundingBox: CGRect(x: 0, y: 0, width: 200, height: 50),
                         confidence: confidence,
                         textType: .body
-                    )
+                    ),
                 ],
                 layout: .document
             ),
@@ -509,7 +508,7 @@ extension DocumentScannerFeatureTests {
                         date: Date(),
                         originalText: "01/21/2025",
                         confidence: 0.9
-                    )
+                    ),
                 ],
                 phoneNumbers: ["555-123-4567"],
                 emailAddresses: ["contact@acme.com"],
@@ -519,7 +518,7 @@ extension DocumentScannerFeatureTests {
                         currency: "USD",
                         originalText: "$1,000.00",
                         confidence: 0.95
-                    )
+                    ),
                 ]
             ),
             processingTime: 1.0

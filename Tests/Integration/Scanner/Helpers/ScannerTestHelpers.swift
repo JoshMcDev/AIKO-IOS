@@ -168,7 +168,7 @@ public final class ScannerTestHelpers {
         return Data([
             0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46,
             0x49, 0x46, 0x00, 0x01, 0x01, 0x01, 0x00, 0x48,
-            0x00, 0x48, 0x00, 0x00, 0xFF, 0xD9
+            0x00, 0x48, 0x00, 0x00, 0xFF, 0xD9,
         ])
     }
 
@@ -406,7 +406,7 @@ public final class ScannerTestHelpers {
                     confidence: 0.88,
                     fieldType: .alphanumeric,
                     boundingRect: CGRect(x: 500, y: 200, width: 200, height: 25)
-                )
+                ),
             ]
         case .sf26:
             return [
@@ -417,7 +417,7 @@ public final class ScannerTestHelpers {
                     confidence: 0.90,
                     fieldType: .alphanumeric,
                     boundingRect: CGRect(x: 100, y: 150, width: 200, height: 25)
-                )
+                ),
             ]
         case .dd1155:
             return [
@@ -428,7 +428,7 @@ public final class ScannerTestHelpers {
                     confidence: 0.87,
                     fieldType: .alphanumeric,
                     boundingRect: CGRect(x: 100, y: 180, width: 180, height: 25)
-                )
+                ),
             ]
         }
     }

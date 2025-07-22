@@ -156,7 +156,8 @@ public final class AdaptiveConversationOrchestrator: ObservableObject, @unchecke
         // Check if we can auto-fill with high confidence
         if let prefilled = flow.prefilledData[nextQuestion.field],
            let confidence = flow.confidenceMap[nextQuestion.field],
-           confidence >= configuration.suggestionAcceptanceThreshold {
+           confidence >= configuration.suggestionAcceptanceThreshold
+        {
             // Auto-accept high confidence prefilled data
             let autoResponse = UserResponse(
                 questionId: nextQuestion.id.uuidString,

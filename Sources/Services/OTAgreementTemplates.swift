@@ -134,22 +134,22 @@ extension OTAgreementTemplates: DependencyKey {
                             "Broad publication rights",
                             "5-year government purpose rights",
                             "No deliverable-based payments",
-                            "Flexible research pivots allowed"
+                            "Flexible research pivots allowed",
                         ],
                         commonPitfalls: [
                             "Overly restrictive IP terms",
                             "Fixed deliverables vs research flexibility",
-                            "Inadequate publication procedures"
+                            "Inadequate publication procedures",
                         ],
                         negotiationPoints: [
                             "Publication embargo periods",
                             "Background IP identification",
-                            "Foreign national participation"
+                            "Foreign national participation",
                         ],
                         requiredAttachments: [
                             "Research plan",
                             "Key personnel CVs",
-                            "Facility capabilities"
+                            "Facility capabilities",
                         ]
                     )
 
@@ -160,22 +160,22 @@ extension OTAgreementTemplates: DependencyKey {
                             "Clear prototype definition",
                             "Success criteria metrics",
                             "Follow-on production rights",
-                            "Cost sharing requirements"
+                            "Cost sharing requirements",
                         ],
                         commonPitfalls: [
                             "Vague success criteria",
                             "Missing follow-on provisions",
-                            "Inadequate testing plans"
+                            "Inadequate testing plans",
                         ],
                         negotiationPoints: [
                             "Cost share percentages",
                             "IP rights allocation",
-                            "Production transition terms"
+                            "Production transition terms",
                         ],
                         requiredAttachments: [
                             "Technical specification",
                             "Test plan",
-                            "Milestone schedule"
+                            "Milestone schedule",
                         ]
                     )
 
@@ -186,22 +186,22 @@ extension OTAgreementTemplates: DependencyKey {
                             "Unit pricing structure",
                             "Quality standards",
                             "Delivery schedule",
-                            "Warranty provisions"
+                            "Warranty provisions",
                         ],
                         commonPitfalls: [
                             "Inadequate configuration control",
                             "Missing sustainment provisions",
-                            "Unclear acceptance criteria"
+                            "Unclear acceptance criteria",
                         ],
                         negotiationPoints: [
                             "Volume discounts",
                             "Option quantities",
-                            "Warranty duration"
+                            "Warranty duration",
                         ],
                         requiredAttachments: [
                             "Production readiness review",
                             "Quality plan",
-                            "Supply chain assessment"
+                            "Supply chain assessment",
                         ]
                     )
 
@@ -212,22 +212,22 @@ extension OTAgreementTemplates: DependencyKey {
                             "Consortium governance structure",
                             "Member agreements",
                             "Work share allocation",
-                            "Common fund management"
+                            "Common fund management",
                         ],
                         commonPitfalls: [
                             "Unclear decision rights",
                             "IP allocation conflicts",
-                            "Free rider problems"
+                            "Free rider problems",
                         ],
                         negotiationPoints: [
                             "Leadership structure",
                             "New member criteria",
-                            "Exit provisions"
+                            "Exit provisions",
                         ],
                         requiredAttachments: [
                             "Consortium agreement",
                             "Member capabilities matrix",
-                            "Governance charter"
+                            "Governance charter",
                         ]
                     )
 
@@ -238,22 +238,22 @@ extension OTAgreementTemplates: DependencyKey {
                             "1/3 cost share requirement",
                             "Traditional FAR-like terms",
                             "Standard IP provisions",
-                            "Audit requirements"
+                            "Audit requirements",
                         ],
                         commonPitfalls: [
                             "Insufficient cost share",
                             "Over-application of FAR",
-                            "Rigid milestone structure"
+                            "Rigid milestone structure",
                         ],
                         negotiationPoints: [
                             "In-kind contributions",
                             "IP flexibility",
-                            "Milestone adjustments"
+                            "Milestone adjustments",
                         ],
                         requiredAttachments: [
                             "Cost share commitment",
                             "Past performance",
-                            "Technical approach"
+                            "Technical approach",
                         ]
                     )
 
@@ -264,22 +264,22 @@ extension OTAgreementTemplates: DependencyKey {
                             "Commercial terms preference",
                             "Reduced oversight",
                             "Flexible IP arrangements",
-                            "No cost accounting standards"
+                            "No cost accounting standards",
                         ],
                         commonPitfalls: [
                             "Over-bureaucratization",
                             "Excessive reporting",
-                            "FAR-like provisions"
+                            "FAR-like provisions",
                         ],
                         negotiationPoints: [
                             "Commercial pricing",
                             "IP ownership",
-                            "Minimal reporting"
+                            "Minimal reporting",
                         ],
                         requiredAttachments: [
                             "Commercial capability statement",
                             "Pricing methodology",
-                            "Commercial practices description"
+                            "Commercial practices description",
                         ]
                     )
 
@@ -290,22 +290,22 @@ extension OTAgreementTemplates: DependencyKey {
                             "Dual market rights",
                             "Revenue sharing",
                             "Export control compliance",
-                            "Commercial milestone tracking"
+                            "Commercial milestone tracking",
                         ],
                         commonPitfalls: [
                             "Unclear market boundaries",
                             "Missing export provisions",
-                            "Inadequate revenue tracking"
+                            "Inadequate revenue tracking",
                         ],
                         negotiationPoints: [
                             "Market exclusivity periods",
                             "Revenue share percentages",
-                            "Foreign sales rights"
+                            "Foreign sales rights",
                         ],
                         requiredAttachments: [
                             "Commercialization plan",
                             "Market analysis",
-                            "Export compliance plan"
+                            "Export compliance plan",
                         ]
                     )
 
@@ -316,22 +316,22 @@ extension OTAgreementTemplates: DependencyKey {
                             "SBIR data rights",
                             "Phase III eligibility",
                             "Commercialization requirements",
-                            "Success fee structure"
+                            "Success fee structure",
                         ],
                         commonPitfalls: [
                             "Violating SBIR policy",
                             "Inadequate Phase III bridge",
-                            "Missing success metrics"
+                            "Missing success metrics",
                         ],
                         negotiationPoints: [
                             "Success fee triggers",
                             "Phase III commitment",
-                            "Mentorship terms"
+                            "Mentorship terms",
                         ],
                         requiredAttachments: [
                             "Commercialization plan",
                             "Phase III strategy",
-                            "Company qualifications"
+                            "Company qualifications",
                         ]
                     )
                 }

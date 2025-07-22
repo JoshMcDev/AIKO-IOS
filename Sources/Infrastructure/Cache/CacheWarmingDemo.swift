@@ -52,7 +52,7 @@ public func demonstrateCacheWarming() async throws {
         schedule: [
             DateComponents(hour: 9, minute: 0), // 9:00 AM
             DateComponents(hour: 13, minute: 0), // 1:00 PM
-            DateComponents(hour: 17, minute: 0) // 5:00 PM
+            DateComponents(hour: 17, minute: 0), // 5:00 PM
         ],
         actions: [
             CacheWarmingStrategy.ActionPattern(
@@ -64,7 +64,7 @@ public func demonstrateCacheWarming() async throws {
                 actionType: .analyze,
                 objectType: .requirement,
                 priority: 0.8
-            )
+            ),
         ]
     )
 
@@ -78,7 +78,7 @@ public func demonstrateCacheWarming() async throws {
     let patterns = [
         "document.*generate",
         "requirement.*analyze",
-        "validation.*execute"
+        "validation.*execute",
     ]
 
     try await warmingStrategy.warmCache(using: .onDemand(patterns: patterns))
@@ -112,7 +112,7 @@ public func demonstrateCacheWarming() async throws {
     let hybridStrategies: [CacheWarmingStrategy.WarmingStrategy] = [
         .predictive(predictiveConfig),
         .trending(window: 1800), // 30 minutes
-        .related(depth: 1)
+        .related(depth: 1),
     ]
 
     try await warmingStrategy.warmCache(using: .hybrid(hybridStrategies))
@@ -124,7 +124,7 @@ public func demonstrateCacheWarming() async throws {
 
     let backgroundTask = await warmingStrategy.startBackgroundWarming(strategies: [
         .predictive(predictiveConfig),
-        .trending(window: 900) // 15 minutes
+        .trending(window: 900), // 15 minutes
     ])
 
     print("   🔄 Background warming task started")
@@ -278,7 +278,7 @@ extension CacheWarmingDemoRunner {
                 actionType: .validate,
                 objectType: .contract,
                 priority: 0.9
-            )
+            ),
         ]
 
         print("   Warming \(peakPatterns.count) peak hour patterns...")

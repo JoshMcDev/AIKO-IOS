@@ -16,7 +16,7 @@ final class SmartDefaultsTests: XCTestCase {
             documentType: .requestForQuote,
             extractedData: [
                 "vendor": "Acme Corp",
-                "totalValue": "50000"
+                "totalValue": "50000",
             ],
             userPatterns: [],
             organizationalRules: [
@@ -25,7 +25,7 @@ final class SmartDefaultsTests: XCTestCase {
                     condition: "value >= 5000 AND value < 25000",
                     value: "Department Head",
                     priority: 10
-                )
+                ),
             ],
             timeContext: SmartDefaultsProvider.TimeContext(
                 currentDate: Date(),
@@ -101,7 +101,7 @@ final class SmartDefaultsTests: XCTestCase {
             .vendorName,
             .requiredDate,
             .estimatedValue,
-            .justification
+            .justification,
         ]
 
         // Test auto-fill candidates
@@ -198,7 +198,7 @@ final class SmartDefaultsTests: XCTestCase {
         let context = SmartDefaultContext(
             extractedData: [
                 "vendorName": "Known Vendor",
-                "estimatedValue": "50000"
+                "estimatedValue": "50000",
             ],
             autoFillThreshold: 0.85
         )
@@ -208,7 +208,7 @@ final class SmartDefaultsTests: XCTestCase {
             .estimatedValue,
             .justification,
             .requiredDate,
-            .fundingSource
+            .fundingSource,
         ]
 
         // Test minimal questioning

@@ -66,7 +66,7 @@ public struct ConfidenceCalculator: Sendable {
             "ocr": ocr,
             "image_quality": imageQuality,
             "pattern_match": patternMatch,
-            "validation": validation
+            "validation": validation,
         ]
     }
 
@@ -93,7 +93,7 @@ public struct ConfidenceCalculator: Sendable {
                 "field_count": Double(fields.count),
                 "average_confidence": averageConfidence,
                 "critical_fields": Double(criticalFieldCount),
-                "high_confidence_fields": Double(highConfidenceCount)
+                "high_confidence_fields": Double(highConfidenceCount),
             ]
         )
     }

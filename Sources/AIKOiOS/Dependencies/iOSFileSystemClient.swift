@@ -96,7 +96,7 @@
                         .contentModificationDateKey,
                         .isDirectoryKey,
                         .isReadableKey,
-                        .isWritableKey
+                        .isWritableKey,
                     ])
 
                     let isDirectory = resourceValues.isDirectory ?? false
@@ -214,7 +214,7 @@
                 let resourceValues = try url.resourceValues(forKeys: [
                     .isDirectoryKey,
                     .isReadableKey,
-                    .isWritableKey
+                    .isWritableKey,
                 ])
 
                 return FileAttributes(

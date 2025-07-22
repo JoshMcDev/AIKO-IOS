@@ -95,10 +95,12 @@ public struct GlobalScanFeature: Sendable {
         }
 
         // MARK: - Computed Properties
+
         // Note: Computed properties are defined in GlobalScanFeature+State.swift
     }
 
     // MARK: - Actions
+
     // Note: Action enum is defined in GlobalScanFeature+Action.swift
 
     // MARK: - Dependencies
@@ -386,4 +388,5 @@ public struct GlobalScanFeature: Sendable {
 }
 
 // MARK: - Supporting Types
+
 // Note: Supporting types are defined in GlobalScanFeature+Types.swift

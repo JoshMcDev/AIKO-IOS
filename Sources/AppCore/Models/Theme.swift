@@ -51,7 +51,7 @@ public enum Theme {
         public static let medium: CGFloat = 12
         public static let large: CGFloat = 16
         public static let extraLarge: CGFloat = 24
-        
+
         // Backward compatibility aliases
         public static let sm: CGFloat = small
         public static let md: CGFloat = medium

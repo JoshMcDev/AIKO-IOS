@@ -30,7 +30,7 @@ final class FormPopulationIntegrationTests: XCTestCase {
                         ocrResult: ocrResult,
                         pageNumber: 1,
                         processingState: .completed
-                    )
+                    ),
                 ]
             )
 
@@ -108,7 +108,7 @@ final class FormPopulationIntegrationTests: XCTestCase {
                     imageData: createGovernmentFormImageData(),
                     pageNumber: 1,
                     processingState: .completed
-                )
+                ),
             ]
         )
 
@@ -366,7 +366,7 @@ final class FormPopulationIntegrationTests: XCTestCase {
                         ocrResult: ocrResult,
                         pageNumber: 1,
                         processingState: .completed
-                    )
+                    ),
                 ]
             )
 
@@ -475,7 +475,7 @@ final class FormPopulationIntegrationTests: XCTestCase {
                     date: Date(),
                     originalText: "01/01/2024 - 12/31/2024",
                     confidence: 0.95
-                )
+                ),
             ],
             amounts: [
                 ExtractedCurrency(
@@ -483,7 +483,7 @@ final class FormPopulationIntegrationTests: XCTestCase {
                     currency: "USD",
                     originalText: "$2,500,000.00",
                     confidence: 0.98
-                )
+                ),
             ]
         )
     }
@@ -500,7 +500,7 @@ final class FormPopulationIntegrationTests: XCTestCase {
                     confidence: 0.98,
                     boundingBox: CGRect(x: 100, y: 50, width: 200, height: 20),
                     fieldType: .text
-                )
+                ),
             ]
         )
 
@@ -511,7 +511,7 @@ final class FormPopulationIntegrationTests: XCTestCase {
                     ocrResult: highConfidenceOCR,
                     pageNumber: 1,
                     processingState: .completed
-                )
+                ),
             ]
         )
     }
@@ -531,7 +531,7 @@ final class FormPopulationIntegrationTests: XCTestCase {
                     ocrResult: lowConfidenceOCR,
                     pageNumber: 1,
                     processingState: .completed
-                )
+                ),
             ]
         )
     }
@@ -551,7 +551,7 @@ final class FormPopulationIntegrationTests: XCTestCase {
                     imageData: farDocumentData,
                     pageNumber: 1,
                     processingState: .completed
-                )
+                ),
             ]
         )
     }
@@ -571,7 +571,7 @@ final class FormPopulationIntegrationTests: XCTestCase {
                     imageData: solicitationData,
                     pageNumber: 1,
                     processingState: .completed
-                )
+                ),
             ]
         )
     }
@@ -600,7 +600,7 @@ final class FormPopulationIntegrationTests: XCTestCase {
                     imageData: complexDocumentData,
                     pageNumber: 1,
                     processingState: .completed
-                )
+                ),
             ]
         )
     }
@@ -620,7 +620,7 @@ final class FormPopulationIntegrationTests: XCTestCase {
                     imageData: ambiguousData,
                     pageNumber: 1,
                     processingState: .completed
-                )
+                ),
             ]
         )
     }

@@ -96,7 +96,7 @@ final class NavigationFeatureTests: XCTestCase {
         let views: [NavigationDestination] = [
             .profile, .acquisitions, .settings, .userGuide,
             .searchTemplates, .samGovLookup, .acquisitionChat,
-            .home, .profile, .acquisitions, .settings
+            .home, .profile, .acquisitions, .settings,
         ]
 
         for destination in views {
@@ -235,7 +235,7 @@ final class MenuItemTests: XCTestCase {
         let itemIds = Set(menuItems.map(\.id))
         let expectedIds: Set<String> = [
             "profile", "acquisitions", "chat", "templates",
-            "sam", "guide", "settings"
+            "sam", "guide", "settings",
         ]
         XCTAssertEqual(itemIds, expectedIds)
     }

@@ -77,7 +77,8 @@ extension DiskCache {
             // Load metadata file if exists
             let metadataURL = fileURL.appendingPathExtension("metadata")
             if let metadataData = try? Data(contentsOf: metadataURL),
-               let metadata = try? JSONDecoder().decode(DiskCacheMetadata.self, from: metadataData) {
+               let metadata = try? JSONDecoder().decode(DiskCacheMetadata.self, from: metadataData)
+            {
                 return OfflineCacheMetadata(
                     key: key,
                     size: size,
@@ -146,7 +147,8 @@ extension DiskCache {
                 if let metadataData = try? Data(contentsOf: metadataURL),
                    let metadata = try? JSONDecoder().decode(DiskCacheMetadata.self, from: metadataData),
                    let expiresAt = metadata.expiresAt,
-                   expiresAt < Date() {
+                   expiresAt < Date()
+                {
                     // Remove expired file and metadata
                     try? FileManager.default.removeItem(at: fileURL)
                     try? FileManager.default.removeItem(at: metadataURL)
@@ -197,7 +199,7 @@ extension SecureCache {
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key,
             kSecAttrService as String: serviceName,
-            kSecReturnAttributes as String: true
+            kSecReturnAttributes as String: true,
         ]
 
         var result: AnyObject?

@@ -2,6 +2,29 @@
 > **Adaptive Intelligence for Kontract Optimization**
 > **Project-Specific Claude Code Configuration**
 
+## File Organization Standards
+
+**CRITICAL**: All files must follow these organization standards:
+
+- **Documentation**: All documentation produced by Claude goes in `documentation/` folder
+- **Tests**: All test files go in `tests/` folder  
+- **Root Directory**: Keep clean - only essential project files (package.json, README.md, Project_Tasks.md, etc.)
+- **No Root Clutter**: Do not create files in root unless required for project operation, optimization, or functionality
+
+**Examples**:
+```bash
+# ✅ CORRECT - Organized structure
+documentation/api-guide.md
+documentation/architecture-overview.md
+tests/unit/AuthTests.swift
+tests/integration/ScannerTests.swift
+
+# ❌ WRONG - Cluttering root
+./api-guide.md
+./AuthTests.swift
+./random-notes.md
+```
+
 ## ALWAYS use Bash(cd /Users/J/aiko && xcodebuild -scheme AIKO -destination "platform=iOS Simulator,name=iPhone 16 Pro" -skipPackagePluginValidation build 2>&1 | grep -E "(error:|…)
 ---
 

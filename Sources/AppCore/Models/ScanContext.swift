@@ -43,16 +43,16 @@ public struct FormContext: Equatable, Sendable {
 public enum AppScreen: String, CaseIterable, Sendable {
     case documentList = "document_list"
     case formEntry = "form_entry"
-    case settings = "settings"
-    case onboarding = "onboarding"
-    case profile = "profile"
-    case acquisitions = "acquisitions"
-    case chat = "chat"
+    case settings
+    case onboarding
+    case profile
+    case acquisitions
+    case chat
     case documentAnalysis = "document_analysis"
     case documentGeneration = "document_generation"
     case documentStatus = "document_status"
     case shareFeature = "share_feature"
-    case authentication = "authentication"
+    case authentication
     case llmProviderSettings = "llm_provider_settings"
     case smartDefaultsDemo = "smart_defaults_demo"
     case documentDelivery = "document_delivery"

@@ -614,7 +614,7 @@ final class DocumentImageProcessorTests: XCTestCase {
         // Add text using Core Graphics
         let textAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 16),
-            .foregroundColor: UIColor.black
+            .foregroundColor: UIColor.black,
         ]
 
         let lines = [
@@ -622,7 +622,7 @@ final class DocumentImageProcessorTests: XCTestCase {
             "This is a test document",
             "For OCR processing tests",
             "Line 4 with numbers: 123.45",
-            "Contact: test@example.com"
+            "Contact: test@example.com",
         ]
 
         var yPosition: CGFloat = 50
@@ -657,12 +657,12 @@ final class DocumentImageProcessorTests: XCTestCase {
 
         let textAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 14),
-            .foregroundColor: UIColor.black
+            .foregroundColor: UIColor.black,
         ]
 
         let titleAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.boldSystemFont(ofSize: 18),
-            .foregroundColor: UIColor.black
+            .foregroundColor: UIColor.black,
         ]
 
         let invoiceLines = [
@@ -679,7 +679,7 @@ final class DocumentImageProcessorTests: XCTestCase {
             ("Description: Consulting Services", textAttributes),
             ("Amount: $1,250.00", textAttributes),
             ("Tax: $125.00", textAttributes),
-            ("Total: $1,375.00", textAttributes)
+            ("Total: $1,375.00", textAttributes),
         ]
 
         var yPosition: CGFloat = 30
@@ -718,12 +718,12 @@ final class DocumentImageProcessorTests: XCTestCase {
 
         let textAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 12),
-            .foregroundColor: UIColor.black
+            .foregroundColor: UIColor.black,
         ]
 
         let titleAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.boldSystemFont(ofSize: 16),
-            .foregroundColor: UIColor.black
+            .foregroundColor: UIColor.black,
         ]
 
         let receiptLines = [
@@ -741,7 +741,7 @@ final class DocumentImageProcessorTests: XCTestCase {
             ("", textAttributes),
             ("Subtotal:    $10.77", textAttributes),
             ("Tax:          $0.86", textAttributes),
-            ("Total:       $11.63", textAttributes)
+            ("Total:       $11.63", textAttributes),
         ]
 
         var yPosition: CGFloat = 20
@@ -786,17 +786,17 @@ final class DocumentImageProcessorTests: XCTestCase {
 
         let nameAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.boldSystemFont(ofSize: 18),
-            .foregroundColor: UIColor.black
+            .foregroundColor: UIColor.black,
         ]
 
         let titleAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 14),
-            .foregroundColor: UIColor.darkGray
+            .foregroundColor: UIColor.darkGray,
         ]
 
         let contactAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 12),
-            .foregroundColor: UIColor.black
+            .foregroundColor: UIColor.black,
         ]
 
         let cardInfo = [
@@ -806,7 +806,7 @@ final class DocumentImageProcessorTests: XCTestCase {
             ("Tech Solutions Inc.", contactAttributes),
             ("john.smith@techsolutions.com", contactAttributes),
             ("(555) 987-6543", contactAttributes),
-            ("www.techsolutions.com", contactAttributes)
+            ("www.techsolutions.com", contactAttributes),
         ]
 
         var yPosition: CGFloat = 30

@@ -100,8 +100,8 @@ public class ValueObjectRepository {
                 "context": [
                     "documentType": object.documentContext.documentType,
                     "section": object.documentContext.section ?? "",
-                    "lineNumber": object.documentContext.lineNumber ?? -1
-                ]
+                    "lineNumber": object.documentContext.lineNumber ?? -1,
+                ],
             ]
 
             // Create searchable attribute
@@ -344,12 +344,12 @@ public extension AdaptiveDataExtractor {
                     expectedDataType: .boolean,
                     isRequired: false,
                     defaultValue: "false"
-                )
+                ),
             ],
             documentTypeSignatures: [
                 "quote_government_vendor_technical_equipment_pricing",
                 "government_communications_equipment",
-                "military_technical_quote"
+                "military_technical_quote",
             ],
             occurrenceCount: 1,
             averageConfidence: 0.96,

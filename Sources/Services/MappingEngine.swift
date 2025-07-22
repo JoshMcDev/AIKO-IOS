@@ -34,14 +34,14 @@ final class MappingEngine: @unchecked Sendable {
                         sourceField: "requisitionNumber",
                         targetField: "requisitionNumber",
                         transformation: .direct
-                    )
+                    ),
                 ],
                 defaultValues: [
                     "unit": "EA",
                     "fob": "Destination",
-                    "discountTerms": "NET 30"
+                    "discountTerms": "NET 30",
                 ]
-            )
+            ),
         ],
 
         // Contract to SF 1449
@@ -82,17 +82,17 @@ final class MappingEngine: @unchecked Sendable {
                                 "description": item["description"] ?? "",
                                 "quantity": item["quantity"] ?? 0,
                                 "unitPrice": item["unitPrice"] ?? 0,
-                                "totalPrice": item["totalPrice"] ?? 0
+                                "totalPrice": item["totalPrice"] ?? 0,
                             ]
                         }
-                    )
+                    ),
                 ],
                 defaultValues: [
                     "deliveryTerms": "F.O.B. DESTINATION",
                     "paymentTerms": "NET 30 DAYS",
-                    "inspectionTerms": "DESTINATION"
+                    "inspectionTerms": "DESTINATION",
                 ]
-            )
+            ),
         ],
 
         // RFP to SF 1449
@@ -122,16 +122,16 @@ final class MappingEngine: @unchecked Sendable {
                             "8a": "8(A) SET-ASIDE",
                             "wosb": "WOSB SET-ASIDE",
                             "hubzone": "HUBZONE SET-ASIDE",
-                            "sdvosb": "SDVOSB SET-ASIDE"
+                            "sdvosb": "SDVOSB SET-ASIDE",
                         ])
-                    )
+                    ),
                 ],
                 defaultValues: [
                     "acquisitionType": "COMMERCIAL",
-                    "evaluationType": "LPTA"
+                    "evaluationType": "LPTA",
                 ]
-            )
-        ]
+            ),
+        ],
     ]
 
     // MARK: - Public Methods

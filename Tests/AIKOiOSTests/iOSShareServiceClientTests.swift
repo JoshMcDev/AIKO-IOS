@@ -142,7 +142,7 @@
                 ("Text with special characters: åäö", "special.txt"),
                 ("Multi-line\ntext\ncontent", "multiline.txt"),
                 ("", "empty.txt"),
-                ("Very long text " + String(repeating: "content ", count: 100), "long.txt")
+                ("Very long text " + String(repeating: "content ", count: 100), "long.txt"),
             ]
 
             for (content, fileName) in testCases {
@@ -190,7 +190,7 @@
                 ("Plain text content", "plain.txt"),
                 ("{\"key\": \"value\"}", "data.json"),
                 ("# Markdown Header\n\nContent", "doc.md"),
-                ("Name,Value\nTest,123", "data.csv")
+                ("Name,Value\nTest,123", "data.csv"),
             ]
 
             for (content, fileName) in testCases {

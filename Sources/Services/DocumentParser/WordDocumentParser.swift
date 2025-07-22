@@ -15,7 +15,8 @@ public final class WordDocumentParser {
         // Check for modern .docx format
         if type.identifier == "com.microsoft.word.docx" ||
             type.identifier == "org.openxmlformats.wordprocessingml.document" ||
-            type.identifier == "com.microsoft.word.wordml" {
+            type.identifier == "com.microsoft.word.wordml"
+        {
             return try await parseDocx(data)
         }
 

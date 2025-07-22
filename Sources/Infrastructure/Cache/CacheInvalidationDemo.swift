@@ -78,7 +78,7 @@ public struct CacheInvalidationDemo {
                 objectType: .contract,
                 objectId: "contract-789",
                 context: ActionContext(userId: "user1", sessionId: "session1")
-            )
+            ),
         ]
 
         // Cache all actions
@@ -126,7 +126,7 @@ public struct CacheInvalidationDemo {
                 objectType: .document,
                 objectId: "prod-doc-001",
                 context: ActionContext(userId: "user1", sessionId: "session1")
-            )
+            ),
         ]
 
         for action in testActions {
@@ -169,7 +169,7 @@ public struct CacheInvalidationDemo {
                 changeType: .delete,
                 changedFields: [],
                 timestamp: Date()
-            )
+            ),
         ]
 
         print("✓ Detected changes:")

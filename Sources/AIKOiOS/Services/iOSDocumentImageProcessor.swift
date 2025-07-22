@@ -6,6 +6,8 @@
     import UIKit
     import Vision
 
+    // Note: Use explicit CoreGraphics.CGRect/CGSize where needed to resolve ambiguity
+
     // MARK: - iOS Document Image Processor Implementation
 
     public extension DocumentImageProcessor {
@@ -52,8 +54,8 @@
         }
 
         func processImage(
-            _ imageData: Data, 
-            mode: DocumentImageProcessor.ProcessingMode, 
+            _ imageData: Data,
+            mode: DocumentImageProcessor.ProcessingMode,
             options: DocumentImageProcessor.ProcessingOptions
         ) async throws -> DocumentImageProcessor.ProcessingResult {
             let startTime = CFAbsoluteTimeGetCurrent()
@@ -598,7 +600,8 @@
                 throw ProcessingError.invalidImageData
             }
 
-            let imageSize = CGSize(width: cgImage.width, height: cgImage.height)
+            let cgImageSize = CoreFoundation.CGSize(width: cgImage.width, height: cgImage.height)
+            let imageSize = AppCore.CGSize(width: Double(cgImageSize.width), height: Double(cgImageSize.height))
 
             // Update progress: Starting OCR preprocessing
             options.progressCallback?(OCRProgress(
@@ -654,7 +657,7 @@
                     ))
 
                     // Process results
-                    let extractedTextElements = processVisionResults(results, imageSize: imageSize)
+                    let extractedTextElements = processVisionResults(results, imageSize: cgImageSize)
 
                     // Update progress: Language detection
                     options.progressCallback?(OCRProgress(
@@ -759,7 +762,7 @@
 
         // MARK: - OCR Helper Methods
 
-        private func processVisionResults(_ results: [VNRecognizedTextObservation], imageSize: CGSize) -> [DocumentImageProcessor.ExtractedText] {
+        private func processVisionResults(_ results: [VNRecognizedTextObservation], imageSize: CoreFoundation.CGSize) -> [DocumentImageProcessor.ExtractedText] {
             results.compactMap { observation -> DocumentImageProcessor.ExtractedText? in
                 guard let topCandidate = observation.topCandidates(1).first else { return nil }
 
@@ -771,19 +774,37 @@
 
                 // Character boxes are not available in this Vision API version
                 // Use empty array for now - this is optional data
-                let characterBoxes: [CGRect] = []
+                let characterBoxes: [CoreGraphics.CGRect] = []
+
+                // Convert CoreFoundation.CGRect to AppCore.CGRect
+                let appCoreBoundingBox = AppCore.CGRect(
+                    x: Double(boundingBox.origin.x),
+                    y: Double(boundingBox.origin.y),
+                    width: Double(boundingBox.size.width),
+                    height: Double(boundingBox.size.height)
+                )
+
+                // Convert array of CoreFoundation.CGRect to AppCore.CGRect
+                let appCoreCharacterBoxes = characterBoxes.map { rect in
+                    AppCore.CGRect(
+                        x: Double(rect.origin.x),
+                        y: Double(rect.origin.y),
+                        width: Double(rect.size.width),
+                        height: Double(rect.size.height)
+                    )
+                }
 
                 return DocumentImageProcessor.ExtractedText(
                     text: topCandidate.string,
                     confidence: Double(topCandidate.confidence),
-                    boundingBox: boundingBox,
-                    characterBoxes: characterBoxes,
+                    boundingBox: appCoreBoundingBox,
+                    characterBoxes: appCoreCharacterBoxes,
                     detectedLanguage: nil // Language detection handled separately
                 )
             }
         }
 
-        private func convertToImageCoordinates(normalizedBox: CGRect, imageSize: CGSize) -> CGRect {
+        private func convertToImageCoordinates(normalizedBox: CoreGraphics.CGRect, imageSize: CoreFoundation.CGSize) -> CoreGraphics.CGRect {
             // Vision uses normalized coordinates (0-1) with origin at bottom-left
             // Convert to image coordinates with origin at top-left
             let x = normalizedBox.origin.x * imageSize.width
@@ -791,7 +812,7 @@
             let width = normalizedBox.size.width * imageSize.width
             let height = normalizedBox.size.height * imageSize.height
 
-            return CGRect(x: x, y: y, width: width, height: height)
+            return CoreGraphics.CGRect(x: x, y: y, width: width, height: height)
         }
 
         private func detectLanguages(from extractedText: [DocumentImageProcessor.ExtractedText]) -> [DocumentImageProcessor.OCRLanguage] {

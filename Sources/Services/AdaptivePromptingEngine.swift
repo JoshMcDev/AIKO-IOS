@@ -808,7 +808,7 @@ public final class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol, @un
     /// Enhanced document context extraction using unified extractor
     /// This method handles raw document data and performs comprehensive extraction
     public func extractContextFromRawDocuments(
-        _ documentData: [(data: Data, type: UTType)],
+        _ documentData: [(data: Data, type: UniformTypeIdentifiers.UTType)],
         withHints: [String: Any]? = nil
     ) async throws -> ExtractedContext {
         guard let extractor = unifiedExtractor else {
@@ -926,7 +926,8 @@ public final class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol, @un
             if let decimal = value as? Decimal {
                 data.estimatedValue = decimal
             } else if let string = value as? String,
-                      let double = Double(string.replacingOccurrences(of: "$", with: "").replacingOccurrences(of: ",", with: "")) {
+                      let double = Double(string.replacingOccurrences(of: "$", with: "").replacingOccurrences(of: ",", with: ""))
+            {
                 data.estimatedValue = Decimal(double)
             }
         case .requiredDate:

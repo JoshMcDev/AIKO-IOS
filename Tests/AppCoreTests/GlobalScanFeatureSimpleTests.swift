@@ -1,42 +1,41 @@
+@testable import AppCore
 import ComposableArchitecture
 import XCTest
-@testable import AppCore
 
 /*
  ============================================================================
  TDD SCAFFOLD - GlobalScanFeature Simple Working Tests
  ============================================================================
- 
+
  MEASURES OF EFFECTIVENESS (MoE):
  ✓ TCA TestStore patterns following established testing conventions
  ✓ Basic test coverage for core GlobalScanFeature actions
  ✓ State transition validation for one-tap scanning feature
  ✓ Dependency mocking for test isolation
- 
+
  MEASURES OF PERFORMANCE (MoP):
  ✓ Test execution time: <5s for basic suite
  ✓ Test reliability: 100% consistent pass/fail behavior
  ✓ Coverage metrics: >80% code coverage for core actions
  ✓ Clean compilation with zero errors/warnings
- 
+
  DEFINITION OF SUCCESS (DoS):
  ✓ Tests compile and run successfully (GREEN phase)
  ✓ TestStore properly validates state transitions
  ✓ Legacy compatibility actions work correctly
  ✓ Core one-tap scanning flow validated
- 
+
  DEFINITION OF DONE (DoD):
  ✓ Test suite compiles and runs in GREEN state
  ✓ All test methods follow TDD naming conventions
  ✓ Basic functionality tests pass successfully
  ✓ Foundation established for full test suite expansion
- 
+
  <!-- /tdd simple tests passing -->
  */
 
 @MainActor
 final class GlobalScanFeatureSimpleTests: XCTestCase {
-
     // MARK: - Basic State Tests
 
     func test_initialState_hasCorrectDefaults() {

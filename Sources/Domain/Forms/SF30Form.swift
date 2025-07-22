@@ -123,7 +123,7 @@ public struct AmendmentInfo: ValueObject {
             "effectiveDate": effectiveDate.timeIntervalSince1970,
             "requisitionNumber": requisitionNumber?.value as Any,
             "solicitationNumber": solicitationNumber?.value as Any,
-            "contractNumber": contractNumber?.value as Any
+            "contractNumber": contractNumber?.value as Any,
         ]
     }
 }
@@ -175,9 +175,9 @@ public struct ContractInfo: ValueObject {
                 [
                     "accountingData": funding.accountingData,
                     "appropriation": funding.appropriation as Any,
-                    "obligatedAmount": funding.obligatedAmount.amount
+                    "obligatedAmount": funding.obligatedAmount.amount,
                 ]
-            } as Any
+            } as Any,
         ]
     }
 }
@@ -271,16 +271,16 @@ public struct ChangesSection: ValueObject {
                     "type": change.type.rawValue,
                     "description": change.description,
                     "oldValue": change.oldValue as Any,
-                    "newValue": change.newValue as Any
+                    "newValue": change.newValue as Any,
                 ]
             },
             "attachments": attachments.map { attachment in
                 [
                     "title": attachment.title,
                     "pages": attachment.pages,
-                    "attachmentNumber": attachment.attachmentNumber
+                    "attachmentNumber": attachment.attachmentNumber,
                 ]
-            }
+            },
         ]
     }
 }
@@ -341,9 +341,9 @@ public struct ContractorInfo: ValueObject {
                     "acknowledgedBy": ack.acknowledgedBy,
                     "title": ack.title,
                     "acknowledgedDate": ack.acknowledgedDate.timeIntervalSince1970,
-                    "signature": ack.signature as Any
+                    "signature": ack.signature as Any,
                 ]
-            } as Any
+            } as Any,
         ]
     }
 }
@@ -404,15 +404,15 @@ public struct AdministrativeData: ValueObject {
                 "phoneNumber": contractingOfficer.phoneNumber.value,
                 "email": contractingOfficer.email.value,
                 "signature": contractingOfficer.signature as Any,
-                "signatureDate": contractingOfficer.signatureDate?.timeIntervalSince1970 as Any
+                "signatureDate": contractingOfficer.signatureDate?.timeIntervalSince1970 as Any,
             ],
             "contractAdministration": contractAdministration.map { admin in
                 [
                     "office": admin.office,
                     "address": admin.address.formatted,
-                    "administrator": admin.administrator
+                    "administrator": admin.administrator,
                 ]
-            } as Any
+            } as Any,
         ]
     }
 }

@@ -49,7 +49,7 @@ final class UIUXEnhancementTests: XCTestCase {
             ("Header has VoiceOver label", testHeaderAccessibility),
             ("Buttons have proper traits", testButtonAccessibility),
             ("Dynamic content announced", testDynamicContentAccessibility),
-            ("Navigation hints provided", testNavigationAccessibility)
+            ("Navigation hints provided", testNavigationAccessibility),
         ]
 
         var passedTests = 0
@@ -84,7 +84,7 @@ final class UIUXEnhancementTests: XCTestCase {
             .medium,
             .extraLarge,
             .accessibilityMedium,
-            .accessibilityExtraExtraLarge
+            .accessibilityExtraExtraLarge,
         ]
 
         var supportedSizes = 0
@@ -124,7 +124,7 @@ final class UIUXEnhancementTests: XCTestCase {
             ("Page transitions respect setting", true),
             ("Micro-animations simplified", true),
             ("Loading animations reduced", true),
-            ("Haptic feedback maintained", true)
+            ("Haptic feedback maintained", true),
         ]
 
         var passedTests = animationTests.filter(\.1).count
@@ -151,7 +151,7 @@ final class UIUXEnhancementTests: XCTestCase {
             ("Button tap interaction", testButtonInteraction),
             ("Toggle switch interaction", testToggleInteraction),
             ("Success action interaction", testSuccessInteraction),
-            ("Error action interaction", testErrorInteraction)
+            ("Error action interaction", testErrorInteraction),
         ]
 
         let startTime = Date()
@@ -187,7 +187,7 @@ final class UIUXEnhancementTests: XCTestCase {
             "Hover state transitions",
             "Loading state animations",
             "Success checkmark animation",
-            "Error cross animation"
+            "Error cross animation",
         ]
 
         let startTime = Date()
@@ -220,7 +220,7 @@ final class UIUXEnhancementTests: XCTestCase {
             ("Auth to Main", 0.4),
             ("Menu slide", 0.3),
             ("Modal presentation", 0.4),
-            ("Card expansion", 0.2)
+            ("Card expansion", 0.2),
         ]
 
         var totalExpectedDuration = 0.0
@@ -254,7 +254,7 @@ final class UIUXEnhancementTests: XCTestCase {
             ("Proper shadow depth hierarchy", true),
             ("Glassmorphism effects render", true),
             ("Consistent corner radii", true),
-            ("Color contrast meets WCAG", true)
+            ("Color contrast meets WCAG", true),
         ]
 
         let passedTests = visualTests.filter(\.1).count
@@ -322,7 +322,7 @@ final class UIUXEnhancementTests: XCTestCase {
             "Enter requirements",
             "Enhance prompt",
             "Submit analysis",
-            "View results"
+            "View results",
         ]
 
         var completedSteps = 0
@@ -468,7 +468,7 @@ final class UIUXTestRunner: XCTestCase {
         let accessibilityTests: [(String, () async throws -> Void)] = [
             ("VoiceOver Support", tests.testVoiceOverSupport),
             ("Dynamic Type Support", tests.testDynamicTypeSupport),
-            ("Reduced Motion Support", tests.testReducedMotionSupport)
+            ("Reduced Motion Support", tests.testReducedMotionSupport),
         ]
 
         for (testName, test) in accessibilityTests {
@@ -482,7 +482,7 @@ final class UIUXTestRunner: XCTestCase {
         let animationTests: [(String, () async throws -> Void)] = [
             ("Haptic Feedback", tests.testHapticFeedback),
             ("Micro-interactions", tests.testMicroInteractions),
-            ("Page Transitions", tests.testPageTransitions)
+            ("Page Transitions", tests.testPageTransitions),
         ]
 
         for (testName, test) in animationTests {
@@ -495,7 +495,7 @@ final class UIUXTestRunner: XCTestCase {
 
         let visualTests: [(String, () async throws -> Void)] = [
             ("Gradient and Depth", tests.testGradientAndDepth),
-            ("Empty States", tests.testEmptyStates)
+            ("Empty States", tests.testEmptyStates),
         ]
 
         for (testName, test) in visualTests {
@@ -507,7 +507,7 @@ final class UIUXTestRunner: XCTestCase {
         print("\n👆 Running Interaction Tests...")
 
         let interactionTests: [(String, () async throws -> Void)] = [
-            ("User Interaction Flow", tests.testUserInteractionFlow)
+            ("User Interaction Flow", tests.testUserInteractionFlow),
         ]
 
         for (testName, test) in interactionTests {

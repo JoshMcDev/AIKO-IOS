@@ -1,7 +1,7 @@
-import XCTest
 import ComposableArchitecture
 @testable import Features
 @testable import UI
+import XCTest
 
 /*
  ============================================================================
@@ -37,10 +37,9 @@ import ComposableArchitecture
 
 @MainActor
 final class GlobalScanPerformanceTests: XCTestCase {
-
     // MARK: - Performance Requirements
 
-    private struct PerformanceRequirements {
+    private enum PerformanceRequirements {
         static let maxActivationLatency: TimeInterval = 0.2 // 200ms
         static let maxRenderTime: TimeInterval = 0.016 // 16ms for 60fps
         static let maxMemoryOverhead: Double = 2.0 // 2MB in megabytes
@@ -60,7 +59,7 @@ final class GlobalScanPerformanceTests: XCTestCase {
         // This test will FAIL initially - establishing baseline
         var latencies: [TimeInterval] = []
 
-        self.measure(metrics: [XCTClockMetric(), XCTMemoryMetric()]) {
+        measure(metrics: [XCTClockMetric(), XCTMemoryMetric()]) {
             // Given: A properly configured global scan feature
             let store = TestStore(initialState: GlobalScanFeature.State()) {
                 GlobalScanFeature()
@@ -101,7 +100,7 @@ final class GlobalScanPerformanceTests: XCTestCase {
 
     func test_performance_endToEndScanLatency() {
         // Comprehensive latency test from button tap to scanner dismissal
-        self.measure(metrics: [XCTClockMetric()]) {
+        measure(metrics: [XCTClockMetric()]) {
             // This comprehensive test should FAIL initially
             let expectation = XCTestExpectation(description: "End-to-end scan completion")
 
@@ -138,9 +137,9 @@ final class GlobalScanPerformanceTests: XCTestCase {
 
     func test_performance_floatingButtonRender() {
         // Test rendering performance of floating action button
-        self.measure(metrics: [XCTClockMetric(), XCTCPUMetric()]) {
+        measure(metrics: [XCTClockMetric(), XCTCPUMetric()]) {
             // Given: Button render simulation
-            for _ in 0..<100 {
+            for _ in 0 ..< 100 {
                 let state = GlobalScanFeature.State()
 
                 // Simulate view updates that would occur during animation
@@ -158,7 +157,7 @@ final class GlobalScanPerformanceTests: XCTestCase {
         let animationDuration: TimeInterval = 0.3
         let expectedFrames = Int(animationDuration * 60) // 60fps target
 
-        self.measure(metrics: [XCTClockMetric()]) {
+        measure(metrics: [XCTClockMetric()]) {
             // Simulate animation frame updates
             let startTime = CACurrentMediaTime()
             var frameCount = 0
@@ -188,11 +187,11 @@ final class GlobalScanPerformanceTests: XCTestCase {
 
     func test_performance_memoryUsage() {
         // Test memory overhead of global scan feature
-        self.measure(metrics: [XCTMemoryMetric()]) {
+        measure(metrics: [XCTMemoryMetric()]) {
             var stores: [TestStore<GlobalScanFeature.State, GlobalScanFeature.Action>] = []
 
             // Create multiple instances to measure memory scaling
-            for _ in 0..<10 {
+            for _ in 0 ..< 10 {
                 let store = TestStore(initialState: GlobalScanFeature.State()) {
                     GlobalScanFeature()
                         .dependency(\.documentScanner, .performanceTestValue)
@@ -210,11 +209,11 @@ final class GlobalScanPerformanceTests: XCTestCase {
 
     func test_performance_stateUpdateMemoryImpact() {
         // Test memory impact of frequent state updates
-        self.measure(metrics: [XCTMemoryMetric(), XCTCPUMetric()]) {
+        measure(metrics: [XCTMemoryMetric(), XCTCPUMetric()]) {
             var state = GlobalScanFeature.State()
 
             // Simulate frequent state updates (e.g., during drag gestures)
-            for i in 0..<1000 {
+            for i in 0 ..< 1000 {
                 state.dragOffset = CGSize(
                     width: Double(i % 100),
                     height: Double(i % 50)
@@ -231,11 +230,11 @@ final class GlobalScanPerformanceTests: XCTestCase {
 
     func test_performance_idleCPUUsage() {
         // Test CPU usage when button is idle (visible but not interacting)
-        self.measure(metrics: [XCTCPUMetric()]) {
+        measure(metrics: [XCTCPUMetric()]) {
             let state = GlobalScanFeature.State()
 
             // Simulate idle state checks that might occur during app lifecycle
-            for _ in 0..<1000 {
+            for _ in 0 ..< 1000 {
                 _ = state.shouldShowButton
                 _ = state.effectivePosition
                 _ = state.buttonOpacity
@@ -250,7 +249,7 @@ final class GlobalScanPerformanceTests: XCTestCase {
 
     func test_performance_dragGestureProcessing() {
         // Test performance during drag gesture handling
-        self.measure(metrics: [XCTClockMetric(), XCTCPUMetric()]) {
+        measure(metrics: [XCTClockMetric(), XCTCPUMetric()]) {
             let store = TestStore(initialState: GlobalScanFeature.State()) {
                 GlobalScanFeature()
                     .dependency(\.documentScanner, .performanceTestValue)
@@ -258,7 +257,7 @@ final class GlobalScanPerformanceTests: XCTestCase {
 
             // Simulate rapid drag gesture updates
             Task {
-                for i in 0..<100 {
+                for i in 0 ..< 100 {
                     let offset = CGSize(
                         width: Double(i),
                         height: Double(i / 2)
@@ -275,13 +274,13 @@ final class GlobalScanPerformanceTests: XCTestCase {
 
     func test_performance_appFeatureIntegration() {
         // Test performance impact on main AppFeature when GlobalScan is integrated
-        self.measure(metrics: [XCTClockMetric(), XCTMemoryMetric()]) {
+        measure(metrics: [XCTClockMetric(), XCTMemoryMetric()]) {
             // Create AppFeature with GlobalScan integration
             var appState = AppFeature.State()
             appState.globalScan = GlobalScanFeature.State()
 
             // Simulate app-level operations with global scan active
-            for _ in 0..<100 {
+            for _ in 0 ..< 100 {
                 appState.globalScan.isVisible.toggle()
                 appState.showingMenu.toggle()
 
@@ -296,7 +295,7 @@ final class GlobalScanPerformanceTests: XCTestCase {
 
     func test_performance_documentScannerIntegration() {
         // Test performance of DocumentScannerFeature integration
-        self.measure(metrics: [XCTClockMetric()]) {
+        measure(metrics: [XCTClockMetric()]) {
             let store = TestStore(initialState: GlobalScanFeature.State()) {
                 GlobalScanFeature()
                     .dependency(\.documentScanner, .performanceTestValue)
@@ -304,7 +303,7 @@ final class GlobalScanPerformanceTests: XCTestCase {
 
             Task {
                 // Simulate rapid scanner state changes
-                for _ in 0..<50 {
+                for _ in 0 ..< 50 {
                     await store.send(.activateScanner)
                     await store.send(.scannerDismissed)
                 }
@@ -318,19 +317,19 @@ final class GlobalScanPerformanceTests: XCTestCase {
 
     func test_performance_baseline() {
         // Establish performance baseline for regression detection
-        self.measureMetrics(
+        measureMetrics(
             [.wallClockTime, .userCPUTime, .systemCPUTime, .memoryPhysical],
             automaticallyStartMeasuring: false
         ) {
             // Warmup iterations
-            for _ in 0..<warmupIterations {
+            for _ in 0 ..< warmupIterations {
                 _ = GlobalScanFeature.State()
             }
 
             startMeasuring()
 
             // Baseline measurement
-            for _ in 0..<measurementIterations {
+            for _ in 0 ..< measurementIterations {
                 let store = TestStore(initialState: GlobalScanFeature.State()) {
                     GlobalScanFeature()
                 }
@@ -356,18 +355,18 @@ extension DocumentScannerClient {
         isScanningAvailable: { true },
         scanDocument: { _ in
             // Fast mock implementation for performance testing
-            return ScannedDocument(pages: [])
+            ScannedDocument(pages: [])
         },
         enhanceImageAdvanced: { _, _, _ in
             // Fast mock implementation
-            return DocumentImageProcessor.ProcessingResult(
+            DocumentImageProcessor.ProcessingResult(
                 processedImageData: Data(),
                 qualityMetrics: .init(overallScore: 0.9),
                 processingTime: 0.001
             )
         },
         performOCR: { _ in
-            return "Mock OCR text"
+            "Mock OCR text"
         },
         saveToDocumentPipeline: { _ in
             // Fast save mock

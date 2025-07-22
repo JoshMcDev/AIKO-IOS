@@ -281,7 +281,7 @@ public final class LLMDocumentGenerator: @unchecked Sendable {
             rawContent: content,
             metadata: [
                 "template": template.id,
-                "generatedAt": ISO8601DateFormatter().string(from: Date())
+                "generatedAt": ISO8601DateFormatter().string(from: Date()),
             ]
         )
     }
@@ -462,7 +462,7 @@ public class DocumentTemplateLibrary: @unchecked Sendable {
                     title: "Delivery Requirements",
                     prompt: "Specify delivery or performance requirements",
                     contextRequirements: ["delivery date", "location", "schedule"]
-                )
+                ),
             ],
             temperature: 0.7,
             maxTokens: 2000

@@ -372,13 +372,13 @@ public final class MockLLMProvider: Sendable {
                 "Position Title": "Systems Analyst II",
                 "Request Date": "03/15/2024",
                 "Supervisor Name": "Jane M. Johnson",
-                "Reason for Request": "Position reclassification review"
+                "Reason for Request": "Position reclassification review",
             ],
             confidence: Double.random(in: configuration.confidenceRange),
             suggestedMappings: [
                 FieldMapping(sourceField: "Employee Name", targetField: "employeeName", confidence: 0.95),
                 FieldMapping(sourceField: "Employee ID", targetField: "employeeId", confidence: 0.98),
-                FieldMapping(sourceField: "Department", targetField: "department", confidence: 0.92)
+                FieldMapping(sourceField: "Department", targetField: "department", confidence: 0.92),
             ]
         )
 
@@ -390,7 +390,7 @@ public final class MockLLMProvider: Sendable {
                 "Job Title": "Air Traffic Controller",
                 "Analysis Type": "Classification Review",
                 "Priority Level": "High",
-                "Due Date": "04/30/2024"
+                "Due Date": "04/30/2024",
             ],
             confidence: Double.random(in: configuration.confidenceRange)
         )
@@ -404,7 +404,7 @@ public final class MockLLMProvider: Sendable {
                 "Request Date": "03/20/2024",
                 "Items Requested": "MRE Meals, Type A Rations",
                 "Quantity": "50 units",
-                "Authorizing Officer": "Capt. Sarah L. Martinez"
+                "Authorizing Officer": "Capt. Sarah L. Martinez",
             ],
             confidence: Double.random(in: configuration.confidenceRange)
         )

@@ -288,7 +288,7 @@ extension DocumentParserEnhanced {
             extractedData.vendorName,
             extractedData.vendorAddress,
             extractedData.vendorPhone,
-            extractedData.vendorEmail
+            extractedData.vendorEmail,
         ]
         totalFields += vendorFields.count
         filledFields += vendorFields.compactMap { $0 }.filter { !$0.isEmpty }.count
@@ -297,7 +297,7 @@ extension DocumentParserEnhanced {
         let quoteFields: [Any?] = [
             extractedData.quoteNumber,
             extractedData.quoteDate,
-            extractedData.totalPrice
+            extractedData.totalPrice,
         ]
         totalFields += quoteFields.count
         filledFields += quoteFields.compactMap { $0 }.count

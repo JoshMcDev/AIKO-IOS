@@ -95,7 +95,7 @@ final class ErrorAlertTests: XCTestCase {
             "Invalid acquisition data",
             "Core Data save error",
             "Authentication failed",
-            "Document generation timeout"
+            "Document generation timeout",
         ]
 
         for (index, errorMessage) in errorScenarios.enumerated() {

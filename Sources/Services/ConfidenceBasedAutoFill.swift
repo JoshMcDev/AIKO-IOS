@@ -105,7 +105,7 @@ public final class ConfidenceBasedAutoFillEngine: @unchecked Sendable {
         .fundingSource,
         .contractType,
         .vendorUEI,
-        .vendorCAGE
+        .vendorCAGE,
     ]
 
     private let queue = DispatchQueue(label: "com.aiko.autofill", attributes: .concurrent)

@@ -43,7 +43,7 @@ public actor SecureCache: OfflineCacheProtocol {
 
         // Load metadata
         Task {
-            await loadMetadata()
+            await self.loadMetadata()
         }
     }
 
@@ -79,7 +79,7 @@ public actor SecureCache: OfflineCacheProtocol {
             kSecAttrService as String: keychainService,
             kSecAttrAccount as String: key,
             kSecValueData as String: dataToStore,
-            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
         ]
 
         // Delete existing item first
@@ -127,7 +127,7 @@ public actor SecureCache: OfflineCacheProtocol {
             kSecAttrService as String: keychainService,
             kSecAttrAccount as String: key,
             kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne
+            kSecMatchLimit as String: kSecMatchLimitOne,
         ]
 
         var result: AnyObject?
@@ -164,7 +164,7 @@ public actor SecureCache: OfflineCacheProtocol {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: keychainService,
-            kSecAttrAccount as String: key
+            kSecAttrAccount as String: key,
         ]
 
         let status = SecItemDelete(query as CFDictionary)
@@ -183,7 +183,7 @@ public actor SecureCache: OfflineCacheProtocol {
         // Clear all items with our service
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: keychainService
+            kSecAttrService as String: keychainService,
         ]
 
         SecItemDelete(query as CFDictionary)
@@ -206,7 +206,7 @@ public actor SecureCache: OfflineCacheProtocol {
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: keychainService,
             kSecAttrAccount as String: key,
-            kSecReturnData as String: false
+            kSecReturnData as String: false,
         ]
 
         let status = SecItemCopyMatching(query as CFDictionary, nil)
@@ -265,7 +265,7 @@ public actor SecureCache: OfflineCacheProtocol {
         do {
             let decoder = JSONDecoder()
             metadata = try decoder.decode([String: SecureCacheMetadata].self, from: data)
-            logger.debug("Loaded secure metadata with \(self.metadata.count) entries")
+            logger.debug("Loaded secure metadata with \(metadata.count) entries")
         } catch {
             logger.error("Failed to load secure metadata: \(error)")
             metadata = [:]
@@ -288,7 +288,7 @@ public actor SecureCache: OfflineCacheProtocol {
         let query: [String: Any] = [
             kSecClass as String: kSecClassKey,
             kSecAttrApplicationTag as String: "com.aiko.encryption.key",
-            kSecReturnData as String: true
+            kSecReturnData as String: true,
         ]
 
         var result: AnyObject?
@@ -309,7 +309,7 @@ public actor SecureCache: OfflineCacheProtocol {
             kSecClass as String: kSecClassKey,
             kSecAttrApplicationTag as String: "com.aiko.encryption.key",
             kSecValueData as String: keyData,
-            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
         ]
 
         SecItemDelete(query as CFDictionary) // Delete any existing

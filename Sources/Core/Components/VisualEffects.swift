@@ -106,7 +106,7 @@ struct GlassmorphicView<Content: View>: View {
                                 Color.black.opacity(0.05),
                             colorScheme == .dark ?
                                 Color.white.opacity(0.02) :
-                                Color.black.opacity(0.02)
+                                Color.black.opacity(0.02),
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -120,7 +120,7 @@ struct GlassmorphicView<Content: View>: View {
                     LinearGradient(
                         colors: [
                             Color.white.opacity(0.3),
-                            Color.white.opacity(0.1)
+                            Color.white.opacity(0.1),
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -257,7 +257,7 @@ struct EmptyStateView: View {
                         LinearGradient(
                             colors: [
                                 Color.blue.opacity(0.1),
-                                Color.blue.opacity(0.05)
+                                Color.blue.opacity(0.05),
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing

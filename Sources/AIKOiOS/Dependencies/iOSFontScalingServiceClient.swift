@@ -2,6 +2,7 @@
     import AppCore
     import ComposableArchitecture
     @preconcurrency import SwiftUI
+    import UIKit
 
     /// iOS Font Scaling Service Client using SimpleServiceTemplate
     public final class iOSFontScalingServiceClient: SimpleServiceTemplate {
@@ -12,7 +13,7 @@
             super.init()
         }
 
-        public func scaledFontSize(for baseSize: CGFloat, textStyle: Font.TextStyle, sizeCategory: ContentSizeCategory) async -> CGFloat {
+        public func scaledFontSize(for baseSize: CGFloat, textStyle: SwiftUI.Font.TextStyle, sizeCategory: SwiftUI.ContentSizeCategory) async -> CGFloat {
             await executeMainActorOperation {
                 self.service.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: sizeCategory)
             }

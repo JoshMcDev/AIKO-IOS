@@ -115,7 +115,7 @@ public struct ContractInformation: ValueObject {
             "solicitationNumber": solicitationNumber?.value as Any,
             "contractType": contractType.rawValue,
             "totalAmount": totalAmount.amount,
-            "currency": totalAmount.currency.rawValue
+            "currency": totalAmount.currency.rawValue,
         ]
     }
 }
@@ -173,7 +173,7 @@ public struct VendorInformation: ValueObject {
             "cageCode": cageCode.value,
             "dunsNumber": dunsNumber?.value as Any,
             "taxId": taxId,
-            "smallBusinessPrograms": smallBusinessPrograms.map(\.rawValue)
+            "smallBusinessPrograms": smallBusinessPrograms.map(\.rawValue),
         ]
     }
 }
@@ -266,18 +266,18 @@ public struct SuppliesSection: ValueObject {
                     "unitPrice": item.unitPrice.amount,
                     "totalPrice": item.totalPrice.amount,
                     "naicsCode": item.naicsCode?.value as Any,
-                    "psc": item.psc as Any
+                    "psc": item.psc as Any,
                 ]
             },
             "performancePeriod": [
                 "startDate": performancePeriod.startDate.timeIntervalSince1970,
-                "endDate": performancePeriod.endDate.timeIntervalSince1970
+                "endDate": performancePeriod.endDate.timeIntervalSince1970,
             ],
             "placeOfPerformance": [
                 "address": placeOfPerformance.address.formatted,
                 "countryCode": placeOfPerformance.countryCode,
-                "principalPlaceCode": placeOfPerformance.principalPlaceCode as Any
-            ]
+                "principalPlaceCode": placeOfPerformance.principalPlaceCode as Any,
+            ],
         ]
     }
 }
@@ -321,7 +321,7 @@ public struct AccountingSection: ValueObject {
             "objectClass": objectClass as Any,
             "stationNumber": stationNumber as Any,
             "obligation": obligation.amount,
-            "currency": obligation.currency.rawValue
+            "currency": obligation.currency.rawValue,
         ]
     }
 }
@@ -382,16 +382,16 @@ public struct SignatureSection: ValueObject {
                 "name": contractingOfficer.name,
                 "title": contractingOfficer.title,
                 "signature": contractingOfficer.signature as Any,
-                "signatureDate": contractingOfficer.signatureDate?.timeIntervalSince1970 as Any
+                "signatureDate": contractingOfficer.signatureDate?.timeIntervalSince1970 as Any,
             ],
             "vendor": vendor.map { v in
                 [
                     "name": v.name,
                     "title": v.title,
                     "signature": v.signature as Any,
-                    "signatureDate": v.signatureDate?.timeIntervalSince1970 as Any
+                    "signatureDate": v.signatureDate?.timeIntervalSince1970 as Any,
                 ]
-            } as Any
+            } as Any,
         ]
     }
 }

@@ -64,7 +64,6 @@ public actor ConsistentHash {
 
     /// Get replica nodes for a key
     public func getReplicaNodes(for key: String, count: Int) -> [String] {
-        guard count > 0 else { return [] }
         guard !ring.isEmpty else { return [] }
 
         let hash = hashValue(key)
@@ -81,7 +80,7 @@ public actor ConsistentHash {
 
             if !seenNodes.contains(nodeId) {
                 seenNodes.insert(nodeId)
-                if replicas.count > 0 || nodeId != getNode(for: key) {
+                if !replicas.isEmpty || nodeId != getNode(for: key) {
                     replicas.append(nodeId)
                 }
             }

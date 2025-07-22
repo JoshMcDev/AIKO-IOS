@@ -197,7 +197,7 @@ struct DocumentChainProgressBar: View {
                         .fill(LinearGradient(
                             gradient: Gradient(colors: [
                                 Color(red: 0.6, green: 0.4, blue: 1.0),
-                                Color(red: 0.4, green: 0.2, blue: 0.8)
+                                Color(red: 0.4, green: 0.2, blue: 0.8),
                             ]),
                             startPoint: .leading,
                             endPoint: .trailing

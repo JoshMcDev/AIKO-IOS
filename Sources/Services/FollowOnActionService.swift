@@ -594,7 +594,7 @@ public final class FollowOnActionService {
         [
             "acquisitionId": acquisition.id.uuidString,
             "actionCategory": action.category.rawValue,
-            "priority": action.priority.rawValue
+            "priority": action.priority.rawValue,
         ]
     }
 

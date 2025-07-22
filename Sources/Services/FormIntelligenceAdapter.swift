@@ -224,7 +224,8 @@ extension FormIntelligenceAdapter: DependencyKey {
 
                 // Check for commercial acquisition
                 if analysis.response.contains("commercial") ||
-                    analysis.response.contains("FAR Part 12") {
+                    analysis.response.contains("FAR Part 12")
+                {
                     recommendedForms.append(.init(
                         formType: GovernmentFormData.FormType.sf1449,
                         formNumber: "SF 1449",
@@ -237,7 +238,8 @@ extension FormIntelligenceAdapter: DependencyKey {
 
                 // Check for simplified acquisition
                 if analysis.response.contains("simplified acquisition") ||
-                    analysis.response.contains("FAR Part 13") {
+                    analysis.response.contains("FAR Part 13")
+                {
                     recommendedForms.append(.init(
                         formType: GovernmentFormData.FormType.sf18,
                         formNumber: "SF 18",
@@ -250,7 +252,8 @@ extension FormIntelligenceAdapter: DependencyKey {
 
                 // Check for contract modification needs
                 if acquisition.status == .inProgress || acquisition.status == .underReview,
-                   requirements.contains("modification") || requirements.contains("change") {
+                   requirements.contains("modification") || requirements.contains("change")
+                {
                     recommendedForms.append(.init(
                         formType: GovernmentFormData.FormType.sf30,
                         formNumber: "SF 30",
@@ -425,7 +428,7 @@ extension FormIntelligenceAdapter: DependencyKey {
                         userData: [:],
                         systemData: [
                             "processing_time": String(outcome.processingTime),
-                            "error_count": String(outcome.validationErrors.count)
+                            "error_count": String(outcome.validationErrors.count),
                         ]
                     ),
                     outcome: outcome.success ? .success : .failure
@@ -465,7 +468,7 @@ extension FormIntelligenceAdapter: DependencyKey {
                     GovernmentFormData.FormType.sf18,
                     GovernmentFormData.FormType.sf26,
                     GovernmentFormData.FormType.sf44,
-                    GovernmentFormData.FormType.dd1155
+                    GovernmentFormData.FormType.dd1155,
                 ]
 
                 // Get user patterns for analysis
@@ -491,11 +494,11 @@ extension FormIntelligenceAdapter: DependencyKey {
                             impact: totalFrequency > 10 ? .high : .medium,
                             recommendations: [
                                 "Consider creating templates for common scenarios",
-                                "Review auto-fill accuracy for frequently used fields"
+                                "Review auto-fill accuracy for frequently used fields",
                             ],
                             dataPoints: [
                                 .init(label: "Pattern Frequency", value: Double(totalFrequency), unit: "occurrences"),
-                                .init(label: "Success Rate", value: avgSuccessRate * 100, unit: "%")
+                                .init(label: "Success Rate", value: avgSuccessRate * 100, unit: "%"),
                             ]
                         ))
                     }
@@ -511,12 +514,12 @@ extension FormIntelligenceAdapter: DependencyKey {
                             impact: avgTime > 1800 ? .high : .low,
                             recommendations: avgTime > 1800 ? [
                                 "Consider breaking complex sections into steps",
-                                "Provide more auto-fill options"
+                                "Provide more auto-fill options",
                             ] : [
-                                "Current completion time is optimal"
+                                "Current completion time is optimal",
                             ],
                             dataPoints: [
-                                .init(label: "Average Time", value: avgTime / 60, unit: "minutes")
+                                .init(label: "Average Time", value: avgTime / 60, unit: "minutes"),
                             ]
                         ))
                     }
@@ -538,7 +541,7 @@ extension FormIntelligenceAdapter: DependencyKey {
                             recommendations: [learning.recommendation.action],
                             dataPoints: [
                                 .init(label: "Confidence", value: learning.confidence * 100, unit: "%"),
-                                .init(label: "Impact", value: learning.recommendation.impact == .high ? 100 : learning.recommendation.impact == .medium ? 50 : 25, unit: "score")
+                                .init(label: "Impact", value: learning.recommendation.impact == .high ? 100 : learning.recommendation.impact == .medium ? 50 : 25, unit: "score"),
                             ]
                         ))
                     }

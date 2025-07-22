@@ -54,7 +54,7 @@ final class VisionKitIntegrationTests: XCTestCase {
                     pages: [
                         ScannedPage(imageData: Data([0xFF, 0xD8, 0xFF, 0xD9]), pageNumber: 1),
                         ScannedPage(imageData: Data([0xFF, 0xD8, 0xFF, 0xD9]), pageNumber: 2),
-                        ScannedPage(imageData: Data([0xFF, 0xD8, 0xFF, 0xD9]), pageNumber: 3)
+                        ScannedPage(imageData: Data([0xFF, 0xD8, 0xFF, 0xD9]), pageNumber: 3),
                     ],
                     title: "Multi-page Test Document"
                 )
@@ -392,7 +392,7 @@ final class VisionKitIntegrationTests: XCTestCase {
                 expectation.fulfill()
                 return ScannedDocument(
                     pages: [
-                        ScannedPage(imageData: Data(), pageNumber: 1)
+                        ScannedPage(imageData: Data(), pageNumber: 1),
                     ]
                 )
             },

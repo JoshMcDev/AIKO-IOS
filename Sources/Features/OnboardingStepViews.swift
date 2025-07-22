@@ -105,7 +105,8 @@ struct PersonalInfoStepView: View {
             Button(action: onUpdateProfileImage) {
                 ZStack {
                     if let imageData = profile.profileImageData,
-                       let image = imageLoader.loadImage(imageData) {
+                       let image = imageLoader.loadImage(imageData)
+                    {
                         image
                             .resizable()
                             .scaledToFill()
@@ -268,7 +269,8 @@ struct OrganizationInfoStepView: View {
 
                 Button(action: onUpdateLogo) {
                     if let logoData = profile.organizationLogoData,
-                       let image = imageLoader.loadImage(logoData) {
+                       let image = imageLoader.loadImage(logoData)
+                    {
                         image
                             .resizable()
                             .scaledToFit()
@@ -399,7 +401,8 @@ struct ReviewStepView: View {
             // Profile summary
             HStack(spacing: Theme.Spacing.large) {
                 if let imageData = profile.profileImageData,
-                   let image = imageLoader.loadImage(imageData) {
+                   let image = imageLoader.loadImage(imageData)
+                {
                     image
                         .resizable()
                         .scaledToFill()

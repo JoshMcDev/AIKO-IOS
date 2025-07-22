@@ -118,13 +118,13 @@ final class EndToEndScannerWorkflowTests: XCTestCase {
         await ScannerTestHelpers.waitForScannerExpectations([
             scannerPresentationExpectation,
             ocrCompletionExpectation,
-            autoPopulationExpectation
+            autoPopulationExpectation,
         ])
 
         // GREEN PHASE: Final state verification working
         XCTAssertEqual(testStore.state.processingState, .completed)
         XCTAssertFalse(testStore.state.scannedDocuments.isEmpty)
-        XCTAssertTrue(testStore.state.autoPopulationResults.count > 0)
+        XCTAssertTrue(!testStore.state.autoPopulationResults.isEmpty)
     }
 
     /// Test workflow with damaged document quality
@@ -359,7 +359,7 @@ final class EndToEndScannerWorkflowTests: XCTestCase {
             "dateSubmitted": "2024-01-15",
             "totalAmount": "$50,000.00",
             "performancePeriod": "12 months",
-            "pointOfContact": "John Doe"
+            "pointOfContact": "John Doe",
         ]
 
         return AutoPopulationResult(

@@ -1,6 +1,6 @@
+@testable import AIKO
 @testable import AikoCompat
 @testable import AppCore
-@testable import AIKO
 import ComposableArchitecture
 import XCTest
 
@@ -22,7 +22,7 @@ final class AIDocumentGeneratorTests: XCTestCase {
 
             ## Conclusion
             This completes the test document.
-            """
+            """,
         ])
         generator = AIDocumentGenerator.liveValue
     }
@@ -103,7 +103,7 @@ final class AIDocumentGeneratorTests: XCTestCase {
         let documentTypes: [DocumentType] = [
             .contractingOfficerOrder,
             .independentGovernmentCostEstimate,
-            .statementOfWork
+            .statementOfWork,
         ]
 
         mockProvider = MockAIProvider(responses: Array(repeating: "Test content", count: documentTypes.count))

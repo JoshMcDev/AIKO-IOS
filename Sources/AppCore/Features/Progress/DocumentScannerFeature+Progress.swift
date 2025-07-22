@@ -27,7 +27,8 @@ public extension DocumentScannerFeature.State {
         set {
             // Update our scanning state based on progress feedback
             if let currentSession = newValue.currentSession,
-               let _ = newValue.activeSessions[currentSession] {
+               let _ = newValue.activeSessions[currentSession]
+            {
                 // Update our progress tracking based on the progress state
                 // This allows for bidirectional sync
                 _progressSessionId = currentSession
@@ -248,7 +249,7 @@ public extension MultiPageSession {
                 "session_id": id.uuidString,
                 "total_pages": "\(totalPagesScanned)",
                 "processed_pages": "\(processedPagesCount)",
-                "current_page_progress": "\(currentPageProgress)"
+                "current_page_progress": "\(currentPageProgress)",
             ]
         )
 

@@ -195,7 +195,7 @@ final class GovernmentFormOCRModelsTests: XCTestCase {
         let indicators = [
             FormIndicator(type: .title, value: "SOLICITATION/CONTRACT/ORDER FOR COMMERCIAL ITEMS", weight: 0.9),
             FormIndicator(type: .formNumber, value: "SF 1449", weight: 0.95),
-            FormIndicator(type: .fieldLabel, value: "SOLICITATION NO.", weight: 0.7)
+            FormIndicator(type: .fieldLabel, value: "SOLICITATION NO.", weight: 0.7),
         ]
 
         let detectedForm = DetectedFormType(
@@ -215,7 +215,7 @@ final class GovernmentFormOCRModelsTests: XCTestCase {
         let indicators = [
             FormIndicator(type: .title, value: "AMENDMENT OF SOLICITATION/MODIFICATION OF CONTRACT", weight: 0.9),
             FormIndicator(type: .formNumber, value: "SF 30", weight: 0.95),
-            FormIndicator(type: .fieldLabel, value: "AMENDMENT NO.", weight: 0.8)
+            FormIndicator(type: .fieldLabel, value: "AMENDMENT NO.", weight: 0.8),
         ]
 
         let detectedForm = DetectedFormType(
@@ -235,7 +235,7 @@ final class GovernmentFormOCRModelsTests: XCTestCase {
         let indicators = [
             FormIndicator(type: .title, value: "REQUEST AND AUTHORIZATION FOR TDY TRAVEL", weight: 0.85),
             FormIndicator(type: .formNumber, value: "DD 1155", weight: 0.95),
-            FormIndicator(type: .fieldLabel, value: "NAME (Last, First, MI)", weight: 0.75)
+            FormIndicator(type: .fieldLabel, value: "NAME (Last, First, MI)", weight: 0.75),
         ]
 
         let detectedForm = DetectedFormType(
@@ -269,7 +269,7 @@ final class GovernmentFormOCRModelsTests: XCTestCase {
         let rules = [
             TransformationRule(type: .trimWhitespace),
             TransformationRule(type: .upperCase),
-            TransformationRule(type: .removeNonAlphanumeric)
+            TransformationRule(type: .removeNonAlphanumeric),
         ]
 
         let mapping = FieldMapping(
@@ -360,7 +360,7 @@ final class GovernmentFormOCRModelsTests: XCTestCase {
             ("W52P1J-23-R-0001", ValidationPatterns.solicitationNumber, true),
             ("Contract.Number.123", ValidationPatterns.contractNumber, true),
             ("$1,234,567.89", ValidationPatterns.currency, true),
-            ("(555) 123-4567", ValidationPatterns.phoneNumber, true)
+            ("(555) 123-4567", ValidationPatterns.phoneNumber, true),
         ]
 
         for (value, pattern, shouldMatch) in specialCases {
@@ -509,7 +509,7 @@ final class GovernmentFormOCRModelsTests: XCTestCase {
             (ValidationPatterns.currency, "$1,234.56"),
             (ValidationPatterns.date, "01/15/2025"),
             (ValidationPatterns.phoneNumber, "(555) 123-4567"),
-            (ValidationPatterns.email, "contractor@company.com")
+            (ValidationPatterns.email, "contractor@company.com"),
         ]
     }
 
@@ -538,7 +538,7 @@ final class GovernmentFormOCRModelsTests: XCTestCase {
                 validationPattern: ValidationPatterns.currency,
                 confidenceThreshold: 0.95,
                 isCritical: true
-            )
+            ),
         ]
 
         return FieldMappingConfiguration(

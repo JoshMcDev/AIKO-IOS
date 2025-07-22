@@ -203,7 +203,6 @@ public struct EnhancedAppView: View {
     }
 }
 
-
 // MARK: - Enhanced Document Types Section
 
 struct EnhancedDocumentTypesSection: View {
@@ -939,7 +938,7 @@ struct EnhancedUploadedDocumentCard: View {
             AccessibilityActionModifier.AccessibilityAction(
                 name: "Remove",
                 action: onRemove
-            )
+            ),
         ])
     }
 
@@ -1018,5 +1017,3 @@ extension DocumentStatusFeature.DocumentStatus {
         }
     }
 }
-
-

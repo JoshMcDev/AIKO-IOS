@@ -95,7 +95,7 @@ final class Integration_SAMGovRepositoryTests: XCTestCase {
         let ueis = [
             SAMGovTestData.lockheedUEI,
             SAMGovTestData.boozAllenUEI,
-            "NOTFOUND123"
+            "NOTFOUND123",
         ]
 
         let entities = try await sut.getEntities(ueis: ueis)

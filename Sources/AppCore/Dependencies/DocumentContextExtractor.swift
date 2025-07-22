@@ -110,7 +110,7 @@ extension DocumentContextExtractor: DependencyKey {
                         type: .amount,
                         value: "$100,000",
                         confidence: 0.85
-                    )
+                    ),
                 ],
                 relationships: [
                     EntityRelationship(
@@ -118,7 +118,7 @@ extension DocumentContextExtractor: DependencyKey {
                         toEntityId: "amount-1",
                         relationshipType: .contractedBy,
                         confidence: 0.8
-                    )
+                    ),
                 ],
                 compliance: ComplianceAnalysis(
                     overallCompliance: .compliant,
@@ -135,7 +135,7 @@ extension DocumentContextExtractor: DependencyKey {
                         description: "Test risk factor",
                         probability: 0.3,
                         impact: 0.5
-                    )
+                    ),
                 ],
                 recommendations: [
                     Recommendation(
@@ -145,7 +145,7 @@ extension DocumentContextExtractor: DependencyKey {
                         description: "Test description",
                         action: "Test action",
                         rationale: "Test rationale"
-                    )
+                    ),
                 ],
                 confidence: 0.85,
                 processingTime: 0.1
@@ -158,7 +158,7 @@ extension DocumentContextExtractor: DependencyKey {
                         text: "Test paragraph",
                         boundingBox: CGRect(x: 0, y: 0, width: 100, height: 20),
                         confidence: 0.9
-                    )
+                    ),
                 ],
                 layout: .document
             )
@@ -169,7 +169,7 @@ extension DocumentContextExtractor: DependencyKey {
                     type: .vendor,
                     value: "Test Entity",
                     confidence: 0.9
-                )
+                ),
             ]
             let relationships: [EntityRelationship] = []
             return (entities, relationships)
@@ -185,7 +185,7 @@ extension DocumentContextExtractor: DependencyKey {
                     description: "Test risk",
                     probability: 0.2,
                     impact: 0.3
-                )
+                ),
             ]
         },
         generateRecommendations: { _ in
@@ -197,7 +197,7 @@ extension DocumentContextExtractor: DependencyKey {
                     description: "Test description",
                     action: "Test action",
                     rationale: "Test rationale"
-                )
+                ),
             ]
         }
     )
@@ -334,7 +334,7 @@ private func generateBasicRecommendations(for documentType: ScannerDocumentType)
                 description: "Review contract for regulatory compliance",
                 action: "Conduct thorough FAR/DFARS compliance check",
                 rationale: "Ensure all contract terms meet regulatory requirements"
-            )
+            ),
         ]
     case .solicitation:
         [
@@ -345,7 +345,7 @@ private func generateBasicRecommendations(for documentType: ScannerDocumentType)
                 description: "Analyze solicitation requirements",
                 action: "Extract and validate all requirements",
                 rationale: "Comprehensive understanding needed for response"
-            )
+            ),
         ]
     default:
         [
@@ -356,7 +356,7 @@ private func generateBasicRecommendations(for documentType: ScannerDocumentType)
                 description: "Classify document for proper filing",
                 action: "Determine appropriate document category",
                 rationale: "Proper classification improves organization"
-            )
+            ),
         ]
     }
 }

@@ -341,7 +341,7 @@ public enum RegulationsGovConfig {
     public static var headers: [String: String] {
         [
             "X-Api-Key": apiKey,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         ]
     }
 }
@@ -368,7 +368,7 @@ extension RegulationService: DependencyKey {
                     URLQueryItem(name: "filter[searchTerm]", value: query.searchTerm),
                     URLQueryItem(name: "sort", value: "\(query.sortOrder.rawValue == "ASC" ? "" : "-")\(query.sortBy.rawValue)"),
                     URLQueryItem(name: "page[size]", value: String(query.pageSize)),
-                    URLQueryItem(name: "page[number]", value: String(query.pageNumber))
+                    URLQueryItem(name: "page[number]", value: String(query.pageNumber)),
                 ]
 
                 if let documentType = query.documentType {
@@ -510,7 +510,7 @@ extension RegulationService: DependencyKey {
                         lastUpdated: Date(),
                         isDeviation: false,
                         applicability: ["All contracts"]
-                    )
+                    ),
                 ]
             },
 

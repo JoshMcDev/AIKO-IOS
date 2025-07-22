@@ -53,7 +53,7 @@ class UserPatternLearningEngineTests: XCTestCase {
         // Test sequence-aware prediction
         let previousFields: [RequirementField: Any] = [
             field1: "TechSuppliers Inc",
-            field2: "75000"
+            field2: "75000",
         ]
 
         let prediction = await sut.getSequenceAwarePrediction(

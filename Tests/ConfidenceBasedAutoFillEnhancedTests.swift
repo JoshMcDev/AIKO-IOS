@@ -393,7 +393,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
             .fundingSource,
             .contractType,
             .performanceLocation,
-            .requiredDate
+            .requiredDate,
         ]
     }
 
@@ -404,7 +404,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
             .contractType,
             .vendorUEI,
             .vendorCAGE,
-            .contractNumber
+            .contractNumber,
         ]
     }
 
@@ -424,7 +424,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
                 "cageCode": "1ABC5",
                 "uei": "ABC123DEF456",
                 "projectTitle": "IT Services Support",
-                "totalAmount": "$1,234,567.89"
+                "totalAmount": "$1,234,567.89",
             ],
             fiscalYear: "2025",
             fiscalQuarter: "Q2",
@@ -443,7 +443,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
             extractedData: [
                 "estimatedValue": "$5,000,000.00",
                 "contractType": "Cost Plus Fixed Fee",
-                "fundingSource": "RDT&E 2025"
+                "fundingSource": "RDT&E 2025",
             ],
             fiscalYear: "2025",
             fiscalQuarter: "Q1",
@@ -475,7 +475,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
             userId: "test-user",
             extractedData: [
                 "estimatedValue": "$1,234,567.89",
-                "fundingAmount": "$500,000.00"
+                "fundingAmount": "$500,000.00",
             ],
             autoFillThreshold: 0.85
         )
@@ -488,7 +488,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
             extractedData: [
                 "requiredDate": "03/15/2025",
                 "startDate": "01-01-2025",
-                "endDate": "12/31/2025"
+                "endDate": "12/31/2025",
             ],
             autoFillThreshold: 0.85
         )
@@ -504,7 +504,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
             (RequirementField.contractType, "Firm Fixed Price"),
             (RequirementField.performanceLocation, "Ft. Belvoir, VA"),
             (RequirementField.projectTitle, "IT Services Support"),
-            (RequirementField.estimatedValue, "$1,234,567.89")
+            (RequirementField.estimatedValue, "$1,234,567.89"),
         ]
 
         for (field, value) in patterns {

@@ -113,7 +113,7 @@ final class RegressionTestSuite: XCTestCase {
             .analyzingRequirements,
             .suggestingDocuments,
             .collectingData,
-            .generatingDocuments
+            .generatingDocuments,
         ]
 
         for state in states {

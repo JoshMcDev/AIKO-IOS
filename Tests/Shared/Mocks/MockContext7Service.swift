@@ -214,7 +214,7 @@ public extension MockContext7Service {
                         affectedDocumentTypes: [.qasp, .acquisitionPlan],
                         farReference: "DFARS 252.204-7012",
                         changesSummary: "Enhanced cybersecurity requirements for contractors"
-                    )
+                    ),
                 ]
             },
 
@@ -231,7 +231,7 @@ public extension MockContext7Service {
                             clause: "Audit and Records",
                             matchConfidence: 0.95,
                             explanation: "Document includes required audit provisions"
-                        )
+                        ),
                     ],
                     recommendations: [
                         .init(
@@ -239,7 +239,7 @@ public extension MockContext7Service {
                             recommendation: "Include specific data retention period",
                             relatedRegulation: "FAR 52.215-2",
                             estimatedEffort: "15 minutes"
-                        )
+                        ),
                     ],
                     lastUpdated: Date()
                 )
@@ -254,7 +254,7 @@ public extension MockContext7Service {
                     commonRequirementPatterns: [
                         "software development",
                         "cloud services",
-                        "cybersecurity assessment"
+                        "cybersecurity assessment",
                     ],
                     recommendedWorkflows: [
                         .init(
@@ -262,7 +262,7 @@ public extension MockContext7Service {
                             description: "Use templates for common requirement patterns",
                             efficiency: 0.45,
                             basedOnPatterns: ["software development"]
-                        )
+                        ),
                     ],
                     usageStatistics: .init(
                         totalDocumentsGenerated: 156,
@@ -283,12 +283,12 @@ public extension MockContext7Service {
                         requirements: [
                             "Implement multi-factor authentication",
                             "Verify all access requests",
-                            "Encrypt data in transit"
+                            "Encrypt data in transit",
                         ],
                         lastUpdated: Date(),
                         complianceDeadline: Date().addingTimeInterval(90 * 24 * 60 * 60),
                         affectedFeatures: ["API Authentication", "Document Access"]
-                    )
+                    ),
                 ]
             },
 
@@ -304,7 +304,7 @@ public extension MockContext7Service {
                         relevanceScore: 0.95,
                         lastUpdated: Date(),
                         relatedDocumentTypes: [.sow, .acquisitionPlan]
-                    )
+                    ),
                 ]
             }
         )

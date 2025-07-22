@@ -406,7 +406,7 @@ public actor CacheWarmingStrategy {
                 actionType: .analyze,
                 objectType: .requirement,
                 priority: 0.8
-            )
+            ),
         ]
     }
 
@@ -492,7 +492,7 @@ public actor CacheWarmingStrategy {
         // For now, warm common patterns
         let commonPatterns = [
             ActionPattern(actionType: .generate, objectType: .document),
-            ActionPattern(actionType: .analyze, objectType: .requirement)
+            ActionPattern(actionType: .analyze, objectType: .requirement),
         ]
 
         for pattern in commonPatterns {

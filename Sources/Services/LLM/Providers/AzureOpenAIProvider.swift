@@ -58,7 +58,7 @@ public final class AzureOpenAIProvider: LLMProviderProtocol, @unchecked Sendable
                         inputPricePerMillion: 5.0,
                         outputPricePerMillion: 15.0
                     )
-                )
+                ),
             ]
         )
     }
@@ -149,7 +149,7 @@ public final class AzureOpenAIProvider: LLMProviderProtocol, @unchecked Sendable
         // Build request body
         var body: [String: Any] = [
             "messages": messages,
-            "temperature": request.temperature
+            "temperature": request.temperature,
         ]
 
         if let maxTokens = request.maxTokens {
@@ -262,7 +262,7 @@ public final class AzureOpenAIProvider: LLMProviderProtocol, @unchecked Sendable
                     var body: [String: Any] = [
                         "messages": messages,
                         "temperature": request.temperature,
-                        "stream": true
+                        "stream": true,
                     ]
 
                     if let maxTokens = request.maxTokens {
@@ -300,7 +300,8 @@ public final class AzureOpenAIProvider: LLMProviderProtocol, @unchecked Sendable
                                let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                                let choices = json["choices"] as? [[String: Any]],
                                let firstChoice = choices.first,
-                               let delta = firstChoice["delta"] as? [String: Any] {
+                               let delta = firstChoice["delta"] as? [String: Any]
+                            {
                                 if let content = delta["content"] as? String {
                                     continuation.yield(LLMStreamChunk(delta: content))
                                 }

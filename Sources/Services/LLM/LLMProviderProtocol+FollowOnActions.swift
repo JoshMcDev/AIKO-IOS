@@ -20,7 +20,7 @@ public extension LLMProviderProtocol {
         let request = LLMChatRequest(
             messages: [
                 LLMMessage(role: .system, content: systemPrompt),
-                LLMMessage(role: .user, content: userPrompt)
+                LLMMessage(role: .user, content: userPrompt),
             ],
             model: context.preferredModel ?? getSettings().apiEndpoint ?? "default",
             temperature: 0.3, // Lower temperature for consistent action generation
@@ -58,7 +58,7 @@ public extension LLMProviderProtocol {
         let request = LLMChatRequest(
             messages: [
                 LLMMessage(role: .system, content: systemPrompt),
-                LLMMessage(role: .user, content: "Based on this context, suggest next actions: \(contextSummary)")
+                LLMMessage(role: .user, content: "Based on this context, suggest next actions: \(contextSummary)"),
             ],
             model: getSettings().apiEndpoint ?? "default",
             temperature: 0.5,
@@ -325,7 +325,7 @@ private extension LLMProviderProtocol {
                     category: .requirementGathering,
                     priority: .critical,
                     estimatedDuration: 3600
-                )
+                ),
             ])
 
         case .solicitation:
@@ -344,7 +344,7 @@ private extension LLMProviderProtocol {
                     category: .vendorManagement,
                     priority: .high,
                     estimatedDuration: 1200
-                )
+                ),
             ])
 
         default:

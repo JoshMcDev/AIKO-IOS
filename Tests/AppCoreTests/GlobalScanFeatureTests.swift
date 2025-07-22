@@ -1,6 +1,6 @@
+@testable import AppCore
 import ComposableArchitecture
 import XCTest
-@testable import AppCore
 
 /*
  ============================================================================
@@ -36,7 +36,6 @@ import XCTest
 
 @MainActor
 final class GlobalScanFeatureTests: XCTestCase {
-
     // MARK: - Test Configuration
 
     private let testTimeout: TimeInterval = 5.0
@@ -449,22 +448,21 @@ extension HapticManagerClient {
     static let testValue = HapticManagerClient(
         impact: { _ in },
         notification: { _ in },
-        selection: { },
-        buttonTap: { },
-        toggleSwitch: { },
-        successAction: { },
-        errorAction: { },
-        warningAction: { },
-        dragStarted: { },
-        dragEnded: { },
-        refresh: { }
+        selection: {},
+        buttonTap: {},
+        toggleSwitch: {},
+        successAction: {},
+        errorAction: {},
+        warningAction: {},
+        dragStarted: {},
+        dragEnded: {},
+        refresh: {}
     )
 }
 
 // MARK: - Performance Benchmark Tests
 
 extension GlobalScanFeatureTests {
-
     func test_performanceBenchmark_buttonRender() {
         // This test will establish baseline performance metrics
         // Should FAIL initially until optimizations are implemented
@@ -480,7 +478,7 @@ extension GlobalScanFeatureTests {
         measure {
             var state = GlobalScanFeature.State()
             // Simulate rapid state changes
-            for _ in 0..<100 {
+            for _ in 0 ..< 100 {
                 state.isVisible.toggle()
                 state.position = state.position == .topLeading ? .bottomTrailing : .topLeading
             }

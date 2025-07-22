@@ -748,7 +748,7 @@ public struct DocumentScannerFeature: Sendable {
                             "session_id": sessionID.uuidString,
                             "source": "document_scanner",
                             "total_pages": scannedPages.count,
-                            "processing_mode": "scanner_integration"
+                            "processing_mode": "scanner_integration",
                         ]
 
                         // Extract comprehensive document context

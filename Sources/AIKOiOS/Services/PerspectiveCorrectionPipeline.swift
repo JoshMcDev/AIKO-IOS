@@ -258,7 +258,7 @@
                 CGPoint(x: targetRect.minX, y: targetRect.minY), // top-left
                 CGPoint(x: targetRect.maxX, y: targetRect.minY), // top-right
                 CGPoint(x: targetRect.maxX, y: targetRect.maxY), // bottom-right
-                CGPoint(x: targetRect.minX, y: targetRect.maxY) // bottom-left
+                CGPoint(x: targetRect.minX, y: targetRect.maxY), // bottom-left
             ]
         }
 

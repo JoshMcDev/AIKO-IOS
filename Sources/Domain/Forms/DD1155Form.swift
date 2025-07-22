@@ -151,8 +151,8 @@ public struct OrderInformation: ValueObject {
                 "name": issuingOffice.name,
                 "code": issuingOffice.code,
                 "address": issuingOffice.address.formatted,
-                "dodaac": issuingOffice.dodaac as Any
-            ]
+                "dodaac": issuingOffice.dodaac as Any,
+            ],
         ]
     }
 }
@@ -199,7 +199,7 @@ public struct ContractorInformation: ValueObject {
             "taxId": taxId as Any,
             "phoneNumber": phoneNumber.value,
             "contactPerson": contactPerson as Any,
-            "email": email?.value as Any
+            "email": email?.value as Any,
         ]
     }
 }
@@ -263,10 +263,10 @@ public struct DD1155DeliveryInformation: ValueObject {
             "shipTo": [
                 "code": shipTo.code,
                 "address": shipTo.address.formatted,
-                "dodaac": shipTo.dodaac as Any
+                "dodaac": shipTo.dodaac as Any,
             ],
             "markFor": markFor as Any,
-            "shippingInstructions": shippingInstructions as Any
+            "shippingInstructions": shippingInstructions as Any,
         ]
     }
 }
@@ -376,7 +376,7 @@ public struct ItemsOrderedSection: ValueObject {
                     "quantity": item.quantity,
                     "unit": item.unit,
                     "unitPrice": item.unitPrice.amount,
-                    "amount": item.amount.amount
+                    "amount": item.amount.amount,
                 ]
             },
             "totalAmount": totalAmount.amount,
@@ -384,9 +384,9 @@ public struct ItemsOrderedSection: ValueObject {
             "discount": discount.map { d in
                 [
                     "percentage": d.percentage.value,
-                    "netDays": d.netDays
+                    "netDays": d.netDays,
                 ]
-            } as Any
+            } as Any,
         ]
     }
 }
@@ -437,7 +437,7 @@ public struct AccountingData: ValueObject {
             "jobOrderNumber": jobOrderNumber as Any,
             "projectCode": projectCode as Any,
             "workUnitCode": workUnitCode as Any,
-            "costCenterCode": costCenterCode as Any
+            "costCenterCode": costCenterCode as Any,
         ]
     }
 }
@@ -497,14 +497,14 @@ public struct AuthorizationSection: ValueObject {
                 "name": authorizedBy.name,
                 "title": authorizedBy.title,
                 "signature": authorizedBy.signature as Any,
-                "signatureDate": authorizedBy.signatureDate?.timeIntervalSince1970 as Any
+                "signatureDate": authorizedBy.signatureDate?.timeIntervalSince1970 as Any,
             ],
             "contractingOfficer": contractingOfficer.map { co in
                 [
                     "name": co.name,
-                    "phoneNumber": co.phoneNumber.value
+                    "phoneNumber": co.phoneNumber.value,
                 ]
-            } as Any
+            } as Any,
         ]
     }
 }

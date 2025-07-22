@@ -355,7 +355,7 @@ public extension FormAutoPopulationEngine {
                     name: ocrData.travelerInfo?.name?.processedText ?? "",
                     organization: ocrData.travelerInfo?.organization?.processedText,
                     role: .other
-                )
+                ),
             ] : []
         )
 

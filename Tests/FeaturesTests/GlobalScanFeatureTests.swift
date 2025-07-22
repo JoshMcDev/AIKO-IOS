@@ -1,9 +1,8 @@
-import XCTest
-import ComposableArchitecture
 @testable import AppCore
+import ComposableArchitecture
+import XCTest
 
 final class GlobalScanFeatureTests: XCTestCase {
-
     // MARK: - Performance Tests (TDD Rubric)
 
     func testScanInitiationTime() async {
@@ -29,7 +28,7 @@ final class GlobalScanFeatureTests: XCTestCase {
     }
 
     func testTaskCompletionEfficiency() async {
-        // Target: 80% time reduction (15s -> 3s)  
+        // Target: 80% time reduction (15s -> 3s)
         // This is a placeholder for full workflow timing
 
         let store = TestStore(initialState: GlobalScanFeature.State()) {
@@ -189,15 +188,15 @@ extension HapticManagerClient {
     static let testValue = HapticManagerClient(
         impact: { _ in },
         notification: { _ in },
-        selection: { },
-        buttonTap: { },
-        toggleSwitch: { },
-        successAction: { },
-        errorAction: { },
-        warningAction: { },
-        dragStarted: { },
-        dragEnded: { },
-        refresh: { }
+        selection: {},
+        buttonTap: {},
+        toggleSwitch: {},
+        successAction: {},
+        errorAction: {},
+        warningAction: {},
+        dragStarted: {},
+        dragEnded: {},
+        refresh: {}
     )
 }
 

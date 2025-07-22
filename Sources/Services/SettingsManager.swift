@@ -223,7 +223,7 @@ extension SettingsManager: DependencyKey {
                 let query: [String: Any] = [
                     kSecClass as String: kSecClassGenericPassword,
                     kSecAttrService as String: "com.aiko.api",
-                    kSecAttrAccount as String: "anthropic_api_key"
+                    kSecAttrAccount as String: "anthropic_api_key",
                 ]
                 SecItemDelete(query as CFDictionary)
 
@@ -248,7 +248,7 @@ extension SettingsManager: DependencyKey {
                     kSecClass as String: kSecClassGenericPassword,
                     kSecAttrService as String: "com.aiko.api",
                     kSecAttrAccount as String: "anthropic_api_key",
-                    kSecValueData as String: key.data(using: .utf8)!
+                    kSecValueData as String: key.data(using: .utf8)!,
                 ]
 
                 // Delete existing
@@ -265,7 +265,7 @@ extension SettingsManager: DependencyKey {
                     kSecClass as String: kSecClassGenericPassword,
                     kSecAttrService as String: "com.aiko.api",
                     kSecAttrAccount as String: "anthropic_api_key",
-                    kSecReturnData as String: true
+                    kSecReturnData as String: true,
                 ]
 
                 var result: AnyObject?
@@ -273,7 +273,8 @@ extension SettingsManager: DependencyKey {
 
                 if status == errSecSuccess,
                    let data = result as? Data,
-                   let key = String(data: data, encoding: .utf8) {
+                   let key = String(data: data, encoding: .utf8)
+                {
                     return key
                 }
 
@@ -366,7 +367,8 @@ extension SettingsManager: DependencyKey {
                     templates: templates.map { template in
                         // Convert CustomTemplate to JSON string
                         if let data = try? JSONEncoder().encode(template),
-                           let jsonString = String(data: data, encoding: .utf8) {
+                           let jsonString = String(data: data, encoding: .utf8)
+                        {
                             return jsonString
                         }
                         return ""
@@ -415,7 +417,8 @@ extension SettingsManager: DependencyKey {
                     @Dependency(\.templateStorageService) var templateService
                     for templateJSON in backupData.templates {
                         if let data = templateJSON.data(using: .utf8),
-                           let template = try? JSONDecoder().decode(CustomTemplate.self, from: data) {
+                           let template = try? JSONDecoder().decode(CustomTemplate.self, from: data)
+                        {
                             try? await templateService.saveTemplate(template)
                         }
                     }

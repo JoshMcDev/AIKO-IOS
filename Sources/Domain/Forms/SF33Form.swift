@@ -113,7 +113,7 @@ public struct SF33SolicitationSection: ValueObject {
             "requisitionNumber": requisitionNumber?.value as Any,
             "solicitationType": solicitationType.rawValue,
             "setAsideType": setAsideType?.rawValue as Any,
-            "responseDeadline": responseDeadline.timeIntervalSince1970
+            "responseDeadline": responseDeadline.timeIntervalSince1970,
         ]
     }
 }
@@ -216,23 +216,23 @@ public struct OfferSection: ValueObject {
                 "taxId": offeror.taxId,
                 "phoneNumber": offeror.phoneNumber.value,
                 "email": offeror.email.value,
-                "authorizedRepresentative": offeror.authorizedRepresentative
+                "authorizedRepresentative": offeror.authorizedRepresentative,
             ],
             "offerDate": offerDate.timeIntervalSince1970,
             "offerValidityPeriod": offerValidityPeriod,
             "acknowledgments": acknowledgments.map { ack in
                 [
                     "amendmentNumber": ack.amendmentNumber,
-                    "acknowledgedDate": ack.acknowledgedDate.timeIntervalSince1970
+                    "acknowledgedDate": ack.acknowledgedDate.timeIntervalSince1970,
                 ]
             },
             "certifications": certifications.map { cert in
                 [
                     "type": cert.type.rawValue,
                     "certified": cert.certified,
-                    "certificationDate": cert.certificationDate.timeIntervalSince1970
+                    "certificationDate": cert.certificationDate.timeIntervalSince1970,
                 ]
-            }
+            },
         ]
     }
 }
@@ -290,10 +290,10 @@ public struct AwardSection: ValueObject {
                     "name": officer.name,
                     "title": officer.title,
                     "signature": officer.signature as Any,
-                    "signatureDate": officer.signatureDate?.timeIntervalSince1970 as Any
+                    "signatureDate": officer.signatureDate?.timeIntervalSince1970 as Any,
                 ]
             } as Any,
-            "accountingData": accountingData as Any
+            "accountingData": accountingData as Any,
         ]
     }
 }

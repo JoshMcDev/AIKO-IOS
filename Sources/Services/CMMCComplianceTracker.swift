@@ -298,7 +298,7 @@ private func getCMMCRequirements(for level: CMMCLevel) -> [CMMCRequirement] {
                 objective: "Verify identity before granting access.",
                 discussion: "Authentication mechanisms must be in place to verify claimed identities.",
                 nistMapping: ["IA-2", "IA-3"]
-            )
+            ),
             // Add remaining Level 1 requirements...
         ])
     }
@@ -335,7 +335,7 @@ private func getCMMCRequirements(for level: CMMCLevel) -> [CMMCRequirement] {
                 objective: "Maintain audit logs for security monitoring and incident response.",
                 discussion: "Audit logs must capture sufficient detail to reconstruct events and identify responsible parties.",
                 nistMapping: ["AU-2", "AU-3", "AU-12"]
-            )
+            ),
             // Add remaining Level 2 requirements...
         ])
     }
@@ -372,7 +372,7 @@ private func getCMMCRequirements(for level: CMMCLevel) -> [CMMCRequirement] {
                 objective: "Maintain comprehensive incident records and ensure proper reporting.",
                 discussion: "Document all aspects of incident response including timeline, impact, and remediation.",
                 nistMapping: ["IR-4", "IR-5", "IR-6"]
-            )
+            ),
             // Add remaining Level 3 requirements...
         ])
     }

@@ -43,7 +43,7 @@ final class Unit_SAMGovRepositoryTests: XCTestCase {
         let query = "Test Company"
         mockAPIClient.searchResponse = [
             createMockEntity(name: "Test Company Inc", uei: "TEST123456"),
-            createMockEntity(name: "Test Company LLC", uei: "TEST789012")
+            createMockEntity(name: "Test Company LLC", uei: "TEST789012"),
         ]
 
         // When
@@ -183,7 +183,7 @@ final class Unit_SAMGovRepositoryTests: XCTestCase {
         let uei = "TEST123456"
         let exclusions = [
             createMockExclusion(classificationType: "Debarment", activeDate: "2023-01-01"),
-            createMockExclusion(classificationType: "Suspension", activeDate: "2023-06-01")
+            createMockExclusion(classificationType: "Suspension", activeDate: "2023-06-01"),
         ]
         let mockEntity = createMockEntity(name: "Test Company", uei: uei, exclusions: exclusions)
         mockAPIClient.getEntityResponse = mockEntity

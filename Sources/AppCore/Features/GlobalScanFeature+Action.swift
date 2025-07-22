@@ -3,9 +3,9 @@ import Foundation
 
 // MARK: - GlobalScanFeature Action
 
-extension GlobalScanFeature {
+public extension GlobalScanFeature {
     @CasePathable
-    public enum Action: Sendable {
+    enum Action: Sendable {
         // Button UI Actions
         case setVisibility(Bool)
         case setPosition(FloatingPosition)

@@ -13,23 +13,23 @@ public final class DocumentParserValidator {
 
     // Supported document types
     private static let supportedTypes: Set<String> = [
-        UTType.pdf.identifier,
-        UTType.rtf.identifier,
-        UTType.plainText.identifier,
-        UTType.png.identifier,
-        UTType.jpeg.identifier,
-        UTType.tiff.identifier,
-        UTType.heic.identifier,
+        UniformTypeIdentifiers.UTType.pdf.identifier,
+        UniformTypeIdentifiers.UTType.rtf.identifier,
+        UniformTypeIdentifiers.UTType.plainText.identifier,
+        UniformTypeIdentifiers.UTType.png.identifier,
+        UniformTypeIdentifiers.UTType.jpeg.identifier,
+        UniformTypeIdentifiers.UTType.tiff.identifier,
+        UniformTypeIdentifiers.UTType.heic.identifier,
         "com.microsoft.word.doc",
         "com.microsoft.word.docx",
         "org.openxmlformats.wordprocessingml.document",
-        "com.microsoft.word.wordml"
+        "com.microsoft.word.wordml",
     ]
 
     // MARK: - Public Methods
 
     /// Validates document data before parsing
-    public func validateDocument(_ data: Data, type: UTType) throws {
+    public func validateDocument(_ data: Data, type: UniformTypeIdentifiers.UTType) throws {
         // Check file size
         guard data.count <= Self.maxFileSize else {
             throw DocumentParserValidationError.fileTooLarge(
@@ -55,12 +55,12 @@ public final class DocumentParserValidator {
     /// Validates document with expected type
     public func validate(_ data: Data, expectedType: DocumentValidationType) async -> DocumentValidationResult {
         do {
-            // Map validation type to UTType for compatibility
-            let utType: UTType = switch expectedType {
+            // Map validation type to UniformTypeIdentifiers.UTType for compatibility
+            let utType: UniformTypeIdentifiers.UTType = switch expectedType {
             case .pdf:
                 .pdf
             case .word:
-                UTType(filenameExtension: "docx") ?? .data
+                UniformTypeIdentifiers.UTType(filenameExtension: "docx") ?? .data
             case .plainText:
                 .plainText
             case .rtf:
@@ -68,7 +68,7 @@ public final class DocumentParserValidator {
             case .image:
                 .image
             case .excel:
-                UTType(filenameExtension: "xlsx") ?? .data
+                UniformTypeIdentifiers.UTType(filenameExtension: "xlsx") ?? .data
             case .unknown:
                 .data
             }
@@ -152,7 +152,8 @@ public final class DocumentParserValidator {
                     if row.count >= 2,
                        let quantity = Double(row[0]),
                        let priceString = row.last?.replacingOccurrences(of: "$", with: "").replacingOccurrences(of: ",", with: ""),
-                       let unitPrice = Decimal(string: priceString) {
+                       let unitPrice = Decimal(string: priceString)
+                    {
                         let lineItem = LineItem(
                             itemNumber: nil,
                             description: row.count > 2 ? row[1] : "Item",
@@ -170,7 +171,7 @@ public final class DocumentParserValidator {
 
     // MARK: - Private Methods
 
-    private func isSupportedType(_ type: UTType) -> Bool {
+    private func isSupportedType(_ type: UniformTypeIdentifiers.UTType) -> Bool {
         // Check direct identifier match
         if Self.supportedTypes.contains(type.identifier) {
             return true
@@ -184,7 +185,7 @@ public final class DocumentParserValidator {
         // Check for Word document types
         let wordExtensions = ["doc", "docx"]
         for ext in wordExtensions {
-            if let wordType = UTType(filenameExtension: ext), type.conforms(to: wordType) {
+            if let wordType = UniformTypeIdentifiers.UTType(filenameExtension: ext), type.conforms(to: wordType) {
                 return true
             }
         }
@@ -192,7 +193,7 @@ public final class DocumentParserValidator {
         return false
     }
 
-    private func validateDocumentStructure(_ data: Data, type: UTType) throws {
+    private func validateDocumentStructure(_ data: Data, type: UniformTypeIdentifiers.UTType) throws {
         if type == .pdf {
             // Check PDF header
             let pdfHeader: [UInt8] = [0x25, 0x50, 0x44, 0x46] // %PDF
@@ -348,7 +349,8 @@ public final class DocumentParserValidator {
 
         // Check if date is not too far in the past (e.g., 10 years)
         if let tenYearsAgo = calendar.date(byAdding: .year, value: -10, to: now),
-           date < tenYearsAgo {
+           date < tenYearsAgo
+        {
             throw DocumentParserValidationError.invalidField(
                 field,
                 "date is too far in the past"
@@ -357,7 +359,8 @@ public final class DocumentParserValidator {
 
         // Check if date is not too far in the future (e.g., 5 years)
         if let fiveYearsFromNow = calendar.date(byAdding: .year, value: 5, to: now),
-           date > fiveYearsFromNow {
+           date > fiveYearsFromNow
+        {
             throw DocumentParserValidationError.invalidField(
                 field,
                 "date is too far in the future"

@@ -323,7 +323,7 @@ public class SmartDefaultsProvider: @unchecked Sendable {
                 SmartDefault.Alternative(
                     value: formatter.string(from: calendar.date(byAdding: .day, value: 45, to: Date())!),
                     confidence: 0.6
-                )
+                ),
             ]
         )
     }
@@ -368,7 +368,8 @@ public class SmartDefaultsProvider: @unchecked Sendable {
             reasoning = "End of fiscal year - urgent processing recommended"
         } else if let value = context.extractedData["totalValue"],
                   let amount = parseAmount(value),
-                  amount > 100_000 {
+                  amount > 100_000
+        {
             priority = "High"
             confidence = 0.7
             reasoning = "High-value acquisition"
@@ -401,14 +402,15 @@ public class SmartDefaultsProvider: @unchecked Sendable {
                 source: .contextInference,
                 reasoning: "Standard for purchase requests",
                 alternatives: [
-                    SmartDefault.Alternative(value: "BPA Call", confidence: 0.6)
+                    SmartDefault.Alternative(value: "BPA Call", confidence: 0.6),
                 ]
             )
 
         case .contractScaffold:
             if let value = context.extractedData["estimatedValue"],
                let amount = parseAmount(value),
-               amount > 250_000 {
+               amount > 250_000
+            {
                 return SmartDefault(
                     field: "contractType",
                     value: "Fixed Price",
@@ -416,7 +418,7 @@ public class SmartDefaultsProvider: @unchecked Sendable {
                     source: .contextInference,
                     reasoning: "Recommended for high-value acquisitions",
                     alternatives: [
-                        SmartDefault.Alternative(value: "Cost Plus", confidence: 0.5)
+                        SmartDefault.Alternative(value: "Cost Plus", confidence: 0.5),
                     ]
                 )
             }
@@ -466,7 +468,8 @@ public class SmartDefaultsProvider: @unchecked Sendable {
 
         if condition.contains("high_value") {
             if let value = context.extractedData["totalValue"],
-               let amount = parseAmount(value) {
+               let amount = parseAmount(value)
+            {
                 return amount > 100_000
             }
         }
@@ -536,19 +539,19 @@ public class SmartDefaultsProvider: @unchecked Sendable {
         case .requestForQuote:
             [
                 "vendor", "deliveryDate", "location", "fundingSource",
-                "justification", "approver", "priority", "contractType"
+                "justification", "approver", "priority", "contractType",
             ]
 
         case .requestForProposal:
             [
                 "requirements", "evaluationCriteria", "submissionDeadline",
-                "pointOfContact", "setAsideType", "naics"
+                "pointOfContact", "setAsideType", "naics",
             ]
 
         case .contractScaffold:
             [
                 "contractType", "performancePeriod", "deliverables",
-                "paymentTerms", "clauses", "attachments"
+                "paymentTerms", "clauses", "attachments",
             ]
 
         default:
@@ -617,7 +620,7 @@ public class OrganizationalRuleEngine {
                 condition: "fiscal_year_end",
                 value: "Urgent",
                 priority: 9
-            )
+            ),
         ]
     }
 }

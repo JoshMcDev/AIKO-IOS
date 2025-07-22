@@ -192,7 +192,7 @@
                     eventType: .hapticContinuous,
                     parameters: [
                         CHHapticEventParameter(parameterID: .hapticIntensity, value: event.intensity),
-                        CHHapticEventParameter(parameterID: .hapticSharpness, value: event.sharpness)
+                        CHHapticEventParameter(parameterID: .hapticSharpness, value: event.sharpness),
                     ],
                     relativeTime: event.time,
                     duration: event.duration
@@ -205,20 +205,20 @@
         // Predefined patterns
         static let success = HapticPattern(events: [
             HapticEvent(time: 0, intensity: 0.6, sharpness: 0.8, duration: 0.1),
-            HapticEvent(time: 0.15, intensity: 1.0, sharpness: 1.0, duration: 0.1)
+            HapticEvent(time: 0.15, intensity: 1.0, sharpness: 1.0, duration: 0.1),
         ])
 
         static let warning = HapticPattern(events: [
             HapticEvent(time: 0, intensity: 0.8, sharpness: 0.8, duration: 0.2),
-            HapticEvent(time: 0.3, intensity: 0.8, sharpness: 0.8, duration: 0.2)
+            HapticEvent(time: 0.3, intensity: 0.8, sharpness: 0.8, duration: 0.2),
         ])
 
         static let error = HapticPattern(events: [
-            HapticEvent(time: 0, intensity: 1.0, sharpness: 1.0, duration: 0.3)
+            HapticEvent(time: 0, intensity: 1.0, sharpness: 1.0, duration: 0.3),
         ])
 
         static let selection = HapticPattern(events: [
-            HapticEvent(time: 0, intensity: 0.4, sharpness: 0.6, duration: 0.05)
+            HapticEvent(time: 0, intensity: 0.4, sharpness: 0.6, duration: 0.05),
         ])
 
         // Impact style patterns
@@ -226,23 +226,23 @@
             switch style {
             case .light:
                 HapticPattern(events: [
-                    HapticEvent(time: 0, intensity: 0.3, sharpness: 0.5, duration: 0.1)
+                    HapticEvent(time: 0, intensity: 0.3, sharpness: 0.5, duration: 0.1),
                 ])
             case .medium:
                 HapticPattern(events: [
-                    HapticEvent(time: 0, intensity: 0.6, sharpness: 0.7, duration: 0.1)
+                    HapticEvent(time: 0, intensity: 0.6, sharpness: 0.7, duration: 0.1),
                 ])
             case .heavy:
                 HapticPattern(events: [
-                    HapticEvent(time: 0, intensity: 1.0, sharpness: 0.9, duration: 0.1)
+                    HapticEvent(time: 0, intensity: 1.0, sharpness: 0.9, duration: 0.1),
                 ])
             case .soft:
                 HapticPattern(events: [
-                    HapticEvent(time: 0, intensity: 0.4, sharpness: 0.3, duration: 0.15)
+                    HapticEvent(time: 0, intensity: 0.4, sharpness: 0.3, duration: 0.15),
                 ])
             case .rigid:
                 HapticPattern(events: [
-                    HapticEvent(time: 0, intensity: 0.8, sharpness: 1.0, duration: 0.08)
+                    HapticEvent(time: 0, intensity: 0.8, sharpness: 1.0, duration: 0.08),
                 ])
             }
         }

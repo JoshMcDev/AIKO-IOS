@@ -368,7 +368,7 @@ final class PerformanceTestSuite: XCTestCase {
             Data(repeating: 0, count: 1024), // 1KB
             Data(repeating: 0, count: 10 * 1024), // 10KB
             Data(repeating: 0, count: 100 * 1024), // 100KB
-            Data(repeating: 0, count: 1024 * 1024) // 1MB
+            Data(repeating: 0, count: 1024 * 1024), // 1MB
         ]
 
         for (index, documentData) in documents.enumerated() {
@@ -411,7 +411,7 @@ final class PerformanceTestSuite: XCTestCase {
                     "performance work statement",
                     "evaluation",
                     "far compliant",
-                    "template"
+                    "template",
                 ]
 
                 for query in queries {

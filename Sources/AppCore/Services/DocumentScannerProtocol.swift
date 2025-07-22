@@ -355,7 +355,7 @@ extension DocumentScannerService: DependencyKey {
                     ScannedPage(
                         imageData: Data(),
                         pageNumber: 1
-                    )
+                    ),
                 ],
                 title: "Test Document"
             )
@@ -384,7 +384,7 @@ extension DocumentScannerService: DependencyKey {
                     ScannedPage(
                         imageData: Data(),
                         pageNumber: 1
-                    )
+                    ),
                 ],
                 title: "Test Document"
             )

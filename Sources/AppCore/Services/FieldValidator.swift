@@ -29,7 +29,7 @@ public struct FieldValidator: Sendable {
         // GREEN phase - minimal implementation for MM/DD/YYYY and DD MMM YYYY formats
         let patterns = [
             "^\\d{2}/\\d{2}/\\d{4}$", // MM/DD/YYYY
-            "^\\d{2} [A-Z]{3} \\d{4}$" // DD MMM YYYY
+            "^\\d{2} [A-Z]{3} \\d{4}$", // DD MMM YYYY
         ]
 
         for pattern in patterns {

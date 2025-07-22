@@ -114,7 +114,7 @@ final class UnifiedTemplateServiceTests: XCTestCase {
                         order: 1,
                         isRequired: true,
                         subsections: []
-                    )
+                    ),
                 ],
                 requiredFields: ["field1"],
                 optionalFields: ["field2"]
@@ -217,7 +217,7 @@ final class UnifiedTemplateServiceTests: XCTestCase {
         let templates = [
             createTestTemplate(name: "Template 1"),
             createTestTemplate(name: "Template 2"),
-            createTestTemplate(name: "Template 3")
+            createTestTemplate(name: "Template 3"),
         ]
 
         var exportedData: [Data] = []
@@ -284,7 +284,7 @@ final class UnifiedTemplateServiceTests: XCTestCase {
                         order: 1,
                         isRequired: true,
                         subsections: []
-                    )
+                    ),
                 ],
                 requiredFields: [],
                 optionalFields: []
@@ -307,7 +307,7 @@ final class TemplateCategoryTests: XCTestCase {
     func testAllCategoriesHaveValidRawValues() {
         let categories: [TemplateCategory] = [
             .contracts, .statements, .solicitations, .reports,
-            .analysis, .planning, .compliance, .other
+            .analysis, .planning, .compliance, .other,
         ]
 
         for category in categories {

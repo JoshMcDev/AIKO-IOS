@@ -80,7 +80,7 @@ final class DocumentChainMetadataTests: XCTestCase {
                 previousVersionID: nil,
                 documentType: .requirementsDocument,
                 generatedAt: Date()
-            )
+            ),
         ]
         chains[.performanceWorkStatement] = [
             DocumentChain(
@@ -89,7 +89,7 @@ final class DocumentChainMetadataTests: XCTestCase {
                 documentType: .performanceWorkStatement,
                 generatedAt: Date(),
                 metadata: ["version": "2.0"]
-            )
+            ),
         ]
 
         let encoder = JSONEncoder()

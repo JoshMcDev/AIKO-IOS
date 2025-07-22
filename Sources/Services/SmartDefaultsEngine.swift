@@ -462,13 +462,13 @@ public final class SmartDefaultsEngine: @unchecked Sendable {
             .projectTitle,
             .estimatedValue,
             .requiredDate,
-            .vendorName
+            .vendorName,
         ]
 
         let highPriorityFields: Set<RequirementField> = [
             .fundingSource,
             .contractType,
-            .performanceLocation
+            .performanceLocation,
         ]
 
         return fields.sorted { lhs, rhs in

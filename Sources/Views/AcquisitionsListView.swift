@@ -397,13 +397,13 @@ struct AcquisitionCard: View {
                 Spacer()
 
                 // Document counts
-                if acquisition.uploadedFilesArray.count > 0 {
+                if !acquisition.uploadedFilesArray.isEmpty {
                     Label("\(acquisition.uploadedFilesArray.count)", systemImage: "doc.fill")
                         .font(.caption)
                         .foregroundColor(.blue)
                 }
 
-                if acquisition.generatedFilesArray.count > 0 {
+                if !acquisition.generatedFilesArray.isEmpty {
                     Label("\(acquisition.generatedFilesArray.count)", systemImage: "doc.text.fill")
                         .font(.caption)
                         .foregroundColor(.green)
@@ -538,7 +538,7 @@ struct AcquisitionCard: View {
         }
 
         // Last resort - use first few words
-        if words.count > 0 {
+        if !words.isEmpty {
             return words.prefix(4).joined(separator: " ").capitalized
         }
 

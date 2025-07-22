@@ -596,7 +596,7 @@ actor CachePatternAnalyzer {
                 description: "Document access clusters",
                 frequency: 0.7,
                 impact: .medium
-            )
+            ),
         ]
     }
 
@@ -814,7 +814,7 @@ extension CachePerformanceAnalytics {
         [
             "Traffic patterns remain consistent",
             "No major system changes",
-            "Current cache configuration maintained"
+            "Current cache configuration maintained",
         ]
     }
 
@@ -824,18 +824,18 @@ extension CachePerformanceAnalytics {
                 .l1Memory: 100_000,
                 .l2SSD: 1_000_000,
                 .l3Distributed: 10_000_000,
-                .l4CloudStorage: 100_000_000
+                .l4CloudStorage: 100_000_000,
             ],
             evictionPolicies: [
                 .l1Memory: "LRU",
                 .l2SSD: "LFU",
                 .l3Distributed: "ARC",
-                .l4CloudStorage: "TTL"
+                .l4CloudStorage: "TTL",
             ],
             ttlSettings: [
                 "default": 3600,
                 "frequent": 7200,
-                "permanent": 86400
+                "permanent": 86400,
             ]
         )
     }

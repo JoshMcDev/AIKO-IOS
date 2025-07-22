@@ -198,7 +198,7 @@ final class DocumentOCRBridgeTests: XCTestCase {
         let processingHints = [
             "preserve_metadata": true,
             "processing_mode": "enhanced",
-            "session_type": "test"
+            "session_type": "test",
         ]
 
         let result = try await bridge.bridgeToOCR(
@@ -383,11 +383,11 @@ final class DocumentOCRBridgeTests: XCTestCase {
                 pages: createTestPages(count: pagesPerSession, withQuality: 0.8),
                 processingHints: [
                     "session_number": sessionIndex,
-                    "batch_test": true
+                    "batch_test": true,
                 ],
                 contextHints: [
                     "extract_vendor": true,
-                    "extract_pricing": true
+                    "extract_pricing": true,
                 ]
             )
         }
@@ -408,7 +408,7 @@ final class DocumentOCRBridgeTests: XCTestCase {
                     confidence: confidence,
                     boundingBox: CGRect(x: 0, y: 0, width: 100, height: 20),
                     fieldType: .text
-                )
+                ),
             ],
             documentStructure: DocumentStructure(
                 paragraphs: [
@@ -417,7 +417,7 @@ final class DocumentOCRBridgeTests: XCTestCase {
                         boundingBox: CGRect(x: 0, y: 0, width: 200, height: 40),
                         confidence: confidence,
                         textType: .body
-                    )
+                    ),
                 ],
                 layout: .document
             ),
@@ -461,7 +461,7 @@ class MockUnifiedDocumentContextExtractor: UnifiedDocumentContextExtractor {
                         quantity: 1,
                         unitPrice: Decimal(1500.00),
                         totalPrice: Decimal(1500.00)
-                    )
+                    ),
                 ]
             ),
             technicalDetails: ["High-performance mock service with advanced features"],
@@ -474,7 +474,7 @@ class MockUnifiedDocumentContextExtractor: UnifiedDocumentContextExtractor {
                 "overall": 0.85,
                 "vendor": 0.9,
                 "pricing": 0.8,
-                "technical": 0.75
+                "technical": 0.75,
             ]
         )
 
@@ -519,7 +519,7 @@ extension DocumentOCRBridgeTests {
             processingHints: [
                 "document_scanner": true,
                 "enhanced_ocr": true,
-                "processing_mode": "scanner_integration"
+                "processing_mode": "scanner_integration",
             ]
         )
 
@@ -531,7 +531,7 @@ extension DocumentOCRBridgeTests {
             from: bridgeResult,
             additionalHints: [
                 "extract_all": true,
-                "confidence_threshold": 0.7
+                "confidence_threshold": 0.7,
             ]
         )
 

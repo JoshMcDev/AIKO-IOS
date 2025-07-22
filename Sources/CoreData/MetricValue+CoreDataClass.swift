@@ -38,7 +38,8 @@ public class MetricValueEntity: NSManagedObject {
         entity.unit = model.unit.rawValue
 
         if !model.metadata.isEmpty,
-           let metadataData = try? JSONEncoder().encode(model.metadata) {
+           let metadataData = try? JSONEncoder().encode(model.metadata)
+        {
             entity.metadataData = metadataData
         }
 

@@ -440,7 +440,7 @@ public actor OneTapWorkflowEngine {
                         boundingBox: CGRect(x: 0, y: 0, width: 400, height: 600),
                         confidence: 0.92,
                         textType: .body
-                    )
+                    ),
                 ],
                 layout: .form
             ),
@@ -493,7 +493,7 @@ public actor OneTapWorkflowEngine {
                     confidence: 0.88,
                     fieldType: .contractValue,
                     boundingBox: CGRect(x: 100, y: 110, width: 100, height: 20)
-                )
+                ),
             ]
 
         case .contractDocumentScan:
@@ -518,7 +518,7 @@ public actor OneTapWorkflowEngine {
                     confidence: 0.85,
                     fieldType: .address,
                     boundingBox: CGRect(x: 100, y: 110, width: 200, height: 40)
-                )
+                ),
             ]
 
         case .invoiceProcessing:
@@ -543,7 +543,7 @@ public actor OneTapWorkflowEngine {
                     confidence: 0.87,
                     fieldType: .date,
                     boundingBox: CGRect(x: 100, y: 110, width: 100, height: 20)
-                )
+                ),
             ]
 
         case .customWorkflow:
@@ -555,7 +555,7 @@ public actor OneTapWorkflowEngine {
                     confidence: 0.80,
                     fieldType: .text,
                     boundingBox: CGRect(x: 100, y: 50, width: 120, height: 20)
-                )
+                ),
             ]
         }
 
@@ -704,7 +704,7 @@ public actor OneTapWorkflowEngine {
                     confidence: 0.92,
                     boundingBox: CGRect(x: 100, y: 80, width: 120, height: 20),
                     fieldType: .text
-                )
+                ),
             ]
         case .contractDocumentScan:
             [
@@ -714,7 +714,7 @@ public actor OneTapWorkflowEngine {
                     confidence: 0.90,
                     boundingBox: CGRect(x: 100, y: 50, width: 150, height: 20),
                     fieldType: .text
-                )
+                ),
             ]
         case .invoiceProcessing:
             [
@@ -724,7 +724,7 @@ public actor OneTapWorkflowEngine {
                     confidence: 0.91,
                     boundingBox: CGRect(x: 100, y: 80, width: 100, height: 20),
                     fieldType: .currency
-                )
+                ),
             ]
         case .customWorkflow:
             []

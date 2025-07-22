@@ -212,7 +212,7 @@ public final class DataExtractor {
             "MM/dd/yy",
             "MM-dd-yy",
             "MMMM d, yyyy",
-            "MMM d, yyyy"
+            "MMM d, yyyy",
         ]
 
         var dates: [Date] = []
@@ -254,13 +254,14 @@ public final class DataExtractor {
             "Quotation\\s*#?\\s*:?\\s*([A-Z0-9-]+)",
             "RFQ\\s*#?\\s*:?\\s*([A-Z0-9-]+)",
             "Reference\\s*#?\\s*:?\\s*([A-Z0-9-]+)",
-            "Proposal\\s*#?\\s*:?\\s*([A-Z0-9-]+)"
+            "Proposal\\s*#?\\s*:?\\s*([A-Z0-9-]+)",
         ]
 
         for pattern in patterns {
             if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
                let match = regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)),
-               let range = Range(match.range(at: 1), in: text) {
+               let range = Range(match.range(at: 1), in: text)
+            {
                 return String(text[range])
             }
         }
@@ -272,13 +273,14 @@ public final class DataExtractor {
         let ueiPatterns = [
             "UEI\\s*:?\\s*([A-Z0-9]{12})",
             "Unique Entity ID\\s*:?\\s*([A-Z0-9]{12})",
-            "SAM UEI\\s*:?\\s*([A-Z0-9]{12})"
+            "SAM UEI\\s*:?\\s*([A-Z0-9]{12})",
         ]
 
         for pattern in ueiPatterns {
             if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
                let match = regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)),
-               let range = Range(match.range(at: 1), in: text) {
+               let range = Range(match.range(at: 1), in: text)
+            {
                 return String(text[range])
             }
         }
@@ -286,7 +288,8 @@ public final class DataExtractor {
         // Fallback to generic UEI pattern
         let matches = ueiRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
         if let match = matches.first,
-           let range = Range(match.range, in: text) {
+           let range = Range(match.range, in: text)
+        {
             let candidate = String(text[range])
             // Basic validation - UEI should not be all numbers
             if !candidate.allSatisfy(\.isNumber) {
@@ -300,13 +303,14 @@ public final class DataExtractor {
     private func extractCAGE(from text: String) -> String? {
         let cagePatterns = [
             "CAGE\\s*(?:Code)?\\s*:?\\s*([A-Z0-9]{5})",
-            "Commercial and Government Entity\\s*:?\\s*([A-Z0-9]{5})"
+            "Commercial and Government Entity\\s*:?\\s*([A-Z0-9]{5})",
         ]
 
         for pattern in cagePatterns {
             if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
                let match = regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)),
-               let range = Range(match.range(at: 1), in: text) {
+               let range = Range(match.range(at: 1), in: text)
+            {
                 return String(text[range])
             }
         }
@@ -335,7 +339,8 @@ public final class DataExtractor {
                             potentialAddressLine.range(of: "\\b[A-Z]{2}\\s+\\d{5}(?:-\\d{4})?\\b",
                                                        options: .regularExpression) != nil ||
                             potentialAddressLine.range(of: "P\\.?O\\.?\\s*Box",
-                                                       options: [.regularExpression, .caseInsensitive]) != nil {
+                                                       options: [.regularExpression, .caseInsensitive]) != nil
+                        {
                             addressLines.append(potentialAddressLine)
                         }
                     }
@@ -399,13 +404,14 @@ public final class DataExtractor {
         let patterns = [
             "(?:Qty:?\\s*|Quantity:?\\s*)?([0-9]+(?:\\.[0-9]+)?)\\s*(?:x|X|ea|EA|each|Each)",
             "([0-9]+(?:\\.[0-9]+)?)\\s*(?:units?|Units?|pcs?|PCS?)",
-            "\\b([0-9]+)\\s+@\\s*\\$"
+            "\\b([0-9]+)\\s+@\\s*\\$",
         ]
 
         for pattern in patterns {
             if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
                let match = regex.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)),
-               let range = Range(match.range(at: 1), in: line) {
+               let range = Range(match.range(at: 1), in: line)
+            {
                 return Decimal(string: String(line[range]))
             }
         }
@@ -421,20 +427,20 @@ public final class DataExtractor {
             patterns = [
                 "Payment Terms?\\s*:?\\s*([^\\n]+)",
                 "Terms?\\s*:?\\s*([^\\n]+)",
-                "Net\\s*(\\d+)\\s*days?"
+                "Net\\s*(\\d+)\\s*days?",
             ]
         case "delivery":
             patterns = [
                 "Delivery Terms?\\s*:?\\s*([^\\n]+)",
                 "Shipping Terms?\\s*:?\\s*([^\\n]+)",
                 "FOB\\s*([^\\n]+)",
-                "Delivery\\s*:?\\s*([^\\n]+)"
+                "Delivery\\s*:?\\s*([^\\n]+)",
             ]
         case "warranty":
             patterns = [
                 "Warranty\\s*:?\\s*([^\\n]+)",
                 "Guarantee\\s*:?\\s*([^\\n]+)",
-                "(\\d+)\\s*(?:year|month|day)s?\\s*warranty"
+                "(\\d+)\\s*(?:year|month|day)s?\\s*warranty",
             ]
         default:
             return nil
@@ -443,7 +449,8 @@ public final class DataExtractor {
         for pattern in patterns {
             if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
                let match = regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)),
-               let range = Range(match.range(at: 1), in: text) {
+               let range = Range(match.range(at: 1), in: text)
+            {
                 let terms = String(text[range]).trimmingCharacters(in: .whitespacesAndNewlines)
                 if !terms.isEmpty {
                     return terms

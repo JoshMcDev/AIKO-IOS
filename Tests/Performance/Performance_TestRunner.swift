@@ -7,7 +7,7 @@ public final class PerformanceTestRunner {
 
     private let testSuites: [XCTestCase.Type] = [
         PerformanceTestSuite.self,
-        CriticalPathPerformanceTests.self
+        CriticalPathPerformanceTests.self,
     ]
 
     private var results: [PerformanceTestResult] = []
@@ -126,7 +126,7 @@ public final class PerformanceTestRunner {
                     unit: "MB",
                     min: Double(memoryUsages.min() ?? 0) / 1024 / 1024,
                     max: Double(memoryUsages.max() ?? 0) / 1024 / 1024
-                )
+                ),
             ]
 
             expectation.fulfill()
@@ -197,7 +197,7 @@ public final class PerformanceTestRunner {
                     name: "Memory Delta",
                     value: Double(memoryDelta) / 1024 / 1024,
                     unit: "MB"
-                )
+                ),
             ],
             passed: success,
             timestamp: Date()
@@ -294,21 +294,21 @@ public final class PerformanceTestRunner {
                 PerformanceTest(name: "Document Generation E2E", feature: feature) {
                     // Test implementation
                     true
-                }
+                },
             ]
         case .caching:
             [
                 PerformanceTest(name: "Adaptive Cache Performance", feature: feature) {
                     // Test implementation
                     true
-                }
+                },
             ]
         case .apiOptimization:
             [
                 PerformanceTest(name: "Batched API Requests", feature: feature) {
                     // Test implementation
                     true
-                }
+                },
             ]
         default:
             []
@@ -495,7 +495,8 @@ actor PerformanceBaselineManager {
 
     private func loadBaselines() {
         if let data = UserDefaults.standard.data(forKey: "performance_baselines"),
-           let decoded = try? JSONDecoder().decode([String: Double].self, from: data) {
+           let decoded = try? JSONDecoder().decode([String: Double].self, from: data)
+        {
             baselines = decoded
         }
     }

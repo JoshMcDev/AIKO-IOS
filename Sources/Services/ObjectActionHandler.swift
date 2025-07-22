@@ -427,7 +427,7 @@ private func handleAnalyzeAction(_ action: ObjectAction) async throws -> ActionO
     let analysis: [String: Any] = [
         "objectType": action.objectType.rawValue,
         "insights": ["Pattern detected", "Optimization opportunity found"],
-        "score": 0.85
+        "score": 0.85,
     ]
     let data = try JSONSerialization.data(withJSONObject: analysis)
     return ActionOutput(type: .json, data: data, metadata: ["analyzed": "true"])
@@ -506,7 +506,7 @@ private func calculateEffectivenessScore(_ output: ActionOutput?, action: Object
     }
 
     // Check data size (non-empty)
-    if output.data.count > 0 {
+    if !output.data.isEmpty {
         score += 0.2
     }
 

@@ -25,12 +25,12 @@ public final class LLMKeychainService: @unchecked Sendable {
             let query: [String: Any] = [
                 kSecClass as String: kSecClassGenericPassword,
                 kSecAttrService as String: serviceName,
-                kSecAttrAccount as String: account
+                kSecAttrAccount as String: account,
             ]
 
             let attributes: [String: Any] = [
                 kSecValueData as String: data,
-                kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+                kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
             ]
 
             let status = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
@@ -45,7 +45,7 @@ public final class LLMKeychainService: @unchecked Sendable {
                 kSecAttrService as String: serviceName,
                 kSecAttrAccount as String: account,
                 kSecValueData as String: data,
-                kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+                kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
             ]
 
             if let accessGroup {
@@ -69,7 +69,7 @@ public final class LLMKeychainService: @unchecked Sendable {
             kSecAttrService as String: serviceName,
             kSecAttrAccount as String: account,
             kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne
+            kSecMatchLimit as String: kSecMatchLimitOne,
         ]
 
         if let accessGroup {
@@ -96,7 +96,7 @@ public final class LLMKeychainService: @unchecked Sendable {
         var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: serviceName,
-            kSecAttrAccount as String: account
+            kSecAttrAccount as String: account,
         ]
 
         if let accessGroup {
@@ -126,7 +126,7 @@ public final class LLMKeychainService: @unchecked Sendable {
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: serviceName,
             kSecReturnAttributes as String: true,
-            kSecMatchLimit as String: kSecMatchLimitAll
+            kSecMatchLimit as String: kSecMatchLimitAll,
         ]
 
         if let accessGroup {
@@ -152,7 +152,7 @@ public final class LLMKeychainService: @unchecked Sendable {
     public func deleteAllAPIKeys() throws {
         var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: serviceName
+            kSecAttrService as String: serviceName,
         ]
 
         if let accessGroup {

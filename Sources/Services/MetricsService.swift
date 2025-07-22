@@ -393,7 +393,7 @@ private struct MetricsAnalyzer {
         MeasureOfPerformance.cpuUsage.rawValue: (0, 80),
         MeasureOfPerformance.memoryUsage.rawValue: (0, 80),
         MeasureOfEffectiveness.userSatisfaction.rawValue: (3.5, 5.0),
-        MeasureOfEffectiveness.taskCompletionRate.rawValue: (80, 100)
+        MeasureOfEffectiveness.taskCompletionRate.rawValue: (80, 100),
     ]
 
     func checkThresholds(_ measurement: MetricMeasurement) -> MetricInsight? {
