@@ -8,7 +8,12 @@ import XCTest
 @available(iOS 16.0, *)
 @MainActor
 final class MediaManagementUITests: XCTestCase {
-    var store: Store<MediaManagementFeature.State, MediaManagementFeature.Action>!
+    var store: Store<MediaManagementFeature.State, MediaManagementFeature.Action>?
+
+    private var storeUnwrapped: Store<MediaManagementFeature.State, MediaManagementFeature.Action> {
+        guard let store = store else { fatalError("store not initialized") }
+        return store
+    }
 
     override func setUp() async throws {
         try await super.setUp()
@@ -27,7 +32,7 @@ final class MediaManagementUITests: XCTestCase {
 
     func testFilePickerButton_ShouldTriggerPicker() async throws {
         // Given
-        let view = MediaPickerButton(store: store)
+        let view = MediaPickerButton(store: storeUnwrapped)
 
         // When/Then
         await assertViewExists(view) { inspectedView in
@@ -45,7 +50,7 @@ final class MediaManagementUITests: XCTestCase {
             initialState: MediaManagementFeature.State(isLoading: true),
             reducer: { MediaManagementFeature() }
         )
-        let view = MediaPickerButton(store: store)
+        let view = MediaPickerButton(store: storeUnwrapped)
 
         // When/Then
         await assertViewExists(view) { inspectedView in
@@ -66,7 +71,7 @@ final class MediaManagementUITests: XCTestCase {
             initialState: MediaManagementFeature.State(albums: albums),
             reducer: { MediaManagementFeature() }
         )
-        let view = PhotoLibraryView(store: store)
+        let view = PhotoLibraryView(store: storeUnwrapped)
 
         // When/Then
         await assertViewExists(view) { inspectedView in
@@ -88,7 +93,7 @@ final class MediaManagementUITests: XCTestCase {
             ),
             reducer: { MediaManagementFeature() }
         )
-        let view = PhotoLibraryView(store: store)
+        let view = PhotoLibraryView(store: storeUnwrapped)
 
         // When/Then
         await assertViewExists(view) { inspectedView in
@@ -108,7 +113,7 @@ final class MediaManagementUITests: XCTestCase {
 
     func testCameraView_ShowsCaptureButton() async throws {
         // Given
-        let view = CameraView(store: store)
+        let view = CameraView(store: storeUnwrapped)
 
         // When/Then
         await assertViewExists(view) { inspectedView in
@@ -127,7 +132,7 @@ final class MediaManagementUITests: XCTestCase {
             initialState: MediaManagementFeature.State(isRecording: true),
             reducer: { MediaManagementFeature() }
         )
-        let view = CameraView(store: store)
+        let view = CameraView(store: storeUnwrapped)
 
         // When/Then
         await assertViewExists(view) { inspectedView in
@@ -152,7 +157,7 @@ final class MediaManagementUITests: XCTestCase {
             ),
             reducer: { MediaManagementFeature() }
         )
-        let view = MediaGridView(store: store)
+        let view = MediaGridView(store: storeUnwrapped)
 
         // When/Then
         await assertViewExists(view) { inspectedView in
@@ -175,7 +180,7 @@ final class MediaManagementUITests: XCTestCase {
             ),
             reducer: { MediaManagementFeature() }
         )
-        let view = MediaGridView(store: store)
+        let view = MediaGridView(store: storeUnwrapped)
 
         // When/Then
         await assertViewExists(view) { inspectedView in
@@ -195,7 +200,7 @@ final class MediaManagementUITests: XCTestCase {
     func testMediaDetailView_DisplaysMetadata() async throws {
         // Given
         let asset = createMockAsset()
-        let view = MediaDetailView(asset: asset, store: store)
+        let view = MediaDetailView(asset: asset, store: storeUnwrapped)
 
         // When/Then
         await assertViewExists(view) { inspectedView in
@@ -211,7 +216,7 @@ final class MediaManagementUITests: XCTestCase {
     func testMediaDetailView_ActionButtons() async throws {
         // Given
         let asset = createMockAsset()
-        let view = MediaDetailView(asset: asset, store: store)
+        let view = MediaDetailView(asset: asset, store: storeUnwrapped)
 
         // When/Then
         await assertViewExists(view) { inspectedView in
@@ -240,7 +245,7 @@ final class MediaManagementUITests: XCTestCase {
             ),
             reducer: { MediaManagementFeature() }
         )
-        let view = BatchProcessingView(store: store)
+        let view = BatchProcessingView(store: storeUnwrapped)
 
         // When/Then
         await assertViewExists(view) { inspectedView in
@@ -268,7 +273,7 @@ final class MediaManagementUITests: XCTestCase {
             ),
             reducer: { MediaManagementFeature() }
         )
-        let view = BatchProcessingView(store: store)
+        let view = BatchProcessingView(store: storeUnwrapped)
 
         // When/Then
         await assertViewExists(view) { inspectedView in
@@ -284,7 +289,7 @@ final class MediaManagementUITests: XCTestCase {
 
     func testWorkflowBuilderView_AddSteps() async throws {
         // Given
-        let view = WorkflowBuilderView(store: store)
+        let view = WorkflowBuilderView(store: storeUnwrapped)
 
         // When/Then
         await assertViewExists(view) { inspectedView in
@@ -307,7 +312,7 @@ final class MediaManagementUITests: XCTestCase {
             ),
             reducer: { MediaManagementFeature() }
         )
-        let view = WorkflowTemplatesView(store: store)
+        let view = WorkflowTemplatesView(store: storeUnwrapped)
 
         // When/Then
         await assertViewExists(view) { inspectedView in
@@ -332,7 +337,7 @@ final class MediaManagementUITests: XCTestCase {
             ),
             reducer: { MediaManagementFeature() }
         )
-        let view = MediaManagementView(store: store)
+        let view = MediaManagementView(store: storeUnwrapped)
 
         // When/Then
         await assertViewExists(view) { inspectedView in
@@ -350,7 +355,7 @@ final class MediaManagementUITests: XCTestCase {
 
     func testSettingsView_ValidationRulesSection() async throws {
         // Given
-        let view = MediaSettingsView(store: store)
+        let view = MediaSettingsView(store: storeUnwrapped)
 
         // When/Then
         await assertViewExists(view) { inspectedView in

@@ -5,7 +5,7 @@
     import UIKit
 
     /// iOS implementation of ShareServiceProtocol
-    public final class iOSShareService: ShareServiceProtocol {
+    public final class IOSShareService: ShareServiceProtocol {
         public init() {}
 
         @MainActor

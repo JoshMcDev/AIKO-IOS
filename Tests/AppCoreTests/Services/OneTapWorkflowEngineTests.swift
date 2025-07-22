@@ -8,10 +8,31 @@ import XCTest
 final class OneTapWorkflowEngineTests: XCTestCase {
     // MARK: - Test Properties
 
-    private var engine: OneTapWorkflowEngine!
-    private var governmentConfig: OneTapWorkflowEngine.OneTapConfiguration!
-    private var contractConfig: OneTapWorkflowEngine.OneTapConfiguration!
-    private var invoiceConfig: OneTapWorkflowEngine.OneTapConfiguration!
+    private var engine: OneTapWorkflowEngine?
+    private var governmentConfig: OneTapWorkflowEngine.OneTapConfiguration?
+    private var contractConfig: OneTapWorkflowEngine.OneTapConfiguration?
+    private var invoiceConfig: OneTapWorkflowEngine.OneTapConfiguration?
+
+    // MARK: - Computed Properties for Safe Access
+    private var engineUnwrapped: OneTapWorkflowEngine {
+        guard let engine = engine else { fatalError("engine not initialized") }
+        return engine
+    }
+
+    private var governmentConfigUnwrapped: OneTapWorkflowEngine.OneTapConfiguration {
+        guard let config = governmentConfig else { fatalError("governmentConfig not initialized") }
+        return config
+    }
+
+    private var contractConfigUnwrapped: OneTapWorkflowEngine.OneTapConfiguration {
+        guard let config = contractConfig else { fatalError("contractConfig not initialized") }
+        return config
+    }
+
+    private var invoiceConfigUnwrapped: OneTapWorkflowEngine.OneTapConfiguration {
+        guard let config = invoiceConfig else { fatalError("invoiceConfig not initialized") }
+        return config
+    }
 
     // MARK: - Setup & Teardown
 
@@ -60,7 +81,7 @@ final class OneTapWorkflowEngineTests: XCTestCase {
         // RED phase: This test will fail until workflow is fully implemented
         do {
             // WHEN: Executing one-tap government form workflow
-            let result = try await engine.executeOneTapScan(configuration: governmentConfig)
+            let result = try await engineUnwrapped.executeOneTapScan(configuration: governmentConfigUnwrapped)
 
             // THEN: Should complete full workflow successfully
             XCTAssertEqual(result.userInteractionCount, 1, "Should complete with minimal user interaction")
@@ -79,7 +100,7 @@ final class OneTapWorkflowEngineTests: XCTestCase {
     func testExecuteOneTapScan_SF30Form_FieldExtraction() async throws {
         // RED phase: Will fail until SF-30 specific field extraction is implemented
         do {
-            let result = try await engine.executeOneTapScan(configuration: governmentConfig)
+            let result = try await engineUnwrapped.executeOneTapScan(configuration: governmentConfigUnwrapped)
 
             // THEN: Should extract SF-30 specific fields
             let cageCodeField = result.extractedFields.first { $0.fieldType == .cageCode }
@@ -110,7 +131,7 @@ final class OneTapWorkflowEngineTests: XCTestCase {
     func testExecuteOneTapScan_GovernmentForm_ConfidenceScoring() async throws {
         // RED phase: Will fail until confidence scoring is implemented
         do {
-            let result = try await engine.executeOneTapScan(configuration: governmentConfig)
+            let result = try await engineUnwrapped.executeOneTapScan(configuration: governmentConfigUnwrapped)
 
             // THEN: Should provide confidence scores for all extracted fields
             for field in result.extractedFields {
@@ -139,7 +160,7 @@ final class OneTapWorkflowEngineTests: XCTestCase {
     func testExecuteOneTapScan_ContractDocument_Success() async throws {
         // RED phase: Will fail until contract processing is implemented
         do {
-            let result = try await engine.executeOneTapScan(configuration: contractConfig)
+            let result = try await engineUnwrapped.executeOneTapScan(configuration: contractConfigUnwrapped)
 
             // THEN: Should process contract documents with high quality
             XCTAssertEqual(result.userInteractionCount, 1, "Should minimize user interactions")
@@ -161,7 +182,7 @@ final class OneTapWorkflowEngineTests: XCTestCase {
     func testExecuteOneTapScan_ContractDocument_VendorInformation() async throws {
         // RED phase: Will fail until vendor information extraction is implemented
         do {
-            let result = try await engine.executeOneTapScan(configuration: contractConfig)
+            let result = try await engineUnwrapped.executeOneTapScan(configuration: contractConfigUnwrapped)
 
             // THEN: Should extract vendor-specific information
             let vendorNameField = result.extractedFields.first { $0.fieldType == .vendorName }
@@ -185,7 +206,7 @@ final class OneTapWorkflowEngineTests: XCTestCase {
     func testExecuteOneTapScan_Invoice_Success() async throws {
         // RED phase: Will fail until invoice processing is implemented
         do {
-            let result = try await engine.executeOneTapScan(configuration: invoiceConfig)
+            let result = try await engineUnwrapped.executeOneTapScan(configuration: invoiceConfigUnwrapped)
 
             // THEN: Should process invoices efficiently
             XCTAssertEqual(result.userInteractionCount, 1, "Should minimize user interactions")
@@ -205,7 +226,7 @@ final class OneTapWorkflowEngineTests: XCTestCase {
     func testExecuteOneTapScan_Invoice_CurrencyFields() async throws {
         // RED phase: Will fail until currency field extraction is implemented
         do {
-            let result = try await engine.executeOneTapScan(configuration: invoiceConfig)
+            let result = try await engineUnwrapped.executeOneTapScan(configuration: invoiceConfigUnwrapped)
 
             // THEN: Should extract and validate currency fields
             let currencyFields = result.extractedFields.filter { $0.fieldType == .currency }
@@ -249,7 +270,7 @@ final class OneTapWorkflowEngineTests: XCTestCase {
         )
 
         do {
-            let result = try await engine.executeOneTapScan(configuration: customConfig)
+            let result = try await engineUnwrapped.executeOneTapScan(configuration: customConfig)
 
             // THEN: Should execute custom workflow steps
             XCTAssertLessThan(result.processingTime, 15.0, "Custom workflow should respect timeout")
@@ -270,7 +291,7 @@ final class OneTapWorkflowEngineTests: XCTestCase {
         // Start workflow in background task to track progress
         Task {
             do {
-                _ = try await engine.executeOneTapScan(configuration: governmentConfig)
+                _ = try await engineUnwrapped.executeOneTapScan(configuration: governmentConfigUnwrapped)
             } catch {
                 // Expected in RED phase
             }
@@ -291,7 +312,7 @@ final class OneTapWorkflowEngineTests: XCTestCase {
         let workflowId = UUID()
 
         // WHEN: Getting progress for non-existent workflow
-        let progress = await engine.getWorkflowProgress(for: workflowId)
+        let progress = await engineUnwrapped.getWorkflowProgress(for: workflowId)
 
         // THEN: Should return nil for non-existent workflow
         XCTAssertNil(progress, "Should return nil for non-existent workflow")
@@ -302,10 +323,10 @@ final class OneTapWorkflowEngineTests: XCTestCase {
         let workflowId = UUID()
 
         // WHEN: Canceling workflow
-        await engine.cancelWorkflow(workflowId)
+        await engineUnwrapped.cancelWorkflow(workflowId)
 
         // THEN: Should handle cancellation gracefully
-        let progress = await engine.getWorkflowProgress(for: workflowId)
+        let progress = await engineUnwrapped.getWorkflowProgress(for: workflowId)
         XCTAssertNil(progress, "Canceled workflow should not have progress")
     }
 
@@ -316,7 +337,7 @@ final class OneTapWorkflowEngineTests: XCTestCase {
         let startTime = Date()
 
         do {
-            _ = try await engine.executeOneTapScan(configuration: governmentConfig)
+            _ = try await engineUnwrapped.executeOneTapScan(configuration: governmentConfigUnwrapped)
 
             let processingTime = Date().timeIntervalSince(startTime)
 
@@ -340,8 +361,8 @@ final class OneTapWorkflowEngineTests: XCTestCase {
             for i in 0 ..< workflowCount {
                 group.addTask {
                     do {
-                        let config = i % 2 == 0 ? self.governmentConfig! : self.invoiceConfig!
-                        _ = try await self.engine.executeOneTapScan(configuration: config)
+                        let config = i % 2 == 0 ? self.governmentConfigUnwrapped : self.invoiceConfigUnwrapped
+                        _ = try await self.engineUnwrapped.executeOneTapScan(configuration: config)
                     } catch {
                         // Expected in RED phase
                     }
@@ -359,9 +380,9 @@ final class OneTapWorkflowEngineTests: XCTestCase {
         // RED phase: Will test time estimation functionality
 
         // WHEN: Estimating processing times for different workflow types
-        let govTime = await engine.estimateProcessingTime(for: .governmentFormProcessing)
-        let contractTime = await engine.estimateProcessingTime(for: .contractDocumentScan)
-        let invoiceTime = await engine.estimateProcessingTime(for: .invoiceProcessing)
+        let govTime = await engineUnwrapped.estimateProcessingTime(for: .governmentFormProcessing)
+        let contractTime = await engineUnwrapped.estimateProcessingTime(for: .contractDocumentScan)
+        let invoiceTime = await engineUnwrapped.estimateProcessingTime(for: .invoiceProcessing)
 
         // THEN: Should provide reasonable estimates
         XCTAssertGreaterThan(govTime, 0, "Government form estimate should be positive")
@@ -385,7 +406,7 @@ final class OneTapWorkflowEngineTests: XCTestCase {
         )
 
         do {
-            _ = try await engine.executeOneTapScan(configuration: invalidConfig)
+            _ = try await engineUnwrapped.executeOneTapScan(configuration: invalidConfig)
             XCTFail("Should throw error for invalid configuration")
         } catch OneTapWorkflowEngine.OneTapError.configurationInvalid {
             // Expected error
@@ -403,7 +424,7 @@ final class OneTapWorkflowEngineTests: XCTestCase {
         )
 
         do {
-            _ = try await engine.executeOneTapScan(configuration: strictConfig)
+            _ = try await engineUnwrapped.executeOneTapScan(configuration: strictConfig)
             // May not reach this point in RED phase
         } catch let OneTapWorkflowEngine.OneTapError.qualityThresholdNotMet(score) {
             // Expected when quality is below threshold
@@ -421,7 +442,7 @@ final class OneTapWorkflowEngineTests: XCTestCase {
         )
 
         do {
-            _ = try await engine.executeOneTapScan(configuration: timeoutConfig)
+            _ = try await engineUnwrapped.executeOneTapScan(configuration: timeoutConfig)
             XCTFail("Should timeout with very short time limit")
         } catch OneTapWorkflowEngine.OneTapError.workflowTimeout {
             // Expected timeout error
@@ -434,7 +455,7 @@ final class OneTapWorkflowEngineTests: XCTestCase {
 
     func testGetSupportedWorkflows_ReturnsAllTypes() async {
         // WHEN: Getting supported workflow types
-        let supportedWorkflows = await engine.getSupportedWorkflows()
+        let supportedWorkflows = await engineUnwrapped.getSupportedWorkflows()
 
         // THEN: Should return all predefined workflow types
         XCTAssertTrue(supportedWorkflows.contains(.governmentFormProcessing), "Should support government forms")
@@ -452,7 +473,7 @@ final class OneTapWorkflowEngineTests: XCTestCase {
 
         do {
             // WHEN: Executing complete end-to-end workflow
-            let result = try await engine.executeOneTapScan(configuration: governmentConfig)
+            let result = try await engineUnwrapped.executeOneTapScan(configuration: governmentConfigUnwrapped)
 
             let endTime = Date()
             let totalTime = endTime.timeIntervalSince(startTime)

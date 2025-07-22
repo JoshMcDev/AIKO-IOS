@@ -62,10 +62,11 @@ public final class DomainEventDispatcher: @unchecked Sendable {
         let anyHandler = AnyDomainEventHandler(handler)
 
         handlersQueue.async(flags: .barrier) {
-            if self.handlers[typeId] != nil {
-                self.handlers[typeId]!.append(anyHandler)
+            if var existingHandlers = self.handlers[typeId] {
+                existingHandlers.append(anyHandler)
                 // Sort by priority (descending)
-                self.handlers[typeId]!.sort { $0.priority > $1.priority }
+                existingHandlers.sort { $0.priority > $1.priority }
+                self.handlers[typeId] = existingHandlers
             } else {
                 self.handlers[typeId] = [anyHandler]
             }

@@ -4,12 +4,16 @@
     import SwiftUI
     import XCTest
 
-    final class iOSThemeServiceClientTests: XCTestCase {
-        var client: iOSThemeServiceClient!
+    final class IOSThemeServiceClientTests: XCTestCase {
+        var client: IOSThemeServiceClient?
 
+        private var clientUnwrapped: IOSThemeServiceClient {
+            guard let client = client else { fatalError("client not initialized") }
+            return client
+        }
         override func setUp() async throws {
             try await super.setUp()
-            client = iOSThemeServiceClient()
+            client = IOSThemeServiceClient()
         }
 
         override func tearDown() async throws {
@@ -26,7 +30,7 @@
             }
 
             // Test that backgroundColor executes on MainActor
-            let color = await client.backgroundColor()
+            let color = await clientUnwrapped.backgroundColor()
             XCTAssertNotNil(color, "Should return a valid Color")
 
             await MainActor.run {
@@ -35,10 +39,10 @@
         }
 
         func testColorMethodsMainActor() async {
-            let backgroundColor = await client.backgroundColor()
-            let cardColor = await client.cardColor()
-            let secondaryColor = await client.secondaryColor()
-            let tertiaryColor = await client.tertiaryColor()
+            let backgroundColor = await clientUnwrapped.backgroundColor()
+            let cardColor = await clientUnwrapped.cardColor()
+            let secondaryColor = await clientUnwrapped.secondaryColor()
+            let tertiaryColor = await clientUnwrapped.tertiaryColor()
 
             // All color methods should return valid colors
             XCTAssertNotNil(backgroundColor, "backgroundColor should return valid Color")
@@ -52,9 +56,9 @@
         }
 
         func testGroupedBackgroundMethodsMainActor() async {
-            let groupedBackground = await client.groupedBackground()
-            let groupedSecondaryBackground = await client.groupedSecondaryBackground()
-            let groupedTertiaryBackground = await client.groupedTertiaryBackground()
+            let groupedBackground = await clientUnwrapped.groupedBackground()
+            let groupedSecondaryBackground = await clientUnwrapped.groupedSecondaryBackground()
+            let groupedTertiaryBackground = await clientUnwrapped.groupedTertiaryBackground()
 
             // All grouped background methods should return valid colors
             XCTAssertNotNil(groupedBackground, "groupedBackground should return valid Color")
@@ -69,9 +73,9 @@
         func testViewModificationMethodsMainActor() async {
             let testView = AnyView(Text("Test"))
 
-            let hiddenNavView = await client.applyNavigationBarHidden(to: testView)
-            let darkNavView = await client.applyDarkNavigationBar(to: testView)
-            let sheetView = await client.applySheet(to: testView)
+            let hiddenNavView = await clientUnwrapped.applyNavigationBarHidden(to: testView)
+            let darkNavView = await clientUnwrapped.applyDarkNavigationBar(to: testView)
+            let sheetView = await clientUnwrapped.applySheet(to: testView)
 
             // All view modification methods should return valid AnyViews
             XCTAssertNotNil(hiddenNavView, "applyNavigationBarHidden should return valid AnyView")
@@ -92,7 +96,7 @@
 
         func testTemplateStartMethod() async throws {
             // Test that the template's start method can be called without error
-            try await client.start()
+            try await clientUnwrapped.start()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After start(), should be on main thread")
@@ -115,9 +119,9 @@
 
         func testAsyncAwaitPattern() async {
             // Test the async/await pattern works correctly
-            async let backgroundColorTask = client.backgroundColor()
-            async let cardColorTask = client.cardColor()
-            async let secondaryColorTask = client.secondaryColor()
+            async let backgroundColorTask = clientUnwrapped.backgroundColor()
+            async let cardColorTask = clientUnwrapped.cardColor()
+            async let secondaryColorTask = clientUnwrapped.secondaryColor()
 
             let (backgroundColor, cardColor, secondaryColor) = await (backgroundColorTask, cardColorTask, secondaryColorTask)
 
@@ -134,8 +138,8 @@
 
         func testColorConsistency() async {
             // Test that colors are consistently returned
-            let backgroundColor1 = await client.backgroundColor()
-            let backgroundColor2 = await client.backgroundColor()
+            let backgroundColor1 = await clientUnwrapped.backgroundColor()
+            let backgroundColor2 = await clientUnwrapped.backgroundColor()
 
             // Colors should be consistent across calls
             XCTAssertEqual(backgroundColor1, backgroundColor2, "backgroundColor should be consistent")
@@ -145,9 +149,9 @@
             let testView = AnyView(Text("Integration Test"))
 
             // Test chaining view modifications (conceptually)
-            let modifiedView1 = await client.applyNavigationBarHidden(to: testView)
-            let modifiedView2 = await client.applyDarkNavigationBar(to: modifiedView1)
-            let finalView = await client.applySheet(to: modifiedView2)
+            let modifiedView1 = await clientUnwrapped.applyNavigationBarHidden(to: testView)
+            let modifiedView2 = await clientUnwrapped.applyDarkNavigationBar(to: modifiedView1)
+            let finalView = await clientUnwrapped.applySheet(to: modifiedView2)
 
             XCTAssertNotNil(finalView, "Should be able to chain view modifications")
 

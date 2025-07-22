@@ -4,9 +4,9 @@
     import Foundation
 
     /// iOS File Service Client using SimpleServiceTemplate
-    public final class iOSFileServiceClient: SimpleServiceTemplate {
+    public final class IOSFileServiceClient: SimpleServiceTemplate {
         @MainActor
-        private lazy var service = iOSFileService()
+        private lazy var service = IOSFileService()
 
         override public init() {
             super.init()
@@ -44,7 +44,7 @@
     public extension FileServiceClient {
         @MainActor
         static var iOSLive: Self {
-            let client = iOSFileServiceClient()
+            let client = IOSFileServiceClient()
 
             return Self(
                 saveFile: { content, suggestedFileName, allowedFileTypes in
@@ -62,7 +62,7 @@
     }
 
     // Convenience static accessor
-    public enum iOSFileServiceClientAccessor {
+    public enum IOSFileServiceClientAccessor {
         @MainActor
         public static var live: FileServiceClient {
             FileServiceClient.iOSLive

@@ -31,12 +31,16 @@ class MockSAMGovAPIClient: SAMGovAPIClientProtocol {
     // MARK: - Helper Methods
 
     private func createLockheedEntity() -> SAMEntity {
-        SAMEntity(
+        guard let expirationDate = Calendar.current.date(byAdding: .day, value: 67, to: Date()) else {
+            fatalError("Failed to create expiration date for Lockheed mock entity")
+        }
+
+        return SAMEntity(
             ueiSAM: "G2Y7W1E3LJK5",
             cageCode: "1F353",
             legalBusinessName: "LOCKHEED MARTIN CORPORATION",
             registrationStatus: "Active",
-            registrationExpirationDate: ISO8601DateFormatter().string(from: Calendar.current.date(byAdding: .day, value: 67, to: Date())!),
+            registrationExpirationDate: ISO8601DateFormatter().string(from: expirationDate),
             purposeOfRegistrationCode: "Z2",
             purposeOfRegistrationDesc: "All Awards",
             entityStructureCode: "2L",
@@ -49,12 +53,16 @@ class MockSAMGovAPIClient: SAMGovAPIClientProtocol {
     }
 
     private func createBoozAllenEntity() -> SAMEntity {
-        SAMEntity(
+        guard let expirationDate = Calendar.current.date(byAdding: .day, value: 133, to: Date()) else {
+            fatalError("Failed to create expiration date for Booz Allen mock entity")
+        }
+
+        return SAMEntity(
             ueiSAM: "R3Q8P8B7VNJ3",
             cageCode: "17038",
             legalBusinessName: "BOOZ ALLEN HAMILTON INC",
             registrationStatus: "Active",
-            registrationExpirationDate: ISO8601DateFormatter().string(from: Calendar.current.date(byAdding: .day, value: 133, to: Date())!),
+            registrationExpirationDate: ISO8601DateFormatter().string(from: expirationDate),
             purposeOfRegistrationCode: "Z2",
             purposeOfRegistrationDesc: "All Awards",
             entityStructureCode: "2L",

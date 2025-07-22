@@ -5,8 +5,8 @@
     import SwiftUI
 
     /// iOS Image Loader Service Client using SimpleServiceTemplate
-    public final class iOSImageLoaderClient: SimpleServiceTemplate {
-        private let service = iOSImageLoader()
+    public final class IOSImageLoaderClient: SimpleServiceTemplate {
+        private let service = IOSImageLoader()
 
         override public init() {
             super.init()
@@ -52,34 +52,34 @@
     public extension ImageLoaderClient {
         static let iOSLive = Self(
             loadImage: { data in
-                let service = iOSImageLoader()
+                let service = IOSImageLoader()
                 return service.loadImage(from: data)
             },
             loadImageFromData: { data in
-                let service = iOSImageLoader()
+                let service = IOSImageLoader()
                 return service.loadImage(from: data)
             },
             createImage: { platformImage in
-                let service = iOSImageLoader()
+                let service = IOSImageLoader()
                 return service.createImage(from: platformImage)
             },
             loadImageFromBundle: { name, ext, bundle in
-                let service = iOSImageLoader()
+                let service = IOSImageLoader()
                 return service.loadImage(named: name, withExtension: ext, in: bundle)
             },
             loadImageFromFile: { path in
-                let service = iOSImageLoader()
+                let service = IOSImageLoader()
                 return service.loadImageFromFile(path)
             },
             convertToSwiftUIImage: { platformImage in
-                let service = iOSImageLoader()
+                let service = IOSImageLoader()
                 return service.convertToSwiftUIImage(platformImage)
             }
         )
     }
 
     // Convenience static accessor
-    public enum iOSImageLoaderClientLive {
+    public enum IOSImageLoaderClientLive {
         public static let live = ImageLoaderClient.iOSLive
     }
 #endif

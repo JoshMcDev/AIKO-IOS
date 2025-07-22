@@ -4,8 +4,8 @@
     import SwiftUI
 
     /// iOS Accessibility Service Client using SimpleServiceTemplate
-    public final class iOSAccessibilityServiceClient: SimpleServiceTemplate {
-        private let service = iOSAccessibilityService()
+    public final class IOSAccessibilityServiceClient: SimpleServiceTemplate {
+        private let service = IOSAccessibilityService()
 
         override public init() {
             super.init()
@@ -44,7 +44,7 @@
 
     public extension AccessibilityServiceClient {
         static let iOS: Self = {
-            let service = iOSAccessibilityService()
+            let service = IOSAccessibilityService()
             return Self(
                 _announceNotification: { message, priority in
                     MainActor.assumeIsolated {

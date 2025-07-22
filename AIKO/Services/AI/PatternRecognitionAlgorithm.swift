@@ -193,8 +193,7 @@ actor PatternRecognitionAlgorithm {
         // Group by interaction type
         let groupedByType = Dictionary(grouping: similarTimeInteractions) { $0.type }
 
-        for (interactionType, interactions) in groupedByType {
-            if interactions.count >= 5 { // Minimum threshold
+        for (interactionType, interactions) in groupedByType where interactions.count >= 5 { // Minimum threshold
                 let pattern = UserPattern(
                     id: UUID(),
                     type: .timeOfDay,
@@ -377,8 +376,7 @@ actor PatternRecognitionAlgorithm {
         for interaction in interactions.sorted(by: { $0.timestamp < $1.timestamp }) {
             if let fieldName = interaction.metadata["fieldName"] as? String {
                 if let last = lastTimestamp,
-                   interaction.timestamp.timeIntervalSince(last) > 30
-                {
+                   interaction.timestamp.timeIntervalSince(last) > 30 {
                     // New sequence if more than 30 seconds gap
                     if !currentSequence.isEmpty {
                         sequences.append(currentSequence)
@@ -481,11 +479,9 @@ actor PatternRecognitionAlgorithm {
         var uniquePatterns: [UserPattern] = []
         var seenIds = Set<UUID>()
 
-        for pattern in patterns {
-            if !seenIds.contains(pattern.id) {
-                seenIds.insert(pattern.id)
-                uniquePatterns.append(pattern)
-            }
+        for pattern in patterns where !seenIds.contains(pattern.id) {
+            seenIds.insert(pattern.id)
+            uniquePatterns.append(pattern)
         }
 
         // Filter by minimum confidence
@@ -646,8 +642,7 @@ struct ValuePatternClusterer {
         for value in values {
             var assigned = false
 
-            for i in 0 ..< clusters.count {
-                if calculateSimilarity(value, clusters[i].centroid) >= similarity {
+            for i in 0 ..< clusters.count where calculateSimilarity(value, clusters[i].centroid) >= similarity {
                     clusters[i].members.append(value)
                     clusters[i].updateCentroid()
                     assigned = true

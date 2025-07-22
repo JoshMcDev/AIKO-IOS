@@ -4,7 +4,12 @@ import UniformTypeIdentifiers
 import XCTest
 
 final class DocumentParserEnhancedTests: XCTestCase {
-    private var parser: DocumentParserEnhanced!
+    private var parser: DocumentParserEnhanced?
+
+    private var parserUnwrapped: DocumentParserEnhanced {
+        guard let parser = parser else { fatalError("parser not initialized") }
+        return parser
+    }
 
     override func setUp() {
         super.setUp()
@@ -53,7 +58,7 @@ final class DocumentParserEnhancedTests: XCTestCase {
         }
 
         // Parse the PDF
-        let result = try await parser.parseWithStructuredData(pdfData, type: .pdf, fileName: "test_quote.pdf")
+        let result = try await parserUnwrapped.parseWithStructuredData(pdfData, type: .pdf, fileName: "test_quote.pdf")
 
         // Verify basic parsing
         XCTAssertFalse(result.extractedText.isEmpty)
@@ -96,7 +101,7 @@ final class DocumentParserEnhancedTests: XCTestCase {
         }
 
         // Parse the PDF
-        let result = try await parser.parseWithStructuredData(pdfData, type: .pdf, fileName: "empty.pdf")
+        let result = try await parserUnwrapped.parseWithStructuredData(pdfData, type: .pdf, fileName: "empty.pdf")
 
         // Verify parsing handles empty content
         XCTAssertTrue(result.extractedText.isEmpty || result.extractedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
@@ -125,8 +130,11 @@ final class DocumentParserEnhancedTests: XCTestCase {
         CAGE Code: 12345
         """
 
-        let data = testText.data(using: .utf8)!
-        let result = try await parser.parseWithStructuredData(data, type: .plainText, fileName: "vendor_info.txt")
+        guard let data = testText.data(using: .utf8) else {
+            XCTFail("Failed to convert test text to data")
+            return
+        }
+        let result = try await parserUnwrapped.parseWithStructuredData(data, type: .plainText, fileName: "vendor_info.txt")
 
         XCTAssertEqual(result.extractedData.vendorName, "Tech Solutions Inc.")
         XCTAssertNotNil(result.extractedData.vendorAddress)
@@ -150,8 +158,11 @@ final class DocumentParserEnhancedTests: XCTestCase {
         Total: $7,459.99
         """
 
-        let data = testText.data(using: .utf8)!
-        let result = try await parser.parseWithStructuredData(data, type: .plainText, fileName: "line_items.txt")
+        guard let data = testText.data(using: .utf8) else {
+            XCTFail("Failed to convert test text to data")
+            return
+        }
+        let result = try await parserUnwrapped.parseWithStructuredData(data, type: .plainText, fileName: "line_items.txt")
 
         XCTAssertGreaterThanOrEqual(result.extractedData.lineItems.count, 3)
 
@@ -169,8 +180,11 @@ final class DocumentParserEnhancedTests: XCTestCase {
         Delivery Date: 2025-03-01
         """
 
-        let data = testText.data(using: .utf8)!
-        let result = try await parser.parseWithStructuredData(data, type: .plainText, fileName: "dates.txt")
+        guard let data = testText.data(using: .utf8) else {
+            XCTFail("Failed to convert test text to data")
+            return
+        }
+        let result = try await parserUnwrapped.parseWithStructuredData(data, type: .plainText, fileName: "dates.txt")
 
         XCTAssertNotNil(result.extractedData.quoteDate)
         XCTAssertNotNil(result.extractedData.validUntilDate)
@@ -179,7 +193,10 @@ final class DocumentParserEnhancedTests: XCTestCase {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MM/dd/yyyy"
         if let quoteDate = result.extractedData.quoteDate {
-            let expectedDate = dateFormatter.date(from: "01/15/2025")!
+            guard let expectedDate = dateFormatter.date(from: "01/15/2025") else {
+                XCTFail("Failed to create expected date from string")
+                return
+            }
             XCTAssertEqual(quoteDate.timeIntervalSince1970, expectedDate.timeIntervalSince1970, accuracy: 86400) // Within 1 day
         }
     }
@@ -197,8 +214,11 @@ final class DocumentParserEnhancedTests: XCTestCase {
         - Subject to availability
         """
 
-        let data = testText.data(using: .utf8)!
-        let result = try await parser.parseWithStructuredData(data, type: .plainText, fileName: "terms.txt")
+        guard let data = testText.data(using: .utf8) else {
+            XCTFail("Failed to convert test text to data")
+            return
+        }
+        let result = try await parserUnwrapped.parseWithStructuredData(data, type: .plainText, fileName: "terms.txt")
 
         XCTAssertEqual(result.extractedData.paymentTerms, "2/10 Net 30")
         XCTAssertNotNil(result.extractedData.deliveryTerms)
@@ -213,7 +233,7 @@ final class DocumentParserEnhancedTests: XCTestCase {
         let corruptedData = Data([0xFF, 0xFE, 0x00, 0x01, 0x02, 0x03])
 
         do {
-            _ = try await parser.parseWithStructuredData(corruptedData, type: .pdf, fileName: "corrupted.pdf")
+            _ = try await parserUnwrapped.parseWithStructuredData(corruptedData, type: .pdf, fileName: "corrupted.pdf")
             XCTFail("Should have thrown an error for corrupted data")
         } catch {
             // Expected error
@@ -230,13 +250,16 @@ final class DocumentParserEnhancedTests: XCTestCase {
             largeText += "Line \(i): This is a test line with some content including price $\(i).99\n"
         }
 
-        let data = largeText.data(using: .utf8)!
+        guard let data = largeText.data(using: .utf8) else {
+            XCTFail("Failed to convert large text to data")
+            return
+        }
 
         measure {
             let expectation = self.expectation(description: "Parse large document")
 
             Task {
-                _ = try await parser.parseWithStructuredData(data, type: .plainText, fileName: "large.txt")
+                _ = try await parserUnwrapped.parseWithStructuredData(data, type: .plainText, fileName: "large.txt")
                 expectation.fulfill()
             }
 

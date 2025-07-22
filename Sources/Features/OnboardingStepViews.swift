@@ -105,8 +105,7 @@ struct PersonalInfoStepView: View {
             Button(action: onUpdateProfileImage) {
                 ZStack {
                     if let imageData = profile.profileImageData,
-                       let image = imageLoader.loadImage(imageData)
-                    {
+                       let image = imageLoader.loadImage(imageData) {
                         image
                             .resizable()
                             .scaledToFill()
@@ -269,8 +268,7 @@ struct OrganizationInfoStepView: View {
 
                 Button(action: onUpdateLogo) {
                     if let logoData = profile.organizationLogoData,
-                       let image = imageLoader.loadImage(logoData)
-                    {
+                       let image = imageLoader.loadImage(logoData) {
                         image
                             .resizable()
                             .scaledToFit()
@@ -401,8 +399,7 @@ struct ReviewStepView: View {
             // Profile summary
             HStack(spacing: Theme.Spacing.large) {
                 if let imageData = profile.profileImageData,
-                   let image = imageLoader.loadImage(imageData)
-                {
+                   let image = imageLoader.loadImage(imageData) {
                     image
                         .resizable()
                         .scaledToFill()
@@ -523,7 +520,8 @@ struct APIKeyStepView: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
 
-                Link(destination: URL(string: "https://console.anthropic.com/api") ?? URL(string: "https://anthropic.com")!) {
+                if let url = URL(string: "https://console.anthropic.com/api") ?? URL(string: "https://anthropic.com") {
+                    Link(destination: url) {
                     HStack {
                         Image(systemName: "link")
                         Text("console.anthropic.com/api")
@@ -531,6 +529,7 @@ struct APIKeyStepView: View {
                     }
                     .font(.subheadline)
                     .foregroundColor(Theme.Colors.aikoAccent)
+                    }
                 }
                 .padding(.vertical, Theme.Spacing.extraSmall)
             }

@@ -17,19 +17,16 @@
         }
 
         public func sendEmail(
-            to recipients: [String],
-            subject: String,
-            body: String,
-            isHTML _: Bool,
-            attachments _: [(data: Data, mimeType: String, fileName: String)]?,
+            configuration: EmailConfiguration,
             completion: @escaping @Sendable (Bool) -> Void
         ) {
             // macOS can only open default mail client with mailto URL
-            showEmailComposer(
-                recipients: recipients,
-                subject: subject,
-                body: body
-            ) { result in
+            let composerConfig = EmailComposerConfiguration(
+                recipients: configuration.recipients,
+                subject: configuration.subject,
+                body: configuration.body
+            )
+            showEmailComposer(configuration: composerConfig) { result in
                 switch result {
                 case .sent:
                     completion(true)
@@ -40,9 +37,7 @@
         }
 
         public func showEmailComposer(
-            recipients: [String],
-            subject: String,
-            body: String,
+            configuration: EmailComposerConfiguration,
             completion: @escaping @Sendable (EmailComposeResult) -> Void
         ) {
             guard canSendEmail else {
@@ -53,16 +48,16 @@
             // Create mailto URL
             var components = URLComponents()
             components.scheme = "mailto"
-            components.path = recipients.joined(separator: ",")
+            components.path = configuration.recipients.joined(separator: ",")
 
             var queryItems: [URLQueryItem] = []
 
-            if !subject.isEmpty {
-                queryItems.append(URLQueryItem(name: "subject", value: subject))
+            if !configuration.subject.isEmpty {
+                queryItems.append(URLQueryItem(name: "subject", value: configuration.subject))
             }
 
-            if !body.isEmpty {
-                queryItems.append(URLQueryItem(name: "body", value: body))
+            if !configuration.body.isEmpty {
+                queryItems.append(URLQueryItem(name: "body", value: configuration.body))
             }
 
             components.queryItems = queryItems.isEmpty ? nil : queryItems

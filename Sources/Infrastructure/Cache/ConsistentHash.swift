@@ -59,7 +59,11 @@ public actor ConsistentHash {
         // Wrap around if necessary
         let position = index < sortedKeys.count ? sortedKeys[index] : sortedKeys[0]
 
-        return ring[position]!
+        guard let node = ring[position] else {
+            // This should never happen if the ring is properly maintained
+            fatalError("Ring inconsistency detected: position \(position) not found")
+        }
+        return node
     }
 
     /// Get replica nodes for a key
@@ -76,7 +80,10 @@ public actor ConsistentHash {
         // Find unique nodes
         while replicas.count < count, seenNodes.count < nodeMap.count {
             let position = sortedKeys[index % sortedKeys.count]
-            let nodeId = ring[position]!
+            guard let nodeId = ring[position] else {
+                index += 1
+                continue // Skip invalid positions
+            }
 
             if !seenNodes.contains(nodeId) {
                 seenNodes.insert(nodeId)
@@ -111,7 +118,9 @@ public actor ConsistentHash {
         guard hasNode(nodeId) else { return [] }
 
         // Temporarily remove the node
-        let positions = nodeMap[nodeId]!
+        guard let positions = nodeMap[nodeId] else {
+            return [] // Node not found
+        }
         for position in positions {
             ring.removeValue(forKey: position)
         }
@@ -163,7 +172,7 @@ public actor ConsistentHash {
         for i in 0 ..< keyCount {
             let key = "test-key-\(i)"
             let nodeId = getNode(for: key)
-            distribution[nodeId]! += 1
+            distribution[nodeId, default: 0] += 1
         }
 
         // Convert to percentages
@@ -223,7 +232,9 @@ public actor ConsistentHash {
             // Show first 10 positions
             let positions = sortedKeys.prefix(10)
             for position in positions {
-                let nodeId = ring[position]!
+                guard let nodeId = ring[position] else {
+                    continue // Skip invalid positions
+                }
                 output += String(format: "Position %010u -> Node: %@\n", position, nodeId)
             }
 

@@ -336,7 +336,9 @@ public final class PerformanceTestRunner {
     }
 
     private func getReportsDirectory() -> URL {
-        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        guard let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            fatalError("Unable to access documents directory")
+        }
         let reportsPath = documentsPath.appendingPathComponent("PerformanceReports")
 
         try? FileManager.default.createDirectory(at: reportsPath, withIntermediateDirectories: true)
@@ -495,8 +497,7 @@ actor PerformanceBaselineManager {
 
     private func loadBaselines() {
         if let data = UserDefaults.standard.data(forKey: "performance_baselines"),
-           let decoded = try? JSONDecoder().decode([String: Double].self, from: data)
-        {
+           let decoded = try? JSONDecoder().decode([String: Double].self, from: data) {
             baselines = decoded
         }
     }

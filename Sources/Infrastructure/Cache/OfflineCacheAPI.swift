@@ -441,8 +441,7 @@ extension OfflineCacheManager {
         }
 
         if let lastCleanup = statistics.lastCleanup,
-           Date().timeIntervalSince(lastCleanup) > 86400 * 7
-        {
+           Date().timeIntervalSince(lastCleanup) > 86400 * 7 {
             issues.append("Cache cleanup overdue")
         }
 

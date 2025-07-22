@@ -11,7 +11,15 @@ import XCTest
 final class DocumentProcessorIntegrationTests: XCTestCase {
     // MARK: - Test Setup
 
-    private var processor: DocumentImageProcessor!
+    private var processor: DocumentImageProcessor?
+
+    private var processorUnwrapped: DocumentImageProcessor {
+        guard let processor = processor else {
+            XCTFail("processor not initialized")
+            return DocumentImageProcessor.testValue
+        }
+        return processor
+    }
     private let concurrentRequestCount = 5
     private let testTimeout: TimeInterval = 15.0
 
@@ -39,7 +47,7 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
             for index in 0 ..< concurrentRequestCount {
                 group.addTask {
                     do {
-                        let result = try await processor.processImage(testImageData, .enhanced, options)
+                        let result = try await processorUnwrapped.processImage(testImageData, .enhanced, options)
                         expectation.fulfill()
                         return result
                     } catch {
@@ -83,7 +91,7 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
                 let testImageData = createLargeTestImageData() // Large test data
                 let options = createProcessingOptions()
 
-                let result = try await processor.processImage(testImageData, .enhanced, options)
+                let result = try await processorUnwrapped.processImage(testImageData, .enhanced, options)
                 processedResults.append(result)
                 weakProcessorReference = result as AnyObject
             }
@@ -117,7 +125,7 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
         let startTime = CFAbsoluteTimeGetCurrent()
 
         do {
-            let result = try await processor.processImage(testImageData, .enhanced, options)
+            let result = try await processorUnwrapped.processImage(testImageData, .enhanced, options)
             let processingTime = CFAbsoluteTimeGetCurrent() - startTime
 
             // Verify GPU acceleration performance benefits
@@ -143,7 +151,7 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
 
         // Mock Metal unavailability scenario
         do {
-            let result = try await processor.processImage(testImageData, .basic, options)
+            let result = try await processorUnwrapped.processImage(testImageData, .basic, options)
 
             // Should fallback to CPU processing gracefully
             XCTAssertFalse(result.processedImageData.isEmpty)
@@ -173,7 +181,7 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
         }
 
         do {
-            let result = try await processor.processImage(testImageData, .enhanced, progressOptions)
+            let result = try await processorUnwrapped.processImage(testImageData, .enhanced, progressOptions)
 
             // Verify Core Image filters were applied in pipeline
             XCTAssertTrue(result.appliedFilters.contains("CIPerspectiveCorrection"))
@@ -202,7 +210,7 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
         let options = createProcessingOptions()
 
         do {
-            let result = try await processor.processImage(testImageData, .enhanced, options)
+            let result = try await processorUnwrapped.processImage(testImageData, .enhanced, options)
 
             // Verify Core Image-based quality analysis
             let metrics = result.qualityMetrics
@@ -237,9 +245,9 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
         let qualityOptions = DocumentImageProcessor.ProcessingOptions(qualityTarget: .quality)
         let balancedOptions = createProcessingOptions()
 
-        async let result1 = processor.processImage(testImageData, .basic, speedOptions)
-        async let result2 = processor.processImage(testImageData, .enhanced, qualityOptions)
-        async let result3 = processor.processImage(testImageData, .documentScanner, balancedOptions)
+        async let result1 = processorUnwrapped.processImage(testImageData, .basic, speedOptions)
+        async let result2 = processorUnwrapped.processImage(testImageData, .enhanced, qualityOptions)
+        async let result3 = processorUnwrapped.processImage(testImageData, .documentScanner, balancedOptions)
 
         do {
             let results = try await [result1, result2, result3]
@@ -276,7 +284,7 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
 
         let processingTask = Task {
             do {
-                _ = try await processor.processImage(testImageData, .enhanced, options)
+                _ = try await processorUnwrapped.processImage(testImageData, .enhanced, options)
                 XCTFail("Task should be cancelled, but cancellation handling not implemented")
             } catch {
                 if error is CancellationError {
@@ -310,14 +318,20 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
         let testImageData = createTestImageData()
 
         do {
-            let result = try await processor.processImage(testImageData, .enhanced, options)
+            let result = try await processorUnwrapped.processImage(testImageData, .enhanced, options)
 
             // Verify progress callbacks were called
             XCTAssertGreaterThanOrEqual(receivedProgress.count, 3)
 
             // Verify progress sequence
-            let firstProgress = receivedProgress.first!
-            let lastProgress = receivedProgress.last!
+            guard let firstProgress = receivedProgress.first else {
+                XCTFail("Expected to receive first progress update")
+                return
+            }
+            guard let lastProgress = receivedProgress.last else {
+                XCTFail("Expected to receive last progress update")
+                return
+            }
             XCTAssertLessThan(firstProgress.overallProgress, lastProgress.overallProgress)
             XCTAssertEqual(lastProgress.overallProgress, 1.0, accuracy: 0.001)
 
@@ -343,19 +357,19 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
         // Test DocumentImageProcessor processing options quality targets integration
         let testImageData = createTestImageData()
 
-        let speedResult = try await processor.processImage(
+        let speedResult = try await processorUnwrapped.processImage(
             testImageData,
             .basic,
             createSpeedProcessingOptions()
         )
 
-        let balancedResult = try await processor.processImage(
+        let balancedResult = try await processorUnwrapped.processImage(
             testImageData,
             .enhanced,
             createProcessingOptions()
         )
 
-        let qualityResult = try await processor.processImage(
+        let qualityResult = try await processorUnwrapped.processImage(
             testImageData,
             .enhanced,
             DocumentImageProcessor.ProcessingOptions(qualityTarget: .quality)
@@ -418,7 +432,7 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
         let startMemory = getCurrentMemoryUsage()
 
         do {
-            let result = try await processor.processImage(largeImageData, .enhanced, options)
+            let result = try await processorUnwrapped.processImage(largeImageData, .enhanced, options)
 
             let endMemory = getCurrentMemoryUsage()
             let memoryIncrease = endMemory - startMemory
@@ -512,7 +526,7 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
     private func createTestImageData() -> Data {
         // Create test image data for processing
         let colorSpace = CGColorSpaceCreateDeviceRGB()
-        let bitmapContext = CGContext(
+        guard let bitmapContext = CGContext(
             data: nil,
             width: 800,
             height: 600,
@@ -520,7 +534,10 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
             bytesPerRow: 0,
             space: colorSpace,
             bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue
-        )!
+        ) else {
+            XCTFail("Failed to create bitmap context for test image data")
+            return Data()
+        }
 
         // Fill with test pattern
         bitmapContext.setFillColor(CGColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0))
@@ -529,7 +546,10 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
         bitmapContext.setFillColor(CGColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0))
         bitmapContext.fill(CGRect(x: 100, y: 100, width: 600, height: 400))
 
-        let cgImage = bitmapContext.makeImage()!
+        guard let cgImage = bitmapContext.makeImage() else {
+            XCTFail("Failed to create CGImage from bitmap context")
+            return Data()
+        }
 
         #if os(iOS)
             let uiImage = UIImage(cgImage: cgImage)
@@ -543,7 +563,7 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
     private func createLargeTestImageData() -> Data {
         // Create larger test image data for memory/performance testing
         let colorSpace = CGColorSpaceCreateDeviceRGB()
-        let bitmapContext = CGContext(
+        guard let bitmapContext = CGContext(
             data: nil,
             width: 2048,
             height: 2048,
@@ -551,9 +571,15 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
             bytesPerRow: 0,
             space: colorSpace,
             bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue
-        )!
+        ) else {
+            XCTFail("Failed to create bitmap context for large test image data")
+            return Data()
+        }
 
-        let cgImage = bitmapContext.makeImage()!
+        guard let cgImage = bitmapContext.makeImage() else {
+            XCTFail("Failed to create CGImage from large bitmap context")
+            return Data()
+        }
 
         #if os(iOS)
             let uiImage = UIImage(cgImage: cgImage)
@@ -589,7 +615,7 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
 
                 do {
                     let startTime = CFAbsoluteTimeGetCurrent()
-                    let result = try await processor.processImage(testImageData, .enhanced, options)
+                    let result = try await processorUnwrapped.processImage(testImageData, .enhanced, options)
                     let processingTime = CFAbsoluteTimeGetCurrent() - startTime
 
                     XCTAssertLessThan(processingTime, 3.0, "Processing should complete within 3 seconds")

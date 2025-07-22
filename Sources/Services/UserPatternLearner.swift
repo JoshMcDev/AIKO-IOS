@@ -125,8 +125,7 @@ public class UserPatternLearner {
         // Get insights for each field
         for field in formFields {
             if let insight = await getInsights(for: field, context: context),
-               insight.confidence >= 0.7
-            {
+               insight.confidence >= 0.7 {
                 defaults[field] = insight.suggestedValue
             }
         }
@@ -204,11 +203,11 @@ public class UserPatternLearner {
     }
 
     private func decayOldPatterns() async {
-        let cutoffDate = Calendar.current.date(
+        guard let cutoffDate = Calendar.current.date(
             byAdding: .day,
             value: -patternDecayDays,
             to: Date()
-        )!
+        ) else { return }
 
         patterns = patterns.compactMap { pattern in
             if pattern.lastSeen < cutoffDate {
@@ -440,7 +439,8 @@ public class UserPatternLearner {
     private func calculateEfficiencyMetrics() -> EfficiencyMetrics {
         // Calculate various efficiency metrics
         let recentPatterns = patterns.filter {
-            $0.lastSeen > Calendar.current.date(byAdding: .day, value: -30, to: Date())!
+            guard let thirtyDaysAgo = Calendar.current.date(byAdding: .day, value: -30, to: Date()) else { return false }
+            return $0.lastSeen > thirtyDaysAgo
         }
 
         let avgCompletionTime = recentPatterns

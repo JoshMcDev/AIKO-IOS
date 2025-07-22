@@ -157,11 +157,9 @@ final class UIUXEnhancementTests: XCTestCase {
         let startTime = Date()
         var successfulInteractions = 0
 
-        for (testName, test) in hapticTests {
-            if await test() {
-                successfulInteractions += 1
-                print("  ✓ \(testName)")
-            }
+        for (testName, test) in hapticTests where await test() {
+            successfulInteractions += 1
+            print("  ✓ \(testName)")
         }
 
         let endTime = Date()

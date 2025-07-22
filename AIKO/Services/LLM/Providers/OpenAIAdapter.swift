@@ -42,7 +42,9 @@ final class OpenAIAdapter: LLMProviderAdapter {
             options: mergedOptions
         )
 
-        let url = URL(string: "\(getBaseURL())/v1/chat/completions")!
+        guard let url = URL(string: "\(getBaseURL())/v1/chat/completions") else {
+            throw LLMError.invalidResponse("Invalid base URL configuration")
+        }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.httpBody = try encoder.encode(requestBody)
@@ -93,7 +95,9 @@ final class OpenAIAdapter: LLMProviderAdapter {
                     )
                     requestBody.stream = true
 
-                    let url = URL(string: "\(getBaseURL())/v1/chat/completions")!
+                    guard let url = URL(string: "\(getBaseURL())/v1/chat/completions") else {
+                        throw LLMError.invalidResponse("Invalid base URL configuration")
+                    }
                     var request = URLRequest(url: url)
                     request.httpMethod = "POST"
                     request.httpBody = try encoder.encode(requestBody)
@@ -301,8 +305,7 @@ private struct OpenAIFunction: Codable {
         name = try container.decode(String.self, forKey: .name)
         description = try container.decode(String.self, forKey: .description)
         if let jsonData = try? container.decode(Data.self, forKey: .parameters),
-           let json = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any]
-        {
+           let json = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any] {
             parameters = json
         } else {
             parameters = [:]

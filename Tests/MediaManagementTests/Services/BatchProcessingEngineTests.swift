@@ -184,7 +184,11 @@ final class BatchProcessingEngineTests: XCTestCase {
         // Given - Mix of valid and invalid assets
         var assets = createTestAssets(count: 3)
         assets.append(createInvalidAsset())
-        assets.append(createTestAssets(count: 2).first!)
+        guard let firstTestAsset = createTestAssets(count: 2).first else {
+            XCTFail("Failed to create test asset for error handling test")
+            return
+        }
+        assets.append(firstTestAsset)
 
         // When
         let results = try await batchEngine.processBatchMedia(assets, .default)
@@ -201,7 +205,11 @@ final class BatchProcessingEngineTests: XCTestCase {
 
     func testRetryFailedOperations() async throws {
         // Given
-        let assets = [createInvalidAsset(), createTestAssets(count: 2).first!]
+        guard let firstAsset = createTestAssets(count: 2).first else {
+            XCTFail("Failed to create test asset for retry operations test")
+            return
+        }
+        let assets = [createInvalidAsset(), firstAsset]
         let configuration = ProcessingConfiguration(
             targetFormat: .optimized,
             compressionSettings: .default,
@@ -252,7 +260,10 @@ final class BatchProcessingEngineTests: XCTestCase {
         }
 
         // Then
-        let finalProgress = progressUpdates.last!
+        guard let finalProgress = progressUpdates.last else {
+            XCTFail("No progress updates received during detailed progress tracking")
+            return
+        }
         XCTAssertTrue(finalProgress.isComplete)
         XCTAssertEqual(finalProgress.processedCount, assets.count)
         XCTAssertEqual(finalProgress.fractionCompleted, 1.0, accuracy: 0.01)
@@ -320,7 +331,7 @@ final class BatchProcessingEngineTests: XCTestCase {
     private func createInvalidAsset() -> MediaAsset {
         MediaAsset(
             type: .other,
-            data: "Invalid data".data(using: .utf8)!,
+            data: Data("Invalid data".utf8),
             metadata: MediaMetadata(
                 fileName: "invalid.dat",
                 fileSize: 100,
@@ -337,12 +348,22 @@ final class BatchProcessingEngineTests: XCTestCase {
         defer { UIGraphicsEndImageContext() }
 
         let colors: [UIColor] = [.red, .green, .blue, .yellow, .orange]
-        let color = colors.randomElement()!
+        guard let color = colors.randomElement() else {
+            // This should never happen with a non-empty array, but we need to handle it
+            fatalError("Failed to get random color from non-empty array")
+        }
 
         color.setFill()
         UIRectFill(CGRect(origin: .zero, size: size))
 
-        let image = UIGraphicsGetImageFromCurrentImageContext()!
-        return image.jpegData(compressionQuality: 0.8)!
+        guard let image = UIGraphicsGetImageFromCurrentImageContext() else {
+            fatalError("Failed to create image from graphics context")
+        }
+
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+            fatalError("Failed to convert image to JPEG data")
+        }
+
+        return imageData
     }
 }

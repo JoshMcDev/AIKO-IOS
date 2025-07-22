@@ -5,7 +5,7 @@ struct WorkflowPromptsView: View {
     let store: StoreOf<DocumentAnalysisFeature>
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                 // Workflow State Header
                 if let context = viewStore.workflowContext {
@@ -13,7 +13,7 @@ struct WorkflowPromptsView: View {
                         currentState: context.currentState,
                         automationEnabled: context.automationSettings.enabled
                     )
-                }
+        })
 
                 // Pending Approvals
                 if !viewStore.pendingApprovals.isEmpty {

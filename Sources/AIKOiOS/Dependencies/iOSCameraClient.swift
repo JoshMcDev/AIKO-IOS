@@ -6,11 +6,11 @@
     import UIKit
 
     /// iOS-specific implementation of CameraClient
-    public struct iOSCameraClient: Sendable {}
+    public struct IOSCameraClient: Sendable {}
 
     // MARK: - Live Implementation
 
-    public extension iOSCameraClient {
+    public extension IOSCameraClient {
         @MainActor
         static let live: CameraClient = .init(
             checkAvailability: {
@@ -36,7 +36,7 @@
 
     // MARK: - Implementation Methods
 
-    extension iOSCameraClient {
+    extension IOSCameraClient {
         private static func checkAvailability() async -> Bool {
             await Task.detached { @MainActor in
                 UIImagePickerController.isSourceTypeAvailable(.camera)
@@ -135,8 +135,7 @@
                 imagePickerController.cameraDevice = currentPosition == .front ? .front : .rear
 
                 if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                   let rootViewController = windowScene.windows.first?.rootViewController
-                {
+                   let rootViewController = windowScene.windows.first?.rootViewController {
                     rootViewController.present(imagePickerController, animated: true)
                 } else {
                     self.captureCompletion?(.failure(CameraError.unknownError("Failed to present camera interface")))
@@ -157,8 +156,7 @@
             picker.dismiss(animated: true)
 
             if let image = info[.originalImage] as? UIImage,
-               let imageData = image.jpegData(compressionQuality: 0.8)
-            {
+               let imageData = image.jpegData(compressionQuality: 0.8) {
                 let photo = CapturedPhoto(
                     id: UUID(),
                     imageData: imageData,

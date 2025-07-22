@@ -13,13 +13,13 @@ public struct EnhancedLLMDialog: View {
     }
 
     public var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             SwiftUI.NavigationView {
                 VStack(spacing: 0) {
                     headerView
                     analysisSummaryView(viewStore: viewStore)
                     decisionButtonsView(viewStore: viewStore)
-                }
+        })
                 .background(Color.black)
                 .modifier(NavigationBarHiddenModifier())
                 .preferredColorScheme(.dark)
@@ -168,7 +168,7 @@ public struct EnhancedLLMDialog: View {
         Button(action: {
             viewStore.send(.analysis(.confirmRequirements(true)))
             // TODO: Handle refinement mode transition
-        }) {
+        }, label: {
             VStack(spacing: Theme.Spacing.small) {
                 HStack {
                     Image(systemName: "bubble.left.and.bubble.right.fill")
@@ -197,7 +197,7 @@ public struct EnhancedLLMDialog: View {
             )
             .foregroundColor(.white)
             .cornerRadius(Theme.CornerRadius.large)
-        }
+        })
     }
 
     private func manualSelectionButton(viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> some View {
@@ -339,12 +339,12 @@ public struct RequirementsRefinementDialog: View {
     ]
 
     public var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             SwiftUI.NavigationView {
                 VStack(spacing: 0) {
                     progressBar
                     questionContent(viewStore: viewStore)
-                }
+        })
                 .background(Theme.Colors.aikoBackground)
                 .navigationTitle("Refine Requirements")
                 .navigationConfiguration(

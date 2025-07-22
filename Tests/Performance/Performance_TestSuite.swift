@@ -238,7 +238,7 @@ final class PerformanceTestSuite: XCTestCase {
                         "miss_\(Int.random(in: 1000 ..< 2000))"
                     }
 
-                    if let _ = await cache.retrieve(for: hash) {
+                    if await cache.retrieve(for: hash) != nil {
                         hits += 1
                     } else {
                         misses += 1
@@ -297,7 +297,10 @@ final class PerformanceTestSuite: XCTestCase {
 
                     switch operation {
                     case 0: // Retrieve
-                        let id = documents.randomElement()!.id
+                        guard let randomDocument = documents.randomElement() else {
+                            continue // Skip this iteration if no documents available
+                        }
+                        let id = randomDocument.id
                         _ = try await service.retrieve(id: id)
                     case 1: // List
                         _ = await service.listDocuments()
@@ -506,7 +509,7 @@ final class PerformanceTestSuite: XCTestCase {
                     }
 
                     // Allow memory pressure to trigger
-                    if i % 100 == 0 {
+                    if memoryTestIndex % 100 == 0 {
                         await cache.adjustCacheLimits()
                     }
                 }

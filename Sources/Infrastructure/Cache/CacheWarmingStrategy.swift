@@ -283,14 +283,12 @@ public actor CacheWarmingStrategy {
         let now = Date()
 
         // Check if any schedule matches current time
-        for schedule in config.schedule {
-            if calendar.dateComponents([.hour, .minute], from: now) == schedule {
-                // Warm all configured actions
-                for pattern in config.actions {
-                    await warmPattern(pattern)
-                }
-                break
+        for schedule in config.schedule where calendar.dateComponents([.hour, .minute], from: now) == schedule {
+            // Warm all configured actions
+            for pattern in config.actions {
+                await warmPattern(pattern)
             }
+            break
         }
     }
 

@@ -283,7 +283,7 @@ private func checkGrammarIssues(text: String, corrections: inout [SpellCheckServ
         corrections.append(
             SpellCheckService.SpellCheckResult.Correction(
                 range: match.range,
-                original: String(text[Range(match.range, in: text)!]),
+                original: Range(match.range, in: text).map { String(text[$0]) } ?? "",
                 suggestion: " ",
                 type: .punctuation,
                 confidence: 1.0
@@ -298,7 +298,8 @@ private func checkGrammarIssues(text: String, corrections: inout [SpellCheckServ
         issueCount += 1
         if let range = Range(match.range, in: text) {
             let original = String(text[range])
-            let suggestion = String(original.first!) + " " + String(original.last!)
+            guard let firstChar = original.first, let lastChar = original.last else { continue }
+            let suggestion = String(firstChar) + " " + String(lastChar)
             corrections.append(
                 SpellCheckService.SpellCheckResult.Correction(
                     range: match.range,

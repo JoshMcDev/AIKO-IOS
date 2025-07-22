@@ -121,7 +121,10 @@ final class NavigationFeatureTests: XCTestCase {
         }
 
         // Select menu item
-        let menuItem = MenuItem.defaultMenuItems.first!
+        guard let menuItem = MenuItem.defaultMenuItems.first else {
+            XCTFail("Expected at least one default menu item to exist")
+            return
+        }
         await store.send(.selectMenuItem(menuItem)) {
             $0.selectedMenuItem = menuItem
         }
@@ -189,7 +192,10 @@ final class NavigationFeatureTests: XCTestCase {
         }
 
         // Select menu item
-        let profileMenuItem = MenuItem.defaultMenuItems.first { $0.id == "profile" }!
+        guard let profileMenuItem = MenuItem.defaultMenuItems.first(where: { $0.id == "profile" }) else {
+            XCTFail("Expected to find profile menu item in default menu items")
+            return
+        }
         await store.send(.selectMenuItem(profileMenuItem)) {
             $0.selectedMenuItem = profileMenuItem
         }
@@ -241,7 +247,10 @@ final class MenuItemTests: XCTestCase {
     }
 
     func testMenuItemProperties() {
-        let profileItem = MenuItem.defaultMenuItems.first { $0.id == "profile" }!
+        guard let profileItem = MenuItem.defaultMenuItems.first(where: { $0.id == "profile" }) else {
+            XCTFail("Expected to find profile menu item in default menu items")
+            return
+        }
 
         XCTAssertEqual(profileItem.title, "My Profile")
         XCTAssertEqual(profileItem.icon, "person.circle")

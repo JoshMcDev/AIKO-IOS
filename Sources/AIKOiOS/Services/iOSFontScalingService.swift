@@ -3,7 +3,7 @@
     @preconcurrency import SwiftUI
     import UIKit
 
-    public final class iOSFontScalingService: FontScalingServiceProtocol {
+    public final class IOSFontScalingService: FontScalingServiceProtocol {
         public init() {}
 
         public func scaledFontSize(for baseSize: CGFloat, textStyle: Font.TextStyle, sizeCategory _: ContentSizeCategory) -> CGFloat {

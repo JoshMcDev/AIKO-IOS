@@ -282,8 +282,7 @@ extension FARPart12ComplianceService: DependencyKey {
                 var gaps: [String] = []
 
                 // Check which research methods were used
-                for method in MarketResearchCompliance.ResearchMethod.allCases {
-                    if lowercaseContent.contains(method.rawValue.lowercased()) {
+                for method in MarketResearchCompliance.ResearchMethod.allCases where lowercaseContent.contains(method.rawValue.lowercased()) {
                         usedMethods.append(method)
                     }
                 }

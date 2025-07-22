@@ -4,11 +4,11 @@
     import Foundation
 
     /// Registers all iOS-specific implementations of AppCore dependencies
-    /// Note: This functionality has been moved to iOSDependencyRegistration.swift
+    /// Note: This functionality has been moved to IOSDependencyRegistration.swift
     /// This file is kept for backward compatibility during the migration
     public enum LegacyiOSDependencyRegistration {
         /// Register all iOS implementations
-        /// @deprecated Use iOSDependencyRegistration.configureForLaunch() instead
+        /// @deprecated Use IOSDependencyRegistration.configureForLaunch() instead
         @MainActor
         public static func registerAll() {
             // Migration complete - this method is now a no-op

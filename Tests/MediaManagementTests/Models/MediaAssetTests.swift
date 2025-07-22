@@ -6,7 +6,7 @@ final class MediaAssetTests: XCTestCase {
     func testMediaAssetInitialization() throws {
         // Given
         let id = UUID()
-        let data = "Test data".data(using: .utf8)!
+        let data = Data("Test data".utf8)
         let metadata = MediaMetadata(
             fileName: "test.jpg",
             fileSize: 1024,
@@ -155,7 +155,7 @@ final class MediaAssetTests: XCTestCase {
         MediaAsset(
             id: UUID(),
             type: .photo,
-            data: "Test data".data(using: .utf8)!,
+            data: Data("Test data".utf8),
             metadata: MediaMetadata(
                 fileName: "test.jpg",
                 fileSize: 1024,

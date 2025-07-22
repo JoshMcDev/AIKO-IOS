@@ -7,7 +7,7 @@ struct InformationGatheringView: View {
     @FocusState private var isTextFieldFocused: Bool
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             SwiftUI.NavigationView {
                 ZStack {
                     Theme.Colors.aikoBackground
@@ -25,7 +25,7 @@ struct InformationGatheringView: View {
                                 currentIndex: viewStore.currentQuestionIndex,
                                 total: viewStore.informationQuestions.count
                             )
-                        }
+        })
 
                         // Main content
                         QuestionContentView(

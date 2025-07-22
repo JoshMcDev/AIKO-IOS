@@ -5,7 +5,7 @@
     import UIKit
 
     /// iOS implementation of ImageLoaderProtocol
-    public final class iOSImageLoader: ImageLoaderProtocol {
+    public final class IOSImageLoader: ImageLoaderProtocol {
         public init() {}
 
         public func loadImage(from data: Data) -> Image? {

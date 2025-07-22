@@ -4,7 +4,7 @@
     import SwiftUI
 
     /// iOS implementation of NavigationServiceProtocol
-    public final class iOSNavigationService: NavigationServiceProtocol {
+    public final class IOSNavigationService: NavigationServiceProtocol {
         public init() {}
 
         public var supportsNavigationStack: Bool {

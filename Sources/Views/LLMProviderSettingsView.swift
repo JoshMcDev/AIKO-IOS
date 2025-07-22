@@ -9,7 +9,7 @@ struct LLMProviderSettingsView: View {
     @Dependency(\.navigationService) var navigationService
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { store in
+        WithViewStore(store, observe: { $0 }, content: { store in
             List {
                 // Active Provider Section
                 Section {
@@ -23,7 +23,7 @@ struct LLMProviderSettingsView: View {
                     } else {
                         Text("No active provider")
                             .foregroundColor(.secondary)
-                    }
+        })
                 } header: {
                     Text("Active Provider")
                 }
@@ -264,7 +264,7 @@ struct LLMProviderConfigurationView: View {
     }
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             Form {
                 Section {
                     HStack {
@@ -272,7 +272,7 @@ struct LLMProviderConfigurationView: View {
                         Spacer()
                         Text(viewStore.provider.name)
                             .foregroundColor(.secondary)
-                    }
+        })
                 } header: {
                     Text("Provider Information")
                 }

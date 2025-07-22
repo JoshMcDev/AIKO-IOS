@@ -103,8 +103,7 @@ public struct DocumentParser: DocumentParserProtocol {
         var text = ""
         for pageIndex in 0 ..< document.pageCount {
             if let page = document.page(at: pageIndex),
-               let pageText = page.string
-            {
+               let pageText = page.string {
                 text += pageText + "\n"
             }
         }

@@ -7,11 +7,11 @@
     import Vision
 
     /// iOS-specific implementation of DocumentScannerClient
-    public struct iOSDocumentScannerClient: Sendable {}
+    public struct IOSDocumentScannerClient: Sendable {}
 
     // MARK: - Live Implementation
 
-    public extension iOSDocumentScannerClient {
+    public extension IOSDocumentScannerClient {
         @MainActor
         static let live: DocumentScannerClient = {
             @Dependency(\.documentImageProcessor) var imageProcessor
@@ -64,7 +64,7 @@
 
     // MARK: - Implementation Methods
 
-    extension iOSDocumentScannerClient {
+    extension IOSDocumentScannerClient {
         @MainActor
         private static func checkCameraPermissions() async -> Bool {
             #if targetEnvironment(simulator)
@@ -655,22 +655,18 @@
                 var detectedType: List.ListType?
 
                 // Check for bullet points
-                for bullet in bulletPatterns {
-                    if text.hasPrefix(bullet) {
-                        isListItem = true
-                        detectedType = .unordered
-                        break
-                    }
+                for bullet in bulletPatterns where text.hasPrefix(bullet) {
+                    isListItem = true
+                    detectedType = .unordered
+                    break
                 }
 
                 // Check for numbered lists
                 if !isListItem {
-                    for pattern in numberPatterns {
-                        if text.range(of: "^" + pattern, options: .regularExpression) != nil {
-                            isListItem = true
-                            detectedType = .ordered
-                            break
-                        }
+                    for pattern in numberPatterns where text.range(of: "^" + pattern, options: .regularExpression) != nil {
+                        isListItem = true
+                        detectedType = .ordered
+                        break
                     }
                 }
 

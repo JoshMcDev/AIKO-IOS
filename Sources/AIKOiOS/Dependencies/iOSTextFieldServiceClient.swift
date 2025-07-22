@@ -16,7 +16,7 @@
         )
     }
 
-    public enum iOSTextFieldServiceClient {
+    public enum IOSTextFieldServiceClient {
         public static let live = TextFieldServiceClient.iOS
     }
 #endif

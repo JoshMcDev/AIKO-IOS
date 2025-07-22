@@ -4,7 +4,7 @@
     import UniformTypeIdentifiers
 
     /// iOS-specific document picker implementation
-    public struct iOSDocumentPicker: UIViewControllerRepresentable {
+    public struct IOSDocumentPicker: UIViewControllerRepresentable {
         let allowedContentTypes: [UTType]
         let allowsMultipleSelection: Bool
         let onDocumentsPicked: ([(Data, String)]) -> Void
@@ -36,9 +36,9 @@
         }
 
         public class Coordinator: NSObject, UIDocumentPickerDelegate {
-            let parent: iOSDocumentPicker
+            let parent: IOSDocumentPicker
 
-            init(_ parent: iOSDocumentPicker) {
+            init(_ parent: IOSDocumentPicker) {
                 self.parent = parent
             }
 
@@ -68,7 +68,7 @@
     }
 
     /// iOS-specific wrapper for document picker integration
-    public struct iOSDocumentPickerView: View {
+    public struct IOSDocumentPickerView: View {
         @State private var showingPicker = false
         let onDocumentsPicked: ([(Data, String)]) -> Void
 
@@ -81,7 +81,7 @@
                 showingPicker = true
             }
             .sheet(isPresented: $showingPicker) {
-                iOSDocumentPicker(onDocumentsPicked: onDocumentsPicked) {
+                IOSDocumentPicker(onDocumentsPicked: onDocumentsPicked) {
                     showingPicker = false
                 }
             }

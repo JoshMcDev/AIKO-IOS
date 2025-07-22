@@ -434,7 +434,7 @@ private actor StandardCacheComponent {
 }
 
 private final class EncryptionLayer: @unchecked Sendable {
-    private var masterKey: SymmetricKey
+    private var primaryKey: SymmetricKey
     private let keychainService = "com.aiko.unified.cache"
 
     struct EncryptedData {
@@ -444,11 +444,11 @@ private final class EncryptionLayer: @unchecked Sendable {
 
     init() async throws {
         // Initialize or load encryption key
-        masterKey = SymmetricKey(size: .bits256)
+        primaryKey = SymmetricKey(size: .bits256)
     }
 
     func encrypt(_ data: Data) async throws -> EncryptedData {
-        let sealedBox = try AES.GCM.seal(data, using: masterKey)
+        let sealedBox = try AES.GCM.seal(data, using: primaryKey)
         guard let combined = sealedBox.combined else {
             throw CacheError.encryptionFailed
         }
@@ -461,12 +461,12 @@ private final class EncryptionLayer: @unchecked Sendable {
 
     func decrypt(ciphertext: Data, nonce _: Data) async throws -> Data {
         let sealedBox = try AES.GCM.SealedBox(combined: ciphertext)
-        return try AES.GCM.open(sealedBox, using: masterKey)
+        return try AES.GCM.open(sealedBox, using: primaryKey)
     }
 
     func rotateKey() async throws {
         // Generate new key
-        masterKey = SymmetricKey(size: .bits256)
+        primaryKey = SymmetricKey(size: .bits256)
         // Save to keychain
     }
 }
@@ -609,6 +609,7 @@ enum CacheError: LocalizedError {
     case missingEncryptionData
     case integrityCheckFailed
     case configurationChangeRequiresClear
+    case invalidKey(String)
 
     var errorDescription: String? {
         switch self {
@@ -624,6 +625,8 @@ enum CacheError: LocalizedError {
             "Data integrity check failed"
         case .configurationChangeRequiresClear:
             "Configuration change requires clearing the cache"
+        case .invalidKey(let key):
+            "Invalid key: \(key)"
         }
     }
 }

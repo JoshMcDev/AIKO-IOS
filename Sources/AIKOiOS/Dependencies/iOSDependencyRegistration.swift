@@ -4,7 +4,7 @@
     import Foundation
 
     /// Configures iOS-specific dependency implementations for launch
-    public enum iOSDependencyRegistration {
+    public enum IOSDependencyRegistration {
         /// Configure all iOS dependencies for app launch
         @MainActor
         public static func configureForLaunch() {

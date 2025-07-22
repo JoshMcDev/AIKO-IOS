@@ -374,8 +374,7 @@ struct UserPreference: Identifiable, Codable {
         // Check if all query context keys match
         for (key, value) in queryContext.attributes {
             if let storedValue = context[key] as? String,
-               let queryValue = value as? String
-            {
+               let queryValue = value as? String {
                 if storedValue != queryValue {
                     return false
                 }
@@ -512,8 +511,7 @@ extension UserPreference {
 
         // Decode context
         if let contextData = entity.contextData,
-           let context = try? JSONSerialization.jsonObject(with: contextData) as? [String: Any]
-        {
+           let context = try? JSONSerialization.jsonObject(with: contextData) as? [String: Any] {
             self.context = context
         } else {
             context = [:]

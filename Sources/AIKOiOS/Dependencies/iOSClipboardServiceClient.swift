@@ -5,8 +5,8 @@
 
     /// iOS Clipboard Service Client using SimpleServiceTemplate
     @MainActor
-    public final class iOSClipboardServiceClient: SimpleServiceTemplate {
-        private lazy var service = iOSClipboardService()
+    public final class IOSClipboardServiceClient: SimpleServiceTemplate {
+        private lazy var service = IOSClipboardService()
 
         override public init() {
             super.init()
@@ -67,7 +67,7 @@
     }
 
     // Convenience static accessor
-    public enum iOSClipboardServiceClientAccessor {
+    public enum IOSClipboardServiceClientAccessor {
         @MainActor
         public static var live: ClipboardServiceClient {
             ClipboardServiceClient.iOSLive

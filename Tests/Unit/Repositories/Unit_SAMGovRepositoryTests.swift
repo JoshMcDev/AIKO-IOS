@@ -2,12 +2,27 @@
 import CoreData
 import XCTest
 
-final class Unit_SAMGovRepositoryTests: XCTestCase {
+final class UnitSAMGovRepositoryTests: XCTestCase {
     // MARK: - Properties
 
-    private var sut: SAMGovRepository!
-    private var context: NSManagedObjectContext!
-    private var mockAPIClient: MockSAMGovAPIClient!
+    private var sut: SAMGovRepository?
+    private var context: NSManagedObjectContext?
+    private var mockAPIClient: MockSAMGovAPIClient?
+
+    private var sutUnwrapped: SAMGovRepository {
+        guard let sut = sut else { fatalError("sut not initialized") }
+        return sut
+    }
+
+    private var contextUnwrapped: NSManagedObjectContext {
+        guard let context = context else { fatalError("context not initialized") }
+        return context
+    }
+
+    private var mockAPIClientUnwrapped: MockSAMGovAPIClient {
+        guard let mockAPIClient = mockAPIClient else { fatalError("mockAPIClient not initialized") }
+        return mockAPIClient
+    }
 
     // MARK: - Setup/Teardown
 
@@ -41,13 +56,13 @@ final class Unit_SAMGovRepositoryTests: XCTestCase {
     func testSearchEntities_Success() async throws {
         // Given
         let query = "Test Company"
-        mockAPIClient.searchResponse = [
+        mockAPIClientUnwrapped.searchResponse = [
             createMockEntity(name: "Test Company Inc", uei: "TEST123456"),
             createMockEntity(name: "Test Company LLC", uei: "TEST789012"),
         ]
 
         // When
-        let results = try await sut.searchEntities(query: query)
+        let results = try await sutUnwrapped.searchEntities(query: query)
 
         // Then
         XCTAssertEqual(results.count, 2)
@@ -57,8 +72,8 @@ final class Unit_SAMGovRepositoryTests: XCTestCase {
         XCTAssertEqual(results[1].ueiSAM, "TEST789012")
 
         // Verify API was called
-        XCTAssertEqual(mockAPIClient.searchCalls.count, 1)
-        XCTAssertEqual(mockAPIClient.searchCalls.first, query)
+        XCTAssertEqual(mockAPIClientUnwrapped.searchCalls.count, 1)
+        XCTAssertEqual(mockAPIClientUnwrapped.searchCalls.first, query)
     }
 
     func testSearchEntities_EmptyQuery_ThrowsError() async throws {
@@ -67,7 +82,7 @@ final class Unit_SAMGovRepositoryTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try await sut.searchEntities(query: query)
+            _ = try await sutUnwrapped.searchEntities(query: query)
             XCTFail("Expected error for empty query")
         } catch {
             XCTAssertTrue(error is DomainError)
@@ -77,11 +92,11 @@ final class Unit_SAMGovRepositoryTests: XCTestCase {
     func testSearchEntities_APIError_ThrowsError() async throws {
         // Given
         let query = "Test Company"
-        mockAPIClient.shouldThrowError = true
+        mockAPIClientUnwrapped.shouldThrowError = true
 
         // When/Then
         do {
-            _ = try await sut.searchEntities(query: query)
+            _ = try await sutUnwrapped.searchEntities(query: query)
             XCTFail("Expected error from API")
         } catch {
             // Expected error
@@ -99,10 +114,10 @@ final class Unit_SAMGovRepositoryTests: XCTestCase {
             uei: uei,
             exclusions: [createMockExclusion()]
         )
-        mockAPIClient.getEntityResponse = mockEntity
+        mockAPIClientUnwrapped.getEntityResponse = mockEntity
 
         // When
-        let entity = try await sut.getEntity(uei: uei)
+        let entity = try await sutUnwrapped.getEntity(uei: uei)
 
         // Then
         XCTAssertNotNil(entity)
@@ -111,17 +126,17 @@ final class Unit_SAMGovRepositoryTests: XCTestCase {
         XCTAssertEqual(entity?.exclusions.count, 1)
 
         // Verify API was called
-        XCTAssertEqual(mockAPIClient.getEntityCalls.count, 1)
-        XCTAssertEqual(mockAPIClient.getEntityCalls.first, uei)
+        XCTAssertEqual(mockAPIClientUnwrapped.getEntityCalls.count, 1)
+        XCTAssertEqual(mockAPIClientUnwrapped.getEntityCalls.first, uei)
     }
 
     func testGetEntity_NotFound_ReturnsNil() async throws {
         // Given
         let uei = "NOTFOUND123"
-        mockAPIClient.getEntityResponse = nil
+        mockAPIClientUnwrapped.getEntityResponse = nil
 
         // When
-        let entity = try await sut.getEntity(uei: uei)
+        let entity = try await sutUnwrapped.getEntity(uei: uei)
 
         // Then
         XCTAssertNil(entity)
@@ -133,47 +148,47 @@ final class Unit_SAMGovRepositoryTests: XCTestCase {
         let mockEntity = createMockEntity(name: "Test Company", uei: uei)
 
         // First call to populate cache
-        mockAPIClient.getEntityResponse = mockEntity
-        _ = try await sut.getEntity(uei: uei)
+        mockAPIClientUnwrapped.getEntityResponse = mockEntity
+        _ = try await sutUnwrapped.getEntity(uei: uei)
 
         // Change API response
-        mockAPIClient.getEntityResponse = createMockEntity(name: "Different Company", uei: uei)
+        mockAPIClientUnwrapped.getEntityResponse = createMockEntity(name: "Different Company", uei: uei)
 
         // When - Second call should use cache
-        let cachedEntity = try await sut.getEntity(uei: uei)
+        let cachedEntity = try await sutUnwrapped.getEntity(uei: uei)
 
         // Then
         XCTAssertEqual(cachedEntity?.legalBusinessName, "Test Company") // Original cached value
-        XCTAssertEqual(mockAPIClient.getEntityCalls.count, 1) // API only called once
+        XCTAssertEqual(mockAPIClientUnwrapped.getEntityCalls.count, 1) // API only called once
     }
 
     func testGetEntity_ExpiredCache_RefreshesFromAPI() async throws {
         // Given
         let uei = "TEST123456"
         let originalEntity = createMockEntity(name: "Original Company", uei: uei)
-        mockAPIClient.getEntityResponse = originalEntity
+        mockAPIClientUnwrapped.getEntityResponse = originalEntity
 
         // First call to populate cache
-        _ = try await sut.getEntity(uei: uei)
+        _ = try await sutUnwrapped.getEntity(uei: uei)
 
         // Manually expire cache by updating timestamp
         let request = NSFetchRequest<CachedEntity>(entityName: "CachedEntity")
         request.predicate = NSPredicate(format: "uei == %@", uei)
-        if let cached = try context.fetch(request).first {
+        if let cached = try contextUnwrapped.fetch(request).first {
             cached.lastUpdated = Date().addingTimeInterval(-25 * 60 * 60) // 25 hours ago
-            try context.save()
+            try contextUnwrapped.save()
         }
 
         // Update API response
         let updatedEntity = createMockEntity(name: "Updated Company", uei: uei)
-        mockAPIClient.getEntityResponse = updatedEntity
+        mockAPIClientUnwrapped.getEntityResponse = updatedEntity
 
         // When
-        let refreshedEntity = try await sut.getEntity(uei: uei)
+        let refreshedEntity = try await sutUnwrapped.getEntity(uei: uei)
 
         // Then
         XCTAssertEqual(refreshedEntity?.legalBusinessName, "Updated Company")
-        XCTAssertEqual(mockAPIClient.getEntityCalls.count, 2) // API called twice
+        XCTAssertEqual(mockAPIClientUnwrapped.getEntityCalls.count, 2) // API called twice
     }
 
     // MARK: - Exclusions Tests
@@ -186,10 +201,10 @@ final class Unit_SAMGovRepositoryTests: XCTestCase {
             createMockExclusion(classificationType: "Suspension", activeDate: "2023-06-01"),
         ]
         let mockEntity = createMockEntity(name: "Test Company", uei: uei, exclusions: exclusions)
-        mockAPIClient.getEntityResponse = mockEntity
+        mockAPIClientUnwrapped.getEntityResponse = mockEntity
 
         // When
-        let retrievedExclusions = try await sut.getExclusions(for: uei)
+        let retrievedExclusions = try await sutUnwrapped.getExclusions(for: uei)
 
         // Then
         XCTAssertEqual(retrievedExclusions.count, 2)
@@ -201,10 +216,10 @@ final class Unit_SAMGovRepositoryTests: XCTestCase {
         // Given
         let uei = "TEST123456"
         let mockEntity = createMockEntity(name: "Test Company", uei: uei, exclusions: [])
-        mockAPIClient.getEntityResponse = mockEntity
+        mockAPIClientUnwrapped.getEntityResponse = mockEntity
 
         // When
-        let exclusions = try await sut.getExclusions(for: uei)
+        let exclusions = try await sutUnwrapped.getExclusions(for: uei)
 
         // Then
         XCTAssertEqual(exclusions.count, 0)
@@ -215,10 +230,10 @@ final class Unit_SAMGovRepositoryTests: XCTestCase {
     func testGetEntities_MultipleUEIs_Success() async throws {
         // Given
         let ueis = ["TEST123456", "TEST789012", "TEST345678"]
-        mockAPIClient.getEntityResponse = nil // Will be set per call
+        mockAPIClientUnwrapped.getEntityResponse = nil // Will be set per call
 
         // Setup different responses for each UEI
-        mockAPIClient.getEntitiesHandler = { uei in
+        mockAPIClientUnwrapped.getEntitiesHandler = { uei in
             switch uei {
             case "TEST123456":
                 self.createMockEntity(name: "Company 1", uei: uei)
@@ -232,7 +247,7 @@ final class Unit_SAMGovRepositoryTests: XCTestCase {
         }
 
         // When
-        let entities = try await sut.getEntities(ueis: ueis)
+        let entities = try await sutUnwrapped.getEntities(ueis: ueis)
 
         // Then
         XCTAssertEqual(entities.count, 3)
@@ -244,7 +259,7 @@ final class Unit_SAMGovRepositoryTests: XCTestCase {
     func testGetEntities_SomeNotFound_ReturnsOnlyFound() async throws {
         // Given
         let ueis = ["TEST123456", "NOTFOUND", "TEST345678"]
-        mockAPIClient.getEntitiesHandler = { uei in
+        mockAPIClientUnwrapped.getEntitiesHandler = { uei in
             if uei == "NOTFOUND" {
                 return nil
             }
@@ -252,7 +267,7 @@ final class Unit_SAMGovRepositoryTests: XCTestCase {
         }
 
         // When
-        let entities = try await sut.getEntities(ueis: ueis)
+        let entities = try await sutUnwrapped.getEntities(ueis: ueis)
 
         // Then
         XCTAssertEqual(entities.count, 2)
@@ -265,21 +280,21 @@ final class Unit_SAMGovRepositoryTests: XCTestCase {
         // Given - Populate cache with entities
         let uei1 = "TEST123456"
         let uei2 = "TEST789012"
-        mockAPIClient.getEntityResponse = createMockEntity(name: "Company 1", uei: uei1)
-        _ = try await sut.getEntity(uei: uei1)
-        mockAPIClient.getEntityResponse = createMockEntity(name: "Company 2", uei: uei2)
-        _ = try await sut.getEntity(uei: uei2)
+        mockAPIClientUnwrapped.getEntityResponse = createMockEntity(name: "Company 1", uei: uei1)
+        _ = try await sutUnwrapped.getEntity(uei: uei1)
+        mockAPIClientUnwrapped.getEntityResponse = createMockEntity(name: "Company 2", uei: uei2)
+        _ = try await sutUnwrapped.getEntity(uei: uei2)
 
         // Verify cache is populated
         let request = NSFetchRequest<CachedEntity>(entityName: "CachedEntity")
-        let beforeClear = try context.fetch(request)
+        let beforeClear = try contextUnwrapped.fetch(request)
         XCTAssertEqual(beforeClear.count, 2)
 
         // When
-        try await sut.clearCache()
+        try await sutUnwrapped.clearCache()
 
         // Then
-        let afterClear = try context.fetch(request)
+        let afterClear = try contextUnwrapped.fetch(request)
         XCTAssertEqual(afterClear.count, 0)
     }
 
@@ -287,7 +302,7 @@ final class Unit_SAMGovRepositoryTests: XCTestCase {
 
     func testPerformance_SearchEntities() throws {
         // Given
-        mockAPIClient.searchResponse = (1 ... 100).map { i in
+        mockAPIClientUnwrapped.searchResponse = (1 ... 100).map { i in
             createMockEntity(name: "Company \(i)", uei: "UEI\(i)")
         }
 
@@ -296,7 +311,7 @@ final class Unit_SAMGovRepositoryTests: XCTestCase {
             let expectation = self.expectation(description: "Search entities")
 
             Task {
-                _ = try await sut.searchEntities(query: "Company")
+                _ = try await sutUnwrapped.searchEntities(query: "Company")
                 expectation.fulfill()
             }
 

@@ -12,7 +12,7 @@ public struct OnboardingView: View {
     }
 
     public var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             VStack(spacing: 0) {
                 // Progress Bar
                 OnboardingProgressBar(
@@ -33,7 +33,7 @@ public struct OnboardingView: View {
                             Text(viewStore.currentStep.subtitle)
                                 .font(.body)
                                 .foregroundColor(.secondary)
-                        }
+        })
                         .padding(.top, Theme.Spacing.extraLarge)
 
                         // Step Content

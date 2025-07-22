@@ -12,8 +12,18 @@ import XCTest
 final class IntegrationTestName: XCTestCase {
     // MARK: - Properties
 
-    var systemUnderTest: SystemType!
-    var mockDependency: MockDependency!
+    var systemUnderTestUnwrapped: SystemType?
+    var mockDependencyUnwrapped: MockDependency?
+
+    private var systemUnderTestUnwrappedUnwrapped: SystemType {
+        guard let systemUnderTestUnwrapped = systemUnderTestUnwrapped else { fatalError("systemUnderTestUnwrapped not initialized") }
+        return systemUnderTestUnwrapped
+    }
+
+    private var mockDependencyUnwrappedUnwrapped: MockDependency {
+        guard let mockDependencyUnwrapped = mockDependencyUnwrapped else { fatalError("mockDependencyUnwrapped not initialized") }
+        return mockDependencyUnwrapped
+    }
 
     // MARK: - Setup
 
@@ -21,8 +31,8 @@ final class IntegrationTestName: XCTestCase {
         try await super.setUp()
 
         // Setup test environment
-        mockDependency = MockDependency()
-        systemUnderTest = SystemType(dependency: mockDependency)
+        mockDependencyUnwrapped = MockDependency()
+        systemUnderTestUnwrapped = SystemType(dependency: mockDependencyUnwrapped)
 
         // Setup test data
         try await setupTestData()
@@ -32,8 +42,8 @@ final class IntegrationTestName: XCTestCase {
         // Cleanup
         try await cleanupTestData()
 
-        systemUnderTest = nil
-        mockDependency = nil
+        systemUnderTestUnwrapped = nil
+        mockDependencyUnwrapped = nil
 
         try await super.tearDown()
     }
@@ -45,7 +55,7 @@ final class IntegrationTestName: XCTestCase {
         let testInput = createTestInput()
 
         // When - Execute full flow
-        let result = try await systemUnderTest.executeFullFlow(testInput)
+        let result = try await systemUnderTestUnwrapped.executeFullFlow(testInput)
 
         // Then - Verify all systems worked together
         XCTAssertNotNil(result)
@@ -56,7 +66,7 @@ final class IntegrationTestName: XCTestCase {
         XCTAssertEqual(cachedData, result.data)
 
         // Verify external system was called
-        XCTAssertEqual(mockDependency.callCount, 1)
+        XCTAssertEqual(mockDependencyUnwrapped.callCount, 1)
     }
 
     // MARK: - API Integration Tests

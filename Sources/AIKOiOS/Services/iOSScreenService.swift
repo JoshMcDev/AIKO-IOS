@@ -5,7 +5,7 @@
     import UIKit
 
     /// iOS implementation of ScreenServiceProtocol
-    public final class iOSScreenService: ScreenServiceProtocol, @unchecked Sendable {
+    public final class IOSScreenService: ScreenServiceProtocol, @unchecked Sendable {
         // Thread-safe cached values - use UIKit types internally
         private let cachedBounds: UIKit.CGRect
         private let cachedScale: UIKit.CGFloat

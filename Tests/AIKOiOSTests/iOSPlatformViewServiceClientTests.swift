@@ -4,12 +4,16 @@
     import SwiftUI
     import XCTest
 
-    final class iOSPlatformViewServiceClientTests: XCTestCase {
-        var client: iOSPlatformViewServiceClient!
+    final class IOSPlatformViewServiceClientTests: XCTestCase {
+        var client: IOSPlatformViewServiceClient?
 
+        private var clientUnwrapped: IOSPlatformViewServiceClient {
+            guard let client = client else { fatalError("client not initialized") }
+            return client
+        }
         override func setUp() async throws {
             try await super.setUp()
-            client = iOSPlatformViewServiceClient()
+            client = IOSPlatformViewServiceClient()
         }
 
         override func tearDown() async throws {
@@ -26,7 +30,7 @@
             }
 
             // Test that createNavigationStack executes on MainActor
-            let navigationStack = await client.createNavigationStack {
+            let navigationStack = await clientUnwrapped.createNavigationStack {
                 Text("Test Content")
             }
             XCTAssertNotNil(navigationStack, "Should return a navigation stack view")
@@ -37,7 +41,7 @@
         }
 
         func testCreateDocumentPickerMainActor() async {
-            let documentPicker = await client.createDocumentPicker { _ in
+            let documentPicker = await clientUnwrapped.createDocumentPicker { _ in
                 // Mock callback
             }
             XCTAssertNotNil(documentPicker, "Should return a document picker view")
@@ -48,7 +52,7 @@
         }
 
         func testCreateImagePickerMainActor() async {
-            let imagePicker = await client.createImagePicker { _ in
+            let imagePicker = await clientUnwrapped.createImagePicker { _ in
                 // Mock callback
             }
             XCTAssertNotNil(imagePicker, "Should return an image picker view")
@@ -59,7 +63,7 @@
         }
 
         func testCreateShareSheetMainActor() async {
-            let shareSheet = await client.createShareSheet(items: ["Test item"])
+            let shareSheet = await clientUnwrapped.createShareSheet(items: ["Test item"])
             XCTAssertNotNil(shareSheet, "Should return a share sheet view")
 
             await MainActor.run {
@@ -69,7 +73,7 @@
 
         func testApplyWindowStyleMainActor() async {
             let originalView = AnyView(Text("Test"))
-            let styledView = await client.applyWindowStyle(to: originalView)
+            let styledView = await clientUnwrapped.applyWindowStyle(to: originalView)
             XCTAssertNotNil(styledView, "Should return a styled view")
 
             await MainActor.run {
@@ -86,7 +90,7 @@
 
         func testTemplateStartMethod() async throws {
             // Test that the template's start method can be called without error
-            try await client.start()
+            try await clientUnwrapped.start()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After start(), should be on main thread")
@@ -111,9 +115,9 @@
 
         func testAsyncAwaitPattern() async {
             // Test the async/await pattern works correctly
-            async let navigationTask = client.createNavigationStack { Text("Nav Test") }
-            async let shareSheetTask = client.createShareSheet(items: ["Share Test"])
-            async let windowStyleTask = client.applyWindowStyle(to: AnyView(Text("Style Test")))
+            async let navigationTask = clientUnwrapped.createNavigationStack { Text("Nav Test") }
+            async let shareSheetTask = clientUnwrapped.createShareSheet(items: ["Share Test"])
+            async let windowStyleTask = clientUnwrapped.applyWindowStyle(to: AnyView(Text("Style Test")))
 
             let (navigation, shareSheet, windowStyled) = await (navigationTask, shareSheetTask, windowStyleTask)
 
@@ -129,17 +133,17 @@
         // MARK: - Platform View Creation Tests
 
         func testCreateNavigationStackWithDifferentContent() async {
-            let textView = await client.createNavigationStack {
+            let textView = await clientUnwrapped.createNavigationStack {
                 Text("Text Content")
             }
             XCTAssertNotNil(textView, "Should create navigation stack with text")
 
-            let buttonView = await client.createNavigationStack {
+            let buttonView = await clientUnwrapped.createNavigationStack {
                 Button("Button") {}
             }
             XCTAssertNotNil(buttonView, "Should create navigation stack with button")
 
-            let listView = await client.createNavigationStack {
+            let listView = await clientUnwrapped.createNavigationStack {
                 List {
                     Text("Item 1")
                     Text("Item 2")
@@ -151,7 +155,7 @@
         func testCreateDocumentPickerWithCallback() async {
             var documentsReceived: [(Data, String)] = []
 
-            let documentPicker = await client.createDocumentPicker { documents in
+            let documentPicker = await clientUnwrapped.createDocumentPicker { documents in
                 documentsReceived = documents
             }
 
@@ -162,7 +166,7 @@
         func testCreateImagePickerWithCallback() async {
             var imageDataReceived: Data?
 
-            let imagePicker = await client.createImagePicker { data in
+            let imagePicker = await clientUnwrapped.createImagePicker { data in
                 imageDataReceived = data
             }
 
@@ -171,21 +175,29 @@
         }
 
         func testCreateShareSheetWithDifferentItems() async {
-            let stringItems = await client.createShareSheet(items: ["String 1", "String 2"])
+            let stringItems = await clientUnwrapped.createShareSheet(items: ["String 1", "String 2"])
             XCTAssertNotNil(stringItems, "Should create share sheet with strings")
 
-            let urlItems = await client.createShareSheet(items: [URL(string: "https://example.com")!])
+            guard let testURL = URL(string: "https://example.com") else {
+                XCTFail("Failed to create test URL from 'https://example.com'")
+                return
+            }
+            let urlItems = await clientUnwrapped.createShareSheet(items: [testURL])
             XCTAssertNotNil(urlItems, "Should create share sheet with URLs")
 
-            let mixedItems = await client.createShareSheet(items: ["Text", URL(string: "https://example.com")!])
+            guard let mixedTestURL = URL(string: "https://example.com") else {
+                XCTFail("Failed to create test URL from 'https://example.com' for mixed items test")
+                return
+            }
+            let mixedItems = await clientUnwrapped.createShareSheet(items: ["Text", mixedTestURL])
             XCTAssertNotNil(mixedItems, "Should create share sheet with mixed items")
 
-            let emptyItems = await client.createShareSheet(items: [])
+            let emptyItems = await clientUnwrapped.createShareSheet(items: [])
             XCTAssertNotNil(emptyItems, "Should create share sheet with empty items")
         }
 
         func testCreateSidebarNavigation() async {
-            let sidebarView = await client.createSidebarNavigation(
+            let sidebarView = await clientUnwrapped.createSidebarNavigation(
                 sidebar: {
                     VStack {
                         Text("Sidebar Item 1")
@@ -203,32 +215,32 @@
 
         func testApplyWindowStyleToViews() async {
             let textView = AnyView(Text("Window Style Test"))
-            let styledText = await client.applyWindowStyle(to: textView)
+            let styledText = await clientUnwrapped.applyWindowStyle(to: textView)
             XCTAssertNotNil(styledText, "Should apply window style to text view")
 
             let buttonView = AnyView(Button("Window Button") {})
-            let styledButton = await client.applyWindowStyle(to: buttonView)
+            let styledButton = await clientUnwrapped.applyWindowStyle(to: buttonView)
             XCTAssertNotNil(styledButton, "Should apply window style to button view")
 
             let navigationView = AnyView(NavigationView { Text("Navigation") })
-            let styledNavigation = await client.applyWindowStyle(to: navigationView)
+            let styledNavigation = await clientUnwrapped.applyWindowStyle(to: navigationView)
             XCTAssertNotNil(styledNavigation, "Should apply window style to navigation view")
         }
 
         func testApplyToolbarStyleToViews() async {
             let textView = AnyView(Text("Toolbar Style Test"))
-            let styledText = await client.applyToolbarStyle(to: textView)
+            let styledText = await clientUnwrapped.applyToolbarStyle(to: textView)
             XCTAssertNotNil(styledText, "Should apply toolbar style to text view")
 
             let listView = AnyView(List { Text("List Item") })
-            let styledList = await client.applyToolbarStyle(to: listView)
+            let styledList = await clientUnwrapped.applyToolbarStyle(to: listView)
             XCTAssertNotNil(styledList, "Should apply toolbar style to list view")
         }
 
         func testCreateDropZone() async {
             var droppedItems: [Any] = []
 
-            let dropZone = await client.createDropZone(
+            let dropZone = await clientUnwrapped.createDropZone(
                 content: {
                     Text("Drop Zone Content")
                 },
@@ -246,7 +258,7 @@
 
         func testComplexViewComposition() async {
             // Test creating complex view hierarchies
-            let complexView = await client.createNavigationStack {
+            let complexView = await clientUnwrapped.createNavigationStack {
                 VStack {
                     Text("Header")
                     List {
@@ -273,8 +285,8 @@
             let originalView = AnyView(Text("Chaining Test"))
 
             // Apply multiple styles in sequence
-            let windowStyled = await client.applyWindowStyle(to: originalView)
-            let toolbarStyled = await client.applyToolbarStyle(to: windowStyled)
+            let windowStyled = await clientUnwrapped.applyWindowStyle(to: originalView)
+            let toolbarStyled = await clientUnwrapped.applyToolbarStyle(to: windowStyled)
 
             XCTAssertNotNil(toolbarStyled, "Should handle style chaining")
         }
@@ -286,7 +298,7 @@
             let startTime = CFAbsoluteTimeGetCurrent()
 
             for i in 0 ..< iterations {
-                _ = await client.createNavigationStack {
+                _ = await clientUnwrapped.createNavigationStack {
                     Text("Performance Test \(i)")
                 }
             }
@@ -303,12 +315,12 @@
 
         func testConcurrentViewCreation() async {
             // Test concurrent view creation operations
-            async let nav1 = client.createNavigationStack { Text("Concurrent 1") }
-            async let nav2 = client.createNavigationStack { Text("Concurrent 2") }
-            async let share1 = client.createShareSheet(items: ["Concurrent Share 1"])
-            async let share2 = client.createShareSheet(items: ["Concurrent Share 2"])
-            async let picker1 = client.createDocumentPicker { _ in }
-            async let picker2 = client.createImagePicker { _ in }
+            async let nav1 = clientUnwrapped.createNavigationStack { Text("Concurrent 1") }
+            async let nav2 = clientUnwrapped.createNavigationStack { Text("Concurrent 2") }
+            async let share1 = clientUnwrapped.createShareSheet(items: ["Concurrent Share 1"])
+            async let share2 = clientUnwrapped.createShareSheet(items: ["Concurrent Share 2"])
+            async let picker1 = clientUnwrapped.createDocumentPicker { _ in }
+            async let picker2 = clientUnwrapped.createImagePicker { _ in }
 
             let (n1, n2, s1, s2, p1, p2) = await (nav1, nav2, share1, share2, picker1, picker2)
 
@@ -327,7 +339,7 @@
         // MARK: - Convenience Accessor Tests
 
         func testConvenienceStaticAccessor() async {
-            let serviceClient = iOSPlatformViewServiceClient.live
+            let serviceClient = IOSPlatformViewServiceClient.live
 
             // Test that the convenience accessor works
             let navigationStack = await serviceClient._createNavigationStack {

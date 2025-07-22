@@ -17,10 +17,12 @@ public final class LLMKeychainService: @unchecked Sendable {
     /// Store API key for a provider
     public func storeAPIKey(_ key: String, for provider: String) throws {
         let account = accountName(for: provider)
-        let data = key.data(using: .utf8)!
+        guard let data = key.data(using: .utf8) else {
+            throw LLMKeychainError.encodingError("Failed to encode API key")
+        }
 
         // Check if key already exists
-        if let _ = try? retrieveAPIKey(for: provider) {
+        if (try? retrieveAPIKey(for: provider)) != nil {
             // Update existing key
             let query: [String: Any] = [
                 kSecClass as String: kSecClassGenericPassword,

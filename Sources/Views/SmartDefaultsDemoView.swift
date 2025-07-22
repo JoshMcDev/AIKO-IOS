@@ -24,7 +24,7 @@ struct SmartDefaultsDemoView: View {
     let store: StoreOf<SmartDefaultsDemoFeature>
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             ScrollView {
                 VStack(spacing: 20) {
                     headerSection
@@ -38,7 +38,7 @@ struct SmartDefaultsDemoView: View {
                         formFieldsSection(viewStore)
                         confidenceMetricsSection(viewStore)
                         actionButtonsSection(viewStore)
-                    }
+        })
                 }
                 .padding()
             }

@@ -5,9 +5,9 @@
     import UIKit
 
     /// iOS Font Scaling Service Client using SimpleServiceTemplate
-    public final class iOSFontScalingServiceClient: SimpleServiceTemplate {
+    public final class IOSFontScalingServiceClient: SimpleServiceTemplate {
         @MainActor
-        lazy var service = iOSFontScalingService()
+        lazy var service = IOSFontScalingService()
 
         override public init() {
             super.init()
@@ -29,7 +29,7 @@
     public extension FontScalingServiceClient {
         @MainActor
         static var iOS: Self {
-            let client = iOSFontScalingServiceClient()
+            let client = IOSFontScalingServiceClient()
 
             return Self(
                 _scaledFontSize: { baseSize, sendableTextStyle, sendableSizeCategory in
@@ -53,7 +53,7 @@
     }
 
     // Convenience static accessor
-    public enum iOSFontScalingServiceClientLive {
+    public enum IOSFontScalingServiceClientLive {
         @MainActor
         public static var live: FontScalingServiceClient {
             FontScalingServiceClient.iOS

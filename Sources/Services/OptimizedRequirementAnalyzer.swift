@@ -60,8 +60,7 @@ actor APIRequestBatcher {
         do {
             let results = try await batchAnalyze(requirements: requirements)
 
-            for (index, result) in results.enumerated() {
-                if index < batch.count {
+            for (index, result) in results.enumerated() where index < batch.count {
                     batch[index].1.resume(returning: result)
                 }
             }
@@ -240,8 +239,7 @@ extension OptimizedRequirementAnalyzer: DependencyKey {
                     let requirementsToAnalyze = uncachedRequirements.map(\.1)
                     let results = try await batcher.batchAnalyze(requirements: requirementsToAnalyze)
 
-                    for (i, result) in results.enumerated() {
-                        if i < uncachedRequirements.count {
+                    for (i, result) in results.enumerated() where i < uncachedRequirements.count {
                             let originalIndex = uncachedRequirements[i].0
                             apiResults.append((originalIndex, result))
 

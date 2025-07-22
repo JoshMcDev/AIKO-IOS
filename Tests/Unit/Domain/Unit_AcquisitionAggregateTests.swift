@@ -1,18 +1,28 @@
 @testable import AIKO
 import XCTest
 
-final class Unit_AcquisitionAggregateTests: XCTestCase {
+final class UnitAcquisitionAggregateTests: XCTestCase {
     // MARK: - Properties
 
-    private var sut: AcquisitionAggregate!
-    private var mockEventPublisher: MockDomainEventPublisher!
+    private var sut: AcquisitionAggregate?
+    private var mockEventPublisherUnwrapped: MockDomainEventPublisher?
+
+    private var sutUnwrapped: AcquisitionAggregate {
+        guard let sut = sut else { fatalError("sut not initialized") }
+        return sut
+    }
+
+    private var mockEventPublisherUnwrappedUnwrapped: MockDomainEventPublisher {
+        guard let mockEventPublisherUnwrapped = mockEventPublisherUnwrapped else { fatalError("mockEventPublisherUnwrapped not initialized") }
+        return mockEventPublisherUnwrapped
+    }
 
     // MARK: - Setup/Teardown
 
     override func setUp() {
         super.setUp()
 
-        mockEventPublisher = MockDomainEventPublisher()
+        mockEventPublisherUnwrapped = MockDomainEventPublisher()
 
         sut = AcquisitionAggregate(
             id: UUID(),
@@ -23,13 +33,13 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
             updatedAt: Date(),
             documents: [],
             forms: [],
-            eventPublisher: mockEventPublisher
+            eventPublisher: mockEventPublisherUnwrapped
         )
     }
 
     override func tearDown() {
         sut = nil
-        mockEventPublisher = nil
+        mockEventPublisherUnwrapped = nil
         super.tearDown()
     }
 
@@ -54,7 +64,7 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
             updatedAt: updatedAt,
             documents: [],
             forms: [],
-            eventPublisher: mockEventPublisher
+            eventPublisher: mockEventPublisherUnwrapped
         )
 
         // Then
@@ -73,19 +83,19 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
     func testUpdateTitle_Success() {
         // Given
         let newTitle = "Updated Title"
-        let originalUpdatedAt = sut.updatedAt
+        let originalUpdatedAt = sutUnwrapped.updatedAt
 
         // When
-        sut.updateTitle(newTitle)
+        sutUnwrapped.updateTitle(newTitle)
 
         // Then
-        XCTAssertEqual(sut.title, newTitle)
-        XCTAssertGreaterThan(sut.updatedAt, originalUpdatedAt)
+        XCTAssertEqual(sutUnwrapped.title, newTitle)
+        XCTAssertGreaterThan(sutUnwrapped.updatedAt, originalUpdatedAt)
 
         // Verify event published
-        XCTAssertEqual(mockEventPublisher.publishedEvents.count, 1)
-        if let event = mockEventPublisher.publishedEvents.first as? AcquisitionUpdatedEvent {
-            XCTAssertEqual(event.aggregateId, sut.id)
+        XCTAssertEqual(mockEventPublisherUnwrapped.publishedEvents.count, 1)
+        if let event = mockEventPublisherUnwrapped.publishedEvents.first as? AcquisitionUpdatedEvent {
+            XCTAssertEqual(event.aggregateId, sutUnwrapped.id)
             XCTAssertEqual(event.field, "title")
             XCTAssertEqual(event.newValue as? String, newTitle)
         } else {
@@ -96,18 +106,18 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
     func testUpdateRequirements_Success() {
         // Given
         let newRequirements = "Updated requirements"
-        let originalUpdatedAt = sut.updatedAt
+        let originalUpdatedAt = sutUnwrapped.updatedAt
 
         // When
-        sut.updateRequirements(newRequirements)
+        sutUnwrapped.updateRequirements(newRequirements)
 
         // Then
-        XCTAssertEqual(sut.requirements, newRequirements)
-        XCTAssertGreaterThan(sut.updatedAt, originalUpdatedAt)
+        XCTAssertEqual(sutUnwrapped.requirements, newRequirements)
+        XCTAssertGreaterThan(sutUnwrapped.updatedAt, originalUpdatedAt)
 
         // Verify event published
-        XCTAssertEqual(mockEventPublisher.publishedEvents.count, 1)
-        if let event = mockEventPublisher.publishedEvents.first as? AcquisitionUpdatedEvent {
+        XCTAssertEqual(mockEventPublisherUnwrapped.publishedEvents.count, 1)
+        if let event = mockEventPublisherUnwrapped.publishedEvents.first as? AcquisitionUpdatedEvent {
             XCTAssertEqual(event.field, "requirements")
             XCTAssertEqual(event.newValue as? String, newRequirements)
         }
@@ -115,15 +125,15 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
 
     func testUpdateStatus_ValidTransition_Success() {
         // Given
-        XCTAssertEqual(sut.status, .draft)
+        XCTAssertEqual(sutUnwrapped.status, .draft)
 
         // When - Draft to In Review
-        sut.updateStatus(.inReview)
+        sutUnwrapped.updateStatus(.inReview)
 
         // Then
-        XCTAssertEqual(sut.status, .inReview)
-        XCTAssertEqual(mockEventPublisher.publishedEvents.count, 1)
-        if let event = mockEventPublisher.publishedEvents.first as? AcquisitionStatusChangedEvent {
+        XCTAssertEqual(sutUnwrapped.status, .inReview)
+        XCTAssertEqual(mockEventPublisherUnwrapped.publishedEvents.count, 1)
+        if let event = mockEventPublisherUnwrapped.publishedEvents.first as? AcquisitionStatusChangedEvent {
             XCTAssertEqual(event.oldStatus, .draft)
             XCTAssertEqual(event.newStatus, .inReview)
         }
@@ -131,15 +141,15 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
 
     func testUpdateStatus_InvalidTransition_DoesNotUpdate() {
         // Given
-        sut.updateStatus(.completed) // Set to completed
-        mockEventPublisher.reset()
+        sutUnwrapped.updateStatus(.completed) // Set to completed
+        mockEventPublisherUnwrapped.reset()
 
         // When - Try to go back to draft (invalid)
-        sut.updateStatus(.draft)
+        sutUnwrapped.updateStatus(.draft)
 
         // Then
-        XCTAssertEqual(sut.status, .completed) // Should remain completed
-        XCTAssertEqual(mockEventPublisher.publishedEvents.count, 0) // No event published
+        XCTAssertEqual(sutUnwrapped.status, .completed) // Should remain completed
+        XCTAssertEqual(mockEventPublisherUnwrapped.publishedEvents.count, 0) // No event published
     }
 
     // MARK: - Document Management Tests
@@ -155,16 +165,16 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
         )
 
         // When
-        sut.addDocument(document)
+        sutUnwrapped.addDocument(document)
 
         // Then
-        XCTAssertEqual(sut.documents.count, 1)
-        XCTAssertEqual(sut.documents.first?.id, document.id)
+        XCTAssertEqual(sutUnwrapped.documents.count, 1)
+        XCTAssertEqual(sutUnwrapped.documents.first?.id, document.id)
 
         // Verify event published
-        XCTAssertEqual(mockEventPublisher.publishedEvents.count, 1)
-        if let event = mockEventPublisher.publishedEvents.first as? DocumentAddedEvent {
-            XCTAssertEqual(event.aggregateId, sut.id)
+        XCTAssertEqual(mockEventPublisherUnwrapped.publishedEvents.count, 1)
+        if let event = mockEventPublisherUnwrapped.publishedEvents.first as? DocumentAddedEvent {
+            XCTAssertEqual(event.aggregateId, sutUnwrapped.id)
             XCTAssertEqual(event.documentId, document.id)
             XCTAssertEqual(event.fileName, document.fileName)
         }
@@ -179,15 +189,15 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
             contentSummary: nil,
             createdAt: Date()
         )
-        sut.addDocument(document)
-        mockEventPublisher.reset()
+        sutUnwrapped.addDocument(document)
+        mockEventPublisherUnwrapped.reset()
 
         // When - Try to add same document again
-        sut.addDocument(document)
+        sutUnwrapped.addDocument(document)
 
         // Then
-        XCTAssertEqual(sut.documents.count, 1) // Still only one
-        XCTAssertEqual(mockEventPublisher.publishedEvents.count, 0) // No new event
+        XCTAssertEqual(sutUnwrapped.documents.count, 1) // Still only one
+        XCTAssertEqual(mockEventPublisherUnwrapped.publishedEvents.count, 0) // No new event
     }
 
     func testRemoveDocument_Success() {
@@ -199,19 +209,19 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
             contentSummary: nil,
             createdAt: Date()
         )
-        sut.addDocument(document)
-        mockEventPublisher.reset()
+        sutUnwrapped.addDocument(document)
+        mockEventPublisherUnwrapped.reset()
 
         // When
-        sut.removeDocument(withId: document.id)
+        sutUnwrapped.removeDocument(withId: document.id)
 
         // Then
-        XCTAssertEqual(sut.documents.count, 0)
+        XCTAssertEqual(sutUnwrapped.documents.count, 0)
 
         // Verify event published
-        XCTAssertEqual(mockEventPublisher.publishedEvents.count, 1)
-        if let event = mockEventPublisher.publishedEvents.first as? DocumentRemovedEvent {
-            XCTAssertEqual(event.aggregateId, sut.id)
+        XCTAssertEqual(mockEventPublisherUnwrapped.publishedEvents.count, 1)
+        if let event = mockEventPublisherUnwrapped.publishedEvents.first as? DocumentRemovedEvent {
+            XCTAssertEqual(event.aggregateId, sutUnwrapped.id)
             XCTAssertEqual(event.documentId, document.id)
         }
     }
@@ -221,11 +231,11 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
         let nonExistentId = UUID()
 
         // When
-        sut.removeDocument(withId: nonExistentId)
+        sutUnwrapped.removeDocument(withId: nonExistentId)
 
         // Then
-        XCTAssertEqual(sut.documents.count, 0)
-        XCTAssertEqual(mockEventPublisher.publishedEvents.count, 0)
+        XCTAssertEqual(sutUnwrapped.documents.count, 0)
+        XCTAssertEqual(mockEventPublisherUnwrapped.publishedEvents.count, 0)
     }
 
     // MARK: - Form Management Tests
@@ -235,16 +245,16 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
         let form = createTestForm()
 
         // When
-        sut.addForm(form)
+        sutUnwrapped.addForm(form)
 
         // Then
-        XCTAssertEqual(sut.forms.count, 1)
-        XCTAssertTrue(sut.forms.contains { $0.formNumber == form.formNumber })
+        XCTAssertEqual(sutUnwrapped.forms.count, 1)
+        XCTAssertTrue(sutUnwrapped.forms.contains { $0.formNumber == form.formNumber })
 
         // Verify event published
-        XCTAssertEqual(mockEventPublisher.publishedEvents.count, 1)
-        if let event = mockEventPublisher.publishedEvents.first as? FormAddedEvent {
-            XCTAssertEqual(event.aggregateId, sut.id)
+        XCTAssertEqual(mockEventPublisherUnwrapped.publishedEvents.count, 1)
+        if let event = mockEventPublisherUnwrapped.publishedEvents.first as? FormAddedEvent {
+            XCTAssertEqual(event.aggregateId, sutUnwrapped.id)
             XCTAssertEqual(event.formNumber, form.formNumber)
             XCTAssertEqual(event.formType, String(describing: type(of: form)))
         }
@@ -253,19 +263,19 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
     func testRemoveForm_Success() {
         // Given
         let form = createTestForm()
-        sut.addForm(form)
-        mockEventPublisher.reset()
+        sutUnwrapped.addForm(form)
+        mockEventPublisherUnwrapped.reset()
 
         // When
-        sut.removeForm(withNumber: form.formNumber)
+        sutUnwrapped.removeForm(withNumber: form.formNumber)
 
         // Then
-        XCTAssertEqual(sut.forms.count, 0)
+        XCTAssertEqual(sutUnwrapped.forms.count, 0)
 
         // Verify event published
-        XCTAssertEqual(mockEventPublisher.publishedEvents.count, 1)
-        if let event = mockEventPublisher.publishedEvents.first as? FormRemovedEvent {
-            XCTAssertEqual(event.aggregateId, sut.id)
+        XCTAssertEqual(mockEventPublisherUnwrapped.publishedEvents.count, 1)
+        if let event = mockEventPublisherUnwrapped.publishedEvents.first as? FormRemovedEvent {
+            XCTAssertEqual(event.aggregateId, sutUnwrapped.id)
             XCTAssertEqual(event.formNumber, form.formNumber)
         }
     }
@@ -274,18 +284,18 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
 
     func testIsValidForSubmission_AllRequirementsMet_ReturnsTrue() {
         // Given
-        sut.updateStatus(.approved)
-        sut.addDocument(Document(
+        sutUnwrapped.updateStatus(.approved)
+        sutUnwrapped.addDocument(Document(
             id: UUID(),
             fileName: "requirements.pdf",
             data: Data("content".utf8),
             contentSummary: nil,
             createdAt: Date()
         ))
-        sut.addForm(createTestForm())
+        sutUnwrapped.addForm(createTestForm())
 
         // When
-        let isValid = sut.isValidForSubmission()
+        let isValid = sutUnwrapped.isValidForSubmission()
 
         // Then
         XCTAssertTrue(isValid)
@@ -293,17 +303,17 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
 
     func testIsValidForSubmission_WrongStatus_ReturnsFalse() {
         // Given - In draft status
-        sut.addDocument(Document(
+        sutUnwrapped.addDocument(Document(
             id: UUID(),
             fileName: "requirements.pdf",
             data: Data("content".utf8),
             contentSummary: nil,
             createdAt: Date()
         ))
-        sut.addForm(createTestForm())
+        sutUnwrapped.addForm(createTestForm())
 
         // When
-        let isValid = sut.isValidForSubmission()
+        let isValid = sutUnwrapped.isValidForSubmission()
 
         // Then
         XCTAssertFalse(isValid)
@@ -311,11 +321,11 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
 
     func testIsValidForSubmission_NoDocuments_ReturnsFalse() {
         // Given
-        sut.updateStatus(.approved)
-        sut.addForm(createTestForm())
+        sutUnwrapped.updateStatus(.approved)
+        sutUnwrapped.addForm(createTestForm())
 
         // When
-        let isValid = sut.isValidForSubmission()
+        let isValid = sutUnwrapped.isValidForSubmission()
 
         // Then
         XCTAssertFalse(isValid)
@@ -323,8 +333,8 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
 
     func testIsValidForSubmission_NoForms_ReturnsFalse() {
         // Given
-        sut.updateStatus(.approved)
-        sut.addDocument(Document(
+        sutUnwrapped.updateStatus(.approved)
+        sutUnwrapped.addDocument(Document(
             id: UUID(),
             fileName: "requirements.pdf",
             data: Data("content".utf8),
@@ -333,7 +343,7 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
         ))
 
         // When
-        let isValid = sut.isValidForSubmission()
+        let isValid = sutUnwrapped.isValidForSubmission()
 
         // Then
         XCTAssertFalse(isValid)
@@ -343,9 +353,9 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
 
     func testGetDomainEvents_ReturnsAllEvents() {
         // Given
-        sut.updateTitle("New Title")
-        sut.updateStatus(.inReview)
-        sut.addDocument(Document(
+        sutUnwrapped.updateTitle("New Title")
+        sutUnwrapped.updateStatus(.inReview)
+        sutUnwrapped.addDocument(Document(
             id: UUID(),
             fileName: "test.pdf",
             data: Data("test".utf8),
@@ -354,7 +364,7 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
         ))
 
         // When
-        let events = sut.getDomainEvents()
+        let events = sutUnwrapped.getDomainEvents()
 
         // Then
         XCTAssertEqual(events.count, 3)
@@ -365,12 +375,12 @@ final class Unit_AcquisitionAggregateTests: XCTestCase {
 
     func testClearDomainEvents_RemovesAllEvents() {
         // Given
-        sut.updateTitle("New Title")
-        sut.updateStatus(.inReview)
+        sutUnwrapped.updateTitle("New Title")
+        sutUnwrapped.updateStatus(.inReview)
 
         // When
-        sut.clearDomainEvents()
-        let events = sut.getDomainEvents()
+        sutUnwrapped.clearDomainEvents()
+        let events = sutUnwrapped.getDomainEvents()
 
         // Then
         XCTAssertEqual(events.count, 0)

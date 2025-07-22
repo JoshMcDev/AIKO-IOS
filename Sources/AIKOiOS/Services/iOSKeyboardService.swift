@@ -3,7 +3,7 @@
     import UIKit
 
     /// iOS implementation of keyboard service
-    public final class iOSKeyboardService: KeyboardServiceProtocol, @unchecked Sendable {
+    public final class IOSKeyboardService: KeyboardServiceProtocol, @unchecked Sendable {
         public typealias KeyboardType = UIKeyboardType
 
         public var defaultKeyboardType: UIKeyboardType {

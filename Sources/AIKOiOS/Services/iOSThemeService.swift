@@ -3,7 +3,7 @@
     import SwiftUI
     import UIKit
 
-    public final class iOSThemeService: ThemeServiceProtocol {
+    public final class IOSThemeService: ThemeServiceProtocol {
         public init() {}
 
         public func backgroundColor() -> Color {

@@ -161,7 +161,7 @@ private func generateSimulatedEvents(count: Int) -> [CacheAccessEvent] {
 
         // Use common keys 70% of the time
         let key = Double.random(in: 0 ... 1) < 0.7 ?
-            commonKeys.randomElement()! :
+            commonKeys.randomElement() ?? "default:key:\(UUID().uuidString.prefix(8))" :
             "random:key:\(UUID().uuidString.prefix(8))"
 
         // Vary latency based on tier and hit type

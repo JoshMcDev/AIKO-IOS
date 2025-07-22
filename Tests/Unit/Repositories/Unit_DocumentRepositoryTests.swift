@@ -2,11 +2,21 @@
 import CoreData
 import XCTest
 
-final class Unit_DocumentRepositoryTests: XCTestCase {
+final class UnitDocumentRepositoryTests: XCTestCase {
     // MARK: - Properties
 
-    private var sut: DocumentRepository!
-    private var context: NSManagedObjectContext!
+    private var sut: DocumentRepository?
+    private var context: NSManagedObjectContext?
+
+    private var sutUnwrapped: DocumentRepository {
+        guard let sut = sut else { fatalError("sut not initialized") }
+        return sut
+    }
+
+    private var contextUnwrapped: NSManagedObjectContext {
+        guard let context = context else { fatalError("context not initialized") }
+        return context
+    }
 
     // MARK: - Setup/Teardown
 
@@ -19,10 +29,10 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
         try! coordinator.addPersistentStore(ofType: NSInMemoryStoreType, configurationName: nil, at: nil, options: nil)
 
         context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
-        context.persistentStoreCoordinator = coordinator
+        contextUnwrapped.persistentStoreCoordinator = coordinator
 
         // Create repository
-        sut = DocumentRepository(context: context)
+        sut = DocumentRepository(context: contextUnwrapped)
     }
 
     override func tearDown() {
@@ -41,7 +51,7 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
         let contentSummary = "This is a test document"
 
         // When
-        let savedDoc = try await sut.saveDocument(
+        let savedDoc = try await sutUnwrapped.saveDocument(
             fileName: fileName,
             data: data,
             contentSummary: contentSummary,
@@ -59,7 +69,7 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
         // Verify persistence
         let request = NSFetchRequest<DocumentData>(entityName: "DocumentData")
         request.predicate = NSPredicate(format: "id == %@", savedDoc.id as CVarArg)
-        let results = try context.fetch(request)
+        let results = try contextUnwrapped.fetch(request)
         XCTAssertEqual(results.count, 1)
         XCTAssertEqual(results.first?.fileName, fileName)
     }
@@ -72,7 +82,7 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try await sut.saveDocument(
+            _ = try await sutUnwrapped.saveDocument(
                 fileName: fileName,
                 data: data,
                 contentSummary: nil,
@@ -92,7 +102,7 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try await sut.saveDocument(
+            _ = try await sutUnwrapped.saveDocument(
                 fileName: fileName,
                 data: data,
                 contentSummary: nil,
@@ -109,7 +119,7 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
     func testGetDocument_ExistingDocument_Success() async throws {
         // Given
         let acquisitionId = UUID()
-        let saved = try await sut.saveDocument(
+        let saved = try await sutUnwrapped.saveDocument(
             fileName: "test.pdf",
             data: Data("content".utf8),
             contentSummary: "Summary",
@@ -117,7 +127,7 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
         )
 
         // When
-        let retrieved = try await sut.getDocument(id: saved.id)
+        let retrieved = try await sutUnwrapped.getDocument(id: saved.id)
 
         // Then
         XCTAssertNotNil(retrieved)
@@ -132,7 +142,7 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
         let nonExistentId = UUID()
 
         // When
-        let retrieved = try await sut.getDocument(id: nonExistentId)
+        let retrieved = try await sutUnwrapped.getDocument(id: nonExistentId)
 
         // Then
         XCTAssertNil(retrieved)
@@ -141,13 +151,13 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
     func testGetDocumentsForAcquisition_Success() async throws {
         // Given
         let acquisitionId = UUID()
-        let doc1 = try await sut.saveDocument(
+        let doc1 = try await sutUnwrapped.saveDocument(
             fileName: "doc1.pdf",
             data: Data("content1".utf8),
             contentSummary: "Summary 1",
             acquisitionId: acquisitionId
         )
-        let doc2 = try await sut.saveDocument(
+        let doc2 = try await sutUnwrapped.saveDocument(
             fileName: "doc2.docx",
             data: Data("content2".utf8),
             contentSummary: "Summary 2",
@@ -156,7 +166,7 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
 
         // Different acquisition
         let otherAcquisitionId = UUID()
-        _ = try await sut.saveDocument(
+        _ = try await sutUnwrapped.saveDocument(
             fileName: "other.pdf",
             data: Data("other".utf8),
             contentSummary: nil,
@@ -164,7 +174,7 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
         )
 
         // When
-        let documents = try await sut.getDocumentsForAcquisition(id: acquisitionId)
+        let documents = try await sutUnwrapped.getDocumentsForAcquisition(id: acquisitionId)
 
         // Then
         XCTAssertEqual(documents.count, 2)
@@ -183,7 +193,7 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
         let acquisitionId = UUID()
 
         // When
-        let documents = try await sut.getDocumentsForAcquisition(id: acquisitionId)
+        let documents = try await sutUnwrapped.getDocumentsForAcquisition(id: acquisitionId)
 
         // Then
         XCTAssertEqual(documents.count, 0)
@@ -194,7 +204,7 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
     func testDeleteDocument_Success() async throws {
         // Given
         let acquisitionId = UUID()
-        let doc = try await sut.saveDocument(
+        let doc = try await sutUnwrapped.saveDocument(
             fileName: "to-delete.pdf",
             data: Data("content".utf8),
             contentSummary: nil,
@@ -202,16 +212,16 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
         )
 
         // When
-        try await sut.deleteDocument(id: doc.id)
+        try await sutUnwrapped.deleteDocument(id: doc.id)
 
         // Then
-        let retrieved = try await sut.getDocument(id: doc.id)
+        let retrieved = try await sutUnwrapped.getDocument(id: doc.id)
         XCTAssertNil(retrieved)
 
         // Verify deletion from Core Data
         let request = NSFetchRequest<DocumentData>(entityName: "DocumentData")
         request.predicate = NSPredicate(format: "id == %@", doc.id as CVarArg)
-        let results = try context.fetch(request)
+        let results = try contextUnwrapped.fetch(request)
         XCTAssertEqual(results.count, 0)
     }
 
@@ -221,7 +231,7 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
 
         // When/Then
         do {
-            try await sut.deleteDocument(id: nonExistentId)
+            try await sutUnwrapped.deleteDocument(id: nonExistentId)
             XCTFail("Expected error for non-existent document")
         } catch {
             XCTAssertTrue(error is DomainError)
@@ -231,13 +241,13 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
     func testDeleteAllDocumentsForAcquisition_Success() async throws {
         // Given
         let acquisitionId = UUID()
-        _ = try await sut.saveDocument(
+        _ = try await sutUnwrapped.saveDocument(
             fileName: "doc1.pdf",
             data: Data("content1".utf8),
             contentSummary: nil,
             acquisitionId: acquisitionId
         )
-        _ = try await sut.saveDocument(
+        _ = try await sutUnwrapped.saveDocument(
             fileName: "doc2.pdf",
             data: Data("content2".utf8),
             contentSummary: nil,
@@ -246,7 +256,7 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
 
         // Different acquisition (should not be deleted)
         let otherAcquisitionId = UUID()
-        let otherDoc = try await sut.saveDocument(
+        let otherDoc = try await sutUnwrapped.saveDocument(
             fileName: "other.pdf",
             data: Data("other".utf8),
             contentSummary: nil,
@@ -254,13 +264,13 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
         )
 
         // When
-        try await sut.deleteAllDocumentsForAcquisition(id: acquisitionId)
+        try await sutUnwrapped.deleteAllDocumentsForAcquisition(id: acquisitionId)
 
         // Then
-        let remaining = try await sut.getDocumentsForAcquisition(id: acquisitionId)
+        let remaining = try await sutUnwrapped.getDocumentsForAcquisition(id: acquisitionId)
         XCTAssertEqual(remaining.count, 0)
 
-        let otherRemaining = try await sut.getDocument(id: otherDoc.id)
+        let otherRemaining = try await sutUnwrapped.getDocument(id: otherDoc.id)
         XCTAssertNotNil(otherRemaining)
     }
 
@@ -269,7 +279,7 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
     func testUpdateDocumentSummary_Success() async throws {
         // Given
         let acquisitionId = UUID()
-        let doc = try await sut.saveDocument(
+        let doc = try await sutUnwrapped.saveDocument(
             fileName: "test.pdf",
             data: Data("content".utf8),
             contentSummary: "Original summary",
@@ -278,10 +288,10 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
         let newSummary = "Updated summary"
 
         // When
-        try await sut.updateDocumentSummary(id: doc.id, summary: newSummary)
+        try await sutUnwrapped.updateDocumentSummary(id: doc.id, summary: newSummary)
 
         // Then
-        let updated = try await sut.getDocument(id: doc.id)
+        let updated = try await sutUnwrapped.getDocument(id: doc.id)
         XCTAssertNotNil(updated)
         XCTAssertEqual(updated?.contentSummary, newSummary)
         XCTAssertEqual(updated?.fileName, doc.fileName) // Other fields unchanged
@@ -294,7 +304,7 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
 
         // When/Then
         do {
-            try await sut.updateDocumentSummary(id: nonExistentId, summary: "New summary")
+            try await sutUnwrapped.updateDocumentSummary(id: nonExistentId, summary: "New summary")
             XCTFail("Expected error for non-existent document")
         } catch {
             XCTAssertTrue(error is DomainError)
@@ -308,19 +318,19 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
         let acquisitionId1 = UUID()
         let acquisitionId2 = UUID()
 
-        _ = try await sut.saveDocument(
+        _ = try await sutUnwrapped.saveDocument(
             fileName: "contract-draft-v1.pdf",
             data: Data("content1".utf8),
             contentSummary: "Initial draft",
             acquisitionId: acquisitionId1
         )
-        _ = try await sut.saveDocument(
+        _ = try await sutUnwrapped.saveDocument(
             fileName: "contract-final.pdf",
             data: Data("content2".utf8),
             contentSummary: "Final version",
             acquisitionId: acquisitionId1
         )
-        _ = try await sut.saveDocument(
+        _ = try await sutUnwrapped.saveDocument(
             fileName: "invoice.pdf",
             data: Data("content3".utf8),
             contentSummary: "Monthly invoice",
@@ -328,9 +338,9 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
         )
 
         // When
-        let contractDocs = try await sut.searchDocuments(query: "contract")
-        let invoiceDocs = try await sut.searchDocuments(query: "invoice")
-        let pdfDocs = try await sut.searchDocuments(query: ".pdf")
+        let contractDocs = try await sutUnwrapped.searchDocuments(query: "contract")
+        let invoiceDocs = try await sutUnwrapped.searchDocuments(query: "invoice")
+        let pdfDocs = try await sutUnwrapped.searchDocuments(query: ".pdf")
 
         // Then
         XCTAssertEqual(contractDocs.count, 2)
@@ -342,19 +352,19 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
         // Given
         let acquisitionId = UUID()
 
-        _ = try await sut.saveDocument(
+        _ = try await sutUnwrapped.saveDocument(
             fileName: "doc1.pdf",
             data: Data("content1".utf8),
             contentSummary: "Requirements analysis document",
             acquisitionId: acquisitionId
         )
-        _ = try await sut.saveDocument(
+        _ = try await sutUnwrapped.saveDocument(
             fileName: "doc2.pdf",
             data: Data("content2".utf8),
             contentSummary: "Technical specifications",
             acquisitionId: acquisitionId
         )
-        _ = try await sut.saveDocument(
+        _ = try await sutUnwrapped.saveDocument(
             fileName: "doc3.pdf",
             data: Data("content3".utf8),
             contentSummary: nil, // No summary
@@ -362,8 +372,8 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
         )
 
         // When
-        let requirementsDocs = try await sut.searchDocuments(query: "requirements")
-        let technicalDocs = try await sut.searchDocuments(query: "technical")
+        let requirementsDocs = try await sutUnwrapped.searchDocuments(query: "requirements")
+        let technicalDocs = try await sutUnwrapped.searchDocuments(query: "technical")
 
         // Then
         XCTAssertEqual(requirementsDocs.count, 1)
@@ -379,7 +389,7 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
             Task {
                 let acquisitionId = UUID()
                 for i in 1 ... 100 {
-                    _ = try await sut.saveDocument(
+                    _ = try await sutUnwrapped.saveDocument(
                         fileName: "document-\(i).pdf",
                         data: Data("Content \(i)".utf8),
                         contentSummary: "Summary \(i)",
@@ -399,7 +409,7 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
         Task {
             let acquisitionId = UUID()
             for i in 1 ... 200 {
-                _ = try await sut.saveDocument(
+                _ = try await sutUnwrapped.saveDocument(
                     fileName: i % 2 == 0 ? "contract-\(i).pdf" : "invoice-\(i).pdf",
                     data: Data("Content \(i)".utf8),
                     contentSummary: "Document \(i)",
@@ -415,7 +425,7 @@ final class Unit_DocumentRepositoryTests: XCTestCase {
             let searchExpectation = self.expectation(description: "Search documents")
 
             Task {
-                _ = try await sut.searchDocuments(query: "contract")
+                _ = try await sutUnwrapped.searchDocuments(query: "contract")
                 searchExpectation.fulfill()
             }
 

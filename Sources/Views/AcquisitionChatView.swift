@@ -6,14 +6,14 @@ struct AcquisitionChatView: View {
     let store: StoreOf<AcquisitionChatFeature>
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             ZStack {
                 // Background that extends to safe area
                 Color.black
                     .ignoresSafeArea()
 
                 chatContent(viewStore: viewStore)
-            }
+        })
             .preferredColorScheme(.dark)
             .alert(
                 "Save Acquisition?",
@@ -244,7 +244,7 @@ private func generateChatHistoryContent(viewStore: ViewStore<AcquisitionChatFeat
 
     // Add all messages
     for message in viewStore.messages {
-        let role = message.role == .user ? "User" : "Assistant"
+        let role = message.role == .user ? "User": "Assistant"
         content += "\(role): \(message.content)\n\n"
     }
 
@@ -338,8 +338,8 @@ struct AcquisitionChatBubble: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: Theme.Spacing.small) {
-            VStack(alignment: message.role == .user ? .trailing : .leading, spacing: 4) {
-                Text(message.role == .user ? "You" : "AIKO")
+            VStack(alignment: message.role == .user ? .trailing: .leading, spacing: 4) {
+                Text(message.role == .user ? "You": "AIKO")
                     .font(.caption)
                     .foregroundColor(.secondary)
 
@@ -347,11 +347,11 @@ struct AcquisitionChatBubble: View {
                     .padding(Theme.Spacing.medium)
                     .background(
                         RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
-                            .fill(message.role == .user ? Theme.Colors.aikoAccent : Theme.Colors.aikoSecondary)
+                            .fill(message.role == .user ? Theme.Colors.aikoAccent: Theme.Colors.aikoSecondary)
                     )
-                    .frame(maxWidth: .infinity, alignment: message.role == .user ? .trailing : .leading)
+                    .frame(maxWidth: .infinity, alignment: message.role == .user ? .trailing: .leading)
             }
-            .frame(maxWidth: .infinity, alignment: message.role == .user ? .trailing : .leading)
+            .frame(maxWidth: .infinity, alignment: message.role == .user ? .trailing: .leading)
 
             if message.role == .user {
                 Image(systemName: "person.circle.fill")
@@ -372,7 +372,7 @@ struct TypingIndicator: View {
                 Circle()
                     .fill(Color.blue)
                     .frame(width: 8, height: 8)
-                    .scaleEffect(animationPhase == index ? 1.3 : 1.0)
+                    .scaleEffect(animationPhase == index ? 1.3: 1.0)
                     .animation(
                         Animation.easeInOut(duration: 0.5)
                             .repeatForever()
@@ -491,9 +491,9 @@ struct ChatInputArea: View {
                     }) {
                         Image(systemName: "sparkles")
                             .font(.title3)
-                            .foregroundColor(!text.isEmpty ? .yellow : .secondary)
+                            .foregroundColor(!text.isEmpty ? .yellow: .secondary)
                             .frame(width: 32, height: 32)
-                            .scaleEffect(!text.isEmpty ? 1.0 : 0.9)
+                            .scaleEffect(!text.isEmpty ? 1.0: 0.9)
                             .animation(.easeInOut(duration: 0.2), value: text.isEmpty)
                     }
                     .disabled(text.isEmpty || isProcessing)
@@ -528,11 +528,11 @@ struct ChatInputArea: View {
                             onStartRecording()
                         }
                     }) {
-                        Image(systemName: isRecording ? "mic.fill" : "mic")
+                        Image(systemName: isRecording ? "mic.fill": "mic")
                             .font(.title3)
-                            .foregroundColor(isRecording ? .red : .secondary)
+                            .foregroundColor(isRecording ? .red: .secondary)
                             .frame(width: 32, height: 32)
-                            .scaleEffect(isRecording ? 1.2 : 1.0)
+                            .scaleEffect(isRecording ? 1.2: 1.0)
                             .animation(.easeInOut(duration: 0.2), value: isRecording)
                     }
                     .disabled(isProcessing && !isRecording)
@@ -544,9 +544,9 @@ struct ChatInputArea: View {
                                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                 .frame(width: 20, height: 20)
                         } else {
-                            Image(systemName: text.isEmpty ? "arrow.up.circle" : "arrow.up.circle.fill")
+                            Image(systemName: text.isEmpty ? "arrow.up.circle": "arrow.up.circle.fill")
                                 .font(.title3)
-                                .foregroundColor(text.isEmpty ? .secondary : .white)
+                                .foregroundColor(text.isEmpty ? .secondary: .white)
                                 .frame(width: 32, height: 32)
                         }
                     }
@@ -562,7 +562,7 @@ struct ChatInputArea: View {
                         }
                     )
                     .disabled(text.isEmpty || isProcessing)
-                    .scaleEffect(text.isEmpty ? 1.0 : 1.1)
+                    .scaleEffect(text.isEmpty ? 1.0: 1.1)
                     .animation(.easeInOut(duration: 0.2), value: text.isEmpty)
                 }
                 .padding(.trailing, Theme.Spacing.medium)

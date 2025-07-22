@@ -5,7 +5,7 @@ struct SettingsView: View {
     let store: StoreOf<SettingsFeature>
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             Group {
                 #if os(iOS)
                     if UIDevice.current.userInterfaceIdiom == .phone {
@@ -19,7 +19,7 @@ struct SettingsView: View {
                                                 .frame(width: 20)
                                                 .foregroundColor(.accentColor)
                                             Text(section.rawValue)
-                                        }
+        })
                                     }
                                 }
                             }
@@ -89,7 +89,7 @@ struct SettingsSidebar: View {
     let store: StoreOf<SettingsFeature>
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             List {
                 ForEach(SettingsFeature.SettingsSection.allCases, id: \.self) { section in
                     Button(action: {
@@ -103,7 +103,7 @@ struct SettingsSidebar: View {
                             if viewStore.selectedSection == section {
                                 Image(systemName: "chevron.right")
                                     .foregroundColor(.accentColor)
-                            }
+        })
                         }
                     }
                     .buttonStyle(PlainButtonStyle())
@@ -159,7 +159,7 @@ struct GeneralSettingsView: View {
     let store: StoreOf<SettingsFeature>
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 SettingsSection(title: "Appearance") {
                     VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
@@ -173,7 +173,7 @@ struct GeneralSettingsView: View {
                             )) {
                                 ForEach(SettingsFeature.AppTheme.allCases, id: \.self) { theme in
                                     Text(theme.rawValue).tag(theme)
-                                }
+        })
                             }
                             .pickerStyle(SegmentedPickerStyle())
                             .frame(width: 250)
@@ -396,7 +396,7 @@ struct APISettingsView: View {
     @State private var showingAddKey = false
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 // Model Information
                 SettingsSection(title: "AI Model") {
@@ -410,7 +410,7 @@ struct APISettingsView: View {
                             Text("Claude 4 Sonnet")
                                 .font(.headline)
                                 .foregroundColor(.blue)
-                        }
+        })
 
                         Text("The latest Claude model is used for all document generation")
                             .font(.caption)
@@ -436,8 +436,10 @@ struct APISettingsView: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
 
-                        Link("Get a free API key at SAM.gov", destination: URL(string: "https://open.gsa.gov/api/entity-api/")!)
-                            .font(.caption)
+                        if let url = URL(string: "https://open.gsa.gov/api/entity-api/") {
+                            Link("Get a free API key at SAM.gov", destination: url)
+                                .font(.caption)
+                        }
                     }
                 }
 
@@ -643,7 +645,7 @@ struct DocumentSettingsView: View {
     let store: StoreOf<SettingsFeature>
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 SettingsSection(title: "Template Settings") {
                     VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
@@ -656,7 +658,7 @@ struct DocumentSettingsView: View {
                             )) {
                                 ForEach(SettingsFeature.TemplateSet.allCases, id: \.self) { templateSet in
                                     Text(templateSet.rawValue).tag(templateSet)
-                                }
+        })
                             }
                             .pickerStyle(MenuPickerStyle())
                             .frame(width: 200)
@@ -693,7 +695,7 @@ struct NotificationSettingsView: View {
     let store: StoreOf<SettingsFeature>
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 SettingsSection(title: "Notification Preferences") {
                     VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
@@ -701,7 +703,7 @@ struct NotificationSettingsView: View {
                             get: { $0.notificationSettings.enableNotifications },
                             send: { .toggleNotifications($0) }
                         ))
-                    }
+        })
                 }
             }
         }
@@ -714,7 +716,7 @@ struct DataPrivacySettingsView: View {
     let store: StoreOf<SettingsFeature>
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 SettingsSection(title: "Privacy") {
                     VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
@@ -726,7 +728,7 @@ struct DataPrivacySettingsView: View {
                         Text("Help improve AIKO by sharing anonymous usage data")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                    }
+        })
                 }
 
                 SettingsSection(title: "Data Management") {
@@ -753,7 +755,7 @@ struct AdvancedSettingsView: View {
     let store: StoreOf<SettingsFeature>
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 SettingsSection(title: "Developer Options") {
                     VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
@@ -766,7 +768,7 @@ struct AdvancedSettingsView: View {
                             get: { $0.advancedSettings.showDetailedErrors },
                             send: { .toggleDetailedErrors($0) }
                         ))
-                    }
+        })
                 }
 
                 SettingsSection(title: "Performance") {

@@ -4,12 +4,16 @@
     import SwiftUI
     import XCTest
 
-    final class iOSFontScalingServiceClientTests: XCTestCase {
-        var client: iOSFontScalingServiceClient!
+    final class IOSFontScalingServiceClientTests: XCTestCase {
+        var client: IOSFontScalingServiceClient?
 
+        private var clientUnwrapped: IOSFontScalingServiceClient {
+            guard let client = client else { fatalError("client not initialized") }
+            return client
+        }
         override func setUp() async throws {
             try await super.setUp()
-            client = iOSFontScalingServiceClient()
+            client = IOSFontScalingServiceClient()
         }
 
         override func tearDown() async throws {
@@ -26,7 +30,7 @@
             }
 
             // Test that scaledFontSize executes on MainActor
-            let scaledSize = await client.scaledFontSize(
+            let scaledSize = await clientUnwrapped.scaledFontSize(
                 for: 16.0,
                 textStyle: .body,
                 sizeCategory: .medium
@@ -39,7 +43,7 @@
         }
 
         func testSupportsUIFontMetricsMainActor() async {
-            let supports = await client.supportsUIFontMetrics()
+            let supports = await clientUnwrapped.supportsUIFontMetrics()
             XCTAssertTrue(supports, "iOS should support UIFontMetrics")
 
             await MainActor.run {
@@ -56,7 +60,7 @@
 
         func testTemplateStartMethod() async throws {
             // Test that the template's start method can be called without error
-            try await client.start()
+            try await clientUnwrapped.start()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After start(), should be on main thread")
@@ -82,8 +86,8 @@
 
         func testAsyncAwaitPattern() async {
             // Test the async/await pattern works correctly
-            async let scaledSizeTask = client.scaledFontSize(for: 18.0, textStyle: .headline, sizeCategory: .large)
-            async let supportsTask = client.supportsUIFontMetrics()
+            async let scaledSizeTask = clientUnwrapped.scaledFontSize(for: 18.0, textStyle: .headline, sizeCategory: .large)
+            async let supportsTask = clientUnwrapped.supportsUIFontMetrics()
 
             let (scaledSize, supports) = await (scaledSizeTask, supportsTask)
 
@@ -98,13 +102,13 @@
         // MARK: - Font Scaling Tests
 
         func testUIFontMetricsSupport() async {
-            let supports = await client.supportsUIFontMetrics()
+            let supports = await clientUnwrapped.supportsUIFontMetrics()
             XCTAssertTrue(supports, "iOS platform should always support UIFontMetrics")
         }
 
         func testScaledFontSizeBasic() async {
             let baseSize: CGFloat = 16.0
-            let scaledSize = await client.scaledFontSize(
+            let scaledSize = await clientUnwrapped.scaledFontSize(
                 for: baseSize,
                 textStyle: .body,
                 sizeCategory: .medium
@@ -126,7 +130,7 @@
             ]
 
             for textStyle in textStyles {
-                let scaledSize = await client.scaledFontSize(
+                let scaledSize = await clientUnwrapped.scaledFontSize(
                     for: baseSize,
                     textStyle: textStyle,
                     sizeCategory: sizeCategory
@@ -150,7 +154,7 @@
             ]
 
             for sizeCategory in sizeCategories {
-                let scaledSize = await client.scaledFontSize(
+                let scaledSize = await clientUnwrapped.scaledFontSize(
                     for: baseSize,
                     textStyle: textStyle,
                     sizeCategory: sizeCategory
@@ -165,10 +169,10 @@
             let textStyle = Font.TextStyle.body
 
             // Test that larger size categories generally produce larger font sizes
-            let smallSize = await client.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: .small)
-            let mediumSize = await client.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: .medium)
-            let largeSize = await client.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: .large)
-            let extraLargeSize = await client.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: .extraLarge)
+            let smallSize = await clientUnwrapped.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: .small)
+            let mediumSize = await clientUnwrapped.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: .medium)
+            let largeSize = await clientUnwrapped.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: .large)
+            let extraLargeSize = await clientUnwrapped.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: .extraLarge)
 
             XCTAssertTrue(smallSize <= mediumSize, "Small should not be larger than medium")
             XCTAssertTrue(mediumSize <= largeSize, "Medium should not be larger than large")
@@ -180,17 +184,17 @@
             let textStyle = Font.TextStyle.body
 
             // Test accessibility size categories
-            let accessibilityMedium = await client.scaledFontSize(
+            let accessibilityMedium = await clientUnwrapped.scaledFontSize(
                 for: baseSize,
                 textStyle: textStyle,
                 sizeCategory: .accessibilityMedium
             )
-            let accessibilityExtraLarge = await client.scaledFontSize(
+            let accessibilityExtraLarge = await clientUnwrapped.scaledFontSize(
                 for: baseSize,
                 textStyle: textStyle,
                 sizeCategory: .accessibilityExtraLarge
             )
-            let accessibilityExtraExtraExtraLarge = await client.scaledFontSize(
+            let accessibilityExtraExtraExtraLarge = await clientUnwrapped.scaledFontSize(
                 for: baseSize,
                 textStyle: textStyle,
                 sizeCategory: .accessibilityExtraExtraExtraLarge
@@ -207,7 +211,7 @@
             let sizeCategory = ContentSizeCategory.medium
 
             for baseSize in baseSizes {
-                let scaledSize = await client.scaledFontSize(
+                let scaledSize = await clientUnwrapped.scaledFontSize(
                     for: baseSize,
                     textStyle: textStyle,
                     sizeCategory: sizeCategory
@@ -229,9 +233,9 @@
             let sizeCategory = ContentSizeCategory.medium
 
             // Multiple calls should return the same result
-            let size1 = await client.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: sizeCategory)
-            let size2 = await client.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: sizeCategory)
-            let size3 = await client.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: sizeCategory)
+            let size1 = await clientUnwrapped.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: sizeCategory)
+            let size2 = await clientUnwrapped.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: sizeCategory)
+            let size3 = await clientUnwrapped.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: sizeCategory)
 
             XCTAssertEqual(size1, size2, "Multiple calls should return consistent results")
             XCTAssertEqual(size2, size3, "Multiple calls should return consistent results")
@@ -241,10 +245,10 @@
             let baseSize: CGFloat = 16.0
 
             // Test concurrent scaling operations
-            async let bodySize = client.scaledFontSize(for: baseSize, textStyle: .body, sizeCategory: .medium)
-            async let headlineSize = client.scaledFontSize(for: baseSize, textStyle: .headline, sizeCategory: .large)
-            async let footnoteSize = client.scaledFontSize(for: baseSize, textStyle: .footnote, sizeCategory: .small)
-            async let titleSize = client.scaledFontSize(for: baseSize, textStyle: .title, sizeCategory: .extraLarge)
+            async let bodySize = clientUnwrapped.scaledFontSize(for: baseSize, textStyle: .body, sizeCategory: .medium)
+            async let headlineSize = clientUnwrapped.scaledFontSize(for: baseSize, textStyle: .headline, sizeCategory: .large)
+            async let footnoteSize = clientUnwrapped.scaledFontSize(for: baseSize, textStyle: .footnote, sizeCategory: .small)
+            async let titleSize = clientUnwrapped.scaledFontSize(for: baseSize, textStyle: .title, sizeCategory: .extraLarge)
 
             let (body, headline, footnote, title) = await (bodySize, headlineSize, footnoteSize, titleSize)
 
@@ -269,7 +273,7 @@
             let startTime = CFAbsoluteTimeGetCurrent()
 
             for _ in 0 ..< iterations {
-                _ = await client.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: sizeCategory)
+                _ = await clientUnwrapped.scaledFontSize(for: baseSize, textStyle: textStyle, sizeCategory: sizeCategory)
             }
 
             let timeElapsed = CFAbsoluteTimeGetCurrent() - startTime
@@ -285,7 +289,7 @@
         // MARK: - Convenience Accessor Tests
 
         func testConvenienceStaticAccessor() async {
-            let serviceClient = iOSFontScalingServiceClient.live
+            let serviceClient = IOSFontScalingServiceClient.live
 
             // Test that the convenience accessor works
             let scaledSize = await serviceClient._scaledFontSize(16.0, .body, .medium)

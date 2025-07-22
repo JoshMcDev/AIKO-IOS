@@ -12,9 +12,24 @@ import XCTest
 final class EndToEndScannerWorkflowTests: XCTestCase {
     // MARK: - Test Configuration
 
-    private var testStore: TestStore<DocumentScannerFeature.State, DocumentScannerFeature.Action>!
-    private var mockLLMProvider: MockLLMProvider!
-    private var testDocuments: [ScannedDocument]!
+    private var testStore: TestStore<DocumentScannerFeature.State, DocumentScannerFeature.Action>?
+    private var mockLLMProvider: MockLLMProvider?
+    private var testDocuments: [ScannedDocument]?
+
+    private var testStoreUnwrapped: TestStore<DocumentScannerFeature.State, DocumentScannerFeature.Action> {
+        guard let testStore = testStore else { fatalError("testStore not initialized") }
+        return testStore
+    }
+
+    private var mockLLMProviderUnwrapped: MockLLMProvider {
+        guard let mockLLMProvider = mockLLMProvider else { fatalError("mockLLMProvider not initialized") }
+        return mockLLMProvider
+    }
+
+    private var testDocumentsUnwrapped: [ScannedDocument] {
+        guard let testDocuments = testDocuments else { fatalError("testDocuments not initialized") }
+        return testDocuments
+    }
 
     // MARK: - Setup and Teardown
 
@@ -55,9 +70,12 @@ final class EndToEndScannerWorkflowTests: XCTestCase {
     /// Requirements: <500ms scanner presentation, >95% OCR accuracy, >85% auto-population
     func test_completeWorkflow_withCleanSF18Document_meetsAllRequirements() async throws {
         // GREEN PHASE: Complete workflow integration working
-        let cleanSF18 = testDocuments.first { doc in
+        guard let cleanSF18 = testDocuments.first(where: { doc in
             doc.documentType == "SF-18" && doc.pages.first?.confidence ?? 0 > 0.95
-        }!
+        }) else {
+            XCTFail("Failed to find clean SF-18 document with >95% confidence in test documents")
+            return
+        }
 
         let scannerPresentationExpectation = ScannerTestHelpers.createScannerWorkflowExpectation(
             description: "Scanner should present in <500ms"
@@ -74,7 +92,7 @@ final class EndToEndScannerWorkflowTests: XCTestCase {
         // Measure scanner presentation speed
         let startTime = Date()
 
-        await testStore.send(.scanButtonTapped) {
+        await testStoreUnwrapped.send(.scanButtonTapped) {
             $0.isScannerPresented = true
         }
 
@@ -88,7 +106,7 @@ final class EndToEndScannerWorkflowTests: XCTestCase {
         scannerPresentationExpectation.fulfill()
 
         // Simulate document scanning
-        await testStore.send(.documentsScanned([cleanSF18])) {
+        await testStoreUnwrapped.send(.documentsScanned([cleanSF18])) {
             $0.scannedDocuments = [cleanSF18]
             $0.processingState = .processing
         }
@@ -122,28 +140,31 @@ final class EndToEndScannerWorkflowTests: XCTestCase {
         ])
 
         // GREEN PHASE: Final state verification working
-        XCTAssertEqual(testStore.state.processingState, .completed)
-        XCTAssertFalse(testStore.state.scannedDocuments.isEmpty)
-        XCTAssertTrue(!testStore.state.autoPopulationResults.isEmpty)
+        XCTAssertEqual(testStoreUnwrapped.state.processingState, .completed)
+        XCTAssertFalse(testStoreUnwrapped.state.scannedDocuments.isEmpty)
+        XCTAssertTrue(!testStoreUnwrapped.state.autoPopulationResults.isEmpty)
     }
 
     /// Test workflow with damaged document quality
     /// Should handle quality issues gracefully while maintaining minimum thresholds
     func test_completeWorkflow_withDamagedDocument_maintainsMinimumThresholds() async throws {
         // GREEN PHASE: Damaged document handling working
-        let damagedDoc = testDocuments.first { doc in
+        guard let damagedDoc = testDocuments.first(where: { doc in
             doc.pages.first?.confidence ?? 1.0 < 0.8
-        }!
+        }) else {
+            XCTFail("Failed to find damaged document with confidence <80% in test documents")
+            return
+        }
 
         let workflowExpectation = ScannerTestHelpers.createScannerWorkflowExpectation(
             description: "Damaged document workflow should complete with graceful degradation"
         )
 
-        await testStore.send(.scanButtonTapped) {
+        await testStoreUnwrapped.send(.scanButtonTapped) {
             $0.isScannerPresented = true
         }
 
-        await testStore.send(.documentsScanned([damagedDoc])) {
+        await testStoreUnwrapped.send(.documentsScanned([damagedDoc])) {
             $0.scannedDocuments = [damagedDoc]
             $0.processingState = .processing
         }
@@ -187,11 +208,11 @@ final class EndToEndScannerWorkflowTests: XCTestCase {
             expectedFulfillmentCount: 3
         )
 
-        await testStore.send(.scanButtonTapped) {
+        await testStoreUnwrapped.send(.scanButtonTapped) {
             $0.isScannerPresented = true
         }
 
-        await testStore.send(.documentsScanned([multiPageDoc])) {
+        await testStoreUnwrapped.send(.documentsScanned([multiPageDoc])) {
             $0.scannedDocuments = [multiPageDoc]
             $0.processingState = .processing
         }
@@ -233,13 +254,16 @@ final class EndToEndScannerWorkflowTests: XCTestCase {
             description: "Error conditions should be handled gracefully"
         )
 
-        let testDoc = testDocuments.first!
+        guard let testDoc = testDocuments.first else {
+            XCTFail("Failed to get first test document from test documents array")
+            return
+        }
 
-        await testStore.send(.scanButtonTapped) {
+        await testStoreUnwrapped.send(.scanButtonTapped) {
             $0.isScannerPresented = true
         }
 
-        await testStore.send(.documentsScanned([testDoc])) {
+        await testStoreUnwrapped.send(.documentsScanned([testDoc])) {
             $0.scannedDocuments = [testDoc]
             $0.processingState = .processing
         }
@@ -257,14 +281,14 @@ final class EndToEndScannerWorkflowTests: XCTestCase {
         } catch {
             // This is expected - test the error handling
             // GREEN PHASE: Error handling implementation working
-            await testStore.send(.processingError(error)) {
+            await testStoreUnwrapped.send(.processingError(error)) {
                 $0.processingState = .error(error.localizedDescription)
                 $0.showingErrorAlert = true
             }
         }
 
         // GREEN PHASE: Retry mechanism working
-        await testStore.send(.retryProcessing) {
+        await testStoreUnwrapped.send(.retryProcessing) {
             $0.processingState = .processing
             $0.showingErrorAlert = false
         }
@@ -289,13 +313,13 @@ final class EndToEndScannerWorkflowTests: XCTestCase {
 
         let startTime = Date()
 
-        await testStore.send(.scanButtonTapped) {
+        await testStoreUnwrapped.send(.scanButtonTapped) {
             $0.isScannerPresented = true
         }
 
         // Process documents in batches to simulate real-world usage
         for batch in stressTestDocs.chunked(into: 2) {
-            await testStore.send(.documentsScanned(batch)) {
+            await testStoreUnwrapped.send(.documentsScanned(batch)) {
                 $0.scannedDocuments.append(contentsOf: batch)
                 $0.processingState = .processing
             }

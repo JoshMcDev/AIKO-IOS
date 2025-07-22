@@ -140,7 +140,7 @@ final class CacheSyncViewModel: ObservableObject {
             "Syncing..."
         } else if pendingChanges > 0 {
             "\(pendingChanges) pending changes"
-        } else if let _ = lastSyncDate {
+        } else if lastSyncDate != nil {
             "All changes synced"
         } else {
             "Not synced"

@@ -5,12 +5,17 @@
     import SwiftUI
     import XCTest
 
-    final class iOSHapticManagerClientTests: XCTestCase {
-        var client: iOSHapticManagerClient!
+    final class IOSHapticManagerClientTests: XCTestCase {
+        var client: IOSHapticManagerClient?
+
+        private var clientUnwrapped: IOSHapticManagerClient {
+            guard let client = client else { fatalError("client not initialized") }
+            return client
+        }
 
         override func setUp() async throws {
             try await super.setUp()
-            client = iOSHapticManagerClient()
+            client = IOSHapticManagerClient()
         }
 
         override func tearDown() async throws {
@@ -27,7 +32,7 @@
             }
 
             // Test that impact executes on MainActor
-            await client.impact(.light)
+            await clientUnwrapped.impact(.light)
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After impact, should still be on main thread")
@@ -35,7 +40,7 @@
         }
 
         func testImpactMainActor() async {
-            await client.impact(.medium)
+            await clientUnwrapped.impact(.medium)
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After impact, should be on main thread")
@@ -43,7 +48,7 @@
         }
 
         func testNotificationMainActor() async {
-            await client.notification(.success)
+            await clientUnwrapped.notification(.success)
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After notification, should be on main thread")
@@ -51,7 +56,7 @@
         }
 
         func testSelectionMainActor() async {
-            await client.selection()
+            await clientUnwrapped.selection()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After selection, should be on main thread")
@@ -59,7 +64,7 @@
         }
 
         func testButtonTapMainActor() async {
-            await client.buttonTap()
+            await clientUnwrapped.buttonTap()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After buttonTap, should be on main thread")
@@ -67,7 +72,7 @@
         }
 
         func testToggleSwitchMainActor() async {
-            await client.toggleSwitch()
+            await clientUnwrapped.toggleSwitch()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After toggleSwitch, should be on main thread")
@@ -75,7 +80,7 @@
         }
 
         func testSuccessActionMainActor() async {
-            await client.successAction()
+            await clientUnwrapped.successAction()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After successAction, should be on main thread")
@@ -83,7 +88,7 @@
         }
 
         func testErrorActionMainActor() async {
-            await client.errorAction()
+            await clientUnwrapped.errorAction()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After errorAction, should be on main thread")
@@ -91,7 +96,7 @@
         }
 
         func testWarningActionMainActor() async {
-            await client.warningAction()
+            await clientUnwrapped.warningAction()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After warningAction, should be on main thread")
@@ -99,7 +104,7 @@
         }
 
         func testDragStartedMainActor() async {
-            await client.dragStarted()
+            await clientUnwrapped.dragStarted()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After dragStarted, should be on main thread")
@@ -107,7 +112,7 @@
         }
 
         func testDragEndedMainActor() async {
-            await client.dragEnded()
+            await clientUnwrapped.dragEnded()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After dragEnded, should be on main thread")
@@ -115,7 +120,7 @@
         }
 
         func testRefreshMainActor() async {
-            await client.refresh()
+            await clientUnwrapped.refresh()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After refresh, should be on main thread")
@@ -125,13 +130,13 @@
         // MARK: - Template Compliance Tests
 
         func testInheritsFromSimpleServiceTemplate() {
-            XCTAssertTrue(client is SimpleServiceTemplate, "Should inherit from SimpleServiceTemplate")
-            XCTAssertTrue(client is MainActorService, "Should conform to MainActorService protocol")
+            XCTAssertTrue(clientUnwrapped is SimpleServiceTemplate, "Should inherit from SimpleServiceTemplate")
+            XCTAssertTrue(clientUnwrapped is MainActorService, "Should conform to MainActorService protocol")
         }
 
         func testTemplateStartMethod() async throws {
             // Test that the template's start method can be called without error
-            try await client.start()
+            try await clientUnwrapped.start()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After start(), should be on main thread")
@@ -155,9 +160,9 @@
 
         func testAsyncAwaitPattern() async {
             // Test the async/await pattern works correctly
-            async let impactTask = client.impact(.medium)
-            async let notificationTask = client.notification(.warning)
-            async let selectionTask = client.selection()
+            async let impactTask = clientUnwrapped.impact(.medium)
+            async let notificationTask = clientUnwrapped.notification(.warning)
+            async let selectionTask = clientUnwrapped.selection()
 
             await (impactTask, notificationTask, selectionTask)
 
@@ -170,11 +175,11 @@
 
         func testAllImpactStyles() async {
             // Test all impact styles
-            await client.impact(.light)
-            await client.impact(.medium)
-            await client.impact(.heavy)
-            await client.impact(.soft)
-            await client.impact(.rigid)
+            await clientUnwrapped.impact(.light)
+            await clientUnwrapped.impact(.medium)
+            await clientUnwrapped.impact(.heavy)
+            await clientUnwrapped.impact(.soft)
+            await clientUnwrapped.impact(.rigid)
 
             // Should complete without error
             await MainActor.run {
@@ -184,9 +189,9 @@
 
         func testAllNotificationTypes() async {
             // Test all notification types
-            await client.notification(.success)
-            await client.notification(.warning)
-            await client.notification(.error)
+            await clientUnwrapped.notification(.success)
+            await clientUnwrapped.notification(.warning)
+            await clientUnwrapped.notification(.error)
 
             // Should complete without error
             await MainActor.run {
@@ -196,13 +201,13 @@
 
         func testConvenienceHapticMethods() async {
             // Test convenience methods that map to specific haptic patterns
-            await client.buttonTap() // Maps to light impact
-            await client.toggleSwitch() // Maps to medium impact
-            await client.successAction() // Maps to success notification
-            await client.errorAction() // Maps to error notification
-            await client.warningAction() // Maps to warning notification
-            await client.dragStarted() // Maps to soft impact
-            await client.dragEnded() // Maps to rigid impact
+            await clientUnwrapped.buttonTap() // Maps to light impact
+            await clientUnwrapped.toggleSwitch() // Maps to medium impact
+            await clientUnwrapped.successAction() // Maps to success notification
+            await clientUnwrapped.errorAction() // Maps to error notification
+            await clientUnwrapped.warningAction() // Maps to warning notification
+            await clientUnwrapped.dragStarted() // Maps to soft impact
+            await clientUnwrapped.dragEnded() // Maps to rigid impact
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After convenience methods, should be on main thread")
@@ -211,7 +216,7 @@
 
         func testRefreshHapticSequence() async {
             // Test the refresh method which performs a sequence of haptics
-            await client.refresh()
+            await clientUnwrapped.refresh()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After refresh sequence, should be on main thread")
@@ -220,7 +225,7 @@
 
         func testSelectionHaptic() async {
             // Test selection haptic
-            await client.selection()
+            await clientUnwrapped.selection()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After selection haptic, should be on main thread")
@@ -231,9 +236,9 @@
 
         func testMultipleImpacts() async {
             // Test multiple impacts in sequence
-            await client.impact(.light)
-            await client.impact(.medium)
-            await client.impact(.heavy)
+            await clientUnwrapped.impact(.light)
+            await clientUnwrapped.impact(.medium)
+            await clientUnwrapped.impact(.heavy)
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After multiple impacts, should be on main thread")
@@ -242,11 +247,11 @@
 
         func testMixedHapticOperations() async {
             // Test mixing different types of haptic operations
-            await client.impact(.medium)
-            await client.notification(.success)
-            await client.selection()
-            await client.buttonTap()
-            await client.dragStarted()
+            await clientUnwrapped.impact(.medium)
+            await clientUnwrapped.notification(.success)
+            await clientUnwrapped.selection()
+            await clientUnwrapped.buttonTap()
+            await clientUnwrapped.dragStarted()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After mixed operations, should be on main thread")
@@ -255,10 +260,10 @@
 
         func testConcurrentHapticOperations() async {
             // Test concurrent haptic operations
-            async let impact1 = client.impact(.light)
-            async let impact2 = client.impact(.medium)
-            async let notification1 = client.notification(.success)
-            async let selection1 = client.selection()
+            async let impact1 = clientUnwrapped.impact(.light)
+            async let impact2 = clientUnwrapped.impact(.medium)
+            async let notification1 = clientUnwrapped.notification(.success)
+            async let selection1 = clientUnwrapped.selection()
 
             await (impact1, impact2, notification1, selection1)
 
@@ -271,9 +276,9 @@
 
         func testHapticsOnNonHapticCapableDevice() async {
             // Even on devices without haptic support, methods should complete without crashing
-            await client.impact(.heavy)
-            await client.notification(.error)
-            await client.selection()
+            await clientUnwrapped.impact(.heavy)
+            await clientUnwrapped.notification(.error)
+            await clientUnwrapped.selection()
 
             // Should complete successfully regardless of device capabilities
             await MainActor.run {

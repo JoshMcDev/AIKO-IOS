@@ -4,7 +4,12 @@ import XCTest
 
 @MainActor
 final class UnifiedTemplateServiceTests: XCTestCase {
-    var service: UnifiedTemplateService!
+    var service: UnifiedTemplateService?
+
+    private var serviceUnwrapped: UnifiedTemplateService {
+        guard let service = service else { fatalError("service not initialized") }
+        return service
+    }
 
     override func setUp() async throws {
         try await super.setUp()
@@ -19,7 +24,7 @@ final class UnifiedTemplateServiceTests: XCTestCase {
     // MARK: - Template Discovery Tests
 
     func testFetchTemplatesFromAllSources() async throws {
-        let templates = try await service.fetchTemplates(
+        let templates = try await serviceUnwrapped.fetchTemplates(
             from: [.builtin, .userCreated, .community, .organization]
         )
 
@@ -39,7 +44,7 @@ final class UnifiedTemplateServiceTests: XCTestCase {
     }
 
     func testFetchTemplatesFromSpecificSource() async throws {
-        let builtinTemplates = try await service.fetchTemplates(from: [.builtin])
+        let builtinTemplates = try await serviceUnwrapped.fetchTemplates(from: [.builtin])
 
         XCTAssertFalse(builtinTemplates.isEmpty)
         XCTAssertTrue(builtinTemplates.allSatisfy { $0.source == .builtin })
@@ -47,7 +52,7 @@ final class UnifiedTemplateServiceTests: XCTestCase {
 
     func testSearchTemplates() async throws {
         let searchQuery = "performance"
-        let results = try await service.searchTemplates(
+        let results = try await serviceUnwrapped.searchTemplates(
             query: searchQuery,
             in: [.builtin, .userCreated]
         )
@@ -65,8 +70,8 @@ final class UnifiedTemplateServiceTests: XCTestCase {
     }
 
     func testFilterTemplatesByCategory() async throws {
-        let templates = try await service.fetchTemplates(from: [.builtin])
-        let filtered = try await service.filterTemplates(
+        let templates = try await serviceUnwrapped.fetchTemplates(from: [.builtin])
+        let filtered = try await serviceUnwrapped.filterTemplates(
             templates,
             by: .category(.contracts)
         )
@@ -75,8 +80,8 @@ final class UnifiedTemplateServiceTests: XCTestCase {
     }
 
     func testFilterTemplatesByCompliance() async throws {
-        let templates = try await service.fetchTemplates(from: [.builtin])
-        let filtered = try await service.filterTemplates(
+        let templates = try await serviceUnwrapped.fetchTemplates(from: [.builtin])
+        let filtered = try await serviceUnwrapped.filterTemplates(
             templates,
             by: .compliance(.farCompliant)
         )
@@ -129,30 +134,30 @@ final class UnifiedTemplateServiceTests: XCTestCase {
             )
         )
 
-        try await service.saveTemplate(customTemplate)
+        try await serviceUnwrapped.saveTemplate(customTemplate)
 
         // Verify it was saved
-        let userTemplates = try await service.fetchTemplates(from: [.userCreated])
+        let userTemplates = try await serviceUnwrapped.fetchTemplates(from: [.userCreated])
         XCTAssertTrue(userTemplates.contains { $0.id == customTemplate.id })
     }
 
     func testDeleteTemplate() async throws {
         // First save a template
         let template = createTestTemplate()
-        try await service.saveTemplate(template)
+        try await serviceUnwrapped.saveTemplate(template)
 
         // Delete it
-        try await service.deleteTemplate(id: template.id)
+        try await serviceUnwrapped.deleteTemplate(id: template.id)
 
         // Verify it's gone
-        let templates = try await service.fetchTemplates(from: [.userCreated])
+        let templates = try await serviceUnwrapped.fetchTemplates(from: [.userCreated])
         XCTAssertFalse(templates.contains { $0.id == template.id })
     }
 
     func testDuplicateTemplate() async throws {
         let originalTemplate = createTestTemplate()
 
-        let duplicated = try await service.duplicateTemplate(originalTemplate)
+        let duplicated = try await serviceUnwrapped.duplicateTemplate(originalTemplate)
 
         XCTAssertNotEqual(duplicated.id, originalTemplate.id)
         XCTAssertEqual(duplicated.metadata.name, "\(originalTemplate.metadata.name) (Copy)")
@@ -164,7 +169,7 @@ final class UnifiedTemplateServiceTests: XCTestCase {
 
     func testValidateTemplate() async throws {
         let validTemplate = createTestTemplate()
-        let validationResult = try await service.validateTemplate(validTemplate)
+        let validationResult = try await serviceUnwrapped.validateTemplate(validTemplate)
 
         XCTAssertTrue(validationResult.isValid)
         XCTAssertTrue(validationResult.errors.isEmpty)
@@ -175,7 +180,7 @@ final class UnifiedTemplateServiceTests: XCTestCase {
         // Make template invalid by removing required sections
         invalidTemplate.structure.sections = []
 
-        let validationResult = try await service.validateTemplate(invalidTemplate)
+        let validationResult = try await serviceUnwrapped.validateTemplate(invalidTemplate)
 
         XCTAssertFalse(validationResult.isValid)
         XCTAssertFalse(validationResult.errors.isEmpty)
@@ -186,7 +191,7 @@ final class UnifiedTemplateServiceTests: XCTestCase {
     func testExportTemplate() async throws {
         let template = createTestTemplate()
 
-        let exportData = try await service.exportTemplate(
+        let exportData = try await serviceUnwrapped.exportTemplate(
             template,
             format: .json
         )
@@ -200,9 +205,9 @@ final class UnifiedTemplateServiceTests: XCTestCase {
 
     func testImportTemplate() async throws {
         let template = createTestTemplate()
-        let exportData = try await service.exportTemplate(template, format: .json)
+        let exportData = try await serviceUnwrapped.exportTemplate(template, format: .json)
 
-        let importedTemplate = try await service.importTemplate(
+        let importedTemplate = try await serviceUnwrapped.importTemplate(
             from: exportData,
             format: .json
         )
@@ -222,11 +227,11 @@ final class UnifiedTemplateServiceTests: XCTestCase {
 
         var exportedData: [Data] = []
         for template in templates {
-            let data = try await service.exportTemplate(template, format: .json)
+            let data = try await serviceUnwrapped.exportTemplate(template, format: .json)
             exportedData.append(data)
         }
 
-        let results = await service.batchImportTemplates(
+        let results = await serviceUnwrapped.batchImportTemplates(
             from: exportedData,
             format: .json
         )
@@ -248,7 +253,7 @@ final class UnifiedTemplateServiceTests: XCTestCase {
             let expectation = self.expectation(description: "Fetch templates")
 
             Task {
-                _ = try await service.fetchTemplates(from: TemplateSource.allCases)
+                _ = try await serviceUnwrapped.fetchTemplates(from: TemplateSource.allCases)
                 expectation.fulfill()
             }
 

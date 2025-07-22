@@ -128,12 +128,7 @@ public struct DocumentGenerationFeature: @unchecked Sendable {
                     }
                 }
 
-                return .run { [requirements = enhancedRequirements,
-                               documentTypes = state.selectedDocumentTypes,
-                               dfDocumentTypes = state.status.selectedDFDocumentTypes,
-                               userProfileService = self.userProfileService,
-                               objectActionHandler = self.objectActionHandler,
-                               performanceMonitor = self.performanceMonitor] send in
+                return .run { [requirements = enhancedRequirements, documentTypes = state.selectedDocumentTypes, dfDocumentTypes = state.status.selectedDFDocumentTypes, userProfileService = self.userProfileService, objectActionHandler = self.objectActionHandler, performanceMonitor = self.performanceMonitor] send in
                         do {
                             // Start performance monitoring session
                             _ = await performanceMonitor.startSession()

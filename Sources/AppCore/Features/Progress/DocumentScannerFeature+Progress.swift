@@ -27,8 +27,7 @@ public extension DocumentScannerFeature.State {
         set {
             // Update our scanning state based on progress feedback
             if let currentSession = newValue.currentSession,
-               let _ = newValue.activeSessions[currentSession]
-            {
+               newValue.activeSessions[currentSession] != nil {
                 // Update our progress tracking based on the progress state
                 // This allows for bidirectional sync
                 _progressSessionId = currentSession
@@ -196,7 +195,7 @@ public extension MultiPageSession {
 
         // If we have a page in progress, add partial progress
         let inProgressBonus: Double = {
-            if let _ = pages.first(where: { $0.processingState == .processing }) {
+            if pages.first(where: { $0.processingState == .processing }) != nil {
                 return currentPageProgress / totalPages
             }
             return 0.0

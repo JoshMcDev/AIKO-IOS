@@ -1,7 +1,7 @@
 @testable import AIKO
 import XCTest
 
-final class Unit_FormFactoryTests: XCTestCase {
+final class UnitFormFactoryTests: XCTestCase {
     // MARK: - SF1449 Factory Tests
 
     func testSF1449Factory_CreateWithValidData_Success() throws {

@@ -3,11 +3,21 @@ import CoreData
 import XCTest
 
 /// Integration tests for SAMGovRepository using mock API client
-final class Integration_SAMGovRepositoryTests: XCTestCase {
+final class IntegrationSAMGovRepositoryTests: XCTestCase {
     // MARK: - Properties
 
-    private var sut: SAMGovRepository!
-    private var context: NSManagedObjectContext!
+    private var sut: SAMGovRepository?
+    private var context: NSManagedObjectContext?
+
+    private var sutUnwrapped: SAMGovRepository {
+        guard let sut = sut else { fatalError("sut not initialized") }
+        return sut
+    }
+
+    private var contextUnwrapped: NSManagedObjectContext {
+        guard let context = context else { fatalError("context not initialized") }
+        return context
+    }
 
     // MARK: - Setup/Teardown
 
@@ -20,10 +30,10 @@ final class Integration_SAMGovRepositoryTests: XCTestCase {
         try! coordinator.addPersistentStore(ofType: NSInMemoryStoreType, configurationName: nil, at: nil, options: nil)
 
         context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
-        context.persistentStoreCoordinator = coordinator
+        contextUnwrapped.persistentStoreCoordinator = coordinator
 
         // Create repository with mock API client
-        sut = SAMGovRepository.createMock(context: context)
+        sut = SAMGovRepository.createMock(context: contextUnwrapped)
     }
 
     override func tearDown() {
@@ -36,57 +46,57 @@ final class Integration_SAMGovRepositoryTests: XCTestCase {
 
     func testSearchEntitiesIntegration() async throws {
         // Test 1: Search for Lockheed Martin
-        let lockheedResults = try await sut.searchEntities(query: "Lockheed")
+        let lockheedResults = try await sutUnwrapped.searchEntities(query: "Lockheed")
         XCTAssertEqual(lockheedResults.count, 1)
         XCTAssertEqual(lockheedResults.first?.legalBusinessName, SAMGovTestData.lockheedName)
         XCTAssertEqual(lockheedResults.first?.cageCode, SAMGovTestData.lockheedCAGE)
 
         // Test 2: Search for Booz Allen
-        let boozResults = try await sut.searchEntities(query: "Booz Allen")
+        let boozResults = try await sutUnwrapped.searchEntities(query: "Booz Allen")
         XCTAssertEqual(boozResults.count, 1)
         XCTAssertEqual(boozResults.first?.legalBusinessName, SAMGovTestData.boozAllenName)
         XCTAssertEqual(boozResults.first?.cageCode, SAMGovTestData.boozAllenCAGE)
 
         // Test 3: Search by CAGE code
-        let cageResults = try await sut.searchEntities(query: "1F353")
+        let cageResults = try await sutUnwrapped.searchEntities(query: "1F353")
         XCTAssertEqual(cageResults.count, 1)
         XCTAssertEqual(cageResults.first?.cageCode, SAMGovTestData.lockheedCAGE)
 
         // Test 4: No results
-        let noResults = try await sut.searchEntities(query: "NonExistentCompany")
+        let noResults = try await sutUnwrapped.searchEntities(query: "NonExistentCompany")
         XCTAssertEqual(noResults.count, 0)
     }
 
     func testGetEntityIntegration() async throws {
         // Test 1: Get by UEI
-        let lockheedByUEI = try await sut.getEntity(uei: SAMGovTestData.lockheedUEI)
+        let lockheedByUEI = try await sutUnwrapped.getEntity(uei: SAMGovTestData.lockheedUEI)
         XCTAssertNotNil(lockheedByUEI)
         XCTAssertEqual(lockheedByUEI?.legalBusinessName, SAMGovTestData.lockheedName)
 
         // Test 2: Get by CAGE
-        let lockheedByCAGE = try await sut.getEntity(uei: SAMGovTestData.lockheedCAGE)
+        let lockheedByCAGE = try await sutUnwrapped.getEntity(uei: SAMGovTestData.lockheedCAGE)
         XCTAssertNotNil(lockheedByCAGE)
         XCTAssertEqual(lockheedByCAGE?.legalBusinessName, SAMGovTestData.lockheedName)
 
         // Test 3: Non-existent entity
-        let nonExistent = try await sut.getEntity(uei: "NOTFOUND123")
+        let nonExistent = try await sutUnwrapped.getEntity(uei: "NOTFOUND123")
         XCTAssertNil(nonExistent)
     }
 
     func testCachingIntegration() async throws {
         // First call - should hit API
-        let firstCall = try await sut.getEntity(uei: SAMGovTestData.lockheedUEI)
+        let firstCall = try await sutUnwrapped.getEntity(uei: SAMGovTestData.lockheedUEI)
         XCTAssertNotNil(firstCall)
 
         // Second call - should use cache
-        let secondCall = try await sut.getEntity(uei: SAMGovTestData.lockheedUEI)
+        let secondCall = try await sutUnwrapped.getEntity(uei: SAMGovTestData.lockheedUEI)
         XCTAssertNotNil(secondCall)
         XCTAssertEqual(firstCall?.legalBusinessName, secondCall?.legalBusinessName)
 
         // Verify entity is cached
         let request = NSFetchRequest<CachedEntity>(entityName: "CachedEntity")
         request.predicate = NSPredicate(format: "uei == %@", SAMGovTestData.lockheedUEI)
-        let cachedEntities = try context.fetch(request)
+        let cachedEntities = try contextUnwrapped.fetch(request)
         XCTAssertEqual(cachedEntities.count, 1)
         XCTAssertEqual(cachedEntities.first?.legalBusinessName, SAMGovTestData.lockheedName)
     }
@@ -98,7 +108,7 @@ final class Integration_SAMGovRepositoryTests: XCTestCase {
             "NOTFOUND123",
         ]
 
-        let entities = try await sut.getEntities(ueis: ueis)
+        let entities = try await sutUnwrapped.getEntities(ueis: ueis)
         XCTAssertEqual(entities.count, 2) // Should find 2 out of 3
 
         let names = entities.map(\.legalBusinessName)
@@ -109,7 +119,7 @@ final class Integration_SAMGovRepositoryTests: XCTestCase {
     func testErrorHandlingIntegration() async throws {
         // Search that triggers error
         do {
-            _ = try await sut.searchEntities(query: "error")
+            _ = try await sutUnwrapped.searchEntities(query: "error")
             XCTFail("Expected error but got success")
         } catch {
             XCTAssertTrue(error is SAMGovError)
@@ -140,7 +150,7 @@ final class Integration_SAMGovRepositoryTests: XCTestCase {
         await withTaskGroup(of: [SAMEntity].self) { group in
             for query in ["Lockheed", "Booz", "1F353", "17038"] {
                 group.addTask {
-                    try! await self.sut.searchEntities(query: query)
+                    try! await self.sutUnwrapped.searchEntities(query: query)
                 }
             }
 
@@ -155,19 +165,19 @@ final class Integration_SAMGovRepositoryTests: XCTestCase {
 
     func testCacheClearingIntegration() async throws {
         // Populate cache
-        _ = try await sut.getEntity(uei: SAMGovTestData.lockheedUEI)
-        _ = try await sut.getEntity(uei: SAMGovTestData.boozAllenUEI)
+        _ = try await sutUnwrapped.getEntity(uei: SAMGovTestData.lockheedUEI)
+        _ = try await sutUnwrapped.getEntity(uei: SAMGovTestData.boozAllenUEI)
 
         // Verify cache has entries
         let request = NSFetchRequest<CachedEntity>(entityName: "CachedEntity")
-        let beforeClear = try context.fetch(request)
+        let beforeClear = try contextUnwrapped.fetch(request)
         XCTAssertEqual(beforeClear.count, 2)
 
         // Clear cache
-        try await sut.clearCache()
+        try await sutUnwrapped.clearCache()
 
         // Verify cache is empty
-        let afterClear = try context.fetch(request)
+        let afterClear = try contextUnwrapped.fetch(request)
         XCTAssertEqual(afterClear.count, 0)
     }
 }

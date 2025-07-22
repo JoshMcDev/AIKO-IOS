@@ -243,7 +243,7 @@ public extension SampleData {
             description: "Random description",
             estimatedValue: Double.random(in: 1000 ... 100_000),
             vendor: "Random Vendor \(String.random(length: 3))",
-            status: AcquisitionStatus.allCases.randomElement()!,
+            status: AcquisitionStatus.allCases.randomElement() ?? .planning,
             createdDate: Date(),
             lastModified: Date(),
             requirements: randomRequirementsData()

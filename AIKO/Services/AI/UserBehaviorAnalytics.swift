@@ -464,7 +464,12 @@ class InteractionTracker {
         let recentInteractions = interactions.suffix(10)
         guard recentInteractions.count >= 2 else { return 0 }
 
-        let timeSpan = recentInteractions.last!.timestamp.timeIntervalSince(recentInteractions.first!.timestamp)
+        guard let lastInteraction = recentInteractions.last,
+              let firstInteraction = recentInteractions.first else {
+            return 0
+        }
+
+        let timeSpan = lastInteraction.timestamp.timeIntervalSince(firstInteraction.timestamp)
         return timeSpan > 0 ? Double(recentInteractions.count) / timeSpan : 0
     }
 
@@ -474,8 +479,7 @@ class InteractionTracker {
 
         for interaction in interactions where interaction.type == .navigation {
             if let context = interaction.metadata["context"] as? String,
-               context != lastContext
-            {
+               context != lastContext {
                 switches += 1
                 lastContext = context
             }
@@ -592,9 +596,12 @@ class PerformanceMonitor {
         metrics[metric, default: []].append(value)
 
         // Keep only recent values
-        if metrics[metric]!.count > 100 {
-            metrics[metric]!.removeFirst(50)
+        guard var metricValues = metrics[metric], metricValues.count > 100 else {
+            return
         }
+
+        metricValues.removeFirst(50)
+        metrics[metric] = metricValues
     }
 
     func generateReport() -> PerformanceReport {
@@ -695,10 +702,8 @@ struct PrivacySettings {
 
         // Remove sensitive metadata
         var filteredMetadata = interaction.metadata
-        for (key, _) in filteredMetadata {
-            if isSensitiveField(key) {
-                filteredMetadata[key] = "[REDACTED]"
-            }
+        for (key, _) in filteredMetadata where isSensitiveField(key) {
+            filteredMetadata[key] = "[REDACTED]"
         }
 
         return Interaction(

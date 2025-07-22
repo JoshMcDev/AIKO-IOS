@@ -6,14 +6,55 @@ import XCTest
 @available(iOS 16.0, *)
 @MainActor
 final class MediaManagementIntegrationTests: XCTestCase {
-    var sut: MediaWorkflowCoordinator!
-    var filePickerService: FilePickerService!
-    var photoLibraryService: PhotoLibraryService!
-    var cameraService: CameraService!
-    var screenshotService: ScreenshotService!
-    var metadataService: MediaMetadataService!
-    var validationService: ValidationService!
-    var batchEngine: BatchProcessingEngine!
+    var sut: MediaWorkflowCoordinator?
+    var filePickerService: FilePickerService?
+    var photoLibraryService: PhotoLibraryService?
+    var cameraService: CameraService?
+    var screenshotService: ScreenshotService?
+    var metadataService: MediaMetadataService?
+    var validationService: ValidationService?
+    var batchEngine: BatchProcessingEngine?
+
+    // MARK: - Computed Properties for Safe Access
+    private var sutUnwrapped: MediaWorkflowCoordinator {
+        guard let sut = sut else { fatalError("sut not initialized") }
+        return sut
+    }
+
+    private var filePickerServiceUnwrapped: FilePickerService {
+        guard let service = filePickerService else { fatalError("filePickerService not initialized") }
+        return service
+    }
+
+    private var photoLibraryServiceUnwrapped: PhotoLibraryService {
+        guard let service = photoLibraryService else { fatalError("photoLibraryService not initialized") }
+        return service
+    }
+
+    private var cameraServiceUnwrapped: CameraService {
+        guard let service = cameraService else { fatalError("cameraService not initialized") }
+        return service
+    }
+
+    private var screenshotServiceUnwrapped: ScreenshotService {
+        guard let service = screenshotService else { fatalError("screenshotService not initialized") }
+        return service
+    }
+
+    private var metadataServiceUnwrapped: MediaMetadataService {
+        guard let service = metadataService else { fatalError("metadataService not initialized") }
+        return service
+    }
+
+    private var validationServiceUnwrapped: ValidationService {
+        guard let service = validationService else { fatalError("validationService not initialized") }
+        return service
+    }
+
+    private var batchEngineUnwrapped: BatchProcessingEngine {
+        guard let engine = batchEngine else { fatalError("batchEngine not initialized") }
+        return engine
+    }
 
     override func setUp() async throws {
         try await super.setUp()
@@ -47,20 +88,20 @@ final class MediaManagementIntegrationTests: XCTestCase {
         // Test complete flow: pick -> validate -> extract metadata -> compress
         await assertThrowsError {
             // 1. Pick files
-            let urls = try await filePickerService.pickFiles(
+            let urls = try await filePickerServiceUnwrapped.pickFiles(
                 allowedTypes: [.image],
                 allowsMultiple: false,
                 maxFileSize: 10_000_000
             )
 
             // 2. Validate files
-            let validationResults = try await validationService.validateBatch(
+            let validationResults = try await validationServiceUnwrapped.validateBatch(
                 urls,
                 rules: ValidationRules.default
             )
 
             // 3. Extract metadata
-            let metadata = try await metadataService.extractMetadata(from: urls[0])
+            let metadata = try await metadataServiceUnwrapped.extractMetadata(from: urls[0])
 
             // 4. Create workflow
             let workflow = MediaWorkflow(
@@ -77,7 +118,7 @@ final class MediaManagementIntegrationTests: XCTestCase {
                 metadata: metadata,
                 size: 0
             )
-            _ = try await sut.executeWorkflow(workflow, with: [asset])
+            _ = try await sutUnwrapped.executeWorkflow(workflow, with: [asset])
         }
     }
 
@@ -85,20 +126,20 @@ final class MediaManagementIntegrationTests: XCTestCase {
         // Test photo library integration
         await assertThrowsError {
             // 1. Request permission
-            _ = try await photoLibraryService.requestPhotoLibraryAccess()
+            _ = try await photoLibraryServiceUnwrapped.requestPhotoLibraryAccess()
 
             // 2. Load albums
-            let albums = try await photoLibraryService.fetchAlbums()
+            let albums = try await photoLibraryServiceUnwrapped.fetchAlbums()
 
             // 3. Select photos
-            let assets = try await photoLibraryService.selectPhotos(limit: 5)
+            let assets = try await photoLibraryServiceUnwrapped.selectPhotos(limit: 5)
 
             // 4. Process selected photos
             let batchOp = BatchOperation(
                 type: .resize,
                 assets: assets
             )
-            _ = try await batchEngine.startBatchOperation(batchOp)
+            _ = try await batchEngineUnwrapped.startBatchOperation(batchOp)
         }
     }
 
@@ -106,16 +147,16 @@ final class MediaManagementIntegrationTests: XCTestCase {
         // Test camera integration
         await assertThrowsError {
             // 1. Check camera availability
-            let isAvailable = await cameraService.isCameraAvailable()
+            let isAvailable = await cameraServiceUnwrapped.isCameraAvailable()
 
             // 2. Request permission
-            _ = try await cameraService.requestCameraAccess()
+            _ = try await cameraServiceUnwrapped.requestCameraAccess()
 
             // 3. Capture photo
-            let photoData = try await cameraService.capturePhoto()
+            let photoData = try await cameraServiceUnwrapped.capturePhoto()
 
             // 4. Extract metadata
-            let metadata = try await metadataService.extractMetadata(
+            let metadata = try await metadataServiceUnwrapped.extractMetadata(
                 from: photoData,
                 type: .image
             )
@@ -127,7 +168,7 @@ final class MediaManagementIntegrationTests: XCTestCase {
                 metadata: metadata,
                 size: Int64(photoData.count)
             )
-            _ = try await photoLibraryService.saveToPhotoLibrary(asset)
+            _ = try await photoLibraryServiceUnwrapped.saveToPhotoLibrary(asset)
         }
     }
 
@@ -142,17 +183,17 @@ final class MediaManagementIntegrationTests: XCTestCase {
             let documentURL = URL(fileURLWithPath: "/tmp/document.pdf")
 
             // Validate each type with appropriate rules
-            _ = try await validationService.validateFile(
+            _ = try await validationServiceUnwrapped.validateFile(
                 imageURL,
-                rules: validationService.suggestedRules(for: .image)
+                rules: validationServiceUnwrapped.suggestedRules(for: .image)
             )
-            _ = try await validationService.validateFile(
+            _ = try await validationServiceUnwrapped.validateFile(
                 videoURL,
-                rules: validationService.suggestedRules(for: .video)
+                rules: validationServiceUnwrapped.suggestedRules(for: .video)
             )
-            _ = try await validationService.validateFile(
+            _ = try await validationServiceUnwrapped.validateFile(
                 documentURL,
-                rules: validationService.suggestedRules(for: .document)
+                rules: validationServiceUnwrapped.suggestedRules(for: .document)
             )
         }
     }
@@ -168,7 +209,7 @@ final class MediaManagementIntegrationTests: XCTestCase {
 
             // Validate all assets
             let urls = assets.map { $0.url }
-            let validationResults = try await validationService.validateBatch(
+            let validationResults = try await validationServiceUnwrapped.validateBatch(
                 urls,
                 rules: ValidationRules.default
             )
@@ -184,7 +225,7 @@ final class MediaManagementIntegrationTests: XCTestCase {
                 assets: validAssets,
                 options: BatchOperationOptions(concurrent: true)
             )
-            _ = try await batchEngine.startBatchOperation(operation)
+            _ = try await batchEngineUnwrapped.startBatchOperation(operation)
         }
     }
 
@@ -193,16 +234,16 @@ final class MediaManagementIntegrationTests: XCTestCase {
     func testScreenCaptureWorkflow_CaptureAndProcess() async throws {
         await assertThrowsError {
             // 1. Capture screenshot
-            let screenshotData = try await screenshotService.captureFullScreen()
+            let screenshotData = try await screenshotServiceUnwrapped.captureFullScreen()
 
             // 2. Extract metadata
-            let metadata = try await metadataService.extractMetadata(
+            let metadata = try await metadataServiceUnwrapped.extractMetadata(
                 from: screenshotData,
                 type: .image
             )
 
             // 3. Analyze content
-            let analysis = try await metadataService.analyzeImageContent(screenshotData)
+            let analysis = try await metadataServiceUnwrapped.analyzeImageContent(screenshotData)
 
             // 4. Create workflow for processing
             let workflow = MediaWorkflow(
@@ -220,14 +261,14 @@ final class MediaManagementIntegrationTests: XCTestCase {
                 metadata: metadata,
                 size: Int64(screenshotData.count)
             )
-            _ = try await sut.executeWorkflow(workflow, with: [asset])
+            _ = try await sutUnwrapped.executeWorkflow(workflow, with: [asset])
         }
     }
 
     func testScreenRecordingWorkflow_RecordProcessUpload() async throws {
         await assertThrowsError {
             // 1. Start recording
-            let session = try await screenshotService.startScreenRecording(
+            let session = try await screenshotServiceUnwrapped.startScreenRecording(
                 options: ScreenRecordingOptions(
                     frameRate: 30,
                     quality: .high,
@@ -236,10 +277,10 @@ final class MediaManagementIntegrationTests: XCTestCase {
             )
 
             // 2. Stop recording
-            let recordingURL = try await screenshotService.stopScreenRecording(session)
+            let recordingURL = try await screenshotServiceUnwrapped.stopScreenRecording(session)
 
             // 3. Extract metadata
-            let metadata = try await metadataService.extractMetadata(from: recordingURL)
+            let metadata = try await metadataServiceUnwrapped.extractMetadata(from: recordingURL)
 
             // 4. Create processing workflow
             let workflow = MediaWorkflow(
@@ -257,7 +298,7 @@ final class MediaManagementIntegrationTests: XCTestCase {
                 metadata: metadata,
                 size: 0
             )
-            _ = try await sut.executeWorkflow(workflow, with: [asset])
+            _ = try await sutUnwrapped.executeWorkflow(workflow, with: [asset])
         }
     }
 
@@ -299,7 +340,7 @@ final class MediaManagementIntegrationTests: XCTestCase {
                 createMockAsset(type: .document),
             ]
 
-            _ = try await sut.executeWorkflow(workflow, with: assets)
+            _ = try await sutUnwrapped.executeWorkflow(workflow, with: assets)
         }
     }
 
@@ -321,7 +362,7 @@ final class MediaManagementIntegrationTests: XCTestCase {
             )
 
             let assets = Array(repeating: createMockAsset(), count: 10)
-            _ = try await sut.executeWorkflow(workflow, with: assets)
+            _ = try await sutUnwrapped.executeWorkflow(workflow, with: assets)
         }
     }
 
@@ -339,10 +380,10 @@ final class MediaManagementIntegrationTests: XCTestCase {
             )
 
             let assets = [createMockAsset()]
-            let handle = try await sut.executeWorkflow(workflow, with: assets)
+            let handle = try await sutUnwrapped.executeWorkflow(workflow, with: assets)
 
             // Monitor execution
-            let stream = sut.monitorExecution(handle)
+            let stream = sutUnwrapped.monitorExecution(handle)
             for await update in stream {
                 if case .failed = update.status {
                     // Retry or handle error
@@ -367,11 +408,9 @@ final class MediaManagementIntegrationTests: XCTestCase {
             let handle = try await batchEngine.startBatchOperation(operation)
 
             // Monitor progress
-            let progressStream = batchEngine.monitorProgress(handle)
-            for await progress in progressStream {
-                if progress.failed > 0 {
-                    // Handle failed items
-                }
+            let progressStream = batchEngineUnwrapped.monitorProgress(handle)
+            for await progress in progressStream where progress.failed > 0 {
+                // Handle failed items
             }
         }
     }
@@ -389,7 +428,7 @@ final class MediaManagementIntegrationTests: XCTestCase {
                 maxConcurrentItems: 10,
                 priorityQueueEnabled: true
             )
-            await batchEngine.configureEngine(settings)
+            await batchEngineUnwrapped.configureEngine(settings)
 
             // Start processing
             let operation = BatchOperation(
@@ -400,7 +439,7 @@ final class MediaManagementIntegrationTests: XCTestCase {
                     priority: .high
                 )
             )
-            _ = try await batchEngine.startBatchOperation(operation)
+            _ = try await batchEngineUnwrapped.startBatchOperation(operation)
         }
     }
 
@@ -411,7 +450,7 @@ final class MediaManagementIntegrationTests: XCTestCase {
                 memoryLimit: 500_000_000, // 500MB
                 diskSpaceLimit: 2_000_000_000 // 2GB
             )
-            await batchEngine.configureEngine(settings)
+            await batchEngineUnwrapped.configureEngine(settings)
 
             // Process large files
             let largeAssets = [
@@ -424,7 +463,7 @@ final class MediaManagementIntegrationTests: XCTestCase {
                 type: .compress,
                 assets: largeAssets
             )
-            _ = try await batchEngine.startBatchOperation(operation)
+            _ = try await batchEngineUnwrapped.startBatchOperation(operation)
         }
     }
 
@@ -443,14 +482,14 @@ final class MediaManagementIntegrationTests: XCTestCase {
                 ]
             )
 
-            try await sut.saveWorkflowTemplate(workflow, name: "Standard Photo")
+            try await sutUnwrapped.saveWorkflowTemplate(workflow, name: "Standard Photo")
 
             // Load template
-            let loadedWorkflow = try await sut.loadWorkflowTemplate("Standard Photo")
+            let loadedWorkflow = try await sutUnwrapped.loadWorkflowTemplate("Standard Photo")
 
             // Execute with assets
             let assets = [createMockAsset(type: .image)]
-            _ = try await sut.executeWorkflow(loadedWorkflow, with: assets)
+            _ = try await sutUnwrapped.executeWorkflow(loadedWorkflow, with: assets)
         }
     }
 
@@ -461,21 +500,21 @@ final class MediaManagementIntegrationTests: XCTestCase {
             let url = URL(fileURLWithPath: "/tmp/suspicious.jpg")
 
             // 1. Security scan
-            let scanResult = try await validationService.scanForThreats(url)
+            let scanResult = try await validationServiceUnwrapped.scanForThreats(url)
 
             // 2. Validate if clean
             if scanResult.isSafe {
-                let validationResult = try await validationService.validateFile(
+                let validationResult = try await validationServiceUnwrapped.validateFile(
                     url,
                     rules: ValidationRules(requireSecurityScan: true)
                 )
 
                 // 3. Process if valid
                 if validationResult.isValid {
-                    let metadata = try await metadataService.extractMetadata(from: url)
+                    let metadata = try await metadataServiceUnwrapped.extractMetadata(from: url)
 
                     // 4. Remove sensitive metadata
-                    _ = try await metadataService.removeMetadata(
+                    _ = try await metadataServiceUnwrapped.removeMetadata(
                         from: url,
                         fields: [.location, .camera]
                     )
@@ -488,14 +527,14 @@ final class MediaManagementIntegrationTests: XCTestCase {
         // Test permission requests across all services
         await assertThrowsError {
             // Photo library
-            _ = try await photoLibraryService.requestPhotoLibraryAccess()
+            _ = try await photoLibraryServiceUnwrapped.requestPhotoLibraryAccess()
 
             // Camera
-            _ = try await cameraService.requestCameraAccess()
-            _ = try await cameraService.requestMicrophoneAccess()
+            _ = try await cameraServiceUnwrapped.requestCameraAccess()
+            _ = try await cameraServiceUnwrapped.requestMicrophoneAccess()
 
             // Screen recording
-            _ = try await screenshotService.requestScreenRecordingPermission()
+            _ = try await screenshotServiceUnwrapped.requestScreenRecordingPermission()
         }
     }
 
@@ -506,16 +545,16 @@ final class MediaManagementIntegrationTests: XCTestCase {
             // Start workflow
             let workflow = createComplexWorkflow()
             let assets = Array(repeating: createMockAsset(), count: 50)
-            let handle = try await sut.executeWorkflow(workflow, with: assets)
+            let handle = try await sutUnwrapped.executeWorkflow(workflow, with: assets)
 
             // Simulate interruption
-            try await sut.pauseExecution(handle)
+            try await sutUnwrapped.pauseExecution(handle)
 
             // Get state
-            let status = await sut.getExecutionStatus(handle)
+            let status = await sutUnwrapped.getExecutionStatus(handle)
 
             // Resume
-            try await sut.resumeExecution(handle)
+            try await sutUnwrapped.resumeExecution(handle)
         }
     }
 
@@ -545,10 +584,10 @@ final class MediaManagementIntegrationTests: XCTestCase {
             )
 
             let assets = [createMockAsset()]
-            let handle = try await sut.executeWorkflow(workflow, with: assets)
+            let handle = try await sutUnwrapped.executeWorkflow(workflow, with: assets)
 
             // Monitor for UI updates
-            let updateStream = sut.monitorExecution(handle)
+            let updateStream = sutUnwrapped.monitorExecution(handle)
             for await update in updateStream {
                 // UI would update based on these
                 _ = update

@@ -14,7 +14,12 @@ final class DocumentChainMetadataTests: XCTestCase {
         var passed: Bool { overallScore >= 0.8 }
     }
 
-    var context: NSManagedObjectContext!
+    var context: NSManagedObjectContext?
+
+    private var contextUnwrapped: NSManagedObjectContext {
+        guard let context = context else { fatalError("context not initialized") }
+        return context
+    }
 
     override func setUp() async throws {
         try await super.setUp()
@@ -27,7 +32,7 @@ final class DocumentChainMetadataTests: XCTestCase {
         var metrics = TestMetrics()
 
         // Create test acquisition
-        let acquisition = CoreDataAcquisition(context: context)
+        let acquisition = CoreDataAcquisition(context: contextUnwrapped)
         acquisition.id = UUID()
         acquisition.title = "Test Acquisition"
         acquisition.createdDate = Date()
@@ -174,7 +179,7 @@ final class DocumentChainMetadataTests: XCTestCase {
     func testLargeChainPerformance() async throws {
         var metrics = TestMetrics()
 
-        let acquisition = CoreDataAcquisition(context: context)
+        let acquisition = CoreDataAcquisition(context: contextUnwrapped)
         acquisition.id = UUID()
         acquisition.title = "Performance Test"
 

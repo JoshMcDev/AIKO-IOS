@@ -2,30 +2,30 @@
     import AppCore
     import SwiftUI
 
-    public final class iOSPlatformViewService: PlatformViewServiceProtocol {
+    public final class IOSPlatformViewService: PlatformViewServiceProtocol {
         public init() {}
 
         public func createNavigationStack(@ViewBuilder content: @escaping () -> some View) -> AnyView {
             AnyView(
-                iOSNavigationStack(content: content)
+                IOSNavigationStack(content: content)
             )
         }
 
         public func createDocumentPicker(onDocumentsPicked: @escaping ([(Data, String)]) -> Void) -> AnyView {
             AnyView(
-                iOSDocumentPickerView(onDocumentsPicked: onDocumentsPicked)
+                IOSDocumentPickerView(onDocumentsPicked: onDocumentsPicked)
             )
         }
 
         public func createImagePicker(onImagePicked: @escaping (Data) -> Void) -> AnyView {
             AnyView(
-                iOSImagePickerView(onImagePicked: onImagePicked)
+                IOSImagePickerView(onImagePicked: onImagePicked)
             )
         }
 
         public func createShareSheet(items: [Any]) -> AnyView {
             AnyView(
-                iOSShareButton(items: items)
+                IOSShareButton(items: items)
             )
         }
 
@@ -41,7 +41,7 @@
             AnyView(
                 view
                     .navigationViewStyle(.automatic)
-                    .modifier(iOSNavigationBarStyleModifier())
+                    .modifier(IOSNavigationBarStyleModifier())
             )
         }
 

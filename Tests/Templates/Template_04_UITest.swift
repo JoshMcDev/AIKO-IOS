@@ -14,8 +14,18 @@ import XCTest
 final class ScreenNameUITests: XCTestCase {
     // MARK: - Properties
 
-    var sut: ScreenNameView!
-    var store: Store<FeatureName.State, FeatureName.Action>!
+    var sut: ScreenNameView?
+    var store: Store<FeatureName.State, FeatureName.Action>?
+
+    private var sutUnwrapped: ScreenNameView {
+        guard let sut = sut else { fatalError("sut not initialized") }
+        return sut
+    }
+
+    private var storeUnwrapped: Store<FeatureName.State, FeatureName.Action> {
+        guard let store = store else { fatalError("store not initialized") }
+        return store
+    }
 
     // MARK: - Setup
 
@@ -25,7 +35,7 @@ final class ScreenNameUITests: XCTestCase {
             initialState: FeatureName.State(),
             reducer: { FeatureName() }
         )
-        sut = ScreenNameView(store: store)
+        sut = ScreenNameView(store: storeUnwrapped)
     }
 
     override func tearDown() {
@@ -38,7 +48,7 @@ final class ScreenNameUITests: XCTestCase {
 
     func test_viewAppearance_withInitialState_rendersCorrectly() throws {
         // Test that all expected UI elements are present
-        let inspection = try sut.inspect()
+        let inspection = try sutUnwrapped.inspect()
 
         XCTAssertNoThrow(try inspection.find(text: "Expected Text"))
         XCTAssertNoThrow(try inspection.find(button: "Expected Button"))
@@ -51,7 +61,7 @@ final class ScreenNameUITests: XCTestCase {
         let expectation = expectation(description: "Action triggered")
 
         // When
-        let button = try sut.inspect().find(button: "Action Button")
+        let button = try sutUnwrapped.inspect().find(button: "Action Button")
         try button.tap()
 
         // Then
@@ -62,7 +72,7 @@ final class ScreenNameUITests: XCTestCase {
 
     func test_accessibility_allElementsHaveLabels() throws {
         // Verify all interactive elements have accessibility labels
-        let inspection = try sut.inspect()
+        let inspection = try sutUnwrapped.inspect()
 
         // Check buttons
         let buttons = try inspection.findAll(ViewType.Button.self)

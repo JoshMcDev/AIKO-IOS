@@ -180,8 +180,7 @@ extension SLATemplateService: DependencyKey {
                 """
 
                 // Add sections
-                for section in template.sections {
-                    if !customization.excludedSections.contains(section.title) {
+                for section in template.sections where !customization.excludedSections.contains(section.title) {
                         content += """
                         \(section.title.uppercased())
 

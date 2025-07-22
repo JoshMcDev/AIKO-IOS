@@ -175,7 +175,9 @@ final class FARValidationService: @unchecked Sendable {
         }
 
         if let dueDate = data["dueDate"] as? Date {
-            let minimumLeadTime = Calendar.current.date(byAdding: .day, value: 15, to: Date())!
+            guard let minimumLeadTime = Calendar.current.date(byAdding: .day, value: 15, to: Date()) else {
+                return // Skip validation if date calculation fails
+            }
             if dueDate < minimumLeadTime {
                 errors.append(ValidationError(field: "dueDate", message: "RFP due date must be at least 15 days from today"))
             }

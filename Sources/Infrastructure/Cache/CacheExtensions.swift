@@ -77,8 +77,7 @@ extension DiskCache {
             // Load metadata file if exists
             let metadataURL = fileURL.appendingPathExtension("metadata")
             if let metadataData = try? Data(contentsOf: metadataURL),
-               let metadata = try? JSONDecoder().decode(DiskCacheMetadata.self, from: metadataData)
-            {
+               let metadata = try? JSONDecoder().decode(DiskCacheMetadata.self, from: metadataData) {
                 return OfflineCacheMetadata(
                     key: key,
                     size: size,
@@ -147,8 +146,7 @@ extension DiskCache {
                 if let metadataData = try? Data(contentsOf: metadataURL),
                    let metadata = try? JSONDecoder().decode(DiskCacheMetadata.self, from: metadataData),
                    let expiresAt = metadata.expiresAt,
-                   expiresAt < Date()
-                {
+                   expiresAt < Date() {
                     // Remove expired file and metadata
                     try? FileManager.default.removeItem(at: fileURL)
                     try? FileManager.default.removeItem(at: metadataURL)
@@ -230,7 +228,7 @@ extension SecureCache {
     func checkHealth() async -> Bool {
         // Verify keychain is accessible
         let testKey = "health_check_test"
-        let testData = "test".data(using: .utf8)!
+        let testData = Data("test".utf8)
 
         // Try to store and retrieve
         do {

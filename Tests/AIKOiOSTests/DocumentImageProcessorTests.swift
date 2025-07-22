@@ -15,7 +15,7 @@ final class DocumentImageProcessorTests: XCTestCase {
 
         #if os(iOS)
             // Register iOS dependencies for testing
-            await iOSDependencyRegistration.configureForLaunch()
+            await IOSDependencyRegistration.configureForLaunch()
         #endif
     }
 

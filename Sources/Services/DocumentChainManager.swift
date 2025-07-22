@@ -267,8 +267,7 @@ extension DocumentChainManager: DependencyKey {
                 }
 
                 // Find the next uncompleted document
-                for document in chain.plannedDocuments {
-                    if chain.completedDocuments[document] == nil {
+                for document in chain.plannedDocuments where chain.completedDocuments[document] == nil {
                         // Validate dependencies before suggesting
                         let previousDocs = Array(chain.completedDocuments.values)
                         let validation = documentDependencyService.validateDependencies(previousDocs, document)

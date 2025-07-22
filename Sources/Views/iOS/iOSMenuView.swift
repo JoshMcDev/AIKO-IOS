@@ -5,7 +5,7 @@
     import UIKit
 
     /// iOS-specific implementation of MenuView
-    public struct iOSMenuView: View {
+    public struct IOSMenuView: View {
         let store: StoreOf<AppFeature>
         @Binding var isShowing: Bool
         @Binding var selectedMenuItem: AppFeature.MenuItem?
@@ -35,7 +35,7 @@
                 menuContent
             }
             .sheet(isPresented: $showingImagePicker) {
-                iOSProfileImagePicker(
+                IOSProfileImagePicker(
                     onImageSelected: { data in
                         if let uiImage = UIImage(data: data) {
                             profileImage = uiImage
@@ -196,13 +196,13 @@
         private var menuItemsList: some View {
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.Spacing.small) {
-                    WithViewStore(store, observe: { $0 }) { viewStore in
+                    WithViewStore(store, observe: { $0 }, content: { viewStore in
                         ForEach(AppFeature.MenuItem.allCases, id: \.self) { item in
                             if item == .quickReferences {
                                 quickReferencesSection(viewStore: viewStore, item: item)
                             } else {
                                 regularMenuItem(item: item)
-                            }
+        })
                         }
                     }
                 }
@@ -307,7 +307,7 @@
         }
 
         private func regularMenuItem(item: AppFeature.MenuItem) -> some View {
-            WithViewStore(store, observe: { $0 }) { viewStore in
+            WithViewStore(store, observe: { $0 }, content: { viewStore in
                 MenuItemRow(
                     item: item,
                     isSelected: selectedMenuItem == item,
@@ -315,7 +315,7 @@
                         withAnimation(.easeInOut(duration: 0.3)) {
                             viewStore.send(.selectMenuItem(item))
                             isShowing = false
-                        }
+        })
                     }
                 )
             }
@@ -323,7 +323,7 @@
     }
 
     /// iOS Profile Image Picker
-    struct iOSProfileImagePicker: UIViewControllerRepresentable {
+    struct IOSProfileImagePicker: UIViewControllerRepresentable {
         let onImageSelected: (Data) -> Void
 
         func makeUIViewController(context: Context) -> UIImagePickerController {
@@ -341,20 +341,18 @@
         }
 
         class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-            let parent: iOSProfileImagePicker
+            let parent: IOSProfileImagePicker
 
-            init(_ parent: iOSProfileImagePicker) {
+            init(_ parent: IOSProfileImagePicker) {
                 self.parent = parent
             }
 
             func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
                 if let editedImage = info[.editedImage] as? UIImage,
-                   let imageData = editedImage.jpegData(compressionQuality: 0.8)
-                {
+                   let imageData = editedImage.jpegData(compressionQuality: 0.8) {
                     parent.onImageSelected(imageData)
                 } else if let originalImage = info[.originalImage] as? UIImage,
-                          let imageData = originalImage.jpegData(compressionQuality: 0.8)
-                {
+                          let imageData = originalImage.jpegData(compressionQuality: 0.8) {
                     parent.onImageSelected(imageData)
                 }
 

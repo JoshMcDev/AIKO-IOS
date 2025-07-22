@@ -1,5 +1,45 @@
 import Foundation
 
+/// Email composition configuration
+public struct EmailConfiguration: Sendable {
+    public let recipients: [String]
+    public let subject: String
+    public let body: String
+    public let isHTML: Bool
+    public let attachments: [(data: Data, mimeType: String, fileName: String)]?
+    
+    public init(
+        recipients: [String],
+        subject: String,
+        body: String,
+        isHTML: Bool = false,
+        attachments: [(data: Data, mimeType: String, fileName: String)]? = nil
+    ) {
+        self.recipients = recipients
+        self.subject = subject
+        self.body = body
+        self.isHTML = isHTML
+        self.attachments = attachments
+    }
+}
+
+/// Email composer configuration for showing composer UI
+public struct EmailComposerConfiguration: Sendable {
+    public let recipients: [String]
+    public let subject: String
+    public let body: String
+    
+    public init(
+        recipients: [String],
+        subject: String,
+        body: String
+    ) {
+        self.recipients = recipients
+        self.subject = subject
+        self.body = body
+    }
+}
+
 /// Protocol for platform-agnostic email functionality
 public protocol EmailServiceProtocol: Sendable {
     /// Checks if the device can send email
@@ -8,31 +48,19 @@ public protocol EmailServiceProtocol: Sendable {
 
     /// Composes and sends an email
     /// - Parameters:
-    ///   - to: Array of recipient email addresses
-    ///   - subject: Email subject
-    ///   - body: Email body content
-    ///   - isHTML: Whether the body contains HTML
-    ///   - attachments: Optional array of attachment data with filenames
+    ///   - configuration: Email configuration with all necessary parameters
     ///   - completion: Completion handler with success status
     func sendEmail(
-        to recipients: [String],
-        subject: String,
-        body: String,
-        isHTML: Bool,
-        attachments: [(data: Data, mimeType: String, fileName: String)]?,
+        configuration: EmailConfiguration,
         completion: @escaping @Sendable (Bool) -> Void
     )
 
     /// Shows the system email composer if available
     /// - Parameters:
-    ///   - recipients: Array of recipient email addresses
-    ///   - subject: Email subject
-    ///   - body: Email body content
+    ///   - configuration: Email composer configuration with necessary parameters
     ///   - completion: Completion handler with result
     func showEmailComposer(
-        recipients: [String],
-        subject: String,
-        body: String,
+        configuration: EmailComposerConfiguration,
         completion: @escaping @Sendable (EmailComposeResult) -> Void
     )
 }

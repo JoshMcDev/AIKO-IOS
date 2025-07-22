@@ -28,7 +28,7 @@ public final class SF18Form: BaseGovernmentForm {
             formNumber: "SF18",
             formTitle: "Request for Quotations",
             revision: revision,
-            effectiveDate: DateComponents(calendar: .current, year: 2016, month: 6, day: 1).date!,
+            effectiveDate: DateComponents(calendar: .current, year: 2016, month: 6, day: 1).date ?? Date(),
             expirationDate: nil,
             isElectronic: true,
             metadata: metadata

@@ -323,8 +323,7 @@ private struct InsightGenerator {
         var insights: [Insight] = []
 
         // Generate insights from patterns
-        for pattern in result.patternsDetected {
-            if pattern.significance > 0.7 {
+        for pattern in result.patternsDetected where pattern.significance > 0.7 {
                 insights.append(Insight(
                     category: categorizePattern(pattern),
                     title: "Pattern Detected: \(pattern.name)",

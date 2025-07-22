@@ -315,16 +315,14 @@ public final class UnifiedDocumentContextExtractor: @unchecked Sendable {
         var totalPrice: Decimal?
         var lineItems: [APELineItem] = []
 
-        for object in result.valueObjects {
-            if object.dataType == .currency {
+        for object in result.valueObjects where object.dataType == .currency {
                 if object.fieldName.lowercased().contains("total") {
                     totalPrice = Decimal(string: object.value.replacingOccurrences(of: "$", with: "")
                         .replacingOccurrences(of: ",", with: ""))
                 } else {
                     // Might be a line item price
                     if let price = Decimal(string: object.value.replacingOccurrences(of: "$", with: "")
-                        .replacingOccurrences(of: ",", with: ""))
-                    {
+                        .replacingOccurrences(of: ",", with: "")) {
                         lineItems.append(APELineItem(
                             description: object.fieldName,
                             quantity: 1,
@@ -347,8 +345,7 @@ public final class UnifiedDocumentContextExtractor: @unchecked Sendable {
         var dates = ExtractedDates()
         var hasData = false
 
-        for object in result.valueObjects {
-            if object.dataType == .date {
+        for object in result.valueObjects where object.dataType == .date {
                 if let date = parseDate(object.value) {
                     switch object.fieldName.lowercased() {
                     case "quote_date", "date":
@@ -367,7 +364,7 @@ public final class UnifiedDocumentContextExtractor: @unchecked Sendable {
             }
         }
 
-        return hasData ? dates : nil
+        return hasData ? dates: nil
     }
 
     private func extractTechnicalDetailsFromAdaptive(_ result: AdaptiveExtractionResult) -> [String] {
@@ -454,8 +451,7 @@ public final class UnifiedDocumentContextExtractor: @unchecked Sendable {
         ]
 
         for object in result.valueObjects {
-            for (pattern, field) in fieldMappings {
-                if object.fieldName.lowercased().contains(pattern) {
+            for (pattern, field) in fieldMappings where object.fieldName.lowercased().contains(pattern) {
                     let currentConfidence = confidence[field] ?? 0
                     confidence[field] = max(currentConfidence, Float(object.confidence))
                 }
@@ -495,16 +491,14 @@ public final class UnifiedDocumentContextExtractor: @unchecked Sendable {
 
         // Try ISO8601 first
         if let iso = formatters.first as? ISO8601DateFormatter,
-           let date = iso.date(from: dateString)
-        {
+           let date = iso.date(from: dateString) {
             return date
         }
 
         // Try other formatters
         for formatter in formatters.dropFirst() {
             if let formatter = formatter as? DateFormatter,
-               let date = formatter.date(from: dateString)
-            {
+               let date = formatter.date(from: dateString) {
                 return date
             }
         }
@@ -806,18 +800,14 @@ public final class UnifiedDocumentContextExtractor: @unchecked Sendable {
                 }
             }
 
-            for email in result.extractedMetadata.emailAddresses {
-                if vendorInfo.email == nil {
-                    vendorInfo.email = email
-                    hasData = true
-                }
+            for email in result.extractedMetadata.emailAddresses where vendorInfo.email == nil {
+                vendorInfo.email = email
+                hasData = true
             }
 
-            for phone in result.extractedMetadata.phoneNumbers {
-                if vendorInfo.phone == nil {
-                    vendorInfo.phone = phone
-                    hasData = true
-                }
+            for phone in result.extractedMetadata.phoneNumbers where vendorInfo.phone == nil {
+                vendorInfo.phone = phone
+                hasData = true
             }
         }
 
@@ -838,8 +828,7 @@ public final class UnifiedDocumentContextExtractor: @unchecked Sendable {
 
                     if let price = Decimal(string: cleanValue) {
                         if field.label.lowercased().contains("total") ||
-                            field.label.lowercased().contains("amount")
-                        {
+                            field.label.lowercased().contains("amount") {
                             totalPrice = price
                         } else {
                             lineItems.append(APELineItem(
@@ -898,8 +887,7 @@ public final class UnifiedDocumentContextExtractor: @unchecked Sendable {
             for field in result.recognizedFields where field.confidence > 0.7 {
                 let label = field.label.lowercased()
                 if label.contains("spec") || label.contains("technical") ||
-                    label.contains("feature") || label.contains("requirement")
-                {
+                    label.contains("feature") || label.contains("requirement") {
                     if field.value.count > 20 {
                         technicalDetails.append(field.value)
                     }
@@ -910,8 +898,7 @@ public final class UnifiedDocumentContextExtractor: @unchecked Sendable {
             for paragraph in result.documentStructure.paragraphs where paragraph.confidence > 0.8 {
                 let text = paragraph.text.lowercased()
                 if text.contains("specification") || text.contains("technical") ||
-                    text.contains("requirements") || text.contains("performance")
-                {
+                    text.contains("requirements") || text.contains("performance") {
                     if paragraph.text.count > 50 {
                         technicalDetails.append(paragraph.text)
                     }
@@ -993,8 +980,7 @@ public final class UnifiedDocumentContextExtractor: @unchecked Sendable {
             for field in result.recognizedFields where field.confidence > 0.7 {
                 let label = field.label.lowercased()
                 if label.contains("term") || label.contains("condition") ||
-                    label.contains("requirement") || label.contains("clause")
-                {
+                    label.contains("requirement") || label.contains("clause") {
                     if field.value.count > 10 {
                         specialTerms.append(field.value)
                     }
@@ -1006,8 +992,7 @@ public final class UnifiedDocumentContextExtractor: @unchecked Sendable {
                 for item in list.items where item.confidence > 0.8 {
                     let text = item.text.lowercased()
                     if text.contains("term") || text.contains("condition") ||
-                        text.contains("shall") || text.contains("must")
-                    {
+                        text.contains("shall") || text.contains("must") {
                         specialTerms.append(item.text)
                     }
                 }
@@ -1051,10 +1036,8 @@ public final class UnifiedDocumentContextExtractor: @unchecked Sendable {
 
         // Fill in missing fields with overall confidence
         let allFields: [RequirementField] = [.vendorName, .vendorUEI, .vendorCAGE, .estimatedValue, .requiredDate, .technicalSpecs, .specialConditions]
-        for field in allFields {
-            if confidence[field] == nil {
-                confidence[field] = Float(overallConfidence * 0.8) // Slightly lower for undetected fields
-            }
+        for field in allFields where confidence[field] == nil {
+            confidence[field] = Float(overallConfidence * 0.8) // Slightly lower for undetected fields
         }
 
         return confidence

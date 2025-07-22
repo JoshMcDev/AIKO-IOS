@@ -10,10 +10,30 @@
     final class VisionKitAdapterProfessionalTests: XCTestCase {
         // MARK: - Test Properties
 
-        private var adapter: VisionKitAdapter!
-        private var professionalConfig: VisionKitAdapter.ScanConfiguration!
-        private var mockImageData: Data!
-        private var mockDocument: ScannedDocument!
+        private var adapter: VisionKitAdapter?
+        private var professionalConfig: VisionKitAdapter.ScanConfiguration?
+        private var mockImageData: Data?
+        private var mockDocument: ScannedDocument?
+
+        private var adapterUnwrapped: VisionKitAdapter {
+            guard let adapter = adapter else { fatalError("adapter not initialized") }
+            return adapter
+        }
+
+        private var professionalConfigUnwrapped: VisionKitAdapter.ScanConfiguration {
+            guard let professionalConfig = professionalConfig else { fatalError("professionalConfig not initialized") }
+            return professionalConfig
+        }
+
+        private var mockImageDataUnwrapped: Data {
+            guard let mockImageData = mockImageData else { fatalError("mockImageData not initialized") }
+            return mockImageData
+        }
+
+        private var mockDocumentUnwrapped: ScannedDocument {
+            guard let mockDocument = mockDocument else { fatalError("mockDocument not initialized") }
+            return mockDocument
+        }
 
         // MARK: - Setup & Teardown
 
@@ -32,7 +52,7 @@
             adapter = VisionKitAdapter(configuration: professionalConfig)
 
             // Create mock test data
-            mockImageData = "mock_government_form_image".data(using: .utf8)!
+            mockImageData = Data("mock_government_form_image".utf8)
             mockDocument = createMockScannedDocument()
         }
 
@@ -56,7 +76,7 @@
             let adapter = VisionKitAdapter(configuration: config)
 
             // WHEN: Creating professional document camera
-            let scanner = adapter.createProfessionalDocumentCameraViewController(
+            let scanner = adapterUnwrapped.createProfessionalDocumentCameraViewController(
                 professionalMode: .governmentForms
             )
 
@@ -77,7 +97,7 @@
             let adapter = VisionKitAdapter(configuration: contractConfig)
 
             // WHEN: Creating professional scanner for contracts
-            let scanner = adapter.createProfessionalDocumentCameraViewController(
+            let scanner = adapterUnwrapped.createProfessionalDocumentCameraViewController(
                 professionalMode: .contracts
             )
 
@@ -96,7 +116,7 @@
             let adapter = VisionKitAdapter(configuration: techConfig)
 
             // WHEN: Creating scanner for technical documents
-            let scanner = adapter.createProfessionalDocumentCameraViewController(
+            let scanner = adapterUnwrapped.createProfessionalDocumentCameraViewController(
                 professionalMode: .technicalDocuments
             )
 
@@ -116,7 +136,7 @@
             // RED phase: This test will fail until professional processing is implemented
             do {
                 // WHEN: Presenting professional document scanner
-                let document = try await adapter.presentProfessionalDocumentScanner()
+                let document = try await adapterUnwrapped.presentProfessionalDocumentScanner()
 
                 // THEN: Document should have professional processing applied
                 XCTAssertNotNil(document)
@@ -131,10 +151,10 @@
 
         func testApplyProfessionalProcessing_GovernmentForm_Success() async throws {
             // GIVEN: Raw scanned document
-            let rawDocument = mockDocument
+            let rawDocument = mockDocumentUnwrapped
 
             // WHEN: Applying professional processing
-            let processedDocument = try await adapter.applyProfessionalProcessing(to: rawDocument)
+            let processedDocument = try await adapterUnwrapped.applyProfessionalProcessing(to: rawDocument)
 
             // THEN: Document should be enhanced with professional processing
             XCTAssertNotNil(processedDocument)
@@ -147,10 +167,10 @@
 
         func testDetectDocumentEdges_WellDefinedEdges_Success() async {
             // GIVEN: Mock image data with clear document edges
-            let imageDataWithEdges = "mock_clear_document_edges".data(using: .utf8)!
+            let imageDataWithEdges = Data("mock_clear_document_edges".utf8)
 
             // WHEN: Detecting document edges
-            let edgesDetected = await adapter.detectDocumentEdges(in: imageDataWithEdges)
+            let edgesDetected = await adapterUnwrapped.detectDocumentEdges(in: imageDataWithEdges)
 
             // THEN: Edges should be detected successfully
             // RED phase: Always returns false - this test will fail
@@ -159,10 +179,10 @@
 
         func testDetectDocumentEdges_PoorQualityImage_Failure() async {
             // GIVEN: Mock image data with poor edge definition
-            let poorQualityImageData = "mock_blurry_document".data(using: .utf8)!
+            let poorQualityImageData = Data("mock_blurry_document".utf8)
 
             // WHEN: Detecting edges in poor quality image
-            let edgesDetected = await adapter.detectDocumentEdges(in: poorQualityImageData)
+            let edgesDetected = await adapterUnwrapped.detectDocumentEdges(in: poorQualityImageData)
 
             // THEN: Edge detection should fail appropriately
             // RED phase: Always returns false - this test passes by coincidence but for wrong reasons
@@ -171,10 +191,10 @@
 
         func testDetectDocumentEdges_MultipleDocuments_Success() async {
             // GIVEN: Image data containing multiple documents
-            let multiDocImageData = "mock_multiple_documents".data(using: .utf8)!
+            let multiDocImageData = Data("mock_multiple_documents".utf8)
 
             // WHEN: Detecting edges with multiple documents
-            let edgesDetected = await adapter.detectDocumentEdges(in: multiDocImageData)
+            let edgesDetected = await adapterUnwrapped.detectDocumentEdges(in: multiDocImageData)
 
             // THEN: Should detect primary document edges
             // RED phase: Will fail - edge detection not implemented
@@ -185,10 +205,10 @@
 
         func testEstimateScanQuality_HighQuality_Success() async {
             // GIVEN: High-quality document image data
-            let highQualityImageData = "mock_high_quality_document".data(using: .utf8)!
+            let highQualityImageData = Data("mock_high_quality_document".utf8)
 
             // WHEN: Estimating scan quality
-            let qualityScore = await adapter.estimateScanQuality(from: highQualityImageData)
+            let qualityScore = await adapterUnwrapped.estimateScanQuality(from: highQualityImageData)
 
             // THEN: Quality score should be high (>0.8)
             // RED phase: Always returns 0.5 - this test will fail
@@ -197,10 +217,10 @@
 
         func testEstimateScanQuality_MediumQuality_Success() async {
             // GIVEN: Medium-quality document image data
-            let mediumQualityImageData = "mock_medium_quality_document".data(using: .utf8)!
+            let mediumQualityImageData = Data("mock_medium_quality_document".utf8)
 
             // WHEN: Estimating scan quality
-            let qualityScore = await adapter.estimateScanQuality(from: mediumQualityImageData)
+            let qualityScore = await adapterUnwrapped.estimateScanQuality(from: mediumQualityImageData)
 
             // THEN: Quality score should be medium (0.4-0.8)
             // RED phase: Always returns 0.5 - this test passes by coincidence
@@ -210,10 +230,10 @@
 
         func testEstimateScanQuality_PoorQuality_Success() async {
             // GIVEN: Poor-quality document image data
-            let poorQualityImageData = "mock_poor_quality_document".data(using: .utf8)!
+            let poorQualityImageData = Data("mock_poor_quality_document".utf8)
 
             // WHEN: Estimating scan quality
-            let qualityScore = await adapter.estimateScanQuality(from: poorQualityImageData)
+            let qualityScore = await adapterUnwrapped.estimateScanQuality(from: poorQualityImageData)
 
             // THEN: Quality score should be low (<0.4)
             // RED phase: Always returns 0.5 - this test will fail
@@ -227,7 +247,7 @@
             let govFormDocument = createMockGovernmentFormDocument()
 
             // WHEN: Validating professional quality
-            let isValidQuality = await adapter.validateProfessionalQuality(document: govFormDocument)
+            let isValidQuality = await adapterUnwrapped.validateProfessionalQuality(document: govFormDocument)
 
             // THEN: Should meet professional quality standards
             // RED phase: Always returns false - this test will fail
@@ -239,7 +259,7 @@
             let contractDocument = createMockContractDocument()
 
             // WHEN: Validating professional quality
-            let isValidQuality = await adapter.validateProfessionalQuality(document: contractDocument)
+            let isValidQuality = await adapterUnwrapped.validateProfessionalQuality(document: contractDocument)
 
             // THEN: Should meet professional quality standards for contracts
             // RED phase: Always returns false - this test will fail
@@ -251,7 +271,7 @@
             let poorQualityDocument = createMockPoorQualityDocument()
 
             // WHEN: Validating professional quality
-            let isValidQuality = await adapter.validateProfessionalQuality(document: poorQualityDocument)
+            let isValidQuality = await adapterUnwrapped.validateProfessionalQuality(document: poorQualityDocument)
 
             // THEN: Should not meet professional quality standards
             // RED phase: Always returns false - this test passes by coincidence
@@ -302,7 +322,7 @@
             let startTime = Date()
 
             // WHEN: Applying professional processing
-            _ = try await adapter.applyProfessionalProcessing(to: largeDocument)
+            _ = try await adapterUnwrapped.applyProfessionalProcessing(to: largeDocument)
 
             // THEN: Processing should complete within performance target
             let processingTime = Date().timeIntervalSince(startTime)
@@ -315,7 +335,7 @@
             let startTime = Date()
 
             // WHEN: Detecting edges
-            _ = await adapter.detectDocumentEdges(in: highResImageData)
+            _ = await adapterUnwrapped.detectDocumentEdges(in: highResImageData)
 
             // THEN: Edge detection should complete quickly
             let detectionTime = Date().timeIntervalSince(startTime)
@@ -328,7 +348,7 @@
             let startTime = Date()
 
             // WHEN: Estimating scan quality
-            _ = await adapter.estimateScanQuality(from: highResImageData)
+            _ = await adapterUnwrapped.estimateScanQuality(from: highResImageData)
 
             // THEN: Quality assessment should complete quickly
             let assessmentTime = Date().timeIntervalSince(startTime)
@@ -347,7 +367,7 @@
 
             // WHEN & THEN: Professional processing should handle invalid input gracefully
             do {
-                _ = try await adapter.applyProfessionalProcessing(to: invalidDocument)
+                _ = try await adapterUnwrapped.applyProfessionalProcessing(to: invalidDocument)
                 // RED phase: Error handling not implemented - this may not throw as expected
             } catch {
                 // Expected behavior - should throw appropriate error
@@ -360,7 +380,7 @@
             let invalidImageData = Data()
 
             // WHEN: Attempting edge detection with invalid data
-            let result = await adapter.detectDocumentEdges(in: invalidImageData)
+            let result = await adapterUnwrapped.detectDocumentEdges(in: invalidImageData)
 
             // THEN: Should handle gracefully and return false
             XCTAssertFalse(result, "Should handle invalid image data gracefully")
@@ -371,7 +391,7 @@
             let corruptedImageData = Data(repeating: 0xFF, count: 100)
 
             // WHEN: Attempting quality assessment with corrupted data
-            let quality = await adapter.estimateScanQuality(from: corruptedImageData)
+            let quality = await adapterUnwrapped.estimateScanQuality(from: corruptedImageData)
 
             // THEN: Should return low quality score for corrupted data
             XCTAssertGreaterThanOrEqual(quality, 0.0, "Quality score should not be negative")
@@ -381,7 +401,7 @@
         // MARK: - Helper Methods
 
         private func createMockScannedDocument() -> ScannedDocument {
-            let mockPageData = "mock_page_data".data(using: .utf8)!
+            let mockPageData = Data("mock_page_data".utf8)
             let page = ScannedPage(
                 id: UUID(),
                 imageData: mockPageData,
@@ -396,7 +416,7 @@
         }
 
         private func createMockGovernmentFormDocument() -> ScannedDocument {
-            let mockFormData = "mock_sf_30_form_data".data(using: .utf8)!
+            let mockFormData = Data("mock_sf_30_form_data".utf8)
             let formPage = ScannedPage(
                 id: UUID(),
                 imageData: mockFormData,
@@ -411,7 +431,7 @@
         }
 
         private func createMockContractDocument() -> ScannedDocument {
-            let mockContractData = "mock_contract_document_data".data(using: .utf8)!
+            let mockContractData = Data("mock_contract_document_data".utf8)
             let contractPage = ScannedPage(
                 id: UUID(),
                 imageData: mockContractData,
@@ -426,7 +446,7 @@
         }
 
         private func createMockPoorQualityDocument() -> ScannedDocument {
-            let mockPoorData = "mock_poor_quality_scan".data(using: .utf8)!
+            let mockPoorData = Data("mock_poor_quality_scan".utf8)
             let poorPage = ScannedPage(
                 id: UUID(),
                 imageData: mockPoorData,
@@ -444,7 +464,7 @@
             var pages: [ScannedPage] = []
 
             for i in 1 ... pageCount {
-                let mockData = "mock_page_\(i)_data".data(using: .utf8)!
+                let mockData = Data("mock_page_\(i)_data".utf8)
                 let page = ScannedPage(
                     id: UUID(),
                     imageData: mockData,

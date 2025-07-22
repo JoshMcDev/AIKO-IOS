@@ -4,8 +4,8 @@
     import Foundation
 
     /// iOS Keyboard Service Client using SimpleServiceTemplate
-    public final class iOSKeyboardServiceClient: SimpleServiceTemplate {
-        private let service = iOSKeyboardService()
+    public final class IOSKeyboardServiceClient: SimpleServiceTemplate {
+        private let service = IOSKeyboardService()
 
         override public init() {
             super.init()
@@ -66,14 +66,14 @@
                 .url
             },
             supportsKeyboardTypes: {
-                let service = iOSKeyboardService()
+                let service = IOSKeyboardService()
                 return service.supportsKeyboardTypes
             }
         )
     }
 
     // Convenience static accessor
-    public enum iOSKeyboardServiceClientLive {
+    public enum IOSKeyboardServiceClientLive {
         public static let live = KeyboardServiceClient.iOSLive
     }
 #endif

@@ -4,7 +4,12 @@ import XCTest
 
 @available(iOS 16.0, *)
 final class FilePickerServiceTests: XCTestCase {
-    var sut: FilePickerService!
+    var sut: FilePickerService?
+
+    private var sutUnwrapped: FilePickerService {
+        guard let sut = sut else { fatalError("sut not initialized") }
+        return sut
+    }
 
     override func setUp() async throws {
         try await super.setUp()
@@ -20,11 +25,11 @@ final class FilePickerServiceTests: XCTestCase {
 
     func testPickFiles_WithSingleFileType_ShouldReturnSelectedFile() async throws {
         // Given
-        let allowedTypes: [MediaType] = [.image]
+        let allowedTypes: [MediaType] = [Unwrapped.image]
 
         // When/Then
         await assertThrowsError {
-            _ = try await sut.pickFiles(
+            _ = try await sutUnwrapped.pickFiles(
                 allowedTypes: allowedTypes,
                 allowsMultiple: false,
                 maxFileSize: nil
@@ -34,11 +39,11 @@ final class FilePickerServiceTests: XCTestCase {
 
     func testPickFiles_WithMultipleFileTypes_ShouldReturnSelectedFiles() async throws {
         // Given
-        let allowedTypes: [MediaType] = [.image, .video, .document]
+        let allowedTypes: [MediaType] = [Unwrapped.image, Unwrapped.video, Unwrapped.document]
 
         // When/Then
         await assertThrowsError {
-            _ = try await sut.pickFiles(
+            _ = try await sutUnwrapped.pickFiles(
                 allowedTypes: allowedTypes,
                 allowsMultiple: true,
                 maxFileSize: nil
@@ -52,8 +57,8 @@ final class FilePickerServiceTests: XCTestCase {
 
         // When/Then
         await assertThrowsError {
-            _ = try await sut.pickFiles(
-                allowedTypes: [.image],
+            _ = try await sutUnwrapped.pickFiles(
+                allowedTypes: [Unwrapped.image],
                 allowsMultiple: false,
                 maxFileSize: maxFileSize
             )
@@ -63,8 +68,8 @@ final class FilePickerServiceTests: XCTestCase {
     func testPickFiles_WhenCancelled_ShouldReturnEmptyArray() async throws {
         // When/Then
         await assertThrowsError {
-            _ = try await sut.pickFiles(
-                allowedTypes: [.document],
+            _ = try await sutUnwrapped.pickFiles(
+                allowedTypes: [Unwrapped.document],
                 allowsMultiple: false,
                 maxFileSize: nil
             )
@@ -76,14 +81,14 @@ final class FilePickerServiceTests: XCTestCase {
     func testPickFolder_ShouldReturnSelectedFolder() async throws {
         // When/Then
         await assertThrowsError {
-            _ = try await sut.pickFolder()
+            _ = try await sutUnwrapped.pickFolder()
         }
     }
 
     func testPickFolder_WhenCancelled_ShouldThrowError() async throws {
         // When/Then
         await assertThrowsError {
-            _ = try await sut.pickFolder()
+            _ = try await sutUnwrapped.pickFolder()
         }
     }
 
@@ -91,29 +96,29 @@ final class FilePickerServiceTests: XCTestCase {
 
     func testSaveFile_WithValidURL_ShouldSaveToSelectedLocation() async throws {
         // Given
-        let url = URL(fileURLWithPath: "/tmp/test.txt")
-        let suggestedName = "saved_file.txt"
+        let url = URL(fileURLWithPath: "/tmp/testUnwrapped.txt")
+        let suggestedName = "saved_fileUnwrapped.txt"
 
         // When/Then
         await assertThrowsError {
-            _ = try await sut.saveFile(
+            _ = try await sutUnwrapped.saveFile(
                 url,
                 suggestedName: suggestedName,
-                allowedTypes: [.document]
+                allowedTypes: [Unwrapped.document]
             )
         }
     }
 
     func testSaveFile_WithInvalidURL_ShouldThrowError() async throws {
         // Given
-        let url = URL(fileURLWithPath: "/invalid/path/file.txt")
+        let url = URL(fileURLWithPath: "/invalid/path/fileUnwrapped.txt")
 
         // When/Then
         await assertThrowsError {
-            _ = try await sut.saveFile(
+            _ = try await sutUnwrapped.saveFile(
                 url,
                 suggestedName: nil,
-                allowedTypes: [.document]
+                allowedTypes: [Unwrapped.document]
             )
         }
     }
@@ -122,7 +127,7 @@ final class FilePickerServiceTests: XCTestCase {
 
     func testIsAvailable_ShouldReturnTrue() {
         // When
-        let isAvailable = sut.isAvailable
+        let isAvailable = sutUnwrapped.isAvailable
 
         // Then
         XCTAssertTrue(isAvailable)
@@ -132,10 +137,10 @@ final class FilePickerServiceTests: XCTestCase {
 
     func testGetRecentlyPicked_WithNoHistory_ShouldReturnEmptyArray() async {
         // When
-        let recent = await sut.getRecentlyPicked(limit: 10)
+        let recent = await sutUnwrapped.getRecentlyPicked(limit: 10)
 
         // Then
-        XCTAssertTrue(recent.isEmpty)
+        XCTAssertTrue(recentUnwrapped.isEmpty)
     }
 
     func testGetRecentlyPicked_WithHistory_ShouldReturnLimitedResults() async {
@@ -143,19 +148,19 @@ final class FilePickerServiceTests: XCTestCase {
         let limit = 5
 
         // When
-        let recent = await sut.getRecentlyPicked(limit: limit)
+        let recent = await sutUnwrapped.getRecentlyPicked(limit: limit)
 
         // Then
-        XCTAssertTrue(recent.count <= limit)
+        XCTAssertTrue(recentUnwrapped.count <= limit)
     }
 
     func testClearRecentlyPicked_ShouldRemoveAllHistory() async {
         // When
-        await sut.clearRecentlyPicked()
-        let recent = await sut.getRecentlyPicked(limit: 10)
+        await sutUnwrapped.clearRecentlyPicked()
+        let recent = await sutUnwrapped.getRecentlyPicked(limit: 10)
 
         // Then
-        XCTAssertTrue(recent.isEmpty)
+        XCTAssertTrue(recentUnwrapped.isEmpty)
     }
 
     // MARK: - Multiple Selection Tests
@@ -163,8 +168,8 @@ final class FilePickerServiceTests: XCTestCase {
     func testPickFiles_WithMultipleSelection_ShouldReturnMultipleFiles() async throws {
         // When/Then
         await assertThrowsError {
-            _ = try await sut.pickFiles(
-                allowedTypes: [.image, .video],
+            _ = try await sutUnwrapped.pickFiles(
+                allowedTypes: [Unwrapped.image, Unwrapped.video],
                 allowsMultiple: true,
                 maxFileSize: nil
             )
@@ -175,11 +180,11 @@ final class FilePickerServiceTests: XCTestCase {
 
     func testPickFiles_WithSpecificTypes_ShouldOnlyShowAllowedTypes() async throws {
         // Given
-        let allowedTypes: [MediaType] = [.archive]
+        let allowedTypes: [MediaType] = [Unwrapped.archive]
 
         // When/Then
         await assertThrowsError {
-            _ = try await sut.pickFiles(
+            _ = try await sutUnwrapped.pickFiles(
                 allowedTypes: allowedTypes,
                 allowsMultiple: false,
                 maxFileSize: nil
@@ -195,7 +200,7 @@ final class FilePickerServiceTests: XCTestCase {
 
         // When/Then
         await assertThrowsError {
-            _ = try await sut.pickFiles(
+            _ = try await sutUnwrapped.pickFiles(
                 allowedTypes: allowedTypes,
                 allowsMultiple: false,
                 maxFileSize: nil

@@ -113,13 +113,16 @@
 
             // Document Scanner Mode: Edge Detection and Perspective Correction
             if mode == .documentScanner {
-                return try await performDocumentScannerProcessing(
+                let config = DocumentScannerProcessingConfig(
                     ciImage: processedImage,
                     originalImage: ciImage,
                     options: options,
-                    appliedFilters: &appliedFilters,
                     startTime: startTime,
                     updateProgress: updateProgress
+                )
+                return try await performDocumentScannerProcessing(
+                    config: config,
+                    appliedFilters: &appliedFilters
                 )
             }
 
@@ -350,56 +353,61 @@
         }
 
         // MARK: - Document Scanner Processing
+        
+        /// Configuration for document scanner processing
+        private struct DocumentScannerProcessingConfig: Sendable {
+            let ciImage: CIImage
+            let originalImage: CIImage
+            let options: DocumentImageProcessor.ProcessingOptions
+            let startTime: CFAbsoluteTime
+            let updateProgress: @Sendable (ProcessingStep, Double) -> Void
+        }
 
         private func performDocumentScannerProcessing(
-            ciImage: CIImage,
-            originalImage _: CIImage,
-            options: DocumentImageProcessor.ProcessingOptions,
-            appliedFilters: inout [String],
-            startTime: CFAbsoluteTime,
-            updateProgress: (ProcessingStep, Double) -> Void
+            config: DocumentScannerProcessingConfig,
+            appliedFilters: inout [String]
         ) async throws -> DocumentImageProcessor.ProcessingResult {
-            var processedImage = ciImage
+            var processedImage = config.ciImage
 
             // Step 2: Edge Detection
-            updateProgress(.edgeDetection, 0.0)
+            config.updateProgress(.edgeDetection, 0.0)
             let documentProcessingResult = try await documentProcessingPipeline.processDocument(
                 processedImage,
-                options: options
+                options: config.options
             )
             processedImage = documentProcessingResult.processedImage
             appliedFilters.append("edge_detection")
             appliedFilters.append("perspective_correction")
-            updateProgress(.perspectiveCorrection, 1.0)
+            config.updateProgress(.perspectiveCorrection, 1.0)
 
             // Step 3: Enhanced processing for document scanner mode
-            updateProgress(.enhancement, 0.0)
-            processedImage = try performAdvancedEnhancement(processedImage, options: options)
+            config.updateProgress(.enhancement, 0.0)
+            processedImage = try performAdvancedEnhancement(processedImage, options: config.options)
             appliedFilters.append("advanced_enhancement")
-            updateProgress(.enhancement, 1.0)
+            config.updateProgress(.enhancement, 1.0)
 
             // Step 4: Denoising
-            updateProgress(.denoising, 0.0)
-            processedImage = try performDenoising(processedImage, options: options)
+            config.updateProgress(.denoising, 0.0)
+            processedImage = try performDenoising(processedImage, options: config.options)
             appliedFilters.append("denoising")
-            updateProgress(.denoising, 1.0)
+            config.updateProgress(.denoising, 1.0)
 
             // Step 5: Advanced sharpening
-            updateProgress(.sharpening, 0.0)
-            processedImage = try performAdvancedSharpening(processedImage, options: options)
+            config.updateProgress(.sharpening, 0.0)
+            processedImage = try performAdvancedSharpening(processedImage, options: config.options)
             appliedFilters.append("advanced_sharpening")
-            updateProgress(.sharpening, 1.0)
+            config.updateProgress(.sharpening, 1.0)
 
             // Step 6: OCR optimization (always enabled for document scanner)
-            updateProgress(.optimization, 0.0)
-            processedImage = try performOCROptimization(processedImage, options: options)
+            config.updateProgress(.optimization, 0.0)
+            processedImage = try performOCROptimization(processedImage, options: config.options)
             appliedFilters.append("ocr_optimization")
-            updateProgress(.optimization, 1.0)
+            config.updateProgress(.optimization, 1.0)
 
             // Step 7: Quality analysis with enhanced metrics
-            updateProgress(.qualityAnalysis, 0.0)
+            config.updateProgress(.qualityAnalysis, 0.0)
             let qualityMetrics = documentProcessingResult.qualityMetrics
-            updateProgress(.qualityAnalysis, 1.0)
+            config.updateProgress(.qualityAnalysis, 1.0)
 
             // Convert to data
             guard let finalCGImage = context.createCGImage(processedImage, from: processedImage.extent) else {
@@ -411,7 +419,7 @@
                 throw ProcessingError.processingFailed("Failed to convert to JPEG data")
             }
 
-            let processingTime = CFAbsoluteTimeGetCurrent() - startTime
+            let processingTime = CFAbsoluteTimeGetCurrent() - config.startTime
 
             return DocumentImageProcessor.ProcessingResult(
                 processedImageData: finalImageData,

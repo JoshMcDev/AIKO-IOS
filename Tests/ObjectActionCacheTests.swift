@@ -23,7 +23,7 @@ final class ObjectActionCacheTests: XCTestCase {
             status: .completed,
             output: ActionOutput(
                 type: .text,
-                data: "Test output".data(using: .utf8)!
+                data: Data("Test output".utf8)
             ),
             metrics: ActionMetrics(
                 startTime: Date(),
@@ -104,7 +104,7 @@ final class ObjectActionCacheTests: XCTestCase {
                 context: ActionContext(userId: "user1", sessionId: "session1")
             )
 
-            if let _ = await cache.get(action) {
+            if await cache.get(action) != nil {
                 hits += 1
             }
         }

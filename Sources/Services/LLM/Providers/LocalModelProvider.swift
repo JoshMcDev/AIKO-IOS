@@ -76,14 +76,13 @@ public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable 
         get async {
             // Check if local server is running
             if let config = try? await LLMConfigurationManager.shared.loadConfiguration(for: id),
-               let customEndpoint = config.customEndpoint
-            {
+               let customEndpoint = config.customEndpoint {
                 serverURL = customEndpoint
             }
 
             // Try to ping the server
             do {
-                let url = URL(string: "\(serverURL)/health")!
+                guard let url = URL(string: "\(serverURL)/health") else { return false }
                 let (_, response) = try await session.data(from: url)
                 if let httpResponse = response as? HTTPURLResponse {
                     return httpResponse.statusCode == 200
@@ -107,8 +106,7 @@ public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable 
     public func chatCompletion(_ request: LLMChatRequest) async throws -> LLMChatResponse {
         // Update server URL if custom endpoint is configured
         if let config = try? await LLMConfigurationManager.shared.loadConfiguration(for: id),
-           let customEndpoint = config.customEndpoint
-        {
+           let customEndpoint = config.customEndpoint {
             serverURL = customEndpoint
         }
 
@@ -142,7 +140,10 @@ public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable 
         ]
 
         // Make API request
-        var urlRequest = URLRequest(url: URL(string: "\(serverURL)/completion")!)
+        guard let url = URL(string: "\(serverURL)/completion") else {
+            throw LLMProviderError.networkError("Invalid URL")
+        }
+        var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         urlRequest.httpBody = try JSONSerialization.data(withJSONObject: body)
@@ -190,8 +191,7 @@ public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable 
                 do {
                     // Update server URL if custom endpoint is configured
                     if let config = try? await LLMConfigurationManager.shared.loadConfiguration(for: id),
-                       let customEndpoint = config.customEndpoint
-                    {
+                       let customEndpoint = config.customEndpoint {
                         self.serverURL = customEndpoint
                     }
 
@@ -225,7 +225,10 @@ public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable 
                     ]
 
                     // Make streaming request
-                    var urlRequest = URLRequest(url: URL(string: "\(serverURL)/completion")!)
+                    guard let url = URL(string: "\(serverURL)/completion") else {
+                        throw LLMProviderError.networkError("Invalid URL")
+                    }
+                    var urlRequest = URLRequest(url: url)
                     urlRequest.httpMethod = "POST"
                     urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
                     urlRequest.httpBody = try JSONSerialization.data(withJSONObject: body)
@@ -239,24 +242,21 @@ public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable 
                     }
 
                     // Process streaming response
-                    for try await line in bytes.lines {
-                        if line.hasPrefix("data: ") {
-                            let jsonString = String(line.dropFirst(6))
+                    for try await line in bytes.lines where line.hasPrefix("data: ") {
+                        let jsonString = String(line.dropFirst(6))
 
-                            if let data = jsonString.data(using: .utf8),
-                               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
-                            {
-                                if let content = json["content"] as? String {
-                                    continuation.yield(LLMStreamChunk(delta: content))
-                                }
+                        if let data = jsonString.data(using: .utf8),
+                           let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                            if let content = json["content"] as? String {
+                                continuation.yield(LLMStreamChunk(delta: content))
+                            }
 
-                                if let stop = json["stop"] as? Bool, stop {
-                                    let stoppedLimit = json["stopped_limit"] as? Bool ?? false
-                                    let finishReason: FinishReason = stoppedLimit ? .length : .stop
-                                    continuation.yield(LLMStreamChunk(delta: "", finishReason: finishReason))
-                                    continuation.finish()
-                                    break
-                                }
+                            if let stop = json["stop"] as? Bool, stop {
+                                let stoppedLimit = json["stopped_limit"] as? Bool ?? false
+                                let finishReason: FinishReason = stoppedLimit ? .length : .stop
+                                continuation.yield(LLMStreamChunk(delta: "", finishReason: finishReason))
+                                continuation.finish()
+                                break
                             }
                         }
                     }
@@ -274,14 +274,16 @@ public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable 
     public func tokenCount(for text: String) async throws -> Int {
         // Update server URL if custom endpoint is configured
         if let config = try? await LLMConfigurationManager.shared.loadConfiguration(for: id),
-           let customEndpoint = config.customEndpoint
-        {
+           let customEndpoint = config.customEndpoint {
             serverURL = customEndpoint
         }
 
         let body: [String: Any] = ["content": text]
 
-        var urlRequest = URLRequest(url: URL(string: "\(serverURL)/tokenize")!)
+        guard let url = URL(string: "\(serverURL)/tokenize") else {
+            throw LLMProviderError.networkError("Invalid URL")
+        }
+        var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         urlRequest.httpBody = try JSONSerialization.data(withJSONObject: body)

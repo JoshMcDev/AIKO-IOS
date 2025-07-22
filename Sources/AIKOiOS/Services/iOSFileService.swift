@@ -5,7 +5,7 @@
     import UniformTypeIdentifiers
 
     /// iOS implementation of FileServiceProtocol
-    public final class iOSFileService: FileServiceProtocol {
+    public final class IOSFileService: FileServiceProtocol {
         public init() {}
 
         public func saveFile(

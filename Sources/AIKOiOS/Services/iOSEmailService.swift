@@ -5,9 +5,9 @@
     import UIKit
 
     /// iOS implementation of EmailServiceProtocol
-    public final class iOSEmailService: DelegateServiceTemplate<EmailComposeResult>, EmailServiceProtocol {
+    public final class IOSEmailService: DelegateServiceTemplate<EmailComposeResult>, EmailServiceProtocol {
         @MainActor
-        public static let shared = iOSEmailService()
+        public static let shared = IOSEmailService()
 
         override public init() {
             super.init()
@@ -29,20 +29,17 @@
         }
 
         public nonisolated func sendEmail(
-            to recipients: [String],
-            subject: String,
-            body: String,
-            isHTML _: Bool,
-            attachments _: [(data: Data, mimeType: String, fileName: String)]?,
+            configuration: EmailConfiguration,
             completion: @escaping @Sendable (Bool) -> Void
         ) {
             // iOS doesn't support background email sending
             // Show composer instead
-            showEmailComposer(
-                recipients: recipients,
-                subject: subject,
-                body: body
-            ) { result in
+            let composerConfig = EmailComposerConfiguration(
+                recipients: configuration.recipients,
+                subject: configuration.subject,
+                body: configuration.body
+            )
+            showEmailComposer(configuration: composerConfig) { result in
                 switch result {
                 case .sent:
                     completion(true)
@@ -53,9 +50,7 @@
         }
 
         public nonisolated func showEmailComposer(
-            recipients: [String],
-            subject: String,
-            body: String,
+            configuration: EmailComposerConfiguration,
             completion: @escaping @Sendable (EmailComposeResult) -> Void
         ) {
             guard canSendEmail else {
@@ -74,9 +69,9 @@
 
                 let mailComposer = MFMailComposeViewController()
                 mailComposer.mailComposeDelegate = self
-                mailComposer.setToRecipients(recipients)
-                mailComposer.setSubject(subject)
-                mailComposer.setMessageBody(body, isHTML: false)
+                mailComposer.setToRecipients(configuration.recipients)
+                mailComposer.setSubject(configuration.subject)
+                mailComposer.setMessageBody(configuration.body, isHTML: false)
 
                 // Store completion handler using template system
                 self.uiManager.setCompletion(completion)
@@ -88,7 +83,7 @@
 
     // MARK: - MFMailComposeViewControllerDelegate
 
-    extension iOSEmailService: MFMailComposeViewControllerDelegate {
+    extension IOSEmailService: MFMailComposeViewControllerDelegate {
         public nonisolated func mailComposeController(
             _ controller: MFMailComposeViewController,
             didFinishWith result: MFMailComposeResult,

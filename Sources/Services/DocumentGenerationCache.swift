@@ -42,7 +42,9 @@ public actor DocumentGenerationCache {
     // MARK: - Initialization
 
     public init() {
-        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        guard let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            fatalError("Unable to access documents directory")
+        }
         persistentCacheURL = documentsPath.appendingPathComponent("AIDocumentCache")
 
         // Create cache directory if it doesn't exist

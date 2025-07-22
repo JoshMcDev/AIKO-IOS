@@ -4,7 +4,7 @@ import XCTest
 
 @available(iOS 16.0, *)
 final class PhotoLibraryServiceTests: XCTestCase {
-    var sut: PhotoLibraryService!
+    var sut: PhotoLibraryService?
 
     override func setUp() async throws {
         try await super.setUp()

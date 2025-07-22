@@ -159,7 +159,11 @@ final class AdaptiveDocumentCacheTests: XCTestCase {
         XCTAssertLessThanOrEqual(cache.count, 3)
 
         // Newest documents should still be in cache
-        let newestDocument = try await cache.retrieve(id: documentIds.last!)
+        guard let lastDocumentId = documentIds.last else {
+            XCTFail("Document IDs array should not be empty")
+            return
+        }
+        let newestDocument = try await cache.retrieve(id: lastDocumentId)
         XCTAssertNotNil(newestDocument)
     }
 
@@ -240,10 +244,8 @@ final class AdaptiveDocumentCacheTests: XCTestCase {
                 }
             }
 
-            for await retrieved in group {
-                if retrieved != nil {
-                    retrievedCount += 1
-                }
+            for await retrieved in group where retrieved != nil {
+                retrievedCount += 1
             }
         }
 

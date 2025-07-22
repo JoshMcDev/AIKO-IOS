@@ -3,7 +3,7 @@ import XCTest
 
 /// QA Tests for Phase 4.2: Professional Document Scanner Implementation
 /// Tests platform-agnostic components without cross-platform dependencies
-final class Phase4_2_QATests: XCTestCase {
+final class Phase42QATests: XCTestCase {
     func testDocumentImageProcessorAvailability() {
         // Test that DocumentImageProcessor dependency is available
         withDependencies {

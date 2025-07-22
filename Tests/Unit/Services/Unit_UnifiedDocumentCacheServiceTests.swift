@@ -4,7 +4,12 @@ import XCTest
 
 @MainActor
 final class UnifiedDocumentCacheServiceTests: XCTestCase {
-    var service: UnifiedDocumentCacheService!
+    var service: UnifiedDocumentCacheService?
+
+    private var serviceUnwrapped: UnifiedDocumentCacheService {
+        guard let service = service else { fatalError("service not initialized") }
+        return service
+    }
 
     override func setUp() async throws {
         try await super.setUp()
@@ -12,7 +17,7 @@ final class UnifiedDocumentCacheServiceTests: XCTestCase {
     }
 
     override func tearDown() async throws {
-        await service.clear()
+        await serviceUnwrapped.clear()
         service = nil
         try await super.tearDown()
     }
@@ -20,7 +25,7 @@ final class UnifiedDocumentCacheServiceTests: XCTestCase {
     // MARK: - Configuration Tests
 
     func testDefaultConfiguration() async {
-        let config = await service.currentConfiguration()
+        let config = await serviceUnwrapped.currentConfiguration()
         XCTAssertEqual(config.mode, .standard)
         XCTAssertFalse(config.encryptionEnabled)
         XCTAssertFalse(config.adaptiveSizingEnabled)
@@ -37,9 +42,9 @@ final class UnifiedDocumentCacheServiceTests: XCTestCase {
             maxMemorySize: 200 * 1024 * 1024
         )
 
-        try await service.updateConfiguration(newConfig)
+        try await serviceUnwrapped.updateConfiguration(newConfig)
 
-        let currentConfig = await service.currentConfiguration()
+        let currentConfig = await serviceUnwrapped.currentConfiguration()
         XCTAssertEqual(currentConfig, newConfig)
     }
 
@@ -57,8 +62,8 @@ final class UnifiedDocumentCacheServiceTests: XCTestCase {
             )
         )
 
-        try await service.store(document: standardDoc)
-        var retrieved = try await service.retrieve(id: standardDoc.id)
+        try await serviceUnwrapped.store(document: standardDoc)
+        var retrieved = try await serviceUnwrapped.retrieve(id: standardDoc.id)
         XCTAssertNotNil(retrieved)
 
         // Switch to encrypted mode
@@ -70,7 +75,7 @@ final class UnifiedDocumentCacheServiceTests: XCTestCase {
             maxMemorySize: 100 * 1024 * 1024
         )
 
-        try await service.updateConfiguration(encryptedConfig)
+        try await serviceUnwrapped.updateConfiguration(encryptedConfig)
 
         // Store encrypted document
         let encryptedDoc = CachedDocument(
@@ -85,8 +90,8 @@ final class UnifiedDocumentCacheServiceTests: XCTestCase {
             )
         )
 
-        try await service.store(document: encryptedDoc)
-        retrieved = try await service.retrieve(id: encryptedDoc.id)
+        try await serviceUnwrapped.store(document: encryptedDoc)
+        retrieved = try await serviceUnwrapped.retrieve(id: encryptedDoc.id)
         XCTAssertNotNil(retrieved)
 
         // Previous document might not be accessible after mode switch
@@ -109,23 +114,23 @@ final class UnifiedDocumentCacheServiceTests: XCTestCase {
         )
 
         // Store
-        try await service.store(document: document)
-        let count = await service.count()
+        try await serviceUnwrapped.store(document: document)
+        let count = await serviceUnwrapped.count()
         XCTAssertEqual(count, 1)
 
         // Retrieve
-        let retrieved = try await service.retrieve(id: document.id)
+        let retrieved = try await serviceUnwrapped.retrieve(id: document.id)
         XCTAssertNotNil(retrieved)
         XCTAssertEqual(retrieved?.id, document.id)
 
         // List
-        let allDocs = await service.listDocuments()
+        let allDocs = await serviceUnwrapped.listDocuments()
         XCTAssertEqual(allDocs.count, 1)
         XCTAssertEqual(allDocs.first?.id, document.id)
 
         // Remove
-        try await service.remove(id: document.id)
-        let countAfterRemove = await service.count()
+        try await serviceUnwrapped.remove(id: document.id)
+        let countAfterRemove = await serviceUnwrapped.count()
         XCTAssertEqual(countAfterRemove, 0)
     }
 
@@ -145,18 +150,18 @@ final class UnifiedDocumentCacheServiceTests: XCTestCase {
         }
 
         // Batch store
-        try await service.batchStore(documents: documents)
-        let count = await service.count()
+        try await serviceUnwrapped.batchStore(documents: documents)
+        let count = await serviceUnwrapped.count()
         XCTAssertEqual(count, 10)
 
         // Batch retrieve
         let ids = documents.map(\.id)
-        let retrieved = await service.batchRetrieve(ids: ids)
+        let retrieved = await serviceUnwrapped.batchRetrieve(ids: ids)
         XCTAssertEqual(retrieved.count, 10)
 
         // Clear
-        await service.clear()
-        let isEmpty = await service.isEmpty()
+        await serviceUnwrapped.clear()
+        let isEmpty = await serviceUnwrapped.isEmpty()
         XCTAssertTrue(isEmpty)
     }
 
@@ -178,16 +183,16 @@ final class UnifiedDocumentCacheServiceTests: XCTestCase {
         }
 
         // Store documents
-        try await service.batchStore(documents: documents)
+        try await serviceUnwrapped.batchStore(documents: documents)
 
         // Perform some retrievals
         for _ in 0 ..< 3 {
-            _ = try await service.retrieve(id: documents[0].id)
+            _ = try await serviceUnwrapped.retrieve(id: documents[0].id)
         }
-        _ = try await service.retrieve(id: documents[1].id)
-        _ = try await service.retrieve(id: UUID()) // Miss
+        _ = try await serviceUnwrapped.retrieve(id: documents[1].id)
+        _ = try await serviceUnwrapped.retrieve(id: UUID()) // Miss
 
-        let stats = await service.statistics()
+        let stats = await serviceUnwrapped.statistics()
         XCTAssertEqual(stats.totalDocuments, 5)
         XCTAssertEqual(stats.cacheHits, 4)
         XCTAssertEqual(stats.cacheMisses, 1)
@@ -206,7 +211,7 @@ final class UnifiedDocumentCacheServiceTests: XCTestCase {
             maxMemorySize: 100 * 1024 * 1024
         )
 
-        try await service.updateConfiguration(encryptedConfig)
+        try await serviceUnwrapped.updateConfiguration(encryptedConfig)
 
         let sensitiveData = "Sensitive information"
         let document = CachedDocument(
@@ -223,13 +228,19 @@ final class UnifiedDocumentCacheServiceTests: XCTestCase {
         )
 
         // Store encrypted
-        try await service.store(document: document)
+        try await serviceUnwrapped.store(document: document)
 
         // Retrieve and verify
-        let retrieved = try await service.retrieve(id: document.id)
+        let retrieved = try await serviceUnwrapped.retrieve(id: document.id)
         XCTAssertNotNil(retrieved)
-        XCTAssertEqual(String(data: retrieved!.data, encoding: .utf8), sensitiveData)
-        XCTAssertTrue(retrieved!.metadata.isEncrypted ?? false)
+
+        guard let retrievedDocument = retrieved else {
+            XCTFail("Failed to retrieve encrypted document - retrieved document is nil")
+            return
+        }
+
+        XCTAssertEqual(String(data: retrievedDocument.data, encoding: .utf8), sensitiveData)
+        XCTAssertTrue(retrievedDocument.metadata.isEncrypted ?? false)
     }
 
     // MARK: - Adaptive Mode Tests
@@ -244,7 +255,7 @@ final class UnifiedDocumentCacheServiceTests: XCTestCase {
             maxMemorySize: 200 * 1024 * 1024
         )
 
-        try await service.updateConfiguration(adaptiveConfig)
+        try await serviceUnwrapped.updateConfiguration(adaptiveConfig)
 
         // Store many documents to trigger adaptive behavior
         let documents = (0 ..< 50).map { i in
@@ -261,15 +272,15 @@ final class UnifiedDocumentCacheServiceTests: XCTestCase {
             )
         }
 
-        try await service.batchStore(documents: documents)
+        try await serviceUnwrapped.batchStore(documents: documents)
 
         // Access some documents frequently
         for _ in 0 ..< 10 {
-            _ = try await service.retrieve(id: documents[0].id)
-            _ = try await service.retrieve(id: documents[1].id)
+            _ = try await serviceUnwrapped.retrieve(id: documents[0].id)
+            _ = try await serviceUnwrapped.retrieve(id: documents[1].id)
         }
 
-        let stats = await service.statistics()
+        let stats = await serviceUnwrapped.statistics()
         XCTAssertGreaterThan(stats.totalMemoryUsage, 0)
 
         // The adaptive cache should maintain good performance
@@ -294,8 +305,8 @@ final class UnifiedDocumentCacheServiceTests: XCTestCase {
 
         // Should handle gracefully
         do {
-            try await service.store(document: emptyDoc)
-            let retrieved = try await service.retrieve(id: emptyDoc.id)
+            try await serviceUnwrapped.store(document: emptyDoc)
+            let retrieved = try await serviceUnwrapped.retrieve(id: emptyDoc.id)
             XCTAssertNotNil(retrieved)
             XCTAssertEqual(retrieved?.data.count, 0)
         } catch {
@@ -329,15 +340,15 @@ final class UnifiedDocumentCacheServiceTests: XCTestCase {
                     )
                 }
 
-                try await service.batchStore(documents: documents)
+                try await serviceUnwrapped.batchStore(documents: documents)
 
                 // Random retrievals
                 for _ in 0 ..< 100 {
                     let randomIndex = Int.random(in: 0 ..< documents.count)
-                    _ = try await service.retrieve(id: documents[randomIndex].id)
+                    _ = try await serviceUnwrapped.retrieve(id: documents[randomIndex].id)
                 }
 
-                await service.clear()
+                await serviceUnwrapped.clear()
                 expectation.fulfill()
             }
 

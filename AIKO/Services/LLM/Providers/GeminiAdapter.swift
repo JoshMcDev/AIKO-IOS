@@ -43,7 +43,9 @@ final class GeminiAdapter: LLMProviderAdapter {
         )
 
         let endpoint = configuration.model.id.contains("vision") ? "generateContent" : "generateContent"
-        let url = URL(string: "\(getBaseURL())/v1beta/models/\(configuration.model.id):\(endpoint)?key=\(apiKey)")!
+        guard let url = URL(string: "\(getBaseURL())/v1beta/models/\(configuration.model.id):\(endpoint)?key=\(apiKey)") else {
+            throw LLMError.invalidResponse("Invalid URL constructed for Gemini API endpoint")
+        }
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -97,7 +99,9 @@ final class GeminiAdapter: LLMProviderAdapter {
                         options: mergedOptions
                     )
 
-                    let url = URL(string: "\(getBaseURL())/v1beta/models/\(configuration.model.id):streamGenerateContent?key=\(apiKey)")!
+                    guard let url = URL(string: "\(getBaseURL())/v1beta/models/\(configuration.model.id):streamGenerateContent?key=\(apiKey)") else {
+                        throw LLMError.invalidResponse("Invalid URL constructed for Gemini streaming API endpoint")
+                    }
 
                     var request = URLRequest(url: url)
                     request.httpMethod = "POST"
@@ -117,8 +121,7 @@ final class GeminiAdapter: LLMProviderAdapter {
                     if let streamResponses = try? decoder.decode([GeminiResponse].self, from: data) {
                         for (index, response) in streamResponses.enumerated() {
                             if let candidate = response.candidates?.first,
-                               let text = candidate.content.parts.first?.text
-                            {
+                               let text = candidate.content.parts.first?.text {
                                 let chunk = LLMStreamChunk(
                                     id: UUID().uuidString,
                                     delta: text,

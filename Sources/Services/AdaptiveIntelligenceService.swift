@@ -296,8 +296,7 @@ extension AdaptiveIntelligenceService: DependencyKey {
                 var suggestions: [AutomationSuggestion] = []
 
                 // Analyze repeated sequences
-                for sequence in repeatedActions.sequences {
-                    if sequence.frequency > 3 {
+                for sequence in repeatedActions.sequences where sequence.frequency > 3 {
                         suggestions.append(AutomationSuggestion(
                             id: UUID(),
                             title: "Automate \(sequence.description)",

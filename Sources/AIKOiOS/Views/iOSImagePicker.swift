@@ -3,7 +3,7 @@
     import UIKit
 
     /// iOS-specific image picker and document scanner
-    public struct iOSImagePicker: UIViewControllerRepresentable {
+    public struct IOSImagePicker: UIViewControllerRepresentable {
         let sourceType: UIImagePickerController.SourceType
         let onImagePicked: (Data) -> Void
         let onCancel: () -> Void
@@ -32,16 +32,15 @@
         }
 
         public class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-            let parent: iOSImagePicker
+            let parent: IOSImagePicker
 
-            init(_ parent: iOSImagePicker) {
+            init(_ parent: IOSImagePicker) {
                 self.parent = parent
             }
 
             public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
                 if let image = info[.originalImage] as? UIImage,
-                   let imageData = image.jpegData(compressionQuality: 0.8)
-                {
+                   let imageData = image.jpegData(compressionQuality: 0.8) {
                     parent.onImagePicked(imageData)
                 }
                 picker.dismiss(animated: true)
@@ -56,7 +55,7 @@
 
     /// iOS-specific document scanner using VisionKitAdapter
     @available(iOS 13.0, *)
-    public struct iOSDocumentScanner: UIViewControllerRepresentable {
+    public struct IOSDocumentScanner: UIViewControllerRepresentable {
         let onDocumentScanned: (Data) -> Void
         let onCancel: () -> Void
 
@@ -100,7 +99,7 @@
     }
 
     /// iOS-specific picker view that combines photo library and document scanning
-    public struct iOSImagePickerView: View {
+    public struct IOSImagePickerView: View {
         @State private var showingImagePicker = false
         @State private var showingDocumentScanner = false
         @State private var showingSourceSelector = false
@@ -128,13 +127,13 @@
                 Button("Cancel", role: .cancel) {}
             }
             .sheet(isPresented: $showingImagePicker) {
-                iOSImagePicker(onImagePicked: onImagePicked) {
+                IOSImagePicker(onImagePicked: onImagePicked) {
                     showingImagePicker = false
                 }
             }
             .sheet(isPresented: $showingDocumentScanner) {
                 if #available(iOS 13.0, *) {
-                    iOSDocumentScanner(onDocumentScanned: onImagePicked) {
+                    IOSDocumentScanner(onDocumentScanned: onImagePicked) {
                         showingDocumentScanner = false
                     }
                 }

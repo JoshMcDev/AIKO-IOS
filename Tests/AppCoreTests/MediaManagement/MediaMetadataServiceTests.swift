@@ -4,7 +4,12 @@ import XCTest
 
 @available(iOS 16.0, *)
 final class MediaMetadataServiceTests: XCTestCase {
-    var sut: MediaMetadataService!
+    var sut: MediaMetadataService?
+
+    private var sutUnwrapped: MediaMetadataService {
+        guard let sut = sut else { fatalError("sut not initialized") }
+        return sut
+    }
 
     override func setUp() async throws {
         try await super.setUp()

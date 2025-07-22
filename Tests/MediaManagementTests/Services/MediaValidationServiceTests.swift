@@ -34,7 +34,7 @@ final class MediaValidationServiceTests: XCTestCase {
 
     func testValidateFileTypeInvalid() async {
         // Given
-        let invalidData = "Invalid file".data(using: .utf8)!
+        let invalidData = Data("Invalid file".utf8)
         let fileName = "malware.exe"
 
         // When/Then
@@ -216,8 +216,17 @@ final class MediaValidationServiceTests: XCTestCase {
         UIColor.blue.setFill()
         UIRectFill(CGRect(x: 0, y: 0, width: 100, height: 100))
 
-        let image = UIGraphicsGetImageFromCurrentImageContext()!
-        return image.jpegData(compressionQuality: 0.8)!
+        guard let image = UIGraphicsGetImageFromCurrentImageContext() else {
+            XCTFail("Failed to create image from graphics context")
+            return Data()
+        }
+
+        guard let jpegData = image.jpegData(compressionQuality: 0.8) else {
+            XCTFail("Failed to convert image to JPEG data")
+            return Data()
+        }
+
+        return jpegData
     }
 
     private func createTestImageDataWithEXIF() -> Data {
@@ -227,12 +236,12 @@ final class MediaValidationServiceTests: XCTestCase {
 
     private func createTestPDFData() -> Data {
         // Create simple PDF data
-        return "%PDF-1.4\n%âãÏÓ\n".data(using: .utf8)!
+        return Data("%PDF-1.4\n%âãÏÓ\n".utf8)
     }
 
     private func createSuspiciousData() -> Data {
         // Data that would trigger security warnings
-        return "MZ\u{0090}\u{0003}".data(using: .utf8)! // PE header signature
+        return Data("MZ\u{0090}\u{0003}".utf8) // PE header signature
     }
 
     private func createTestAsset() -> MediaAsset {
@@ -270,7 +279,7 @@ final class MediaValidationServiceTests: XCTestCase {
     private func createInvalidTestAsset() -> MediaAsset {
         MediaAsset(
             type: .other,
-            data: "Invalid".data(using: .utf8)!,
+            data: Data("Invalid".utf8),
             metadata: MediaMetadata(
                 fileName: "malware.exe",
                 fileSize: 1024,

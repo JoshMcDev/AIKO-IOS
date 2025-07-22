@@ -217,33 +217,33 @@ public final class EnhancedContextualDefaultsProvider: @unchecked Sendable {
         if factors.isEndOfFiscalYear, factors.daysUntilFYEnd < 60 {
             // Urgent delivery needed before FY end
             let maxDays = max(factors.daysUntilFYEnd - 10, 14) // At least 2 weeks
-            suggestedDate = calendar.date(byAdding: .day, value: maxDays, to: Date())!
+            suggestedDate = calendar.date(byAdding: .day, value: maxDays, to: Date()) ?? Date().addingTimeInterval(TimeInterval(maxDays * 24 * 60 * 60))
             confidence = 0.9
             reasoning = "End of fiscal year urgency - must deliver before \(factors.fiscalYear) ends"
         }
         // Factor 2: End of quarter considerations
         else if factors.isEndOfQuarter, factors.daysUntilQuarterEnd < 30 {
             let targetDays = min(factors.daysUntilQuarterEnd - 5, 25)
-            suggestedDate = calendar.date(byAdding: .day, value: targetDays, to: Date())!
+            suggestedDate = calendar.date(byAdding: .day, value: targetDays, to: Date()) ?? Date().addingTimeInterval(TimeInterval(targetDays * 24 * 60 * 60))
             confidence = 0.85
             reasoning = "End of quarter - delivery before \(factors.fiscalQuarter) ends"
         }
         // Factor 3: Workload considerations
         else if factors.currentWorkload == .critical {
             // Extended timeline due to high workload
-            suggestedDate = calendar.date(byAdding: .day, value: 45, to: Date())!
+            suggestedDate = calendar.date(byAdding: .day, value: 45, to: Date()) ?? Date().addingTimeInterval(TimeInterval(45 * 24 * 60 * 60))
             confidence = 0.75
             reasoning = "Extended timeline due to critical workload levels"
         }
         // Factor 4: Historical patterns
         else if let avgDelivery = calculateAverageDeliveryTime(from: factors.recentAcquisitions) {
-            suggestedDate = calendar.date(byAdding: .day, value: avgDelivery, to: Date())!
+            suggestedDate = calendar.date(byAdding: .day, value: avgDelivery, to: Date()) ?? Date().addingTimeInterval(TimeInterval(avgDelivery * 24 * 60 * 60))
             confidence = 0.8
             reasoning = "Based on average delivery time of \(avgDelivery) days"
         }
         // Default: Standard delivery window
         else {
-            suggestedDate = calendar.date(byAdding: .day, value: 30, to: Date())!
+            suggestedDate = calendar.date(byAdding: .day, value: 30, to: Date()) ?? Date().addingTimeInterval(TimeInterval(30 * 24 * 60 * 60))
             confidence = 0.7
             reasoning = "Standard 30-day delivery window"
         }
@@ -566,9 +566,9 @@ public final class EnhancedContextualDefaultsProvider: @unchecked Sendable {
     private func adjustForWeekend(date: Date, calendar: Calendar) -> Date {
         let weekday = calendar.component(.weekday, from: date)
         if weekday == 1 { // Sunday
-            return calendar.date(byAdding: .day, value: 1, to: date)!
+            return calendar.date(byAdding: .day, value: 1, to: date) ?? date.addingTimeInterval(24 * 60 * 60)
         } else if weekday == 7 { // Saturday
-            return calendar.date(byAdding: .day, value: 2, to: date)!
+            return calendar.date(byAdding: .day, value: 2, to: date) ?? date.addingTimeInterval(2 * 24 * 60 * 60)
         }
         return date
     }
@@ -615,17 +615,15 @@ public final class EnhancedContextualDefaultsProvider: @unchecked Sendable {
         let validated = defaults
 
         // Validation 1: Payment terms should align with vendor preferences
-        if let _ = validated[.paymentTerms],
-           let _ = validated[.vendorName]
-        {
+        if validated[.paymentTerms] != nil,
+           validated[.vendorName] != nil {
             // Adjust payment terms based on vendor history
             // Implementation would check vendor payment history
         }
 
         // Validation 2: Delivery date should consider inspection requirements
-        if let _ = validated[.requiredDate],
-           let _ = validated[.inspectionRequirements]
-        {
+        if validated[.requiredDate] != nil,
+           validated[.inspectionRequirements] != nil {
             // Add buffer for inspection time if needed
             // Implementation would adjust dates accordingly
         }

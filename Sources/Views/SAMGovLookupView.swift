@@ -725,8 +725,7 @@ struct EntityDetailView: View {
 
             // Architect-Engineer Qualifications
             if let aeInfo = entity.architectEngineerQualifications,
-               aeInfo.hasArchitectEngineerResponses
-            {
+               aeInfo.hasArchitectEngineerResponses {
                 VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                     Text("Architect-Engineer Qualifications")
                         .font(.headline)

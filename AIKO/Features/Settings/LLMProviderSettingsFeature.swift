@@ -81,10 +81,15 @@ struct LLMProviderSettingsFeature: Reducer {
 
             case let .providerTapped(provider):
                 state.selectedProvider = provider
+                guard let defaultModel = provider.defaultModel ?? provider.availableModels.first else {
+                    // Should not happen as providers should always have at least one model
+                    return .none
+                }
+
                 state.providerConfigState = ProviderConfigurationFeature.State(
                     provider: provider,
                     hasExistingKey: state.configuredProviders.contains(provider),
-                    selectedModel: provider.defaultModel ?? provider.availableModels.first!,
+                    selectedModel: defaultModel,
                     temperature: 0.7
                 )
                 state.isProviderConfigSheetPresented = true

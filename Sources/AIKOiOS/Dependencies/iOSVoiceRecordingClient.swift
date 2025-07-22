@@ -12,20 +12,20 @@
             Self(
                 checkPermissions: {
                     MainActor.assumeIsolated {
-                        iOSAudioRecorder.shared.checkPermissions()
+                        IOSAudioRecorder.shared.checkPermissions()
                     }
                 },
                 requestPermissions: {
-                    await iOSAudioRecorder.shared.requestPermissions()
+                    await IOSAudioRecorder.shared.requestPermissions()
                 },
                 startRecording: {
-                    try await iOSAudioRecorder.shared.startRecording()
+                    try await IOSAudioRecorder.shared.startRecording()
                 },
                 stopRecording: {
-                    try await iOSAudioRecorder.shared.stopRecording()
+                    try await IOSAudioRecorder.shared.stopRecording()
                 },
                 cancelRecording: {
-                    try await iOSAudioRecorder.shared.cancelRecording()
+                    try await IOSAudioRecorder.shared.cancelRecording()
                 }
             )
         }
@@ -34,8 +34,8 @@
     // MARK: - iOS Audio Recorder Implementation
 
     @MainActor
-    private class iOSAudioRecorder: NSObject {
-        static let shared = iOSAudioRecorder()
+    private class IOSAudioRecorder: NSObject {
+        static let shared = IOSAudioRecorder()
 
         private var audioRecorder: AVAudioRecorder?
         private let audioSession: AVAudioSession

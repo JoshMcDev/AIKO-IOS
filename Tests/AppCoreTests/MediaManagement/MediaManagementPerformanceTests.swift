@@ -4,10 +4,30 @@ import XCTest
 
 @available(iOS 16.0, *)
 final class MediaManagementPerformanceTests: XCTestCase {
-    var metadataService: MediaMetadataService!
-    var validationService: ValidationService!
-    var batchEngine: BatchProcessingEngine!
-    var workflowCoordinator: MediaWorkflowCoordinator!
+    var metadataService: MediaMetadataService?
+    var validationService: ValidationService?
+    var batchEngine: BatchProcessingEngine?
+    var workflowCoordinator: MediaWorkflowCoordinator?
+
+    private var metadataServiceUnwrapped: MediaMetadataService {
+        guard let metadataService = metadataService else { fatalError("metadataService not initialized") }
+        return metadataService
+    }
+
+    private var validationServiceUnwrapped: ValidationService {
+        guard let validationService = validationService else { fatalError("validationService not initialized") }
+        return validationService
+    }
+
+    private var batchEngineUnwrapped: BatchProcessingEngine {
+        guard let batchEngine = batchEngine else { fatalError("batchEngine not initialized") }
+        return batchEngine
+    }
+
+    private var workflowCoordinatorUnwrapped: MediaWorkflowCoordinator {
+        guard let workflowCoordinator = workflowCoordinator else { fatalError("workflowCoordinator not initialized") }
+        return workflowCoordinator
+    }
 
     override func setUp() async throws {
         try await super.setUp()
@@ -33,7 +53,7 @@ final class MediaManagementPerformanceTests: XCTestCase {
 
         await measureAsyncPerformance {
             do {
-                _ = try await metadataService.extractMetadata(from: imageData, type: .image)
+                _ = try await metadataServiceUnwrapped.extractMetadata(from: imageData, type: .image)
             } catch {
                 // Expected error in scaffold
             }
@@ -47,7 +67,7 @@ final class MediaManagementPerformanceTests: XCTestCase {
         await measureAsyncPerformance {
             for imageData in images {
                 do {
-                    _ = try await metadataService.extractMetadata(from: imageData, type: .image)
+                    _ = try await metadataServiceUnwrapped.extractMetadata(from: imageData, type: .image)
                 } catch {
                     // Expected error in scaffold
                 }
@@ -61,7 +81,7 @@ final class MediaManagementPerformanceTests: XCTestCase {
 
         await measureAsyncPerformance {
             do {
-                _ = try await metadataService.extractText(from: imageData)
+                _ = try await metadataServiceUnwrapped.extractText(from: imageData)
             } catch {
                 // Expected error in scaffold
             }
@@ -77,7 +97,7 @@ final class MediaManagementPerformanceTests: XCTestCase {
 
         await measureAsyncPerformance {
             do {
-                _ = try await validationService.validateFile(url, rules: rules)
+                _ = try await validationServiceUnwrapped.validateFile(url, rules: rules)
             } catch {
                 // Expected error in scaffold
             }
@@ -91,7 +111,7 @@ final class MediaManagementPerformanceTests: XCTestCase {
 
         await measureAsyncPerformance {
             do {
-                _ = try await validationService.validateBatch(urls, rules: rules)
+                _ = try await validationServiceUnwrapped.validateBatch(urls, rules: rules)
             } catch {
                 // Expected error in scaffold
             }
@@ -104,7 +124,7 @@ final class MediaManagementPerformanceTests: XCTestCase {
 
         await measureAsyncPerformance {
             do {
-                _ = try await validationService.checkIntegrity(url)
+                _ = try await validationServiceUnwrapped.checkIntegrity(url)
             } catch {
                 // Expected error in scaffold
             }
@@ -124,7 +144,7 @@ final class MediaManagementPerformanceTests: XCTestCase {
 
         await measureAsyncPerformance {
             do {
-                _ = try await batchEngine.startBatchOperation(operation)
+                _ = try await batchEngineUnwrapped.startBatchOperation(operation)
             } catch {
                 // Expected error in scaffold
             }
@@ -142,7 +162,7 @@ final class MediaManagementPerformanceTests: XCTestCase {
 
         await measureAsyncPerformance {
             do {
-                _ = try await batchEngine.startBatchOperation(operation)
+                _ = try await batchEngineUnwrapped.startBatchOperation(operation)
             } catch {
                 // Expected error in scaffold
             }
@@ -165,7 +185,7 @@ final class MediaManagementPerformanceTests: XCTestCase {
 
         await measureAsyncPerformance {
             do {
-                _ = try await batchEngine.startBatchOperation(operation)
+                _ = try await batchEngineUnwrapped.startBatchOperation(operation)
             } catch {
                 // Expected error in scaffold
             }
@@ -188,7 +208,7 @@ final class MediaManagementPerformanceTests: XCTestCase {
 
         await measureAsyncPerformance {
             do {
-                _ = try await workflowCoordinator.executeWorkflow(workflow, with: assets)
+                _ = try await workflowCoordinatorUnwrapped.executeWorkflow(workflow, with: assets)
             } catch {
                 // Expected error in scaffold
             }
@@ -216,7 +236,7 @@ final class MediaManagementPerformanceTests: XCTestCase {
 
         await measureAsyncPerformance {
             do {
-                _ = try await workflowCoordinator.executeWorkflow(workflow, with: assets)
+                _ = try await workflowCoordinatorUnwrapped.executeWorkflow(workflow, with: assets)
             } catch {
                 // Expected error in scaffold
             }
@@ -249,7 +269,7 @@ final class MediaManagementPerformanceTests: XCTestCase {
 
         await measureAsyncPerformance {
             do {
-                _ = try await workflowCoordinator.executeWorkflow(workflow, with: assets)
+                _ = try await workflowCoordinatorUnwrapped.executeWorkflow(workflow, with: assets)
             } catch {
                 // Expected error in scaffold
             }
@@ -271,7 +291,7 @@ final class MediaManagementPerformanceTests: XCTestCase {
 
         await measureMemoryPerformance {
             do {
-                _ = try await batchEngine.startBatchOperation(operation)
+                _ = try await batchEngineUnwrapped.startBatchOperation(operation)
             } catch {
                 // Expected error in scaffold
             }
@@ -286,7 +306,7 @@ final class MediaManagementPerformanceTests: XCTestCase {
         await measureMemoryPerformance {
             for url in urls {
                 do {
-                    _ = try await metadataService.generateThumbnail(from: url, size: size, time: nil)
+                    _ = try await metadataServiceUnwrapped.generateThumbnail(from: url, size: size, time: nil)
                 } catch {
                     // Expected error in scaffold
                 }
@@ -314,7 +334,7 @@ final class MediaManagementPerformanceTests: XCTestCase {
                     group.addTask {
                         do {
                             let assets = Array(repeating: self.createMockAsset(), count: 10)
-                            _ = try await self.workflowCoordinator.executeWorkflow(workflow, with: assets)
+                            _ = try await self.workflowCoordinatorUnwrapped.executeWorkflow(workflow, with: assets)
                         } catch {
                             // Expected error in scaffold
                         }
@@ -332,7 +352,7 @@ final class MediaManagementPerformanceTests: XCTestCase {
 
         await measureAsyncPerformance {
             do {
-                _ = try await metadataService.detectFaces(in: imageData)
+                _ = try await metadataServiceUnwrapped.detectFaces(in: imageData)
             } catch {
                 // Expected error in scaffold
             }
@@ -348,7 +368,7 @@ final class MediaManagementPerformanceTests: XCTestCase {
 
         await measureAsyncPerformance {
             do {
-                _ = try await metadataService.extractWaveform(from: audioURL, samples: samples)
+                _ = try await metadataServiceUnwrapped.extractWaveform(from: audioURL, samples: samples)
             } catch {
                 // Expected error in scaffold
             }
@@ -365,7 +385,7 @@ final class MediaManagementPerformanceTests: XCTestCase {
         await measureAsyncPerformance {
             for timestamp in timestamps {
                 do {
-                    _ = try await metadataService.extractVideoFrame(from: videoURL, at: timestamp)
+                    _ = try await metadataServiceUnwrapped.extractVideoFrame(from: videoURL, at: timestamp)
                 } catch {
                     // Expected error in scaffold
                 }

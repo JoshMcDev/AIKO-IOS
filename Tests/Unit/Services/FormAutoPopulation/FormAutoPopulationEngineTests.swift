@@ -4,9 +4,24 @@ import XCTest
 
 @MainActor
 final class FormAutoPopulationEngineTests: XCTestCase {
-    private var mockDocumentProcessor: DocumentImageProcessor!
-    private var mockSmartDefaults: SmartDefaultsEngine!
-    private var formAutoPopulationEngine: FormAutoPopulationEngine!
+    private var mockDocumentProcessor: DocumentImageProcessor?
+    private var mockSmartDefaults: SmartDefaultsEngine?
+    private var formAutoPopulationEngine: FormAutoPopulationEngine?
+
+    private var mockDocumentProcessorUnwrapped: DocumentImageProcessor {
+        guard let mockDocumentProcessor = mockDocumentProcessor else { fatalError("mockDocumentProcessor not initialized") }
+        return mockDocumentProcessor
+    }
+
+    private var mockSmartDefaultsUnwrapped: SmartDefaultsEngine {
+        guard let mockSmartDefaults = mockSmartDefaults else { fatalError("mockSmartDefaults not initialized") }
+        return mockSmartDefaults
+    }
+
+    private var formAutoPopulationEngineUnwrapped: FormAutoPopulationEngine {
+        guard let formAutoPopulationEngine = formAutoPopulationEngine else { fatalError("formAutoPopulationEngine not initialized") }
+        return formAutoPopulationEngine
+    }
 
     override func setUp() {
         super.setUp()
@@ -34,7 +49,7 @@ final class FormAutoPopulationEngineTests: XCTestCase {
         let sf30ImageData = createMockSF30ImageData()
 
         // When: Extract form data
-        let result = try await formAutoPopulationEngine.extractFormData(from: sf30ImageData, formType: .sf30)
+        let result = try await formAutoPopulationEngineUnwrapped.extractFormData(from: sf30ImageData, formType: .sf30)
 
         // Then: High confidence fields should have ≥95% accuracy
         let highConfidenceFields = result.fields.filter { $0.confidence.value >= 0.85 }
@@ -50,7 +65,7 @@ final class FormAutoPopulationEngineTests: XCTestCase {
         let sf1449ImageData = createMockSF1449ImageData()
 
         // When: Extract form data
-        let result = try await formAutoPopulationEngine.extractFormData(from: sf1449ImageData, formType: .sf1449)
+        let result = try await formAutoPopulationEngineUnwrapped.extractFormData(from: sf1449ImageData, formType: .sf1449)
 
         // Then: Medium confidence fields should have ≥85% accuracy
         let mediumConfidenceFields = result.fields.filter { $0.confidence.value >= 0.65 && $0.confidence.value < 0.85 }
@@ -65,7 +80,7 @@ final class FormAutoPopulationEngineTests: XCTestCase {
         let formImageData = createMockFormWithCriticalFields()
 
         // When: Extract form data
-        let result = try await formAutoPopulationEngine.extractFormData(from: formImageData, formType: .sf30)
+        let result = try await formAutoPopulationEngineUnwrapped.extractFormData(from: formImageData, formType: .sf30)
 
         // Then: All critical fields should be identified (100% detection)
         let criticalFields = result.fields.filter { $0.isCritical }

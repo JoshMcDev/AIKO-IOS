@@ -129,7 +129,7 @@ class DocumentExtractionExample {
     private func loadSamplePDFData() -> Data? {
         // In a real implementation, this would load actual PDF data
         // For now, return mock data
-        "Mock PDF Data".data(using: .utf8)
+        Data("Mock PDF Data".utf8)
     }
 }
 

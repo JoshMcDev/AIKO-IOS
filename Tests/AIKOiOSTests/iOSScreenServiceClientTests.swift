@@ -4,12 +4,16 @@
     import SwiftUI
     import XCTest
 
-    final class iOSScreenServiceClientTests: XCTestCase {
-        var client: iOSScreenServiceClient!
+    final class IOSScreenServiceClientTests: XCTestCase {
+        var client: IOSScreenServiceClient?
 
+        private var clientUnwrapped: IOSScreenServiceClient {
+            guard let client = client else { fatalError("client not initialized") }
+            return client
+        }
         override func setUp() async throws {
             try await super.setUp()
-            client = iOSScreenServiceClient()
+            client = IOSScreenServiceClient()
         }
 
         override func tearDown() async throws {
@@ -26,7 +30,7 @@
             }
 
             // Test that mainScreenBounds executes on MainActor
-            let bounds = await client.mainScreenBounds()
+            let bounds = await clientUnwrapped.mainScreenBounds()
             XCTAssertTrue(bounds.width > 0, "Screen bounds should have positive width")
             XCTAssertTrue(bounds.height > 0, "Screen bounds should have positive height")
 
@@ -36,7 +40,7 @@
         }
 
         func testMainScreenBoundsMainActor() async {
-            let bounds = await client.mainScreenBounds()
+            let bounds = await clientUnwrapped.mainScreenBounds()
 
             XCTAssertTrue(bounds.width > 0, "Screen width should be positive")
             XCTAssertTrue(bounds.height > 0, "Screen height should be positive")
@@ -47,7 +51,7 @@
         }
 
         func testMainScreenWidthMainActor() async {
-            let width = await client.mainScreenWidth()
+            let width = await clientUnwrapped.mainScreenWidth()
 
             XCTAssertTrue(width > 0, "Screen width should be positive")
 
@@ -57,7 +61,7 @@
         }
 
         func testMainScreenHeightMainActor() async {
-            let height = await client.mainScreenHeight()
+            let height = await clientUnwrapped.mainScreenHeight()
 
             XCTAssertTrue(height > 0, "Screen height should be positive")
 
@@ -67,7 +71,7 @@
         }
 
         func testScreenScaleMainActor() async {
-            let scale = await client.screenScale()
+            let scale = await clientUnwrapped.screenScale()
 
             XCTAssertTrue(scale > 0, "Screen scale should be positive")
             XCTAssertTrue(scale >= 1.0, "Screen scale should be at least 1.0")
@@ -78,7 +82,7 @@
         }
 
         func testIsCompactMainActor() async {
-            let isCompact = await client.isCompact()
+            let isCompact = await clientUnwrapped.isCompact()
 
             XCTAssertTrue(isCompact == true || isCompact == false, "isCompact should be a boolean")
 
@@ -96,7 +100,7 @@
 
         func testTemplateStartMethod() async throws {
             // Test that the template's start method can be called without error
-            try await client.start()
+            try await clientUnwrapped.start()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After start(), should be on main thread")
@@ -129,11 +133,11 @@
 
         func testAsyncAwaitPattern() async {
             // Test the async/await pattern works correctly
-            async let boundsTask = client.mainScreenBounds()
-            async let widthTask = client.mainScreenWidth()
-            async let heightTask = client.mainScreenHeight()
-            async let scaleTask = client.screenScale()
-            async let compactTask = client.isCompact()
+            async let boundsTask = clientUnwrapped.mainScreenBounds()
+            async let widthTask = clientUnwrapped.mainScreenWidth()
+            async let heightTask = clientUnwrapped.mainScreenHeight()
+            async let scaleTask = clientUnwrapped.screenScale()
+            async let compactTask = clientUnwrapped.isCompact()
 
             let (bounds, width, height, scale, isCompact) = await (boundsTask, widthTask, heightTask, scaleTask, compactTask)
 
@@ -152,9 +156,9 @@
         // MARK: - Screen Property Tests
 
         func testScreenBoundsConsistency() async {
-            let bounds = await client.mainScreenBounds()
-            let width = await client.mainScreenWidth()
-            let height = await client.mainScreenHeight()
+            let bounds = await clientUnwrapped.mainScreenBounds()
+            let width = await clientUnwrapped.mainScreenWidth()
+            let height = await clientUnwrapped.mainScreenHeight()
 
             XCTAssertEqual(bounds.width, width, "Bounds width should match individual width")
             XCTAssertEqual(bounds.height, height, "Bounds height should match individual height")
@@ -162,24 +166,24 @@
 
         func testScreenPropertiesStability() async {
             // Test that screen properties remain consistent across multiple calls
-            let bounds1 = await client.mainScreenBounds()
-            let bounds2 = await client.mainScreenBounds()
+            let bounds1 = await clientUnwrapped.mainScreenBounds()
+            let bounds2 = await clientUnwrapped.mainScreenBounds()
 
             XCTAssertEqual(bounds1, bounds2, "Screen bounds should be consistent")
 
-            let scale1 = await client.screenScale()
-            let scale2 = await client.screenScale()
+            let scale1 = await clientUnwrapped.screenScale()
+            let scale2 = await clientUnwrapped.screenScale()
 
             XCTAssertEqual(scale1, scale2, "Screen scale should be consistent")
 
-            let compact1 = await client.isCompact()
-            let compact2 = await client.isCompact()
+            let compact1 = await clientUnwrapped.isCompact()
+            let compact2 = await clientUnwrapped.isCompact()
 
             XCTAssertEqual(compact1, compact2, "Compact state should be consistent")
         }
 
         func testScreenScaleValidRange() async {
-            let scale = await client.screenScale()
+            let scale = await clientUnwrapped.screenScale()
 
             // Screen scale should be in a reasonable range
             XCTAssertTrue(scale >= 1.0, "Screen scale should be at least 1.0")
@@ -196,8 +200,8 @@
         }
 
         func testScreenDimensionsReasonable() async {
-            let width = await client.mainScreenWidth()
-            let height = await client.mainScreenHeight()
+            let width = await clientUnwrapped.mainScreenWidth()
+            let height = await clientUnwrapped.mainScreenHeight()
 
             // iOS devices have reasonable screen dimensions
             XCTAssertTrue(width >= 200, "Screen width should be at least 200 points")
@@ -207,8 +211,8 @@
         }
 
         func testCompactStateLogic() async {
-            let isCompact = await client.isCompact()
-            let width = await client.mainScreenWidth()
+            let isCompact = await clientUnwrapped.isCompact()
+            let width = await clientUnwrapped.mainScreenWidth()
 
             // Basic logic check: very narrow screens should typically be compact
             if width < 400 {
@@ -227,11 +231,11 @@
             let startTime = CFAbsoluteTimeGetCurrent()
 
             for _ in 0 ..< iterations {
-                _ = await client.mainScreenBounds()
-                _ = await client.mainScreenWidth()
-                _ = await client.mainScreenHeight()
-                _ = await client.screenScale()
-                _ = await client.isCompact()
+                _ = await clientUnwrapped.mainScreenBounds()
+                _ = await clientUnwrapped.mainScreenWidth()
+                _ = await clientUnwrapped.mainScreenHeight()
+                _ = await clientUnwrapped.screenScale()
+                _ = await clientUnwrapped.isCompact()
             }
 
             let timeElapsed = CFAbsoluteTimeGetCurrent() - startTime
@@ -248,12 +252,12 @@
 
         func testConcurrentScreenPropertyAccess() async {
             // Test concurrent access to the same properties
-            async let bounds1 = client.mainScreenBounds()
-            async let bounds2 = client.mainScreenBounds()
-            async let width1 = client.mainScreenWidth()
-            async let width2 = client.mainScreenWidth()
-            async let scale1 = client.screenScale()
-            async let scale2 = client.screenScale()
+            async let bounds1 = clientUnwrapped.mainScreenBounds()
+            async let bounds2 = clientUnwrapped.mainScreenBounds()
+            async let width1 = clientUnwrapped.mainScreenWidth()
+            async let width2 = clientUnwrapped.mainScreenWidth()
+            async let scale1 = clientUnwrapped.screenScale()
+            async let scale2 = clientUnwrapped.screenScale()
 
             let (b1, b2, w1, w2, s1, s2) = await (bounds1, bounds2, width1, width2, scale1, scale2)
 
@@ -269,7 +273,7 @@
         // MARK: - Convenience Accessor Tests
 
         func testConvenienceStaticAccessor() async {
-            let serviceClient = iOSScreenServiceClient.live
+            let serviceClient = IOSScreenServiceClient.live
 
             // Test that the convenience accessor works
             let bounds = await serviceClient.mainScreenBounds()

@@ -203,13 +203,13 @@
         private var menuItemsList: some View {
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.Spacing.small) {
-                    WithViewStore(store, observe: { $0 }) { viewStore in
+                    WithViewStore(store, observe: { $0 }, content: { viewStore in
                         ForEach(AppFeature.MenuItem.allCases, id: \.self) { item in
                             if item == .quickReferences {
                                 quickReferencesSection(viewStore: viewStore, item: item)
                             } else {
                                 regularMenuItem(item: item)
-                            }
+        })
                         }
                     }
                 }
@@ -314,7 +314,7 @@
         }
 
         private func regularMenuItem(item: AppFeature.MenuItem) -> some View {
-            WithViewStore(store, observe: { $0 }) { viewStore in
+            WithViewStore(store, observe: { $0 }, content: { viewStore in
                 MenuItemRow(
                     item: item,
                     isSelected: selectedMenuItem == item,
@@ -322,7 +322,7 @@
                         withAnimation(.easeInOut(duration: 0.3)) {
                             viewStore.send(.selectMenuItem(item))
                             isShowing = false
-                        }
+        })
                     }
                 )
             }

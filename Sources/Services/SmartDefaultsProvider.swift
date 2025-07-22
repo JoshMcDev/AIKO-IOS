@@ -194,8 +194,7 @@ public class SmartDefaultsProvider: @unchecked Sendable {
             .filter { $0.field == field }
             .sorted { $0.priority > $1.priority }
 
-        for rule in applicableRules {
-            if evaluateRuleCondition(rule.condition, context: context) {
+        for rule in applicableRules where evaluateRuleCondition(rule.condition, context: context) {
                 return SmartDefault(
                     field: field,
                     value: rule.value,
@@ -302,11 +301,11 @@ public class SmartDefaultsProvider: @unchecked Sendable {
                 byAdding: .day,
                 value: min(30, context.timeContext.daysUntilFYEnd - 5),
                 to: Date()
-            )!
+            ) ?? Date()
             reasoning = "End of fiscal year - expedited delivery recommended"
         } else {
             // Standard 30-day delivery
-            suggestedDate = calendar.date(byAdding: .day, value: 30, to: Date())!
+            suggestedDate = calendar.date(byAdding: .day, value: 30, to: Date()) ?? Date()
             reasoning = "Standard 30-day delivery window"
         }
 
@@ -321,7 +320,7 @@ public class SmartDefaultsProvider: @unchecked Sendable {
             reasoning: reasoning,
             alternatives: [
                 SmartDefault.Alternative(
-                    value: formatter.string(from: calendar.date(byAdding: .day, value: 45, to: Date())!),
+                    value: formatter.string(from: calendar.date(byAdding: .day, value: 45, to: Date()) ?? Date()),
                     confidence: 0.6
                 ),
             ]
@@ -368,8 +367,7 @@ public class SmartDefaultsProvider: @unchecked Sendable {
             reasoning = "End of fiscal year - urgent processing recommended"
         } else if let value = context.extractedData["totalValue"],
                   let amount = parseAmount(value),
-                  amount > 100_000
-        {
+                  amount > 100_000 {
             priority = "High"
             confidence = 0.7
             reasoning = "High-value acquisition"
@@ -409,8 +407,7 @@ public class SmartDefaultsProvider: @unchecked Sendable {
         case .contractScaffold:
             if let value = context.extractedData["estimatedValue"],
                let amount = parseAmount(value),
-               amount > 250_000
-            {
+               amount > 250_000 {
                 return SmartDefault(
                     field: "contractType",
                     value: "Fixed Price",
@@ -468,8 +465,7 @@ public class SmartDefaultsProvider: @unchecked Sendable {
 
         if condition.contains("high_value") {
             if let value = context.extractedData["totalValue"],
-               let amount = parseAmount(value)
-            {
+               let amount = parseAmount(value) {
                 return amount > 100_000
             }
         }

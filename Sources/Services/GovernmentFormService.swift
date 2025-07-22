@@ -91,7 +91,7 @@ public actor GovernmentFormService: DomainService {
         id: UUID,
         with formData: FormData
     ) async throws {
-        guard let _ = try await getForm(id: id) else {
+        guard try await getForm(id: id) != nil else {
             throw ServiceError.notFound("Form not found")
         }
 
@@ -119,7 +119,7 @@ public actor GovernmentFormService: DomainService {
         id: UUID,
         status: String
     ) async throws {
-        guard let _ = try await getForm(id: id) else {
+        guard try await getForm(id: id) != nil else {
             throw ServiceError.notFound("Form not found")
         }
 
@@ -138,7 +138,7 @@ public actor GovernmentFormService: DomainService {
 
     /// Delete a form
     public func deleteForm(id: UUID) async throws {
-        guard let _ = try await getForm(id: id) else {
+        guard try await getForm(id: id) != nil else {
             throw ServiceError.notFound("Form not found")
         }
 

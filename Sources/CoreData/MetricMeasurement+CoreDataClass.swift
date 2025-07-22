@@ -8,7 +8,7 @@ public class MetricMeasurementEntity: NSManagedObject {
     public func toModel() -> MetricMeasurement? {
         guard let id,
               let name,
-              let _ = metricType,
+              metricType != nil,
               let contextData,
               let context = try? JSONDecoder().decode(MetricContext.self, from: contextData)
         else {
@@ -18,12 +18,10 @@ public class MetricMeasurementEntity: NSManagedObject {
         // Decode metric type
         let type: MetricMeasurement.MetricType
         if let mopString = mopType,
-           let mop = MeasureOfPerformance(rawValue: mopString)
-        {
+           let mop = MeasureOfPerformance(rawValue: mopString) {
             type = .mop(mop)
         } else if let moeString = moeType,
-                  let moe = MeasureOfEffectiveness(rawValue: moeString)
-        {
+                  let moe = MeasureOfEffectiveness(rawValue: moeString) {
             type = .moe(moe)
         } else {
             return nil

@@ -248,7 +248,7 @@ final class OfflineCacheManager: ObservableObject {
 
         guard currentSize > configuration.maxSize else { return }
 
-        logger.warning("Cache size \(currentSize) exceeds limit \(configuration.maxSize)")
+        logger.warning("Cache size \(currentSize) exceeds limit \(self.configuration.maxSize)")
 
         // Apply eviction policy
         switch configuration.evictionPolicy {

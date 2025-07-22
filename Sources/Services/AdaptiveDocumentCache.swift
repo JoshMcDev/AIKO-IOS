@@ -82,7 +82,7 @@ actor AdaptiveCacheStorage {
     private var accessOrder: [String] = []
 
     // Encryption components
-    private var masterKey: SymmetricKey
+    private var primaryKey: SymmetricKey
     private let keyDerivationSalt: Data
     private let encryptionManager: DocumentEncryptionManager
 
@@ -131,12 +131,12 @@ actor AdaptiveCacheStorage {
         encryptionManager = DocumentEncryptionManager()
 
         // Generate or load encryption key
-        if let savedKey = try? await encryptionManager.loadMasterKey() {
-            masterKey = savedKey.key
+        if let savedKey = try? await encryptionManager.loadPrimaryKey() {
+            primaryKey = savedKey.key
             keyDerivationSalt = savedKey.salt
         } else {
-            let newKey = try await encryptionManager.generateMasterKey()
-            masterKey = newKey.key
+            let newKey = try await encryptionManager.generatePrimaryKey()
+            primaryKey = newKey.key
             keyDerivationSalt = newKey.salt
         }
 
@@ -254,7 +254,7 @@ actor AdaptiveCacheStorage {
         let originalSize = documentData.count
 
         // Encrypt
-        let encrypted = try await encryptionManager.encrypt(documentData, using: masterKey)
+        let encrypted = try await encryptionManager.encrypt(documentData, using: primaryKey)
 
         // Create metadata
         let metadata = DocumentMetadata(
@@ -298,7 +298,7 @@ actor AdaptiveCacheStorage {
             let decryptedData = try await encryptionManager.decrypt(
                 ciphertext: cached.encryptedData,
                 nonce: cached.nonce,
-                using: masterKey
+                using: primaryKey
             )
 
             // Verify integrity
@@ -565,7 +565,7 @@ extension AdaptiveDocumentCache: DependencyKey {
                 // Implementation
             },
             getCacheStatistics: {
-                guard let _ = try? await getStorage() else {
+                guard (try? await getStorage()) != nil else {
                     return CacheStatistics(
                         totalCachedDocuments: 0,
                         totalCachedAnalyses: 0,

@@ -709,8 +709,7 @@ public final class UserPatternLearningEngine: @unchecked Sendable {
 
     private func loadPatterns() {
         if let data = UserDefaults.standard.data(forKey: persistenceKey),
-           let decoded = try? JSONDecoder().decode([String: [PatternData]].self, from: data)
-        {
+           let decoded = try? JSONDecoder().decode([String: [PatternData]].self, from: data) {
             // Convert string keys back to RequirementField
             for (key, value) in decoded {
                 if let field = RequirementField(rawValue: key) {
@@ -722,16 +721,14 @@ public final class UserPatternLearningEngine: @unchecked Sendable {
 
     private func loadContextualPatterns() {
         if let data = UserDefaults.standard.data(forKey: contextPersistenceKey),
-           let decoded = try? JSONDecoder().decode([ContextualPattern].self, from: data)
-        {
+           let decoded = try? JSONDecoder().decode([ContextualPattern].self, from: data) {
             contextualPatterns = decoded
         }
     }
 
     private func loadFieldRelationships() {
         if let data = UserDefaults.standard.data(forKey: relationshipPersistenceKey),
-           let decoded = try? JSONDecoder().decode([FieldRelationship].self, from: data)
-        {
+           let decoded = try? JSONDecoder().decode([FieldRelationship].self, from: data) {
             fieldRelationships = decoded
         }
     }
@@ -1022,8 +1019,7 @@ extension UserPatternLearningEngine {
         // Combine insights
         if let weighted = bestWeighted,
            let cluster = bestCluster,
-           weighted.key == cluster.representative
-        {
+           weighted.key == cluster.representative {
             // Strong agreement
             return (weighted.key, min(weighted.value * 1.2, 1.0))
         } else if let weighted = bestWeighted {
@@ -1349,8 +1345,7 @@ extension UserPatternLearningEngine {
             _ = captureTimeContext()
 
             // Find matching temporal patterns
-            for i in 0 ..< temporalPatterns.count {
-                if temporalPatterns[i].field == interaction.field.rawValue {
+            for i in 0 ..< temporalPatterns.count where temporalPatterns[i].field == interaction.field.rawValue {
                     // Update confidence based on match
                     let matches = String(describing: interaction.finalValue) == temporalPatterns[i].typicalValue
                     let adjustment: Float = matches ? 0.1 : -0.05
@@ -1458,23 +1453,23 @@ extension UserPatternLearningEngine {
     private func calculateTimeMatchScore(pattern: TemporalPattern.TimePattern, current: TimeContext) -> Float {
         switch pattern {
         case .endOfMonth:
-            return current.isEndOfMonth ? 1.0 : 0.0
+            return current.isEndOfMonth ? 1.0: 0.0
         case .endOfQuarter:
-            return current.isEndOfQuarter ? 1.0 : 0.0
+            return current.isEndOfQuarter ? 1.0: 0.0
         case .businessHours:
             if let hour = current.hourOfDay {
-                return (hour >= 9 && hour <= 17) ? 0.9 : 0.0
+                return (hour >= 9 && hour <= 17) ? 0.9: 0.0
             }
             return 0.0
         case .afterHours:
             if let hour = current.hourOfDay {
-                return (hour < 9 || hour > 17) ? 0.9 : 0.0
+                return (hour < 9 || hour > 17) ? 0.9: 0.0
             }
             return 0.0
         case .mondayMorning:
-            return (current.dayOfWeek == 2 && (current.hourOfDay ?? 0) < 12) ? 1.0 : 0.0
+            return (current.dayOfWeek == 2 && (current.hourOfDay ?? 0) < 12) ? 1.0: 0.0
         case .fridayAfternoon:
-            return (current.dayOfWeek == 6 && (current.hourOfDay ?? 0) >= 12) ? 1.0 : 0.0
+            return (current.dayOfWeek == 6 && (current.hourOfDay ?? 0) >= 12) ? 1.0: 0.0
         }
     }
 
@@ -1647,10 +1642,8 @@ private struct ClusterPattern {
 extension Array where Element: Equatable {
     func removingDuplicates() -> [Element] {
         var result: [Element] = []
-        for element in self {
-            if !result.contains(element) {
-                result.append(element)
-            }
+        for element in self where !result.contains(element) {
+            result.append(element)
         }
         return result
     }

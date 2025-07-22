@@ -10,14 +10,14 @@ public struct AcquisitionsListView: View {
     }
 
     public var body: some View {
-        WithViewStore(store, observe: \.self) { viewStore in
+        WithViewStore(store, observe: \.self, content: { viewStore in
             contentView(viewStore: viewStore)
                 .background(Theme.Colors.aikoBackground)
                 .navigationTitle("My Acquisitions")
                 .applyNavigationConfiguration()
                 .onAppear {
                     viewStore.send(.onAppear)
-                }
+        })
                 .alert(
                     "Error",
                     isPresented: errorBinding(viewStore: viewStore),

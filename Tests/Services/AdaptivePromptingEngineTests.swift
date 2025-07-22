@@ -2,7 +2,12 @@
 import XCTest
 
 final class AdaptivePromptingEngineTests: XCTestCase {
-    var engine: AdaptivePromptingEngine!
+    var engine: AdaptivePromptingEngine?
+
+    private var engineUnwrapped: AdaptivePromptingEngine {
+        guard let engine = engine else { fatalError("engine not initialized") }
+        return engine
+    }
 
     override func setUp() {
         super.setUp()
@@ -26,7 +31,7 @@ final class AdaptivePromptingEngineTests: XCTestCase {
         )
 
         // When
-        let session = await engine.startConversation(with: context)
+        let session = await engineUnwrapped.startConversation(with: context)
 
         // Then
         XCTAssertEqual(session.state, .gatheringBasicInfo)
@@ -46,7 +51,7 @@ final class AdaptivePromptingEngineTests: XCTestCase {
         )
 
         // When
-        let session = await engine.startConversation(with: context)
+        let session = await engineUnwrapped.startConversation(with: context)
 
         // Then
         XCTAssertEqual(session.state, .gatheringBasicInfo)
@@ -59,7 +64,7 @@ final class AdaptivePromptingEngineTests: XCTestCase {
     func testProcessUserResponseTextInput() async throws {
         // Given
         let context = ConversationContext(acquisitionType: .supplies)
-        let session = await engine.startConversation(with: context)
+        let session = await engineUnwrapped.startConversation(with: context)
 
         guard let firstQuestion = session.remainingQuestions.first else {
             XCTFail("No questions generated")
@@ -73,7 +78,7 @@ final class AdaptivePromptingEngineTests: XCTestCase {
         )
 
         // When
-        let nextPrompt = try await engine.processUserResponse(response, in: session)
+        let nextPrompt = try await engineUnwrapped.processUserResponse(response, in: session)
 
         // Then
         XCTAssertNotNil(nextPrompt)
@@ -83,7 +88,7 @@ final class AdaptivePromptingEngineTests: XCTestCase {
     func testProcessUserResponseSkip() async throws {
         // Given
         let context = ConversationContext(acquisitionType: .services)
-        let session = await engine.startConversation(with: context)
+        let session = await engineUnwrapped.startConversation(with: context)
 
         guard let firstQuestion = session.remainingQuestions.first else {
             XCTFail("No questions generated")
@@ -97,7 +102,7 @@ final class AdaptivePromptingEngineTests: XCTestCase {
         )
 
         // When
-        let nextPrompt = try await engine.processUserResponse(response, in: session)
+        let nextPrompt = try await engineUnwrapped.processUserResponse(response, in: session)
 
         // Then
         XCTAssertNotNil(nextPrompt)
@@ -112,7 +117,7 @@ final class AdaptivePromptingEngineTests: XCTestCase {
         let documents = [createMockParsedDocument()]
 
         // When
-        let context = try await engine.extractContextFromDocuments(documents)
+        let context = try await engineUnwrapped.extractContextFromDocuments(documents)
 
         // Then
         XCTAssertNotNil(context.vendorInfo)
@@ -136,11 +141,11 @@ final class AdaptivePromptingEngineTests: XCTestCase {
         )
 
         // When
-        await engine.learnFromInteraction(interaction)
+        await engineUnwrapped.learnFromInteraction(interaction)
 
         // Then
         // Interaction should be recorded for future defaults
-        let defaults = await engine.getSmartDefaults(for: .vendorName)
+        let defaults = await engineUnwrapped.getSmartDefaults(for: .vendorName)
         // May be nil if not enough patterns yet
         XCTAssertTrue(defaults == nil || defaults?.source == .userPattern)
     }
@@ -158,11 +163,11 @@ final class AdaptivePromptingEngineTests: XCTestCase {
                 timeToRespond: TimeInterval(i),
                 documentContext: false
             )
-            await engine.learnFromInteraction(interaction)
+            await engineUnwrapped.learnFromInteraction(interaction)
         }
 
         // When
-        let defaults = await engine.getSmartDefaults(for: .vendorName)
+        let defaults = await engineUnwrapped.getSmartDefaults(for: .vendorName)
 
         // Then
         XCTAssertNotNil(defaults)
@@ -178,7 +183,7 @@ final class AdaptivePromptingEngineTests: XCTestCase {
         let context = ConversationContext(acquisitionType: .construction)
 
         // When
-        let session = await engine.startConversation(with: context)
+        let session = await engineUnwrapped.startConversation(with: context)
 
         // Then
         let priorities = session.remainingQuestions.map(\.priority)
@@ -210,7 +215,7 @@ final class AdaptivePromptingEngineTests: XCTestCase {
         )
 
         // When
-        let session = await engine.startConversation(with: context)
+        let session = await engineUnwrapped.startConversation(with: context)
 
         // Then
         // Should adapt questions based on historical data
@@ -274,8 +279,18 @@ final class AdaptivePromptingEngineTests: XCTestCase {
 // MARK: - Integration Tests
 
 final class AdaptivePromptingIntegrationTests: XCTestCase {
-    var engine: AdaptivePromptingEngine!
-    var documentParser: DocumentParserEnhanced!
+    var engine: AdaptivePromptingEngine?
+    var documentParser: DocumentParserEnhanced?
+
+    private var engineUnwrapped: AdaptivePromptingEngine {
+        guard let engine = engine else { fatalError("engine not initialized") }
+        return engine
+    }
+
+    private var documentParserUnwrapped: DocumentParserEnhanced {
+        guard let documentParser = documentParser else { fatalError("documentParser not initialized") }
+        return documentParser
+    }
 
     override func setUp() {
         super.setUp()
@@ -288,17 +303,17 @@ final class AdaptivePromptingIntegrationTests: XCTestCase {
         let pdfData = createMockPDFData()
 
         // When - parse document
-        let parsedDoc = try await documentParser.parse(pdfData, type: .pdf)
+        let parsedDoc = try await documentParserUnwrapped.parse(pdfData, type: .pdf)
 
         // Extract context
-        let extractedContext = try await engine.extractContextFromDocuments([parsedDoc])
+        let extractedContext = try await engineUnwrapped.extractContextFromDocuments([parsedDoc])
 
         // Start conversation with context
         let conversationContext = ConversationContext(
             acquisitionType: .supplies,
             uploadedDocuments: [parsedDoc]
         )
-        let session = await engine.startConversation(with: conversationContext)
+        let session = await engineUnwrapped.startConversation(with: conversationContext)
 
         // Then
         XCTAssertNotNil(extractedContext.vendorInfo)

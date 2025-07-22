@@ -3,7 +3,7 @@
     import UIKit
 
     /// iOS-specific navigation container that provides iPhone and iPad optimizations
-    public struct iOSNavigationStack<Content: View>: View {
+    public struct IOSNavigationStack<Content: View>: View {
         let content: () -> Content
 
         public init(@ViewBuilder content: @escaping () -> Content) {
@@ -15,12 +15,12 @@
                 content()
             }
             .navigationViewStyle(.automatic)
-            .modifier(iOSNavigationBarStyleModifier())
+            .modifier(IOSNavigationBarStyleModifier())
         }
     }
 
     /// iOS-specific navigation bar styling
-    public struct iOSNavigationBarStyleModifier: ViewModifier {
+    public struct IOSNavigationBarStyleModifier: ViewModifier {
         public init() {}
 
         public func body(content: Content) -> some View {
@@ -44,7 +44,7 @@
     }
 
     /// iOS-specific tab view implementation
-    public struct iOSTabView<Content: View>: View {
+    public struct IOSTabView<Content: View>: View {
         let content: () -> Content
 
         public init(@ViewBuilder content: @escaping () -> Content) {
@@ -55,12 +55,12 @@
             TabView {
                 content()
             }
-            .modifier(iOSTabBarStyleModifier())
+            .modifier(IOSTabBarStyleModifier())
         }
     }
 
     /// iOS-specific tab bar styling
-    public struct iOSTabBarStyleModifier: ViewModifier {
+    public struct IOSTabBarStyleModifier: ViewModifier {
         public init() {}
 
         public func body(content: Content) -> some View {

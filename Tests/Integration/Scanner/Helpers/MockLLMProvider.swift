@@ -243,7 +243,7 @@ public final class MockLLMProvider: Sendable {
         let errorProbability = 1.0 - configuration.successRate
         if Double.random(in: 0 ... 1) < errorProbability {
             let errors: [LLMError] = [.rateLimited, .networkTimeout, .serviceUnavailable, .invalidResponse]
-            throw errors.randomElement()!
+            throw errors.randomElement() ?? .networkTimeout
         }
     }
 
@@ -305,13 +305,11 @@ public final class MockLLMProvider: Sendable {
         let searchTerms = generateSearchTerms(for: fieldName)
 
         for line in lines {
-            for term in searchTerms {
-                if line.lowercased().contains(term.lowercased()) {
-                    // Extract value after the field label
-                    let components = line.components(separatedBy: ":")
-                    if components.count > 1 {
-                        return components[1].trimmingCharacters(in: .whitespaces)
-                    }
+            for term in searchTerms where line.lowercased().contains(term.lowercased()) {
+                // Extract value after the field label
+                let components = line.components(separatedBy: ":")
+                if components.count > 1 {
+                    return components[1].trimmingCharacters(in: .whitespaces)
                 }
             }
         }
@@ -344,17 +342,15 @@ public final class MockLLMProvider: Sendable {
     private func generateValidationIssues(for mappings: [FieldMapping]) -> [ValidationIssue] {
         var issues: [ValidationIssue] = []
 
-        for mapping in mappings {
-            if mapping.confidence < 0.5 {
-                issues.append(
-                    ValidationIssue(
-                        fieldName: mapping.sourceField,
-                        issueType: .lowConfidence,
-                        description: "Low confidence score: \(mapping.confidence)",
-                        severity: .warning
-                    )
+        for mapping in mappings where mapping.confidence < 0.5 {
+            issues.append(
+                ValidationIssue(
+                    fieldName: mapping.sourceField,
+                    issueType: .lowConfidence,
+                    description: "Low confidence score: \(mapping.confidence)",
+                    severity: .warning
                 )
-            }
+            )
         }
 
         return issues

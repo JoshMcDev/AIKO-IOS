@@ -40,7 +40,7 @@
         )
     }
 
-    public enum iOSScreenServiceClient {
+    public enum IOSScreenServiceClient {
         public static let live = ScreenServiceClient.iOS
     }
 #endif

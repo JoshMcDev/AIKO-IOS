@@ -160,7 +160,10 @@ public final class AzureOpenAIProvider: LLMProviderProtocol, @unchecked Sendable
         let url = "\(baseURL)/openai/deployments/\(deployment)/chat/completions?api-version=\(apiVersion)"
 
         // Make API request
-        var urlRequest = URLRequest(url: URL(string: url)!)
+        guard let urlObject = URL(string: url) else {
+            throw LLMProviderError.networkError("Invalid URL")
+        }
+        var urlRequest = URLRequest(url: urlObject)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         urlRequest.setValue(config.apiKey, forHTTPHeaderField: "api-key")
@@ -273,7 +276,10 @@ public final class AzureOpenAIProvider: LLMProviderProtocol, @unchecked Sendable
                     let url = "\(baseURL)/openai/deployments/\(deployment)/chat/completions?api-version=\(apiVersion)"
 
                     // Make streaming request
-                    var urlRequest = URLRequest(url: URL(string: url)!)
+                    guard let urlObject = URL(string: url) else {
+                        throw LLMProviderError.networkError("Invalid URL")
+                    }
+                    var urlRequest = URLRequest(url: urlObject)
                     urlRequest.httpMethod = "POST"
                     urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
                     urlRequest.setValue(config.apiKey, forHTTPHeaderField: "api-key")
@@ -288,8 +294,7 @@ public final class AzureOpenAIProvider: LLMProviderProtocol, @unchecked Sendable
                     }
 
                     // Process SSE stream
-                    for try await line in bytes.lines {
-                        if line.hasPrefix("data: ") {
+                    for try await line in bytes.lines where line.hasPrefix("data: ") {
                             let jsonString = String(line.dropFirst(6))
                             if jsonString == "[DONE]" {
                                 continuation.finish()
@@ -300,8 +305,7 @@ public final class AzureOpenAIProvider: LLMProviderProtocol, @unchecked Sendable
                                let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                                let choices = json["choices"] as? [[String: Any]],
                                let firstChoice = choices.first,
-                               let delta = firstChoice["delta"] as? [String: Any]
-                            {
+                               let delta = firstChoice["delta"] as? [String: Any] {
                                 if let content = delta["content"] as? String {
                                     continuation.yield(LLMStreamChunk(delta: content))
                                 }
@@ -337,7 +341,10 @@ public final class AzureOpenAIProvider: LLMProviderProtocol, @unchecked Sendable
 
         let url = "\(endpoint)/openai/deployments/\(embeddingDeployment)/embeddings?api-version=\(apiVersion)"
 
-        var urlRequest = URLRequest(url: URL(string: url)!)
+        guard let urlObject = URL(string: url) else {
+            throw LLMProviderError.networkError("Invalid URL")
+        }
+        var urlRequest = URLRequest(url: urlObject)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         urlRequest.setValue(config.apiKey, forHTTPHeaderField: "api-key")

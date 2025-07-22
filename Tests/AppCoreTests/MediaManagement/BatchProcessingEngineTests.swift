@@ -4,7 +4,12 @@ import XCTest
 
 @available(iOS 16.0, *)
 final class BatchProcessingEngineTests: XCTestCase {
-    var sut: BatchProcessingEngine!
+    var sut: BatchProcessingEngine?
+
+    private var sutUnwrapped: BatchProcessingEngine {
+        guard let sut = sut else { fatalError("sut not initialized") }
+        return sut
+    }
 
     override func setUp() async throws {
         try await super.setUp()

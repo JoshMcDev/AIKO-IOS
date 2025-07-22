@@ -115,8 +115,7 @@ final class DataTransformationService: @unchecked Sendable {
         if let quantityStr = data["quantity"],
            let unitPriceStr = data["unitPrice"],
            let quantity = Double(quantityStr),
-           let unitPrice = Double(unitPriceStr)
-        {
+           let unitPrice = Double(unitPriceStr) {
             result["extendedPrice"] = String(quantity * unitPrice)
         }
 
@@ -161,10 +160,8 @@ final class DataTransformationService: @unchecked Sendable {
         // Add required FAR clauses
         var clauses = data["farClauses"]?.components(separatedBy: ",") ?? []
         let requiredClauses = ["52.212-1", "52.212-2", "52.212-3", "52.212-4", "52.212-5"]
-        for clause in requiredClauses {
-            if !clauses.contains(clause) {
-                clauses.append(clause)
-            }
+        for clause in requiredClauses where !clauses.contains(clause) {
+            clauses.append(clause)
         }
         result["farClauses"] = clauses.joined(separator: ",")
 
@@ -198,8 +195,7 @@ final class DataTransformationService: @unchecked Sendable {
 
         // Validate micro-purchase threshold
         if let totalStr = data["totalAmount"],
-           let total = Double(totalStr)
-        {
+           let total = Double(totalStr) {
             if total > 10000 {
                 throw DataTransformationError.thresholdExceeded(
                     "SF 44 cannot be used for purchases over $10,000"
@@ -234,8 +230,7 @@ final class DataTransformationService: @unchecked Sendable {
                 let parts = item.components(separatedBy: ":")
                 if parts.count >= 3,
                    let quantity = Double(parts[1]),
-                   let unitPrice = Double(parts[2])
-                {
+                   let unitPrice = Double(parts[2]) {
                     totalAmount += quantity * unitPrice
                 }
             }
@@ -245,8 +240,7 @@ final class DataTransformationService: @unchecked Sendable {
         // Calculate dates
         if let startDateStr = data["startDate"],
            let performanceDaysStr = data["performanceDays"],
-           let performanceDays = Int(performanceDaysStr)
-        {
+           let performanceDays = Int(performanceDaysStr) {
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd"
             if let startDate = formatter.date(from: startDateStr) {
@@ -276,23 +270,20 @@ final class DataTransformationService: @unchecked Sendable {
         var result = data
 
         // Format dates according to FAR standards
-        for (key, value) in result {
-            if key.hasSuffix("Date") {
-                // Try to parse date string and reformat
-                let inputFormatter = DateFormatter()
-                inputFormatter.dateFormat = "yyyy-MM-dd"
-                if let date = inputFormatter.date(from: value) {
-                    dateFormatter.dateFormat = "MM/dd/yyyy"
-                    result[key] = dateFormatter.string(from: date)
-                }
+        for (key, value) in result where key.hasSuffix("Date") {
+            // Try to parse date string and reformat
+            let inputFormatter = DateFormatter()
+            inputFormatter.dateFormat = "yyyy-MM-dd"
+            if let date = inputFormatter.date(from: value) {
+                dateFormatter.dateFormat = "MM/dd/yyyy"
+                result[key] = dateFormatter.string(from: date)
             }
         }
 
         // Format currency values
         for (key, value) in result {
             if key.contains("Amount") || key.contains("Price") || key.contains("Value"),
-               let number = Double(value)
-            {
+               let number = Double(value) {
                 result[key] = currencyFormatter.string(from: NSNumber(value: number)) ?? "$0.00"
             }
         }

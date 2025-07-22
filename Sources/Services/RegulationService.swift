@@ -363,7 +363,9 @@ extension RegulationService: DependencyKey {
 
         return RegulationService(
             searchDocuments: { query in
-                var components = URLComponents(string: "\(RegulationsGovConfig.baseURL)/documents")!
+                guard var components = URLComponents(string: "\(RegulationsGovConfig.baseURL)/documents") else {
+                    throw RegulationServiceError.apiError("Invalid base URL")
+                }
                 var queryItems: [URLQueryItem] = [
                     URLQueryItem(name: "filter[searchTerm]", value: query.searchTerm),
                     URLQueryItem(name: "sort", value: "\(query.sortOrder.rawValue == "ASC" ? "" : "-")\(query.sortBy.rawValue)"),
@@ -383,7 +385,10 @@ extension RegulationService: DependencyKey {
 
                 components.queryItems = queryItems
 
-                var request = URLRequest(url: components.url!)
+                guard let url = components.url else {
+                    throw RegulationServiceError.apiError("Failed to construct URL")
+                }
+                var request = URLRequest(url: url)
                 RegulationsGovConfig.headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
 
                 let (data, response) = try await urlSession.data(for: request)
@@ -407,7 +412,9 @@ extension RegulationService: DependencyKey {
             },
 
             getDocument: { documentId in
-                let url = URL(string: "\(RegulationsGovConfig.baseURL)/documents/\(documentId)")!
+                guard let url = URL(string: "\(RegulationsGovConfig.baseURL)/documents/\(documentId)") else {
+                    throw RegulationServiceError.apiError("Invalid document URL")
+                }
                 var request = URLRequest(url: url)
                 RegulationsGovConfig.headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
 
@@ -418,7 +425,9 @@ extension RegulationService: DependencyKey {
             },
 
             getDocumentComments: { documentId in
-                let url = URL(string: "\(RegulationsGovConfig.baseURL)/comments?filter[commentOnId]=\(documentId)")!
+                guard let url = URL(string: "\(RegulationsGovConfig.baseURL)/comments?filter[commentOnId]=\(documentId)") else {
+                    throw RegulationServiceError.apiError("Invalid comments URL")
+                }
                 var request = URLRequest(url: url)
                 RegulationsGovConfig.headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
 
@@ -429,7 +438,9 @@ extension RegulationService: DependencyKey {
             },
 
             getDocket: { docketId in
-                let url = URL(string: "\(RegulationsGovConfig.baseURL)/dockets/\(docketId)")!
+                guard let url = URL(string: "\(RegulationsGovConfig.baseURL)/dockets/\(docketId)") else {
+                    throw RegulationServiceError.apiError("Invalid docket URL")
+                }
                 var request = URLRequest(url: url)
                 RegulationsGovConfig.headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
 
@@ -440,7 +451,9 @@ extension RegulationService: DependencyKey {
             },
 
             downloadAttachment: { _, attachmentUrl in
-                let url = URL(string: attachmentUrl)!
+                guard let url = URL(string: attachmentUrl) else {
+                    throw RegulationServiceError.apiError("Invalid attachment URL")
+                }
                 var request = URLRequest(url: url)
                 RegulationsGovConfig.headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
 
@@ -451,7 +464,9 @@ extension RegulationService: DependencyKey {
             getFARContent: { reference in
                 // Construct URL based on FAR reference
                 let urlPath = reference.fullReference.replacingOccurrences(of: " ", with: "_")
-                let url = URL(string: "\(GSADITAConfig.farURL)/\(urlPath).dita")!
+                guard let url = URL(string: "\(GSADITAConfig.farURL)/\(urlPath).dita") else {
+                    throw RegulationServiceError.apiError("Invalid FAR URL")
+                }
 
                 let (data, _) = try await urlSession.data(from: url)
 
@@ -473,7 +488,9 @@ extension RegulationService: DependencyKey {
 
             getDFARSContent: { reference in
                 let urlPath = reference.fullReference.replacingOccurrences(of: " ", with: "_")
-                let url = URL(string: "\(GSADITAConfig.dfarsURL)/\(urlPath).dita")!
+                guard let url = URL(string: "\(GSADITAConfig.dfarsURL)/\(urlPath).dita") else {
+                    throw RegulationServiceError.apiError("Invalid DFARS URL")
+                }
 
                 let (data, _) = try await urlSession.data(from: url)
 

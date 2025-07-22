@@ -4,8 +4,8 @@
     import SwiftUI
 
     /// iOS Blur Effect Service Client using SimpleServiceTemplate
-    public final class iOSBlurEffectServiceClient: SimpleServiceTemplate {
-        private let service = iOSBlurEffectService()
+    public final class IOSBlurEffectServiceClient: SimpleServiceTemplate {
+        private let service = IOSBlurEffectService()
 
         override public init() {
             super.init()
@@ -32,7 +32,7 @@
 
     public extension BlurEffectServiceClient {
         static let iOS: Self = {
-            let service = iOSBlurEffectService()
+            let service = IOSBlurEffectService()
             return Self(
                 _createBlurredBackground: { radius in
                     service.createBlurredBackground(radius: radius)

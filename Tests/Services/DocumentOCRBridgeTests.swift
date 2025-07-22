@@ -11,28 +11,43 @@ import XCTest
 final class DocumentOCRBridgeTests: XCTestCase {
     // MARK: - Test Properties
 
-    private var bridge: DocumentOCRBridge!
-    private var mockUnifiedExtractor: MockUnifiedDocumentContextExtractor!
-    private var testSessionID: DocumentSessionID!
+    private var bridge: DocumentOCRBridge?
+    private var mockUnifiedExtractorUnwrapped: MockUnifiedDocumentContextExtractor?
+    private var testSessionIDUnwrapped: DocumentSessionID?
+
+    private var bridgeUnwrapped: DocumentOCRBridge {
+        guard let bridge = bridge else { fatalError("bridge not initialized") }
+        return bridge
+    }
+
+    private var mockUnifiedExtractorUnwrappedUnwrapped: MockUnifiedDocumentContextExtractor {
+        guard let mockUnifiedExtractorUnwrapped = mockUnifiedExtractorUnwrapped else { fatalError("mockUnifiedExtractorUnwrapped not initialized") }
+        return mockUnifiedExtractorUnwrapped
+    }
+
+    private var testSessionIDUnwrappedUnwrapped: DocumentSessionID {
+        guard let testSessionIDUnwrapped = testSessionIDUnwrapped else { fatalError("testSessionIDUnwrapped not initialized") }
+        return testSessionIDUnwrapped
+    }
 
     // MARK: - Test Setup
 
     override func setUpWithError() throws {
         try super.setUpWithError()
 
-        mockUnifiedExtractor = MockUnifiedDocumentContextExtractor()
+        mockUnifiedExtractorUnwrapped = MockUnifiedDocumentContextExtractor()
         bridge = DocumentOCRBridge(
-            unifiedExtractor: mockUnifiedExtractor,
+            unifiedExtractor: mockUnifiedExtractorUnwrapped,
             qualityThreshold: 0.7,
             batchProcessingTimeout: 30.0
         )
-        testSessionID = UUID()
+        testSessionIDUnwrapped = UUID()
     }
 
     override func tearDownWithError() throws {
         bridge = nil
-        mockUnifiedExtractor = nil
-        testSessionID = nil
+        mockUnifiedExtractorUnwrapped = nil
+        testSessionIDUnwrapped = nil
         try super.tearDownWithError()
     }
 
@@ -50,7 +65,7 @@ final class DocumentOCRBridgeTests: XCTestCase {
                 let sessionID = UUID()
                 let singlePageBatch = [testPages[i]]
 
-                let result = try await bridge.bridgeToOCR(
+                let result = try await bridgeUnwrapped.bridgeToOCR(
                     scannerPages: singlePageBatch,
                     sessionID: sessionID,
                     processingHints: ["test_mode": true]
@@ -81,9 +96,9 @@ final class DocumentOCRBridgeTests: XCTestCase {
 
         let startTime = CFAbsoluteTimeGetCurrent()
 
-        let result = try await bridge.bridgeToOCR(
+        let result = try await bridgeUnwrapped.bridgeToOCR(
             scannerPages: testPages,
-            sessionID: testSessionID,
+            sessionID: testSessionIDUnwrapped,
             processingHints: ["performance_test": true]
         )
 
@@ -107,18 +122,18 @@ final class DocumentOCRBridgeTests: XCTestCase {
         let testPages = createTestPages(count: 10, withQuality: 0.9)
 
         // Process the session
-        let result = try await bridge.bridgeToOCR(
+        let result = try await bridgeUnwrapped.bridgeToOCR(
             scannerPages: testPages,
-            sessionID: testSessionID,
+            sessionID: testSessionIDUnwrapped,
             processingHints: ["multi_page_test": true]
         )
 
         // Validate session state persistence
-        let restoredState = await bridge.restoreSessionState(sessionID: testSessionID)
+        let restoredState = await bridgeUnwrapped.restoreSessionState(sessionID: testSessionIDUnwrapped)
 
         // MoP #5: Multi-page session state persistence 100% accuracy
         XCTAssertNotNil(restoredState, "Session state must be persisted")
-        XCTAssertEqual(restoredState?.sessionID, testSessionID)
+        XCTAssertEqual(restoredState?.sessionID, testSessionIDUnwrapped)
         XCTAssertEqual(restoredState?.pages.count, testPages.count)
         XCTAssertEqual(restoredState?.state, .completed)
 
@@ -139,7 +154,7 @@ final class DocumentOCRBridgeTests: XCTestCase {
         // Create multiple sessions
         let sessions = createTestSessions(count: 3, pagesPerSession: 5)
 
-        let results = try await bridge.processBatchSessions(sessions: sessions)
+        let results = try await bridgeUnwrapped.processBatchSessions(sessions: sessions)
 
         // Validate all sessions processed
         XCTAssertEqual(results.count, sessions.count)
@@ -155,7 +170,7 @@ final class DocumentOCRBridgeTests: XCTestCase {
             XCTAssertNotNil(result.context)
 
             // Validate session state persistence for each session
-            let restoredState = await bridge.restoreSessionState(sessionID: session.sessionID)
+            let restoredState = await bridgeUnwrapped.restoreSessionState(sessionID: session.sessionID)
             XCTAssertNotNil(restoredState)
             XCTAssertEqual(restoredState?.state, .completed)
         }
@@ -172,9 +187,9 @@ final class DocumentOCRBridgeTests: XCTestCase {
 
         let allPages = highQualityPages + lowQualityPages
 
-        let result = try await bridge.bridgeToOCR(
+        let result = try await bridgeUnwrapped.bridgeToOCR(
             scannerPages: allPages,
-            sessionID: testSessionID,
+            sessionID: testSessionIDUnwrapped,
             processingHints: ["quality_test": true]
         )
 
@@ -201,27 +216,27 @@ final class DocumentOCRBridgeTests: XCTestCase {
             "session_type": "test",
         ]
 
-        let result = try await bridge.bridgeToOCR(
+        let result = try await bridgeUnwrapped.bridgeToOCR(
             scannerPages: testPages,
-            sessionID: testSessionID,
+            sessionID: testSessionIDUnwrapped,
             processingHints: processingHints
         )
 
         // Extract context to validate metadata preservation
-        let context = try await bridge.extractDocumentContext(
+        let context = try await bridgeUnwrapped.extractDocumentContext(
             from: result,
             additionalHints: ["context_extraction": true]
         )
 
         // Validate that processing hints are preserved
-        XCTAssertTrue(mockUnifiedExtractor.lastProcessingHints?["preserve_metadata"] as? Bool == true)
-        XCTAssertEqual(mockUnifiedExtractor.lastProcessingHints?["processing_mode"] as? String, "enhanced")
-        XCTAssertEqual(mockUnifiedExtractor.lastProcessingHints?["session_type"] as? String, "test")
+        XCTAssertTrue(mockUnifiedExtractorUnwrapped.lastProcessingHints?["preserve_metadata"] as? Bool == true)
+        XCTAssertEqual(mockUnifiedExtractorUnwrapped.lastProcessingHints?["processing_mode"] as? String, "enhanced")
+        XCTAssertEqual(mockUnifiedExtractorUnwrapped.lastProcessingHints?["session_type"] as? String, "test")
 
         // Validate scanner-specific context hints are added
-        XCTAssertTrue(mockUnifiedExtractor.lastProcessingHints?["document_scanner_bridge"] as? Bool == true)
-        XCTAssertEqual(mockUnifiedExtractor.lastProcessingHints?["scanner_session_id"] as? String, testSessionID.uuidString)
-        XCTAssertEqual(mockUnifiedExtractor.lastProcessingHints?["processed_pages_count"] as? Int, testPages.count)
+        XCTAssertTrue(mockUnifiedExtractorUnwrapped.lastProcessingHints?["document_scanner_bridge"] as? Bool == true)
+        XCTAssertEqual(mockUnifiedExtractorUnwrapped.lastProcessingHints?["scanner_session_id"] as? String, testSessionIDUnwrapped.uuidString)
+        XCTAssertEqual(mockUnifiedExtractorUnwrapped.lastProcessingHints?["processed_pages_count"] as? Int, testPages.count)
 
         // Validate context extraction succeeded
         XCTAssertNotNil(context)
@@ -235,9 +250,9 @@ final class DocumentOCRBridgeTests: XCTestCase {
     func testErrorHandlingAndRecovery() async throws {
         // Test with no pages
         do {
-            _ = try await bridge.bridgeToOCR(
+            _ = try await bridgeUnwrapped.bridgeToOCR(
                 scannerPages: [],
-                sessionID: testSessionID
+                sessionID: testSessionIDUnwrapped
             )
             XCTFail("Should throw error for empty pages")
         } catch OCRBridgeError.noProcessedPages {
@@ -248,9 +263,9 @@ final class DocumentOCRBridgeTests: XCTestCase {
         let lowQualityPages = createTestPages(count: 2, withQuality: 0.3)
 
         do {
-            _ = try await bridge.bridgeToOCR(
+            _ = try await bridgeUnwrapped.bridgeToOCR(
                 scannerPages: lowQualityPages,
-                sessionID: testSessionID
+                sessionID: testSessionIDUnwrapped
             )
             XCTFail("Should throw error for no qualified pages")
         } catch OCRBridgeError.noQualifiedPages {
@@ -265,17 +280,17 @@ final class DocumentOCRBridgeTests: XCTestCase {
     func testIntegrationWithUnifiedExtractor() async throws {
         let testPages = createTestPages(count: 3, withQuality: 0.8)
 
-        let result = try await bridge.bridgeToOCR(
+        let result = try await bridgeUnwrapped.bridgeToOCR(
             scannerPages: testPages,
-            sessionID: testSessionID,
+            sessionID: testSessionIDUnwrapped,
             processingHints: ["integration_test": true]
         )
 
-        let context = try await bridge.extractDocumentContext(from: result)
+        let context = try await bridgeUnwrapped.extractDocumentContext(from: result)
 
         // Validate that UnifiedDocumentContextExtractor was called
-        XCTAssertTrue(mockUnifiedExtractor.wasExtractContextCalled)
-        XCTAssertEqual(mockUnifiedExtractor.lastOCRResults?.count, testPages.count)
+        XCTAssertTrue(mockUnifiedExtractorUnwrapped.wasExtractContextCalled)
+        XCTAssertEqual(mockUnifiedExtractorUnwrapped.lastOCRResults?.count, testPages.count)
 
         // Validate context extraction results
         XCTAssertNotNil(context.extractedContext)
@@ -293,9 +308,9 @@ final class DocumentOCRBridgeTests: XCTestCase {
 
         let startTime = CFAbsoluteTimeGetCurrent()
 
-        let result = try await bridge.bridgeToOCR(
+        let result = try await bridgeUnwrapped.bridgeToOCR(
             scannerPages: largeTestPages,
-            sessionID: testSessionID,
+            sessionID: testSessionIDUnwrapped,
             processingHints: ["large_document_test": true]
         )
 
@@ -306,7 +321,7 @@ final class DocumentOCRBridgeTests: XCTestCase {
         XCTAssertEqual(result.processedPages, largeTestPages.count)
 
         // Extract context
-        let context = try await bridge.extractDocumentContext(from: result)
+        let context = try await bridgeUnwrapped.extractDocumentContext(from: result)
         XCTAssertNotNil(context)
 
         print("✅ Large Document Performance: \(largeTestPages.count) pages in \(totalTime)s")
@@ -513,9 +528,9 @@ extension DocumentOCRBridgeTests {
         let scannerPages = createTestPagesWithMetadata(count: 3)
 
         // 2. Bridge to OCR pipeline
-        let bridgeResult = try await bridge.bridgeToOCR(
+        let bridgeResult = try await bridgeUnwrapped.bridgeToOCR(
             scannerPages: scannerPages,
-            sessionID: testSessionID,
+            sessionID: testSessionIDUnwrapped,
             processingHints: [
                 "document_scanner": true,
                 "enhanced_ocr": true,
@@ -527,7 +542,7 @@ extension DocumentOCRBridgeTests {
         XCTAssertLessThan(bridgeResult.handoffTime, 0.5, "Handoff must be <500ms")
 
         // 4. Extract comprehensive document context
-        let context = try await bridge.extractDocumentContext(
+        let context = try await bridgeUnwrapped.extractDocumentContext(
             from: bridgeResult,
             additionalHints: [
                 "extract_all": true,
@@ -543,7 +558,7 @@ extension DocumentOCRBridgeTests {
         XCTAssertNotNil(context.extractedContext.pricing)
 
         // 6. Validate session state persistence (MoP #5)
-        let restoredState = await bridge.restoreSessionState(sessionID: testSessionID)
+        let restoredState = await bridgeUnwrapped.restoreSessionState(sessionID: testSessionIDUnwrapped)
         XCTAssertNotNil(restoredState)
         XCTAssertEqual(restoredState?.state, .completed)
 

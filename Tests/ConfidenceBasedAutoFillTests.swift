@@ -2,9 +2,24 @@
 import XCTest
 
 final class ConfidenceBasedAutoFillTests: XCTestCase {
-    var autoFillEngine: ConfidenceBasedAutoFillEngine!
-    var smartDefaultsEngine: SmartDefaultsEngine!
-    var patternLearningEngine: UserPatternLearningEngine!
+    var autoFillEngine: ConfidenceBasedAutoFillEngine?
+    var smartDefaultsEngine: SmartDefaultsEngine?
+    var patternLearningEngine: UserPatternLearningEngine?
+
+    private var autoFillEngineUnwrapped: ConfidenceBasedAutoFillEngine {
+        guard let autoFillEngine = autoFillEngine else { fatalError("autoFillEngine not initialized") }
+        return autoFillEngine
+    }
+
+    private var smartDefaultsEngineUnwrapped: SmartDefaultsEngine {
+        guard let smartDefaultsEngine = smartDefaultsEngine else { fatalError("smartDefaultsEngine not initialized") }
+        return smartDefaultsEngine
+    }
+
+    private var patternLearningEngineUnwrapped: UserPatternLearningEngine {
+        guard let patternLearningEngine = patternLearningEngine else { fatalError("patternLearningEngine not initialized") }
+        return patternLearningEngine
+    }
 
     override func setUp() async throws {
         try await super.setUp()
@@ -66,11 +81,11 @@ final class ConfidenceBasedAutoFillTests: XCTestCase {
                 timeToRespond: 2.0,
                 documentContext: false
             )
-            await patternLearningEngine.learn(from: interaction)
+            await patternLearningEngineUnwrapped.learn(from: interaction)
         }
 
         // Test auto-fill
-        let result = await autoFillEngine.analyzeFieldsForAutoFill(
+        let result = await autoFillEngineUnwrapped.analyzeFieldsForAutoFill(
             fields: fields,
             context: context
         )
@@ -110,7 +125,7 @@ final class ConfidenceBasedAutoFillTests: XCTestCase {
             autoFillThreshold: 0.85
         )
 
-        let result = await autoFillEngine.analyzeFieldsForAutoFill(
+        let result = await autoFillEngineUnwrapped.analyzeFieldsForAutoFill(
             fields: fields,
             context: context
         )
@@ -137,7 +152,7 @@ final class ConfidenceBasedAutoFillTests: XCTestCase {
             autoFillThreshold: 0.85
         )
 
-        let result = await autoFillEngine.analyzeFieldsForAutoFill(
+        let result = await autoFillEngineUnwrapped.analyzeFieldsForAutoFill(
             fields: fields,
             context: context
         )
@@ -159,7 +174,7 @@ final class ConfidenceBasedAutoFillTests: XCTestCase {
         )
 
         // Process rejection feedback
-        await autoFillEngine.processUserFeedback(
+        await autoFillEngineUnwrapped.processUserFeedback(
             field: field,
             autoFilledValue: suggestedValue,
             userValue: userValue,
@@ -168,12 +183,12 @@ final class ConfidenceBasedAutoFillTests: XCTestCase {
         )
 
         // Check metrics
-        let metrics = autoFillEngine.getMetrics()
+        let metrics = autoFillEngineUnwrapped.getMetrics()
         XCTAssertEqual(metrics.rejectedCount, 1)
         XCTAssertTrue(metrics.rejectedFields.contains(field))
 
         // Process acceptance feedback
-        await autoFillEngine.processUserFeedback(
+        await autoFillEngineUnwrapped.processUserFeedback(
             field: .contractType,
             autoFilledValue: "Purchase Order",
             userValue: "Purchase Order",
@@ -181,7 +196,7 @@ final class ConfidenceBasedAutoFillTests: XCTestCase {
             context: context
         )
 
-        let updatedMetrics = autoFillEngine.getMetrics()
+        let updatedMetrics = autoFillEngineUnwrapped.getMetrics()
         XCTAssertEqual(updatedMetrics.acceptedCount, 1)
         XCTAssertEqual(updatedMetrics.totalFeedbackCount, 2)
         XCTAssertEqual(updatedMetrics.acceptanceRate, 0.5)
@@ -211,7 +226,7 @@ final class ConfidenceBasedAutoFillTests: XCTestCase {
             summary: summary
         )
 
-        let explanation = autoFillEngine.generateAutoFillExplanation(result)
+        let explanation = autoFillEngineUnwrapped.generateAutoFillExplanation(result)
 
         XCTAssertTrue(explanation.contains("6 fields"))
         XCTAssertTrue(explanation.contains("2 more"))
@@ -220,17 +235,17 @@ final class ConfidenceBasedAutoFillTests: XCTestCase {
     }
 
     func testConfidenceColorMapping() {
-        XCTAssertEqual(autoFillEngine.getConfidenceColor(for: 0.95), .green)
-        XCTAssertEqual(autoFillEngine.getConfidenceColor(for: 0.85), .blue)
-        XCTAssertEqual(autoFillEngine.getConfidenceColor(for: 0.70), .orange)
-        XCTAssertEqual(autoFillEngine.getConfidenceColor(for: 0.50), .gray)
+        XCTAssertEqual(autoFillEngineUnwrapped.getConfidenceColor(for: 0.95), .green)
+        XCTAssertEqual(autoFillEngineUnwrapped.getConfidenceColor(for: 0.85), .blue)
+        XCTAssertEqual(autoFillEngineUnwrapped.getConfidenceColor(for: 0.70), .orange)
+        XCTAssertEqual(autoFillEngineUnwrapped.getConfidenceColor(for: 0.50), .gray)
     }
 
     func testConfidenceDescriptions() {
-        XCTAssertEqual(autoFillEngine.getConfidenceDescription(for: 0.95), "Very High")
-        XCTAssertEqual(autoFillEngine.getConfidenceDescription(for: 0.85), "High")
-        XCTAssertEqual(autoFillEngine.getConfidenceDescription(for: 0.70), "Moderate")
-        XCTAssertEqual(autoFillEngine.getConfidenceDescription(for: 0.55), "Low")
-        XCTAssertEqual(autoFillEngine.getConfidenceDescription(for: 0.30), "Very Low")
+        XCTAssertEqual(autoFillEngineUnwrapped.getConfidenceDescription(for: 0.95), "Very High")
+        XCTAssertEqual(autoFillEngineUnwrapped.getConfidenceDescription(for: 0.85), "High")
+        XCTAssertEqual(autoFillEngineUnwrapped.getConfidenceDescription(for: 0.70), "Moderate")
+        XCTAssertEqual(autoFillEngineUnwrapped.getConfidenceDescription(for: 0.55), "Low")
+        XCTAssertEqual(autoFillEngineUnwrapped.getConfidenceDescription(for: 0.30), "Very Low")
     }
 }

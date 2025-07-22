@@ -4,8 +4,8 @@
     import SwiftUI
 
     /// iOS Theme Service Client using SimpleServiceTemplate
-    public final class iOSThemeServiceClient: SimpleServiceTemplate {
-        private let service = iOSThemeService()
+    public final class IOSThemeServiceClient: SimpleServiceTemplate {
+        private let service = IOSThemeService()
 
         override public init() {
             super.init()
@@ -74,7 +74,7 @@
 
     public extension ThemeServiceClient {
         static let iOS: Self = {
-            let service = iOSThemeService()
+            let service = IOSThemeService()
             return Self(
                 backgroundColorProvider: {
                     service.backgroundColor()
@@ -111,7 +111,7 @@
     }
 
     // Convenience static accessor
-    public enum iOSThemeServiceClientLive {
+    public enum IOSThemeServiceClientLive {
         public static let live = ThemeServiceClient.iOS
     }
 #endif

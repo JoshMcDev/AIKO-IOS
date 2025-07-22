@@ -34,7 +34,7 @@ public final class DD1155Form: BaseGovernmentForm {
             formNumber: "DD1155",
             formTitle: "Order for Supplies or Services",
             revision: revision,
-            effectiveDate: DateComponents(calendar: .current, year: 2022, month: 6, day: 1).date!,
+            effectiveDate: DateComponents(calendar: .current, year: 2022, month: 6, day: 1).date ?? Date(),
             expirationDate: nil,
             isElectronic: true,
             metadata: metadata

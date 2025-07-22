@@ -19,7 +19,7 @@ public struct MenuView: View {
 
     public var body: some View {
         #if os(iOS)
-            iOSMenuView(
+            IOSMenuView(
                 store: store,
                 isShowing: $isShowing,
                 selectedMenuItem: $selectedMenuItem

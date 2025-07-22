@@ -236,7 +236,7 @@ public struct CacheInvalidationDemo {
             status: .completed,
             output: ActionOutput(
                 type: .text,
-                data: "Demo result".data(using: .utf8)!
+                data: Data("Demo result".utf8)
             ),
             metrics: ActionMetrics(
                 startTime: Date(),

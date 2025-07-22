@@ -104,18 +104,19 @@ public actor DocumentGenerationPerformanceMonitor {
         generationMetrics.append(metric)
 
         // Update session metrics
-        if currentSession != nil {
-            currentSession!.totalDocumentsGenerated += 1
-            currentSession!.totalProcessingTime += durations.total
+        if var session = currentSession {
+            session.totalDocumentsGenerated += 1
+            session.totalProcessingTime += durations.total
 
             if cacheHit {
-                currentSession!.cacheHits += 1
+                session.cacheHits += 1
             } else {
-                currentSession!.cacheMisses += 1
+                session.cacheMisses += 1
                 if let apiDuration = durations.apiCall {
-                    currentSession!.totalAPITime += apiDuration
+                    session.totalAPITime += apiDuration
                 }
             }
+            currentSession = session
         }
 
         // Maintain size limit
@@ -232,8 +233,7 @@ public actor DocumentGenerationPerformanceMonitor {
         }
 
         // Check for slow document types
-        for (type, performance) in report.typeMetrics {
-            if performance.averageGenerationTime > targetGenerationTime * 1.5 {
+        for (type, performance) in report.typeMetrics where performance.averageGenerationTime > targetGenerationTime * 1.5 {
                 suggestions.append(OptimizationSuggestion(
                     category: .documentType,
                     priority: .medium,

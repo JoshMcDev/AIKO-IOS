@@ -4,12 +4,16 @@
     import SwiftUI
     import XCTest
 
-    final class iOSShareServiceClientTests: XCTestCase {
-        var client: iOSShareServiceClient!
+    final class IOSShareServiceClientTests: XCTestCase {
+        var client: IOSShareServiceClient?
 
+        private var clientUnwrapped: IOSShareServiceClient {
+            guard let client = client else { fatalError("client not initialized") }
+            return client
+        }
         override func setUp() async throws {
             try await super.setUp()
-            client = iOSShareServiceClient()
+            client = IOSShareServiceClient()
         }
 
         override func tearDown() async throws {
@@ -27,7 +31,7 @@
 
             // Test that share executes on MainActor (will likely fail in test env)
             let shareItems = ShareableItems(["Test text"])
-            let result = await client.share(items: shareItems)
+            let result = await clientUnwrapped.share(items: shareItems)
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After share, should still be on main thread")
@@ -39,7 +43,7 @@
 
         func testCreateShareableFileMainActor() async {
             do {
-                let url = try client.createShareableFile(from: "Test content", fileName: "test.txt")
+                let url = try clientUnwrapped.createShareableFile(from: "Test content", fileName: "test.txt")
                 XCTAssertTrue(url.isFileURL, "Should create a file URL")
                 XCTAssertTrue(url.lastPathComponent == "test.txt", "Should use the provided filename")
 
@@ -52,7 +56,7 @@
         }
 
         func testShareContentMainActor() async {
-            await client.shareContent("Test content for sharing", fileName: "shared.txt")
+            await clientUnwrapped.shareContent("Test content for sharing", fileName: "shared.txt")
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After shareContent, should be on main thread")
@@ -68,7 +72,7 @@
 
         func testTemplateStartMethod() async throws {
             // Test that the template's start method can be called without error
-            try await client.start()
+            try await clientUnwrapped.start()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After start(), should be on main thread")
@@ -95,8 +99,8 @@
             // Test the async/await pattern works correctly
             let shareItems = ShareableItems(["Test content"])
 
-            async let shareTask = client.share(items: shareItems)
-            async let shareContentTask = client.shareContent("Content", fileName: "test.txt")
+            async let shareTask = clientUnwrapped.share(items: shareItems)
+            async let shareContentTask = clientUnwrapped.shareContent("Content", fileName: "test.txt")
 
             let shareResult = await shareTask
             await shareContentTask
@@ -112,25 +116,31 @@
 
         func testShareWithStringItems() async {
             let items = ShareableItems(["String 1", "String 2", "String 3"])
-            let result = await client.share(items: items)
+            let result = await clientUnwrapped.share(items: items)
 
             // In test environment, this will likely fail, but should not crash
             XCTAssertTrue(result == true || result == false, "Share should return a boolean")
         }
 
         func testShareWithURLItems() async {
-            let url = URL(string: "https://example.com")!
+            guard let url = URL(string: "https://example.com") else {
+                XCTFail("Failed to create URL from valid string 'https://example.com'")
+                return
+            }
             let items = ShareableItems([url])
-            let result = await client.share(items: items)
+            let result = await clientUnwrapped.share(items: items)
 
             // In test environment, this will likely fail, but should not crash
             XCTAssertTrue(result == true || result == false, "Share should return a boolean")
         }
 
         func testShareWithMixedItems() async {
-            let url = URL(string: "https://example.com")!
+            guard let url = URL(string: "https://example.com") else {
+                XCTFail("Failed to create URL from valid string 'https://example.com'")
+                return
+            }
             let items = ShareableItems(["Text content", url])
-            let result = await client.share(items: items)
+            let result = await clientUnwrapped.share(items: items)
 
             // In test environment, this will likely fail, but should not crash
             XCTAssertTrue(result == true || result == false, "Share should return a boolean")
@@ -147,7 +157,7 @@
 
             for (content, fileName) in testCases {
                 do {
-                    let url = try client.createShareableFile(from: content, fileName: fileName)
+                    let url = try clientUnwrapped.createShareableFile(from: content, fileName: fileName)
                     XCTAssertTrue(url.isFileURL, "Should create file URL for \(fileName)")
                     XCTAssertTrue(url.lastPathComponent == fileName, "Should use correct filename")
 
@@ -166,7 +176,7 @@
             for ext in extensions {
                 do {
                     let fileName = "test.\(ext)"
-                    let url = try client.createShareableFile(from: "Test content", fileName: fileName)
+                    let url = try clientUnwrapped.createShareableFile(from: "Test content", fileName: fileName)
                     XCTAssertTrue(url.lastPathComponent == fileName, "Should use correct filename with extension")
                     XCTAssertTrue(url.pathExtension == ext, "Should preserve file extension")
                 } catch {
@@ -177,7 +187,7 @@
 
         func testShareContent() async {
             // Test the convenience method that creates file and shares it
-            await client.shareContent("Content to share", fileName: "convenience.txt")
+            await clientUnwrapped.shareContent("Content to share", fileName: "convenience.txt")
 
             // Should complete without crashing (may fail in test environment)
             await MainActor.run {
@@ -194,7 +204,7 @@
             ]
 
             for (content, fileName) in testCases {
-                await client.shareContent(content, fileName: fileName)
+                await clientUnwrapped.shareContent(content, fileName: fileName)
                 // Should complete without error
             }
 
@@ -208,7 +218,7 @@
         func testCreateShareableFileWithInvalidFileName() async {
             // Test with potentially problematic filename
             do {
-                let url = try client.createShareableFile(from: "Test", fileName: "")
+                let url = try clientUnwrapped.createShareableFile(from: "Test", fileName: "")
                 XCTAssertTrue(url.isFileURL, "Should handle empty filename gracefully")
             } catch {
                 // May fail with empty filename, which is acceptable
@@ -219,7 +229,7 @@
         func testShareInTestEnvironment() async {
             // In test environment, UI operations will likely fail
             let items = ShareableItems(["Test content"])
-            let result = await client.share(items: items)
+            let result = await clientUnwrapped.share(items: items)
 
             // Should handle gracefully even if it fails
             XCTAssertTrue(result == true || result == false, "Should return boolean even if sharing fails")
@@ -232,7 +242,7 @@
         // MARK: - Convenience Accessor Tests
 
         func testConvenienceStaticAccessor() async {
-            let serviceClient = iOSShareServiceClient.live
+            let serviceClient = IOSShareServiceClient.live
 
             // Test that the convenience accessor works
             let items = ShareableItems(["Convenience test"])
@@ -253,7 +263,7 @@
             // Create multiple temporary files
             for i in 0 ..< 5 {
                 do {
-                    let url = try client.createShareableFile(from: "Content \(i)", fileName: "temp\(i).txt")
+                    let url = try clientUnwrapped.createShareableFile(from: "Content \(i)", fileName: "temp\(i).txt")
                     createdURLs.append(url)
                     XCTAssertTrue(FileManager.default.fileExists(atPath: url.path), "File should exist after creation")
                 } catch {

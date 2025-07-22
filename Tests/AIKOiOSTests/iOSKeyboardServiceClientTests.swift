@@ -4,12 +4,16 @@
     import SwiftUI
     import XCTest
 
-    final class iOSKeyboardServiceClientTests: XCTestCase {
-        var client: iOSKeyboardServiceClient!
+    final class IOSKeyboardServiceClientTests: XCTestCase {
+        var client: IOSKeyboardServiceClient?
 
+        private var clientUnwrapped: IOSKeyboardServiceClient {
+            guard let client = client else { fatalError("client not initialized") }
+            return client
+        }
         override func setUp() async throws {
             try await super.setUp()
-            client = iOSKeyboardServiceClient()
+            client = IOSKeyboardServiceClient()
         }
 
         override func tearDown() async throws {
@@ -26,7 +30,7 @@
             }
 
             // Test that defaultKeyboardType executes on MainActor
-            let keyboardType = await client.defaultKeyboardType()
+            let keyboardType = await clientUnwrapped.defaultKeyboardType()
             XCTAssertEqual(keyboardType, .default, "Should return default keyboard type")
 
             await MainActor.run {
@@ -35,11 +39,11 @@
         }
 
         func testKeyboardTypeMethodsMainActor() async {
-            let defaultType = await client.defaultKeyboardType()
-            let emailType = await client.emailKeyboardType()
-            let numberType = await client.numberKeyboardType()
-            let phoneType = await client.phoneKeyboardType()
-            let urlType = await client.urlKeyboardType()
+            let defaultType = await clientUnwrapped.defaultKeyboardType()
+            let emailType = await clientUnwrapped.emailKeyboardType()
+            let numberType = await clientUnwrapped.numberKeyboardType()
+            let phoneType = await clientUnwrapped.phoneKeyboardType()
+            let urlType = await clientUnwrapped.urlKeyboardType()
 
             // All keyboard type methods should return valid types
             XCTAssertEqual(defaultType, .default, "defaultKeyboardType should return .default")
@@ -54,7 +58,7 @@
         }
 
         func testSupportsKeyboardTypesMainActor() async {
-            let supports = await client.supportsKeyboardTypes()
+            let supports = await clientUnwrapped.supportsKeyboardTypes()
 
             // iOS should support keyboard types
             XCTAssertTrue(supports, "iOS should support keyboard types")
@@ -73,7 +77,7 @@
 
         func testTemplateStartMethod() async throws {
             // Test that the template's start method can be called without error
-            try await client.start()
+            try await clientUnwrapped.start()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After start(), should be on main thread")
@@ -96,9 +100,9 @@
 
         func testAsyncAwaitPattern() async {
             // Test the async/await pattern works correctly
-            async let defaultTypeTask = client.defaultKeyboardType()
-            async let emailTypeTask = client.emailKeyboardType()
-            async let supportsTask = client.supportsKeyboardTypes()
+            async let defaultTypeTask = clientUnwrapped.defaultKeyboardType()
+            async let emailTypeTask = clientUnwrapped.emailKeyboardType()
+            async let supportsTask = clientUnwrapped.supportsKeyboardTypes()
 
             let (defaultType, emailType, supports) = await (defaultTypeTask, emailTypeTask, supportsTask)
 
@@ -115,11 +119,11 @@
 
         func testAllKeyboardTypesReturned() async {
             let types = await [
-                client.defaultKeyboardType(),
-                client.emailKeyboardType(),
-                client.numberKeyboardType(),
-                client.phoneKeyboardType(),
-                client.urlKeyboardType(),
+                clientUnwrapped.defaultKeyboardType(),
+                clientUnwrapped.emailKeyboardType(),
+                clientUnwrapped.numberKeyboardType(),
+                clientUnwrapped.phoneKeyboardType(),
+                clientUnwrapped.urlKeyboardType(),
             ]
 
             let expectedTypes: [PlatformKeyboardType] = [.default, .email, .number, .phone, .url]
@@ -130,18 +134,18 @@
 
         func testKeyboardTypeConsistency() async {
             // Test that keyboard types are consistently returned
-            let defaultType1 = await client.defaultKeyboardType()
-            let defaultType2 = await client.defaultKeyboardType()
-            let emailType1 = await client.emailKeyboardType()
-            let emailType2 = await client.emailKeyboardType()
+            let defaultType1 = await clientUnwrapped.defaultKeyboardType()
+            let defaultType2 = await clientUnwrapped.defaultKeyboardType()
+            let emailType1 = await clientUnwrapped.emailKeyboardType()
+            let emailType2 = await clientUnwrapped.emailKeyboardType()
 
             XCTAssertEqual(defaultType1, defaultType2, "Default keyboard type should be consistent")
             XCTAssertEqual(emailType1, emailType2, "Email keyboard type should be consistent")
         }
 
         func testKeyboardSupportConsistency() async {
-            let supports1 = await client.supportsKeyboardTypes()
-            let supports2 = await client.supportsKeyboardTypes()
+            let supports1 = await clientUnwrapped.supportsKeyboardTypes()
+            let supports2 = await clientUnwrapped.supportsKeyboardTypes()
 
             // Support should be consistent across calls
             XCTAssertEqual(supports1, supports2, "Keyboard type support should be consistent")
@@ -150,7 +154,7 @@
         // MARK: - Convenience Accessor Tests
 
         func testConvenienceStaticAccessor() async {
-            let serviceClient = iOSKeyboardServiceClient.live
+            let serviceClient = IOSKeyboardServiceClient.live
 
             // Test that the convenience accessor works
             let defaultType = await serviceClient.defaultKeyboardType()

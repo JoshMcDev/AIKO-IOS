@@ -123,7 +123,7 @@ extension DocumentDeliveryService: DependencyKey {
                 print("Test: Emailed \(documents.count) documents to \(email)")
             },
             packageDocuments: { _, _ in
-                "Test document package".data(using: .utf8) ?? Data()
+                Data("Test document package".utf8)
             }
         )
     }

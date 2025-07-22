@@ -2,12 +2,27 @@
 import CoreData
 import XCTest
 
-final class Unit_AcquisitionRepositoryTests: XCTestCase {
+final class UnitAcquisitionRepositoryTests: XCTestCase {
     // MARK: - Properties
 
-    private var sut: AcquisitionRepository!
-    private var context: NSManagedObjectContext!
-    private var mockEventStore: InMemoryEventStore!
+    private var sut: AcquisitionRepository?
+    private var context: NSManagedObjectContext?
+    private var mockEventStore: InMemoryEventStore?
+
+    private var sutUnwrapped: AcquisitionRepository {
+        guard let sut = sut else { fatalError("sut not initialized") }
+        return sut
+    }
+
+    private var contextUnwrapped: NSManagedObjectContext {
+        guard let context = context else { fatalError("context not initialized") }
+        return context
+    }
+
+    private var mockEventStoreUnwrapped: InMemoryEventStore {
+        guard let mockEventStore = mockEventStore else { fatalError("mockEventStore not initialized") }
+        return mockEventStore
+    }
 
     // MARK: - Setup/Teardown
 
@@ -44,7 +59,7 @@ final class Unit_AcquisitionRepositoryTests: XCTestCase {
         let requirements = "Test requirements"
 
         // When
-        let acquisition = try await sut.create(title: title, requirements: requirements)
+        let acquisition = try await sutUnwrapped.create(title: title, requirements: requirements)
 
         // Then
         XCTAssertNotNil(acquisition)
@@ -56,7 +71,7 @@ final class Unit_AcquisitionRepositoryTests: XCTestCase {
         XCTAssertNotNil(acquisition.updatedAt)
 
         // Verify domain event was stored
-        let events = try await mockEventStore.eventsForAggregate(id: acquisition.id, after: nil)
+        let events = try await mockEventStoreUnwrapped.eventsForAggregate(id: acquisition.id, after: nil)
         XCTAssertEqual(events.count, 1)
     }
 
@@ -70,7 +85,7 @@ final class Unit_AcquisitionRepositoryTests: XCTestCase {
         ]
 
         // When
-        let acquisition = try await sut.createWithDocuments(
+        let acquisition = try await sutUnwrapped.createWithDocuments(
             title: title,
             requirements: requirements,
             uploadedDocuments: documents
@@ -92,7 +107,7 @@ final class Unit_AcquisitionRepositoryTests: XCTestCase {
         XCTAssertNil(doc2?.contentSummary)
 
         // Verify domain events
-        let events = try await mockEventStore.eventsForAggregate(id: acquisition.id, after: nil)
+        let events = try await mockEventStoreUnwrapped.eventsForAggregate(id: acquisition.id, after: nil)
         XCTAssertGreaterThanOrEqual(events.count, 3) // Created + 2 document added events
     }
 
@@ -100,10 +115,10 @@ final class Unit_AcquisitionRepositoryTests: XCTestCase {
 
     func testFindById_ExistingAcquisition_Success() async throws {
         // Given
-        let created = try await sut.create(title: "Test", requirements: "Requirements")
+        let created = try await sutUnwrapped.create(title: "Test", requirements: "Requirements")
 
         // When
-        let found = try await sut.findById(created.id)
+        let found = try await sutUnwrapped.findById(created.id)
 
         // Then
         XCTAssertNotNil(found)
@@ -117,7 +132,7 @@ final class Unit_AcquisitionRepositoryTests: XCTestCase {
         let nonExistentId = UUID()
 
         // When
-        let found = try await sut.findById(nonExistentId)
+        let found = try await sutUnwrapped.findById(nonExistentId)
 
         // Then
         XCTAssertNil(found)
@@ -125,12 +140,12 @@ final class Unit_AcquisitionRepositoryTests: XCTestCase {
 
     func testFindAll_Success() async throws {
         // Given
-        let acquisition1 = try await sut.create(title: "Test 1", requirements: "Req 1")
-        let acquisition2 = try await sut.create(title: "Test 2", requirements: "Req 2")
-        let acquisition3 = try await sut.create(title: "Test 3", requirements: "Req 3")
+        let acquisition1 = try await sutUnwrapped.create(title: "Test 1", requirements: "Req 1")
+        let acquisition2 = try await sutUnwrapped.create(title: "Test 2", requirements: "Req 2")
+        let acquisition3 = try await sutUnwrapped.create(title: "Test 3", requirements: "Req 3")
 
         // When
-        let all = try await sut.findAll()
+        let all = try await sutUnwrapped.findAll()
 
         // Then
         XCTAssertEqual(all.count, 3)
@@ -142,18 +157,18 @@ final class Unit_AcquisitionRepositoryTests: XCTestCase {
 
     func testFindByStatus_Success() async throws {
         // Given
-        let draft1 = try await sut.create(title: "Draft 1", requirements: "Req")
-        let draft2 = try await sut.create(title: "Draft 2", requirements: "Req")
+        let draft1 = try await sutUnwrapped.create(title: "Draft 1", requirements: "Req")
+        let draft2 = try await sutUnwrapped.create(title: "Draft 2", requirements: "Req")
 
         // Create one in review
-        let inReview = try await sut.create(title: "In Review", requirements: "Req")
-        try await sut.update(inReview.id) { acquisition in
+        let inReview = try await sutUnwrapped.create(title: "In Review", requirements: "Req")
+        try await sutUnwrapped.update(inReview.id) { acquisition in
             acquisition.updateStatus(.inReview)
         }
 
         // When
-        let drafts = try await sut.findByStatus(.draft)
-        let reviews = try await sut.findByStatus(.inReview)
+        let drafts = try await sutUnwrapped.findByStatus(.draft)
+        let reviews = try await sutUnwrapped.findByStatus(.inReview)
 
         // Then
         XCTAssertEqual(drafts.count, 2)
@@ -165,25 +180,25 @@ final class Unit_AcquisitionRepositoryTests: XCTestCase {
 
     func testUpdate_Success() async throws {
         // Given
-        let acquisition = try await sut.create(title: "Original", requirements: "Original Req")
+        let acquisition = try await sutUnwrapped.create(title: "Original", requirements: "Original Req")
         let newTitle = "Updated Title"
         let newRequirements = "Updated Requirements"
 
         // When
-        try await sut.update(acquisition.id) { acq in
+        try await sutUnwrapped.update(acquisition.id) { acq in
             acq.updateTitle(newTitle)
             acq.updateRequirements(newRequirements)
         }
 
         // Then
-        let updated = try await sut.findById(acquisition.id)
+        let updated = try await sutUnwrapped.findById(acquisition.id)
         XCTAssertNotNil(updated)
         XCTAssertEqual(updated?.title, newTitle)
         XCTAssertEqual(updated?.requirements, newRequirements)
         XCTAssertGreaterThan(updated?.updatedAt ?? Date.distantPast, acquisition.updatedAt)
 
         // Verify domain events
-        let events = try await mockEventStore.eventsForAggregate(id: acquisition.id, after: nil)
+        let events = try await mockEventStoreUnwrapped.eventsForAggregate(id: acquisition.id, after: nil)
         XCTAssertGreaterThanOrEqual(events.count, 3) // Created + 2 update events
     }
 
@@ -193,7 +208,7 @@ final class Unit_AcquisitionRepositoryTests: XCTestCase {
 
         // When/Then
         do {
-            try await sut.update(nonExistentId) { _ in }
+            try await sutUnwrapped.update(nonExistentId) { _ in }
             XCTFail("Expected error but succeeded")
         } catch {
             XCTAssertTrue(error is DomainError)
@@ -204,13 +219,13 @@ final class Unit_AcquisitionRepositoryTests: XCTestCase {
 
     func testDelete_Success() async throws {
         // Given
-        let acquisition = try await sut.create(title: "To Delete", requirements: "Req")
+        let acquisition = try await sutUnwrapped.create(title: "To Delete", requirements: "Req")
 
         // When
-        try await sut.delete(acquisition.id)
+        try await sutUnwrapped.delete(acquisition.id)
 
         // Then
-        let found = try await sut.findById(acquisition.id)
+        let found = try await sutUnwrapped.findById(acquisition.id)
         XCTAssertNil(found)
     }
 
@@ -220,7 +235,7 @@ final class Unit_AcquisitionRepositoryTests: XCTestCase {
 
         // When/Then
         do {
-            try await sut.delete(nonExistentId)
+            try await sutUnwrapped.delete(nonExistentId)
             XCTFail("Expected error but succeeded")
         } catch {
             XCTAssertTrue(error is DomainError)
@@ -231,13 +246,13 @@ final class Unit_AcquisitionRepositoryTests: XCTestCase {
 
     func testAddDocument_Success() async throws {
         // Given
-        let acquisition = try await sut.create(title: "Test", requirements: "Req")
+        let acquisition = try await sutUnwrapped.create(title: "Test", requirements: "Req")
         let fileName = "new-doc.pdf"
         let data = Data("test content".utf8)
         let summary = "Test document"
 
         // When
-        try await sut.update(acquisition.id) { acq in
+        try await sutUnwrapped.update(acquisition.id) { acq in
             let doc = Document(
                 id: UUID(),
                 fileName: fileName,
@@ -249,7 +264,7 @@ final class Unit_AcquisitionRepositoryTests: XCTestCase {
         }
 
         // Then
-        let updated = try await sut.findById(acquisition.id)
+        let updated = try await sutUnwrapped.findById(acquisition.id)
         XCTAssertNotNil(updated)
         XCTAssertEqual(updated?.documents.count, 1)
         XCTAssertEqual(updated?.documents.first?.fileName, fileName)
@@ -262,20 +277,23 @@ final class Unit_AcquisitionRepositoryTests: XCTestCase {
             ("doc1.pdf", Data("test1".utf8), "Doc 1"),
             ("doc2.pdf", Data("test2".utf8), "Doc 2"),
         ]
-        let acquisition = try await sut.createWithDocuments(
+        let acquisition = try await sutUnwrapped.createWithDocuments(
             title: "Test",
             requirements: "Req",
             uploadedDocuments: documents
         )
-        let docToRemove = acquisition.documents.first!
+        guard let docToRemove = acquisition.documents.first else {
+            XCTFail("Expected at least one document in acquisition")
+            return
+        }
 
         // When
-        try await sut.update(acquisition.id) { acq in
+        try await sutUnwrapped.update(acquisition.id) { acq in
             acq.removeDocument(withId: docToRemove.id)
         }
 
         // Then
-        let updated = try await sut.findById(acquisition.id)
+        let updated = try await sutUnwrapped.findById(acquisition.id)
         XCTAssertNotNil(updated)
         XCTAssertEqual(updated?.documents.count, 1)
         XCTAssertNotEqual(updated?.documents.first?.id, docToRemove.id)
@@ -285,34 +303,34 @@ final class Unit_AcquisitionRepositoryTests: XCTestCase {
 
     func testStatusTransitions_Valid() async throws {
         // Given
-        let acquisition = try await sut.create(title: "Test", requirements: "Req")
+        let acquisition = try await sutUnwrapped.create(title: "Test", requirements: "Req")
 
         // Draft -> In Review
-        try await sut.update(acquisition.id) { acq in
+        try await sutUnwrapped.update(acquisition.id) { acq in
             acq.updateStatus(.inReview)
         }
-        var updated = try await sut.findById(acquisition.id)
+        var updated = try await sutUnwrapped.findById(acquisition.id)
         XCTAssertEqual(updated?.status, .inReview)
 
         // In Review -> Approved
-        try await sut.update(acquisition.id) { acq in
+        try await sutUnwrapped.update(acquisition.id) { acq in
             acq.updateStatus(.approved)
         }
-        updated = try await sut.findById(acquisition.id)
+        updated = try await sutUnwrapped.findById(acquisition.id)
         XCTAssertEqual(updated?.status, .approved)
 
         // Approved -> Submitted
-        try await sut.update(acquisition.id) { acq in
+        try await sutUnwrapped.update(acquisition.id) { acq in
             acq.updateStatus(.submitted)
         }
-        updated = try await sut.findById(acquisition.id)
+        updated = try await sutUnwrapped.findById(acquisition.id)
         XCTAssertEqual(updated?.status, .submitted)
 
         // Submitted -> Completed
-        try await sut.update(acquisition.id) { acq in
+        try await sutUnwrapped.update(acquisition.id) { acq in
             acq.updateStatus(.completed)
         }
-        updated = try await sut.findById(acquisition.id)
+        updated = try await sutUnwrapped.findById(acquisition.id)
         XCTAssertEqual(updated?.status, .completed)
     }
 
@@ -320,13 +338,13 @@ final class Unit_AcquisitionRepositoryTests: XCTestCase {
 
     func testConcurrentUpdates_HandleGracefully() async throws {
         // Given
-        let acquisition = try await sut.create(title: "Concurrent Test", requirements: "Req")
+        let acquisition = try await sutUnwrapped.create(title: "Concurrent Test", requirements: "Req")
 
         // When - Perform concurrent updates
         await withTaskGroup(of: Void.self) { group in
             for i in 1 ... 10 {
                 group.addTask {
-                    try? await self.sut.update(acquisition.id) { acq in
+                    try? await self.sutUnwrapped.update(acquisition.id) { acq in
                         acq.updateTitle("Update \(i)")
                     }
                 }
@@ -334,7 +352,7 @@ final class Unit_AcquisitionRepositoryTests: XCTestCase {
         }
 
         // Then - Should have last update
-        let final = try await sut.findById(acquisition.id)
+        let final = try await sutUnwrapped.findById(acquisition.id)
         XCTAssertNotNil(final)
         XCTAssertTrue(final?.title.starts(with: "Update") ?? false)
     }
@@ -347,7 +365,7 @@ final class Unit_AcquisitionRepositoryTests: XCTestCase {
 
             Task {
                 for i in 1 ... 100 {
-                    _ = try await sut.create(
+                    _ = try await sutUnwrapped.create(
                         title: "Acquisition \(i)",
                         requirements: "Requirements \(i)"
                     )

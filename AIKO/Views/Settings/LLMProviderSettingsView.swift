@@ -14,7 +14,7 @@ struct LLMProviderSettingsView: View {
     let store: StoreOf<LLMProviderSettingsFeature>
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             NavigationView {
                 List {
                     // Active Provider Section
@@ -31,7 +31,7 @@ struct LLMProviderSettingsView: View {
                                     Text(activeProvider.model.name)
                                         .font(.caption)
                                         .foregroundColor(.secondary)
-                                }
+        })
 
                                 Spacer()
 
@@ -210,7 +210,7 @@ struct ProviderConfigurationView: View {
     @State private var isAuthenticating: Bool = false
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             NavigationView {
                 Form {
                     // Provider Info
@@ -227,7 +227,7 @@ struct ProviderConfigurationView: View {
                                 Text("Configure API access")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
-                            }
+        })
                         }
                         .padding(.vertical, 8)
                     }
@@ -440,7 +440,7 @@ struct ProviderPriorityView: View {
     let store: StoreOf<LLMProviderSettingsFeature>
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             Form {
                 Section {
                     Picker("Fallback Behavior", selection: viewStore.binding(
@@ -449,7 +449,7 @@ struct ProviderPriorityView: View {
                     )) {
                         ForEach(LLMProviderPriority.FallbackBehavior.allCases, id: \.self) { behavior in
                             Text(behavior.displayName).tag(behavior)
-                        }
+        })
                     }
                     .pickerStyle(SegmentedPickerStyle())
                 } header: {

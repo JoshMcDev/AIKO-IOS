@@ -15,8 +15,7 @@ public final class WordDocumentParser {
         // Check for modern .docx format
         if type.identifier == "com.microsoft.word.docx" ||
             type.identifier == "org.openxmlformats.wordprocessingml.document" ||
-            type.identifier == "com.microsoft.word.wordml"
-        {
+            type.identifier == "com.microsoft.word.wordml" {
             return try await parseDocx(data)
         }
 
@@ -116,9 +115,11 @@ public final class WordDocumentParser {
             let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: data.count * 10)
             defer { buffer.deallocate() }
 
+            guard let baseAddress = bytes.bindMemory(to: UInt8.self).baseAddress else { return nil }
+
             let result = compression_decode_buffer(
                 buffer, data.count * 10,
-                bytes.bindMemory(to: UInt8.self).baseAddress!, data.count,
+                baseAddress, data.count,
                 nil, COMPRESSION_ZLIB
             )
 

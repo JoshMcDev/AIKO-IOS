@@ -325,8 +325,11 @@ extension FARPart12Wizard: DependencyKey {
                 guard let nextStepId = currentStep.nextStepLogic(answer),
                       let nextStep = wizardSteps[nextStepId]
                 else {
-                    // Return completion step
-                    return wizardSteps["determination_complete"]!
+                    // Return completion step or throw error if not found
+                    guard let completionStep = wizardSteps["determination_complete"] else {
+                        throw WizardError.stepNotFound("determination_complete")
+                    }
+                    return completionStep
                 }
 
                 return nextStep

@@ -145,7 +145,10 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
 
         // Make API request
         let endpoint = "\(baseURL)/models/\(request.model):generateContent?key=\(config.apiKey ?? "")"
-        var urlRequest = URLRequest(url: URL(string: endpoint)!)
+        guard let url = URL(string: endpoint) else {
+            throw LLMProviderError.networkError("Invalid URL")
+        }
+        var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         urlRequest.httpBody = try JSONSerialization.data(withJSONObject: body)
@@ -244,7 +247,10 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
 
                     // Make streaming request
                     let endpoint = "\(baseURL)/models/\(request.model):streamGenerateContent?alt=sse&key=\(config.apiKey ?? "")"
-                    var urlRequest = URLRequest(url: URL(string: endpoint)!)
+                    guard let url = URL(string: endpoint) else {
+                        throw LLMProviderError.networkError("Invalid URL")
+                    }
+                    var urlRequest = URLRequest(url: url)
                     urlRequest.httpMethod = "POST"
                     urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
                     urlRequest.httpBody = try JSONSerialization.data(withJSONObject: body)
@@ -258,20 +264,18 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
                     }
 
                     // Process SSE stream
-                    for try await line in bytes.lines {
-                        if line.hasPrefix("data: ") {
-                            let jsonString = String(line.dropFirst(6))
+                    for try await line in bytes.lines where line.hasPrefix("data: ") {
+                        let jsonString = String(line.dropFirst(6))
 
-                            if let data = jsonString.data(using: .utf8),
-                               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                               let candidates = json["candidates"] as? [[String: Any]],
-                               let firstCandidate = candidates.first,
-                               let content = firstCandidate["content"] as? [String: Any],
-                               let parts = content["parts"] as? [[String: Any]],
-                               let firstPart = parts.first,
-                               let text = firstPart["text"] as? String
-                            {
-                                continuation.yield(LLMStreamChunk(delta: text))
+                        if let data = jsonString.data(using: .utf8),
+                           let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                           let candidates = json["candidates"] as? [[String: Any]],
+                           let firstCandidate = candidates.first,
+                           let content = firstCandidate["content"] as? [String: Any],
+                           let parts = content["parts"] as? [[String: Any]],
+                           let firstPart = parts.first,
+                           let text = firstPart["text"] as? String {
+                            continuation.yield(LLMStreamChunk(delta: text))
 
                                 if let finishReason = firstCandidate["finishReason"] as? String {
                                     let reason: FinishReason = switch finishReason {
@@ -304,7 +308,10 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
         ]
 
         let endpoint = "\(baseURL)/models/embedding-001:embedContent?key=\(config.apiKey ?? "")"
-        var urlRequest = URLRequest(url: URL(string: endpoint)!)
+        guard let url = URL(string: endpoint) else {
+            throw LLMProviderError.networkError("Invalid URL")
+        }
+        var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         urlRequest.httpBody = try JSONSerialization.data(withJSONObject: body)
@@ -337,7 +344,10 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
         ]
 
         let endpoint = "\(baseURL)/models/gemini-pro:countTokens?key=\(config.apiKey ?? "")"
-        var urlRequest = URLRequest(url: URL(string: endpoint)!)
+        guard let url = URL(string: endpoint) else {
+            throw LLMProviderError.networkError("Invalid URL")
+        }
+        var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         urlRequest.httpBody = try JSONSerialization.data(withJSONObject: body)

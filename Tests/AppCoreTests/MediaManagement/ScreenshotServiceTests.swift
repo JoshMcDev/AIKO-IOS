@@ -4,7 +4,7 @@ import XCTest
 
 @available(iOS 16.0, *)
 final class ScreenshotServiceTests: XCTestCase {
-    var sut: ScreenshotService!
+    var sut: ScreenshotService?
 
     override func setUp() async throws {
         try await super.setUp()

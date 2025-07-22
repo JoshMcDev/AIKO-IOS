@@ -31,7 +31,7 @@ public final class SF44Form: BaseGovernmentForm {
             formNumber: "SF44",
             formTitle: "Purchase Order - Invoice - Voucher",
             revision: revision,
-            effectiveDate: DateComponents(calendar: .current, year: 2023, month: 10, day: 1).date!,
+            effectiveDate: DateComponents(calendar: .current, year: 2023, month: 10, day: 1).date ?? Date(),
             expirationDate: nil,
             isElectronic: true,
             metadata: metadata

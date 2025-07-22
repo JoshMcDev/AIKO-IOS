@@ -2,7 +2,12 @@
 import XCTest
 
 class UserPatternLearningEngineTests: XCTestCase {
-    var sut: UserPatternLearningEngine!
+    var sut: UserPatternLearningEngine?
+
+    private var sutUnwrapped: UserPatternLearningEngine {
+        guard let sut = sut else { fatalError("sut not initialized") }
+        return sut
+    }
 
     override func setUp() {
         super.setUp()
@@ -30,7 +35,7 @@ class UserPatternLearningEngineTests: XCTestCase {
             timeToRespond: 5,
             documentContext: false
         )
-        await sut.learn(from: interaction1)
+        await sutUnwrapped.learn(from: interaction1)
 
         let interaction2 = APEUserInteraction(
             sessionId: interaction1.sessionId,
@@ -39,7 +44,7 @@ class UserPatternLearningEngineTests: XCTestCase {
             timeToRespond: 3,
             documentContext: false
         )
-        await sut.learn(from: interaction2)
+        await sutUnwrapped.learn(from: interaction2)
 
         let interaction3 = APEUserInteraction(
             sessionId: interaction1.sessionId,
@@ -48,7 +53,7 @@ class UserPatternLearningEngineTests: XCTestCase {
             timeToRespond: 2,
             documentContext: false
         )
-        await sut.learn(from: interaction3)
+        await sutUnwrapped.learn(from: interaction3)
 
         // Test sequence-aware prediction
         let previousFields: [RequirementField: Any] = [
@@ -56,13 +61,18 @@ class UserPatternLearningEngineTests: XCTestCase {
             field2: "75000",
         ]
 
-        let prediction = await sut.getSequenceAwarePrediction(
+        let prediction = await sutUnwrapped.getSequenceAwarePrediction(
             for: field3,
             previousFields: previousFields
         )
 
         XCTAssertNotNil(prediction, "Should provide sequence-aware prediction")
-        XCTAssertTrue(prediction!.confidence > 0.5, "Should have reasonable confidence")
+
+        guard let unwrappedPrediction = prediction else {
+            XCTFail("Failed to unwrap prediction for confidence check")
+            return
+        }
+        XCTAssertTrue(unwrappedPrediction.confidence > 0.5, "Should have reasonable confidence")
     }
 
     // MARK: - Time-Aware Prediction Tests
@@ -75,7 +85,11 @@ class UserPatternLearningEngineTests: XCTestCase {
         var calendar = Calendar.current
         var components = calendar.dateComponents([.year, .month, .day], from: Date())
         components.hour = 9
-        let morningDate = calendar.date(from: components)!
+
+        guard let morningDate = calendar.date(from: components) else {
+            XCTFail("Failed to create morning date from calendar components")
+            return
+        }
 
         for _ in 0 ..< 5 {
             let interaction = APEUserInteraction(
@@ -85,11 +99,11 @@ class UserPatternLearningEngineTests: XCTestCase {
                 timeToRespond: 2,
                 documentContext: false
             )
-            await sut.learn(from: interaction)
+            await sutUnwrapped.learn(from: interaction)
         }
 
         // Get time-aware prediction
-        let prediction = await sut.getTimeAwarePrediction(for: field)
+        let prediction = await sutUnwrapped.getTimeAwarePrediction(for: field)
 
         XCTAssertNotNil(prediction, "Should provide time-aware prediction")
     }
@@ -119,11 +133,11 @@ class UserPatternLearningEngineTests: XCTestCase {
                 timeToRespond: 3,
                 documentContext: false
             )
-            await sut.learn(from: interaction)
+            await sutUnwrapped.learn(from: interaction)
         }
 
         // Get cohort-based prediction
-        let prediction = await sut.getCohortPrediction(
+        let prediction = await sutUnwrapped.getCohortPrediction(
             for: field,
             userProfile: userProfile
         )
@@ -151,7 +165,7 @@ class UserPatternLearningEngineTests: XCTestCase {
                 timeToRespond: 2,
                 documentContext: false
             )
-            await sut.learn(from: vendorInteraction)
+            await sutUnwrapped.learn(from: vendorInteraction)
 
             let valueInteraction = APEUserInteraction(
                 sessionId: sessionId,
@@ -160,7 +174,7 @@ class UserPatternLearningEngineTests: XCTestCase {
                 timeToRespond: 3,
                 documentContext: false
             )
-            await sut.learn(from: valueInteraction)
+            await sutUnwrapped.learn(from: valueInteraction)
 
             let dateInteraction = APEUserInteraction(
                 sessionId: sessionId,
@@ -169,7 +183,7 @@ class UserPatternLearningEngineTests: XCTestCase {
                 timeToRespond: 2,
                 documentContext: false
             )
-            await sut.learn(from: dateInteraction)
+            await sutUnwrapped.learn(from: dateInteraction)
         }
 
         // Test batch prediction
@@ -178,7 +192,7 @@ class UserPatternLearningEngineTests: XCTestCase {
             uploadedDocuments: []
         )
 
-        let predictions = await sut.batchPredict(
+        let predictions = await sutUnwrapped.batchPredict(
             fields: [vendorField, valueField, dateField],
             context: context
         )
@@ -204,9 +218,9 @@ class UserPatternLearningEngineTests: XCTestCase {
                 timeToRespond: 2,
                 documentContext: false
             )
-            await sut.learn(from: interaction)
+            await sutUnwrapped.learn(from: interaction)
 
-            let prediction = await sut.getDefault(for: field)
+            let prediction = await sutUnwrapped.getDefault(for: field)
 
             if let prediction {
                 XCTAssertGreaterThanOrEqual(
@@ -238,11 +252,11 @@ class UserPatternLearningEngineTests: XCTestCase {
                 timeToRespond: 2,
                 documentContext: false
             )
-            await sut.learn(from: interaction)
+            await sutUnwrapped.learn(from: interaction)
         }
 
         // Verify we can get a default
-        let defaultValue = await sut.getDefault(for: field)
+        let defaultValue = await sutUnwrapped.getDefault(for: field)
         XCTAssertNotNil(defaultValue, "Should provide a default value")
     }
 }

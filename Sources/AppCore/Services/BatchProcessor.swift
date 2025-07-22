@@ -79,7 +79,7 @@ public actor BatchProcessor: BatchProcessing {
                 if let page = iterator.next() {
                     let currentIndex = index
                     group.addTask { @Sendable in
-                        await self.processPageInGroup(
+                        let config = PageProcessingConfig(
                             page: page,
                             index: currentIndex,
                             total: total,
@@ -88,17 +88,18 @@ public actor BatchProcessor: BatchProcessing {
                             progressHandler: progressHandler,
                             perPageCompletion: perPageCompletion
                         )
+                        await self.processPageInGroup(config: config)
                     }
                     index += 1
                 }
             }
 
             // As tasks complete, start new ones
-            while let _ = await group.next() {
+            while await group.next() != nil {
                 if let page = iterator.next() {
                     let currentIndex = index
                     group.addTask { @Sendable in
-                        await self.processPageInGroup(
+                        let config = PageProcessingConfig(
                             page: page,
                             index: currentIndex,
                             total: total,
@@ -107,6 +108,7 @@ public actor BatchProcessor: BatchProcessing {
                             progressHandler: progressHandler,
                             perPageCompletion: perPageCompletion
                         )
+                        await self.processPageInGroup(config: config)
                     }
                     index += 1
                 }
@@ -119,39 +121,33 @@ public actor BatchProcessor: BatchProcessing {
     }
 
     private func processPageInGroup(
-        page: SessionPage,
-        index: Int,
-        total: Int,
-        sessionEngine: SessionEngine,
-        progressSession _: ProgressSession,
-        progressHandler: @escaping @Sendable (Double) async -> Void,
-        perPageCompletion: @escaping @Sendable (SessionPage.ID, Result<Void, Error>) async -> Void
+        config: PageProcessingConfig
     ) async {
         do {
             // Update page status to processing
-            try await sessionEngine.updatePageStatus(id: page.id, status: .processing)
+            try await config.sessionEngine.updatePageStatus(id: config.page.id, status: .processing)
 
             // Process the page
-            let processedPage = try await processSinglePage(page)
+            let processedPage = try await processSinglePage(config.page)
 
             // Update page status to processed
-            try await sessionEngine.updatePageStatus(id: processedPage.id, status: .processed)
+            try await config.sessionEngine.updatePageStatus(id: processedPage.id, status: .processed)
 
             // Report completion
-            await perPageCompletion(page.id, .success(()))
+            await config.perPageCompletion(config.page.id, .success(()))
 
             // Update overall progress
-            let progress = Double(index + 1) / Double(total)
-            await progressHandler(progress)
+            let progress = Double(config.index + 1) / Double(config.total)
+            await config.progressHandler(progress)
 
         } catch {
             // Update page status to failed
-            _ = try? await sessionEngine.updatePageStatus(id: page.id, status: .failed(error.localizedDescription))
+            _ = try? await config.sessionEngine.updatePageStatus(id: config.page.id, status: .failed(error.localizedDescription))
 
             // Report failure
-            await perPageCompletion(page.id, .failure(error))
+            await config.perPageCompletion(config.page.id, .failure(error))
 
-            print("Failed to process page \(page.id): \(error)")
+            print("Failed to process page \(config.page.id): \(error)")
         }
     }
 

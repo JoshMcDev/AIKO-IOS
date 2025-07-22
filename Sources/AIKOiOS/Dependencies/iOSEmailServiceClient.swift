@@ -7,13 +7,13 @@
         static let iOSLive = Self(
             canSendEmail: {
                 MainActor.assumeIsolated {
-                    iOSEmailService.shared.canSendEmail
+                    IOSEmailService.shared.canSendEmail
                 }
             },
             sendEmail: { recipients, subject, body, isHTML, attachments in
                 await withCheckedContinuation { continuation in
                     Task { @MainActor in
-                        iOSEmailService.shared.sendEmail(
+                        IOSEmailService.shared.sendEmail(
                             to: recipients,
                             subject: subject,
                             body: body,
@@ -28,7 +28,7 @@
             showEmailComposer: { recipients, subject, body in
                 await withCheckedContinuation { continuation in
                     Task { @MainActor in
-                        iOSEmailService.shared.showEmailComposer(
+                        IOSEmailService.shared.showEmailComposer(
                             recipients: recipients,
                             subject: subject,
                             body: body
@@ -42,7 +42,7 @@
     }
 
     // Convenience static accessor
-    public enum iOSEmailServiceClient {
+    public enum IOSEmailServiceClient {
         public static let live = EmailServiceClient.iOSLive
     }
 #endif

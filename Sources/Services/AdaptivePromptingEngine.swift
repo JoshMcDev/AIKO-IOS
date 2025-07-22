@@ -670,10 +670,13 @@ public final class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol, @un
         unifiedExtractor = UnifiedDocumentContextExtractor()
 
         // Initialize SmartDefaultsEngine with all dependencies
+        guard let contextExtractor = unifiedExtractor else {
+            fatalError("Failed to initialize UnifiedDocumentContextExtractor")
+        }
         smartDefaultsEngine = SmartDefaultsEngine(
             smartDefaultsProvider: SmartDefaultsProvider(),
             patternLearningEngine: learningEngine,
-            contextExtractor: unifiedExtractor!
+            contextExtractor: contextExtractor
         )
 
         // Initialize ConfidenceBasedAutoFillEngine
@@ -763,8 +766,12 @@ public final class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol, @un
 
             // Learn from this interaction
             let suggestedValue = session.suggestedAnswers?[question.field]
-            let acceptedSuggestion = suggestedValue != nil &&
-                String(describing: suggestedValue!) == String(describing: response.value)
+            let acceptedSuggestion: Bool
+            if let suggestedValue = suggestedValue {
+                acceptedSuggestion = String(describing: suggestedValue) == String(describing: response.value)
+            } else {
+                acceptedSuggestion = false
+            }
 
             let interaction = APEUserInteraction(
                 sessionId: session.id,
@@ -926,8 +933,7 @@ public final class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol, @un
             if let decimal = value as? Decimal {
                 data.estimatedValue = decimal
             } else if let string = value as? String,
-                      let double = Double(string.replacingOccurrences(of: "$", with: "").replacingOccurrences(of: ",", with: ""))
-            {
+                      let double = Double(string.replacingOccurrences(of: "$", with: "").replacingOccurrences(of: ",", with: "")) {
                 data.estimatedValue = Decimal(double)
             }
         case .requiredDate:

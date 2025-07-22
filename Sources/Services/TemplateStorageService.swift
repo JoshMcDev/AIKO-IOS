@@ -90,7 +90,9 @@ public struct OfficeTemplate: Identifiable, Codable, Equatable, Sendable {
 
 extension TemplateStorageService: DependencyKey {
     public static var liveValue: TemplateStorageService {
-        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        guard let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            fatalError("Unable to access documents directory")
+        }
         let templatesPath = documentsPath.appendingPathComponent("Templates")
         let customTemplatesPath = templatesPath.appendingPathComponent("Custom")
         let editedTemplatesPath = templatesPath.appendingPathComponent("Edited")

@@ -36,7 +36,7 @@ actor DiskCache: OfflineCacheProtocol {
         self.configuration = configuration
 
         // Set up cache directory
-        let documentsPath = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first ?? fileManager.temporaryDirectory
+        let documentsPath = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first ?? FileManager.default.temporaryDirectory
         cacheDirectory = documentsPath.appendingPathComponent("AIKOCache/DiskCache")
 
         // Create directory if needed
@@ -211,7 +211,7 @@ actor DiskCache: OfflineCacheProtocol {
             let data = try Data(contentsOf: metadataURL)
             let decoder = JSONDecoder()
             metadata = try decoder.decode([String: CacheEntry].self, from: data)
-            logger.debug("Loaded metadata with \(metadata.count) entries")
+            logger.debug("Loaded metadata with \(self.metadata.count) entries")
         } catch {
             logger.error("Failed to load metadata: \(error)")
             metadata = [:]

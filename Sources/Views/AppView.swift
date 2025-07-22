@@ -14,7 +14,7 @@ public struct AppView: View {
 
     public var body: some View {
         #if os(iOS)
-            iOSAppView(store: store)
+            IOSAppView(store: store)
         #elseif os(macOS)
             MacOSAppView(store: store)
         #endif

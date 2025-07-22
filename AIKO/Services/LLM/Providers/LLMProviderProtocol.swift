@@ -327,7 +327,7 @@ class LLMProviderAdapter: LLMProviderProtocol {
 
     func validateConfiguration() async -> Bool {
         // Check if API key exists
-        guard let _ = await getAPIKey() else { return false }
+        guard await getAPIKey() != nil else { return false }
 
         // Additional validation can be added by subclasses
         return true

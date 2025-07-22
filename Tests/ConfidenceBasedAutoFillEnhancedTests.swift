@@ -7,9 +7,24 @@ import XCTest
 // Government Form Auto-Population Integration - RED PHASE
 
 final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
-    var autoFillEngine: ConfidenceBasedAutoFillEngine!
-    var smartDefaultsEngine: SmartDefaultsEngine!
-    var patternLearningEngine: UserPatternLearningEngine!
+    var autoFillEngine: ConfidenceBasedAutoFillEngine?
+    var smartDefaultsEngine: SmartDefaultsEngine?
+    var patternLearningEngine: UserPatternLearningEngine?
+
+    private var autoFillEngineUnwrapped: ConfidenceBasedAutoFillEngine {
+        guard let autoFillEngine = autoFillEngine else { fatalError("autoFillEngine not initialized") }
+        return autoFillEngine
+    }
+
+    private var smartDefaultsEngineUnwrapped: SmartDefaultsEngine {
+        guard let smartDefaultsEngine = smartDefaultsEngine else { fatalError("smartDefaultsEngine not initialized") }
+        return smartDefaultsEngine
+    }
+
+    private var patternLearningEngineUnwrapped: UserPatternLearningEngine {
+        guard let patternLearningEngine = patternLearningEngine else { fatalError("patternLearningEngine not initialized") }
+        return patternLearningEngine
+    }
 
     override func setUp() async throws {
         try await super.setUp()
@@ -20,7 +35,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
 
         smartDefaultsEngine = SmartDefaultsEngine(
             smartDefaultsProvider: SmartDefaultsProvider(),
-            patternLearningEngine: patternLearningEngine,
+            patternLearningEngine: patternLearningEngineUnwrapped,
             contextExtractor: contextExtractor
         )
 
@@ -36,7 +51,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
 
         autoFillEngine = ConfidenceBasedAutoFillEngine(
             configuration: config,
-            smartDefaultsEngine: smartDefaultsEngine
+            smartDefaultsEngine: smartDefaultsEngineUnwrapped
         )
     }
 
@@ -50,7 +65,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
         // Mock high-confidence extractions from government form
         await trainEngineWithGovernmentFormPatterns()
 
-        let result = await autoFillEngine.analyzeFieldsForAutoFill(
+        let result = await autoFillEngineUnwrapped.analyzeFieldsForAutoFill(
             fields: governmentFields,
             context: context
         )
@@ -73,7 +88,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
         let context = createGovernmentFormContext()
 
         // Simulate auto-fill session
-        let result = await autoFillEngine.analyzeFieldsForAutoFill(
+        let result = await autoFillEngineUnwrapped.analyzeFieldsForAutoFill(
             fields: governmentFields,
             context: context
         )
@@ -85,7 +100,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
         for (field, value) in result.autoFilledFields {
             let wasAccepted = acceptedCount < Int(ceil(Double(totalAutoFilled) * 0.85))
 
-            await autoFillEngine.processUserFeedback(
+            await autoFillEngineUnwrapped.processUserFeedback(
                 field: field,
                 autoFilledValue: value,
                 userValue: value,
@@ -99,7 +114,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
         }
 
         // User acceptance rate of auto-filled data: ≥85% (TDD rubric)
-        let metrics = autoFillEngine.getMetrics()
+        let metrics = autoFillEngineUnwrapped.getMetrics()
         XCTAssertGreaterThanOrEqual(metrics.acceptanceRate, 0.85, "User acceptance rate should be ≥85%")
         XCTAssertGreaterThanOrEqual(acceptedCount, Int(ceil(Double(totalAutoFilled) * 0.85)), "Should meet 85% acceptance target")
     }
@@ -109,7 +124,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
         let criticalFields = createCriticalGovernmentFields()
         let context = createHighValueContractContext()
 
-        let result = await autoFillEngine.analyzeFieldsForAutoFill(
+        let result = await autoFillEngineUnwrapped.analyzeFieldsForAutoFill(
             fields: criticalFields,
             context: context
         )
@@ -144,7 +159,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
         let estimatedManualTimePerField = 15.0 // seconds
         let baselineTime = Double(governmentFields.count) * estimatedManualTimePerField
 
-        let result = await autoFillEngine.analyzeFieldsForAutoFill(
+        let result = await autoFillEngineUnwrapped.analyzeFieldsForAutoFill(
             fields: governmentFields,
             context: context
         )
@@ -167,7 +182,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
         let fields = [RequirementField.vendorCAGE]
         let context = createContextWithCAGECode()
 
-        let result = await autoFillEngine.analyzeFieldsForAutoFill(
+        let result = await autoFillEngineUnwrapped.analyzeFieldsForAutoFill(
             fields: fields,
             context: context
         )
@@ -194,7 +209,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
         let fields = [RequirementField.vendorUEI]
         let context = createContextWithUEI()
 
-        let result = await autoFillEngine.analyzeFieldsForAutoFill(
+        let result = await autoFillEngineUnwrapped.analyzeFieldsForAutoFill(
             fields: fields,
             context: context
         )
@@ -220,7 +235,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
         let fields = [RequirementField.estimatedValue, RequirementField.fundingAmount]
         let context = createContextWithCurrency()
 
-        let result = await autoFillEngine.analyzeFieldsForAutoFill(
+        let result = await autoFillEngineUnwrapped.analyzeFieldsForAutoFill(
             fields: fields,
             context: context
         )
@@ -247,7 +262,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
         let fields = [RequirementField.requiredDate, RequirementField.performancePeriodStart, RequirementField.performancePeriodEnd]
         let context = createContextWithDates()
 
-        let result = await autoFillEngine.analyzeFieldsForAutoFill(
+        let result = await autoFillEngineUnwrapped.analyzeFieldsForAutoFill(
             fields: fields,
             context: context
         )
@@ -281,7 +296,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
         let context = createGovernmentFormContext()
 
         let startTime = Date()
-        let result = await autoFillEngine.analyzeFieldsForAutoFill(
+        let result = await autoFillEngineUnwrapped.analyzeFieldsForAutoFill(
             fields: governmentFields,
             context: context
         )
@@ -301,7 +316,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
 
         measure {
             Task {
-                let result = await autoFillEngine.analyzeFieldsForAutoFill(
+                let result = await autoFillEngineUnwrapped.analyzeFieldsForAutoFill(
                     fields: governmentFields,
                     context: context
                 )
@@ -318,7 +333,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
         let governmentFields = createGovernmentFormFields()
         let context = createGovernmentFormContext()
 
-        let result = await autoFillEngine.analyzeFieldsForAutoFill(
+        let result = await autoFillEngineUnwrapped.analyzeFieldsForAutoFill(
             fields: governmentFields,
             context: context
         )
@@ -343,7 +358,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
         let context = createGovernmentFormContext()
 
         let startTime = Date()
-        let result = await autoFillEngine.analyzeFieldsForAutoFill(
+        let result = await autoFillEngineUnwrapped.analyzeFieldsForAutoFill(
             fields: governmentFields,
             context: context
         )
@@ -359,7 +374,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
         let governmentFields = createGovernmentFormFields()
         let context = createGovernmentFormContext()
 
-        let result = await autoFillEngine.analyzeFieldsForAutoFill(
+        let result = await autoFillEngineUnwrapped.analyzeFieldsForAutoFill(
             fields: governmentFields,
             context: context
         )
@@ -367,10 +382,10 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
         let startTime = Date()
 
         // Simulate UI interaction (generating explanations, color coding, etc.)
-        let explanation = autoFillEngine.generateAutoFillExplanation(result)
+        let explanation = autoFillEngineUnwrapped.generateAutoFillExplanation(result)
         for field in result.populatedFields {
-            _ = autoFillEngine.getConfidenceColor(for: field.confidence)
-            _ = autoFillEngine.getConfidenceDescription(for: field.confidence)
+            _ = autoFillEngineUnwrapped.getConfidenceColor(for: field.confidence)
+            _ = autoFillEngineUnwrapped.getConfidenceDescription(for: field.confidence)
         }
 
         let uiTime = Date().timeIntervalSince(startTime)

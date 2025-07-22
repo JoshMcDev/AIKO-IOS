@@ -12,7 +12,7 @@ public struct LLMConfirmationDialog: View {
     }
 
     public var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             SwiftUI.NavigationView {
                 VStack(spacing: 0) {
                     // Header
@@ -28,7 +28,7 @@ public struct LLMConfirmationDialog: View {
                         Text("AI Contract Intelligence Officer")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                    }
+        })
                     .padding(.top, Theme.Spacing.large)
                     .padding(.horizontal, Theme.Spacing.large)
 
@@ -216,7 +216,7 @@ public struct DocumentRecommendationDialog: View {
     }
 
     public var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             SwiftUI.NavigationView {
                 VStack(spacing: Theme.Spacing.extraLarge) {
                     // Header
@@ -330,7 +330,7 @@ public struct DocumentRecommendationDialog: View {
                 .background(Theme.Colors.aikoBackground)
                 .modifier(NavigationBarHiddenModifier())
             }
-        }
+        })
     }
 }
 
@@ -344,7 +344,7 @@ public struct DeliveryOptionsDialog: View {
     }
 
     public var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             SwiftUI.NavigationView {
                 VStack(spacing: Theme.Spacing.extraLarge) {
                     // Header
@@ -431,7 +431,7 @@ public struct DeliveryOptionsDialog: View {
                 .background(Theme.Colors.aikoBackground)
                 .modifier(NavigationBarHiddenModifier())
             }
-        }
+        })
     }
 }
 
@@ -447,7 +447,7 @@ public struct EmailConfirmationDialog: View {
 
     public var body: some View {
         SwiftUI.NavigationView {
-            WithViewStore(store, observe: \.delivery) { viewStore in
+            WithViewStore(store, observe: \.delivery, content: { viewStore in
                 VStack(spacing: Theme.Spacing.extraLarge) {
                     // Header
                     VStack(spacing: Theme.Spacing.medium) {
@@ -536,7 +536,7 @@ public struct EmailConfirmationDialog: View {
                 .padding(.horizontal, Theme.Spacing.large)
                 .background(Theme.Colors.aikoBackground)
                 .modifier(NavigationBarHiddenModifier())
-            }
+            })
         }
     }
 

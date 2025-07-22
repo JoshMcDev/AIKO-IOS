@@ -105,8 +105,7 @@ public struct DocumentExecutionFeature: Sendable {
             case .checkInformationSufficiency:
                 state.isExecuting = true
 
-                return .run { [documentTypes = state.executingDocumentTypes,
-                               dfDocumentTypes = state.executingDFDocumentTypes] send in
+                return .run { [documentTypes = state.executingDocumentTypes, dfDocumentTypes = state.executingDFDocumentTypes] send in
                         // Special handling for FAR Updates
                         if documentTypes.contains(.farUpdates) {
                             // FAR Updates doesn't need information gathering
@@ -190,8 +189,7 @@ public struct DocumentExecutionFeature: Sendable {
                 state.isExecuting = true
                 state.executionProgress = 0.0
 
-                return .run { [documentTypes = state.executingDocumentTypes,
-                               dfDocumentTypes = state.executingDFDocumentTypes] send in
+                return .run { [documentTypes = state.executingDocumentTypes, dfDocumentTypes = state.executingDFDocumentTypes] send in
                         // Simulate document generation with progress updates
                         for progress in stride(from: 0.0, through: 1.0, by: 0.1) {
                             try await clock.sleep(for: .milliseconds(500))

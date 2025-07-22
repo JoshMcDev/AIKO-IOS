@@ -4,7 +4,7 @@ import XCTest
 
 @MainActor
 final class FARComplianceManagerTests: XCTestCase {
-    var manager: FARComplianceManager!
+    var manager: FARComplianceManager?
 
     override func setUp() async throws {
         try await super.setUp()
@@ -20,6 +20,10 @@ final class FARComplianceManagerTests: XCTestCase {
 
     func testCompleteComplianceCheck() async throws {
         let document = createTestDocument()
+        guard let manager = manager else {
+            XCTFail("Manager not initialized")
+            return
+        }
         let result = try await manager.performCompleteComplianceCheck(for: document)
 
         XCTAssertNotNil(result)

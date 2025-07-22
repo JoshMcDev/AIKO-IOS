@@ -205,7 +205,7 @@ public struct ParallelDocumentGenerator: Sendable {
                     group.addTask { @Sendable in
                         let provider = aiProvider
                         do {
-                            return try await generateSingleDocument(
+                            let config = DocumentGenerationConfig(
                                 documentType: documentType,
                                 requirements: requirements,
                                 template: templates[documentType],
@@ -213,6 +213,7 @@ public struct ParallelDocumentGenerator: Sendable {
                                 profile: profile,
                                 aiProvider: provider
                             )
+                            return try await generateSingleDocument(config: config)
                         } catch {
                             // Log error but don't fail the entire batch
                             print("Error generating \(documentType): \(error)")
@@ -266,7 +267,7 @@ public struct ParallelDocumentGenerator: Sendable {
                     group.addTask { @Sendable in
                         let provider = aiProvider
                         do {
-                            return try await generateSingleDFDocument(
+                            let config = DFDocumentGenerationConfig(
                                 dfDocumentType: dfDocumentType,
                                 requirements: requirements,
                                 template: templates[dfDocumentType],
@@ -274,6 +275,7 @@ public struct ParallelDocumentGenerator: Sendable {
                                 profile: profile,
                                 aiProvider: provider
                             )
+                            return try await generateSingleDFDocument(config: config)
                         } catch {
                             // Log error but don't fail the entire batch
                             print("Error generating \(dfDocumentType): \(error)")
@@ -358,12 +360,7 @@ public struct ParallelDocumentGenerator: Sendable {
     // MARK: - Single Document Generation
 
     private func generateSingleDocument(
-        documentType: DocumentType,
-        requirements: String,
-        template: String?,
-        systemPrompt: String?,
-        profile: UserProfile?,
-        aiProvider: AIProvider
+        config: DocumentGenerationConfig
     ) async throws -> GeneratedDocument {
         let totalStartTime = Date()
         let cacheCheckStartTime = Date()
@@ -373,30 +370,30 @@ public struct ParallelDocumentGenerator: Sendable {
         // Prepare prompt
         let templateStartTime = Date()
         let prompt: String
-        if let template {
+        if let template = config.template {
             var processedTemplate = template
-            if let profile {
+            if let profile = config.profile {
                 for (key, value) in profile.templateVariables {
                     processedTemplate = processedTemplate.replacingOccurrences(of: "{{\(key)}}", with: value)
                 }
             }
             prompt = AIDocumentGenerator.createTemplateBasedPrompt(
-                for: documentType,
-                requirements: requirements,
+                for: config.documentType,
+                requirements: config.requirements,
                 template: processedTemplate,
-                profile: profile
+                profile: config.profile
             )
         } else {
             prompt = AIDocumentGenerator.createPrompt(
-                for: documentType,
-                requirements: requirements,
-                profile: profile
+                for: config.documentType,
+                requirements: config.requirements,
+                profile: config.profile
             )
         }
         templateLoadDuration = Date().timeIntervalSince(templateStartTime)
 
         // Use preloaded system prompt or generate if not available
-        let finalSystemPrompt = systemPrompt ?? AIDocumentGenerator.getSystemPrompt(for: documentType)
+        let finalSystemPrompt = config.systemPrompt ?? AIDocumentGenerator.getSystemPrompt(for: config.documentType)
 
         // Create messages
         let messages = [
@@ -413,7 +410,7 @@ public struct ParallelDocumentGenerator: Sendable {
 
         // Generate content
         let apiStartTime = Date()
-        let result = try await aiProvider.complete(request)
+        let result = try await config.aiProvider.complete(request)
         apiCallDuration = Date().timeIntervalSince(apiStartTime)
 
         let content = result.content
@@ -426,9 +423,9 @@ public struct ParallelDocumentGenerator: Sendable {
         // Cache the result
         await cache.cacheDocument(
             correctedContent,
-            for: documentType,
-            requirements: requirements,
-            profile: profile
+            for: config.documentType,
+            requirements: config.requirements,
+            profile: config.profile
         )
 
         // Record performance metrics
@@ -436,7 +433,7 @@ public struct ParallelDocumentGenerator: Sendable {
         let cacheCheckDuration = Date().timeIntervalSince(cacheCheckStartTime) - (apiCallDuration ?? 0) - templateLoadDuration - spellCheckDuration
 
         await performanceMonitor.recordGeneration(
-            documentType: documentType.rawValue,
+            documentType: config.documentType.rawValue,
             cacheHit: false,
             durations: (
                 total: totalDuration,
@@ -448,33 +445,28 @@ public struct ParallelDocumentGenerator: Sendable {
         )
 
         return GeneratedDocument(
-            title: "\(documentType.shortName) - \(Date().formatted(date: .abbreviated, time: .omitted))",
-            documentType: documentType,
+            title: "\(config.documentType.shortName) - \(Date().formatted(date: .abbreviated, time: .omitted))",
+            documentType: config.documentType,
             content: correctedContent
         )
     }
 
     private func generateSingleDFDocument(
-        dfDocumentType: DFDocumentType,
-        requirements: String,
-        template: DFTemplate?,
-        systemPrompt: String?,
-        profile: UserProfile?,
-        aiProvider: AIProvider
+        config: DFDocumentGenerationConfig
     ) async throws -> GeneratedDocument {
         let totalStartTime = Date()
         let cacheCheckStartTime = Date()
         var apiCallDuration: TimeInterval?
         var templateLoadDuration: TimeInterval = 0
         var spellCheckDuration: TimeInterval = 0
-        guard let template else {
+        guard let template = config.template else {
             throw AIDocumentGeneratorError.noContent
         }
 
         // Process template
         let templateStartTime = Date()
         var processedTemplate = template.template
-        if let profile {
+        if let profile = config.profile {
             for (key, value) in profile.templateVariables {
                 processedTemplate = processedTemplate.replacingOccurrences(of: "{{\(key)}}", with: value)
             }
@@ -482,16 +474,16 @@ public struct ParallelDocumentGenerator: Sendable {
 
         // Create prompt
         let prompt = AIDocumentGenerator.createDFPrompt(
-            for: dfDocumentType,
-            requirements: requirements,
+            for: config.dfDocumentType,
+            requirements: config.requirements,
             template: processedTemplate,
             quickReference: template.quickReferenceGuide,
-            profile: profile
+            profile: config.profile
         )
         templateLoadDuration = Date().timeIntervalSince(templateStartTime)
 
         // Use preloaded system prompt or generate if not available
-        let finalSystemPrompt = systemPrompt ?? AIDocumentGenerator.getDFSystemPrompt(for: dfDocumentType)
+        let finalSystemPrompt = config.systemPrompt ?? AIDocumentGenerator.getDFSystemPrompt(for: config.dfDocumentType)
 
         // Create messages
         let messages = [
@@ -508,7 +500,7 @@ public struct ParallelDocumentGenerator: Sendable {
 
         // Generate content
         let apiStartTime = Date()
-        let result = try await aiProvider.complete(request)
+        let result = try await config.aiProvider.complete(request)
         apiCallDuration = Date().timeIntervalSince(apiStartTime)
 
         let content = result.content
@@ -521,9 +513,9 @@ public struct ParallelDocumentGenerator: Sendable {
         // Cache the result
         await cache.cacheDocument(
             correctedContent,
-            for: dfDocumentType,
-            requirements: requirements,
-            profile: profile
+            for: config.dfDocumentType,
+            requirements: config.requirements,
+            profile: config.profile
         )
 
         // Record performance metrics
@@ -531,7 +523,7 @@ public struct ParallelDocumentGenerator: Sendable {
         let cacheCheckDuration = Date().timeIntervalSince(cacheCheckStartTime) - (apiCallDuration ?? 0) - templateLoadDuration - spellCheckDuration
 
         await performanceMonitor.recordGeneration(
-            documentType: dfDocumentType.rawValue,
+            documentType: config.dfDocumentType.rawValue,
             cacheHit: false,
             durations: (
                 total: totalDuration,
@@ -543,8 +535,8 @@ public struct ParallelDocumentGenerator: Sendable {
         )
 
         return GeneratedDocument(
-            title: "\(dfDocumentType.shortName) D&F - \(Date().formatted(date: .abbreviated, time: .omitted))",
-            dfDocumentType: dfDocumentType,
+            title: "\(config.dfDocumentType.shortName) D&F - \(Date().formatted(date: .abbreviated, time: .omitted))",
+            dfDocumentType: config.dfDocumentType,
             content: correctedContent
         )
     }

@@ -148,7 +148,10 @@ public final class AdaptiveConversationOrchestrator: ObservableObject, @unchecke
         }
 
         // Get next question from current stage
-        let nextQuestion = flow.currentQuestions.first!
+        guard let nextQuestion = flow.currentQuestions.first else {
+            await completeConversation()
+            return
+        }
 
         // Get smart defaults
         let smartDefault = await promptingEngine.getSmartDefaults(for: nextQuestion.field)
@@ -156,8 +159,7 @@ public final class AdaptiveConversationOrchestrator: ObservableObject, @unchecke
         // Check if we can auto-fill with high confidence
         if let prefilled = flow.prefilledData[nextQuestion.field],
            let confidence = flow.confidenceMap[nextQuestion.field],
-           confidence >= configuration.suggestionAcceptanceThreshold
-        {
+           confidence >= configuration.suggestionAcceptanceThreshold {
             // Auto-accept high confidence prefilled data
             let autoResponse = UserResponse(
                 questionId: nextQuestion.id.uuidString,
@@ -166,7 +168,8 @@ public final class AdaptiveConversationOrchestrator: ObservableObject, @unchecke
                 confidence: confidence
             )
 
-            if let _ = try? await promptingEngine.processUserResponse(autoResponse, in: currentSession!) {
+            guard let session = currentSession else { return }
+            if (try? await promptingEngine.processUserResponse(autoResponse, in: session)) != nil {
                 // Continue to next question
                 await presentNextPrompt()
             } else {

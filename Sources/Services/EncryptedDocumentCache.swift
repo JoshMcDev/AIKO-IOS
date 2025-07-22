@@ -59,7 +59,7 @@ actor EncryptedDocumentCacheStorage {
     private let maxMemorySize: Int64 = 100 * 1024 * 1024 // 100 MB
 
     // Encryption components
-    private var masterKey: SymmetricKey
+    private var primaryKey: SymmetricKey
     private let keyDerivationSalt: Data
     private let encryptionManager: DocumentEncryptionManager
 
@@ -99,12 +99,12 @@ actor EncryptedDocumentCacheStorage {
         encryptionManager = DocumentEncryptionManager()
 
         // Generate or load encryption key
-        if let savedKey = try? await encryptionManager.loadMasterKey() {
-            masterKey = savedKey.key
+        if let savedKey = try? await encryptionManager.loadPrimaryKey() {
+            primaryKey = savedKey.key
             keyDerivationSalt = savedKey.salt
         } else {
-            let newKey = try await encryptionManager.generateMasterKey()
-            masterKey = newKey.key
+            let newKey = try await encryptionManager.generatePrimaryKey()
+            primaryKey = newKey.key
             keyDerivationSalt = newKey.salt
         }
     }
@@ -119,7 +119,7 @@ actor EncryptedDocumentCacheStorage {
         let documentData = try encoder.encode(document)
 
         // Encrypt
-        let encrypted = try await encryptionManager.encrypt(documentData, using: masterKey)
+        let encrypted = try await encryptionManager.encrypt(documentData, using: primaryKey)
 
         // Create metadata
         let metadata = DocumentMetadata(
@@ -151,7 +151,7 @@ actor EncryptedDocumentCacheStorage {
             let decryptedData = try await encryptionManager.decrypt(
                 ciphertext: cached.encryptedData,
                 nonce: cached.nonce,
-                using: masterKey
+                using: primaryKey
             )
 
             // Verify integrity
@@ -195,7 +195,7 @@ actor EncryptedDocumentCacheStorage {
         let data = try encoder.encode(analysisData)
 
         // Encrypt
-        let encrypted = try await encryptionManager.encrypt(data, using: masterKey)
+        let encrypted = try await encryptionManager.encrypt(data, using: primaryKey)
 
         // Create metadata
         let metadata = AnalysisMetadata(
@@ -226,7 +226,7 @@ actor EncryptedDocumentCacheStorage {
             let decryptedData = try await encryptionManager.decrypt(
                 ciphertext: cached.encryptedData,
                 nonce: cached.nonce,
-                using: masterKey
+                using: primaryKey
             )
 
             // Deserialize
@@ -251,7 +251,7 @@ actor EncryptedDocumentCacheStorage {
 
     func rotateEncryptionKey() async throws {
         // Generate new key
-        let newKeyData = try await encryptionManager.generateMasterKey()
+        let newKeyData = try await encryptionManager.generatePrimaryKey()
         let newKey = newKeyData.key
 
         // Re-encrypt all documents
@@ -260,7 +260,7 @@ actor EncryptedDocumentCacheStorage {
             let decryptedData = try await encryptionManager.decrypt(
                 ciphertext: encryptedDoc.encryptedData,
                 nonce: encryptedDoc.nonce,
-                using: masterKey
+                using: primaryKey
             )
 
             // Re-encrypt with new key
@@ -280,7 +280,7 @@ actor EncryptedDocumentCacheStorage {
             let decryptedData = try await encryptionManager.decrypt(
                 ciphertext: encryptedAnalysis.encryptedData,
                 nonce: encryptedAnalysis.nonce,
-                using: masterKey
+                using: primaryKey
             )
 
             // Re-encrypt with new key
@@ -295,8 +295,8 @@ actor EncryptedDocumentCacheStorage {
         }
 
         // Update master key
-        masterKey = newKey
-        try await encryptionManager.saveMasterKey(key: newKey, salt: newKeyData.salt)
+        primaryKey = newKey
+        try await encryptionManager.savePrimaryKey(key: newKey, salt: newKeyData.salt)
     }
 
     func exportEncryptedBackup() async throws -> Data {
@@ -324,7 +324,7 @@ actor EncryptedDocumentCacheStorage {
         }
 
         // Encrypt the entire backup
-        let encrypted = try await encryptionManager.encrypt(backupData, using: masterKey)
+        let encrypted = try await encryptionManager.encrypt(backupData, using: primaryKey)
 
         // Package with metadata
         let package = BackupPackage(
@@ -461,7 +461,7 @@ actor EncryptedDocumentCacheStorage {
 actor DocumentEncryptionManager {
     private let keychainService = "com.aiko.document.encryption"
 
-    struct MasterKeyData {
+    struct PrimaryKeyData {
         let key: SymmetricKey
         let salt: Data
     }
@@ -471,17 +471,17 @@ actor DocumentEncryptionManager {
         let nonce: Data
     }
 
-    func generateMasterKey() async throws -> MasterKeyData {
+    func generatePrimaryKey() async throws -> PrimaryKeyData {
         // Generate salt for key derivation
         let salt = Data((0 ..< 32).map { _ in UInt8.random(in: 0 ... 255) })
 
         // Generate key
         let key = SymmetricKey(size: .bits256)
 
-        return MasterKeyData(key: key, salt: salt)
+        return PrimaryKeyData(key: key, salt: salt)
     }
 
-    func saveMasterKey(key: SymmetricKey, salt: Data) async throws {
+    func savePrimaryKey(key: SymmetricKey, salt: Data) async throws {
         let keyData = key.withUnsafeBytes { Data($0) }
 
         // Combine key and salt
@@ -493,7 +493,7 @@ actor DocumentEncryptionManager {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: keychainService,
-            kSecAttrAccount as String: "master_encryption_key",
+            kSecAttrAccount as String: "primary_encryption_key",
             kSecValueData as String: combinedData,
             kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
         ]
@@ -506,11 +506,11 @@ actor DocumentEncryptionManager {
         }
     }
 
-    func loadMasterKey() async throws -> MasterKeyData {
+    func loadPrimaryKey() async throws -> PrimaryKeyData {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: keychainService,
-            kSecAttrAccount as String: "master_encryption_key",
+            kSecAttrAccount as String: "primary_encryption_key",
             kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne,
         ]
@@ -527,7 +527,7 @@ actor DocumentEncryptionManager {
         let salt = combinedData.suffix(from: 32)
 
         let key = SymmetricKey(data: keyData)
-        return MasterKeyData(key: key, salt: salt)
+        return PrimaryKeyData(key: key, salt: salt)
     }
 
     func encrypt(_ data: Data, using key: SymmetricKey) async throws -> EncryptedData {

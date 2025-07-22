@@ -110,8 +110,7 @@ public final class DocumentContextExtractor: @unchecked Sendable {
         var lineItems: [APELineItem] = []
 
         // Extract total price from entities
-        for entity in document.extractedData.entities {
-            if entity.type == .price {
+        for entity in document.extractedData.entities where entity.type == .price {
                 // Remove currency symbols and convert to Decimal
                 let cleanPrice = entity.value
                     .replacingOccurrences(of: "$", with: "")
@@ -150,15 +149,13 @@ public final class DocumentContextExtractor: @unchecked Sendable {
             for match in matches.prefix(10) { // Limit to 10 line items
                 if let descRange = Range(match.range(at: 1), in: document.extractedText),
                    let qtyRange = Range(match.range(at: 2), in: document.extractedText),
-                   let priceRange = Range(match.range(at: 3), in: document.extractedText)
-                {
+                   let priceRange = Range(match.range(at: 3), in: document.extractedText) {
                     let description = String(document.extractedText[descRange]).trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
                     let quantityStr = String(document.extractedText[qtyRange])
                     let priceStr = String(document.extractedText[priceRange]).replacingOccurrences(of: ",", with: "")
 
                     if let quantity = Int(quantityStr),
-                       let unitPrice = Decimal(string: priceStr)
-                    {
+                       let unitPrice = Decimal(string: priceStr) {
                         lineItems.append(APELineItem(
                             id: UUID(),
                             description: description,
@@ -312,7 +309,7 @@ public final class DocumentContextExtractor: @unchecked Sendable {
         }
 
         // Return the first capture group if it exists, otherwise the whole match
-        let captureRange = match.numberOfRanges > 1 ? match.range(at: 1) : match.range
+        let captureRange = match.numberOfRanges > 1 ? match.range(at: 1): match.range
         guard let swiftRange = Range(captureRange, in: text) else {
             return nil
         }

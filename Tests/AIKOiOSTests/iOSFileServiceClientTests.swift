@@ -4,12 +4,16 @@
     import SwiftUI
     import XCTest
 
-    final class iOSFileServiceClientTests: XCTestCase {
-        var client: iOSFileServiceClient!
+    final class IOSFileServiceClientTests: XCTestCase {
+        var client: IOSFileServiceClient?
 
+        private var clientUnwrapped: IOSFileServiceClient {
+            guard let client = client else { fatalError("client not initialized") }
+            return client
+        }
         override func setUp() async throws {
             try await super.setUp()
-            client = iOSFileServiceClient()
+            client = IOSFileServiceClient()
         }
 
         override func tearDown() async throws {
@@ -26,7 +30,7 @@
             }
 
             // Test that saveFile executes on MainActor (will likely fail in test env, but should not crash)
-            let result = await client.saveFile(
+            let result = await clientUnwrapped.saveFile(
                 content: "Test content",
                 suggestedFileName: "test.txt",
                 allowedFileTypes: ["txt"]
@@ -47,7 +51,7 @@
 
         func testOpenFileMainActor() async {
             // Test that openFile executes on MainActor (will likely return nil in test env)
-            let url = await client.openFile(allowedFileTypes: ["txt", "pdf"])
+            let url = await clientUnwrapped.openFile(allowedFileTypes: ["txt", "pdf"])
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After openFile, should be on main thread")
@@ -68,7 +72,7 @@
 
         func testTemplateStartMethod() async throws {
             // Test that the template's start method can be called without error
-            try await client.start()
+            try await clientUnwrapped.start()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After start(), should be on main thread")
@@ -97,12 +101,12 @@
 
         func testAsyncAwaitPattern() async {
             // Test the async/await pattern works correctly
-            async let saveTask = client.saveFile(
+            async let saveTask = clientUnwrapped.saveFile(
                 content: "Test content 1",
                 suggestedFileName: "test1.txt",
                 allowedFileTypes: ["txt"]
             )
-            async let openTask = client.openFile(allowedFileTypes: ["txt", "pdf"])
+            async let openTask = clientUnwrapped.openFile(allowedFileTypes: ["txt", "pdf"])
 
             let (saveResult, openUrl) = await (saveTask, openTask)
 
@@ -113,7 +117,9 @@
             }
 
             // Open may return nil in test environment
-            XCTAssertTrue(openUrl == nil || openUrl!.isFileURL, "Open result should be nil or valid URL")
+            if let openUrl = openUrl {
+                XCTAssertTrue(openUrl.isFileURL, "Open result should be nil or valid URL")
+            }
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After concurrent async operations, should be on main thread")
@@ -131,7 +137,7 @@
             ]
 
             for (fileType, content) in testCases {
-                let result = await client.saveFile(
+                let result = await clientUnwrapped.saveFile(
                     content: content,
                     suggestedFileName: "test.\(fileType)",
                     allowedFileTypes: [fileType]
@@ -160,7 +166,7 @@
             ]
 
             for types in allowedTypes {
-                let url = await client.openFile(allowedFileTypes: types)
+                let url = await clientUnwrapped.openFile(allowedFileTypes: types)
 
                 // In test environment, this will likely return nil
                 if let url {
@@ -174,7 +180,7 @@
         }
 
         func testSaveFileWithEmptyContent() async {
-            let result = await client.saveFile(
+            let result = await clientUnwrapped.saveFile(
                 content: "",
                 suggestedFileName: "empty.txt",
                 allowedFileTypes: ["txt"]
@@ -196,7 +202,7 @@
         func testSaveFileWithLongContent() async {
             let longContent = String(repeating: "This is a test line with some content.\n", count: 1000)
 
-            let result = await client.saveFile(
+            let result = await clientUnwrapped.saveFile(
                 content: longContent,
                 suggestedFileName: "long_content.txt",
                 allowedFileTypes: ["txt"]
@@ -216,7 +222,7 @@
         }
 
         func testOpenFileWithEmptyAllowedTypes() async {
-            let url = await client.openFile(allowedFileTypes: [])
+            let url = await clientUnwrapped.openFile(allowedFileTypes: [])
 
             // Should handle empty allowed types gracefully
             XCTAssertNil(url, "Should return nil for empty allowed types")
@@ -230,7 +236,7 @@
 
         func testSaveFileInTestEnvironment() async {
             // In test environment, file operations will likely fail due to no UI context
-            let result = await client.saveFile(
+            let result = await clientUnwrapped.saveFile(
                 content: "Test content",
                 suggestedFileName: "test.txt",
                 allowedFileTypes: ["txt"]
@@ -252,7 +258,7 @@
         // MARK: - Convenience Accessor Tests
 
         func testConvenienceStaticAccessor() async {
-            let serviceClient = iOSFileServiceClient.live
+            let serviceClient = IOSFileServiceClientAccessor.live
 
             // Test that the convenience accessor works
             let result = await serviceClient.saveFile("Test", "convenience.txt", ["txt"])

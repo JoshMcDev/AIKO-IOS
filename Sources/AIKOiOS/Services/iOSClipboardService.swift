@@ -4,7 +4,7 @@
     import UIKit
 
     /// iOS implementation of ClipboardServiceProtocol
-    public final class iOSClipboardService: ClipboardServiceProtocol {
+    public final class IOSClipboardService: ClipboardServiceProtocol {
         public init() {}
 
         public func copyText(_ text: String) {

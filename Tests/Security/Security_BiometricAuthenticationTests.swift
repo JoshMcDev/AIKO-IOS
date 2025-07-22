@@ -47,10 +47,22 @@ final class BiometricAuthenticationTests: XCTestCase {
                 saveAPIKey: { _ in },
                 loadAPIKey: { "test-api-key" },
                 validateAPIKey: { _ in true },
-                exportData: { _ in URL(string: "file://test.json")! },
+                exportData: { _ in
+                    guard let url = URL(string: "file://test.json") else {
+                        XCTFail("Failed to create test export URL")
+                        return URL(fileURLWithPath: "/dev/null")
+                    }
+                    return url
+                },
                 importData: { _ in },
                 clearCache: {},
-                performBackup: { _ in URL(string: "file://backup.json")! }
+                performBackup: { _ in
+                    guard let url = URL(string: "file://backup.json") else {
+                        XCTFail("Failed to create test backup URL")
+                        return URL(fileURLWithPath: "/dev/null")
+                    }
+                    return url
+                }
             )
             $0.userProfileService = .testValue
             $0.acquisitionService = .testValue

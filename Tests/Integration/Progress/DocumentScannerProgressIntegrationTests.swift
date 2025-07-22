@@ -36,8 +36,11 @@ final class DocumentScannerProgressIntegrationTests: XCTestCase {
             XCTAssertGreaterThanOrEqual(receivedProgress.count, 3)
 
             // Verify progress sequence
-            let firstProgress = receivedProgress.first!
-            let lastProgress = receivedProgress.last!
+            guard let firstProgress = receivedProgress.first,
+                  let lastProgress = receivedProgress.last else {
+                XCTFail("Failed to get first or last progress")
+                return
+            }
 
             XCTAssertLessThanOrEqual(firstProgress.fractionCompleted, 0.1)
             XCTAssertEqual(lastProgress.fractionCompleted, 1.0, accuracy: 0.001)
@@ -272,7 +275,10 @@ final class DocumentScannerProgressIntegrationTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(receivedStates.count, 4)
 
         // Verify progress increases
-        let finalProgress = receivedStates.last!
+        guard let finalProgress = receivedStates.last else {
+            XCTFail("Failed to get final progress")
+            return
+        }
         XCTAssertEqual(finalProgress.fractionCompleted, 1.0, accuracy: 0.1)
         XCTAssertTrue(finalProgress.currentStep.contains("3 of 3"))
 
@@ -343,7 +349,10 @@ final class DocumentScannerProgressIntegrationTests: XCTestCase {
             XCTAssertTrue(phases.contains(.completing))
 
             // Verify final progress
-            let finalUpdate = receivedProgressUpdates.last!
+            guard let finalUpdate = receivedProgressUpdates.last else {
+                XCTFail("Failed to get final progress update")
+                return
+            }
             XCTAssertEqual(finalUpdate.fractionCompleted, 1.0, accuracy: 0.001)
             XCTAssertEqual(finalUpdate.phase, .completing)
 
@@ -481,7 +490,7 @@ final class DocumentScannerProgressIntegrationTests: XCTestCase {
     private func createTestImageData() -> Data {
         // Create a simple test image (1x1 black pixel)
         let colorSpace = CGColorSpaceCreateDeviceRGB()
-        let bitmapContext = CGContext(
+        guard let bitmapContext = CGContext(
             data: nil,
             width: 1,
             height: 1,
@@ -489,16 +498,26 @@ final class DocumentScannerProgressIntegrationTests: XCTestCase {
             bytesPerRow: 4,
             space: colorSpace,
             bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue
-        )!
+        ) else {
+            fatalError("Failed to create bitmap context")
+        }
 
-        let cgImage = bitmapContext.makeImage()!
+        guard let cgImage = bitmapContext.makeImage() else {
+            fatalError("Failed to create CGImage")
+        }
 
         #if os(iOS)
             let uiImage = UIImage(cgImage: cgImage)
-            return uiImage.pngData()!
+            guard let pngData = uiImage.pngData() else {
+                fatalError("Failed to create PNG data")
+            }
+            return pngData
         #else
             let nsImage = NSImage(cgImage: cgImage, size: NSSize(width: 1, height: 1))
-            return nsImage.tiffRepresentation!
+            guard let tiffData = nsImage.tiffRepresentation else {
+                fatalError("Failed to create TIFF data")
+            }
+            return tiffData
         #endif
     }
 

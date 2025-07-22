@@ -5,12 +5,22 @@ import ComposableArchitecture
 import XCTest
 
 final class AIDocumentGeneratorTests: XCTestCase {
-    var generator: AIDocumentGenerator!
-    var mockProvider: MockAIProvider!
+    var generator: AIDocumentGenerator?
+    var mockProviderUnwrapped: MockAIProvider?
+
+    private var generatorUnwrapped: AIDocumentGenerator {
+        guard let generator = generator else { fatalError("generator not initialized") }
+        return generator
+    }
+
+    private var mockProviderUnwrappedUnwrapped: MockAIProvider {
+        guard let mockProviderUnwrapped = mockProviderUnwrapped else { fatalError("mockProviderUnwrapped not initialized") }
+        return mockProviderUnwrapped
+    }
 
     override func setUp() {
         super.setUp()
-        mockProvider = MockAIProvider(responses: [
+        mockProviderUnwrapped = MockAIProvider(responses: [
             """
             # Test Document
 
@@ -29,7 +39,7 @@ final class AIDocumentGeneratorTests: XCTestCase {
 
     override func tearDown() {
         generator = nil
-        mockProvider = nil
+        mockProviderUnwrapped = nil
         super.tearDown()
     }
 
@@ -39,10 +49,10 @@ final class AIDocumentGeneratorTests: XCTestCase {
         let documentType = DocumentType.contractingOfficerOrder
 
         // Mock the AIProviderFactory to return our mock
-        AIProviderFactory.setTestProvider(mockProvider)
+        AIProviderFactory.setTestProvider(mockProviderUnwrapped)
 
         // When
-        let document = try await generator.generateDocument(
+        let document = try await generatorUnwrapped.generateDocument(
             requirements: requirements,
             type: documentType
         )
@@ -51,10 +61,10 @@ final class AIDocumentGeneratorTests: XCTestCase {
         XCTAssertEqual(document.documentCategory, documentType)
         XCTAssertEqual(document.title, "Test Project - Contracting Officer Order")
         XCTAssertTrue(document.content.contains("Test Document"))
-        XCTAssertEqual(mockProvider.callCount, 1)
+        XCTAssertEqual(mockProviderUnwrapped.callCount, 1)
 
         // Verify the request was properly formatted
-        let lastRequest = try XCTUnwrap(mockProvider.lastRequest)
+        let lastRequest = try XCTUnwrap(mockProviderUnwrapped.lastRequest)
         XCTAssertEqual(lastRequest.model, "claude-sonnet-4-20250514")
         XCTAssertTrue(lastRequest.systemPrompt?.contains("CONTRACTING OFFICER ORDER") == true)
     }
@@ -66,7 +76,7 @@ final class AIDocumentGeneratorTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try await generator.generateDocument(
+            _ = try await generatorUnwrapped.generateDocument(
                 requirements: requirements,
                 type: .contractingOfficerOrder
             )
@@ -86,7 +96,7 @@ final class AIDocumentGeneratorTests: XCTestCase {
 
         // When/Then
         do {
-            _ = try await generator.generateDocument(
+            _ = try await generatorUnwrapped.generateDocument(
                 requirements: requirements,
                 type: .contractingOfficerOrder
             )
@@ -106,13 +116,13 @@ final class AIDocumentGeneratorTests: XCTestCase {
             .statementOfWork,
         ]
 
-        mockProvider = MockAIProvider(responses: Array(repeating: "Test content", count: documentTypes.count))
-        AIProviderFactory.setTestProvider(mockProvider)
+        mockProviderUnwrapped = MockAIProvider(responses: Array(repeating: "Test content", count: documentTypes.count))
+        AIProviderFactory.setTestProvider(mockProviderUnwrapped)
 
         // When
         var documents: [GeneratedDocument] = []
         for type in documentTypes {
-            let document = try await generator.generateDocument(
+            let document = try await generatorUnwrapped.generateDocument(
                 requirements: requirements,
                 type: type
             )
@@ -121,7 +131,7 @@ final class AIDocumentGeneratorTests: XCTestCase {
 
         // Then
         XCTAssertEqual(documents.count, documentTypes.count)
-        XCTAssertEqual(mockProvider.callCount, documentTypes.count)
+        XCTAssertEqual(mockProviderUnwrapped.callCount, documentTypes.count)
 
         for (index, document) in documents.enumerated() {
             XCTAssertEqual(document.documentCategory, documentTypes[index])
@@ -134,10 +144,10 @@ final class AIDocumentGeneratorTests: XCTestCase {
         let requirements = TestDataGenerator.sampleRequirementsData()
         requirements.projectTitle = "Custom Project Title"
 
-        AIProviderFactory.setTestProvider(mockProvider)
+        AIProviderFactory.setTestProvider(mockProviderUnwrapped)
 
         // When
-        let document = try await generator.generateDocument(
+        let document = try await generatorUnwrapped.generateDocument(
             requirements: requirements,
             type: .independentGovernmentCostEstimate
         )
@@ -149,16 +159,16 @@ final class AIDocumentGeneratorTests: XCTestCase {
     func testRequirementsStringGeneration() async throws {
         // Given
         let requirements = TestDataGenerator.sampleRequirementsData()
-        AIProviderFactory.setTestProvider(mockProvider)
+        AIProviderFactory.setTestProvider(mockProviderUnwrapped)
 
         // When
-        _ = try await generator.generateDocument(
+        _ = try await generatorUnwrapped.generateDocument(
             requirements: requirements,
             type: .contractingOfficerOrder
         )
 
         // Then
-        let lastRequest = try XCTUnwrap(mockProvider.lastRequest)
+        let lastRequest = try XCTUnwrap(mockProviderUnwrapped.lastRequest)
         let userMessage = lastRequest.messages.first { $0.content.contains("Project Title") }
         XCTAssertNotNil(userMessage)
         XCTAssertTrue(userMessage?.content.contains("Test Project") == true)

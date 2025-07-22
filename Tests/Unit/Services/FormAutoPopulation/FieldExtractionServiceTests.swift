@@ -3,7 +3,12 @@ import XCTest
 
 /// Unit tests for FieldExtractionService covering field extraction accuracy and performance
 final class FieldExtractionServiceTests: XCTestCase {
-    var fieldExtractor: FieldExtractionService!
+    var fieldExtractor: FieldExtractionService?
+
+    private var fieldExtractorUnwrapped: FieldExtractionService {
+        guard let fieldExtractor = fieldExtractor else { fatalError("fieldExtractor not initialized") }
+        return fieldExtractor
+    }
 
     override func setUp() async throws {
         try await super.setUp()
@@ -23,7 +28,7 @@ final class FieldExtractionServiceTests: XCTestCase {
         let documentData = createMockSF30DocumentData()
 
         // When: Extracting fields
-        let extractedFields = try await fieldExtractor.extractFields(
+        let extractedFields = try await fieldExtractorUnwrapped.extractFields(
             from: documentData,
             formType: .sf30
         )
@@ -45,7 +50,7 @@ final class FieldExtractionServiceTests: XCTestCase {
         let documentData = createMockSF1449DocumentData()
 
         // When: Extracting fields
-        let extractedFields = try await fieldExtractor.extractFields(
+        let extractedFields = try await fieldExtractorUnwrapped.extractFields(
             from: documentData,
             formType: .sf1449
         )
@@ -67,7 +72,7 @@ final class FieldExtractionServiceTests: XCTestCase {
         let documentData = createMockDocumentWithVariedFormatting()
 
         // When: Extracting fields
-        let extractedFields = try await fieldExtractor.extractFields(
+        let extractedFields = try await fieldExtractorUnwrapped.extractFields(
             from: documentData,
             formType: .sf30
         )
@@ -98,15 +103,15 @@ final class FieldExtractionServiceTests: XCTestCase {
         let lowQualityDoc = createMockLowQualityDocument()
 
         // When: Extracting fields from each quality level
-        let highQualityFields = try await fieldExtractor.extractFields(
+        let highQualityFields = try await fieldExtractorUnwrapped.extractFields(
             from: highQualityDoc,
             formType: .sf30
         )
-        let mediumQualityFields = try await fieldExtractor.extractFields(
+        let mediumQualityFields = try await fieldExtractorUnwrapped.extractFields(
             from: mediumQualityDoc,
             formType: .sf30
         )
-        let lowQualityFields = try await fieldExtractor.extractFields(
+        let lowQualityFields = try await fieldExtractorUnwrapped.extractFields(
             from: lowQualityDoc,
             formType: .sf30
         )
@@ -133,7 +138,7 @@ final class FieldExtractionServiceTests: XCTestCase {
 
         // When: Extracting fields with timing
         let startTime = Date()
-        _ = try await fieldExtractor.extractFields(
+        _ = try await fieldExtractorUnwrapped.extractFields(
             from: documentData,
             formType: .sf30
         )
@@ -155,14 +160,14 @@ final class FieldExtractionServiceTests: XCTestCase {
 
         // When: Extracting fields from both
         let startTime1 = Date()
-        _ = try await fieldExtractor.extractFields(
+        _ = try await fieldExtractorUnwrapped.extractFields(
             from: singlePageDoc,
             formType: .sf30
         )
         let singlePageTime = Date().timeIntervalSince(startTime1)
 
         let startTime2 = Date()
-        _ = try await fieldExtractor.extractFields(
+        _ = try await fieldExtractorUnwrapped.extractFields(
             from: multiPageDoc,
             formType: .sf30
         )
@@ -185,7 +190,7 @@ final class FieldExtractionServiceTests: XCTestCase {
 
         // When: Attempting to extract fields
         do {
-            _ = try await fieldExtractor.extractFields(
+            _ = try await fieldExtractorUnwrapped.extractFields(
                 from: corruptedData,
                 formType: .sf30
             )
@@ -205,7 +210,7 @@ final class FieldExtractionServiceTests: XCTestCase {
 
         // When: Attempting to extract fields
         do {
-            let extractedFields = try await fieldExtractor.extractFields(
+            let extractedFields = try await fieldExtractorUnwrapped.extractFields(
                 from: emptyData,
                 formType: .sf30
             )
@@ -231,7 +236,7 @@ final class FieldExtractionServiceTests: XCTestCase {
         // When/Then: Should handle gracefully (implementation will determine behavior)
         // This test validates the error handling structure is in place
         do {
-            _ = try await fieldExtractor.extractFields(
+            _ = try await fieldExtractorUnwrapped.extractFields(
                 from: documentData,
                 formType: .sf30 // Using supported type for now
             )
@@ -248,7 +253,7 @@ final class FieldExtractionServiceTests: XCTestCase {
         let documentData = createMockDocumentWithDateFormats()
 
         // When: Extracting fields
-        let extractedFields = try await fieldExtractor.extractFields(
+        let extractedFields = try await fieldExtractorUnwrapped.extractFields(
             from: documentData,
             formType: .sf30
         )
@@ -281,7 +286,7 @@ final class FieldExtractionServiceTests: XCTestCase {
         let documentData = createMockDocumentWithCurrencyFormats()
 
         // When: Extracting fields
-        let extractedFields = try await fieldExtractor.extractFields(
+        let extractedFields = try await fieldExtractorUnwrapped.extractFields(
             from: documentData,
             formType: .sf1449
         )
@@ -312,92 +317,92 @@ final class FieldExtractionServiceTests: XCTestCase {
     // MARK: - Test Helper Methods
 
     private func createMockSF30DocumentData() -> Data {
-        return """
+        return Data("""
         STANDARD FORM 30
         Contract Number: N00421-25-C-0001
         Modification Number: P00001
         Effective Date: 2025-02-01
         Total Amount: $125,000.00
-        """.data(using: .utf8) ?? Data()
+        """.utf8)
     }
 
     private func createMockSF1449DocumentData() -> Data {
-        return """
+        return Data("""
         STANDARD FORM 1449
         Requisition Number: REQ-2025-001
         Contract Number: W56HZV-25-D-0001
         Vendor Name: ACME Corporation
         Vendor UEI: ABC123DEF456
         Total Amount: $75,500.00
-        """.data(using: .utf8) ?? Data()
+        """.utf8)
     }
 
     private func createMockDocumentWithVariedFormatting() -> Data {
-        return """
+        return Data("""
         Contract Information:
         **Contract Number:** N00421-25-C-0001
         *Total Amount:* $125,000.00
         VENDOR NAME: ACME CORPORATION
         vendor_uei: ABC123DEF456
-        """.data(using: .utf8) ?? Data()
+        """.utf8)
     }
 
     private func createMockHighQualityDocument() -> Data {
-        return """
+        return Data("""
         HIGH QUALITY DOCUMENT
         Contract Number: N00421-25-C-0001
         Total Amount: $125,000.00
         Vendor Name: ACME Corporation
         Effective Date: 2025-02-01
         Performance Location: Naval Base San Diego
-        """.data(using: .utf8) ?? Data()
+        """.utf8)
     }
 
     private func createMockMediumQualityDocument() -> Data {
-        return """
+        return Data("""
         MEDIUM QUALITY DOC
         Contract Num: N00421-25-C-0001
         Amount: $125,000
         Vendor: ACME Corp
         Date: 02/01/2025
-        """.data(using: .utf8) ?? Data()
+        """.utf8)
     }
 
     private func createMockLowQualityDocument() -> Data {
-        return """
+        return Data("""
         LOW QUAL DOC
         Contr: N00421
         Amt: 125000
-        """.data(using: .utf8) ?? Data()
+        """.utf8)
     }
 
     private func createMockSinglePageDocument() -> Data {
-        return "Single page document for performance testing".data(using: .utf8) ?? Data()
+        return Data("Single page document for performance testing".utf8)
     }
 
     private func createMockMultiPageDocument(pages: Int) -> Data {
         let pageContent = "Page content with Contract Number: N00421-25-C-0001\n"
         let multiPageContent = String(repeating: pageContent, count: pages)
-        return multiPageContent.data(using: .utf8) ?? Data()
+        return Data(multiPageContent.utf8)
     }
 
     private func createMockDocumentWithDateFormats() -> Data {
-        return """
+        return Data("""
         Various Date Formats:
         Effective Date: 2025-02-01
         Delivery Date: 02/01/2025
         Award Date: February 1, 2025
         Modified Date: 01-Feb-25
-        """.data(using: .utf8) ?? Data()
+        """.utf8)
     }
 
     private func createMockDocumentWithCurrencyFormats() -> Data {
-        return """
+        return Data("""
         Various Currency Formats:
         Total Amount: $125,000.00
         Line Item Amount: 1250.50
         Base Amount: $1,250
         Tax Amount: 125.00 USD
-        """.data(using: .utf8) ?? Data()
+        """.utf8)
     }
 }

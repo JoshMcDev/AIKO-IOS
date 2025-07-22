@@ -23,7 +23,9 @@ public struct UserProfileService: Sendable {
 
 extension UserProfileService: DependencyKey {
     public static var liveValue: UserProfileService {
-        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            fatalError("Unable to access documents directory")
+        }
         let profileURL = documentsDirectory.appendingPathComponent("userProfile.json")
 
         return UserProfileService(

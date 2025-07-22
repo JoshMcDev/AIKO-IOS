@@ -3,7 +3,7 @@
     import Foundation
 
     /// iOS implementation of text field service
-    public struct iOSTextFieldService: TextFieldServiceProtocol {
+    public struct IOSTextFieldService: TextFieldServiceProtocol {
         public init() {}
 
         public var supportsAutocapitalization: Bool { true }

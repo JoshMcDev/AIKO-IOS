@@ -6,20 +6,30 @@ import XCTest
 final class EnhancedOCREngineTests: XCTestCase {
     // MARK: - Properties
 
-    private var engine: EnhancedOCREngine!
-    private var testImageData: Data!
+    private var engine: EnhancedOCREngine?
+    private var testImageDataUnwrapped: Data?
+
+    private var engineUnwrapped: EnhancedOCREngine {
+        guard let engine = engine else { fatalError("engine not initialized") }
+        return engine
+    }
+
+    private var testImageDataUnwrappedUnwrapped: Data {
+        guard let testImageDataUnwrapped = testImageDataUnwrapped else { fatalError("testImageDataUnwrapped not initialized") }
+        return testImageDataUnwrapped
+    }
 
     // MARK: - Setup & Teardown
 
     override func setUp() async throws {
         try await super.setUp()
         engine = EnhancedOCREngine(confidenceThreshold: 0.8)
-        testImageData = createTestImageData()
+        testImageDataUnwrapped = createTestImageData()
     }
 
     override func tearDown() async throws {
         engine = nil
-        testImageData = nil
+        testImageDataUnwrapped = nil
         try await super.tearDown()
     }
 
@@ -30,7 +40,7 @@ final class EnhancedOCREngineTests: XCTestCase {
         let sf298ImageData = createTestImageData(formType: "SF-298")
 
         // WHEN: Processing the form
-        let result = try await engine.recognizeGovernmentForm(from: sf298ImageData)
+        let result = try await engineUnwrapped.recognizeGovernmentForm(from: sf298ImageData)
 
         // THEN: Should identify SF-298 form type
         XCTAssertEqual(result.formType, .sf298)
@@ -51,7 +61,7 @@ final class EnhancedOCREngineTests: XCTestCase {
         let sf1449ImageData = createTestImageData(formType: "SF-1449")
 
         // WHEN: Processing the form
-        let result = try await engine.recognizeGovernmentForm(from: sf1449ImageData)
+        let result = try await engineUnwrapped.recognizeGovernmentForm(from: sf1449ImageData)
 
         // THEN: Should identify SF-1449 form type
         XCTAssertEqual(result.formType, .sf1449)
@@ -71,7 +81,7 @@ final class EnhancedOCREngineTests: XCTestCase {
         let dd254ImageData = createTestImageData(formType: "DD-254")
 
         // WHEN: Processing the form
-        let result = try await engine.recognizeGovernmentForm(from: dd254ImageData)
+        let result = try await engineUnwrapped.recognizeGovernmentForm(from: dd254ImageData)
 
         // THEN: Should identify DD-254 form type
         XCTAssertEqual(result.formType, .dd254)
@@ -88,7 +98,7 @@ final class EnhancedOCREngineTests: XCTestCase {
         let unknownImageData = createTestImageData(formType: "unknown")
 
         // WHEN: Processing the form
-        let result = try await engine.recognizeGovernmentForm(from: unknownImageData)
+        let result = try await engineUnwrapped.recognizeGovernmentForm(from: unknownImageData)
 
         // THEN: Should classify as unknown but still extract text
         XCTAssertEqual(result.formType, .unknown)
@@ -104,7 +114,7 @@ final class EnhancedOCREngineTests: XCTestCase {
 
         // WHEN/THEN: Should throw unsupported format error
         do {
-            _ = try await engine.recognizeGovernmentForm(from: invalidData)
+            _ = try await engineUnwrapped.recognizeGovernmentForm(from: invalidData)
             XCTFail("Expected error to be thrown")
         } catch {
             guard let ocrError = error as? OCRError else {
@@ -122,7 +132,7 @@ final class EnhancedOCREngineTests: XCTestCase {
         let highQualityFields = createTestGovernmentFormFields(confidence: 0.95)
 
         // WHEN: Calculating confidence score
-        let confidenceScore = await engine.calculateConfidenceScore(for: highQualityFields)
+        let confidenceScore = await engineUnwrapped.calculateConfidenceScore(for: highQualityFields)
 
         // THEN: Should return high confidence
         XCTAssertGreaterThan(confidenceScore, 0.9, "High-quality fields should yield high confidence")
@@ -134,7 +144,7 @@ final class EnhancedOCREngineTests: XCTestCase {
         let lowQualityFields = createTestGovernmentFormFields(confidence: 0.4)
 
         // WHEN: Calculating confidence score
-        let confidenceScore = await engine.calculateConfidenceScore(for: lowQualityFields)
+        let confidenceScore = await engineUnwrapped.calculateConfidenceScore(for: lowQualityFields)
 
         // THEN: Should return low confidence
         XCTAssertLessThan(confidenceScore, 0.6, "Low-quality fields should yield low confidence")
@@ -146,7 +156,7 @@ final class EnhancedOCREngineTests: XCTestCase {
         let emptyFields: [EnhancedOCREngine.GovernmentFormField] = []
 
         // WHEN: Calculating confidence score
-        let confidenceScore = await engine.calculateConfidenceScore(for: emptyFields)
+        let confidenceScore = await engineUnwrapped.calculateConfidenceScore(for: emptyFields)
 
         // THEN: Should return zero confidence
         XCTAssertEqual(confidenceScore, 0.0, "Empty fields should yield zero confidence")
@@ -161,7 +171,7 @@ final class EnhancedOCREngineTests: XCTestCase {
         ]
 
         // WHEN: Calculating confidence score
-        let confidenceScore = await engine.calculateConfidenceScore(for: mixedFields)
+        let confidenceScore = await engineUnwrapped.calculateConfidenceScore(for: mixedFields)
 
         // THEN: Should return weighted average
         let expectedAverage = (0.9 + 0.5 + 0.8) / 3.0
@@ -176,7 +186,7 @@ final class EnhancedOCREngineTests: XCTestCase {
         let ocrResult = createTestOCRResult(formType: .sf298)
 
         // WHEN: Mapping fields to government form
-        let mappedFields = try await engine.mapFieldsToGovernmentForm(
+        let mappedFields = try await engineUnwrapped.mapFieldsToGovernmentForm(
             ocrResult: ocrResult,
             formType: .sf298
         )
@@ -203,7 +213,7 @@ final class EnhancedOCREngineTests: XCTestCase {
         let ocrResult = createTestOCRResult(formType: .sf1449)
 
         // WHEN: Mapping fields to government form
-        let mappedFields = try await engine.mapFieldsToGovernmentForm(
+        let mappedFields = try await engineUnwrapped.mapFieldsToGovernmentForm(
             ocrResult: ocrResult,
             formType: .sf1449
         )
@@ -226,7 +236,7 @@ final class EnhancedOCREngineTests: XCTestCase {
         let ocrResult = createTestOCRResultWithBoundingBoxes()
 
         // WHEN: Mapping fields
-        let mappedFields = try await engine.mapFieldsToGovernmentForm(
+        let mappedFields = try await engineUnwrapped.mapFieldsToGovernmentForm(
             ocrResult: ocrResult,
             formType: .sf298
         )
@@ -244,7 +254,7 @@ final class EnhancedOCREngineTests: XCTestCase {
         let ocrResult = createTestOCRResult(formType: .unknown)
 
         // WHEN: Mapping fields to unknown form type
-        let mappedFields = try await engine.mapFieldsToGovernmentForm(
+        let mappedFields = try await engineUnwrapped.mapFieldsToGovernmentForm(
             ocrResult: ocrResult,
             formType: .unknown
         )
@@ -264,9 +274,9 @@ final class EnhancedOCREngineTests: XCTestCase {
         // WHEN: Processing forms concurrently
         let startTime = Date()
 
-        async let result1 = engine.recognizeGovernmentForm(from: form1Data)
-        async let result2 = engine.recognizeGovernmentForm(from: form2Data)
-        async let result3 = engine.recognizeGovernmentForm(from: form3Data)
+        async let result1 = engineUnwrapped.recognizeGovernmentForm(from: form1Data)
+        async let result2 = engineUnwrapped.recognizeGovernmentForm(from: form2Data)
+        async let result3 = engineUnwrapped.recognizeGovernmentForm(from: form3Data)
 
         let results = try await [result1, result2, result3]
         let processingTime = Date().timeIntervalSince(startTime)
@@ -286,7 +296,7 @@ final class EnhancedOCREngineTests: XCTestCase {
 
     private func createTestImageData(formType: String = "generic") -> Data {
         // Create minimal test image data
-        return "test-image-data-\(formType)".data(using: .utf8) ?? Data()
+        return Data("test-image-data-\(formType)".utf8)
     }
 
     private func createTestGovernmentFormFields(confidence: Double) -> [EnhancedOCREngine.GovernmentFormField] {

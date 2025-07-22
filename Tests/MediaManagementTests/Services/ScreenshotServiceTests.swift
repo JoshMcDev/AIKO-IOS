@@ -232,8 +232,17 @@ final class ScreenshotServiceTests: XCTestCase {
         UIColor.systemBlue.setFill()
         UIRectFill(CGRect(x: 100, y: 100, width: 200, height: 200))
 
-        let image = UIGraphicsGetImageFromCurrentImageContext()!
-        return image.pngData()!
+        guard let image = UIGraphicsGetImageFromCurrentImageContext() else {
+            XCTFail("Failed to create test image from graphics context")
+            return Data()
+        }
+
+        guard let pngData = image.pngData() else {
+            XCTFail("Failed to convert test image to PNG data")
+            return Data()
+        }
+
+        return pngData
     }
 
     private func createTestPath() -> UIBezierPath {

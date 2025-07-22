@@ -4,12 +4,16 @@
     import SwiftUI
     import XCTest
 
-    final class iOSAccessibilityServiceClientTests: XCTestCase {
-        var client: iOSAccessibilityServiceClient!
+    final class IOSAccessibilityServiceClientTests: XCTestCase {
+        var client: IOSAccessibilityServiceClient?
 
+        private var clientUnwrapped: IOSAccessibilityServiceClient {
+            guard let client = client else { fatalError("client not initialized") }
+            return client
+        }
         override func setUp() async throws {
             try await super.setUp()
-            client = iOSAccessibilityServiceClient()
+            client = IOSAccessibilityServiceClient()
         }
 
         override func tearDown() async throws {
@@ -26,7 +30,7 @@
             }
 
             // Test that announceNotification executes on MainActor
-            await client.announceNotification("Test message", priority: .medium)
+            await clientUnwrapped.announceNotification("Test message", priority: .medium)
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After announceNotification, should still be on main thread")
@@ -34,7 +38,7 @@
         }
 
         func testSupportsAccessibilityNotificationsMainActor() async {
-            let supports = await client.supportsAccessibilityNotifications()
+            let supports = await clientUnwrapped.supportsAccessibilityNotifications()
 
             // The result type doesn't matter, we're testing MainActor context
             XCTAssertTrue(supports == true || supports == false, "Should return a boolean value")
@@ -45,7 +49,7 @@
         }
 
         func testNotifyVoiceOverStatusChangeMainActor() async {
-            await client.notifyVoiceOverStatusChange()
+            await clientUnwrapped.notifyVoiceOverStatusChange()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After notifyVoiceOverStatusChange, should be on main thread")
@@ -53,7 +57,7 @@
         }
 
         func testVoiceOverStatusChangeNotificationNameMainActor() async {
-            let notificationName = await client.voiceOverStatusChangeNotificationName()
+            let notificationName = await clientUnwrapped.voiceOverStatusChangeNotificationName()
 
             // The result might be nil, that's fine
             XCTAssertTrue(notificationName != nil || notificationName == nil, "Should return optional Notification.Name")
@@ -64,7 +68,7 @@
         }
 
         func testHasVoiceOverStatusNotificationsMainActor() async {
-            let hasNotifications = await client.hasVoiceOverStatusNotifications()
+            let hasNotifications = await clientUnwrapped.hasVoiceOverStatusNotifications()
 
             XCTAssertTrue(hasNotifications == true || hasNotifications == false, "Should return a boolean value")
 
@@ -82,7 +86,7 @@
 
         func testTemplateStartMethod() async throws {
             // Test that the template's start method can be called without error
-            try await client.start()
+            try await clientUnwrapped.start()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After start(), should be on main thread")
@@ -105,8 +109,8 @@
 
         func testAsyncAwaitPattern() async {
             // Test the async/await pattern works correctly
-            async let supportsTask = client.supportsAccessibilityNotifications()
-            async let hasNotificationsTask = client.hasVoiceOverStatusNotifications()
+            async let supportsTask = clientUnwrapped.supportsAccessibilityNotifications()
+            async let hasNotificationsTask = clientUnwrapped.hasVoiceOverStatusNotifications()
 
             let (supports, hasNotifications) = await (supportsTask, hasNotificationsTask)
 

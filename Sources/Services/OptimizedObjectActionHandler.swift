@@ -215,7 +215,9 @@ private func identifyObjectTypeOptimized(_ object: Any) async throws -> ObjectTy
     case is WorkflowState:
         return .workflow
     case is String:
-        let content = object as! String
+        guard let content = object as? String else {
+            return .dataField
+        }
         if content.contains("requirement") {
             return .requirement
         } else if content.contains("query") || content.contains("?") {
@@ -392,7 +394,7 @@ private func executeActionOptimized(_ action: ObjectAction, resources: ResourceA
         return try await handleOptimizeActionOptimized(action, resources: resources)
     default:
         // Handle other action types
-        let data = "Executed \(action.type) on \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
+        let data = Data("Executed \(action.type) on \(action.objectType) with ID: \(action.objectId)".utf8)
         return ActionOutput(type: .json, data: data, metadata: ["executed": "true"])
     }
 }
@@ -400,27 +402,27 @@ private func executeActionOptimized(_ action: ObjectAction, resources: ResourceA
 // MARK: - Optimized Action Handlers
 
 private func handleCreateActionOptimized(_ action: ObjectAction, resources _: ResourceAllocation) async throws -> ActionOutput {
-    let data = "Created \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
+    let data = Data("Created \(action.objectType) with ID: \(action.objectId)".utf8)
     return ActionOutput(type: .json, data: data, metadata: ["created": "true"])
 }
 
 private func handleReadActionOptimized(_ action: ObjectAction, resources _: ResourceAllocation) async throws -> ActionOutput {
-    let data = "Read \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
+    let data = Data("Read \(action.objectType) with ID: \(action.objectId)".utf8)
     return ActionOutput(type: .json, data: data)
 }
 
 private func handleUpdateActionOptimized(_ action: ObjectAction, resources _: ResourceAllocation) async throws -> ActionOutput {
-    let data = "Updated \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
+    let data = Data("Updated \(action.objectType) with ID: \(action.objectId)".utf8)
     return ActionOutput(type: .json, data: data)
 }
 
 private func handleDeleteActionOptimized(_ action: ObjectAction, resources _: ResourceAllocation) async throws -> ActionOutput {
-    let data = "Deleted \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
+    let data = Data("Deleted \(action.objectType) with ID: \(action.objectId)".utf8)
     return ActionOutput(type: .json, data: data)
 }
 
 private func handleGenerateActionOptimized(_ action: ObjectAction, resources _: ResourceAllocation) async throws -> ActionOutput {
-    let generated = "Generated content for \(action.objectType)".data(using: .utf8)!
+    let generated = Data("Generated content for \(action.objectType)".utf8)
     return ActionOutput(type: .document, data: generated, metadata: ["generated": "true"])
 }
 
@@ -435,22 +437,22 @@ private func handleAnalyzeActionOptimized(_ action: ObjectAction, resources _: R
 }
 
 private func handleValidateActionOptimized(_ action: ObjectAction, resources _: ResourceAllocation) async throws -> ActionOutput {
-    let data = "Validated \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
+    let data = Data("Validated \(action.objectType) with ID: \(action.objectId)".utf8)
     return ActionOutput(type: .json, data: data)
 }
 
 private func handleExecuteActionOptimized(_ action: ObjectAction, resources _: ResourceAllocation) async throws -> ActionOutput {
-    let data = "Executed \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
+    let data = Data("Executed \(action.objectType) with ID: \(action.objectId)".utf8)
     return ActionOutput(type: .json, data: data)
 }
 
 private func handleLearnActionOptimized(_ action: ObjectAction, resources _: ResourceAllocation) async throws -> ActionOutput {
-    let data = "Learning from \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
+    let data = Data("Learning from \(action.objectType) with ID: \(action.objectId)".utf8)
     return ActionOutput(type: .json, data: data)
 }
 
 private func handleOptimizeActionOptimized(_ action: ObjectAction, resources _: ResourceAllocation) async throws -> ActionOutput {
-    let data = "Optimized \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
+    let data = Data("Optimized \(action.objectType) with ID: \(action.objectId)".utf8)
     return ActionOutput(type: .json, data: data)
 }
 
@@ -468,10 +470,8 @@ private func validateActionOptimized(_ action: ObjectAction) async throws -> Obj
 
     // Validate required parameters
     let requiredParams = ParameterRequirements.get(actionType: action.type)
-    for param in requiredParams {
-        if action.parameters[param] == nil {
-            errors.append("Missing required parameter: '\(param)'")
-        }
+    for param in requiredParams where action.parameters[param] == nil {
+        errors.append("Missing required parameter: '\(param)'")
     }
 
     // Validate capabilities

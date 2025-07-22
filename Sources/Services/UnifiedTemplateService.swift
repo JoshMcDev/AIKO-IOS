@@ -310,8 +310,7 @@ actor UnifiedTemplateStorage {
     func loadTemplate(identifier: TemplateIdentifier) async throws -> DocumentTemplate {
         // Check cache first
         if let cached = templateCache[identifier.id],
-           Date().timeIntervalSince(cached.cachedAt) < cacheExpiration
-        {
+           Date().timeIntervalSince(cached.cachedAt) < cacheExpiration {
             return cached.template
         }
 
@@ -546,7 +545,7 @@ actor UnifiedTemplateStorage {
             averageGenerationTime: metadata.averageGenerationTime,
             successRate: metadata.successRate,
             popularFields: Array(metadata.popularFields.keys.sorted {
-                metadata.popularFields[$0]! > metadata.popularFields[$1]!
+                (metadata.popularFields[$0] ?? 0) > (metadata.popularFields[$1] ?? 0)
             }.prefix(5))
         )
     }

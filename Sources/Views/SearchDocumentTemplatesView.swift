@@ -576,7 +576,7 @@ struct UploadTemplateView: View {
                 }
 
                 Section("Upload Document") {
-                    if let _ = uploadedDocument {
+                    if uploadedDocument != nil {
                         HStack {
                             Image(systemName: "doc.fill")
                                 .foregroundColor(.blue)

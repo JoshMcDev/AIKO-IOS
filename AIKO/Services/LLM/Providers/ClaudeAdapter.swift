@@ -45,7 +45,9 @@ final class ClaudeAdapter: LLMProviderAdapter {
             options: mergedOptions
         )
 
-        let url = URL(string: "\(getBaseURL())/v1/messages")!
+        guard let url = URL(string: "\(getBaseURL())/v1/messages") else {
+            throw LLMError.invalidResponse("Invalid API URL configuration")
+        }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.httpBody = try encoder.encode(requestBody)
@@ -96,7 +98,9 @@ final class ClaudeAdapter: LLMProviderAdapter {
                     )
                     requestBody.stream = true
 
-                    let url = URL(string: "\(getBaseURL())/v1/messages")!
+                    guard let url = URL(string: "\(getBaseURL())/v1/messages") else {
+                        throw LLMError.invalidResponse("Invalid API URL configuration")
+                    }
                     var request = URLRequest(url: url)
                     request.httpMethod = "POST"
                     request.httpBody = try encoder.encode(requestBody)

@@ -4,7 +4,7 @@ import XCTest
 
 @available(iOS 16.0, *)
 final class CameraServiceTests: XCTestCase {
-    var sut: CameraService!
+    var sut: CameraService?
 
     override func setUp() async throws {
         try await super.setUp()

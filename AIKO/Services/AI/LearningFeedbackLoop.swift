@@ -169,8 +169,7 @@ final class LearningFeedbackLoop: ObservableObject {
     private func loadHistoricalMetrics() {
         // Load from UserDefaults or Core Data
         if let data = UserDefaults.standard.data(forKey: "LearningMetrics"),
-           let metrics = try? JSONDecoder().decode(LearningMetrics.self, from: data)
-        {
+           let metrics = try? JSONDecoder().decode(LearningMetrics.self, from: data) {
             learningMetrics = metrics
         }
     }
@@ -321,12 +320,10 @@ final class LearningFeedbackLoop: ObservableObject {
         var totalPairs = 0
 
         for i in 0 ..< feedback.count - 1 {
-            for j in i + 1 ..< feedback.count {
-                if feedback[i].targetPatternId == feedback[j].targetPatternId {
-                    totalPairs += 1
-                    if feedback[i].impact == feedback[j].impact {
-                        consistentPairs += 1
-                    }
+            for j in i + 1 ..< feedback.count where feedback[i].targetPatternId == feedback[j].targetPatternId {
+                totalPairs += 1
+                if feedback[i].impact == feedback[j].impact {
+                    consistentPairs += 1
                 }
             }
         }

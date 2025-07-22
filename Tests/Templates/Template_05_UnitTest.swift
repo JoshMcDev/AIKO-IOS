@@ -13,7 +13,12 @@ import XCTest
 final class FeatureNameTests: XCTestCase {
     // MARK: - Properties
 
-    var store: TestStore<FeatureName.State, FeatureName.Action>!
+    var store: TestStore<FeatureName.State, FeatureName.Action>?
+
+    private var storeUnwrapped: TestStore<FeatureName.State, FeatureName.Action> {
+        guard let store = store else { fatalError("store not initialized") }
+        return store
+    }
 
     // MARK: - Setup
 
@@ -37,7 +42,7 @@ final class FeatureNameTests: XCTestCase {
         let expectedState = FeatureName.State()
 
         // Then
-        XCTAssertEqual(store.state, expectedState)
+        XCTAssertEqual(storeUnwrapped.state, expectedState)
     }
 
     func test_actionName_withCondition_producesExpectedResult() async {
@@ -45,13 +50,13 @@ final class FeatureNameTests: XCTestCase {
         let input = "test input"
 
         // When
-        await store.send(.someAction(input)) {
+        await storeUnwrapped.send(.someAction(input)) {
             // Then - Update expected state
             $0.property = "expected value"
         }
 
         // Additional assertions
-        await store.finish()
+        await storeUnwrapped.finish()
     }
 
     // MARK: - Edge Cases

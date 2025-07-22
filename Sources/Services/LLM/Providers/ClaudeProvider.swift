@@ -128,7 +128,10 @@ public final class ClaudeProvider: LLMProviderProtocol, @unchecked Sendable {
         }
 
         // Make API request
-        var urlRequest = URLRequest(url: URL(string: "\(baseURL)/messages")!)
+        guard let url = URL(string: "\(baseURL)/messages") else {
+            throw LLMProviderError.networkError("Invalid URL")
+        }
+        var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         urlRequest.setValue(config.apiKey, forHTTPHeaderField: "x-api-key")
@@ -210,7 +213,10 @@ public final class ClaudeProvider: LLMProviderProtocol, @unchecked Sendable {
                     }
 
                     // Make streaming request
-                    var urlRequest = URLRequest(url: URL(string: "\(baseURL)/messages")!)
+                    guard let url = URL(string: "\(baseURL)/messages") else {
+                        throw LLMProviderError.networkError("Invalid URL")
+                    }
+                    var urlRequest = URLRequest(url: url)
                     urlRequest.httpMethod = "POST"
                     urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
                     urlRequest.setValue(config.apiKey, forHTTPHeaderField: "x-api-key")
@@ -226,8 +232,7 @@ public final class ClaudeProvider: LLMProviderProtocol, @unchecked Sendable {
                     }
 
                     // Process SSE stream
-                    for try await line in bytes.lines {
-                        if line.hasPrefix("data: ") {
+                    for try await line in bytes.lines where line.hasPrefix("data: ") {
                             let jsonString = String(line.dropFirst(6))
                             if jsonString == "[DONE]" {
                                 continuation.finish()
@@ -236,12 +241,10 @@ public final class ClaudeProvider: LLMProviderProtocol, @unchecked Sendable {
 
                             if let data = jsonString.data(using: .utf8),
                                let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                               let type = json["type"] as? String
-                            {
+                               let type = json["type"] as? String {
                                 if type == "content_block_delta",
                                    let delta = json["delta"] as? [String: Any],
-                                   let text = delta["text"] as? String
-                                {
+                                   let text = delta["text"] as? String {
                                     continuation.yield(LLMStreamChunk(delta: text))
                                 } else if type == "message_stop" {
                                     continuation.yield(LLMStreamChunk(delta: "", finishReason: .stop))

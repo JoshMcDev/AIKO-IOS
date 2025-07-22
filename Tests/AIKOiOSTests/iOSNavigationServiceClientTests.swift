@@ -4,12 +4,16 @@
     import SwiftUI
     import XCTest
 
-    final class iOSNavigationServiceClientTests: XCTestCase {
-        var client: iOSNavigationServiceClient!
+    final class IOSNavigationServiceClientTests: XCTestCase {
+        var client: IOSNavigationServiceClient?
 
+        private var clientUnwrapped: IOSNavigationServiceClient {
+            guard let client = client else { fatalError("client not initialized") }
+            return client
+        }
         override func setUp() async throws {
             try await super.setUp()
-            client = iOSNavigationServiceClient()
+            client = IOSNavigationServiceClient()
         }
 
         override func tearDown() async throws {
@@ -26,7 +30,7 @@
             }
 
             // Test that supportsNavigationStack executes on MainActor
-            let supports = await client.supportsNavigationStack()
+            let supports = await clientUnwrapped.supportsNavigationStack()
             XCTAssertTrue(supports == true || supports == false, "Should return a boolean value")
 
             await MainActor.run {
@@ -35,7 +39,7 @@
         }
 
         func testDefaultNavigationStyleMainActor() async {
-            let style = await client.defaultNavigationStyle()
+            let style = await clientUnwrapped.defaultNavigationStyle()
 
             // Should return a valid NavigationStyle
             let validStyles: [NavigationStyle] = [.stack, .tab, .page]
@@ -47,7 +51,7 @@
         }
 
         func testSupportsNavigationBarDisplayModeMainActor() async {
-            let supports = await client.supportsNavigationBarDisplayMode()
+            let supports = await clientUnwrapped.supportsNavigationBarDisplayMode()
 
             // The result type doesn't matter, we're testing MainActor context
             XCTAssertTrue(supports == true || supports == false, "Should return a boolean value")
@@ -66,7 +70,7 @@
 
         func testTemplateStartMethod() async throws {
             // Test that the template's start method can be called without error
-            try await client.start()
+            try await clientUnwrapped.start()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After start(), should be on main thread")
@@ -89,9 +93,9 @@
 
         func testAsyncAwaitPattern() async {
             // Test the async/await pattern works correctly
-            async let supportsStackTask = client.supportsNavigationStack()
-            async let defaultStyleTask = client.defaultNavigationStyle()
-            async let supportsDisplayModeTask = client.supportsNavigationBarDisplayMode()
+            async let supportsStackTask = clientUnwrapped.supportsNavigationStack()
+            async let defaultStyleTask = clientUnwrapped.defaultNavigationStyle()
+            async let supportsDisplayModeTask = clientUnwrapped.supportsNavigationBarDisplayMode()
 
             let (supportsStack, defaultStyle, supportsDisplayMode) = await (supportsStackTask, defaultStyleTask, supportsDisplayModeTask)
 
@@ -108,7 +112,7 @@
         // MARK: - Navigation Feature Tests
 
         func testNavigationStackSupport() async {
-            let supports = await client.supportsNavigationStack()
+            let supports = await clientUnwrapped.supportsNavigationStack()
 
             // On iOS 16+, should support navigation stack
             if #available(iOS 16.0, *) {
@@ -119,15 +123,15 @@
         }
 
         func testDefaultNavigationStyleConsistency() async {
-            let style1 = await client.defaultNavigationStyle()
-            let style2 = await client.defaultNavigationStyle()
+            let style1 = await clientUnwrapped.defaultNavigationStyle()
+            let style2 = await clientUnwrapped.defaultNavigationStyle()
 
             // Default style should be consistent across calls
             XCTAssertEqual(style1, style2, "Default navigation style should be consistent")
         }
 
         func testNavigationBarDisplayModeSupport() async {
-            let supports = await client.supportsNavigationBarDisplayMode()
+            let supports = await clientUnwrapped.supportsNavigationBarDisplayMode()
 
             // iOS should generally support navigation bar display mode
             XCTAssertTrue(supports, "iOS should support navigation bar display mode")
@@ -136,7 +140,7 @@
         // MARK: - Convenience Accessor Tests
 
         func testConvenienceStaticAccessor() async {
-            let serviceClient = iOSNavigationServiceClient.live
+            let serviceClient = IOSNavigationServiceClient.live
 
             // Test that the convenience accessor works
             let supports = await serviceClient.supportsNavigationStack()

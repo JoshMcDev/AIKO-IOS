@@ -7,8 +7,17 @@
     public final class MacOSScreenService: ScreenServiceProtocol {
         public init() {}
 
-        public var mainScreenBounds: CGRect {
-            NSScreen.main?.frame ?? CGRect(x: 0, y: 0, width: 1920, height: 1080)
+        public var mainScreenBounds: AppCore.CGRect {
+            if let frame = NSScreen.main?.frame {
+                return AppCore.CGRect(
+                    x: Double(frame.origin.x),
+                    y: Double(frame.origin.y),
+                    width: Double(frame.size.width),
+                    height: Double(frame.size.height)
+                )
+            } else {
+                return AppCore.CGRect(x: 0.0, y: 0.0, width: 1920.0, height: 1080.0)
+            }
         }
 
         public var mainScreenWidth: CGFloat {
@@ -27,4 +36,5 @@
             // macOS is never compact
             false
         }
-    }#endif
+    }
+#endif

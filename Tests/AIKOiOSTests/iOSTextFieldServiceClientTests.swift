@@ -4,12 +4,16 @@
     import SwiftUI
     import XCTest
 
-    final class iOSTextFieldServiceClientTests: XCTestCase {
-        var client: iOSTextFieldServiceClient!
+    final class IOSTextFieldServiceClientTests: XCTestCase {
+        var client: IOSTextFieldServiceClient?
 
+        private var clientUnwrapped: IOSTextFieldServiceClient {
+            guard let client = client else { fatalError("client not initialized") }
+            return client
+        }
         override func setUp() async throws {
             try await super.setUp()
-            client = iOSTextFieldServiceClient()
+            client = IOSTextFieldServiceClient()
         }
 
         override func tearDown() async throws {
@@ -26,7 +30,7 @@
             }
 
             // Test that supportsAutocapitalization executes on MainActor
-            let supportsAutocap = await client.supportsAutocapitalization()
+            let supportsAutocap = await clientUnwrapped.supportsAutocapitalization()
             XCTAssertTrue(supportsAutocap, "iOS should support autocapitalization")
 
             await MainActor.run {
@@ -35,7 +39,7 @@
         }
 
         func testSupportsAutocapitalizationMainActor() async {
-            let supports = await client.supportsAutocapitalization()
+            let supports = await clientUnwrapped.supportsAutocapitalization()
             XCTAssertTrue(supports, "iOS should support autocapitalization")
 
             await MainActor.run {
@@ -44,7 +48,7 @@
         }
 
         func testSupportsKeyboardTypesMainActor() async {
-            let supports = await client.supportsKeyboardTypes()
+            let supports = await clientUnwrapped.supportsKeyboardTypes()
             XCTAssertTrue(supports, "iOS should support keyboard types")
 
             await MainActor.run {
@@ -61,7 +65,7 @@
 
         func testTemplateStartMethod() async throws {
             // Test that the template's start method can be called without error
-            try await client.start()
+            try await clientUnwrapped.start()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After start(), should be on main thread")
@@ -87,8 +91,8 @@
 
         func testAsyncAwaitPattern() async {
             // Test the async/await pattern works correctly
-            async let autocapTask = client.supportsAutocapitalization()
-            async let keyboardTypesTask = client.supportsKeyboardTypes()
+            async let autocapTask = clientUnwrapped.supportsAutocapitalization()
+            async let keyboardTypesTask = clientUnwrapped.supportsKeyboardTypes()
 
             let (supportsAutocap, supportsKeyboardTypes) = await (autocapTask, keyboardTypesTask)
 
@@ -103,21 +107,21 @@
         // MARK: - Text Field Capability Tests
 
         func testAutocapitalizationSupport() async {
-            let supports = await client.supportsAutocapitalization()
+            let supports = await clientUnwrapped.supportsAutocapitalization()
             XCTAssertTrue(supports, "iOS platform should support autocapitalization")
         }
 
         func testKeyboardTypesSupport() async {
-            let supports = await client.supportsKeyboardTypes()
+            let supports = await clientUnwrapped.supportsKeyboardTypes()
             XCTAssertTrue(supports, "iOS platform should support different keyboard types")
         }
 
         func testMultipleCapabilityChecks() async {
             // Test multiple calls return consistent results
-            let autocap1 = await client.supportsAutocapitalization()
-            let keyboardTypes1 = await client.supportsKeyboardTypes()
-            let autocap2 = await client.supportsAutocapitalization()
-            let keyboardTypes2 = await client.supportsKeyboardTypes()
+            let autocap1 = await clientUnwrapped.supportsAutocapitalization()
+            let keyboardTypes1 = await clientUnwrapped.supportsKeyboardTypes()
+            let autocap2 = await clientUnwrapped.supportsAutocapitalization()
+            let keyboardTypes2 = await clientUnwrapped.supportsKeyboardTypes()
 
             XCTAssertEqual(autocap1, autocap2, "Multiple autocapitalization checks should be consistent")
             XCTAssertEqual(keyboardTypes1, keyboardTypes2, "Multiple keyboard types checks should be consistent")
@@ -131,10 +135,10 @@
 
         func testConcurrentCapabilityChecks() async {
             // Test concurrent calls to the same methods
-            async let autocap1 = client.supportsAutocapitalization()
-            async let autocap2 = client.supportsAutocapitalization()
-            async let keyboardTypes1 = client.supportsKeyboardTypes()
-            async let keyboardTypes2 = client.supportsKeyboardTypes()
+            async let autocap1 = clientUnwrapped.supportsAutocapitalization()
+            async let autocap2 = clientUnwrapped.supportsAutocapitalization()
+            async let keyboardTypes1 = clientUnwrapped.supportsKeyboardTypes()
+            async let keyboardTypes2 = clientUnwrapped.supportsKeyboardTypes()
 
             let (a1, a2, k1, k2) = await (autocap1, autocap2, keyboardTypes1, keyboardTypes2)
 
@@ -155,8 +159,8 @@
             let startTime = CFAbsoluteTimeGetCurrent()
 
             for _ in 0 ..< iterations {
-                _ = await client.supportsAutocapitalization()
-                _ = await client.supportsKeyboardTypes()
+                _ = await clientUnwrapped.supportsAutocapitalization()
+                _ = await clientUnwrapped.supportsKeyboardTypes()
             }
 
             let timeElapsed = CFAbsoluteTimeGetCurrent() - startTime
@@ -172,7 +176,7 @@
         // MARK: - Convenience Accessor Tests
 
         func testConvenienceStaticAccessor() async {
-            let serviceClient = iOSTextFieldServiceClient.live
+            let serviceClient = IOSTextFieldServiceClient.live
 
             // Test that the convenience accessor works
             let supportsAutocap = await serviceClient.supportsAutocapitalization()

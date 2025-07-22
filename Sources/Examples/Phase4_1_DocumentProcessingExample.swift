@@ -11,7 +11,7 @@ import Foundation
     /// Demonstrates the enhanced document scanning and processing capabilities
     /// introduced in Phase 4.1, including advanced image processing modes,
     /// progress reporting, and quality metrics.
-    public enum Phase4_1_DocumentProcessingExample {
+    public enum Phase41DocumentProcessingExample {
         // MARK: - Example Usage
 
         /// Demonstrates basic vs enhanced processing modes
@@ -20,7 +20,7 @@ import Foundation
             print("=====================================")
 
             // Register iOS dependencies
-            await iOSDependencyRegistration.configureForLaunch()
+            await IOSDependencyRegistration.configureForLaunch()
 
             // Create sample image data (in real usage, this would come from camera/scanner)
             guard let sampleImageData = createSampleImageData() else {
@@ -332,8 +332,8 @@ import Foundation
     #if DEBUG
         /// Convenience function to run the Phase 4.1 demo
         public func runPhase4_1_Demo() async {
-            await Phase4_1_DocumentProcessingExample.demonstrateProcessingModes()
-            await Phase4_1_DocumentProcessingExample.demonstrateDocumentPipelineIntegration()
+            await Phase41DocumentProcessingExample.demonstrateProcessingModes()
+            await Phase41DocumentProcessingExample.demonstrateDocumentPipelineIntegration()
         }
     #endif
 

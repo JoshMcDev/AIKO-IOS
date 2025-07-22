@@ -31,7 +31,7 @@ final class CacheInvalidationTests: XCTestCase {
             status: .completed,
             output: ActionOutput(
                 type: .text,
-                data: "Test data".data(using: .utf8)!
+                data: Data("Test data".utf8)
             ),
             metrics: ActionMetrics(
                 startTime: Date(),

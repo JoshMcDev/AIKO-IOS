@@ -3,7 +3,7 @@
     import UIKit
 
     /// iOS-specific share sheet implementation
-    public struct iOSShareSheet: UIViewControllerRepresentable {
+    public struct IOSShareSheet: UIViewControllerRepresentable {
         let items: [Any]
         let excludedActivityTypes: [UIActivity.ActivityType]?
         let onComplete: (UIActivity.ActivityType?, Bool, [Any]?, Error?) -> Void
@@ -26,8 +26,7 @@
             // Configure for iPad
             if let popover = controller.popoverPresentationController {
                 if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                   let window = windowScene.windows.first
-                {
+                   let window = windowScene.windows.first {
                     popover.sourceView = window.rootViewController?.view
                 }
                 popover.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height / 2, width: 0, height: 0)
@@ -41,7 +40,7 @@
     }
 
     /// iOS-specific share button view
-    public struct iOSShareButton: View {
+    public struct IOSShareButton: View {
         let items: [Any]
         let title: String
         @State private var showingShareSheet = false
@@ -56,7 +55,7 @@
                 showingShareSheet = true
             }
             .sheet(isPresented: $showingShareSheet) {
-                iOSShareSheet(items: items) { _, _, _, _ in
+                IOSShareSheet(items: items) { _, _, _, _ in
                     showingShareSheet = false
                 }
             }
@@ -64,7 +63,7 @@
     }
 
     /// iOS-specific share view with more customization options
-    public struct iOSShareView: View {
+    public struct IOSShareView: View {
         let items: [Any]
         let subject: String?
         let message: String?
@@ -86,7 +85,7 @@
         public var body: some View {
             EmptyView()
                 .sheet(isPresented: $isPresented) {
-                    iOSShareSheet(
+                    IOSShareSheet(
                         items: preparedItems,
                         excludedActivityTypes: [
                             .addToReadingList,
@@ -113,7 +112,7 @@
     }
 
     /// iOS-specific activity item provider for custom sharing behavior
-    public class iOSActivityItemProvider: UIActivityItemProvider, @unchecked Sendable {
+    public class IOSActivityItemProvider: UIActivityItemProvider, @unchecked Sendable {
         private let content: String
         private let filename: String?
 

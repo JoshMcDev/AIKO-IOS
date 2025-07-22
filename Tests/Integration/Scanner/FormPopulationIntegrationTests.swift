@@ -448,14 +448,14 @@ final class FormPopulationIntegrationTests: XCTestCase {
     }
 
     private func createMockGovernmentFormData() -> Data {
-        return """
+        return Data("""
         SOLICITATION NUMBER: W56HZV-24-R-0100
         TITLE: Professional IT Services
         RESPONSE DEADLINE: March 15, 2024
         SET-ASIDE TYPE: Small Business
         NAICS CODE: 541512
         ESTIMATED VALUE: $1,000,000 - $5,000,000
-        """.data(using: .utf8) ?? Data()
+        """.utf8)
     }
 
     private func createMockExtractedGovernmentFormData() -> GovernmentFormData {
@@ -537,13 +537,13 @@ final class FormPopulationIntegrationTests: XCTestCase {
     }
 
     private func createMockFARComplianceDocument() -> ScannedDocument {
-        let farDocumentData = """
+        let farDocumentData = Data("""
         FAR CLAUSE 52.204-21 BASIC SAFEGUARDING OF COVERED CONTRACTOR INFORMATION SYSTEMS
         DFARS CLAUSE 252.204-7012 SAFEGUARDING COVERED DEFENSE INFORMATION
         CAGE CODE: 1A2B3
         DUNS NUMBER: 123456789
         CONTRACT TYPE: FIRM FIXED PRICE
-        """.data(using: .utf8) ?? Data()
+        """.utf8)
 
         return ScannedDocument(
             pages: [
@@ -557,13 +557,13 @@ final class FormPopulationIntegrationTests: XCTestCase {
     }
 
     private func createMockSolicitationDocument() -> ScannedDocument {
-        let solicitationData = """
+        let solicitationData = Data("""
         SOLICITATION NUMBER: W56HZV-24-R-0100
         NAICS CODE: 541330
         SET-ASIDE: SMALL BUSINESS
         RESPONSE DEADLINE: MARCH 15, 2024 3:00 PM EST
         ESTIMATED VALUE: $1M - $5M
-        """.data(using: .utf8) ?? Data()
+        """.utf8)
 
         return ScannedDocument(
             pages: [
@@ -577,7 +577,7 @@ final class FormPopulationIntegrationTests: XCTestCase {
     }
 
     private func createComplexGovernmentDocument() -> ScannedDocument {
-        let complexDocumentData = """
+        let complexDocumentData = Data("""
         COMPREHENSIVE CONTRACT DOCUMENT
 
         SECTION A: SOLICITATION/CONTRACT FORM
@@ -592,7 +592,7 @@ final class FormPopulationIntegrationTests: XCTestCase {
 
         SECTION H: SPECIAL CONTRACT REQUIREMENTS
         CYBERSECURITY REQUIREMENTS PER NIST SP 800-171
-        """.data(using: .utf8) ?? Data()
+        """.utf8)
 
         return ScannedDocument(
             pages: [
@@ -606,13 +606,13 @@ final class FormPopulationIntegrationTests: XCTestCase {
     }
 
     private func createAmbiguousGovernmentDocument() -> ScannedDocument {
-        let ambiguousData = """
+        let ambiguousData = Data("""
         [PARTIALLY READABLE TEXT]
         CONTRACT... [UNCLEAR] ...W56HZV-??-C-????
         AMOUNT... [SMUDGED] ...$?.???,???.??
         VENDOR... [FADED] ...ACME... [UNCLEAR]
         DATE... [PARTIALLY VISIBLE] ...2024
-        """.data(using: .utf8) ?? Data()
+        """.utf8)
 
         return ScannedDocument(
             pages: [

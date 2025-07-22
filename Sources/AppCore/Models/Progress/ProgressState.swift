@@ -257,8 +257,7 @@ private extension ProgressState {
         }
 
         let errorType: ProgressErrorType = if let typeString = update.metadata["error_type"],
-                                              let type = ProgressErrorType(rawValue: typeString)
-        {
+                                              let type = ProgressErrorType(rawValue: typeString) {
             type
         } else {
             .unknown

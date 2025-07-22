@@ -36,7 +36,10 @@ public extension Date {
 
 public extension UUID {
     static func testUUID(_ string: String = "12345678-1234-1234-1234-123456789012") -> UUID {
-        UUID(uuidString: string)!
+        guard let uuid = UUID(uuidString: string) else {
+            fatalError("Invalid UUID string provided for testing: \(string)")
+        }
+        return uuid
     }
 }
 
@@ -53,7 +56,12 @@ public extension Array where Element: Equatable {
 public extension String {
     static func random(length: Int = 10) -> String {
         let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        return String((0 ..< length).map { _ in letters.randomElement()! })
+        return String((0 ..< length).map { _ in
+            guard let randomChar = letters.randomElement() else {
+                return "a" // Fallback character - should never happen with non-empty string
+            }
+            return randomChar
+        })
     }
 
     var isValidEmail: Bool {

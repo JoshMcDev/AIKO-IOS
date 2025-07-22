@@ -39,7 +39,7 @@ struct EnhancedDocumentGenerationView: View {
     }
 
     var body: some View {
-        WithViewStore(store, observe: ViewState.init) { viewStore in
+        WithViewStore(store, observe: ViewState.init, content: { viewStore in
             VStack(spacing: 0) {
                 // Main Content Area with parallax effect
                 ScrollView(.vertical, showsIndicators: true) {
@@ -55,7 +55,7 @@ struct EnhancedDocumentGenerationView: View {
                                     insertion: .scale(scale: 0.9).combined(with: .opacity),
                                     removal: .scale(scale: 1.1).combined(with: .opacity)
                                 ))
-                            }
+        })
 
                             // Enhanced document selection
                             EnhancedDocumentTypesSection(

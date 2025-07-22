@@ -201,7 +201,7 @@ final class PhotoLibraryServiceTests: XCTestCase {
         // Given
         let corruptedAsset = MediaAsset(
             type: .photo,
-            data: "corrupted".data(using: .utf8)!,
+            data: Data("corrupted".utf8),
             metadata: MediaMetadata(
                 fileName: "corrupted.jpg",
                 fileSize: 100,
@@ -276,13 +276,29 @@ final class PhotoLibraryServiceTests: XCTestCase {
         defer { UIGraphicsEndImageContext() }
 
         // Draw a gradient
-        let context = UIGraphicsGetCurrentContext()!
+        guard let context = UIGraphicsGetCurrentContext() else {
+            XCTFail("Failed to get current graphics context")
+            return Data()
+        }
+
         let colors = [UIColor.blue.cgColor, UIColor.purple.cgColor]
-        let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: colors as CFArray, locations: nil)!
+        guard let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: colors as CFArray, locations: nil) else {
+            XCTFail("Failed to create gradient for test image")
+            return Data()
+        }
 
         context.drawLinearGradient(gradient, start: .zero, end: CGPoint(x: size.width, y: size.height), options: [])
 
-        let image = UIGraphicsGetImageFromCurrentImageContext()!
-        return image.jpegData(compressionQuality: 0.9)!
+        guard let image = UIGraphicsGetImageFromCurrentImageContext() else {
+            XCTFail("Failed to get image from current graphics context")
+            return Data()
+        }
+
+        guard let jpegData = image.jpegData(compressionQuality: 0.9) else {
+            XCTFail("Failed to convert image to JPEG data")
+            return Data()
+        }
+
+        return jpegData
     }
 }

@@ -278,20 +278,19 @@ public actor DistributedCache: DistributedCacheProtocol {
                 )
 
                 // Add discovered nodes
-                for (nodeId, info) in nodeInfo {
-                    if nodeId != configuration.nodeId {
-                        nodes[nodeId] = NodeInfo(
-                            id: nodeId,
-                            endpoint: info.endpoint,
-                            lastHeartbeat: Date(),
-                            isActive: true,
-                            load: info.load,
-                            keyCount: info.keyCount
-                        )
-                        await consistentHash.addNode(nodeId)
-                        connections[nodeId] = try await CacheConnection.connect(to: info.endpoint)
+                for (nodeId, info) in nodeInfo where nodeId != configuration.nodeId {
+                    nodes[nodeId] = NodeInfo(
+                        id: nodeId,
+                        endpoint: info.endpoint,
+                        lastHeartbeat: Date(),
+                        isActive: true,
+                        load: info.load,
+                        keyCount: info.keyCount
+                    )
+                    await consistentHash.addNode(nodeId)
+                    connections[nodeId] = try await CacheConnection.connect(to: info.endpoint)
 
-                        eventSubject.send(.nodeJoined(nodeId: nodeId))
+                    eventSubject.send(.nodeJoined(nodeId: nodeId))
                     }
                 }
 
@@ -347,12 +346,10 @@ public actor DistributedCache: DistributedCacheProtocol {
         let now = Date()
         let timeout = configuration.failoverTimeout
 
-        for (nodeId, nodeInfo) in nodes {
-            if nodeId != configuration.nodeId {
-                if now.timeIntervalSince(nodeInfo.lastHeartbeat) > timeout {
-                    // Node is down, initiate failover
-                    await handleNodeFailure(nodeId: nodeId)
-                }
+        for (nodeId, nodeInfo) in nodes where nodeId != configuration.nodeId {
+            if now.timeIntervalSince(nodeInfo.lastHeartbeat) > timeout {
+                // Node is down, initiate failover
+                await handleNodeFailure(nodeId: nodeId)
             }
         }
     }
@@ -533,13 +530,11 @@ public actor DistributedCache: DistributedCacheProtocol {
                 }
             }
 
-            for await success in group {
-                if success {
-                    successCount += 1
-                    if successCount >= quorum {
-                        group.cancelAll()
-                        break
-                    }
+            for await success in group where success {
+                successCount += 1
+                if successCount >= quorum {
+                    group.cancelAll()
+                    break
                 }
             }
         }
@@ -580,11 +575,11 @@ private struct DistributedCacheMetrics {
     }
 
     var hitRate: Double {
-        totalRequests > 0 ? Double(cacheHits) / Double(totalRequests) : 0
+        totalRequests > 0 ? Double(cacheHits) / Double(totalRequests): 0
     }
 
     var averageLatency: TimeInterval {
-        totalRequests > 0 ? totalLatency / Double(totalRequests) : 0
+        totalRequests > 0 ? totalLatency / Double(totalRequests): 0
     }
 
     mutating func record(operation: MetricOperation, duration: TimeInterval, hit: Bool = false) {

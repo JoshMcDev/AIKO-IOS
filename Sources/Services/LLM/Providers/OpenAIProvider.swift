@@ -185,7 +185,10 @@ public final class OpenAIProvider: LLMProviderProtocol, @unchecked Sendable {
         }
 
         // Make API request
-        var urlRequest = URLRequest(url: URL(string: "\(baseURL)/chat/completions")!)
+        guard let url = URL(string: "\(baseURL)/chat/completions") else {
+            throw LLMProviderError.networkError("Invalid URL")
+        }
+        var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         urlRequest.setValue("Bearer \(config.apiKey ?? "")", forHTTPHeaderField: "Authorization")
@@ -295,7 +298,10 @@ public final class OpenAIProvider: LLMProviderProtocol, @unchecked Sendable {
                     }
 
                     // Make streaming request
-                    var urlRequest = URLRequest(url: URL(string: "\(baseURL)/chat/completions")!)
+                    guard let url = URL(string: "\(baseURL)/chat/completions") else {
+                        throw LLMProviderError.networkError("Invalid URL")
+                    }
+                    var urlRequest = URLRequest(url: url)
                     urlRequest.httpMethod = "POST"
                     urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
                     urlRequest.setValue("Bearer \(config.apiKey ?? "")", forHTTPHeaderField: "Authorization")
@@ -315,8 +321,7 @@ public final class OpenAIProvider: LLMProviderProtocol, @unchecked Sendable {
                     }
 
                     // Process SSE stream
-                    for try await line in bytes.lines {
-                        if line.hasPrefix("data: ") {
+                    for try await line in bytes.lines where line.hasPrefix("data: ") {
                             let jsonString = String(line.dropFirst(6))
                             if jsonString == "[DONE]" {
                                 continuation.finish()
@@ -327,8 +332,7 @@ public final class OpenAIProvider: LLMProviderProtocol, @unchecked Sendable {
                                let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                                let choices = json["choices"] as? [[String: Any]],
                                let firstChoice = choices.first,
-                               let delta = firstChoice["delta"] as? [String: Any]
-                            {
+                               let delta = firstChoice["delta"] as? [String: Any] {
                                 if let content = delta["content"] as? String {
                                     continuation.yield(LLMStreamChunk(delta: content))
                                 }
@@ -362,7 +366,10 @@ public final class OpenAIProvider: LLMProviderProtocol, @unchecked Sendable {
             "input": text,
         ]
 
-        var urlRequest = URLRequest(url: URL(string: "\(baseURL)/embeddings")!)
+        guard let url = URL(string: "\(baseURL)/embeddings") else {
+            throw LLMProviderError.networkError("Invalid URL")
+        }
+        var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         urlRequest.setValue("Bearer \(config.apiKey ?? "")", forHTTPHeaderField: "Authorization")

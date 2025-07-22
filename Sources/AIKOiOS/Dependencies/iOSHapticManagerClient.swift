@@ -5,8 +5,8 @@
     import UIKit
 
     /// iOS Haptic Manager Service Client using SimpleServiceTemplate
-    public final class iOSHapticManagerClient: SimpleServiceTemplate {
-        private let manager = iOSHapticManager()
+    public final class IOSHapticManagerClient: SimpleServiceTemplate {
+        private let manager = IOSHapticManager()
 
         override public init() {
             super.init()
@@ -84,7 +84,7 @@
     public extension HapticManagerClient {
         @MainActor
         static var iOSLive: Self {
-            let manager = iOSHapticManager()
+            let manager = IOSHapticManager()
 
             return Self(
                 impact: { style in
@@ -149,7 +149,7 @@
     // MARK: - iOS Haptic Manager Implementation
 
     @MainActor
-    private class iOSHapticManager {
+    private class IOSHapticManager {
         private var engine: CHHapticEngine?
         private let supportsHaptics: Bool
 

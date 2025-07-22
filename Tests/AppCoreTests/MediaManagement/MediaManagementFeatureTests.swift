@@ -6,7 +6,12 @@ import XCTest
 @available(iOS 16.0, *)
 @MainActor
 final class MediaManagementFeatureTests: XCTestCase {
-    var store: TestStore<MediaManagementFeature.State, MediaManagementFeature.Action>!
+    var store: TestStore<MediaManagementFeature.State, MediaManagementFeature.Action>?
+
+    private var storeUnwrapped: TestStore<MediaManagementFeature.State, MediaManagementFeature.Action> {
+        guard let store = store else { fatalError("store not initialized") }
+        return store
+    }
 
     override func setUp() async throws {
         try await super.setUp()
@@ -31,12 +36,12 @@ final class MediaManagementFeatureTests: XCTestCase {
         ]
 
         // When/Then
-        await store.send(.pickFiles(allowedTypes: [.image], allowsMultiple: true)) {
+        await storeUnwrapped.send(.pickFiles(allowedTypes: [.image], allowsMultiple: true)) {
             $0.isLoading = true
         }
 
         // Currently fails with "Not implemented"
-        await store.receive(.pickFilesResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
+        await storeUnwrapped.receive(.pickFilesResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
             $0.isLoading = false
             $0.error = MediaError.unsupportedOperation("Not implemented")
         }
@@ -44,11 +49,11 @@ final class MediaManagementFeatureTests: XCTestCase {
 
     func testPickFiles_SingleFile_ShouldAddOneAsset() async {
         // When/Then
-        await store.send(.pickFiles(allowedTypes: [.document], allowsMultiple: false)) {
+        await storeUnwrapped.send(.pickFiles(allowedTypes: [.document], allowsMultiple: false)) {
             $0.isLoading = true
         }
 
-        await store.receive(.pickFilesResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
+        await storeUnwrapped.receive(.pickFilesResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
             $0.isLoading = false
             $0.error = MediaError.unsupportedOperation("Not implemented")
         }
@@ -56,11 +61,11 @@ final class MediaManagementFeatureTests: XCTestCase {
 
     func testPickFiles_Cancelled_ShouldClearLoading() async {
         // When/Then
-        await store.send(.pickFiles(allowedTypes: [.image], allowsMultiple: true)) {
+        await storeUnwrapped.send(.pickFiles(allowedTypes: [.image], allowsMultiple: true)) {
             $0.isLoading = true
         }
 
-        await store.receive(.pickFilesResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
+        await storeUnwrapped.receive(.pickFilesResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
             $0.isLoading = false
             $0.error = MediaError.unsupportedOperation("Not implemented")
         }
@@ -70,11 +75,11 @@ final class MediaManagementFeatureTests: XCTestCase {
 
     func testSelectPhotos_Success_ShouldAddPhotosToState() async {
         // When/Then
-        await store.send(.selectPhotos(limit: 10)) {
+        await storeUnwrapped.send(.selectPhotos(limit: 10)) {
             $0.isLoading = true
         }
 
-        await store.receive(.selectPhotosResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
+        await storeUnwrapped.receive(.selectPhotosResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
             $0.isLoading = false
             $0.error = MediaError.unsupportedOperation("Not implemented")
         }
@@ -82,20 +87,20 @@ final class MediaManagementFeatureTests: XCTestCase {
 
     func testRequestPhotoLibraryPermission_Granted_ShouldUpdatePermission() async {
         // When/Then
-        await store.send(.requestPhotoLibraryPermission)
+        await storeUnwrapped.send(.requestPhotoLibraryPermission)
 
-        await store.receive(.photoLibraryPermissionResponse(false)) {
+        await storeUnwrapped.receive(.photoLibraryPermissionResponse(false)) {
             $0.hasPhotoLibraryPermission = false
         }
     }
 
     func testLoadAlbums_Success_ShouldPopulateAlbums() async {
         // When/Then
-        await store.send(.loadAlbums) {
+        await storeUnwrapped.send(.loadAlbums) {
             $0.isLoading = true
         }
 
-        await store.receive(.loadAlbumsResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
+        await storeUnwrapped.receive(.loadAlbumsResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
             $0.isLoading = false
             $0.error = MediaError.unsupportedOperation("Not implemented")
         }
@@ -105,11 +110,11 @@ final class MediaManagementFeatureTests: XCTestCase {
 
     func testCapturePhoto_Success_ShouldAddPhotoAsset() async {
         // When/Then
-        await store.send(.capturePhoto) {
+        await storeUnwrapped.send(.capturePhoto) {
             $0.isCapturing = true
         }
 
-        await store.receive(.capturePhotoResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
+        await storeUnwrapped.receive(.capturePhotoResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
             $0.isCapturing = false
             $0.error = MediaError.unsupportedOperation("Not implemented")
         }
@@ -117,11 +122,11 @@ final class MediaManagementFeatureTests: XCTestCase {
 
     func testStartVideoRecording_ShouldUpdateRecordingState() async {
         // When/Then
-        await store.send(.startVideoRecording) {
+        await storeUnwrapped.send(.startVideoRecording) {
             $0.isRecording = true
         }
 
-        await store.receive(.startVideoRecordingResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
+        await storeUnwrapped.receive(.startVideoRecordingResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
             $0.isRecording = false
             $0.error = MediaError.unsupportedOperation("Not implemented")
         }
@@ -135,11 +140,11 @@ final class MediaManagementFeatureTests: XCTestCase {
         )
 
         // When/Then
-        await store.send(.stopVideoRecording) {
+        await storeUnwrapped.send(.stopVideoRecording) {
             $0.isRecording = false
         }
 
-        await store.receive(.stopVideoRecordingResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
+        await storeUnwrapped.receive(.stopVideoRecordingResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
             $0.error = MediaError.unsupportedOperation("Not implemented")
         }
     }
@@ -148,11 +153,11 @@ final class MediaManagementFeatureTests: XCTestCase {
 
     func testCaptureScreenshot_FullScreen_ShouldAddScreenshotAsset() async {
         // When/Then
-        await store.send(.captureScreenshot(.fullScreen)) {
+        await storeUnwrapped.send(.captureScreenshot(.fullScreen)) {
             $0.isCapturing = true
         }
 
-        await store.receive(.captureScreenshotResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
+        await storeUnwrapped.receive(.captureScreenshotResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
             $0.isCapturing = false
             $0.error = MediaError.unsupportedOperation("Not implemented")
         }
@@ -160,11 +165,11 @@ final class MediaManagementFeatureTests: XCTestCase {
 
     func testStartScreenRecording_ShouldUpdateRecordingState() async {
         // When/Then
-        await store.send(.startScreenRecording) {
+        await storeUnwrapped.send(.startScreenRecording) {
             $0.isRecording = true
         }
 
-        await store.receive(.startScreenRecordingResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
+        await storeUnwrapped.receive(.startScreenRecordingResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
             $0.isRecording = false
             $0.error = MediaError.unsupportedOperation("Not implemented")
         }
@@ -181,7 +186,7 @@ final class MediaManagementFeatureTests: XCTestCase {
         )
 
         // When/Then
-        await store.send(.selectAsset(asset.id)) {
+        await storeUnwrapped.send(.selectAsset(asset.id)) {
             $0.selectedAssets.insert(asset.id)
         }
     }
@@ -198,7 +203,7 @@ final class MediaManagementFeatureTests: XCTestCase {
         )
 
         // When/Then
-        await store.send(.deselectAsset(asset.id)) {
+        await storeUnwrapped.send(.deselectAsset(asset.id)) {
             $0.selectedAssets.remove(asset.id)
         }
     }
@@ -212,7 +217,7 @@ final class MediaManagementFeatureTests: XCTestCase {
         )
 
         // When/Then
-        await store.send(.selectAllAssets) {
+        await storeUnwrapped.send(.selectAllAssets) {
             $0.selectedAssets = Set(assets.map { $0.id })
         }
     }
@@ -229,7 +234,7 @@ final class MediaManagementFeatureTests: XCTestCase {
         )
 
         // When/Then
-        await store.send(.deselectAllAssets) {
+        await storeUnwrapped.send(.deselectAllAssets) {
             $0.selectedAssets = []
         }
     }
@@ -243,7 +248,7 @@ final class MediaManagementFeatureTests: XCTestCase {
         )
 
         // When/Then
-        await store.send(.deleteAsset(asset.id)) {
+        await storeUnwrapped.send(.deleteAsset(asset.id)) {
             $0.assets.remove(id: asset.id)
         }
     }
@@ -259,11 +264,11 @@ final class MediaManagementFeatureTests: XCTestCase {
         )
 
         // When/Then
-        await store.send(.extractMetadata(assetId: asset.id)) {
+        await storeUnwrapped.send(.extractMetadata(assetId: asset.id)) {
             $0.isProcessing = true
         }
 
-        await store.receive(.extractMetadataResponse(assetId: asset.id, .failure(MediaError.unsupportedOperation("Not implemented")))) {
+        await storeUnwrapped.receive(.extractMetadataResponse(assetId: asset.id, .failure(MediaError.unsupportedOperation("Not implemented")))) {
             $0.isProcessing = false
             $0.error = MediaError.unsupportedOperation("Not implemented")
         }
@@ -283,7 +288,7 @@ final class MediaManagementFeatureTests: XCTestCase {
         )
 
         // When/Then
-        await store.send(.updateMetadata(assetId: asset.id, metadata: newMetadata)) {
+        await storeUnwrapped.send(.updateMetadata(assetId: asset.id, metadata: newMetadata)) {
             $0.assets[id: asset.id]?.metadata = newMetadata
         }
     }
@@ -299,9 +304,9 @@ final class MediaManagementFeatureTests: XCTestCase {
         )
 
         // When/Then
-        await store.send(.validateAsset(asset.id))
+        await storeUnwrapped.send(.validateAsset(asset.id))
 
-        await store.receive(.validateAssetResponse(assetId: asset.id, .failure(MediaError.unsupportedOperation("Not implemented")))) {
+        await storeUnwrapped.receive(.validateAssetResponse(assetId: asset.id, .failure(MediaError.unsupportedOperation("Not implemented")))) {
             $0.error = MediaError.unsupportedOperation("Not implemented")
         }
     }
@@ -315,16 +320,16 @@ final class MediaManagementFeatureTests: XCTestCase {
         )
 
         // When/Then
-        await store.send(.validateAllAssets) {
+        await storeUnwrapped.send(.validateAllAssets) {
             $0.isProcessing = true
         }
 
         // Expect validation responses for each asset
         for asset in assets {
-            await store.receive(.validateAssetResponse(assetId: asset.id, .failure(MediaError.unsupportedOperation("Not implemented"))))
+            await storeUnwrapped.receive(.validateAssetResponse(assetId: asset.id, .failure(MediaError.unsupportedOperation("Not implemented"))))
         }
 
-        await store.receive(.validateAllAssetsComplete) {
+        await storeUnwrapped.receive(.validateAllAssetsComplete) {
             $0.isProcessing = false
             $0.error = MediaError.unsupportedOperation("Not implemented")
         }
@@ -344,11 +349,11 @@ final class MediaManagementFeatureTests: XCTestCase {
         )
 
         // When/Then
-        await store.send(.startBatchOperation(.compress)) {
+        await storeUnwrapped.send(.startBatchOperation(.compress)) {
             $0.isProcessing = true
         }
 
-        await store.receive(.batchOperationResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
+        await storeUnwrapped.receive(.batchOperationResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
             $0.isProcessing = false
             $0.error = MediaError.unsupportedOperation("Not implemented")
         }
@@ -365,7 +370,7 @@ final class MediaManagementFeatureTests: XCTestCase {
         )
 
         // When/Then
-        await store.send(.monitorBatchProgress(handle))
+        await storeUnwrapped.send(.monitorBatchProgress(handle))
 
         // Progress updates would be received here
     }
@@ -382,11 +387,11 @@ final class MediaManagementFeatureTests: XCTestCase {
         )
 
         // When/Then
-        await store.send(.cancelBatchOperation) {
+        await storeUnwrapped.send(.cancelBatchOperation) {
             $0.isProcessing = false
         }
 
-        await store.receive(.batchOperationCancelled) {
+        await storeUnwrapped.receive(.batchOperationCancelled) {
             $0.currentBatchOperation = nil
         }
     }
@@ -406,11 +411,11 @@ final class MediaManagementFeatureTests: XCTestCase {
         )
 
         // When/Then
-        await store.send(.executeWorkflow(workflow)) {
+        await storeUnwrapped.send(.executeWorkflow(workflow)) {
             $0.isProcessing = true
         }
 
-        await store.receive(.workflowResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
+        await storeUnwrapped.receive(.workflowResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
             $0.isProcessing = false
             $0.error = MediaError.unsupportedOperation("Not implemented")
         }
@@ -421,9 +426,9 @@ final class MediaManagementFeatureTests: XCTestCase {
         let workflow = createMockWorkflow()
 
         // When/Then
-        await store.send(.saveWorkflowTemplate(workflow, name: "Test Template"))
+        await storeUnwrapped.send(.saveWorkflowTemplate(workflow, name: "Test Template"))
 
-        await store.receive(.saveWorkflowTemplateResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
+        await storeUnwrapped.receive(.saveWorkflowTemplateResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
             $0.error = MediaError.unsupportedOperation("Not implemented")
         }
     }
@@ -445,7 +450,7 @@ final class MediaManagementFeatureTests: XCTestCase {
         )
 
         // When/Then
-        await store.send(.setFilter(.type(.image))) {
+        await storeUnwrapped.send(.setFilter(.type(.image))) {
             $0.filter = .type(.image)
             // In real implementation, would filter displayed assets
         }
@@ -453,7 +458,7 @@ final class MediaManagementFeatureTests: XCTestCase {
 
     func testSetSortOrder_ShouldReorderAssets() async {
         // When/Then
-        await store.send(.setSortOrder(.dateDescending)) {
+        await storeUnwrapped.send(.setSortOrder(.dateDescending)) {
             $0.sortOrder = .dateDescending
             // In real implementation, would reorder assets
         }
@@ -471,7 +476,7 @@ final class MediaManagementFeatureTests: XCTestCase {
         )
 
         // When/Then
-        await store.send(.clearError) {
+        await storeUnwrapped.send(.clearError) {
             $0.error = nil
         }
     }
@@ -487,12 +492,12 @@ final class MediaManagementFeatureTests: XCTestCase {
         )
 
         // When/Then
-        await store.send(.retryFailedOperation) {
+        await storeUnwrapped.send(.retryFailedOperation) {
             $0.error = nil
             $0.isLoading = true
         }
 
-        await store.receive(.pickFilesResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
+        await storeUnwrapped.receive(.pickFilesResponse(.failure(MediaError.unsupportedOperation("Not implemented")))) {
             $0.isLoading = false
             $0.error = MediaError.unsupportedOperation("Not implemented")
         }

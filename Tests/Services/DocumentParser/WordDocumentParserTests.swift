@@ -3,7 +3,12 @@ import UniformTypeIdentifiers
 import XCTest
 
 final class WordDocumentParserTests: XCTestCase {
-    var parser: WordDocumentParser!
+    var parser: WordDocumentParser?
+
+    private var parserUnwrapped: WordDocumentParser {
+        guard let parser = parser else { fatalError("parser not initialized") }
+        return parser
+    }
 
     override func setUp() {
         super.setUp()
@@ -23,7 +28,7 @@ final class WordDocumentParserTests: XCTestCase {
         let docxType = UTType(filenameExtension: "docx") ?? .data
 
         // When parsing
-        let result = try await parser.parse(emptyData, type: docxType)
+        let result = try await parserUnwrapped.parse(emptyData, type: docxType)
 
         // Then it should return empty string
         XCTAssertEqual(result, "")
@@ -45,11 +50,14 @@ final class WordDocumentParserTests: XCTestCase {
         </w:document>
         """
 
-        let data = xmlContent.data(using: .utf8)!
+        guard let data = xmlContent.data(using: .utf8) else {
+            XCTFail("Failed to convert XML content to UTF-8 data for plain text test")
+            return
+        }
         let docxType = UTType(filenameExtension: "docx") ?? .data
 
         // When parsing
-        let result = try await parser.parse(data, type: docxType)
+        let result = try await parserUnwrapped.parse(data, type: docxType)
 
         // Then it should extract the text
         XCTAssertTrue(result.contains(testText))
@@ -77,11 +85,14 @@ final class WordDocumentParserTests: XCTestCase {
         </w:document>
         """
 
-        let data = xmlContent.data(using: .utf8)!
+        guard let data = xmlContent.data(using: .utf8) else {
+            XCTFail("Failed to convert XML content to UTF-8 data for multiple paragraphs test")
+            return
+        }
         let docxType = UTType(filenameExtension: "docx") ?? .data
 
         // When parsing
-        let result = try await parser.parse(data, type: docxType)
+        let result = try await parserUnwrapped.parse(data, type: docxType)
 
         // Then it should extract both paragraphs
         XCTAssertTrue(result.contains(para1))
@@ -94,15 +105,15 @@ final class WordDocumentParserTests: XCTestCase {
 
         // Add some binary data with embedded text
         data.append(contentsOf: [0x00, 0x01, 0x02]) // Binary header
-        data.append("This is readable text".data(using: .utf8)!)
+        data.append(Data("This is readable text".utf8))
         data.append(contentsOf: [0x00, 0x00]) // Binary separator
-        data.append("More readable content".data(using: .utf8)!)
+        data.append(Data("More readable content".utf8))
         data.append(contentsOf: [0xFF, 0xFE, 0xFD]) // Binary footer
 
         let docType = UTType(filenameExtension: "doc") ?? .data
 
         // When parsing
-        let result = try await parser.parse(data, type: docType)
+        let result = try await parserUnwrapped.parse(data, type: docType)
 
         // Then it should extract readable text
         XCTAssertTrue(result.contains("readable text"))
@@ -111,12 +122,12 @@ final class WordDocumentParserTests: XCTestCase {
 
     func testParseUnsupportedFormat() async throws {
         // Given a non-Word format
-        let data = "Plain text data".data(using: .utf8)!
+        let data = Data("Plain text data".utf8)
         let txtType = UTType.plainText
 
         // When parsing
         do {
-            _ = try await parser.parse(data, type: txtType)
+            _ = try await parserUnwrapped.parse(data, type: txtType)
             XCTFail("Should have thrown unsupportedFormat error")
         } catch {
             // Then it should throw unsupportedFormat error
@@ -151,11 +162,14 @@ final class WordDocumentParserTests: XCTestCase {
         </document>
         """
 
-        let data = xmlContent.data(using: .utf8)!
+        guard let data = xmlContent.data(using: .utf8) else {
+            XCTFail("Failed to convert XML content to UTF-8 data for complex XML test")
+            return
+        }
         let docxType = UTType(filenameExtension: "docx") ?? .data
 
         // When parsing
-        let result = try await parser.parse(data, type: docxType)
+        let result = try await parserUnwrapped.parse(data, type: docxType)
 
         // Then it should extract all text content
         XCTAssertTrue(result.contains("Bold text here"))
@@ -175,11 +189,14 @@ final class WordDocumentParserTests: XCTestCase {
         </w:document>
         """
 
-        let data = xmlContent.data(using: .utf8)!
+        guard let data = xmlContent.data(using: .utf8) else {
+            XCTFail("Failed to convert XML content to UTF-8 data for clean text test")
+            return
+        }
         let docxType = UTType(filenameExtension: "docx") ?? .data
 
         // When parsing
-        let result = try await parser.parse(data, type: docxType)
+        let result = try await parserUnwrapped.parse(data, type: docxType)
 
         // Then it should clean up whitespace
         XCTAssertFalse(result.contains("   ")) // No triple spaces
@@ -193,7 +210,7 @@ final class WordDocumentParserTests: XCTestCase {
         // Simulate binary document with text fragments
         for i in 0 ..< 100 {
             if i % 10 == 0 {
-                data.append("Text\(i / 10)".data(using: .utf8)!)
+                data.append(Data("Text\(i / 10)".utf8))
             } else {
                 data.append(UInt8.random(in: 0 ... 255))
             }
@@ -202,7 +219,7 @@ final class WordDocumentParserTests: XCTestCase {
         let docType = UTType(filenameExtension: "doc") ?? .data
 
         // When parsing
-        let result = try await parser.parse(data, type: docType)
+        let result = try await parserUnwrapped.parse(data, type: docType)
 
         // Then it should extract text fragments
         XCTAssertTrue(result.contains("Text"))

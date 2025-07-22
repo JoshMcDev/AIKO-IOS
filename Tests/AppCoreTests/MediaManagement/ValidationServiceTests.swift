@@ -4,7 +4,12 @@ import XCTest
 
 @available(iOS 16.0, *)
 final class ValidationServiceTests: XCTestCase {
-    var sut: ValidationService!
+    var sut: ValidationService?
+
+    private var sutUnwrapped: ValidationService {
+        guard let sut = sut else { fatalError("sut not initialized") }
+        return sut
+    }
 
     override func setUp() async throws {
         try await super.setUp()
@@ -25,7 +30,7 @@ final class ValidationServiceTests: XCTestCase {
 
         // When/Then
         await assertThrowsError {
-            _ = try await sut.validateFile(url, rules: rules)
+            _ = try await sutUnwrapped.validateFile(url, rules: rules)
         }
     }
 
@@ -36,7 +41,7 @@ final class ValidationServiceTests: XCTestCase {
 
         // When/Then
         await assertThrowsError {
-            _ = try await sut.validateFile(url, rules: rules)
+            _ = try await sutUnwrapped.validateFile(url, rules: rules)
         }
     }
 
@@ -47,7 +52,7 @@ final class ValidationServiceTests: XCTestCase {
 
         // When/Then
         await assertThrowsError {
-            _ = try await sut.validateFile(url, rules: rules)
+            _ = try await sutUnwrapped.validateFile(url, rules: rules)
         }
     }
 
@@ -58,7 +63,7 @@ final class ValidationServiceTests: XCTestCase {
 
         // When/Then
         await assertThrowsError {
-            _ = try await sut.validateFile(url, rules: rules)
+            _ = try await sutUnwrapped.validateFile(url, rules: rules)
         }
     }
 
@@ -72,7 +77,7 @@ final class ValidationServiceTests: XCTestCase {
 
         // When/Then
         await assertThrowsError {
-            _ = try await sut.validateData(data, type: type, rules: rules)
+            _ = try await sutUnwrapped.validateData(data, type: type, rules: rules)
         }
     }
 
@@ -84,7 +89,7 @@ final class ValidationServiceTests: XCTestCase {
 
         // When/Then
         await assertThrowsError {
-            _ = try await sut.validateData(data, type: type, rules: rules)
+            _ = try await sutUnwrapped.validateData(data, type: type, rules: rules)
         }
     }
 
@@ -101,7 +106,7 @@ final class ValidationServiceTests: XCTestCase {
 
         // When/Then
         await assertThrowsError {
-            _ = try await sut.validateBatch(urls, rules: rules)
+            _ = try await sutUnwrapped.validateBatch(urls, rules: rules)
         }
     }
 
@@ -112,7 +117,7 @@ final class ValidationServiceTests: XCTestCase {
 
         // When/Then
         await assertThrowsError {
-            _ = try await sut.validateBatch(urls, rules: rules)
+            _ = try await sutUnwrapped.validateBatch(urls, rules: rules)
         }
     }
 
@@ -124,7 +129,7 @@ final class ValidationServiceTests: XCTestCase {
 
         // When/Then
         await assertThrowsError {
-            _ = try await sut.checkIntegrity(url)
+            _ = try await sutUnwrapped.checkIntegrity(url)
         }
     }
 
@@ -134,7 +139,7 @@ final class ValidationServiceTests: XCTestCase {
 
         // When/Then
         await assertThrowsError {
-            _ = try await sut.checkIntegrity(url)
+            _ = try await sutUnwrapped.checkIntegrity(url)
         }
     }
 
@@ -144,7 +149,7 @@ final class ValidationServiceTests: XCTestCase {
 
         // When/Then
         await assertThrowsError {
-            _ = try await sut.checkIntegrity(url)
+            _ = try await sutUnwrapped.checkIntegrity(url)
         }
     }
 
@@ -156,7 +161,7 @@ final class ValidationServiceTests: XCTestCase {
 
         // When/Then
         await assertThrowsError {
-            _ = try await sut.scanForThreats(url)
+            _ = try await sutUnwrapped.scanForThreats(url)
         }
     }
 
@@ -166,7 +171,7 @@ final class ValidationServiceTests: XCTestCase {
 
         // When/Then
         await assertThrowsError {
-            _ = try await sut.scanForThreats(url)
+            _ = try await sutUnwrapped.scanForThreats(url)
         }
     }
 
@@ -182,7 +187,7 @@ final class ValidationServiceTests: XCTestCase {
         let requirements: Set<String> = ["fileName", "mimeType"]
 
         // When
-        let result = await sut.validateMetadata(metadata, requirements: requirements)
+        let result = await sutUnwrapped.validateMetadata(metadata, requirements: requirements)
 
         // Then
         XCTAssertFalse(result.isValid) // Currently returns false in scaffold
@@ -198,7 +203,7 @@ final class ValidationServiceTests: XCTestCase {
         let requirements: Set<String> = ["fileName", "creationDate"]
 
         // When
-        let result = await sut.validateMetadata(metadata, requirements: requirements)
+        let result = await sutUnwrapped.validateMetadata(metadata, requirements: requirements)
 
         // Then
         XCTAssertFalse(result.isValid)
@@ -208,7 +213,7 @@ final class ValidationServiceTests: XCTestCase {
 
     func testSuggestedRules_ForImageType_ShouldReturnImageRules() {
         // When
-        let rules = sut.suggestedRules(for: .image)
+        let rules = sutUnwrapped.suggestedRules(for: .image)
 
         // Then
         XCTAssertNotNil(rules)
@@ -216,7 +221,7 @@ final class ValidationServiceTests: XCTestCase {
 
     func testSuggestedRules_ForVideoType_ShouldReturnVideoRules() {
         // When
-        let rules = sut.suggestedRules(for: .video)
+        let rules = sutUnwrapped.suggestedRules(for: .video)
 
         // Then
         XCTAssertNotNil(rules)
@@ -231,7 +236,7 @@ final class ValidationServiceTests: XCTestCase {
 
         // When/Then
         await assertThrowsError {
-            _ = try await sut.validateFormat(url, expectedType: expectedType)
+            _ = try await sutUnwrapped.validateFormat(url, expectedType: expectedType)
         }
     }
 
@@ -242,7 +247,7 @@ final class ValidationServiceTests: XCTestCase {
 
         // When/Then
         await assertThrowsError {
-            _ = try await sut.validateFormat(url, expectedType: expectedType)
+            _ = try await sutUnwrapped.validateFormat(url, expectedType: expectedType)
         }
     }
 
@@ -257,7 +262,7 @@ final class ValidationServiceTests: XCTestCase {
         )
 
         // When
-        let result = sut.validateSize(size, constraints: constraints)
+        let result = sutUnwrapped.validateSize(size, constraints: constraints)
 
         // Then
         XCTAssertFalse(result.isValid) // Currently returns false in scaffold
@@ -269,7 +274,7 @@ final class ValidationServiceTests: XCTestCase {
         let constraints = SizeConstraints(minSize: 1_000_000)
 
         // When
-        let result = sut.validateSize(size, constraints: constraints)
+        let result = sutUnwrapped.validateSize(size, constraints: constraints)
 
         // Then
         XCTAssertFalse(result.isValid)
@@ -281,7 +286,7 @@ final class ValidationServiceTests: XCTestCase {
         let constraints = SizeConstraints(maxSize: 10_000_000)
 
         // When
-        let result = sut.validateSize(size, constraints: constraints)
+        let result = sutUnwrapped.validateSize(size, constraints: constraints)
 
         // Then
         XCTAssertFalse(result.isValid)
@@ -300,7 +305,7 @@ final class ValidationServiceTests: XCTestCase {
         )
 
         // When
-        let result = sut.validateDimensions(dimensions, constraints: constraints)
+        let result = sutUnwrapped.validateDimensions(dimensions, constraints: constraints)
 
         // Then
         XCTAssertFalse(result.isValid) // Currently returns false in scaffold
@@ -314,7 +319,7 @@ final class ValidationServiceTests: XCTestCase {
         )
 
         // When
-        let result = sut.validateDimensions(dimensions, constraints: constraints)
+        let result = sutUnwrapped.validateDimensions(dimensions, constraints: constraints)
 
         // Then
         XCTAssertFalse(result.isValid)

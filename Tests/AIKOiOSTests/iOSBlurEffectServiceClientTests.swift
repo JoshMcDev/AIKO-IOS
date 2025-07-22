@@ -5,12 +5,16 @@
     import UIKit
     import XCTest
 
-    final class iOSBlurEffectServiceClientTests: XCTestCase {
-        var client: iOSBlurEffectServiceClient!
+    final class IOSBlurEffectServiceClientTests: XCTestCase {
+        var client: IOSBlurEffectServiceClient?
 
+        private var clientUnwrapped: IOSBlurEffectServiceClient {
+            guard let client = client else { fatalError("client not initialized") }
+            return client
+        }
         override func setUp() async throws {
             try await super.setUp()
-            client = iOSBlurEffectServiceClient()
+            client = IOSBlurEffectServiceClient()
         }
 
         override func tearDown() async throws {
@@ -27,7 +31,7 @@
             }
 
             // Test that createBlurredBackground executes on MainActor
-            let blurredView = await client.createBlurredBackground(radius: 10.0)
+            let blurredView = await clientUnwrapped.createBlurredBackground(radius: 10.0)
             XCTAssertNotNil(blurredView, "Should return a valid AnyView")
 
             await MainActor.run {
@@ -36,7 +40,7 @@
         }
 
         func testSupportsNativeBlurMainActor() async {
-            let supports = await client.supportsNativeBlur()
+            let supports = await clientUnwrapped.supportsNativeBlur()
 
             // The result type doesn't matter, we're testing MainActor context
             XCTAssertTrue(supports == true || supports == false, "Should return a boolean value")
@@ -47,7 +51,7 @@
         }
 
         func testRecommendedBlurStyleMainActor() async {
-            let blurStyle = await client.recommendedBlurStyle()
+            let blurStyle = await clientUnwrapped.recommendedBlurStyle()
 
             // Should return a valid UIBlurEffect.Style
             let validStyles: [UIBlurEffect.Style] = [.regular, .light, .dark, .extraLight, .prominent, .systemUltraThinMaterial, .systemThinMaterial, .systemMaterial, .systemThickMaterial, .systemChromeMaterial]
@@ -67,7 +71,7 @@
 
         func testTemplateStartMethod() async throws {
             // Test that the template's start method can be called without error
-            try await client.start()
+            try await clientUnwrapped.start()
 
             await MainActor.run {
                 XCTAssertTrue(Thread.isMainThread, "After start(), should be on main thread")
@@ -90,8 +94,8 @@
 
         func testAsyncAwaitPattern() async {
             // Test the async/await pattern works correctly
-            async let supportsTask = client.supportsNativeBlur()
-            async let blurStyleTask = client.recommendedBlurStyle()
+            async let supportsTask = clientUnwrapped.supportsNativeBlur()
+            async let blurStyleTask = clientUnwrapped.recommendedBlurStyle()
 
             let (supports, blurStyle) = await (supportsTask, blurStyleTask)
 
@@ -108,7 +112,7 @@
         // MARK: - UI Integration Tests
 
         func testCreateBlurredBackgroundReturnsValidView() async {
-            let blurredView = await client.createBlurredBackground(radius: 15.0)
+            let blurredView = await clientUnwrapped.createBlurredBackground(radius: 15.0)
 
             XCTAssertNotNil(blurredView, "Should return a non-nil AnyView")
 
@@ -119,9 +123,9 @@
 
         func testBlurRadiusVariations() async {
             // Test with different blur radius values
-            let smallBlur = await client.createBlurredBackground(radius: 5.0)
-            let mediumBlur = await client.createBlurredBackground(radius: 15.0)
-            let largeBlur = await client.createBlurredBackground(radius: 25.0)
+            let smallBlur = await clientUnwrapped.createBlurredBackground(radius: 5.0)
+            let mediumBlur = await clientUnwrapped.createBlurredBackground(radius: 15.0)
+            let largeBlur = await clientUnwrapped.createBlurredBackground(radius: 25.0)
 
             XCTAssertNotNil(smallBlur, "Small blur should return valid view")
             XCTAssertNotNil(mediumBlur, "Medium blur should return valid view")

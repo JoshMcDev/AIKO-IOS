@@ -509,7 +509,7 @@ private struct MetricsAnalyzer {
             let previousAvg = previousMeasurements.map(\.aggregatedValue).reduce(0, +) / Double(previousMeasurements.count)
 
             // Create representative measurements
-            let currentRep = currentMeasurements.first!
+            guard let currentRep = currentMeasurements.first else { continue }
             let previousRep = MetricMeasurement(
                 name: currentRep.name,
                 type: currentRep.type,
@@ -648,7 +648,7 @@ private struct MetricsAnalyzer {
                 index == 0 || score >= scores[index - 1] * 0.95
             }
 
-            if isImproving, scores.last! > scores.first! * 1.1 {
+            if isImproving, let lastScore = scores.last, let firstScore = scores.first, lastScore > firstScore * 1.1 {
                 patterns.append((
                     message: "\(metricName) shows consistent improvement pattern",
                     metrics: [metricName],

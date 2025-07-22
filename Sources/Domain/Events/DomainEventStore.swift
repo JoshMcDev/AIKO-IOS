@@ -221,7 +221,7 @@ public final class InMemoryEventStore: DomainEventStore, @unchecked Sendable {
         queue.sync {
             events.filter { event in
                 event.aggregateId == id &&
-                    (after == nil || event.occurredAt > after!)
+                    (after.map { event.occurredAt > $0 } ?? true)
             }.sorted { $0.occurredAt < $1.occurredAt }
         }
     }
@@ -231,7 +231,7 @@ public final class InMemoryEventStore: DomainEventStore, @unchecked Sendable {
         return queue.sync {
             events.filter { event in
                 event.eventType == typeName &&
-                    (after == nil || event.occurredAt > after!)
+                    (after.map { event.occurredAt > $0 } ?? true)
             }.sorted { $0.occurredAt < $1.occurredAt }
         }
     }

@@ -6,7 +6,7 @@
     public extension PlatformViewServiceClient {
         @MainActor
         static var iOS: Self {
-            let service = iOSPlatformViewService()
+            let service = IOSPlatformViewService()
 
             return Self(
                 _createNavigationStack: { content in
@@ -37,7 +37,7 @@
         }
     }
 
-    public enum iOSPlatformViewServiceClient {
+    public enum IOSPlatformViewServiceClient {
         @MainActor
         public static let live = PlatformViewServiceClient.iOS
     }

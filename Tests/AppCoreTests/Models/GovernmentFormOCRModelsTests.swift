@@ -110,7 +110,10 @@ final class GovernmentFormOCRModelsTests: XCTestCase {
         let pattern = ValidationPatterns.cageCode
 
         for cage in validCages {
-            let regex = try! NSRegularExpression(pattern: pattern)
+            guard let regex = try? NSRegularExpression(pattern: pattern) else {
+                XCTFail("Failed to create NSRegularExpression for pattern: \(pattern)")
+                return
+            }
             let range = NSRange(location: 0, length: cage.utf16.count)
             let match = regex.firstMatch(in: cage, options: [], range: range)
 
@@ -124,7 +127,10 @@ final class GovernmentFormOCRModelsTests: XCTestCase {
         let pattern = ValidationPatterns.cageCode
 
         for cage in invalidCages {
-            let regex = try! NSRegularExpression(pattern: pattern)
+            guard let regex = try? NSRegularExpression(pattern: pattern) else {
+                XCTFail("Failed to create NSRegularExpression for pattern: \(pattern)")
+                return
+            }
             let range = NSRange(location: 0, length: cage.utf16.count)
             let match = regex.firstMatch(in: cage, options: [], range: range)
 
@@ -138,7 +144,10 @@ final class GovernmentFormOCRModelsTests: XCTestCase {
         let pattern = ValidationPatterns.uei
 
         for uei in validUEIs {
-            let regex = try! NSRegularExpression(pattern: pattern)
+            guard let regex = try? NSRegularExpression(pattern: pattern) else {
+                XCTFail("Failed to create NSRegularExpression for UEI pattern: \(pattern)")
+                return
+            }
             let range = NSRange(location: 0, length: uei.utf16.count)
             let match = regex.firstMatch(in: uei, options: [], range: range)
 
@@ -152,7 +161,10 @@ final class GovernmentFormOCRModelsTests: XCTestCase {
         let pattern = ValidationPatterns.uei
 
         for uei in invalidUEIs {
-            let regex = try! NSRegularExpression(pattern: pattern)
+            guard let regex = try? NSRegularExpression(pattern: pattern) else {
+                XCTFail("Failed to create NSRegularExpression for UEI pattern: \(pattern)")
+                return
+            }
             let range = NSRange(location: 0, length: uei.utf16.count)
             let match = regex.firstMatch(in: uei, options: [], range: range)
 
@@ -166,7 +178,10 @@ final class GovernmentFormOCRModelsTests: XCTestCase {
         let pattern = ValidationPatterns.currency
 
         for currency in validCurrencies {
-            let regex = try! NSRegularExpression(pattern: pattern)
+            guard let regex = try? NSRegularExpression(pattern: pattern) else {
+                XCTFail("Failed to create NSRegularExpression for currency pattern: \(pattern)")
+                return
+            }
             let range = NSRange(location: 0, length: currency.utf16.count)
             let match = regex.firstMatch(in: currency, options: [], range: range)
 
@@ -180,7 +195,10 @@ final class GovernmentFormOCRModelsTests: XCTestCase {
         let pattern = ValidationPatterns.date
 
         for date in validDates {
-            let regex = try! NSRegularExpression(pattern: pattern)
+            guard let regex = try? NSRegularExpression(pattern: pattern) else {
+                XCTFail("Failed to create NSRegularExpression for date pattern: \(pattern)")
+                return
+            }
             let range = NSRange(location: 0, length: date.utf16.count)
             let match = regex.firstMatch(in: date, options: [], range: range)
 
@@ -314,7 +332,10 @@ final class GovernmentFormOCRModelsTests: XCTestCase {
 
         measure {
             for data in testData {
-                let regex = try! NSRegularExpression(pattern: data.pattern)
+                guard let regex = try? NSRegularExpression(pattern: data.pattern) else {
+                    XCTFail("Failed to create NSRegularExpression for pattern: \(data.pattern)")
+                    continue
+                }
                 let range = NSRange(location: 0, length: data.value.utf16.count)
                 _ = regex.firstMatch(in: data.value, options: [], range: range)
             }
@@ -346,7 +367,7 @@ final class GovernmentFormOCRModelsTests: XCTestCase {
 
     func test_jsonParsing_malformedData_throwsAppropriateError() {
         // Test will fail initially - needs error handling
-        let malformedJSON = "{ \"invalid\": json }".data(using: .utf8)!
+        let malformedJSON = Data("{ \"invalid\": json }".utf8)
 
         let decoder = JSONDecoder()
         XCTAssertThrowsError(try decoder.decode(GovernmentFormOCRModels.SF1449OCRData.self, from: malformedJSON)) { error in
@@ -364,7 +385,10 @@ final class GovernmentFormOCRModelsTests: XCTestCase {
         ]
 
         for (value, pattern, shouldMatch) in specialCases {
-            let regex = try! NSRegularExpression(pattern: pattern)
+            guard let regex = try? NSRegularExpression(pattern: pattern) else {
+                XCTFail("Failed to create NSRegularExpression for pattern: \(pattern)")
+                continue
+            }
             let range = NSRange(location: 0, length: value.utf16.count)
             let match = regex.firstMatch(in: value, options: [], range: range)
 
@@ -414,7 +438,11 @@ final class GovernmentFormOCRModelsTests: XCTestCase {
             }
         }
         """
-        return json.data(using: .utf8)!
+        guard let jsonData = json.data(using: .utf8) else {
+            XCTFail("Failed to convert SF1449 test JSON string to Data")
+            return Data()
+        }
+        return jsonData
     }
 
     private func createSF30TestJSON() -> Data {
@@ -451,7 +479,11 @@ final class GovernmentFormOCRModelsTests: XCTestCase {
             }
         }
         """
-        return json.data(using: .utf8)!
+        guard let jsonData = json.data(using: .utf8) else {
+            XCTFail("Failed to convert SF30 test JSON string to Data")
+            return Data()
+        }
+        return jsonData
     }
 
     private func createDD1155TestJSON() -> Data {
@@ -490,7 +522,11 @@ final class GovernmentFormOCRModelsTests: XCTestCase {
             }
         }
         """
-        return json.data(using: .utf8)!
+        guard let jsonData = json.data(using: .utf8) else {
+            XCTFail("Failed to convert DD1155 test JSON string to Data")
+            return Data()
+        }
+        return jsonData
     }
 
     private func createLargeFormTestJSON() -> Data {

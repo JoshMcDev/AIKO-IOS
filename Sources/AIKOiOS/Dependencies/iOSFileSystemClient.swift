@@ -4,15 +4,15 @@
     import Foundation
 
     /// iOS-specific implementation of FileSystemClient
-    public struct iOSFileSystemClient: Sendable {
+    public struct IOSFileSystemClient: Sendable {
         public init() {}
     }
 
     // MARK: - Live Implementation
 
-    public extension iOSFileSystemClient {
+    public extension IOSFileSystemClient {
         static let live: FileSystemClient = {
-            let client = iOSFileSystemClient()
+            let client = IOSFileSystemClient()
 
             return FileSystemClient(
                 directoryURL: { directory in
@@ -51,7 +51,7 @@
 
     // MARK: - Implementation Methods
 
-    extension iOSFileSystemClient {
+    extension IOSFileSystemClient {
         private func directoryURL(for directory: FileDirectory) throws -> URL {
             switch directory {
             case .documents:

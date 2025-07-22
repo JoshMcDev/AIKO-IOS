@@ -280,10 +280,10 @@ public actor SessionStorage {
     private let fileManager = FileManager.default
 
     private var storageURL: URL {
-        fileManager
-            .urls(for: .cachesDirectory, in: .userDomainMask)
-            .first!
-            .appendingPathComponent("ScanSessions")
+        guard let cachesURL = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first else {
+            fatalError("Unable to find caches directory")
+        }
+        return cachesURL.appendingPathComponent("ScanSessions")
     }
 
     private init() {

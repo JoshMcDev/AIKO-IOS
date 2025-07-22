@@ -4,7 +4,12 @@ import XCTest
 
 @available(iOS 16.0, *)
 final class MediaWorkflowCoordinatorTests: XCTestCase {
-    var sut: MediaWorkflowCoordinator!
+    var sut: MediaWorkflowCoordinator?
+
+    private var sutUnwrapped: MediaWorkflowCoordinator {
+        guard let sut = sut else { fatalError("sut not initialized") }
+        return sut
+    }
 
     override func setUp() async throws {
         try await super.setUp()

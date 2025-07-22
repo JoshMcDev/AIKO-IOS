@@ -236,10 +236,8 @@ extension SettingsManager: DependencyKey {
                 // Clear documents directory (except settings file)
                 let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
                 let contents = try FileManager.default.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: nil)
-                for item in contents {
-                    if item.lastPathComponent != "aiko_settings.json" {
-                        try FileManager.default.removeItem(at: item)
-                    }
+                for item in contents where item.lastPathComponent != "aiko_settings.json" {
+                    try FileManager.default.removeItem(at: item)
                 }
             },
             saveAPIKey: { key in
@@ -248,7 +246,7 @@ extension SettingsManager: DependencyKey {
                     kSecClass as String: kSecClassGenericPassword,
                     kSecAttrService as String: "com.aiko.api",
                     kSecAttrAccount as String: "anthropic_api_key",
-                    kSecValueData as String: key.data(using: .utf8)!,
+                    kSecValueData as String: key.data(using: .utf8) ?? Data(),
                 ]
 
                 // Delete existing
@@ -273,8 +271,7 @@ extension SettingsManager: DependencyKey {
 
                 if status == errSecSuccess,
                    let data = result as? Data,
-                   let key = String(data: data, encoding: .utf8)
-                {
+                   let key = String(data: data, encoding: .utf8) {
                     return key
                 }
 
@@ -367,8 +364,7 @@ extension SettingsManager: DependencyKey {
                     templates: templates.map { template in
                         // Convert CustomTemplate to JSON string
                         if let data = try? JSONEncoder().encode(template),
-                           let jsonString = String(data: data, encoding: .utf8)
-                        {
+                           let jsonString = String(data: data, encoding: .utf8) {
                             return jsonString
                         }
                         return ""
@@ -417,8 +413,7 @@ extension SettingsManager: DependencyKey {
                     @Dependency(\.templateStorageService) var templateService
                     for templateJSON in backupData.templates {
                         if let data = templateJSON.data(using: .utf8),
-                           let template = try? JSONDecoder().decode(CustomTemplate.self, from: data)
-                        {
+                           let template = try? JSONDecoder().decode(CustomTemplate.self, from: data) {
                             try? await templateService.saveTemplate(template)
                         }
                     }
@@ -437,10 +432,10 @@ extension SettingsManager: DependencyKey {
             saveAPIKey: { _ in },
             loadAPIKey: { "test-api-key" },
             validateAPIKey: { _ in true },
-            exportData: { _ in URL(string: "file://test.json")! },
+            exportData: { _ in URL(string: "file://test.json") ?? URL(fileURLWithPath: "/tmp/test.json") },
             importData: { _ in },
             clearCache: {},
-            performBackup: { _ in URL(string: "file://backup.json")! },
+            performBackup: { _ in URL(string: "file://backup.json") ?? URL(fileURLWithPath: "/tmp/backup.json") },
             restoreBackup: { _, _ in }
         )
     }
@@ -458,10 +453,10 @@ extension SettingsManager: DependencyKey {
             saveAPIKey: { _ in },
             loadAPIKey: { "preview-api-key" },
             validateAPIKey: { _ in true },
-            exportData: { _ in URL(string: "file://test.json")! },
+            exportData: { _ in URL(string: "file://test.json") ?? URL(fileURLWithPath: "/tmp/test.json") },
             importData: { _ in },
             clearCache: {},
-            performBackup: { _ in URL(string: "file://backup.json")! },
+            performBackup: { _ in URL(string: "file://backup.json") ?? URL(fileURLWithPath: "/tmp/backup.json") },
             restoreBackup: { _, _ in }
         )
     }

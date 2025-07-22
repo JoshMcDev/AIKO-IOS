@@ -7,7 +7,7 @@
     import UniformTypeIdentifiers
 
     /// iOS-specific implementation of AppView
-    public struct iOSAppView: View {
+    public struct IOSAppView: View {
         let store: StoreOf<AppFeature>
 
         public init(store: StoreOf<AppFeature>) {
@@ -15,11 +15,11 @@
         }
 
         public var body: some View {
-            WithViewStore(store, observe: { $0 }) { viewStore in
-                iOSNavigationStack {
+            WithViewStore(store, observe: { $0 }, content: { viewStore in
+                IOSNavigationStack {
                     SharedAppView(
                         store: store,
-                        services: iOSAppViewServices()
+                        services: IOSAppViewServices()
                     )
                 }
                 .preferredColorScheme(.dark)
@@ -60,7 +60,7 @@
     }
 
     /// iOS-specific navigation stack that handles version differences
-    struct iOSNavigationStack<Content: View>: View {
+    struct IOSNavigationStack<Content: View>: View {
         @ViewBuilder let content: () -> Content
 
         var body: some View {
@@ -80,23 +80,23 @@
     }
 
     /// iOS implementation of platform services
-    struct iOSAppViewServices: @preconcurrency AppViewPlatformServices {
+    struct IOSAppViewServices: @preconcurrency AppViewPlatformServices {
         typealias NavigationStack = AnyView
-        typealias DocumentPickerView = iOSDocumentPicker
-        typealias ImagePickerView = iOSImagePicker
+        typealias DocumentPickerView = IOSDocumentPicker
+        typealias ImagePickerView = IOSImagePicker
         typealias ShareView = ShareSheetView
 
         @MainActor
         func makeNavigationStack(@ViewBuilder content: @escaping () -> some View) -> AnyView {
-            AnyView(iOSNavigationStack(content: content))
+            AnyView(IOSNavigationStack(content: content))
         }
 
-        func makeDocumentPicker(onDocumentsPicked: @escaping ([(Data, String)]) -> Void) -> iOSDocumentPicker {
-            iOSDocumentPicker(onDocumentsPicked: onDocumentsPicked)
+        func makeDocumentPicker(onDocumentsPicked: @escaping ([(Data, String)]) -> Void) -> IOSDocumentPicker {
+            IOSDocumentPicker(onDocumentsPicked: onDocumentsPicked)
         }
 
-        func makeImagePicker(onImagePicked: @escaping (Data) -> Void) -> iOSImagePicker {
-            iOSImagePicker(onImagePicked: onImagePicked)
+        func makeImagePicker(onImagePicked: @escaping (Data) -> Void) -> IOSImagePicker {
+            IOSImagePicker(onImagePicked: onImagePicked)
         }
 
         @MainActor
@@ -117,8 +117,7 @@
             // Method 1: Try loading from bundle with different approaches
             if let url = Bundle.main.url(forResource: "AppIcon", withExtension: "png"),
                let data = try? Data(contentsOf: url),
-               let uiImage = UIImage(data: data)
-            {
+               let uiImage = UIImage(data: data) {
                 return Image(uiImage: uiImage)
             }
 
@@ -135,8 +134,7 @@
             // Method 4: Try from module bundle (for SPM)
             if let bundleURL = Bundle.module.url(forResource: "AppIcon", withExtension: "png"),
                let data = try? Data(contentsOf: bundleURL),
-               let uiImage = UIImage(data: data)
-            {
+               let uiImage = UIImage(data: data) {
                 return Image(uiImage: uiImage)
             }
 
@@ -146,7 +144,7 @@
 
     // MARK: - iOS-specific Image Loading
 
-    extension iOSAppViewServices: PlatformImageLoader {
+    extension IOSAppViewServices: PlatformImageLoader {
         func loadImage(named name: String, in bundle: Bundle?) -> Image? {
             if let uiImage = UIImage(named: name, in: bundle ?? Bundle.main, compatibleWith: nil) {
                 return Image(uiImage: uiImage)
@@ -162,7 +160,7 @@
 
     // MARK: - iOS Document Picker
 
-    struct iOSDocumentPicker: UIViewControllerRepresentable {
+    struct IOSDocumentPicker: UIViewControllerRepresentable {
         let onDocumentsPicked: ([(Data, String)]) -> Void
 
         func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
@@ -185,9 +183,9 @@
         }
 
         class Coordinator: NSObject, UIDocumentPickerDelegate {
-            let parent: iOSDocumentPicker
+            let parent: IOSDocumentPicker
 
-            init(_ parent: iOSDocumentPicker) {
+            init(_ parent: IOSDocumentPicker) {
                 self.parent = parent
             }
 
@@ -225,12 +223,12 @@
 
     // MARK: - iOS Image Picker
 
-    struct iOSImagePicker: View {
+    struct IOSImagePicker: View {
         let onImagePicked: (Data) -> Void
 
         var body: some View {
             if #available(iOS 16.0, *) {
-                iOSDocumentScanner { scannedDocuments in
+                IOSDocumentScanner { scannedDocuments in
                     // Convert to single image data
                     if let firstDocument = scannedDocuments.first {
                         onImagePicked(firstDocument.0)
@@ -238,7 +236,7 @@
                 }
             } else {
                 // Fallback for older iOS versions - single image capture
-                iOSCameraImagePicker { imageData in
+                IOSCameraImagePicker { imageData in
                     onImagePicked(imageData)
                 }
             }
@@ -248,7 +246,7 @@
     // MARK: - iOS Document Scanner
 
     @available(iOS 16.0, *)
-    struct iOSDocumentScanner: UIViewControllerRepresentable {
+    struct IOSDocumentScanner: UIViewControllerRepresentable {
         let onDocumentsScanned: ([(Data, String)]) -> Void
 
         func makeUIViewController(context _: Context) -> UIViewController {
@@ -293,7 +291,7 @@
 
     // MARK: - iOS Camera Image Picker (Fallback)
 
-    struct iOSCameraImagePicker: UIViewControllerRepresentable {
+    struct IOSCameraImagePicker: UIViewControllerRepresentable {
         let onImagePicked: (Data) -> Void
 
         func makeUIViewController(context: Context) -> UIImagePickerController {
@@ -311,16 +309,15 @@
         }
 
         class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-            let parent: iOSCameraImagePicker
+            let parent: IOSCameraImagePicker
 
-            init(_ parent: iOSCameraImagePicker) {
+            init(_ parent: IOSCameraImagePicker) {
                 self.parent = parent
             }
 
             func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
                 if let image = info[.originalImage] as? UIImage,
-                   let imageData = image.jpegData(compressionQuality: 0.8)
-                {
+                   let imageData = image.jpegData(compressionQuality: 0.8) {
                     DispatchQueue.main.async {
                         self.parent.onImagePicked(imageData)
                     }

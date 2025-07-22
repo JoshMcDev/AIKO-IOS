@@ -24,7 +24,7 @@
         )
     }
 
-    public enum iOSNavigationServiceClient {
+    public enum IOSNavigationServiceClient {
         public static let live = NavigationServiceClient.iOS
     }
 #endif
