@@ -19,7 +19,7 @@ public struct ProfileView: View {
             ScrollView {
                 VStack(spacing: Theme.Spacing.xl) {
                     // Info message about profile usage
-                    HStack(alignment: .top, spacing: Theme.Spacing.sm) {
+                    HStack(alignment: .top, spacing: Theme.Spacing.small) {
                         Image(systemName: "sparkles")
                             .font(.body)
                             .foregroundColor(.blue)
@@ -29,7 +29,7 @@ public struct ProfileView: View {
                             .foregroundColor(.secondary)
                             .fixedSize(horizontal: false, vertical: true)
                     }
-                    .padding(Theme.Spacing.md)
+                    .padding(Theme.Spacing.medium)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(
                         RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
@@ -170,7 +170,7 @@ public struct ProfileView: View {
                     }
 
                     // Addresses Section
-                    VStack(spacing: Theme.Spacing.lg) {
+                    VStack(spacing: Theme.Spacing.large) {
                         // Administered By Address
                         AddressSectionView(
                             title: "Default Administered By Address",
@@ -217,7 +217,7 @@ public struct ProfileView: View {
 
                     Spacer(minLength: 50)
                 }
-                .padding(Theme.Spacing.lg)
+                .padding(Theme.Spacing.large)
             }
             .background(Theme.Colors.aikoBackground)
             .navigationTitle("My Profile")
@@ -294,7 +294,7 @@ struct ProfileHeaderView: View {
     let onImageTap: () -> Void
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.lg) {
+        VStack(spacing: Theme.Spacing.large) {
             // Profile Image
             Button(action: isEditing ? onImageTap : {}) {
                 ZStack {
@@ -364,8 +364,8 @@ struct ProfileHeaderView: View {
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundColor(isEditing ? .green : .blue)
-                    .padding(.horizontal, Theme.Spacing.lg)
-                    .padding(.vertical, Theme.Spacing.sm)
+                    .padding(.horizontal, Theme.Spacing.large)
+                    .padding(.vertical, Theme.Spacing.small)
                     .background(
                         RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
                             .fill(isEditing ? Color.green.opacity(0.2) : Color.blue.opacity(0.2))

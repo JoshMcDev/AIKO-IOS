@@ -25,7 +25,7 @@ public struct TemplateDetailView: View {
         SwiftUI.NavigationView {
             VStack(spacing: 0) {
                 // Template Info Header
-                VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                     HStack {
                         Image(systemName: documentType.icon)
                             .font(.title)
@@ -66,13 +66,13 @@ public struct TemplateDetailView: View {
                     farReferencesSection
 
                     // Action buttons
-                    HStack(spacing: Theme.Spacing.md) {
+                    HStack(spacing: Theme.Spacing.medium) {
                         Button(action: { showingUploadOfficeTemplate = true }) {
                             Label("Upload Office Template", systemImage: "square.and.arrow.up")
                                 .font(.subheadline)
                                 .foregroundColor(.blue)
-                                .padding(.horizontal, Theme.Spacing.md)
-                                .padding(.vertical, Theme.Spacing.sm)
+                                .padding(.horizontal, Theme.Spacing.medium)
+                                .padding(.vertical, Theme.Spacing.small)
                                 .background(
                                     RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
                                         .fill(Theme.Colors.aikoSecondary)
@@ -86,7 +86,7 @@ public struct TemplateDetailView: View {
                                 fileName: DocumentShareHelper.generateFileName(for: .template),
                                 buttonStyle: .icon
                             )
-                            .padding(.horizontal, Theme.Spacing.sm)
+                            .padding(.horizontal, Theme.Spacing.small)
                         }
 
                         Spacer()
@@ -102,8 +102,8 @@ public struct TemplateDetailView: View {
                                   systemImage: isEditing ? "checkmark.circle" : "pencil.circle")
                                 .font(.subheadline)
                                 .foregroundColor(isEditing ? .green : .blue)
-                                .padding(.horizontal, Theme.Spacing.md)
-                                .padding(.vertical, Theme.Spacing.sm)
+                                .padding(.horizontal, Theme.Spacing.medium)
+                                .padding(.vertical, Theme.Spacing.small)
                                 .background(
                                     RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
                                         .fill(isEditing ? Color.green.opacity(0.2) : Theme.Colors.aikoSecondary)
@@ -115,8 +115,8 @@ public struct TemplateDetailView: View {
                                 Label("Cancel", systemImage: "xmark.circle")
                                     .font(.subheadline)
                                     .foregroundColor(.red)
-                                    .padding(.horizontal, Theme.Spacing.md)
-                                    .padding(.vertical, Theme.Spacing.sm)
+                                    .padding(.horizontal, Theme.Spacing.medium)
+                                    .padding(.vertical, Theme.Spacing.small)
                                     .background(
                                         RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
                                             .fill(Color.red.opacity(0.2))
@@ -125,7 +125,7 @@ public struct TemplateDetailView: View {
                         }
                     }
                 }
-                .padding(Theme.Spacing.lg)
+                .padding(Theme.Spacing.large)
                 .background(Color.black)
 
                 Divider()
@@ -146,7 +146,7 @@ public struct TemplateDetailView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .padding(.vertical, 100)
                     } else if let error = loadError {
-                        VStack(spacing: Theme.Spacing.lg) {
+                        VStack(spacing: Theme.Spacing.large) {
                             Image(systemName: "exclamationmark.triangle")
                                 .font(.system(size: 48))
                                 .foregroundColor(.orange)
@@ -171,18 +171,18 @@ public struct TemplateDetailView: View {
                         TextEditor(text: $editedContent)
                             .font(.system(.body, design: .monospaced))
                             .foregroundColor(.white)
-                            .padding(Theme.Spacing.lg)
+                            .padding(Theme.Spacing.large)
                             .background(Theme.Colors.aikoSecondary)
                             .cornerRadius(Theme.CornerRadius.md)
-                            .padding(Theme.Spacing.lg)
+                            .padding(Theme.Spacing.large)
                     } else {
                         Text(templateContent)
                             .font(.system(.body, design: .monospaced))
                             .foregroundColor(.white)
-                            .padding(Theme.Spacing.lg)
+                            .padding(Theme.Spacing.large)
                             .background(Theme.Colors.aikoSecondary)
                             .cornerRadius(Theme.CornerRadius.md)
-                            .padding(Theme.Spacing.lg)
+                            .padding(Theme.Spacing.large)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
@@ -374,7 +374,7 @@ public struct TemplateDetailView: View {
 
     @ViewBuilder
     private var farReferencesSection: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.extraSmall) {
             HStack {
                 Image(systemName: "book.closed.fill")
                     .font(.caption)
@@ -387,14 +387,14 @@ public struct TemplateDetailView: View {
             Text(documentType.farReference)
                 .font(.caption)
                 .foregroundColor(.blue)
-                .padding(.horizontal, Theme.Spacing.md)
-                .padding(.vertical, Theme.Spacing.xs)
+                .padding(.horizontal, Theme.Spacing.medium)
+                .padding(.vertical, Theme.Spacing.extraSmall)
                 .background(
                     RoundedRectangle(cornerRadius: 4)
                         .fill(Color.blue.opacity(0.1))
                 )
         }
-        .padding(.top, Theme.Spacing.sm)
+        .padding(.top, Theme.Spacing.small)
     }
 }
 

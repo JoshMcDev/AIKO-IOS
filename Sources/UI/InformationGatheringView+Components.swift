@@ -103,7 +103,7 @@ struct SelectionFieldView: View {
     @Binding var selectedOption: String
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.sm) {
+        VStack(spacing: Theme.Spacing.small) {
             ForEach(options, id: \.self) { option in
                 Button(action: {
                     selectedOption = option

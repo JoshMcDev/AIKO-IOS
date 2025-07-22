@@ -239,7 +239,7 @@ struct SkeletonCard: View {
     var body: some View {
         EnhancedCard(
             content: {
-                VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                     // Title skeleton
                     RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
                         .fill(Color.gray.opacity(0.3))
@@ -285,7 +285,7 @@ struct InteractiveDocumentCard: View {
     var body: some View {
         EnhancedCard(
             content: {
-                VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                     HStack {
                         Image(systemName: document.icon)
                             .font(.title2)

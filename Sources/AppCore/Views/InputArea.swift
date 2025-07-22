@@ -60,11 +60,11 @@ public struct InputArea: View {
         VStack(spacing: 0) {
             Divider()
 
-            VStack(spacing: Theme.Spacing.md) {
+            VStack(spacing: Theme.Spacing.medium) {
                 // Uploaded Documents
                 if !uploadedDocuments.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: Theme.Spacing.sm) {
+                        HStack(spacing: Theme.Spacing.small) {
                             ForEach(uploadedDocuments) { document in
                                 UploadedDocumentCard(
                                     document: document,
@@ -87,13 +87,13 @@ public struct InputArea: View {
                             .textFieldStyle(PlainTextFieldStyle())
                             .foregroundColor(.white)
                             .padding(.leading, Theme.Spacing.lg)
-                            .padding(.vertical, Theme.Spacing.md)
-                            .padding(.trailing, Theme.Spacing.sm)
+                            .padding(.vertical, Theme.Spacing.medium)
+                            .padding(.trailing, Theme.Spacing.small)
                             .lineLimit(1 ... 4)
                     }
 
                     // Action buttons
-                    HStack(spacing: Theme.Spacing.sm) {
+                    HStack(spacing: Theme.Spacing.small) {
                         // Enhance prompt button
                         Button(action: {
                             if !requirements.isEmpty {
@@ -173,8 +173,8 @@ public struct InputArea: View {
                         .scaleEffect(requirements.isEmpty ? 1.0 : 1.1)
                         .animation(.easeInOut(duration: 0.2), value: requirements.isEmpty)
                     }
-                    .padding(.trailing, Theme.Spacing.md)
-                    .padding(.vertical, Theme.Spacing.sm)
+                    .padding(.trailing, Theme.Spacing.medium)
+                    .padding(.vertical, Theme.Spacing.small)
                 }
                 .background(
                     RoundedRectangle(cornerRadius: 24)
@@ -197,7 +197,7 @@ public struct UploadedDocumentCard: View {
     let onRemove: () -> Void
 
     public var body: some View {
-        HStack(spacing: Theme.Spacing.sm) {
+        HStack(spacing: Theme.Spacing.small) {
             Image(systemName: fileIcon(for: document.fileName))
                 .font(.title3)
                 .foregroundColor(.blue)
@@ -220,8 +220,8 @@ public struct UploadedDocumentCard: View {
                     .foregroundColor(.secondary)
             }
         }
-        .padding(.horizontal, Theme.Spacing.md)
-        .padding(.vertical, Theme.Spacing.sm)
+        .padding(.horizontal, Theme.Spacing.medium)
+        .padding(.vertical, Theme.Spacing.small)
         .background(
             RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
                 .fill(Theme.Colors.aikoSecondary)

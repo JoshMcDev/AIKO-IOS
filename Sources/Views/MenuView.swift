@@ -78,7 +78,7 @@ public struct MenuItemRow: View {
                     .foregroundColor(.blue)
             }
         }
-        .padding(.vertical, Theme.Spacing.sm)
+        .padding(.vertical, Theme.Spacing.small)
         .padding(.horizontal, Theme.Spacing.md)
         .background(
             RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)

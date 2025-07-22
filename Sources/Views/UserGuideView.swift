@@ -77,15 +77,15 @@ public struct UserGuideView: View {
                     VStack(spacing: 0) {
                         // Section selector
                         ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: Theme.Spacing.sm) {
+                            HStack(spacing: Theme.Spacing.small) {
                                 ForEach(GuideSection.allCases, id: \.self) { section in
                                     Button(action: { selectedSection = section }) {
                                         Text(section.rawValue)
                                             .font(.subheadline)
                                             .fontWeight(selectedSection == section ? .semibold : .regular)
                                             .foregroundColor(selectedSection == section ? .white : .secondary)
-                                            .padding(.horizontal, Theme.Spacing.md)
-                                            .padding(.vertical, Theme.Spacing.sm)
+                                            .padding(.horizontal, Theme.Spacing.medium)
+                                            .padding(.vertical, Theme.Spacing.small)
                                             .background(
                                                 RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
                                                     .fill(selectedSection == section ? Theme.Colors.aikoAccent : Theme.Colors.aikoSecondary)
@@ -93,7 +93,7 @@ public struct UserGuideView: View {
                                     }
                                 }
                             }
-                            .padding(Theme.Spacing.md)
+                            .padding(Theme.Spacing.medium)
                         }
                         .background(Color.black)
 
@@ -133,19 +133,19 @@ public struct UserGuideView: View {
                 TextField("Search guide...", text: $searchText)
                     .textFieldStyle(PlainTextFieldStyle())
             }
-            .padding(Theme.Spacing.md)
+            .padding(Theme.Spacing.medium)
             .background(Theme.Colors.aikoSecondary.opacity(0.5))
             .cornerRadius(Theme.CornerRadius.sm)
-            .padding(Theme.Spacing.md)
+            .padding(Theme.Spacing.medium)
 
             // Section list
             ScrollView {
-                VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                     ForEach(GuideSection.allCases, id: \.self) { section in
                         sectionButton(section)
                     }
                 }
-                .padding(.horizontal, Theme.Spacing.md)
+                .padding(.horizontal, Theme.Spacing.medium)
             }
         }
         .background(Theme.Colors.aikoSecondary)
@@ -153,7 +153,7 @@ public struct UserGuideView: View {
 
     private func sectionButton(_ section: GuideSection) -> some View {
         Button(action: { selectedSection = section }) {
-            HStack(spacing: Theme.Spacing.md) {
+            HStack(spacing: Theme.Spacing.medium) {
                 Image(systemName: section.icon)
                     .font(.title3)
                     .frame(width: 24)
@@ -166,8 +166,8 @@ public struct UserGuideView: View {
 
                 Spacer()
             }
-            .padding(.vertical, Theme.Spacing.sm)
-            .padding(.horizontal, Theme.Spacing.md)
+            .padding(.vertical, Theme.Spacing.small)
+            .padding(.horizontal, Theme.Spacing.medium)
             .background(
                 RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
                     .fill(selectedSection == section ? Theme.Colors.aikoAccent : Color.clear)
@@ -611,7 +611,7 @@ struct GuideSection: View {
     var bullets: [String] = []
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
             Text(title)
                 .font(.headline)
                 .fontWeight(.semibold)
@@ -624,9 +624,9 @@ struct GuideSection: View {
             }
 
             if !bullets.isEmpty {
-                VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                     ForEach(bullets, id: \.self) { bullet in
-                        HStack(alignment: .top, spacing: Theme.Spacing.sm) {
+                        HStack(alignment: .top, spacing: Theme.Spacing.small) {
                             Text("•")
                                 .font(.body)
                             Text(bullet)
@@ -645,14 +645,14 @@ struct DocumentTypeGuide: View {
     let documents: [(String, String)]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
             Text(category)
                 .font(.headline)
                 .fontWeight(.semibold)
 
-            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                 ForEach(documents, id: \.0) { doc in
-                    HStack(alignment: .top, spacing: Theme.Spacing.md) {
+                    HStack(alignment: .top, spacing: Theme.Spacing.medium) {
                         Text(doc.0)
                             .font(.subheadline)
                             .fontWeight(.medium)
@@ -667,7 +667,7 @@ struct DocumentTypeGuide: View {
                     }
                 }
             }
-            .padding(.leading, Theme.Spacing.md)
+            .padding(.leading, Theme.Spacing.medium)
         }
     }
 }
@@ -678,7 +678,7 @@ struct FAQItem: View {
     @State private var isExpanded = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
             Button(action: { isExpanded.toggle() }) {
                 HStack {
                     Text(question)
@@ -700,11 +700,11 @@ struct FAQItem: View {
                 Text(answer)
                     .font(.body)
                     .foregroundColor(.primary.opacity(0.9))
-                    .padding(.leading, Theme.Spacing.md)
+                    .padding(.leading, Theme.Spacing.medium)
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
-        .padding(Theme.Spacing.md)
+        .padding(Theme.Spacing.medium)
         .background(Theme.Colors.aikoSecondary.opacity(0.5))
         .cornerRadius(Theme.CornerRadius.sm)
         .animation(.easeInOut(duration: 0.2), value: isExpanded)

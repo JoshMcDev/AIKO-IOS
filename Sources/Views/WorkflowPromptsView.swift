@@ -6,7 +6,7 @@ struct WorkflowPromptsView: View {
 
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                 // Workflow State Header
                 if let context = viewStore.workflowContext {
                     WorkflowStateHeader(
@@ -89,7 +89,7 @@ struct WorkflowStateHeader: View {
                     .font(.caption)
                     .foregroundColor(automationEnabled ? .green : .orange)
             }
-            .padding(.horizontal, Theme.Spacing.sm)
+            .padding(.horizontal, Theme.Spacing.small)
             .padding(.vertical, 4)
             .background(
                 RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
@@ -107,7 +107,7 @@ struct PendingApprovalsSection: View {
     let onReject: (WorkflowStep.ID) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.small) {
             Text("Pending Approvals")
                 .font(.subheadline)
                 .fontWeight(.semibold)
@@ -132,7 +132,7 @@ struct ApprovalCard: View {
     let onReject: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.small) {
             Text(step.action)
                 .font(.subheadline)
                 .foregroundColor(.white)
@@ -162,7 +162,7 @@ struct ApprovalCard: View {
                 .buttonStyle(BorderlessButtonStyle())
             }
         }
-        .padding(Theme.Spacing.md)
+        .padding(Theme.Spacing.medium)
         .background(
             RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
                 .fill(Color.orange.opacity(0.1))
@@ -181,7 +181,7 @@ struct SuggestedPromptsSection: View {
     let onSelectPrompt: (SuggestedPrompt) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.small) {
             Text("Suggested Next Steps")
                 .font(.subheadline)
                 .fontWeight(.semibold)
@@ -224,7 +224,7 @@ struct PromptCard: View {
 
     var body: some View {
         Button(action: onSelect) {
-            HStack(spacing: Theme.Spacing.md) {
+            HStack(spacing: Theme.Spacing.medium) {
                 Image(systemName: categoryIcon)
                     .font(.body)
                     .foregroundColor(priorityColor)
@@ -241,7 +241,7 @@ struct PromptCard: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-            .padding(Theme.Spacing.md)
+            .padding(Theme.Spacing.medium)
             .background(
                 RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
                     .fill(Theme.Colors.aikoTertiary)
@@ -259,7 +259,7 @@ struct AutomationControlsSection: View {
     let onShowSettings: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.small) {
             HStack {
                 Text("Automation")
                     .font(.subheadline)

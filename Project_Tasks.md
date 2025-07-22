@@ -2,7 +2,7 @@
 
 ## 📊 Project Overview
 **Last Updated**: 2025-07-22  
-**Total Tasks**: 46 (20 completed, 26 pending)  
+**Total Tasks**: 47 (20 completed, 27 pending)  
 **Completion Rate**: 43%
 
 ### Current Status
@@ -314,7 +314,7 @@
 - **Autonomy**: Complete offline operation after initial setup
 - **Intelligence**: GraphRAG-powered semantic understanding vs keyword matching
 
-### Phase 5: Smart Integrations & Provider Flexibility (7 tasks)
+### Phase 5: Smart Integrations & Provider Flexibility (8 tasks)
 
 - [ ] **Implement iOS Native Integrations Suite**
   - Priority: High
@@ -326,6 +326,22 @@
     - iOS Calendar & Reminders integration for deadline tracking
     - Local notifications system for acquisition milestones
     - Integration with existing form auto-population workflow
+
+- [ ] **Implement iCloud Sync with CloudKit Integration**
+  - Priority: High
+  - Status: 🚧 Not started
+  - Description: Full iCloud synchronization for documents, settings, and app data across all user devices with seamless multi-device experience
+  - Technical Tasks:
+    - CloudKit database schema design for documents, settings, and user preferences
+    - Document synchronization with intelligent conflict resolution strategies
+    - LLM provider settings and API key sync across iPhone, iPad, and Mac
+    - Form templates and scan session persistence across devices
+    - Background sync with CKSubscription for real-time updates and notifications
+    - Offline-first architecture with automatic sync when network available
+    - User control over sync preferences, data management, and storage quotas
+    - CloudKit sharing for collaborative document workflows
+    - Sync status indicators and manual sync triggers for user transparency
+    - Data migration support for existing local-only users upgrading to iCloud sync
 
 - [ ] **Add Google Maps Integration for Vendor Management**
   - Priority: Medium

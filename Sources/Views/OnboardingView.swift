@@ -22,9 +22,9 @@ public struct OnboardingView: View {
 
                 // Content
                 ScrollView {
-                    VStack(spacing: Theme.Spacing.xl) {
+                    VStack(spacing: Theme.Spacing.extraLarge) {
                         // Step Header
-                        VStack(spacing: Theme.Spacing.sm) {
+                        VStack(spacing: Theme.Spacing.small) {
                             Text(viewStore.currentStep.title)
                                 .font(.largeTitle)
                                 .fontWeight(.bold)
@@ -34,7 +34,7 @@ public struct OnboardingView: View {
                                 .font(.body)
                                 .foregroundColor(.secondary)
                         }
-                        .padding(.top, Theme.Spacing.xl)
+                        .padding(.top, Theme.Spacing.extraLarge)
 
                         // Step Content
                         Group {
@@ -101,7 +101,7 @@ public struct OnboardingView: View {
                                 ReviewStepView(profile: viewStore.profile)
                             }
                         }
-                        .padding(.horizontal, Theme.Spacing.lg)
+                        .padding(.horizontal, Theme.Spacing.large)
 
                         Spacer(minLength: 50)
                     }
@@ -152,7 +152,7 @@ struct OnboardingProgressBar: View {
     let progress: Double
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.sm) {
+        VStack(spacing: Theme.Spacing.small) {
             // Step indicators
             HStack(spacing: 4) {
                 ForEach(OnboardingFeature.State.Step.allCases, id: \.self) { step in
@@ -178,8 +178,8 @@ struct OnboardingProgressBar: View {
             }
             .frame(height: 4)
         }
-        .padding(.horizontal, Theme.Spacing.lg)
-        .padding(.vertical, Theme.Spacing.md)
+        .padding(.horizontal, Theme.Spacing.large)
+        .padding(.vertical, Theme.Spacing.medium)
         .background(Theme.Colors.aikoSecondary)
     }
 }
@@ -195,7 +195,7 @@ struct OnboardingNavigationButtons: View {
     let onSkip: () -> Void
 
     var body: some View {
-        HStack(spacing: Theme.Spacing.md) {
+        HStack(spacing: Theme.Spacing.medium) {
             if currentStep != .welcome {
                 Button(action: onPrevious) {
                     Label("Back", systemImage: "chevron.left")
@@ -203,7 +203,7 @@ struct OnboardingNavigationButtons: View {
                         .foregroundColor(.white)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, Theme.Spacing.md)
+                .padding(.vertical, Theme.Spacing.medium)
                 .background(Theme.Colors.aikoSecondary)
                 .cornerRadius(Theme.CornerRadius.sm)
             }
@@ -215,7 +215,7 @@ struct OnboardingNavigationButtons: View {
                         .foregroundColor(.secondary)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, Theme.Spacing.md)
+                .padding(.vertical, Theme.Spacing.medium)
             }
 
             Button(action: onNext) {
@@ -233,12 +233,12 @@ struct OnboardingNavigationButtons: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, Theme.Spacing.md)
+            .padding(.vertical, Theme.Spacing.medium)
             .background(canProceed ? Theme.Colors.aikoAccent : Color.gray.opacity(0.3))
             .cornerRadius(Theme.CornerRadius.sm)
             .disabled(!canProceed || isLoading)
         }
-        .padding(Theme.Spacing.lg)
+        .padding(Theme.Spacing.large)
         .background(Theme.Colors.aikoSecondary)
     }
 }

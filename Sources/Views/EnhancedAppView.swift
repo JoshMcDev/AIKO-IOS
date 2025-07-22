@@ -658,7 +658,7 @@ struct EnhancedDocumentTypesSection: View {
                         .foregroundColor(.white)
                 }
                 .padding(.horizontal, Theme.Spacing.small)
-                .padding(.vertical, Theme.Spacing.xs)
+                .padding(.vertical, Theme.Spacing.extraSmall)
                 .background(
                     Capsule()
                         .fill(Theme.Colors.aikoSecondary)

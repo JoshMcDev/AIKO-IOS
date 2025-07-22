@@ -66,7 +66,7 @@
                     Spacer()
 
                     // Footer
-                    VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                         Divider()
                             .background(Color.gray.opacity(0.3))
 
@@ -78,7 +78,7 @@
                             .font(.caption2)
                             .foregroundColor(.secondary)
                     }
-                    .padding(Theme.Spacing.lg)
+                    .padding(Theme.Spacing.large)
                     .padding(.bottom, geometry.safeAreaInsets.bottom)
                 }
                 .frame(width: 300)
@@ -104,7 +104,7 @@
         // MARK: - Profile Section
 
         private var profileSection: some View {
-            HStack(spacing: Theme.Spacing.md) {
+            HStack(spacing: Theme.Spacing.medium) {
                 profileButton
 
                 VStack(alignment: .leading, spacing: 4) {
@@ -119,7 +119,7 @@
 
                 Spacer()
             }
-            .padding(Theme.Spacing.lg)
+            .padding(Theme.Spacing.large)
         }
 
         @ViewBuilder
@@ -195,7 +195,7 @@
         @ViewBuilder
         private var menuItemsList: some View {
             ScrollView {
-                VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                     WithViewStore(store, observe: { $0 }) { viewStore in
                         ForEach(AppFeature.MenuItem.allCases, id: \.self) { item in
                             if item == .quickReferences {
@@ -206,7 +206,7 @@
                         }
                     }
                 }
-                .padding(Theme.Spacing.md)
+                .padding(Theme.Spacing.medium)
             }
         }
 
@@ -227,7 +227,7 @@
             Button(action: {
                 viewStore.send(.toggleQuickReferences(!viewStore.showingQuickReferences))
             }) {
-                HStack(spacing: Theme.Spacing.md) {
+                HStack(spacing: Theme.Spacing.medium) {
                     Image(systemName: item.icon)
                         .font(.title3)
                         .foregroundColor(Theme.Colors.aikoPrimary)
@@ -251,10 +251,10 @@
                         .font(.caption)
                         .foregroundColor(.blue)
                 }
-                .padding(.vertical, Theme.Spacing.sm)
-                .padding(.horizontal, Theme.Spacing.md)
+                .padding(.vertical, Theme.Spacing.small)
+                .padding(.horizontal, Theme.Spacing.medium)
                 .background(
-                    RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                    RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                         .fill(viewStore.showingQuickReferences ? Color.blue.opacity(0.1) : Color.clear)
                 )
             }
@@ -262,7 +262,7 @@
         }
 
         private func quickReferencesSubmenu(viewStore: ViewStore<AppFeature.State, AppFeature.Action>) -> some View {
-            VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.extraSmall) {
                 ForEach(AppFeature.QuickReference.allCases, id: \.self) { reference in
                     quickReferenceButton(reference: reference, viewStore: viewStore)
                 }
@@ -273,7 +273,7 @@
             Button(action: {
                 viewStore.send(.selectQuickReference(reference))
             }) {
-                HStack(spacing: Theme.Spacing.md) {
+                HStack(spacing: Theme.Spacing.medium) {
                     Image(systemName: reference.icon)
                         .font(.body)
                         .foregroundColor(.blue)
@@ -295,11 +295,11 @@
                         .font(.caption)
                         .foregroundColor(.blue.opacity(0.6))
                 }
-                .padding(.vertical, Theme.Spacing.sm)
-                .padding(.leading, Theme.Spacing.xl + Theme.Spacing.md)
-                .padding(.trailing, Theme.Spacing.md)
+                .padding(.vertical, Theme.Spacing.small)
+                .padding(.leading, Theme.Spacing.extraLarge + Theme.Spacing.medium)
+                .padding(.trailing, Theme.Spacing.medium)
                 .background(
-                    RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                    RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                         .fill(Color.blue.opacity(0.05))
                 )
             }

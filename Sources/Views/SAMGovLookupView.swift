@@ -51,7 +51,7 @@ struct SAMGovLookupView: View {
         SwiftUI.NavigationView {
             VStack(spacing: 0) {
                 // Header with SAM icon
-                VStack(spacing: Theme.Spacing.sm) {
+                VStack(spacing: Theme.Spacing.small) {
                     if let samIcon = loadSAMIcon() {
                         samIcon
                             .resizable()
@@ -78,7 +78,7 @@ struct SAMGovLookupView: View {
 
                 // Search Section
                 ScrollView {
-                    VStack(spacing: Theme.Spacing.lg) {
+                    VStack(spacing: Theme.Spacing.large) {
                         // Search entries
                         ForEach(searchEntries.indices, id: \.self) { index in
                             SearchEntryView(
@@ -105,7 +105,7 @@ struct SAMGovLookupView: View {
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(
-                                RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                                RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                                     .stroke(Theme.Colors.aikoPrimary, style: StrokeStyle(lineWidth: 2, dash: [5]))
                             )
                         }
@@ -128,7 +128,7 @@ struct SAMGovLookupView: View {
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(Theme.Colors.aikoPrimary)
-                            .cornerRadius(Theme.CornerRadius.sm)
+                            .cornerRadius(Theme.CornerRadius.small)
                         }
                         .disabled(searchEntries.allSatisfy(\.text.isEmpty) || searchEntries.contains(where: \.isSearching))
                         .padding(.horizontal)
@@ -255,7 +255,7 @@ struct SearchEntryView: View {
     let onRemove: (() -> Void)?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.small) {
             // Search type filter buttons
             HStack {
                 ForEach(SAMGovLookupView.SearchType.allCases, id: \.self) { type in
@@ -268,16 +268,16 @@ struct SearchEntryView: View {
                                 .fontWeight(entry.type == type ? .semibold : .regular)
                         }
                         .foregroundColor(entry.type == type ? .white : .gray)
-                        .padding(.horizontal, Theme.Spacing.sm)
+                        .padding(.horizontal, Theme.Spacing.small)
                         .padding(.vertical, 6)
                         .background(
                             entry.type == type ? Theme.Colors.aikoPrimary : Color.clear
                         )
                         .overlay(
-                            RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                            RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                                 .stroke(entry.type == type ? Color.clear : Color.gray.opacity(0.3), lineWidth: 1)
                         )
-                        .cornerRadius(Theme.CornerRadius.sm)
+                        .cornerRadius(Theme.CornerRadius.small)
                     }
                 }
 
@@ -328,11 +328,11 @@ struct SearchEntryView: View {
             }
             .padding()
             .background(Theme.Colors.aikoSecondary)
-            .cornerRadius(Theme.CornerRadius.sm)
+            .cornerRadius(Theme.CornerRadius.small)
 
             // Result display
             if let result = entry.result {
-                VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.extraSmall) {
                     HStack {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundColor(.green)
@@ -351,7 +351,7 @@ struct SearchEntryView: View {
         }
         .padding()
         .background(
-            RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
                 .fill(Theme.Colors.aikoCard)
         )
         .padding(.horizontal)
@@ -364,7 +364,7 @@ struct EntityDetailView: View {
     let entity: EntityDetail
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
             // Active Exclusions Warning (if applicable)
             if entity.hasActiveExclusions {
                 HStack {
@@ -386,7 +386,7 @@ struct EntityDetailView: View {
                 }
                 .padding()
                 .background(
-                    RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                    RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                         .fill(Color.red)
                 )
             }
@@ -404,12 +404,12 @@ struct EntityDetailView: View {
             }
             .padding()
             .background(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                     .fill(entity.registrationStatus == "Active" ? Color.green.opacity(0.1) : Color.orange.opacity(0.1))
             )
 
             // Basic Information
-            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                 InfoRow(label: "Legal Name", value: entity.legalBusinessName)
                 InfoRow(label: "UEI", value: entity.ueiSAM)
                 if let cage = entity.cageCode {
@@ -418,10 +418,10 @@ struct EntityDetailView: View {
             }
             .padding()
             .background(Theme.Colors.aikoCard)
-            .cornerRadius(Theme.CornerRadius.sm)
+            .cornerRadius(Theme.CornerRadius.small)
 
             // Registration Dates
-            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                 Text("Registration Information")
                     .font(.headline)
                     .padding(.bottom, 4)
@@ -449,11 +449,11 @@ struct EntityDetailView: View {
             }
             .padding()
             .background(Theme.Colors.aikoCard)
-            .cornerRadius(Theme.CornerRadius.sm)
+            .cornerRadius(Theme.CornerRadius.small)
 
             // Business Types
             if !entity.businessTypes.isEmpty {
-                VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                     Text("Business Types")
                         .font(.headline)
                         .padding(.bottom, 4)
@@ -470,18 +470,18 @@ struct EntityDetailView: View {
                 }
                 .padding()
                 .background(Theme.Colors.aikoCard)
-                .cornerRadius(Theme.CornerRadius.sm)
+                .cornerRadius(Theme.CornerRadius.small)
             }
 
             // NAICS Codes
             if !entity.naicsCodes.isEmpty {
-                VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                     Text("NAICS Codes")
                         .font(.headline)
                         .padding(.bottom, 4)
 
                     ForEach(entity.naicsCodes, id: \.code) { naics in
-                        HStack(alignment: .top, spacing: Theme.Spacing.xs) {
+                        HStack(alignment: .top, spacing: Theme.Spacing.extraSmall) {
                             Text(naics.code)
                                 .font(.caption.monospaced())
                                 .foregroundColor(.secondary)
@@ -505,12 +505,12 @@ struct EntityDetailView: View {
                 }
                 .padding()
                 .background(Theme.Colors.aikoCard)
-                .cornerRadius(Theme.CornerRadius.sm)
+                .cornerRadius(Theme.CornerRadius.small)
             }
 
             // Certifications
             if entity.isSmallBusiness || entity.isVeteranOwned || entity.isWomanOwned || entity.is8aProgram || entity.isHUBZone {
-                VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                     Text("Certifications")
                         .font(.headline)
                         .padding(.bottom, 4)
@@ -548,12 +548,12 @@ struct EntityDetailView: View {
                 }
                 .padding()
                 .background(Theme.Colors.aikoCard)
-                .cornerRadius(Theme.CornerRadius.sm)
+                .cornerRadius(Theme.CornerRadius.small)
             }
 
             // Section 889 Compliance
             if let section889 = entity.section889Certifications {
-                VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                     Text("Section 889 Compliance")
                         .font(.headline)
                         .padding(.bottom, 4)
@@ -591,12 +591,12 @@ struct EntityDetailView: View {
                 }
                 .padding()
                 .background(Theme.Colors.aikoCard)
-                .cornerRadius(Theme.CornerRadius.sm)
+                .cornerRadius(Theme.CornerRadius.small)
             }
 
             // Foreign Government Entities
             if !entity.foreignGovtEntities.isEmpty {
-                VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                     HStack {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .foregroundColor(.orange)
@@ -651,10 +651,10 @@ struct EntityDetailView: View {
                 }
                 .padding()
                 .background(
-                    RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                    RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                         .fill(Color.orange.opacity(0.1))
                         .overlay(
-                            RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                            RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                                 .stroke(Color.orange, lineWidth: 1)
                         )
                 )
@@ -662,7 +662,7 @@ struct EntityDetailView: View {
 
             // Responsibility & Qualification
             if let responsibility = entity.responsibilityInformation {
-                VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                     Text("Responsibility & Qualification")
                         .font(.headline)
                         .padding(.bottom, 4)
@@ -720,13 +720,13 @@ struct EntityDetailView: View {
                 }
                 .padding()
                 .background(Theme.Colors.aikoCard)
-                .cornerRadius(Theme.CornerRadius.sm)
+                .cornerRadius(Theme.CornerRadius.small)
             }
 
             // Architect-Engineer Qualifications
             if let aeInfo = entity.architectEngineerQualifications,
                aeInfo.hasArchitectEngineerResponses {
-                VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                     Text("Architect-Engineer Qualifications")
                         .font(.headline)
                         .padding(.bottom, 4)
@@ -758,12 +758,12 @@ struct EntityDetailView: View {
                 }
                 .padding()
                 .background(Theme.Colors.aikoCard)
-                .cornerRadius(Theme.CornerRadius.sm)
+                .cornerRadius(Theme.CornerRadius.small)
             }
 
             // Address
             if let address = entity.physicalAddress {
-                VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                     Text("Physical Address")
                         .font(.headline)
                         .padding(.bottom, 4)
@@ -779,7 +779,7 @@ struct EntityDetailView: View {
                 }
                 .padding()
                 .background(Theme.Colors.aikoCard)
-                .cornerRadius(Theme.CornerRadius.sm)
+                .cornerRadius(Theme.CornerRadius.small)
             }
         }
     }
@@ -813,7 +813,7 @@ struct InfoRow: View {
 
 struct SAMGovEmptyStateView: View {
     var body: some View {
-        VStack(spacing: Theme.Spacing.lg) {
+        VStack(spacing: Theme.Spacing.large) {
             Image(systemName: "building.2.crop.circle")
                 .font(.system(size: 60))
                 .foregroundColor(.secondary)
@@ -835,7 +835,7 @@ struct SAMGovErrorView: View {
     let message: String
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.md) {
+        VStack(spacing: Theme.Spacing.medium) {
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: 40))
                 .foregroundColor(Theme.Colors.aikoError)
@@ -850,7 +850,7 @@ struct SAMGovErrorView: View {
         }
         .padding()
         .background(
-            RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                 .fill(Theme.Colors.aikoError.opacity(0.1))
         )
     }

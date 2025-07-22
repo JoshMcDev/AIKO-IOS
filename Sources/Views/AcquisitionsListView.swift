@@ -81,7 +81,7 @@ public struct AcquisitionsListView: View {
     @ViewBuilder
     private func acquisitionsListView(viewStore: ViewStore<AcquisitionsListFeature.State, AcquisitionsListFeature.Action>) -> some View {
         ScrollView {
-            LazyVStack(spacing: Theme.Spacing.md) {
+            LazyVStack(spacing: Theme.Spacing.medium) {
                 ForEach(viewStore.filteredAcquisitions, id: \.id) { acquisition in
                     acquisitionCard(
                         acquisition: acquisition,
@@ -89,7 +89,7 @@ public struct AcquisitionsListView: View {
                     )
                 }
             }
-            .padding(Theme.Spacing.lg)
+            .padding(Theme.Spacing.large)
         }
     }
 
@@ -193,7 +193,7 @@ struct SearchFilterBar: View {
     @Binding var sortOrder: AcquisitionsListFeature.SortOrder
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.sm) {
+        VStack(spacing: Theme.Spacing.small) {
             // Search field
             HStack {
                 Image(systemName: "magnifyingglass")
@@ -210,15 +210,15 @@ struct SearchFilterBar: View {
                     }
                 }
             }
-            .padding(.horizontal, Theme.Spacing.md)
-            .padding(.vertical, Theme.Spacing.sm)
+            .padding(.horizontal, Theme.Spacing.medium)
+            .padding(.vertical, Theme.Spacing.small)
             .background(Theme.Colors.aikoSecondary)
             .cornerRadius(Theme.CornerRadius.sm)
-            .padding(.horizontal, Theme.Spacing.lg)
+            .padding(.horizontal, Theme.Spacing.large)
 
             // Filters
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: Theme.Spacing.sm) {
+                HStack(spacing: Theme.Spacing.small) {
                     // Status filter
                     Menu {
                         Button("All Statuses") {
@@ -251,10 +251,10 @@ struct SearchFilterBar: View {
                         )
                     }
                 }
-                .padding(.horizontal, Theme.Spacing.lg)
+                .padding(.horizontal, Theme.Spacing.large)
             }
         }
-        .padding(.vertical, Theme.Spacing.md)
+        .padding(.vertical, Theme.Spacing.medium)
         .background(Color.black)
     }
 }
@@ -277,8 +277,8 @@ struct FilterChip: View {
             }
         }
         .foregroundColor(isSelected ? .white : .secondary)
-        .padding(.horizontal, Theme.Spacing.md)
-        .padding(.vertical, Theme.Spacing.sm)
+        .padding(.horizontal, Theme.Spacing.medium)
+        .padding(.vertical, Theme.Spacing.small)
         .background(
             RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
                 .fill(isSelected ? Theme.Colors.aikoAccent : Theme.Colors.aikoSecondary)
@@ -305,7 +305,7 @@ struct AcquisitionCard: View {
     @FocusState private var isRenameFocused: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
             // Header
             HStack {
                 VStack(alignment: .leading, spacing: 6) {
@@ -445,7 +445,7 @@ struct AcquisitionCard: View {
                 }
             }
         }
-        .padding(Theme.Spacing.lg)
+        .padding(Theme.Spacing.large)
         .background(
             RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
                 .fill(Theme.Colors.aikoSecondary)
@@ -561,7 +561,7 @@ struct StatusBadge: View {
                 .fontWeight(.medium)
         }
         .foregroundColor(color(for: status))
-        .padding(.horizontal, Theme.Spacing.sm)
+        .padding(.horizontal, Theme.Spacing.small)
         .padding(.vertical, 4)
         .background(
             RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
@@ -595,7 +595,7 @@ struct EmptyAcquisitionsView: View {
                 .font(.system(size: 64))
                 .foregroundColor(.secondary)
 
-            VStack(spacing: Theme.Spacing.sm) {
+            VStack(spacing: Theme.Spacing.small) {
                 Text(hasAcquisitions ? "No matching acquisitions" : "No acquisitions yet")
                     .font(.headline)
                     .foregroundColor(.white)

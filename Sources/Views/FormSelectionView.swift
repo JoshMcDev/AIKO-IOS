@@ -26,7 +26,7 @@ public struct FormSelectionView: View {
         SwiftUI.NavigationView {
             VStack(spacing: 0) {
                 // Header
-                VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                     Text("Select Output Format")
                         .font(.title2)
                         .fontWeight(.bold)
@@ -36,7 +36,7 @@ public struct FormSelectionView: View {
                         .font(.subheadline)
                         .foregroundColor(.white.opacity(0.8))
                 }
-                .padding(Theme.Spacing.lg)
+                .padding(Theme.Spacing.large)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color.black)
 
@@ -44,13 +44,13 @@ public struct FormSelectionView: View {
 
                 // Form Options
                 ScrollView {
-                    VStack(spacing: Theme.Spacing.lg) {
+                    VStack(spacing: Theme.Spacing.large) {
                         // AIKO Template Option
                         aikoTemplateOption
 
                         // Official Form Options
                         if !availableForms.isEmpty {
-                            VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                            VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                                 HStack {
                                     Image(systemName: "doc.badge.gearshape")
                                         .foregroundColor(.blue)
@@ -58,7 +58,7 @@ public struct FormSelectionView: View {
                                         .font(.headline)
                                         .foregroundColor(.white)
                                 }
-                                .padding(.horizontal, Theme.Spacing.lg)
+                                .padding(.horizontal, Theme.Spacing.large)
 
                                 ForEach(availableForms) { formSelection in
                                     formOptionCard(formSelection)
@@ -66,7 +66,7 @@ public struct FormSelectionView: View {
                             }
                         } else {
                             // No forms available
-                            VStack(spacing: Theme.Spacing.md) {
+                            VStack(spacing: Theme.Spacing.medium) {
                                 Image(systemName: "doc.badge.ellipsis")
                                     .font(.system(size: 48))
                                     .foregroundColor(.gray)
@@ -83,7 +83,7 @@ public struct FormSelectionView: View {
                             .padding(.vertical, 40)
                         }
                     }
-                    .padding(.vertical, Theme.Spacing.lg)
+                    .padding(.vertical, Theme.Spacing.large)
                 }
                 .background(Theme.Colors.aikoBackground)
             }
@@ -140,7 +140,7 @@ public struct FormSelectionView: View {
     // MARK: - View Components
 
     private var aikoTemplateOption: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
             HStack {
                 Image(systemName: "sparkles")
                     .foregroundColor(.purple)
@@ -148,14 +148,14 @@ public struct FormSelectionView: View {
                     .font(.headline)
                     .foregroundColor(.white)
             }
-            .padding(.horizontal, Theme.Spacing.lg)
+            .padding(.horizontal, Theme.Spacing.large)
 
             Button(action: {
                 selectedForm = nil // nil means use AIKO template
                 dismiss()
             }) {
                 HStack {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                         HStack {
                             Image(systemName: "wand.and.stars")
                                 .font(.title2)
@@ -186,7 +186,7 @@ public struct FormSelectionView: View {
                                 )
                         }
 
-                        HStack(spacing: Theme.Spacing.md) {
+                        HStack(spacing: Theme.Spacing.medium) {
                             Label("FAR Compliant", systemImage: "checkmark.shield")
                                 .font(.caption)
                                 .foregroundColor(.green)
@@ -200,11 +200,11 @@ public struct FormSelectionView: View {
                                 .foregroundColor(.orange)
                         }
                     }
-                    .padding(Theme.Spacing.lg)
+                    .padding(Theme.Spacing.large)
 
                     Image(systemName: "chevron.right")
                         .foregroundColor(.secondary)
-                        .padding(.trailing, Theme.Spacing.lg)
+                        .padding(.trailing, Theme.Spacing.large)
                 }
                 .background(
                     RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
@@ -214,7 +214,7 @@ public struct FormSelectionView: View {
                                 .stroke(Color.purple.opacity(0.5), lineWidth: 2)
                         )
                 )
-                .padding(.horizontal, Theme.Spacing.lg)
+                .padding(.horizontal, Theme.Spacing.large)
             }
             .buttonStyle(PlainButtonStyle())
         }
@@ -226,7 +226,7 @@ public struct FormSelectionView: View {
             dismiss()
         }) {
             HStack {
-                VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                     HStack {
                         Image(systemName: formSelection.formType.icon)
                             .font(.title2)
@@ -266,7 +266,7 @@ public struct FormSelectionView: View {
                         Spacer()
 
                         // Action buttons
-                        HStack(spacing: Theme.Spacing.sm) {
+                        HStack(spacing: Theme.Spacing.small) {
                             Button(action: {
                                 previewFormType = formSelection.formType
                                 showingFormPreview = true
@@ -293,17 +293,17 @@ public struct FormSelectionView: View {
                             .padding(.top, 4)
                     }
                 }
-                .padding(Theme.Spacing.lg)
+                .padding(Theme.Spacing.large)
 
                 Image(systemName: "chevron.right")
                     .foregroundColor(.secondary)
-                    .padding(.trailing, Theme.Spacing.lg)
+                    .padding(.trailing, Theme.Spacing.large)
             }
             .background(
                 RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
                     .fill(Theme.Colors.aikoSecondary)
             )
-            .padding(.horizontal, Theme.Spacing.lg)
+            .padding(.horizontal, Theme.Spacing.large)
         }
         .buttonStyle(PlainButtonStyle())
     }
@@ -400,7 +400,7 @@ struct FormPreviewView: View {
             VStack {
                 if let url = previewURL {
                     // In a real app, this would show a web view or PDF viewer
-                    VStack(spacing: Theme.Spacing.lg) {
+                    VStack(spacing: Theme.Spacing.large) {
                         Image(systemName: formType.icon)
                             .font(.system(size: 64))
                             .foregroundColor(.blue)

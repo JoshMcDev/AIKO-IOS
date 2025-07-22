@@ -48,7 +48,7 @@ public struct SearchDocumentTemplatesView: View {
         SwiftUI.NavigationView {
             VStack(spacing: 0) {
                 // Search and Filter Bar
-                VStack(spacing: Theme.Spacing.md) {
+                VStack(spacing: Theme.Spacing.medium) {
                     // Search field
                     HStack {
                         Image(systemName: "magnifyingglass")
@@ -65,14 +65,14 @@ public struct SearchDocumentTemplatesView: View {
                             }
                         }
                     }
-                    .padding(.horizontal, Theme.Spacing.md)
-                    .padding(.vertical, Theme.Spacing.sm)
+                    .padding(.horizontal, Theme.Spacing.medium)
+                    .padding(.vertical, Theme.Spacing.small)
                     .background(Theme.Colors.aikoSecondary)
-                    .cornerRadius(Theme.CornerRadius.sm)
+                    .cornerRadius(Theme.CornerRadius.small)
 
                     // Category filter
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: Theme.Spacing.sm) {
+                        HStack(spacing: Theme.Spacing.small) {
                             ForEach(DocumentCategory.allCases, id: \.self) { category in
                                 CategoryChip(
                                     category: category,
@@ -83,15 +83,15 @@ public struct SearchDocumentTemplatesView: View {
                         }
                     }
                 }
-                .padding(Theme.Spacing.lg)
+                .padding(Theme.Spacing.large)
                 .background(Color.black)
 
                 // Templates Grid
                 ScrollView {
                     LazyVGrid(columns: [
-                        GridItem(.flexible(), spacing: Theme.Spacing.md),
-                        GridItem(.flexible(), spacing: Theme.Spacing.md)
-                    ], spacing: Theme.Spacing.md) {
+                        GridItem(.flexible(), spacing: Theme.Spacing.medium),
+                        GridItem(.flexible(), spacing: Theme.Spacing.medium)
+                    ], spacing: Theme.Spacing.medium) {
                         // Filter and display document types
                         ForEach(filteredDocumentTypes, id: \.self) { documentType in
                             TemplateCard(
@@ -128,7 +128,7 @@ public struct SearchDocumentTemplatesView: View {
                             }
                         )
                     }
-                    .padding(Theme.Spacing.lg)
+                    .padding(Theme.Spacing.large)
                 }
                 .background(Theme.Colors.aikoBackground)
             }
@@ -342,10 +342,10 @@ struct CategoryChip: View {
                     .fontWeight(isSelected ? .semibold : .regular)
             }
             .foregroundColor(isSelected ? .white : .secondary)
-            .padding(.horizontal, Theme.Spacing.md)
-            .padding(.vertical, Theme.Spacing.sm)
+            .padding(.horizontal, Theme.Spacing.medium)
+            .padding(.vertical, Theme.Spacing.small)
             .background(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                     .fill(isSelected ? Theme.Colors.aikoAccent : Theme.Colors.aikoSecondary)
             )
         }
@@ -359,7 +359,7 @@ struct TemplateCard: View {
 
     var body: some View {
         Button(action: onSelect) {
-            VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                 // Icon and status
                 HStack {
                     Image(systemName: documentType.icon)
@@ -390,7 +390,7 @@ struct TemplateCard: View {
                 Spacer()
 
                 // Template info
-                VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.extraSmall) {
                     // FAR Reference
                     HStack {
                         Image(systemName: "book.closed")
@@ -421,14 +421,14 @@ struct TemplateCard: View {
                     }
                 }
             }
-            .padding(Theme.Spacing.lg)
+            .padding(Theme.Spacing.large)
             .frame(height: 200)
             .background(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
                     .fill(Theme.Colors.aikoSecondary)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
                     .stroke(Color.blue.opacity(0.3), lineWidth: 1)
             )
         }
@@ -443,7 +443,7 @@ struct CustomTemplateCard: View {
 
     var body: some View {
         Button(action: onSelect) {
-            VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                 // Icon and status
                 HStack {
                     Image(systemName: "doc.badge.plus")
@@ -488,14 +488,14 @@ struct CustomTemplateCard: View {
                         .foregroundColor(.secondary)
                 }
             }
-            .padding(Theme.Spacing.lg)
+            .padding(Theme.Spacing.large)
             .frame(height: 180)
             .background(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
                     .fill(Theme.Colors.aikoSecondary)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
                     .stroke(Color.purple.opacity(0.3), lineWidth: 1)
             )
         }
@@ -508,7 +508,7 @@ struct AddTemplateCard: View {
     let onCreate: () -> Void
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.lg) {
+        VStack(spacing: Theme.Spacing.large) {
             Image(systemName: "plus.circle.fill")
                 .font(.system(size: 48))
                 .foregroundColor(.blue)
@@ -517,7 +517,7 @@ struct AddTemplateCard: View {
                 .font(.headline)
                 .foregroundColor(.white)
 
-            VStack(spacing: Theme.Spacing.sm) {
+            VStack(spacing: Theme.Spacing.small) {
                 Button(action: onUpload) {
                     Label("Upload Template", systemImage: "arrow.up.doc")
                         .font(.subheadline)
@@ -534,10 +534,10 @@ struct AddTemplateCard: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .frame(height: 180)
         .background(
-            RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
                 .fill(Theme.Colors.aikoSecondary.opacity(0.5))
                 .overlay(
-                    RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+                    RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
                         .stroke(style: StrokeStyle(lineWidth: 2, dash: [5]))
                         .foregroundColor(.blue.opacity(0.5))
                 )
@@ -641,7 +641,7 @@ struct CreateTemplateView: View {
         SwiftUI.NavigationView {
             VStack(spacing: 0) {
                 // AI Assistant Header
-                VStack(spacing: Theme.Spacing.md) {
+                VStack(spacing: Theme.Spacing.medium) {
                     Image(systemName: "brain.head.profile")
                         .font(.system(size: 48))
                         .foregroundColor(.blue)
@@ -654,7 +654,7 @@ struct CreateTemplateView: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
-                .padding(.vertical, Theme.Spacing.xl)
+                .padding(.vertical, Theme.Spacing.extraLarge)
 
                 // Form
                 Form {

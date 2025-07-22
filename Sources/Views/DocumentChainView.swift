@@ -9,7 +9,7 @@ struct DocumentChainView: View {
     let onSelectDocument: (DocumentType) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
             // Header
             HStack {
                 Text("Document Chain")
@@ -28,7 +28,7 @@ struct DocumentChainView: View {
             if let chainProgress {
                 // Chain visualization
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: Theme.Spacing.sm) {
+                    HStack(spacing: Theme.Spacing.small) {
                         ForEach(Array(chainProgress.plannedDocuments.enumerated()), id: \.offset) { index, document in
                             DocumentChainNode(
                                 document: document,
@@ -45,15 +45,15 @@ struct DocumentChainView: View {
                             }
                         }
                     }
-                    .padding(.vertical, Theme.Spacing.sm)
+                    .padding(.vertical, Theme.Spacing.small)
                 }
 
                 // Validation messages
                 if let validation {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.extraSmall) {
                         if !validation.brokenLinks.isEmpty {
                             ForEach(validation.brokenLinks, id: \.from.rawValue) { link in
-                                HStack(spacing: Theme.Spacing.xs) {
+                                HStack(spacing: Theme.Spacing.extraSmall) {
                                     Image(systemName: "exclamationmark.triangle.fill")
                                         .font(.caption)
                                         .foregroundColor(.orange)
@@ -66,7 +66,7 @@ struct DocumentChainView: View {
                         }
 
                         ForEach(validation.recommendations, id: \.self) { recommendation in
-                            HStack(spacing: Theme.Spacing.xs) {
+                            HStack(spacing: Theme.Spacing.extraSmall) {
                                 Image(systemName: "lightbulb.fill")
                                     .font(.caption)
                                     .foregroundColor(.blue)
@@ -87,7 +87,7 @@ struct DocumentChainView: View {
                     .padding()
             }
         }
-        .padding(Theme.Spacing.md)
+        .padding(Theme.Spacing.medium)
         .background(Theme.Colors.aikoSecondary)
         .cornerRadius(Theme.CornerRadius.md)
     }
@@ -116,7 +116,7 @@ struct DocumentChainNode: View {
 
     var body: some View {
         Button(action: onTap) {
-            VStack(spacing: Theme.Spacing.xs) {
+            VStack(spacing: Theme.Spacing.extraSmall) {
                 ZStack {
                     Circle()
                         .fill(nodeColor.opacity(0.2))
@@ -174,7 +174,7 @@ struct DocumentChainProgressBar: View {
     let chainProgress: DocumentChainProgress
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.extraSmall) {
             HStack {
                 Text("Chain Progress")
                     .font(.caption)

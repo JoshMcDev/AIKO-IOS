@@ -77,7 +77,7 @@ struct QuestionContentView: View {
             let question = viewStore.informationQuestions[viewStore.currentQuestionIndex]
 
             ScrollView {
-                VStack(spacing: Theme.Spacing.xl) {
+                VStack(spacing: Theme.Spacing.extraLarge) {
                     // Question
                     QuestionView(
                         question: question,
@@ -114,7 +114,7 @@ struct ActionButtonsView: View {
     @Binding var currentAnswer: String
 
     var body: some View {
-        HStack(spacing: Theme.Spacing.md) {
+        HStack(spacing: Theme.Spacing.medium) {
             if viewStore.currentQuestionIndex > 0 {
                 Button(action: {
                     // Go back to previous question
@@ -128,7 +128,7 @@ struct ActionButtonsView: View {
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
                     .background(
-                        RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                        RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
                             .fill(Color.white.opacity(0.2))
                     )
                 }
@@ -150,7 +150,7 @@ struct ActionButtonsView: View {
                 .padding(.horizontal, 24)
                 .padding(.vertical, 12)
                 .background(
-                    RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                    RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
                         .fill((currentAnswer.isEmpty && question.isRequired) ? Color.gray : Color.blue)
                 )
             }
@@ -165,11 +165,11 @@ struct CustomTextFieldStyle: TextFieldStyle {
         configuration
             .padding()
             .background(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
                     .fill(Color.white.opacity(0.1))
             )
             .overlay(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
                     .stroke(Color.white.opacity(0.3), lineWidth: 1)
             )
             .foregroundColor(.white)
