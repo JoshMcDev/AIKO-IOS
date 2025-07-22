@@ -21,7 +21,7 @@ public struct CustomTemplateDetailView: View {
         SwiftUI.NavigationView {
             VStack(spacing: 0) {
                 // Template Info Header
-                VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                     HStack {
                         Image(systemName: "doc.badge.plus")
                             .font(.title)
@@ -68,17 +68,17 @@ public struct CustomTemplateDetailView: View {
                     }
 
                     // Action buttons
-                    HStack(spacing: Theme.Spacing.md) {
+                    HStack(spacing: Theme.Spacing.medium) {
                         Button(action: {
                             showingDeleteConfirmation = true
                         }) {
                             Label("Delete Template", systemImage: "trash")
                                 .font(.subheadline)
                                 .foregroundColor(.red)
-                                .padding(.horizontal, Theme.Spacing.md)
-                                .padding(.vertical, Theme.Spacing.sm)
+                                .padding(.horizontal, Theme.Spacing.medium)
+                                .padding(.vertical, Theme.Spacing.small)
                                 .background(
-                                    RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                                    RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                                         .fill(Color.red.opacity(0.2))
                                 )
                         }
@@ -96,10 +96,10 @@ public struct CustomTemplateDetailView: View {
                                   systemImage: isEditing ? "checkmark.circle" : "pencil.circle")
                                 .font(.subheadline)
                                 .foregroundColor(isEditing ? .green : .blue)
-                                .padding(.horizontal, Theme.Spacing.md)
-                                .padding(.vertical, Theme.Spacing.sm)
+                                .padding(.horizontal, Theme.Spacing.medium)
+                                .padding(.vertical, Theme.Spacing.small)
                                 .background(
-                                    RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                                    RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                                         .fill(isEditing ? Color.green.opacity(0.2) : Theme.Colors.aikoSecondary)
                                 )
                         }
@@ -109,17 +109,17 @@ public struct CustomTemplateDetailView: View {
                                 Label("Cancel", systemImage: "xmark.circle")
                                     .font(.subheadline)
                                     .foregroundColor(.red)
-                                    .padding(.horizontal, Theme.Spacing.md)
-                                    .padding(.vertical, Theme.Spacing.sm)
+                                    .padding(.horizontal, Theme.Spacing.medium)
+                                    .padding(.vertical, Theme.Spacing.small)
                                     .background(
-                                        RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                                        RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                                             .fill(Color.red.opacity(0.2))
                                     )
                             }
                         }
                     }
                 }
-                .padding(Theme.Spacing.lg)
+                .padding(Theme.Spacing.large)
                 .background(Color.black)
 
                 Divider()
@@ -130,18 +130,18 @@ public struct CustomTemplateDetailView: View {
                         TextEditor(text: $editedContent)
                             .font(.system(.body, design: .monospaced))
                             .foregroundColor(.white)
-                            .padding(Theme.Spacing.lg)
+                            .padding(Theme.Spacing.large)
                             .background(Theme.Colors.aikoSecondary)
-                            .cornerRadius(Theme.CornerRadius.md)
-                            .padding(Theme.Spacing.lg)
+                            .cornerRadius(Theme.CornerRadius.medium)
+                            .padding(Theme.Spacing.large)
                     } else {
                         Text(template.content)
                             .font(.system(.body, design: .monospaced))
                             .foregroundColor(.white)
-                            .padding(Theme.Spacing.lg)
+                            .padding(Theme.Spacing.large)
                             .background(Theme.Colors.aikoSecondary)
-                            .cornerRadius(Theme.CornerRadius.md)
-                            .padding(Theme.Spacing.lg)
+                            .cornerRadius(Theme.CornerRadius.medium)
+                            .padding(Theme.Spacing.large)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }

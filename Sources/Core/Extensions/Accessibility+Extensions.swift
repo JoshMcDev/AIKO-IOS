@@ -37,7 +37,7 @@ extension View {
     /// Adds header accessibility
     func accessibleHeader(
         label: String,
-        level: HeaderLevel = .h1
+        level: HeaderLevel = .heading1
     ) -> some View {
         accessibilityElement(
             label: label,
@@ -54,7 +54,7 @@ extension View {
 // MARK: - Header Level
 
 enum HeaderLevel {
-    case h1, h2, h3, h4, h5, h6
+    case heading1, heading2, heading3, heading4, heading5, heading6
 
     var trait: AccessibilityTraits {
         .isHeader

@@ -128,7 +128,7 @@ public extension DocumentScannerFeature.Action {
             .cancelProgressTracking(sessionId)
         default:
             // For other progress actions, we can use a generic progress update action
-            ._progressFeedbackReceived(action)
+            .progressFeedbackReceived(action)
         }
     }
 

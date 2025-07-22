@@ -263,10 +263,10 @@ public struct DocumentScannerFeature: Sendable {
         case sessionEngineResponse(ScanSession)
 
         // Internal
-        case _setProcessingAllPages(Bool)
-        case _setProcessingComplete(ScannedPage.ID)
-        case _startQuickScanProgressTimer
-        case _stopQuickScanProgressTimer
+        case internalSetProcessingAllPages(Bool)
+        case internalSetProcessingComplete(ScannedPage.ID)
+        case internalStartQuickScanProgressTimer
+        case internalStopQuickScanProgressTimer
     }
 
     // MARK: - Dependencies
@@ -510,7 +510,7 @@ public struct DocumentScannerFeature: Sendable {
 
                     // Mark as completed if no processing was needed
                     if !enableEnhancement, !enableOCR {
-                        await send(._setProcessingComplete(pageId))
+                        await send(.internalSetProcessingComplete(pageId))
                     }
                 }
 
@@ -591,7 +591,7 @@ public struct DocumentScannerFeature: Sendable {
                     for page in pagesToProcess {
                         await send(.processPage(page.id))
                     }
-                    await send(._setProcessingAllPages(false))
+                    await send(.internalSetProcessingAllPages(false))
                 }
 
             case let .retryPageProcessing(pageId):
@@ -838,7 +838,7 @@ public struct DocumentScannerFeature: Sendable {
                     await send(.checkCameraPermissions)
 
                     // Start progress timer for real-time updates
-                    await send(._startQuickScanProgressTimer)
+                    await send(.internalStartQuickScanProgressTimer)
 
                     // Start the scanner
                     await send(.scanButtonTapped)
@@ -896,7 +896,7 @@ public struct DocumentScannerFeature: Sendable {
                 state.quickScanProgress = nil
                 return Effect.send(.showError("Quick scan failed: \(error.localizedDescription)"))
 
-            case ._startQuickScanProgressTimer:
+            case .internalStartQuickScanProgressTimer:
                 return Effect.run { send in
                     let startTime = Date()
 
@@ -922,7 +922,7 @@ public struct DocumentScannerFeature: Sendable {
                     }
                 }
 
-            case ._stopQuickScanProgressTimer:
+            case .internalStopQuickScanProgressTimer:
                 // Timer will stop naturally when progress updates stop
                 return Effect.none
 
@@ -947,11 +947,11 @@ public struct DocumentScannerFeature: Sendable {
 
             // MARK: Internal Actions
 
-            case let ._setProcessingAllPages(isProcessing):
+            case let .internalSetProcessingAllPages(isProcessing):
                 state.isProcessingAllPages = isProcessing
                 return Effect.none
 
-            case let ._setProcessingComplete(pageId):
+            case let .internalSetProcessingComplete(pageId):
                 state.scannedPages[id: pageId]?.processingState = .completed
                 if state.currentProcessingPage == pageId {
                     state.currentProcessingPage = nil
@@ -1295,10 +1295,10 @@ extension DocumentScannerFeature.Action: Equatable {
         case let (.showError(left), .showError(right)):
             return left == right
 
-        case let (._setProcessingAllPages(left), ._setProcessingAllPages(right)):
+        case let (.internalSetProcessingAllPages(left), .internalSetProcessingAllPages(right)):
             return left == right
 
-        case let (._setProcessingComplete(left), ._setProcessingComplete(right)):
+        case let (.internalSetProcessingComplete(left), .internalSetProcessingComplete(right)):
             return left == right
 
         // Result comparisons

@@ -81,7 +81,7 @@ struct GlassmorphicView<Content: View>: View {
     let content: () -> Content
     var blurRadius: CGFloat = 10
     var opacity: Double = 0.6
-    var cornerRadius: CGFloat = Theme.CornerRadius.lg
+    var cornerRadius: CGFloat = Theme.CornerRadius.large
 
     @Environment(\.colorScheme) private var colorScheme
 
@@ -249,7 +249,7 @@ struct EmptyStateView: View {
     @State private var iconScale = 1.0
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.lg) {
+        VStack(spacing: Theme.Spacing.large) {
             // Animated icon
             ZStack {
                 Circle()
@@ -302,14 +302,14 @@ struct EmptyStateView: View {
                     }
                     .font(.headline)
                     .foregroundColor(.white)
-                    .padding(.horizontal, Theme.Spacing.lg)
-                    .padding(.vertical, Theme.Spacing.md)
+                    .padding(.horizontal, Theme.Spacing.large)
+                    .padding(.vertical, Theme.Spacing.medium)
                     .background(
                         Capsule()
                             .fill(Color.blue)
                     )
                 }
-                .padding(.top, Theme.Spacing.md)
+                .padding(.top, Theme.Spacing.medium)
             }
         }
         .padding()
@@ -373,12 +373,12 @@ struct BasicLinearProgress: View {
         GeometryReader { geometry in
             ZStack(alignment: .leading) {
                 // Background
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                     .fill(Color.gray.opacity(0.2))
                     .frame(height: 8)
 
                 // Progress fill with bounds checking
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                     .fill(
                         LinearGradient(
                             colors: [Color.blue, Color.blue.opacity(0.7)],
@@ -391,7 +391,7 @@ struct BasicLinearProgress: View {
 
                 // Shimmer effect for active progress
                 if progress > 0, progress < 1 {
-                    RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                    RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                         .fill(Color.white.opacity(0.4))
                         .frame(width: 30, height: 8)
                         .offset(x: geometry.size.width * min(max(progress, 0.0), 1.0) - 15)

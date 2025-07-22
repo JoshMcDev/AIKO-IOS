@@ -52,7 +52,7 @@ public struct MenuItemRow: View {
 
     @ViewBuilder
     var rowContent: some View {
-        HStack(spacing: Theme.Spacing.md) {
+        HStack(spacing: Theme.Spacing.medium) {
             Image(systemName: item.icon)
                 .font(.title3)
                 .foregroundColor(Theme.Colors.aikoPrimary)
@@ -79,9 +79,9 @@ public struct MenuItemRow: View {
             }
         }
         .padding(.vertical, Theme.Spacing.small)
-        .padding(.horizontal, Theme.Spacing.md)
+        .padding(.horizontal, Theme.Spacing.medium)
         .background(
-            RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                 .fill(isSelected ? Color.blue.opacity(0.1) : Color.clear)
         )
     }

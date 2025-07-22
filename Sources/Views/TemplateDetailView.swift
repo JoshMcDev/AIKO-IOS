@@ -74,7 +74,7 @@ public struct TemplateDetailView: View {
                                 .padding(.horizontal, Theme.Spacing.medium)
                                 .padding(.vertical, Theme.Spacing.small)
                                 .background(
-                                    RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                                    RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                                         .fill(Theme.Colors.aikoSecondary)
                                 )
                         }
@@ -105,7 +105,7 @@ public struct TemplateDetailView: View {
                                 .padding(.horizontal, Theme.Spacing.medium)
                                 .padding(.vertical, Theme.Spacing.small)
                                 .background(
-                                    RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                                    RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                                         .fill(isEditing ? Color.green.opacity(0.2) : Theme.Colors.aikoSecondary)
                                 )
                         }
@@ -118,7 +118,7 @@ public struct TemplateDetailView: View {
                                     .padding(.horizontal, Theme.Spacing.medium)
                                     .padding(.vertical, Theme.Spacing.small)
                                     .background(
-                                        RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                                        RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                                             .fill(Color.red.opacity(0.2))
                                     )
                             }

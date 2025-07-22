@@ -17,7 +17,7 @@ public struct ProfileView: View {
     public var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             ScrollView {
-                VStack(spacing: Theme.Spacing.xl) {
+                VStack(spacing: Theme.Spacing.extraLarge) {
                     // Info message about profile usage
                     HStack(alignment: .top, spacing: Theme.Spacing.small) {
                         Image(systemName: "sparkles")
@@ -32,7 +32,7 @@ public struct ProfileView: View {
                     .padding(Theme.Spacing.medium)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(
-                        RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                        RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                             .fill(Color.blue.opacity(0.1))
                     )
 
@@ -367,11 +367,11 @@ struct ProfileHeaderView: View {
                     .padding(.horizontal, Theme.Spacing.large)
                     .padding(.vertical, Theme.Spacing.small)
                     .background(
-                        RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                        RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                             .fill(isEditing ? Color.green.opacity(0.2) : Color.blue.opacity(0.2))
                     )
             }
         }
-        .padding(.vertical, Theme.Spacing.xl)
+        .padding(.vertical, Theme.Spacing.extraLarge)
     }
 }

@@ -155,7 +155,7 @@ struct SharedHeaderView<Services: AppViewPlatformServices>: View {
     }
 
     var body: some View {
-        HStack(spacing: Theme.Spacing.lg) {
+        HStack(spacing: Theme.Spacing.large) {
             // App Icon on the left
             SharedAppIconView(services: services)
                 .frame(width: 50, height: 50)
@@ -163,7 +163,7 @@ struct SharedHeaderView<Services: AppViewPlatformServices>: View {
             Spacer()
 
             // Icon buttons evenly spaced
-            HStack(spacing: Theme.Spacing.lg) {
+            HStack(spacing: Theme.Spacing.large) {
                 // SAM.gov lookup button (moved to left)
                 Button(action: onSAMGovLookup) {
                     if let samIcon = loadSAMIcon() {
@@ -174,7 +174,7 @@ struct SharedHeaderView<Services: AppViewPlatformServices>: View {
                             .frame(width: 40, height: 40)
                             .background(Color.black)
                             .overlay(
-                                RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                                RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                                     .stroke(Theme.Colors.aikoPrimary, lineWidth: 2)
                             )
                     } else {
@@ -184,7 +184,7 @@ struct SharedHeaderView<Services: AppViewPlatformServices>: View {
                             .frame(width: 40, height: 40)
                             .background(Color.black)
                             .overlay(
-                                RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                                RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                                     .stroke(Theme.Colors.aikoPrimary, lineWidth: 2)
                             )
                     }
@@ -198,7 +198,7 @@ struct SharedHeaderView<Services: AppViewPlatformServices>: View {
                         .frame(width: 40, height: 40)
                         .background(Color.black)
                         .overlay(
-                            RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                            RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                                 .stroke(Theme.Colors.aikoPrimary, lineWidth: 2)
                         )
                 }
@@ -211,7 +211,7 @@ struct SharedHeaderView<Services: AppViewPlatformServices>: View {
                         .frame(width: 40, height: 40)
                         .background(Color.black)
                         .overlay(
-                            RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                            RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                                 .stroke(Theme.Colors.aikoPrimary, lineWidth: 2)
                         )
                 }
@@ -225,7 +225,7 @@ struct SharedHeaderView<Services: AppViewPlatformServices>: View {
                         .frame(width: 40, height: 40)
                         .background(Color.black)
                         .overlay(
-                            RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                            RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                                 .stroke(Theme.Colors.aikoPrimary, lineWidth: 2)
                         )
                 }
@@ -238,14 +238,14 @@ struct SharedHeaderView<Services: AppViewPlatformServices>: View {
                         .frame(width: 40, height: 40)
                         .background(Color.black)
                         .overlay(
-                            RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                            RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                                 .stroke(Theme.Colors.aikoPrimary, lineWidth: 2)
                         )
                 }
             }
         }
-        .padding(.horizontal, Theme.Spacing.lg)
-        .padding(.vertical, Theme.Spacing.md)
+        .padding(.horizontal, Theme.Spacing.large)
+        .padding(.vertical, Theme.Spacing.medium)
         .background(Color.black)
     }
 }

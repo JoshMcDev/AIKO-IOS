@@ -205,7 +205,7 @@ struct OnboardingNavigationButtons: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, Theme.Spacing.medium)
                 .background(Theme.Colors.aikoSecondary)
-                .cornerRadius(Theme.CornerRadius.sm)
+                .cornerRadius(Theme.CornerRadius.small)
             }
 
             if currentStep != .review, currentStep != .welcome {
@@ -235,7 +235,7 @@ struct OnboardingNavigationButtons: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, Theme.Spacing.medium)
             .background(canProceed ? Theme.Colors.aikoAccent : Color.gray.opacity(0.3))
-            .cornerRadius(Theme.CornerRadius.sm)
+            .cornerRadius(Theme.CornerRadius.small)
             .disabled(!canProceed || isLoading)
         }
         .padding(Theme.Spacing.large)

@@ -27,7 +27,7 @@ struct FaceIDAuthenticationView: View {
                 Spacer()
 
                 // Face ID Icon and Status
-                VStack(spacing: Theme.Spacing.lg) {
+                VStack(spacing: Theme.Spacing.large) {
                     if isAuthenticating {
                         Image(systemName: "faceid")
                             .font(.system(size: 60))
@@ -71,9 +71,9 @@ struct FaceIDAuthenticationView: View {
                             .fontWeight(.semibold)
                             .foregroundColor(.white)
                             .frame(maxWidth: 200)
-                            .padding(.vertical, Theme.Spacing.md)
+                            .padding(.vertical, Theme.Spacing.medium)
                             .background(Theme.Colors.aikoPrimary)
-                            .cornerRadius(Theme.CornerRadius.sm)
+                            .cornerRadius(Theme.CornerRadius.small)
                     }
                 }
 

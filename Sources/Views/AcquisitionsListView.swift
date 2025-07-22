@@ -213,7 +213,7 @@ struct SearchFilterBar: View {
             .padding(.horizontal, Theme.Spacing.medium)
             .padding(.vertical, Theme.Spacing.small)
             .background(Theme.Colors.aikoSecondary)
-            .cornerRadius(Theme.CornerRadius.sm)
+            .cornerRadius(Theme.CornerRadius.small)
             .padding(.horizontal, Theme.Spacing.large)
 
             // Filters
@@ -280,7 +280,7 @@ struct FilterChip: View {
         .padding(.horizontal, Theme.Spacing.medium)
         .padding(.vertical, Theme.Spacing.small)
         .background(
-            RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                 .fill(isSelected ? Theme.Colors.aikoAccent : Theme.Colors.aikoSecondary)
         )
     }
@@ -331,7 +331,7 @@ struct AcquisitionCard: View {
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
                                 .background(Theme.Colors.aikoBackground)
-                                .cornerRadius(Theme.CornerRadius.sm)
+                                .cornerRadius(Theme.CornerRadius.small)
                                 .focused($isRenameFocused)
                                 .onSubmit {
                                     onConfirmRename()
@@ -447,7 +447,7 @@ struct AcquisitionCard: View {
         }
         .padding(Theme.Spacing.large)
         .background(
-            RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
                 .fill(Theme.Colors.aikoSecondary)
         )
         .confirmationDialog(
@@ -564,7 +564,7 @@ struct StatusBadge: View {
         .padding(.horizontal, Theme.Spacing.small)
         .padding(.vertical, 4)
         .background(
-            RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                 .fill(color(for: status).opacity(0.2))
         )
     }
@@ -588,7 +588,7 @@ struct EmptyAcquisitionsView: View {
     let hasAcquisitions: Bool
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.xl) {
+        VStack(spacing: Theme.Spacing.extraLarge) {
             Spacer()
 
             Image(systemName: "doc.text.magnifyingglass")
@@ -608,6 +608,6 @@ struct EmptyAcquisitionsView: View {
 
             Spacer()
         }
-        .padding(Theme.Spacing.xl)
+        .padding(Theme.Spacing.extraLarge)
     }
 }

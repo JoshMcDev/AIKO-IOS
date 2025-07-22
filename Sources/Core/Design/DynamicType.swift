@@ -225,12 +225,12 @@ struct DynamicStack<Content: View>: View {
     var body: some View {
         if sizeCategory.isAccessibilityCategory {
             // Use vertical stack for accessibility sizes
-            VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                 content
             }
         } else {
             // Use horizontal stack for regular sizes
-            HStack(spacing: Theme.Spacing.md) {
+            HStack(spacing: Theme.Spacing.medium) {
                 content
             }
         }

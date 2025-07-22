@@ -72,8 +72,8 @@ public struct GlobalScanFeature: Sendable {
 
         // Legacy compatibility state for existing tests
         public var isScanning: Bool = false
-        public var currentContext: ScanContext?
-        public var scannedDocument: ScannedDocument?
+        public var currentContext: AppCore.ScanContext?
+        public var scannedDocument: GlobalScannedDocument?
 
         public init() {}
 
@@ -83,7 +83,7 @@ public struct GlobalScanFeature: Sendable {
             position: FloatingPosition = .bottomTrailing,
             isScanning: Bool = false,
             isScannerActive: Bool = false,
-            currentContext: ScanContext? = nil,
+            currentContext: AppCore.ScanContext? = nil,
             dragOffset: CGSize = .zero
         ) {
             self.isVisible = isVisible
@@ -94,77 +94,12 @@ public struct GlobalScanFeature: Sendable {
             self.dragOffset = dragOffset
         }
 
-        // Computed Properties
-        public var effectivePosition: FloatingPosition {
-            // TODO: Apply drag offset to position calculation
-            position
-        }
-
-        public var shouldShowButton: Bool {
-            isVisible && !isScannerActive
-        }
-
-        public var buttonOpacity: Double {
-            isDragging ? 0.8 : opacity
-        }
+        // MARK: - Computed Properties
+        // Note: Computed properties are defined in GlobalScanFeature+State.swift
     }
 
     // MARK: - Actions
-
-    public enum Action: Sendable {
-        // Button UI Actions
-        case setVisibility(Bool)
-        case setPosition(FloatingPosition)
-        case animateButton(ButtonAnimation)
-        case buttonTapped
-        case buttonLongPressed
-
-        // Legacy compatibility actions for existing tests
-        case showScanButton
-        case hideScanButton
-        case scanButtonTapped
-        case setScanContext(ScanContext)
-        case clearScanContext
-        case dragGestureChanged(CGSize)
-        case dragGestureEnded
-        case scanCompleted(ScannedDocument)
-
-        // Drag Gesture Actions
-        case dragBegan
-        case dragChanged(CGSize)
-        case dragEnded(CGSize)
-        case snapToPosition(FloatingPosition)
-
-        // Scanner Integration Actions
-        case activateScanner
-        case setScannerMode(ScannerMode)
-        case documentScanner(DocumentScannerFeature.Action)
-        case scannerCompleted(Result<Void, Error>)
-        case scannerDismissed
-
-        // Permission Actions
-        case checkPermissions
-        case permissionsChecked(Bool)
-        case requestCameraPermission
-        case permissionDialogDismissed
-
-        // Performance Tracking Actions
-        case recordActivationStart
-        case recordActivationLatency(TimeInterval)
-
-        // Configuration Actions
-        case updateConfiguration(GlobalScanConfiguration)
-        case resetToDefaults
-
-        // Error Handling Actions
-        case showError(GlobalScanError)
-        case dismissError
-
-        // Internal Actions
-        case startPermissionFlow
-        case completeActivation
-        case handleScannerError(Error)
-    }
+    // Note: Action enum is defined in GlobalScanFeature+Action.swift
 
     // MARK: - Dependencies
 
@@ -199,10 +134,9 @@ public struct GlobalScanFeature: Sendable {
 
             case let .animateButton(animation):
                 state.isAnimating = true
-                return Effect.run { _ in
-                    // TODO: Implement animation logic
+                return Effect.run { send in
                     try await clock.sleep(for: .milliseconds(animation.duration))
-                    // Animation completion would update state
+                    await send(.animationCompleted)
                 }
 
             case .buttonTapped:
@@ -217,10 +151,9 @@ public struct GlobalScanFeature: Sendable {
                 }
 
             case .buttonLongPressed:
-                // Long press for configuration menu
-                return Effect.run { _ in
+                return Effect.run { send in
                     await hapticManager.impact(.heavy)
-                    // TODO: Show configuration menu
+                    await send(.showPositionSelectionMenu)
                 }
 
             // MARK: - Drag Gesture Actions
@@ -252,14 +185,10 @@ public struct GlobalScanFeature: Sendable {
             // MARK: - Scanner Integration Actions
 
             case .activateScanner:
-                // Check if scanner can be activated
                 guard !state.isScannerActive else {
                     return Effect.send(.showError(.scannerAlreadyActive))
                 }
-
                 state.isScannerActive = true
-
-                // Check permissions first
                 if !state.permissionsChecked {
                     return Effect.send(.startPermissionFlow)
                 } else if !state.cameraPermissionGranted {
@@ -270,16 +199,13 @@ public struct GlobalScanFeature: Sendable {
 
             case let .setScannerMode(mode):
                 state.scannerMode = mode
-                state.documentScanner.scannerMode = mode
                 return .none
 
             case .documentScanner(.dismissScanner):
-                // Handle scanner dismissal
                 state.isScannerActive = false
                 return Effect.send(.scannerDismissed)
 
             case .documentScanner(.documentSaved):
-                // Handle successful document save
                 state.isScannerActive = false
                 return Effect.send(.scannerCompleted(.success(())))
 
@@ -364,10 +290,7 @@ public struct GlobalScanFeature: Sendable {
                 return .none
 
             case .resetToDefaults:
-                state.position = .bottomTrailing
-                state.isVisible = true
-                state.scannerMode = .quickScan
-                state.opacity = 1.0
+                state = State()
                 return .none
 
             // MARK: - Error Handling Actions
@@ -389,10 +312,6 @@ public struct GlobalScanFeature: Sendable {
                 return Effect.send(.checkPermissions)
 
             case .completeActivation:
-                // Set scanner to quick scan mode
-                state.documentScanner.scannerMode = state.scannerMode
-
-                // Activate the document scanner
                 return Effect.send(.documentScanner(.scanButtonTapped))
 
             case let .handleScannerError(error):
@@ -435,111 +354,36 @@ public struct GlobalScanFeature: Sendable {
                 state.isScanning = false
                 state.isScannerActive = false
                 return .none
+
+            case .animationCompleted:
+                state.isAnimating = false
+                return .none
+
+            case .showPositionSelectionMenu:
+                let nextPosition: FloatingPosition = switch state.position {
+                case .topLeading: .topTrailing
+                case .topTrailing: .bottomTrailing
+                case .bottomTrailing: .bottomLeading
+                case .bottomLeading: .topLeading
+                }
+                return Effect.send(.setPosition(nextPosition))
             }
         }
     }
 
-    // MARK: - Helper Methods
-
     private func calculateNearestPosition(for offset: CGSize) -> FloatingPosition {
-        // TODO: Implement position calculation based on drag offset
-        // This is a simplified version - full implementation would consider screen bounds
-        if abs(offset.width) > abs(offset.height) {
-            offset.width > 0 ? .bottomTrailing : .bottomLeading
-        } else {
-            offset.height < 0 ? .topTrailing : .bottomTrailing
+        let horizontalThreshold: CGFloat = 100.0
+        let verticalThreshold: CGFloat = 150.0
+        let isHorizontalDrag = abs(offset.width) > abs(offset.height)
+
+        if isHorizontalDrag && abs(offset.width) > horizontalThreshold {
+            return offset.width > 0 ? .bottomTrailing : .bottomLeading
+        } else if abs(offset.height) > verticalThreshold {
+            return offset.height < 0 ? .topTrailing : .bottomTrailing
         }
+        return .bottomTrailing
     }
 }
 
 // MARK: - Supporting Types
-
-public enum FloatingPosition: String, CaseIterable, Equatable, Sendable {
-    case topLeading = "Top Leading"
-    case topTrailing = "Top Trailing"
-    case bottomLeading = "Bottom Leading"
-    case bottomTrailing = "Bottom Trailing"
-
-    public var alignment: UnitPoint {
-        switch self {
-        case .topLeading: .topLeading
-        case .topTrailing: .topTrailing
-        case .bottomLeading: .bottomLeading
-        case .bottomTrailing: .bottomTrailing
-        }
-    }
-
-    public var safeAreaInsets: EdgeInsets {
-        switch self {
-        case .topLeading, .topTrailing:
-            EdgeInsets(top: 20, leading: 16, bottom: 0, trailing: 16)
-        case .bottomLeading, .bottomTrailing:
-            EdgeInsets(top: 0, leading: 16, bottom: 20, trailing: 16)
-        }
-    }
-}
-
-public enum ButtonAnimation: Equatable, Sendable {
-    case pulse(duration: Int = 300)
-    case bounce(duration: Int = 200)
-    case shake(duration: Int = 400)
-    case fadeIn(duration: Int = 250)
-    case fadeOut(duration: Int = 250)
-
-    public var duration: Int {
-        switch self {
-        case let .pulse(duration): duration
-        case let .bounce(duration): duration
-        case let .shake(duration): duration
-        case let .fadeIn(duration): duration
-        case let .fadeOut(duration): duration
-        }
-    }
-}
-
-public enum GlobalScanError: LocalizedError, Equatable, Sendable {
-    case cameraPermissionDenied
-    case scannerAlreadyActive
-    case scannerUnavailable
-    case configurationError(String)
-    case scannerError(String)
-
-    public var errorDescription: String? {
-        switch self {
-        case .cameraPermissionDenied:
-            "Camera permission is required for document scanning"
-        case .scannerAlreadyActive:
-            "Scanner is already active"
-        case .scannerUnavailable:
-            "Document scanner is not available on this device"
-        case let .configurationError(message):
-            "Configuration error: \(message)"
-        case let .scannerError(message):
-            "Scanner error: \(message)"
-        }
-    }
-}
-
-public struct GlobalScanConfiguration: Equatable, Sendable {
-    public let position: FloatingPosition
-    public let isVisible: Bool
-    public let scannerMode: ScannerMode
-    public let enableHapticFeedback: Bool
-    public let enableAnalytics: Bool
-
-    public init(
-        position: FloatingPosition = .bottomTrailing,
-        isVisible: Bool = true,
-        scannerMode: ScannerMode = .quickScan,
-        enableHapticFeedback: Bool = true,
-        enableAnalytics: Bool = true
-    ) {
-        self.position = position
-        self.isVisible = isVisible
-        self.scannerMode = scannerMode
-        self.enableHapticFeedback = enableHapticFeedback
-        self.enableAnalytics = enableAnalytics
-    }
-
-    public static let `default` = GlobalScanConfiguration()
-}
+// Note: Supporting types are defined in GlobalScanFeature+Types.swift

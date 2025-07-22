@@ -203,423 +203,6 @@ public struct EnhancedAppView: View {
     }
 }
 
-// MARK: - Enhanced Header View
-
-struct EnhancedHeaderView: View {
-    @Binding var showMenu: Bool
-    let loadedAcquisition: AppCore.Acquisition?
-    let loadedAcquisitionDisplayName: String?
-    let hasSelectedDocuments: Bool
-    let onNewAcquisition: () -> Void
-    let onSAMGovLookup: () -> Void
-    let onExecuteAll: () -> Void
-
-    @State private var logoScale: CGFloat = 1.0
-    @Environment(\.sizeCategory) private var sizeCategory
-
-    @Dependency(\.imageLoader) var imageLoader
-
-    private func loadSAMIcon() -> Image? {
-        // For Swift Package, load from module bundle
-        guard let url = Bundle.module.url(forResource: "SAMIcon", withExtension: "png") else {
-            return nil
-        }
-
-        guard let data = try? Data(contentsOf: url) else {
-            return nil
-        }
-
-        return imageLoader.loadImage(data)
-    }
-
-    var body: some View {
-        HStack(spacing: 0) {
-            // Animated AIKO Logo
-            ResponsiveText(content: "AIKO", style: .largeTitle)
-                .foregroundStyle(
-                    Theme.Colors.aikoPrimary
-                )
-                .scaleEffect(logoScale)
-                .onAppear {
-                    withAnimation(
-                        Animation.easeInOut(duration: 2.0)
-                            .repeatForever(autoreverses: true)
-                    ) {
-                        logoScale = 1.05
-                    }
-                }
-                .accessibilityLabel("AIKO - AI Contract Intelligence Officer")
-
-            Spacer()
-
-            // Acquisition name with animation
-            if let displayName = loadedAcquisitionDisplayName {
-                ResponsiveText(content: displayName, style: .headline)
-                    .foregroundColor(.white)
-                    .lineLimit(1)
-                    .frame(maxWidth: 200)
-                    .transition(.scale.combined(with: .opacity))
-                    .accessibilityLabel("Current acquisition: \(displayName)")
-
-                Spacer()
-            }
-
-            // Enhanced action buttons
-            DynamicStack {
-                // Execute all button with pulse animation
-                AnimatedButton(action: onExecuteAll) {
-                    Image(systemName: hasSelectedDocuments ? "play.fill" : "play")
-                        .font(.title3)
-                        .foregroundColor(.white)
-                        .frame(width: 44, height: 44)
-                        .background(
-                            Circle()
-                                .fill(Theme.Colors.aikoPrimary)
-                                .shadow(color: Theme.Colors.aikoPrimary.opacity(0.3), radius: hasSelectedDocuments ? 8 : 0)
-                        )
-                }
-                .disabled(!hasSelectedDocuments)
-                .opacity(hasSelectedDocuments ? 1.0 : 0.6)
-                .accessibleButton(
-                    label: "Execute all documents",
-                    hint: hasSelectedDocuments ? "Tap to generate selected documents" : "No documents selected"
-                )
-                .pulse(duration: 2.0, scale: 1.1)
-                .opacity(hasSelectedDocuments ? 1.0 : 0.6)
-
-                // New acquisition button
-                AnimatedButton(action: onNewAcquisition) {
-                    Image(systemName: "plus")
-                        .font(.title3)
-                        .foregroundColor(.white)
-                        .frame(width: 44, height: 44)
-                        .background(
-                            Circle()
-                                .fill(Theme.Colors.aikoPrimary)
-                        )
-                }
-                .accessibleButton(
-                    label: "New acquisition",
-                    hint: "Start a new acquisition"
-                )
-
-                // SAM.gov lookup button
-                AnimatedButton(action: onSAMGovLookup) {
-                    Group {
-                        if let samIcon = loadSAMIcon() {
-                            samIcon
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 30, height: 30)
-                                .frame(width: 44, height: 44)
-                                .background(
-                                    Circle()
-                                        .fill(Color.black)
-                                        .overlay(
-                                            Circle()
-                                                .stroke(Theme.Colors.aikoPrimary, lineWidth: 2)
-                                        )
-                                )
-                        } else {
-                            Text("SAM")
-                                .font(.system(size: 13, weight: .bold, design: .rounded))
-                                .foregroundColor(.white)
-                                .frame(width: 44, height: 44)
-                                .background(
-                                    Circle()
-                                        .fill(Theme.Colors.aikoPrimary)
-                                )
-                        }
-                    }
-                }
-                .accessibleButton(
-                    label: "SAM.gov lookup",
-                    hint: "Search SAM.gov database"
-                )
-
-                // Menu button with rotation animation
-                AnimatedButton(action: { showMenu.toggle() }) {
-                    Image(systemName: "line.horizontal.3")
-                        .font(.title3)
-                        .foregroundColor(.white)
-                        .frame(width: 44, height: 44)
-                        .background(
-                            Circle()
-                                .fill(Theme.Colors.aikoPrimary)
-                        )
-                        .rotationEffect(.degrees(showMenu ? 90 : 0))
-                }
-                .accessibleButton(
-                    label: "Menu",
-                    hint: showMenu ? "Close menu" : "Open menu"
-                )
-            }
-        }
-        .padding(.horizontal, Theme.Spacing.lg)
-        .padding(.vertical, Theme.Spacing.medium)
-        .background(
-            GlassmorphicView {
-                Color.black
-            }
-        )
-    }
-}
-
-// MARK: - Enhanced Document Generation View
-
-struct EnhancedDocumentGenerationView: View {
-    let store: StoreOf<DocumentGenerationFeature>
-    let isChatMode: Bool
-    let loadedAcquisition: AppCore.Acquisition?
-    let loadedAcquisitionDisplayName: String?
-
-    @State private var scrollOffset: CGFloat = 0
-    @Environment(\.sizeCategory) private var sizeCategory
-    @Dependency(\.hapticManager) var hapticManager
-
-    struct ViewState: Equatable {
-        let analysisConversationHistory: [String]
-        let analysisIsAnalyzingRequirements: Bool
-        let analysisUploadedDocuments: [UploadedDocument]
-        let analysisIsRecording: Bool
-        let requirements: String
-        let isGenerating: Bool
-        let selectedDocumentTypes: Set<DocumentType>
-        let selectedDFDocumentTypes: Set<DFDocumentType>
-        let documentReadinessStatus: [DocumentType: DocumentStatusFeature.DocumentStatus]
-
-        init(state: DocumentGenerationFeature.State) {
-            analysisConversationHistory = state.analysis.conversationHistory
-            analysisIsAnalyzingRequirements = state.analysis.isAnalyzingRequirements
-            analysisUploadedDocuments = state.analysis.uploadedDocuments
-            analysisIsRecording = state.analysis.isRecording
-            requirements = state.requirements
-            isGenerating = state.isGenerating
-            selectedDocumentTypes = state.selectedDocumentTypes
-            selectedDFDocumentTypes = state.status.selectedDFDocumentTypes
-            documentReadinessStatus = state.status.documentReadinessStatus
-        }
-    }
-
-    var body: some View {
-        WithViewStore(store, observe: ViewState.init) { viewStore in
-            VStack(spacing: 0) {
-                // Main Content Area with parallax effect
-                ScrollView(.vertical, showsIndicators: true) {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
-                        // Content sections with enhanced animations
-                        Group {
-                            if isChatMode, loadedAcquisition != nil, !viewStore.analysisConversationHistory.isEmpty {
-                                EnhancedChatHistoryView(
-                                    messages: viewStore.analysisConversationHistory,
-                                    isLoading: viewStore.analysisIsAnalyzingRequirements
-                                )
-                                .transition(.asymmetric(
-                                    insertion: .scale(scale: 0.9).combined(with: .opacity),
-                                    removal: .scale(scale: 1.1).combined(with: .opacity)
-                                ))
-                            }
-
-                            // Enhanced document selection
-                            EnhancedDocumentTypesSection(
-                                documentTypes: DocumentType.allCases,
-                                selectedTypes: viewStore.selectedDocumentTypes,
-                                selectedDFTypes: viewStore.selectedDFDocumentTypes,
-                                documentStatus: viewStore.documentReadinessStatus,
-                                hasAcquisition: loadedAcquisition != nil,
-                                onTypeToggled: { documentType in
-                                    hapticManager.selection()
-                                    viewStore.send(.documentTypeToggled(documentType))
-                                },
-                                onDFTypeToggled: { dfDocumentType in
-                                    hapticManager.selection()
-                                    viewStore.send(.status(.dfDocumentTypeToggled(dfDocumentType)))
-                                },
-                                onExecuteCategory: { category in
-                                    hapticManager.notification(.success)
-                                    viewStore.send(.executeCategory(category))
-                                }
-                            )
-                        }
-
-                        Spacer(minLength: 100)
-                    }
-                    .padding(Theme.Spacing.lg)
-                    .background(GeometryReader { geometry in
-                        Color.clear.preference(
-                            key: ScrollOffsetPreferenceKey.self,
-                            value: geometry.frame(in: .named("scroll")).minY
-                        )
-                    })
-                }
-                .coordinateSpace(name: "scroll")
-                .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-                    scrollOffset = value
-                }
-                .background(Theme.Colors.aikoBackground)
-
-                // Enhanced Input Area
-                InputArea(
-                    requirements: viewStore.requirements,
-                    isGenerating: viewStore.isGenerating,
-                    uploadedDocuments: viewStore.analysisUploadedDocuments,
-                    isChatMode: isChatMode,
-                    isRecording: viewStore.analysisIsRecording,
-                    onRequirementsChanged: { requirements in
-                        viewStore.send(.requirementsChanged(requirements))
-                    },
-                    onAnalyzeRequirements: {
-                        hapticManager.impact(.medium)
-                        viewStore.send(.analyzeRequirements)
-                    },
-                    onEnhancePrompt: {
-                        hapticManager.impact(.light)
-                        viewStore.send(.analysis(.enhancePrompt))
-                    },
-                    onStartRecording: {
-                        hapticManager.impact(.medium)
-                        viewStore.send(.analysis(.startVoiceRecording))
-                    },
-                    onStopRecording: {
-                        hapticManager.impact(.light)
-                        viewStore.send(.analysis(.stopVoiceRecording))
-                    },
-                    onShowDocumentPicker: {
-                        hapticManager.selection()
-                        viewStore.send(.analysis(.showDocumentPicker(true)))
-                    },
-                    onShowImagePicker: {
-                        hapticManager.selection()
-                        viewStore.send(.analysis(.showImagePicker(true)))
-                    },
-                    onRemoveDocument: { documentId in
-                        hapticManager.impact(.light)
-                        viewStore.send(.analysis(.removeUploadedDocument(documentId)))
-                    }
-                )
-            }
-            // Add sheet presentations with transitions...
-        }
-    }
-}
-
-// MARK: - Enhanced Chat History
-
-struct EnhancedChatHistoryView: View {
-    let messages: [String]
-    let isLoading: Bool
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
-            ResponsiveText(content: "Chat History", style: .headline)
-                .accessibleHeader(label: "Chat History", level: .h2)
-
-            VStack(alignment: .leading, spacing: Theme.Spacing.small) {
-                ForEach(Array(messages.enumerated()), id: \.offset) { index, message in
-                    EnhancedChatBubble(
-                        message: message,
-                        isUser: message.hasPrefix("User:"),
-                        isLoading: isLoading && index == messages.count - 1
-                    )
-                    .transition(.asymmetric(
-                        insertion: .scale(scale: 0.8, anchor: message.hasPrefix("User:") ? .bottomTrailing : .bottomLeading)
-                            .combined(with: .opacity),
-                        removal: .opacity
-                    ))
-                }
-
-                if isLoading {
-                    HStack(spacing: Theme.Spacing.small) {
-                        LoadingDotsView(dotSize: 8, color: .blue)
-                        ResponsiveText(content: "AIKO is thinking...", style: .caption)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(.horizontal, Theme.Spacing.medium)
-                    .padding(.vertical, Theme.Spacing.small)
-                    .accessibilityLabel("AIKO is processing your request")
-                }
-            }
-            .padding(Theme.Spacing.lg)
-            .background(
-                EnhancedCard(content: {
-                    Color.clear
-                }, style: .glassmorphism)
-            )
-        }
-    }
-}
-
-// MARK: - Enhanced Chat Bubble
-
-struct EnhancedChatBubble: View {
-    let message: String
-    let isUser: Bool
-    let isLoading: Bool
-
-    @State private var showMessage = false
-
-    var cleanMessage: String {
-        if isUser {
-            message.replacingOccurrences(of: "User: ", with: "")
-        } else {
-            message.replacingOccurrences(of: "AIKO: ", with: "")
-        }
-    }
-
-    var body: some View {
-        HStack(alignment: .top, spacing: Theme.Spacing.small) {
-            if !isUser {
-                ZStack {
-                    Circle()
-                        .fill(
-                            Color.blue.opacity(0.3)
-                        )
-                        .frame(width: 32, height: 32)
-
-                    Image(systemName: "brain.head.profile")
-                        .font(.caption)
-                        .foregroundColor(.white)
-                }
-                .pulse(duration: 2.0, scale: 1.1)
-                .accessibilityHidden(true)
-            }
-
-            VStack(alignment: isUser ? .trailing : .leading, spacing: 4) {
-                ResponsiveText(
-                    content: isUser ? "You" : "AIKO",
-                    style: .caption
-                )
-                .foregroundColor(.secondary)
-
-                ResponsiveText(content: cleanMessage, style: .body)
-                    .padding(.horizontal, Theme.Spacing.medium)
-                    .padding(.vertical, Theme.Spacing.small)
-                    .background(
-                        RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
-                            .fill(isUser ? Theme.Colors.aikoAccent : Theme.Colors.aikoSecondary)
-                            .shadow(color: .black.opacity(0.1), radius: 4, y: 2)
-                    )
-                    .scaleEffect(showMessage ? 1.0 : 0.8)
-                    .opacity(showMessage ? 1.0 : 0.0)
-            }
-            .frame(maxWidth: .infinity, alignment: isUser ? .trailing : .leading)
-
-            if isUser {
-                Image(systemName: "person.circle.fill")
-                    .font(.title2)
-                    .foregroundColor(.gray)
-                    .accessibilityHidden(true)
-            }
-        }
-        .onAppear {
-            withAnimation(AnimationSystem.Spring.bouncy.delay(0.1)) {
-                showMessage = true
-            }
-        }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(isUser ? "You" : "AIKO") said: \(cleanMessage)")
-    }
-}
 
 // MARK: - Enhanced Document Types Section
 
@@ -637,14 +220,14 @@ struct EnhancedDocumentTypesSection: View {
     @State private var searchText = ""
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.large) {
             // Header
             HStack {
                 Label("Document Types", systemImage: "folder")
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(Theme.Colors.aikoPrimary)
-                    .accessibleHeader(label: "Document Types", level: .h2)
+                    .accessibleHeader(label: "Document Types", level: .heading2)
 
                 Spacer()
 
@@ -743,7 +326,7 @@ struct EnhancedDocumentCategoryCard: View {
                 hapticManager.selection()
                 onToggleExpanded()
             }) {
-                HStack(spacing: Theme.Spacing.lg) {
+                HStack(spacing: Theme.Spacing.large) {
                     // Animated category icon
                     ZStack {
                         Circle()
@@ -800,7 +383,7 @@ struct EnhancedDocumentCategoryCard: View {
                             .lineLimit(1)
                     }
                 }
-                .padding(Theme.Spacing.lg)
+                .padding(Theme.Spacing.large)
                 .background(
                     EnhancedCard(
                         content: {
@@ -1113,7 +696,7 @@ struct AppEnhancedInputArea: View {
                                 .transition(.scale.combined(with: .opacity))
                             }
                         }
-                        .padding(.horizontal, Theme.Spacing.lg)
+                        .padding(.horizontal, Theme.Spacing.large)
                     }
                     .frame(height: 60)
                     .animation(AnimationSystem.Spring.smooth, value: uploadedDocuments)
@@ -1131,7 +714,7 @@ struct AppEnhancedInputArea: View {
                                 style: .body
                             )
                             .foregroundColor(.gray)
-                            .padding(.leading, Theme.Spacing.lg)
+                            .padding(.leading, Theme.Spacing.large)
                             .allowsHitTesting(false)
                             .transition(.opacity)
                         }
@@ -1142,7 +725,7 @@ struct AppEnhancedInputArea: View {
                         ), axis: .vertical)
                             .textFieldStyle(.plain)
                             .foregroundColor(.white)
-                            .padding(.leading, Theme.Spacing.lg)
+                            .padding(.leading, Theme.Spacing.large)
                             .padding(.vertical, Theme.Spacing.medium)
                             .padding(.trailing, Theme.Spacing.small)
                             .lineLimit(1 ... 4)
@@ -1287,8 +870,8 @@ struct AppEnhancedInputArea: View {
                     }
                 }
             }
-            .padding(.horizontal, Theme.Spacing.lg)
-            .padding(.vertical, Theme.Spacing.lg)
+            .padding(.horizontal, Theme.Spacing.large)
+            .padding(.vertical, Theme.Spacing.large)
             .background(
                 GlassmorphicView {
                     Color.black
@@ -1377,108 +960,6 @@ struct EnhancedUploadedDocumentCard: View {
     }
 }
 
-// MARK: - Enhanced Menu View
-
-struct EnhancedMenuView: View {
-    let store: StoreOf<AppFeature>
-    @Binding var isShowing: Bool
-    @Binding var selectedMenuItem: AppFeature.MenuItem?
-
-    @State private var profileImage: AppCore.PlatformImage?
-    @State private var menuOffset: CGFloat = 300
-    @Dependency(\.hapticManager) var hapticManager
-    @Dependency(\.screenService) var screenService
-
-    var body: some View {
-        HStack(spacing: 0) {
-            // Backdrop
-            Color.clear
-                .frame(width: screenService.mainScreenWidth() - 300)
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    withAnimation(AnimationSystem.Spring.smooth) {
-                        isShowing = false
-                    }
-                }
-
-            // Menu content with glassmorphism
-            GlassmorphicView {
-                VStack(spacing: 0) {
-                    // Profile section
-                    EnhancedProfileSection(profileImage: $profileImage)
-                        .padding(Theme.Spacing.lg)
-
-                    Divider()
-                        .background(Color.gray.opacity(0.3))
-
-                    // Menu items with enhanced styling
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: Theme.Spacing.small) {
-                            WithViewStore(store, observe: { $0 }) { viewStore in
-                                ForEach(AppFeature.MenuItem.allCases, id: \.self) { item in
-                                    EnhancedMenuItemRow(
-                                        item: item,
-                                        isSelected: selectedMenuItem == item,
-                                        action: {
-                                            hapticManager.selection()
-                                            withAnimation(AnimationSystem.Spring.smooth) {
-                                                viewStore.send(.selectMenuItem(item))
-                                                isShowing = false
-                                            }
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                        .padding(Theme.Spacing.medium)
-                    }
-
-                    Spacer()
-
-                    // Footer with version info
-                    VStack(alignment: .leading, spacing: Theme.Spacing.small) {
-                        Divider()
-                            .background(Color.gray.opacity(0.3))
-
-                        HStack {
-                            VStack(alignment: .leading) {
-                                ResponsiveText(content: "AIKO v1.0.0", style: .caption2)
-                                    .foregroundColor(.secondary)
-                                ResponsiveText(
-                                    content: "AI Contract Intelligence Officer",
-                                    style: .caption2
-                                )
-                                .foregroundColor(.secondary)
-                            }
-
-                            Spacer()
-
-                            // Theme toggle
-                            Image(systemName: "moon.stars.fill")
-                                .font(.title3)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    .padding(Theme.Spacing.lg)
-                }
-            }
-            .frame(width: 300)
-            .offset(x: menuOffset)
-            .onAppear {
-                withAnimation(AnimationSystem.Spring.smooth) {
-                    menuOffset = 0
-                }
-            }
-            .onDisappear {
-                menuOffset = 300
-            }
-        }
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel("Navigation Menu")
-        .accessibilityAddTraits(.isModal)
-    }
-}
-
 // MARK: - Helper Views and Extensions
 
 struct AnimatedGradientBackground: View {
@@ -1538,128 +1019,4 @@ extension DocumentStatusFeature.DocumentStatus {
     }
 }
 
-// MARK: - Enhanced Profile Section
 
-struct EnhancedProfileSection: View {
-    @Binding var profileImage: AppCore.PlatformImage?
-    @Dependency(\.imageLoader) var imageLoader
-
-    var body: some View {
-        VStack(spacing: Theme.Spacing.medium) {
-            // Profile image with animation
-            ZStack {
-                Circle()
-                    .fill(
-                        Theme.Colors.aikoPrimary.opacity(0.3)
-                    )
-                    .frame(width: 80, height: 80)
-
-                if let profileImage {
-                    imageLoader.createImage(profileImage)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 80, height: 80)
-                        .clipShape(Circle())
-                } else {
-                    Image(systemName: "person.circle.fill")
-                        .font(.system(size: 40))
-                        .foregroundColor(.white)
-                }
-            }
-            .shadow(color: Theme.Colors.aikoPrimary.opacity(0.3), radius: 8, y: 4)
-
-            // User info
-            VStack(spacing: 4) {
-                ResponsiveText(content: "User", style: .title3)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.white)
-
-                ResponsiveText(content: "user@example.com", style: .caption)
-                    .foregroundColor(.secondary)
-            }
-
-            // Quick stats
-            HStack(spacing: Theme.Spacing.xl) {
-                VStack {
-                    ResponsiveText(content: "12", style: .title2)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                    ResponsiveText(content: "Projects", style: .caption2)
-                        .foregroundColor(.secondary)
-                }
-
-                Divider()
-                    .frame(height: 30)
-
-                VStack {
-                    ResponsiveText(content: "48", style: .title2)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                    ResponsiveText(content: "Documents", style: .caption2)
-                        .foregroundColor(.secondary)
-                }
-            }
-        }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("Profile section")
-    }
-}
-
-// MARK: - Enhanced Menu Item Row
-
-struct EnhancedMenuItemRow: View {
-    let item: AppFeature.MenuItem
-    let isSelected: Bool
-    let action: () -> Void
-
-    @State private var isHovered = false
-
-    var body: some View {
-        AnimatedButton(action: action) {
-            HStack(spacing: Theme.Spacing.medium) {
-                // Icon with animation
-                Image(systemName: item.icon)
-                    .font(.title3)
-                    .foregroundColor(isSelected ? .white : .gray)
-                    .frame(width: 24, height: 24)
-                    .rotationEffect(.degrees(isHovered ? 10 : 0))
-
-                // Label
-                ResponsiveText(content: item.rawValue, style: .body)
-                    .fontWeight(isSelected ? .medium : .regular)
-                    .foregroundColor(isSelected ? .white : .gray)
-
-                Spacer()
-
-                // Selection indicator
-                if isSelected {
-                    Rectangle()
-                        .fill(Theme.Colors.aikoPrimary)
-                        .frame(width: 3)
-                        .transition(.asymmetric(
-                            insertion: .move(edge: .trailing).combined(with: .opacity),
-                            removal: .opacity
-                        ))
-                }
-            }
-            .padding(.horizontal, Theme.Spacing.medium)
-            .padding(.vertical, Theme.Spacing.small)
-            .background(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
-                    .fill(isSelected ? Theme.Colors.aikoPrimary.opacity(0.2) : Color.clear)
-                    .animation(AnimationSystem.Spring.smooth, value: isSelected)
-            )
-        }
-        .buttonStyle(.plain)
-        .onHover { hovering in
-            withAnimation(AnimationSystem.microScale) {
-                isHovered = hovering
-            }
-        }
-        .accessibilityElement(
-            label: item.rawValue,
-            hint: isSelected ? "Currently selected" : "Tap to select",
-            traits: [.isButton, isSelected ? .isSelected : []].reduce([]) { $0.union($1) }
-        )
-    }
-}

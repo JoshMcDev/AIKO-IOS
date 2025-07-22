@@ -53,9 +53,9 @@ struct WorkflowPromptsView: View {
                     }
                 )
             }
-            .padding(Theme.Spacing.lg)
+            .padding(Theme.Spacing.large)
             .background(Theme.Colors.aikoSecondary)
-            .cornerRadius(Theme.CornerRadius.lg)
+            .cornerRadius(Theme.CornerRadius.large)
         }
     }
 }
@@ -92,7 +92,7 @@ struct WorkflowStateHeader: View {
             .padding(.horizontal, Theme.Spacing.small)
             .padding(.vertical, 4)
             .background(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                     .fill((automationEnabled ? Color.green : Color.orange).opacity(0.2))
             )
         }
@@ -164,10 +164,10 @@ struct ApprovalCard: View {
         }
         .padding(Theme.Spacing.medium)
         .background(
-            RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                 .fill(Color.orange.opacity(0.1))
                 .overlay(
-                    RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                    RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                         .stroke(Color.orange.opacity(0.3), lineWidth: 1)
                 )
         )
@@ -243,7 +243,7 @@ struct PromptCard: View {
             }
             .padding(Theme.Spacing.medium)
             .background(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                     .fill(Theme.Colors.aikoTertiary)
             )
         }

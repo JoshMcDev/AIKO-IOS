@@ -67,7 +67,7 @@ public struct UserGuideView: View {
                         // Content
                         ScrollView {
                             contentForSection(selectedSection)
-                                .padding(Theme.Spacing.xl)
+                                .padding(Theme.Spacing.extraLarge)
                         }
                         .frame(maxWidth: .infinity)
                         .background(Theme.Colors.aikoBackground)
@@ -87,7 +87,7 @@ public struct UserGuideView: View {
                                             .padding(.horizontal, Theme.Spacing.medium)
                                             .padding(.vertical, Theme.Spacing.small)
                                             .background(
-                                                RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                                                RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                                                     .fill(selectedSection == section ? Theme.Colors.aikoAccent : Theme.Colors.aikoSecondary)
                                             )
                                     }
@@ -100,7 +100,7 @@ public struct UserGuideView: View {
                         // Content
                         ScrollView {
                             contentForSection(selectedSection)
-                                .padding(Theme.Spacing.xl)
+                                .padding(Theme.Spacing.extraLarge)
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(Theme.Colors.aikoBackground)
@@ -116,7 +116,7 @@ public struct UserGuideView: View {
                 // Content
                 ScrollView {
                     contentForSection(selectedSection)
-                        .padding(Theme.Spacing.xl)
+                        .padding(Theme.Spacing.extraLarge)
                 }
                 .frame(maxWidth: .infinity)
                 .background(Theme.Colors.aikoBackground)
@@ -135,7 +135,7 @@ public struct UserGuideView: View {
             }
             .padding(Theme.Spacing.medium)
             .background(Theme.Colors.aikoSecondary.opacity(0.5))
-            .cornerRadius(Theme.CornerRadius.sm)
+            .cornerRadius(Theme.CornerRadius.small)
             .padding(Theme.Spacing.medium)
 
             // Section list
@@ -169,7 +169,7 @@ public struct UserGuideView: View {
             .padding(.vertical, Theme.Spacing.small)
             .padding(.horizontal, Theme.Spacing.medium)
             .background(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                     .fill(selectedSection == section ? Theme.Colors.aikoAccent : Color.clear)
             )
         }
@@ -201,7 +201,7 @@ public struct UserGuideView: View {
 
 struct GettingStartedContent: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.extraLarge) {
             Text("Welcome to AIKO")
                 .font(.largeTitle)
                 .fontWeight(.bold)
@@ -213,7 +213,7 @@ struct GettingStartedContent: View {
             Divider()
                 .padding(.vertical)
 
-            VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 GuideSection(
                     title: "What is AIKO?",
                     content: """
@@ -254,7 +254,7 @@ struct GettingStartedContent: View {
 
 struct CreatingDocumentsContent: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.extraLarge) {
             Text("Creating Documents")
                 .font(.largeTitle)
                 .fontWeight(.bold)
@@ -263,7 +263,7 @@ struct CreatingDocumentsContent: View {
             Divider()
                 .padding(.vertical)
 
-            VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 GuideSection(
                     title: "Step 1: Describe Your Requirements",
                     content: """
@@ -322,7 +322,7 @@ struct CreatingDocumentsContent: View {
 
 struct UnderstandingDocumentsContent: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.extraLarge) {
             Text("Understanding Documents")
                 .font(.largeTitle)
                 .fontWeight(.bold)
@@ -330,7 +330,7 @@ struct UnderstandingDocumentsContent: View {
             Divider()
                 .padding(.vertical)
 
-            VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 GuideSection(
                     title: "Document Types",
                     content: """
@@ -376,7 +376,7 @@ struct UnderstandingDocumentsContent: View {
 
 struct UsingAIContent: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.extraLarge) {
             Text("Using AI Features")
                 .font(.largeTitle)
                 .fontWeight(.bold)
@@ -384,7 +384,7 @@ struct UsingAIContent: View {
             Divider()
                 .padding(.vertical)
 
-            VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 GuideSection(
                     title: "Natural Language Processing",
                     content: """
@@ -442,7 +442,7 @@ struct UsingAIContent: View {
 
 struct ManagingProfileContent: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.extraLarge) {
             Text("Managing Your Profile")
                 .font(.largeTitle)
                 .fontWeight(.bold)
@@ -450,7 +450,7 @@ struct ManagingProfileContent: View {
             Divider()
                 .padding(.vertical)
 
-            VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 GuideSection(
                     title: "Why Complete Your Profile?",
                     content: """
@@ -495,7 +495,7 @@ struct ManagingProfileContent: View {
 
 struct TipsAndTricksContent: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.extraLarge) {
             Text("Tips & Tricks")
                 .font(.largeTitle)
                 .fontWeight(.bold)
@@ -503,7 +503,7 @@ struct TipsAndTricksContent: View {
             Divider()
                 .padding(.vertical)
 
-            VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 GuideSection(
                     title: "Power User Tips",
                     bullets: [
@@ -550,7 +550,7 @@ struct TipsAndTricksContent: View {
 
 struct FAQContent: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.extraLarge) {
             Text("Frequently Asked Questions")
                 .font(.largeTitle)
                 .fontWeight(.bold)
@@ -558,7 +558,7 @@ struct FAQContent: View {
             Divider()
                 .padding(.vertical)
 
-            VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 FAQItem(
                     question: "Is AIKO FAR-compliant?",
                     answer: "Yes, all documents generated by AIKO follow Federal Acquisition Regulation (FAR) guidelines and include required clauses and provisions."
@@ -706,7 +706,7 @@ struct FAQItem: View {
         }
         .padding(Theme.Spacing.medium)
         .background(Theme.Colors.aikoSecondary.opacity(0.5))
-        .cornerRadius(Theme.CornerRadius.sm)
+        .cornerRadius(Theme.CornerRadius.small)
         .animation(.easeInOut(duration: 0.2), value: isExpanded)
     }
 }

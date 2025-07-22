@@ -207,10 +207,10 @@ public struct FormSelectionView: View {
                         .padding(.trailing, Theme.Spacing.large)
                 }
                 .background(
-                    RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                    RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
                         .fill(Theme.Colors.aikoSecondary)
                         .overlay(
-                            RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                            RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
                                 .stroke(Color.purple.opacity(0.5), lineWidth: 2)
                         )
                 )
@@ -300,7 +300,7 @@ public struct FormSelectionView: View {
                     .padding(.trailing, Theme.Spacing.large)
             }
             .background(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
                     .fill(Theme.Colors.aikoSecondary)
             )
             .padding(.horizontal, Theme.Spacing.large)

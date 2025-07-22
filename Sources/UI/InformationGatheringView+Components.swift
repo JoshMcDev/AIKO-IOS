@@ -9,7 +9,7 @@ struct QuestionView: View {
     let total: Int
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
             HStack {
                 Image(systemName: "questionmark.circle.fill")
                     .font(.title2)
@@ -35,7 +35,7 @@ struct QuestionView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .background(
-            RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
                 .fill(Theme.Colors.aikoSecondary.opacity(0.5))
         )
     }

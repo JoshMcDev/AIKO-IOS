@@ -76,34 +76,34 @@
         static let iOS: Self = {
             let service = iOSThemeService()
             return Self(
-                _backgroundColor: {
+                backgroundColorProvider: {
                     service.backgroundColor()
                 },
-                _cardColor: {
+                cardColorProvider: {
                     service.cardColor()
                 },
-                _secondaryColor: {
+                secondaryColorProvider: {
                     service.secondaryColor()
                 },
-                _tertiaryColor: {
+                tertiaryColorProvider: {
                     service.tertiaryColor()
                 },
-                _groupedBackground: {
+                groupedBackgroundProvider: {
                     service.groupedBackground()
                 },
-                _groupedSecondaryBackground: {
+                groupedSecondaryBackgroundProvider: {
                     service.groupedSecondaryBackground()
                 },
-                _groupedTertiaryBackground: {
+                groupedTertiaryBackgroundProvider: {
                     service.groupedTertiaryBackground()
                 },
-                _applyNavigationBarHidden: { view in
+                navigationBarHiddenApplier: { view in
                     service.applyNavigationBarHidden(to: view)
                 },
-                _applyDarkNavigationBar: { view in
+                darkNavigationBarApplier: { view in
                     service.applyDarkNavigationBar(to: view)
                 },
-                _applySheet: { view in
+                sheetApplier: { view in
                     service.applySheet(to: view)
                 }
             )

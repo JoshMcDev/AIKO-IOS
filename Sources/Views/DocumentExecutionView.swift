@@ -41,7 +41,7 @@ struct DocumentExecutionView: View {
 
                         // Content based on status
                         ScrollView {
-                            VStack(spacing: Theme.Spacing.xl) {
+                            VStack(spacing: Theme.Spacing.extraLarge) {
                                 switch viewStore.executionStatus {
                                 case .idle:
                                     EmptyView()
@@ -88,7 +88,7 @@ struct DocumentExecutionView: View {
 
 struct CheckingInformationView: View {
     var body: some View {
-        VStack(spacing: Theme.Spacing.lg) {
+        VStack(spacing: Theme.Spacing.large) {
             ProgressView()
                 .progressViewStyle(CircularProgressViewStyle(tint: .blue))
                 .scaleEffect(1.5)
@@ -111,7 +111,7 @@ struct GeneratingDocumentsView: View {
     let progress: Double
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.xl) {
+        VStack(spacing: Theme.Spacing.extraLarge) {
             // Progress Circle
             ZStack {
                 Circle()
@@ -138,7 +138,7 @@ struct GeneratingDocumentsView: View {
                     .foregroundColor(.white)
             }
 
-            VStack(spacing: Theme.Spacing.sm) {
+            VStack(spacing: Theme.Spacing.small) {
                 Text("Generating Documents")
                     .font(.headline)
                     .foregroundColor(.white)
@@ -185,7 +185,7 @@ struct CompletedView: View {
     @State private var showCopiedToast = false
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.xl) {
+        VStack(spacing: Theme.Spacing.extraLarge) {
             // Success indicator
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 60))
@@ -197,7 +197,7 @@ struct CompletedView: View {
                 .foregroundColor(.white)
 
             // Action buttons
-            HStack(spacing: Theme.Spacing.lg) {
+            HStack(spacing: Theme.Spacing.large) {
                 ActionButton(
                     title: "Copy",
                     icon: "doc.on.doc",
@@ -228,7 +228,7 @@ struct CompletedView: View {
             }
 
             // Generated content preview
-            VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                 Text("Preview")
                     .font(.headline)
                     .foregroundColor(.white)
@@ -236,10 +236,10 @@ struct CompletedView: View {
                 DocumentRichTextView(content: content)
                     .frame(maxHeight: 400)
                     .background(
-                        RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+                        RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
                             .fill(Color.black.opacity(0.3))
                     )
-                    .cornerRadius(Theme.CornerRadius.lg)
+                    .cornerRadius(Theme.CornerRadius.large)
             }
         }
         .padding(.vertical, 20)
@@ -286,7 +286,7 @@ struct ActionButton: View {
             .foregroundColor(.white)
             .frame(width: 80, height: 80)
             .background(
-                RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
                     .fill(Theme.Colors.aikoSecondary)
             )
         }
@@ -297,7 +297,7 @@ struct ErrorView: View {
     let error: String
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.lg) {
+        VStack(spacing: Theme.Spacing.large) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 60))
                 .foregroundColor(.red)

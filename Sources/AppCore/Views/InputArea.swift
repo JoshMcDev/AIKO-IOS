@@ -72,7 +72,7 @@ public struct InputArea: View {
                                 )
                             }
                         }
-                        .padding(.horizontal, Theme.Spacing.lg)
+                        .padding(.horizontal, Theme.Spacing.large)
                     }
                     .frame(height: 60)
                 }
@@ -86,7 +86,7 @@ public struct InputArea: View {
                         ), prompt: Text("...").foregroundColor(.gray), axis: .vertical)
                             .textFieldStyle(PlainTextFieldStyle())
                             .foregroundColor(.white)
-                            .padding(.leading, Theme.Spacing.lg)
+                            .padding(.leading, Theme.Spacing.large)
                             .padding(.vertical, Theme.Spacing.medium)
                             .padding(.trailing, Theme.Spacing.small)
                             .lineLimit(1 ... 4)
@@ -185,8 +185,8 @@ public struct InputArea: View {
                         )
                 )
             }
-            .padding(.horizontal, Theme.Spacing.lg)
-            .padding(.vertical, Theme.Spacing.lg)
+            .padding(.horizontal, Theme.Spacing.large)
+            .padding(.vertical, Theme.Spacing.large)
             .background(Color.black)
         }
     }
@@ -223,7 +223,7 @@ public struct UploadedDocumentCard: View {
         .padding(.horizontal, Theme.Spacing.medium)
         .padding(.vertical, Theme.Spacing.small)
         .background(
-            RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                 .fill(Theme.Colors.aikoSecondary)
         )
     }

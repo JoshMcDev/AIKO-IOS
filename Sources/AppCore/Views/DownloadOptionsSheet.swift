@@ -57,7 +57,7 @@ public struct DownloadOptionsSheet: View {
                         #endif
 
                         // Download buttons
-                        VStack(spacing: Theme.Spacing.md) {
+                        VStack(spacing: Theme.Spacing.medium) {
                             if !selectedDocuments.isEmpty {
                                 Button(action: downloadSelected) {
                                     Label(
@@ -68,7 +68,7 @@ public struct DownloadOptionsSheet: View {
                                     .padding()
                                     .background(Theme.Colors.aikoPrimary)
                                     .foregroundColor(.white)
-                                    .cornerRadius(Theme.CornerRadius.md)
+                                    .cornerRadius(Theme.CornerRadius.medium)
                                 }
                             }
 
@@ -78,7 +78,7 @@ public struct DownloadOptionsSheet: View {
                                     .padding()
                                     .background(Theme.Colors.aikoAccent)
                                     .foregroundColor(.white)
-                                    .cornerRadius(Theme.CornerRadius.md)
+                                    .cornerRadius(Theme.CornerRadius.medium)
                             }
                         }
                         .padding()
@@ -114,7 +114,7 @@ public struct DownloadOptionsSheet: View {
                                 ProgressView("Downloading...")
                                     .padding()
                                     .background(Color.black)
-                                    .cornerRadius(Theme.CornerRadius.md)
+                                    .cornerRadius(Theme.CornerRadius.medium)
                             }
                     }
                 }
@@ -201,7 +201,7 @@ struct DocumentDownloadRow: View {
 
 struct DocumentsEmptyStateView: View {
     var body: some View {
-        VStack(spacing: Theme.Spacing.lg) {
+        VStack(spacing: Theme.Spacing.large) {
             Spacer()
 
             Image(systemName: "doc.text.magnifyingglass")
@@ -216,7 +216,7 @@ struct DocumentsEmptyStateView: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal, Theme.Spacing.xl)
+                .padding(.horizontal, Theme.Spacing.extraLarge)
 
             Spacer()
         }

@@ -48,7 +48,7 @@ struct EnhancedCard<Content: View>: View {
         content()
             .background(cardBackground)
             .overlay(cardOverlay)
-            .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.lg))
+            .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.large))
             .shadow(
                 color: shadowColor,
                 radius: isPressed ? style.shadowRadius / 2 : style.shadowRadius,
@@ -143,7 +143,7 @@ struct EnhancedCard<Content: View>: View {
     private var cardOverlay: some View {
         switch style {
         case .outlined:
-            RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
                 .strokeBorder(
                     LinearGradient(
                         colors: [
@@ -157,7 +157,7 @@ struct EnhancedCard<Content: View>: View {
                 )
 
         case .glassmorphism:
-            RoundedRectangle(cornerRadius: Theme.CornerRadius.lg)
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
                 .strokeBorder(
                     LinearGradient(
                         colors: [
@@ -201,7 +201,7 @@ struct CardGrid<Item: Identifiable, Content: View>: View {
     init(
         items: [Item],
         columns: Int = 2,
-        spacing: CGFloat = Theme.Spacing.md,
+        spacing: CGFloat = Theme.Spacing.medium,
         @ViewBuilder content: @escaping (Item) -> Content
     ) {
         self.items = items
@@ -241,25 +241,25 @@ struct SkeletonCard: View {
             content: {
                 VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                     // Title skeleton
-                    RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                    RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                         .fill(Color.gray.opacity(0.3))
                         .frame(height: 20)
                         .frame(maxWidth: .infinity)
                         .shimmer(duration: 1.5)
 
                     // Subtitle skeleton
-                    RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                    RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                         .fill(Color.gray.opacity(0.2))
                         .frame(height: 16)
                         .frame(width: 200)
                         .shimmer(duration: 1.5)
 
                     Spacer()
-                        .frame(height: Theme.Spacing.md)
+                        .frame(height: Theme.Spacing.medium)
 
                     // Content skeleton
                     ForEach(0 ..< 3) { _ in
-                        RoundedRectangle(cornerRadius: Theme.CornerRadius.sm)
+                        RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                             .fill(Color.gray.opacity(0.15))
                             .frame(height: 14)
                             .shimmer(duration: 1.5)

@@ -89,7 +89,7 @@ struct DocumentChainView: View {
         }
         .padding(Theme.Spacing.medium)
         .background(Theme.Colors.aikoSecondary)
-        .cornerRadius(Theme.CornerRadius.md)
+        .cornerRadius(Theme.CornerRadius.medium)
     }
 }
 

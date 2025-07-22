@@ -227,10 +227,10 @@ struct ShakeModifier: ViewModifier {
     private func performShake() {
         let animation = Animation.linear(duration: 0.05)
 
-        for i in 0 ..< 6 {
-            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.05) {
+        for index in 0 ..< 6 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * 0.05) {
                 withAnimation(animation) {
-                    shakeOffset = (i % 2 == 0) ? intensity : -intensity
+                    shakeOffset = (index % 2 == 0) ? intensity : -intensity
                 }
             }
         }
