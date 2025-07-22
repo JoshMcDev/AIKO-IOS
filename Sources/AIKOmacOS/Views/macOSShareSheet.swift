@@ -3,7 +3,7 @@
     import SwiftUI
 
     /// macOS-specific sharing implementation using NSSharingService
-    public struct macOSShareSheet: NSViewControllerRepresentable {
+    public struct MacOSShareSheet: NSViewControllerRepresentable {
         let items: [Any]
         let onComplete: (Bool) -> Void
 
@@ -60,7 +60,7 @@
     }
 
     /// macOS-specific share button that uses NSSharingServicePicker
-    public struct macOSShareButton: View {
+    public struct MacOSShareButton: View {
         let items: [Any]
         let title: String
         @State private var showingSharePicker = false
@@ -92,7 +92,7 @@
     }
 
     /// macOS-specific share view with custom services
-    public struct macOSShareView: View {
+    public struct MacOSShareView: View {
         let items: [Any]
         let subject: String?
         let message: String?

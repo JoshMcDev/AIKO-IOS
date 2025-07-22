@@ -5,7 +5,7 @@
 
     public extension PlatformViewServiceClient {
         static let macOS: Self = {
-            let service = macOSPlatformViewService()
+            let service = MacOSPlatformViewService()
             return Self(
                 _createNavigationStack: { @MainActor content in
                     return service.createNavigationStack(content: content)

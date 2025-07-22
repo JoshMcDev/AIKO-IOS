@@ -5,7 +5,7 @@
 
     public extension AccessibilityServiceClient {
         static let macOS: Self = {
-            let service = macOSAccessibilityService()
+            let service = MacOSAccessibilityService()
             return Self(
                 _announceNotification: { message, priority in
                     service.announceNotification(message, priority: priority)

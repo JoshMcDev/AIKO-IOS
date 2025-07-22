@@ -5,7 +5,7 @@
     import SwiftUI
 
     /// macOS implementation of ImageLoaderProtocol
-    public final class macOSImageLoader: ImageLoaderProtocol {
+    public final class MacOSImageLoader: ImageLoaderProtocol {
         public init() {}
 
         public func loadImage(from data: Data) -> Image? {

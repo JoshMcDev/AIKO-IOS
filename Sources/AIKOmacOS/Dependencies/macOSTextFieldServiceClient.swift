@@ -4,7 +4,7 @@
     import Foundation
 
     extension TextFieldServiceClient {
-        private static let textFieldService = macOSTextFieldService()
+        private static let textFieldService = MacOSTextFieldService()
 
         public static let macOSLive = Self(
             supportsAutocapitalization: {
@@ -17,6 +17,6 @@
     }
 
     // Convenience static accessor
-    public enum macOSTextFieldServiceClient {
+    public enum MacOSTextFieldServiceClient {
         public static let live = TextFieldServiceClient.macOSLive
     }#endif

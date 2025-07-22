@@ -5,7 +5,7 @@
 
     public extension ThemeServiceClient {
         static let macOS: Self = {
-            let service = macOSThemeService()
+            let service = MacOSThemeService()
             return Self(
                 backgroundColorProvider: { service.backgroundColor() },
                 cardColorProvider: { service.cardColor() },

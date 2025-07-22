@@ -120,7 +120,11 @@
             let transcription = await withCheckedContinuation { continuation in
                 var finalTranscription = ""
 
-                recognitionTask = speechRecognizer?.recognitionTask(with: recognitionRequest!) { result, error in
+                guard let request = recognitionRequest else {
+                    continuation.resume(returning: "")
+                    return
+                }
+                recognitionTask = speechRecognizer?.recognitionTask(with: request) { result, error in
                     if let result {
                         finalTranscription = result.bestTranscription.formattedString
 

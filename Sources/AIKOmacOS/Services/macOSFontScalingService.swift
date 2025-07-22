@@ -2,7 +2,7 @@
     import AppCore
     import SwiftUI
 
-    public final class macOSFontScalingService: FontScalingServiceProtocol {
+    public final class MacOSFontScalingService: FontScalingServiceProtocol {
         public init() {}
 
         public func scaledFontSize(for baseSize: CGFloat, textStyle _: Font.TextStyle, sizeCategory: ContentSizeCategory) -> CGFloat {

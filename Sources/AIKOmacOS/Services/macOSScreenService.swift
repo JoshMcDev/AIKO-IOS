@@ -4,7 +4,7 @@
     import Foundation
 
     /// macOS implementation of ScreenServiceProtocol
-    public final class macOSScreenService: ScreenServiceProtocol {
+    public final class MacOSScreenService: ScreenServiceProtocol {
         public init() {}
 
         public var mainScreenBounds: CGRect {

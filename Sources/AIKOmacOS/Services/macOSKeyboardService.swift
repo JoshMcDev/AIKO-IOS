@@ -4,7 +4,7 @@
 
     /// macOS implementation of keyboard service
     /// Note: macOS doesn't have keyboard types like iOS, so this is a placeholder implementation
-    public final class macOSKeyboardService: KeyboardServiceProtocol, @unchecked Sendable {
+    public final class MacOSKeyboardService: KeyboardServiceProtocol, @unchecked Sendable {
         public typealias KeyboardType = String
 
         public var defaultKeyboardType: String {

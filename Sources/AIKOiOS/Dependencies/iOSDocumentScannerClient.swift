@@ -697,7 +697,7 @@
                                     width: listBounds.size.width,
                                     height: listBounds.size.height
                                 ),
-                                listType: currentListType!
+                                listType: currentListType ?? .bulleted
                             ))
 
                             listItems = []

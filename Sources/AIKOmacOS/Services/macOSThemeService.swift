@@ -3,7 +3,7 @@
     import AppKit
     import SwiftUI
 
-    public final class macOSThemeService: ThemeServiceProtocol {
+    public final class MacOSThemeService: ThemeServiceProtocol {
         public init() {}
 
         public func backgroundColor() -> Color {

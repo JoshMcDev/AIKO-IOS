@@ -9,7 +9,7 @@
     public extension HapticManagerClient {
         @MainActor
         static var macOSLive: Self {
-            let manager = macOSHapticManager()
+            let manager = MacOSHapticManager()
 
             return Self(
                 impact: { style in
@@ -74,7 +74,7 @@
     // MARK: - macOS Haptic Manager Implementation
 
     @MainActor
-    private class macOSHapticManager {
+    private class MacOSHapticManager {
         private var engine: CHHapticEngine?
         private let supportsHaptics: Bool
 

@@ -523,7 +523,7 @@ struct APIKeyStepView: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
 
-                Link(destination: URL(string: "https://console.anthropic.com/api")!) {
+                Link(destination: URL(string: "https://console.anthropic.com/api") ?? URL(string: "https://anthropic.com")!) {
                     HStack {
                         Image(systemName: "link")
                         Text("console.anthropic.com/api")

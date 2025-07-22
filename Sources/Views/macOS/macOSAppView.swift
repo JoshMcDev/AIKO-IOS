@@ -5,7 +5,7 @@
     import SwiftUI
 
     /// macOS-specific implementation of AppView
-    public struct macOSAppView: View {
+    public struct MacOSAppView: View {
         let store: StoreOf<AppFeature>
 
         public init(store: StoreOf<AppFeature>) {
@@ -16,7 +16,7 @@
             WithViewStore(store, observe: { $0 }) { viewStore in
                 SharedAppView(
                     store: store,
-                    services: macOSAppViewServices()
+                    services: MacOSAppViewServices()
                 )
                 .preferredColorScheme(.dark)
                 .sheet(isPresented: .init(
@@ -34,10 +34,10 @@
     }
 
     /// macOS implementation of platform services
-    struct macOSAppViewServices: AppViewPlatformServices {
+    struct MacOSAppViewServices: AppViewPlatformServices {
         typealias NavigationStack = AnyView
-        typealias DocumentPickerView = macOSDocumentPicker
-        typealias ImagePickerView = macOSImagePicker
+        typealias DocumentPickerView = MacOSDocumentPicker
+        typealias ImagePickerView = MacOSImagePicker
         typealias ShareView = EmptyView
 
         func makeNavigationStack(@ViewBuilder content: @escaping () -> some View) -> AnyView {
@@ -47,13 +47,13 @@
         }
 
         @MainActor
-        func makeDocumentPicker(onDocumentsPicked: @escaping ([(Data, String)]) -> Void) -> macOSDocumentPicker {
-            macOSDocumentPicker(onDocumentsPicked: onDocumentsPicked)
+        func makeDocumentPicker(onDocumentsPicked: @escaping ([(Data, String)]) -> Void) -> MacOSDocumentPicker {
+            MacOSDocumentPicker(onDocumentsPicked: onDocumentsPicked)
         }
 
         @MainActor
-        func makeImagePicker(onImagePicked: @escaping (Data) -> Void) -> macOSImagePicker {
-            macOSImagePicker(onImagePicked: onImagePicked)
+        func makeImagePicker(onImagePicked: @escaping (Data) -> Void) -> MacOSImagePicker {
+            MacOSImagePicker(onImagePicked: onImagePicked)
         }
 
         func makeShareSheet(items _: [Any]) -> EmptyView? {
@@ -99,7 +99,7 @@
 
     // MARK: - macOS-specific Image Loading
 
-    extension macOSAppViewServices: PlatformImageLoader {
+    extension MacOSAppViewServices: PlatformImageLoader {
         func loadImage(named name: String, in _: Bundle?) -> Image? {
             if let nsImage = NSImage(named: name) {
                 return Image(nsImage: nsImage)
@@ -115,7 +115,7 @@
 
     // MARK: - macOS Document Picker
 
-    struct macOSDocumentPicker: View {
+    struct MacOSDocumentPicker: View {
         let onDocumentsPicked: ([(Data, String)]) -> Void
 
         var body: some View {
@@ -163,7 +163,7 @@
 
     // MARK: - macOS Image Picker
 
-    struct macOSImagePicker: View {
+    struct MacOSImagePicker: View {
         let onImagePicked: (Data) -> Void
 
         var body: some View {

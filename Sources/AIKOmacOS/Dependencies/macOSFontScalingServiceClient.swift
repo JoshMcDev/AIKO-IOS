@@ -5,7 +5,7 @@
 
     public extension FontScalingServiceClient {
         static let macOS: Self = {
-            let service = macOSFontScalingService()
+            let service = MacOSFontScalingService()
             return Self(
                 _scaledFontSize: { baseSize, sendableTextStyle, sendableSizeCategory in
                     service.scaledFontSize(

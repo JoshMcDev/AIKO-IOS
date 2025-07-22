@@ -4,7 +4,7 @@
     import Foundation
 
     extension KeyboardServiceClient {
-        private static let keyboardService = macOSKeyboardService()
+        private static let keyboardService = MacOSKeyboardService()
 
         public static let macOSLive = Self(
             defaultKeyboardType: {
@@ -29,6 +29,6 @@
     }
 
     // Convenience static accessor
-    public enum macOSKeyboardServiceClient {
+    public enum MacOSKeyboardServiceClient {
         public static let live = KeyboardServiceClient.macOSLive
     }#endif

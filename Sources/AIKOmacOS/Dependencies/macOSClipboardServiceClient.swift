@@ -6,21 +6,21 @@
     public extension ClipboardServiceClient {
         static let macOSLive = Self(
             copyText: { text in
-                macOSClipboardService().copyText(text)
+                MacOSClipboardService().copyText(text)
             },
             copyData: { data, type in
-                macOSClipboardService().copyData(data, type: type)
+                MacOSClipboardService().copyData(data, type: type)
             },
             getText: {
-                macOSClipboardService().getText()
+                MacOSClipboardService().getText()
             },
             hasContent: { type in
-                macOSClipboardService().hasContent(ofType: type)
+                MacOSClipboardService().hasContent(ofType: type)
             }
         )
     }
 
     // Convenience static accessor
-    public enum macOSClipboardServiceClient {
+    public enum MacOSClipboardServiceClient {
         public static let live = ClipboardServiceClient.macOSLive
     }#endif

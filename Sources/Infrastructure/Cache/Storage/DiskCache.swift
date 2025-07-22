@@ -36,7 +36,7 @@ actor DiskCache: OfflineCacheProtocol {
         self.configuration = configuration
 
         // Set up cache directory
-        let documentsPath = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let documentsPath = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first ?? fileManager.temporaryDirectory
         cacheDirectory = documentsPath.appendingPathComponent("AIKOCache/DiskCache")
 
         // Create directory if needed

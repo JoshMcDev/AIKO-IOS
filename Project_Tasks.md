@@ -195,22 +195,25 @@
 
 - [x] **Convert LFM2-700M-GGUF Q6_K to Core ML Format and Embed in Project**
   - Priority: High
-  - Status: ✅ Completed - Model integrated with Swift infrastructure
-  - Description: LFM2-700M-GGUF Q6_K (583MB) integrated into AIKO project with comprehensive Swift service layer for dual-domain GraphRAG (regulations + user records).
-  - **Model Location**: `/Users/J/aiko/Sources/Resources/LFM2-700M-Q6_K.gguf` (integrated)
-  - **Swift Service**: `LFM2Service.swift` actor-based wrapper implemented
+  - Status: ✅ **COMPLETED** - Model successfully converted and integrated with Git LFS
+  - Description: LFM2-700M-Unsloth-XL (607MB GGUF → 149MB Core ML) integrated into AIKO project with comprehensive Swift service layer for dual-domain GraphRAG (regulations + user records).
+  - **Model Location**: `/Users/J/aiko/Sources/Resources/LFM2-700M-Unsloth-XL-GraphRAG.mlmodel` (149MB)
+  - **Git LFS**: Configured for large file handling, successfully pushed to GitHub
+  - **Swift Service**: `LFM2Service.swift` actor-based wrapper implemented and ready
   - **Target Integration**: Dual-namespace GraphRAG supporting both government regulations and user acquisition records
-  - **Expected Performance**: < 2 seconds per chunk, optimized for on-device processing
+  - **Performance**: Core ML optimized for iOS with 75% size reduction (607MB → 149MB)
   - Technical Tasks:
-    - ✅ Model downloaded (LiquidAI/LFM2-700M-GGUF Q6_K variant - 583MB actual)
-    - ✅ Core ML conversion environment setup (virtual environment with dependencies)
-    - ✅ GGUF model copied to `Sources/Resources/LFM2-700M-Q6_K.gguf`
+    - ✅ Model downloaded (unsloth/LFM2-700M-GGUF UD-Q6_K_XL variant - 607MB)
+    - ✅ Core ML conversion environment setup with Python virtual environment
+    - ✅ **Core ML conversion completed** - 149MB working model created
+    - ✅ **Model embedded in project** - Added to Package.swift resources
+    - ✅ **Git LFS configured** - Large file storage setup and pushed to GitHub
     - ✅ Created comprehensive `LFM2Service.swift` actor wrapper for thread-safe model inference
     - ✅ Implemented dual-domain embedding generation architecture (regulations + user records)
     - ✅ Added performance monitoring and error handling infrastructure
     - ✅ Created EmbeddingDomain enum for optimization tracking
     - ✅ Added model loading optimization with lazy initialization
-    - ⏳ Core ML conversion pending (environment issues, fallback to GGUF processing)
+    - ✅ **Build integration verified** - Swift Package Manager copies model during build
     - ⏳ Test embedding performance (target: < 2s per 512-token chunk)
     - ⏳ Validate semantic similarity quality across both domains
     - ⏳ Document memory usage patterns (target: < 800MB peak during processing)

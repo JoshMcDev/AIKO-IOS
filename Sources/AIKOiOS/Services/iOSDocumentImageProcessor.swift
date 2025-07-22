@@ -843,7 +843,7 @@
 
             // Check for CJK characters
             if allText.contains(where: { char in
-                let scalar = char.unicodeScalars.first!
+                guard let scalar = char.unicodeScalars.first else { return false }
                 return (0x4E00 ... 0x9FFF).contains(scalar.value) // CJK Unified Ideographs
             }) {
                 detectedLanguages.insert(.chinese)

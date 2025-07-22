@@ -3,7 +3,7 @@
     import AppKit
     import SwiftUI
 
-    public final class macOSAccessibilityService: AccessibilityServiceProtocol {
+    public final class MacOSAccessibilityService: AccessibilityServiceProtocol {
         public init() {}
 
         public func announceNotification(_ message: String, priority: AccessibilityAnnouncementPriority) {

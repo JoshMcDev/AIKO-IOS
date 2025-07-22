@@ -3,7 +3,7 @@
     import AppKit
     import SwiftUI
 
-    public final class macOSBlurEffectService: BlurEffectServiceProtocol {
+    public final class MacOSBlurEffectService: BlurEffectServiceProtocol {
         public init() {}
 
         public func createBlurredBackground(radius: CGFloat) -> AnyView {

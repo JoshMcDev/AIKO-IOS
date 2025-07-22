@@ -4,7 +4,7 @@
     import Foundation
 
     /// macOS implementation of EmailServiceProtocol
-    public final class macOSEmailService: EmailServiceProtocol {
+    public final class MacOSEmailService: EmailServiceProtocol {
         public init() {}
 
         public var canSendEmail: Bool {

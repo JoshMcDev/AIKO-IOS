@@ -5,7 +5,7 @@
     import SwiftUI
 
     /// macOS implementation of ShareServiceProtocol
-    public final class macOSShareService: @unchecked Sendable, ShareServiceProtocol {
+    public final class MacOSShareService: @unchecked Sendable, ShareServiceProtocol {
         public init() {}
 
         @MainActor
@@ -34,6 +34,14 @@
                     continuation.resume(returning: false)
                 }
             }
+        }
+
+        public func createShareableFile(from text: String, fileName: String) throws -> URL {
+            let tempDir = FileManager.default.temporaryDirectory
+            let fileURL = tempDir.appendingPathComponent(fileName)
+
+            try text.write(to: fileURL, atomically: true, encoding: .utf8)
+            return fileURL
         }
     }
 

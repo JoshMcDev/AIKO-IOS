@@ -6,11 +6,11 @@
     public extension EmailServiceClient {
         static let macOSLive = Self(
             canSendEmail: {
-                macOSEmailService().canSendEmail
+                MacOSEmailService().canSendEmail
             },
             sendEmail: { recipients, subject, body, isHTML, attachments in
                 await withCheckedContinuation { continuation in
-                    macOSEmailService().sendEmail(
+                    MacOSEmailService().sendEmail(
                         to: recipients,
                         subject: subject,
                         body: body,
@@ -23,7 +23,7 @@
             },
             showEmailComposer: { recipients, subject, body in
                 await withCheckedContinuation { continuation in
-                    macOSEmailService().showEmailComposer(
+                    MacOSEmailService().showEmailComposer(
                         recipients: recipients,
                         subject: subject,
                         body: body
@@ -36,6 +36,6 @@
     }
 
     // Convenience static accessor
-    public enum macOSEmailServiceClient {
+    public enum MacOSEmailServiceClient {
         public static let live = EmailServiceClient.macOSLive
     }#endif

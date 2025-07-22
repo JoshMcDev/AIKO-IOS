@@ -16,8 +16,8 @@ actor LFM2Service {
     private var isInitialized = false
     private let logger = Logger(subsystem: "com.aiko.graphrag", category: "LFM2Service")
 
-    // Model specifications for LFM2-700M-GGUF Q6_K
-    private let modelName = "LFM2-700M-Q6K"
+    // Model specifications for LFM2-700M-Unsloth-XL
+    private let modelName = "LFM2-700M-Unsloth-XL-GraphRAG"
     private let embeddingDimensions = 768
     private let maxTokenLength = 512
 
@@ -56,6 +56,7 @@ actor LFM2Service {
     private func loadCoreMLModel() async throws -> MLModel? {
         // Try different possible model names
         let possibleNames = [
+            "LFM2-700M-Unsloth-XL-GraphRAG",
             "LFM2-700M-Q6K",
             "LFM2-700M-Q6K-Placeholder",
             "LFM2-700M",
