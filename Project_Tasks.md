@@ -27,6 +27,12 @@
   - All quality gates passed
   - Feature ready for deployment
 
+- [x] **/qa - Build error resolution and final validation**
+  - Fixed FormType.custom error (changed to FormType.sf1449)
+  - Resolved stored property in extension issue
+  - Build compilation successful
+  - SwiftFormat and SwiftLint validation completed
+
 - [x] **Fix regex syntax errors in iOS document processor**
   - Regular expression patterns corrected
   - iOS document processing working correctly
@@ -79,6 +85,312 @@
 
 ## Pending Tasks 🚧
 
+### Phase 5: GraphRAG Intelligence System Implementation
+
+> **📋 Implementation Reference Note**: When beginning Phase 5 GraphRAG development, review the comprehensive PRD and implementation plan document: `AIKO_GraphRAG_PRD_Implementation_Plan.md` in the project root. This consensus-validated document (6/7 AI models approved) contains detailed technical requirements, 10-week implementation timeline, architecture specifications, and validated approach for the complete GraphRAG system integration.
+
+- [ ] **Implement On-Device GraphRAG with LFM2 Models and Auto-Update System**
+  - Priority: High
+  - Status: 🚧 Planning - Complete architecture designed, ready for implementation
+  - Description: Full on-device GraphRAG system using Liquid AI's LFM2-700M-GGUF Q6_K (612MB) for embeddings and vector search. Includes auto-update regulation processing, personal repository support, and offline-first architecture.
+  - **Key Architecture**: HTML → regulationParser.ts → Text Chunks → LFM2 → Vector Embeddings → ObjectBox → Instant Semantic Search
+  - **Model Specifications**: LFM2-700M-GGUF Q6_K variant (612MB, optimal quality/size balance)
+  - **Auto-Update Pipeline**: Background regulation fetching → Incremental processing → Seamless vector database updates
+  - Components:
+    - LFM2-700M-GGUF Q6_K model integration (Core ML conversion)
+    - ObjectBox Semantic Index for vector storage with incremental updates
+    - Auto-update regulation ingestion pipeline (official GSA + personal repos)
+    - On-device embedding generation with background processing
+    - Local vector search and retrieval with sub-second performance
+    - Smart update detection (timestamps/hashes) for minimal data transfer
+
+- [ ] **Set up LFM2-700M-GGUF Q6_K Model Integration and Core ML Conversion**
+  - Priority: High
+  - Status: 🚧 Not started
+  - Description: Download LFM2-700M-GGUF Q6_K (612MB) from HuggingFace (LiquidAI/LFM2-700M-GGUF), convert to Core ML format, integrate into iOS app bundle. Model handles embedding generation for regulation text chunks.
+  - **Model Selection Rationale**: Q6_K provides optimal balance of quality vs size (612MB vs 1.49GB F16)
+  - **Expected Performance**: < 2 seconds per regulation chunk, optimized for edge deployment
+  - Technical Tasks:
+    - Download LFM2-700M-GGUF Q6_K variant from HuggingFace (official LiquidAI repo)
+    - Install Core ML conversion tools (coremltools, transformers)
+    - Convert GGUF → Core ML format with quantization preservation
+    - Add 612MB model to iOS app bundle at Sources/Resources/LFM2-700M-Q6K.mlmodel
+    - Create LFM2Service.swift wrapper for model inference
+    - Implement batch embedding generation (chunks of 512 tokens)
+    - Test embedding generation performance (target: < 2s per regulation)
+    - Validate embedding quality with semantic similarity tests
+    - Add model loading optimization for app startup
+    - Document memory usage patterns and optimization strategies
+
+- [ ] **Implement ObjectBox Semantic Index Vector Database with Auto-Update Support**
+  - Priority: High  
+  - Status: 🚧 Not started
+  - Description: Integrate ObjectBox Semantic Index as on-device vector database for regulation embeddings and semantic search. Support incremental updates without full database rebuilds.
+  - **Performance Targets**: Sub-second similarity search across 1000+ regulations, < 100MB storage
+  - **Update Strategy**: Incremental vector updates, separate namespaces for official vs personal repos
+  - Technical Tasks:
+    - Add ObjectBox Swift dependency via SPM
+    - Design RegulationEmbedding.swift schema (vector, metadata, source, timestamp)
+    - Implement VectorSearchService.swift for embedding storage and retrieval
+    - Create similarity search with cosine distance and metadata filtering
+    - Add incremental update logic (detect changed regulations, update only modified vectors)
+    - Implement separate vector namespaces (official, personal) with unified search
+    - Create vector database optimization for mobile (memory mapping, index tuning)
+    - Add backup and restore functionality for vector database
+    - Implement vector database cleanup (remove outdated embeddings)
+    - Performance testing: search latency, storage efficiency, memory usage
+    - Add vector database migration support for schema updates
+
+- [ ] **Build Regulation Processing Pipeline with Smart Chunking**
+  - Priority: High
+  - Status: 🚧 Not started  
+  - Description: Create pipeline to process regulations (HTML to text), generate embeddings, and store in vector database. Supports both official GSA acquisition.gov and personal repositories with intelligent chunking.
+  - **Pipeline Flow**: HTML → regulationParser.ts → Smart Chunks → LFM2 Embeddings → ObjectBox Storage
+  - **Chunking Strategy**: Preserve regulation hierarchy, optimal 512-token chunks with semantic boundaries
+  - **Processing Capacity**: Handle 1000+ regulation files with progress tracking
+  - Technical Tasks:
+    - Enhance existing regulationParser.ts for production use
+    - Implement intelligent text chunking (preserve section boundaries, max 512 tokens)
+    - Create RegulationProcessor.swift for coordination
+    - Add metadata extraction (regulation number, section, title, last updated)
+    - Implement batch embedding generation with LFM2 (process 10 chunks concurrently)
+    - Add vector storage with rich metadata (source, category, confidence score)
+    - Create progress tracking with detailed status ("Processing FAR 15.202... 847/1219")
+    - Implement error handling and retry logic for failed processing
+    - Add processing queue management (pause, resume, cancel)
+    - Create processing analytics (time per regulation, embedding quality metrics)
+    - Add duplicate detection and deduplication logic
+    - Implement regulation validation (ensure complete processing)
+    - Add processing rollback capability for failed batches
+
+- [ ] **Implement Launch-Time Regulation Fetching with Auto-Update System**
+  - Priority: High
+  - Status: 🚧 Not started
+  - Description: During app onboarding, fetch official regulations from GSA acquisition.gov repository, process with LFM2, and populate local vector database. Include intelligent auto-update system for ongoing synchronization.
+  - **Auto-Update Features**: Background checking, incremental downloads, smart processing
+  - **Data Sources**: GSA-Acquisition-FAR (HTML format), user personal repositories
+  - **Update Frequency**: Daily background checks, manual refresh option
+  - Technical Tasks:
+    - Create RegulationUpdateService.swift with GitHub API integration
+    - Implement launch-time onboarding flow ("Setting up regulation database...")
+    - Add background processing of large datasets (1000+ files)
+    - Create user progress indication with detailed status and ETA
+    - Implement error handling, retry logic, and graceful degradation
+    - Add offline mode after initial setup (full local operation)
+    - Build auto-update detection system (file timestamps, hashes, API polling)
+    - Implement incremental download (fetch only changed/new files)
+    - Create background update processing (iOS Background App Refresh)
+    - Add update notification system ("47 regulations updated")
+    - Implement update conflict resolution (handle regulation renames/moves)
+    - Add manual refresh capability with progress tracking
+    - Create update history and rollback functionality
+    - Implement network optimization (compression, delta downloads)
+    - Add update scheduling and battery-aware processing
+    - Create update analytics and success metrics tracking
+
+- [ ] **Add Personal Repository Support with Enhanced Security**
+  - Priority: High
+  - Status: 🚧 Not started
+  - Description: Allow users to connect personal GitHub repositories for custom regulation sets. Process and index alongside official regulations with proper data isolation and security.
+  - **Security Model**: OAuth GitHub authentication, repository-specific access, encrypted local storage
+  - **Data Isolation**: Separate vector namespaces, unified search interface, clear source attribution
+  - **Sync Strategy**: Independent update cycles, conflict resolution, personal repo prioritization
+  - Technical Tasks:
+    - Implement GitHub OAuth authentication flow with proper scopes
+    - Create repository selection UI (browse user's accessible repos)
+    - Add repository validation (check for HTML regulation files)
+    - Implement custom repository processing (same pipeline as official)
+    - Create data isolation between official/personal content (separate ObjectBox namespaces)
+    - Add unified search interface across all sources with source indicators
+    - Implement independent sync and update mechanisms
+    - Create personal repository settings (update frequency, auto-sync toggle)
+    - Add repository access management (add/remove repos, refresh tokens)
+    - Implement conflict resolution (official vs personal regulation conflicts)
+    - Create personal repository backup and restore
+    - Add repository analytics (processing status, last update, error logs)
+    - Implement repository-specific search filtering
+    - Create personal repository export functionality
+    - Add repository sharing capabilities (export processed embeddings)
+    - Implement repository access audit logging
+
+- [ ] **Create GraphRAG Query Interface**
+  - Priority: Medium
+  - Status: 🚧 Not started
+  - Description: Build user interface for semantic search across regulation database. Integrate with existing LLM chat interface.
+  - Technical Tasks:
+    - Query preprocessing and optimization
+    - Vector similarity search
+    - Result ranking and presentation
+    - Integration with chat interface
+    - Context injection for LLM responses
+
+### Phase 5: Smart Integrations & Provider Flexibility (Additional Tasks)
+
+- [ ] **Implement iOS Native Integrations Suite**
+  - Priority: High
+  - Status: 🚧 Not started
+  - Description: Implement comprehensive iOS native integrations for document management, communication, and calendar functionality
+  - Technical Tasks:
+    - Document Picker implementation for file import/export
+    - iOS Native Mail integration for sharing contracts and documents
+    - iOS Calendar & Reminders integration for deadline tracking
+    - Local notifications system for acquisition milestones
+    - Integration with existing form auto-population workflow
+
+- [ ] **Add Google Maps Integration for Vendor Management**
+  - Priority: Medium
+  - Status: 🚧 Not started
+  - Description: Integrate Google Maps for vendor location tracking, site visits, and performance area mapping
+  - Technical Tasks:
+    - Google Maps SDK integration
+    - Vendor location geocoding and mapping
+    - Performance work area visualization
+    - Site visit coordination and routing
+    - Integration with vendor database
+
+- [ ] **Implement Local Security & Authentication Layer**
+  - Priority: High
+  - Status: 🚧 Not started
+  - Description: Add comprehensive local security with Face ID/Touch ID authentication and secure credential management
+  - Technical Tasks:
+    - LocalAuthentication framework integration
+    - Secure keychain storage for API keys and sensitive data
+    - Biometric authentication for app access
+    - Secure document storage with encryption
+    - Privacy controls for sensitive acquisition data
+
+- [ ] **Build Prompt Optimization Engine with 15+ Patterns**
+  - Priority: High
+  - Status: 🚧 Not started
+  - Description: Implement advanced prompt optimization system with multiple patterns for enhanced LLM interactions
+  - Technical Tasks:
+    - Implement 15+ prompt patterns (rolePersona, chainOfThought, fewShot, etc.)
+    - Pattern selection based on query type and context
+    - One-tap prompt enhancement interface
+    - Pattern effectiveness analytics and learning
+    - Integration with all LLM provider interfaces
+
+- [ ] **Create Universal LLM Provider Support System**
+  - Priority: High
+  - Status: 🚧 Not started
+  - Description: Implement dynamic LLM provider discovery and support for any OpenAI-compatible API
+  - Technical Tasks:
+    - Provider discovery service with automatic API structure analysis
+    - Dynamic adapter generation for new providers
+    - Universal configuration interface
+    - Provider performance monitoring and analytics
+    - Secure credential management for multiple providers
+
+- [ ] **iPad Compatibility & Apple Pencil Integration**
+  - Priority: High
+  - Status: 🚧 Not started
+  - Description: Full iPad optimization with Apple Pencil support for document annotation, form completion, and signature capture on generated forms/documents
+  - Technical Tasks:
+    - iPad interface layout optimization with larger screen support
+    - Apple Pencil integration for document annotation and markup
+    - Signature capture with Apple Pencil for contract execution on generated forms/documents
+    - Form field completion with handwriting recognition
+    - Digital signature field detection and validation on all generated documents
+    - Multi-window support for side-by-side document comparison
+    - Drag and drop support for document management
+    - iPad-specific navigation patterns and gestures
+    - Integration with comprehensive file management for signature workflow
+
+- [ ] **Advanced Threshold Management System**
+  - Priority: High
+  - Status: 🚧 Not started
+  - Description: Comprehensive threshold management system incorporating CONUS/OCONUS, emergency, and contingency FAR thresholds throughout the acquisition workflow
+  - Technical Tasks:
+    - Database implementation of current FAR thresholds (CONUS/OCONUS variations)
+    - Emergency and contingency threshold integration
+    - Dynamic threshold application throughout acquisition workflow
+    - User-editable threshold settings menu interface
+    - Current thresholds display with real-time workflow impact
+    - Approval threshold management with user editing capabilities
+    - Template integration ensuring all documents consider threshold changes
+    - Threshold change notification and impact analysis system
+    - Compliance validation against current threshold requirements
+    - Audit trail for threshold modifications and approvals
+
+### Phase 6: Enhanced Intelligent Workflow System
+
+- [ ] **Build CASE FOR ANALYSIS Framework with Logical Narrative**
+  - Priority: High
+  - Status: 🚧 Not started
+  - Description: Implement comprehensive justification framework for every AI recommendation with logical narrative justification versus point estimation analysis, providing full transparency and audit trail
+  - Technical Tasks:
+    - CaseForAnalysis data model (context, authority, situation, evidence, confidence)
+    - Logical narrative generation system for decision justification
+    - Reasoning chain documentation vs simple point estimates
+    - Automatic CfA generation for all AI decisions with narrative flow
+    - Collapsible UI cards for transparency with narrative presentation
+    - JSON export functionality for audit trails with full reasoning documentation
+    - Confidence scoring and validation with narrative explanation
+    - Integration with all LLM-powered features for consistent narrative approach
+    - Outcome-based contracting integration throughout analysis framework
+
+- [ ] **AI-Powered Escape Clause Detection System**
+  - Priority: High
+  - Status: 🚧 Not started
+  - Description: Intelligent analysis system to review vendor submissions for escape clauses that increase risk to the government when entering contracts
+  - Technical Tasks:
+    - Contract language pattern recognition for escape clause identification
+    - Risk assessment scoring for identified escape clause types
+    - Government risk exposure analysis and quantification
+    - Vendor submission automated review and flagging system
+    - Integration with LLM providers for natural language contract analysis
+    - Risk mitigation recommendations for identified escape clauses
+    - Audit trail and documentation of escape clause findings
+    - Alert system for high-risk escape clause detection
+    - Integration with case-for-analysis framework for risk justification
+
+- [ ] **Implement Enhanced Follow-On Actions System with Outcome-Based Contracting**
+  - Priority: High
+  - Status: 🚧 Not started
+  - Description: Intelligent workflow system that suggests and manages follow-on actions based on current context, acquisition lifecycle, and outcome-based contracting principles
+  - Technical Tasks:
+    - Action dependency mapping and workflow orchestration
+    - Context-aware action suggestions based on current acquisition phase
+    - Outcome-based contracting design and planning integration
+    - Performance metrics and outcome tracking throughout acquisition lifecycle
+    - Automated deadline tracking and milestone management
+    - Integration with iOS Calendar and Reminders for action management
+    - Smart prioritization based on regulatory requirements and performance outcomes
+    - Outcome-based contract template integration and modification
+
+- [ ] **Create Intelligent Document Lifecycle Management**
+  - Priority: Medium
+  - Status: 🚧 Not started
+  - Description: AI-powered document management with automatic categorization, version control, and lifecycle tracking
+  - Technical Tasks:
+    - Automatic document classification and tagging
+    - Version control with change tracking and approval workflows
+    - Document lifecycle stage detection (draft, review, approved, executed)
+    - Automated compliance checking against FAR/DFARS requirements
+    - Integration with signature workflow and execution tracking
+
+- [ ] **Build Enhanced Decision Support System**
+  - Priority: Medium
+  - Status: 🚧 Not started
+  - Description: Advanced decision support with multi-factor analysis, risk assessment, and recommendation ranking
+  - Technical Tasks:
+    - Multi-criteria decision analysis framework
+    - Risk assessment matrix with regulatory compliance scoring
+    - Alternative analysis with pros/cons evaluation
+    - Integration with GraphRAG for regulatory precedent analysis
+    - Decision audit trail with justification documentation
+
+- [ ] **Implement Compliance Automation Features**
+  - Priority: Medium
+  - Status: 🚧 Not started
+  - Description: Automated compliance checking and workflow guidance based on FAR/DFARS requirements
+  - Technical Tasks:
+    - Automated compliance checklist generation based on acquisition type
+    - Real-time compliance monitoring during document creation
+    - Integration with GraphRAG for regulation interpretation
+    - Automated warning system for potential compliance issues
+    - Compliance reporting and audit trail generation
+
 - [x] **Add progress feedback during scanning and processing - /refactor phase complete**
   - Priority: Medium  
   - Status: ✅ Completed - Refactored with code quality improvements
@@ -104,11 +416,48 @@
   - Status: ✅ Completed - All compilation errors resolved
   - Description: Fixed BatchProcessor.swift warnings (unreachable catch block and unused result) and ProgressIndicatorView.swift compilation errors (missing ProgressState members). Added accessibilityLabel computed property to ProgressState and corrected property references in UI views.
 
+### Phase 4: Enhanced Document & Media Management (Additional Tasks)
+
+- [ ] **Comprehensive File & Media Management Suite**
+  - Priority: High
+  - Status: 🚧 Not started
+  - Description: Complete file and media management capabilities extending the document scanner functionality
+  - Technical Tasks:
+    - Upload file implementation with document picker integration
+    - Upload photo functionality with photo library access and image optimization
+    - Enhanced scan document with multi-page support and batch processing
+    - Take photo integration with camera API, auto-focus, and exposure optimization
+    - Take screenshot functionality with screen capture API and annotation capabilities
+    - File type validation and metadata extraction
+    - EXIF data handling and image processing pipeline integration
+    - Sharing and export capabilities across all media types
+    - Integration with existing form auto-population workflow
+
 ---
 
-**Last Updated**: 2025-07-21  
-**Total Tasks**: 20 (20 completed, 0 pending)  
-**Completion Rate**: 100%
+**Last Updated**: 2025-07-22  
+**Total Tasks**: 46 (20 completed, 26 pending)  
+**Completion Rate**: 43%
+
+## Phase 5 GraphRAG - Detailed Implementation Status
+
+### Core System Architecture ✅ Designed
+- **Model**: LFM2-700M-GGUF Q6_K (612MB, optimal for iOS)
+- **Pipeline**: HTML → Parser → Chunks → LFM2 → Vectors → ObjectBox → Search
+- **Auto-Update**: Background fetching → Incremental processing → Seamless updates
+- **Performance**: Sub-second search, < 2s embedding generation, offline-first
+
+### Implementation Phases
+1. **Foundation** (Tasks 1-2): LFM2 integration + ObjectBox setup
+2. **Processing** (Tasks 3-4): Regulation pipeline + launch-time fetching  
+3. **Advanced** (Tasks 5-6): Personal repos + auto-updates
+4. **Integration** (Task 7): Query interface + LLM integration
+
+### Expected Outcomes
+- **User Experience**: "Ask anything about regulations" with instant, accurate responses
+- **Performance**: 1000+ regulations searchable in < 1 second
+- **Autonomy**: Complete offline operation after initial setup
+- **Intelligence**: GraphRAG-powered semantic understanding vs keyword matching
 
 ## Recent Completions
 
@@ -117,11 +466,23 @@
 3. ✅ BatchProcessor for concurrent page processing (max 3 concurrent)
 4. ✅ Custom Codable implementations for session persistence
 5. ✅ Comprehensive QA validation with build verification
+6. ✅ Compilation error resolution from /err command findings
 
 ## System Status
 
-- **Build Status**: ✅ Clean (0.26s build time)
+- **Build Status**: ✅ Clean (16.45s build time, 0 errors, 1 minor warning)
 - **Progress Tracking**: ✅ Operational (<200ms latency)
 - **Session Management**: ✅ Full multi-page support
 - **Code Quality**: ✅ All SwiftLint/SwiftFormat compliant
 - **Architecture**: ✅ TCA + Actor-based concurrency
+- **Latest Feature**: ✅ One-tap scanning UI/UX - Phase 4.2 complete
+- **TDD Status**: ✅ Complete workflow (/prd → /conTS → /tdd → /dev → /green → /refactor → /qa)
+
+## Recent Addition - Phase 4.2 One-Tap Scanning
+
+- [x] **Implement one-tap scanning UI/UX accessible from any screen - /qa complete**
+  - Priority: High
+  - Status: ✅ Completed - Full TDD workflow completed with QA gate passed
+  - Description: GlobalScanFeature with floating action button, accessible from all 19 app screens, <200ms scan initiation performance, complete TCA integration with DocumentScannerFeature, permission handling, and legacy compatibility layer. SwiftLint violations resolved, build successful (16.45s).
+  - QA Report: Generated with all completion criteria met
+  - Hook: QA Gate completed successfully
