@@ -517,17 +517,17 @@ public struct EmailConfirmationDialog: View {
                     VStack(spacing: Theme.Spacing.medium) {
                         Button(action: {
                             viewStore.send(.delivery(.sendDocumentsViaEmail))
-                        }) {
+                        }, label: {
                             Text("Send Documents")
-                        }
+                        })
                         .aikoButton(variant: .primary, size: .large)
                         .disabled(!canSendEmail(viewStore))
 
                         Button(action: {
                             viewStore.send(.delivery(.showEmailConfirmation(false)))
-                        }) {
+                        }, label: {
                             Text("Cancel")
-                        }
+                        })
                         .aikoButton(variant: .ghost, size: .medium)
                     }
                     .padding(.horizontal, Theme.Spacing.large)
