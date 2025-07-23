@@ -138,7 +138,7 @@
     }
 
     /// macOS-specific picker view for images
-    public struct macOSImagePickerView: View {
+    public struct MacOSImagePickerView: View {
         @State private var showingImagePicker = false
         @State private var showingSourceSelector = false
         let onImagePicked: (Data) -> Void
@@ -159,7 +159,7 @@
                 Button("Cancel", role: .cancel) {}
             }
             .sheet(isPresented: $showingImagePicker) {
-                macOSImagePicker(onImagePicked: onImagePicked) {
+                MacOSImagePicker(onImagePicked: onImagePicked) {
                     showingImagePicker = false
                 }
                 .frame(width: 600, height: 400)
@@ -168,7 +168,7 @@
     }
 
     /// macOS-specific drag and drop image receiver
-    public struct macOSImageDropZone<Content: View>: View {
+    public struct MacOSImageDropZone<Content: View>: View {
         let content: () -> Content
         let onImageDropped: (Data) -> Void
         @State private var isTargeted = false

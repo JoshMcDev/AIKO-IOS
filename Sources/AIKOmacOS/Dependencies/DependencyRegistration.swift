@@ -4,7 +4,7 @@
     import Foundation
 
     /// Registers all macOS-specific implementations of AppCore dependencies
-    public enum macOSDependencyRegistration {
+    public enum MacOSDependencyRegistration {
         /// Register all macOS implementations
         @MainActor
         public static func registerAll() {
@@ -16,14 +16,14 @@
             // All macOS-specific implementations are automatically registered via:
             // - VoiceRecordingClient.macOSLive
             // - HapticManagerClient.macOSLive
-            // - macOSImageLoaderClient.live
-            // - macOSShareServiceClient.live
-            // - macOSFileServiceClient.live
-            // - macOSEmailServiceClient.live
-            // - macOSClipboardServiceClient.live
-            // - macOSNavigationServiceClient.live
-            // - macOSScreenServiceClient.live
-            // - macOSKeyboardServiceClient.live
-            // - macOSTextFieldServiceClient.live
+            // - MacOSImageLoaderClient.live
+            // - MacOSShareServiceClient.live
+            // - MacOSFileServiceClient.live
+            // - MacOSEmailServiceClient.live
+            // - MacOSClipboardServiceClient.live
+            // - MacOSNavigationServiceClient.live
+            // - MacOSScreenServiceClient.live
+            // - MacOSKeyboardServiceClient.live
+            // - MacOSTextFieldServiceClient.live
         }
     }#endif

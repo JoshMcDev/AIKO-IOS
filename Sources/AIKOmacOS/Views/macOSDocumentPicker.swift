@@ -5,7 +5,7 @@
     import UniformTypeIdentifiers
 
     /// macOS-specific document picker implementation
-    public struct macOSDocumentPicker: NSViewControllerRepresentable {
+    public struct MacOSDocumentPicker: NSViewControllerRepresentable {
         let allowedContentTypes: [UTType]
         let allowsMultipleSelection: Bool
         let onDocumentsPicked: ([(Data, String)]) -> Void
@@ -87,7 +87,7 @@
     }
 
     /// macOS-specific wrapper for document picker integration
-    public struct macOSDocumentPickerView: View {
+    public struct MacOSDocumentPickerView: View {
         @State private var showingPicker = false
         let onDocumentsPicked: ([(Data, String)]) -> Void
 
@@ -100,7 +100,7 @@
                 showingPicker = true
             }
             .sheet(isPresented: $showingPicker) {
-                macOSDocumentPicker(onDocumentsPicked: onDocumentsPicked) {
+                MacOSDocumentPicker(onDocumentsPicked: onDocumentsPicked) {
                     showingPicker = false
                 }
                 .frame(width: 600, height: 400)
@@ -109,7 +109,7 @@
     }
 
     /// macOS-specific drag and drop document receiver
-    public struct macOSDocumentDropZone<Content: View>: View {
+    public struct MacOSDocumentDropZone<Content: View>: View {
         let content: () -> Content
         let onDocumentsDropped: ([(Data, String)]) -> Void
         @State private var isTargeted = false

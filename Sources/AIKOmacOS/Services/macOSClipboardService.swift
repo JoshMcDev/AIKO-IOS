@@ -4,7 +4,7 @@
     import Foundation
 
     /// macOS implementation of ClipboardServiceProtocol
-    public final class macOSClipboardService: ClipboardServiceProtocol {
+    public final class MacOSClipboardService: ClipboardServiceProtocol {
         public init() {}
 
         public func copyText(_ text: String) {

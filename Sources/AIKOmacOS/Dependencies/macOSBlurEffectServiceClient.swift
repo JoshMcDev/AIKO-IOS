@@ -5,7 +5,7 @@
 
     public extension BlurEffectServiceClient {
         static let macOS: Self = {
-            let service = macOSBlurEffectService()
+            let service = MacOSBlurEffectService()
             return Self(
                 _createBlurredBackground: { radius in
                     service.createBlurredBackground(radius: radius)

@@ -5,7 +5,7 @@
     import SwiftUI
 
     extension ImageLoaderClient {
-        private static let imageLoader = macOSImageLoader()
+        private static let imageLoader = MacOSImageLoader()
 
         public static let macOSLive = Self(
             loadImage: { data in

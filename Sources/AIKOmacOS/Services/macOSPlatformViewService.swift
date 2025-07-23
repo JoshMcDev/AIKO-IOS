@@ -2,34 +2,34 @@
     import AppCore
     import SwiftUI
 
-    public final class macOSPlatformViewService: @unchecked Sendable, PlatformViewServiceProtocol {
+    public final class MacOSPlatformViewService: @unchecked Sendable, PlatformViewServiceProtocol {
         public init() {}
 
         @MainActor
         public func createNavigationStack(@ViewBuilder content: @escaping () -> some View) -> AnyView {
             AnyView(
-                macOSNavigationStack(content: content)
+                MacOSNavigationStack(content: content)
             )
         }
 
         @MainActor
         public func createDocumentPicker(onDocumentsPicked: @escaping ([(Data, String)]) -> Void) -> AnyView {
             AnyView(
-                macOSDocumentPickerView(onDocumentsPicked: onDocumentsPicked)
+                MacOSDocumentPickerView(onDocumentsPicked: onDocumentsPicked)
             )
         }
 
         @MainActor
         public func createImagePicker(onImagePicked: @escaping (Data) -> Void) -> AnyView {
             AnyView(
-                macOSImagePickerView(onImagePicked: onImagePicked)
+                MacOSImagePickerView(onImagePicked: onImagePicked)
             )
         }
 
         @MainActor
         public func createShareSheet(items: [Any]) -> AnyView {
             AnyView(
-                macOSShareButton(items: items)
+                MacOSShareButton(items: items)
             )
         }
 
@@ -39,7 +39,7 @@
             @ViewBuilder detail: @escaping () -> some View
         ) -> AnyView {
             AnyView(
-                macOSSidebarNavigation(sidebar: sidebar, detail: detail)
+                MacOSSidebarNavigation(sidebar: sidebar, detail: detail)
             )
         }
 
@@ -47,8 +47,8 @@
         public func applyWindowStyle(to view: AnyView) -> AnyView {
             AnyView(
                 view
-                    .modifier(macOSWindowStyleModifier())
-                    .modifier(macOSWindowControlsOverlay())
+                    .modifier(MacOSWindowStyleModifier())
+                    .modifier(MacOSWindowControlsOverlay())
             )
         }
 
@@ -56,7 +56,7 @@
         public func applyToolbarStyle(to view: AnyView) -> AnyView {
             AnyView(
                 view
-                    .modifier(macOSToolbarModifier())
+                    .modifier(MacOSToolbarModifier())
             )
         }
 
@@ -66,7 +66,7 @@
             onItemsDropped: @escaping ([Any]) -> Void
         ) -> AnyView {
             AnyView(
-                macOSDocumentDropZone(onDocumentsDropped: { documents in
+                MacOSDocumentDropZone(onDocumentsDropped: { documents in
                     onItemsDropped(documents.map { $0 as Any })
                 }) {
                     content()

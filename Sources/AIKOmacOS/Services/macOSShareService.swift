@@ -5,7 +5,7 @@
     import SwiftUI
 
     /// macOS implementation of ShareServiceProtocol
-    public final class macOSShareService: @unchecked Sendable, ShareServiceProtocol {
+    public final class MacOSShareService: @unchecked Sendable, ShareServiceProtocol {
         public init() {}
 
         @MainActor

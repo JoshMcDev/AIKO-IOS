@@ -4,7 +4,7 @@
     import Foundation
 
     /// macOS implementation of FileServiceProtocol
-    public final class macOSFileService: FileServiceProtocol {
+    public final class MacOSFileService: FileServiceProtocol {
         public init() {}
 
         public func saveFile(

@@ -4,7 +4,7 @@
     import Foundation
 
     extension NavigationServiceClient {
-        private static let navigationService = macOSNavigationService()
+        private static let navigationService = MacOSNavigationService()
 
         public static let macOSLive = Self(
             supportsNavigationStack: {

@@ -7,7 +7,7 @@
         static let macOSLive = Self(
             saveFile: { content, suggestedFileName, allowedFileTypes in
                 await withCheckedContinuation { continuation in
-                    macOSFileService().saveFile(
+                    MacOSFileService().saveFile(
                         content: content,
                         suggestedFileName: suggestedFileName,
                         allowedFileTypes: allowedFileTypes
@@ -18,7 +18,7 @@
             },
             openFile: { allowedFileTypes in
                 await withCheckedContinuation { continuation in
-                    macOSFileService().openFile(allowedFileTypes: allowedFileTypes) { url in
+                    MacOSFileService().openFile(allowedFileTypes: allowedFileTypes) { url in
                         continuation.resume(returning: url)
                     }
                 }

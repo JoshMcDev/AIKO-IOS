@@ -4,7 +4,7 @@
     import Foundation
 
     extension ScreenServiceClient {
-        private static let screenService = macOSScreenService()
+        private static let screenService = MacOSScreenService()
 
         public static let macOSLive = Self(
             mainScreenBounds: {
