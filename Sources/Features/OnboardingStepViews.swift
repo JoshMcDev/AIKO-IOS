@@ -320,7 +320,7 @@ struct AddressesStepView: View {
             // Tab selector
             HStack(spacing: 0) {
                 ForEach(ProfileFeature.State.AddressType.allCases, id: \.self) { type in
-                    Button(action: { selectedTab = type }) {
+                    Button(action: { selectedTab = type }, label: {
                         Text(type.rawValue)
                             .font(.caption)
                             .fontWeight(selectedTab == type ? .semibold : .regular)
@@ -330,7 +330,7 @@ struct AddressesStepView: View {
                             .background(
                                 selectedTab == type ? Theme.Colors.aikoAccent : Color.clear
                             )
-                    }
+                    })
                 }
             }
             .background(Theme.Colors.aikoSecondary)
@@ -569,10 +569,10 @@ struct APIKeyStepView: View {
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .disabled(isLoading)
 
-                    Button(action: { onToggleShowAPIKey(!showingAPIKey) }) {
+                    Button(action: { onToggleShowAPIKey(!showingAPIKey) }, label: {
                         Image(systemName: showingAPIKey ? "eye.slash" : "eye")
                             .foregroundColor(.secondary)
-                    }
+                    })
 
                     Button(action: onValidate) {
                         if isLoading {

@@ -5,7 +5,7 @@ struct SettingsView: View {
     let store: StoreOf<SettingsFeature>
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             Group {
                 #if os(iOS)
                     if UIDevice.current.userInterfaceIdiom == .phone {
@@ -81,7 +81,7 @@ struct SettingsView: View {
                     Text(error)
                 }
             }
-        }
+        })
     }
 }
 
@@ -89,12 +89,12 @@ struct SettingsSidebar: View {
     let store: StoreOf<SettingsFeature>
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             List {
                 ForEach(SettingsFeature.SettingsSection.allCases, id: \.self) { section in
                     Button(action: {
                         viewStore.send(.selectSection(section))
-                    }) {
+                    }, label: {
                         HStack {
                             Image(systemName: section.icon)
                                 .frame(width: 20)
@@ -105,7 +105,7 @@ struct SettingsSidebar: View {
                                     .foregroundColor(.accentColor)
                             }
                         }
-                    }
+                    })
                     .buttonStyle(PlainButtonStyle())
                     .padding(.vertical, 4)
                     .background(
@@ -159,7 +159,7 @@ struct GeneralSettingsView: View {
     let store: StoreOf<SettingsFeature>
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 SettingsSection(title: "Appearance") {
                     VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
@@ -396,7 +396,7 @@ struct APISettingsView: View {
     @State private var showingAddKey = false
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 // Model Information
                 SettingsSection(title: "AI Model") {
@@ -645,7 +645,7 @@ struct DocumentSettingsView: View {
     let store: StoreOf<SettingsFeature>
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 SettingsSection(title: "Template Settings") {
                     VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
@@ -695,7 +695,7 @@ struct NotificationSettingsView: View {
     let store: StoreOf<SettingsFeature>
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 SettingsSection(title: "Notification Preferences") {
                     VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
@@ -716,7 +716,7 @@ struct DataPrivacySettingsView: View {
     let store: StoreOf<SettingsFeature>
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 SettingsSection(title: "Privacy") {
                     VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
@@ -755,7 +755,7 @@ struct AdvancedSettingsView: View {
     let store: StoreOf<SettingsFeature>
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             VStack(alignment: .leading, spacing: Theme.Spacing.large) {
                 SettingsSection(title: "Developer Options") {
                     VStack(alignment: .leading, spacing: Theme.Spacing.medium) {

@@ -865,14 +865,14 @@ struct SmartInputBar: View {
                         ForEach(store.suggestions, id: \.self) { suggestion in
                             Button(action: {
                                 store.inputText = suggestion
-                            }) {
+                            }, label: {
                                 Text(suggestion)
                                     .font(.caption)
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 6)
                                     .background(Color(red: 0.92, green: 0.92, blue: 0.94))
                                     .clipShape(Capsule())
-                            }
+                            })
                             .buttonStyle(.plain)
                         }
                     }
@@ -904,13 +904,13 @@ struct SmartInputBar: View {
 
                 Button(action: {
                     store.send(.sendMessage)
-                }) {
+                }, label: {
                     Image(systemName: "arrow.up.circle.fill")
                         .font(.title2)
                         .foregroundColor(
                             store.inputText.isEmpty ? .gray : .blue
                         )
-                }
+                })
                 .disabled(store.inputText.isEmpty)
             }
             .padding()
