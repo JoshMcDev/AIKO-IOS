@@ -13,7 +13,7 @@ public struct EnhancedLLMDialog: View {
     }
 
     public var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             SwiftUI.NavigationView {
                 VStack(spacing: 0) {
                     headerView
@@ -24,7 +24,7 @@ public struct EnhancedLLMDialog: View {
                 .modifier(NavigationBarHiddenModifier())
                 .preferredColorScheme(.dark)
             }
-        }
+        })
     }
 
     // MARK: - Header View
@@ -168,7 +168,7 @@ public struct EnhancedLLMDialog: View {
         Button(action: {
             viewStore.send(.analysis(.confirmRequirements(true)))
             // TODO: Handle refinement mode transition
-        }) {
+        }, label: {
             VStack(spacing: Theme.Spacing.small) {
                 HStack {
                     Image(systemName: "bubble.left.and.bubble.right.fill")
@@ -197,14 +197,14 @@ public struct EnhancedLLMDialog: View {
             )
             .foregroundColor(.white)
             .cornerRadius(Theme.CornerRadius.large)
-        }
+        })
     }
 
     private func manualSelectionButton(viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> some View {
         Button(action: {
             viewStore.send(.analysis(.confirmRequirements(false)))
             viewStore.send(.analysis(.showDocumentPicker(true)))
-        }) {
+        }, label: {
             VStack(spacing: Theme.Spacing.small) {
                 HStack {
                     Image(systemName: "hand.tap.fill")
@@ -230,13 +230,13 @@ public struct EnhancedLLMDialog: View {
                     .stroke(Color.blue.opacity(0.3), lineWidth: 1)
             )
             .cornerRadius(Theme.CornerRadius.large)
-        }
+        })
     }
 
     private func aiRecommendationsButton(viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> some View {
         Button(action: {
             viewStore.send(.generateRecommendedDocuments)
-        }) {
+        }, label: {
             HStack {
                 Image(systemName: "sparkles")
                     .font(.title3)
@@ -250,17 +250,17 @@ public struct EnhancedLLMDialog: View {
             .padding(Theme.Spacing.medium)
             .frame(maxWidth: .infinity)
             .foregroundColor(.blue)
-        }
+        })
     }
 
     private func cancelButton(viewStore: ViewStore<DocumentGenerationFeature.State, DocumentGenerationFeature.Action>) -> some View {
         Button(action: {
             viewStore.send(.analysis(.confirmRequirements(false)))
-        }) {
+        }, label: {
             Text("Cancel")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
-        }
+        })
         .padding(.top, Theme.Spacing.small)
     }
 
@@ -339,7 +339,7 @@ public struct RequirementsRefinementDialog: View {
     ]
 
     public var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             SwiftUI.NavigationView {
                 VStack(spacing: 0) {
                     progressBar
@@ -360,7 +360,7 @@ public struct RequirementsRefinementDialog: View {
                     }
                 }
             }
-        }
+        })
     }
 
     // MARK: - Progress Bar
@@ -539,7 +539,7 @@ struct QuestionInputView: View {
                         } else {
                             answer = answer.isEmpty ? option : "\(answer), \(option)"
                         }
-                    }) {
+                    }, label: {
                         HStack {
                             Text(option)
                                 .foregroundColor(.primary)
@@ -552,7 +552,7 @@ struct QuestionInputView: View {
                         .padding()
                         .background(Theme.Colors.aikoSecondary)
                         .cornerRadius(Theme.CornerRadius.medium)
-                    }
+                    })
                 }
             }
         }
