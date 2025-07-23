@@ -146,8 +146,7 @@
                     defer { group.leave() }
 
                     if let data = item as? Data,
-                       let url = URL(dataRepresentation: data, relativeTo: nil)
-                    {
+                       let url = URL(dataRepresentation: data, relativeTo: nil) {
                         do {
                             let fileData = try Data(contentsOf: url)
                             let filename = url.lastPathComponent

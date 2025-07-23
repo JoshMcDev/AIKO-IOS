@@ -301,8 +301,7 @@ private struct OpenAIFunction: Codable {
         name = try container.decode(String.self, forKey: .name)
         description = try container.decode(String.self, forKey: .description)
         if let jsonData = try? container.decode(Data.self, forKey: .parameters),
-           let json = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any]
-        {
+           let json = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any] {
             parameters = json
         } else {
             parameters = [:]

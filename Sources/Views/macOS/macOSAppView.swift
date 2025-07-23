@@ -75,8 +75,7 @@
             // Method 1: Try loading from bundle with different approaches
             if let url = Bundle.main.url(forResource: "AppIcon", withExtension: "png"),
                let data = try? Data(contentsOf: url),
-               let nsImage = NSImage(data: data)
-            {
+               let nsImage = NSImage(data: data) {
                 return Image(nsImage: nsImage)
             }
 
@@ -88,8 +87,7 @@
             // Method 3: Try from module bundle (for SPM)
             if let bundleURL = Bundle.module.url(forResource: "AppIcon", withExtension: "png"),
                let data = try? Data(contentsOf: bundleURL),
-               let nsImage = NSImage(data: data)
-            {
+               let nsImage = NSImage(data: data) {
                 return Image(nsImage: nsImage)
             }
 

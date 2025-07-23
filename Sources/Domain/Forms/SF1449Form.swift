@@ -145,8 +145,7 @@ public struct SF1449SolicitationSection: ValueObject {
     public func validate() throws {
         if let issueDate,
            let responseDate,
-           responseDate <= issueDate
-        {
+           responseDate <= issueDate {
             throw FormError.validationFailed("Response date must be after issue date")
         }
     }

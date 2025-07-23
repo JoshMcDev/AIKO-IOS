@@ -94,6 +94,6 @@ type_name:
 # Reporter type
 reporter: "xcode"
 
-# Severity levels  
-warning_threshold: 1000  # Temporarily increased to allow commit
-error_threshold: 1000   # Temporarily increased to allow commit
+# Severity levels - STRICT ENFORCEMENT for TDD workflow
+warning_threshold: 0    # ZERO tolerance - all warnings must be resolved
+error_threshold: 0      # ZERO tolerance - all errors must be resolved

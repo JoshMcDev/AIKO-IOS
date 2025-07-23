@@ -180,7 +180,7 @@
 #### Core GraphRAG System
 - [ ] **Implement On-Device GraphRAG with LFM2 Models and Auto-Update System**
   - Priority: High
-  - Status: 🚧 Planning - Complete architecture designed, ready for implementation
+  - Status: 🚧 Not started - Reset for Phase 5 restart
   - Description: Full on-device GraphRAG system using Liquid AI's LFM2-700M-GGUF Q6_K (612MB) for embeddings and vector search. Includes auto-update regulation processing, personal repository support, and offline-first architecture.
   - **Key Architecture**: HTML → regulationParser.ts → Text Chunks → LFM2 → Vector Embeddings → ObjectBox → Instant Semantic Search
   - **Model Specifications**: LFM2-700M-GGUF Q6_K variant (612MB, optimal quality/size balance)
@@ -193,27 +193,23 @@
     - Local vector search and retrieval with sub-second performance
     - Smart update detection (timestamps/hashes) for minimal data transfer
 
-- [x] **Convert LFM2-700M-GGUF Q6_K to Core ML Format and Embed in Project**
+- [ ] **Convert LFM2-700M-GGUF Q6_K to Core ML Format and Embed in Project**
   - Priority: High
-  - Status: ✅ Completed - Model integrated with Swift infrastructure
-  - Description: LFM2-700M-GGUF Q6_K (583MB) integrated into AIKO project with comprehensive Swift service layer for dual-domain GraphRAG (regulations + user records).
-  - **Model Location**: `/Users/J/aiko/Sources/Resources/LFM2-700M-Q6_K.gguf` (integrated)
+  - Status: 🚧 Not started - Reset for Phase 5 restart
+  - Description: Convert LFM2-700M-Unsloth-XL-GraphRAG.mlmodel (correct model) and integrate into AIKO project with comprehensive Swift service layer for dual-domain GraphRAG (regulations + user records).
+  - **Model File**: `LFM2-700M-Unsloth-XL-GraphRAG.mlmodel` (current CoreML model with tensor rank issues)
   - **Swift Service**: `LFM2Service.swift` actor-based wrapper implemented
   - **Target Integration**: Dual-namespace GraphRAG supporting both government regulations and user acquisition records
   - **Expected Performance**: < 2 seconds per chunk, optimized for on-device processing
   - Technical Tasks:
-    - ✅ Model downloaded (LiquidAI/LFM2-700M-GGUF Q6_K variant - 583MB actual)
-    - ✅ Core ML conversion environment setup (virtual environment with dependencies)
-    - ✅ GGUF model copied to `Sources/Resources/LFM2-700M-Q6_K.gguf`
-    - ✅ Created comprehensive `LFM2Service.swift` actor wrapper for thread-safe model inference
-    - ✅ Implemented dual-domain embedding generation architecture (regulations + user records)
-    - ✅ Added performance monitoring and error handling infrastructure
-    - ✅ Created EmbeddingDomain enum for optimization tracking
-    - ✅ Added model loading optimization with lazy initialization
-    - ⏳ Core ML conversion pending (environment issues, fallback to GGUF processing)
-    - ⏳ Test embedding performance (target: < 2s per 512-token chunk)
-    - ⏳ Validate semantic similarity quality across both domains
-    - ⏳ Document memory usage patterns (target: < 800MB peak during processing)
+    - [ ] Fix CoreML model tensor rank error (token_embedding layer rank 2 → rank 4+)
+    - [ ] Validate model input/output specifications
+    - [ ] Test model loading in LFM2Service.swift
+    - [ ] Implement dual-domain embedding generation architecture (regulations + user records)
+    - [ ] Add performance monitoring and error handling infrastructure
+    - [ ] Test embedding performance (target: < 2s per 512-token chunk)
+    - [ ] Validate semantic similarity quality across both domains
+    - [ ] Document memory usage patterns (target: < 800MB peak during processing)
 
 - [ ] **Implement ObjectBox Semantic Index Vector Database with Auto-Update Support**
   - Priority: High  

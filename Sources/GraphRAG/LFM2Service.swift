@@ -104,14 +104,14 @@ actor LFM2Service {
     ///   - domain: Source domain (regulations or user_records) for optimization
     /// - Returns: 768-dimensional embedding vector
     func generateEmbedding(text: String, domain: EmbeddingDomain = .regulations) async throws -> [Float] {
-        guard isInitialized, let model = model else {
+        guard isInitialized, let model else {
             throw LFM2Error.modelNotInitialized
         }
 
         logger.debug("🔄 Generating embedding for \(domain.rawValue) text (length: \(text.count))")
 
-        // Preprocess text (tokenization, truncation, etc.)
-        let processedInput = try preprocessText(text)
+        // Preprocess text with tensor rank fix (tokenization, truncation, etc.)
+        let processedInput = try preprocessTextWithTensorRankFix(text)
 
         // Generate embedding using Core ML model
         let startTime = CFAbsoluteTimeGetCurrent()
@@ -167,6 +167,8 @@ actor LFM2Service {
 
     // MARK: - Text Preprocessing
 
+    /// DEPRECATED: Original rank-2 tensor implementation (kept for backward compatibility)
+    /// Use preprocessTextWithTensorRankFix() instead for proper LFM2 model compatibility
     private func preprocessText(_ text: String) throws -> MLFeatureProvider {
         // TODO: Implement proper tokenization for LFM2
         // For now, create a basic input structure
@@ -195,7 +197,7 @@ actor LFM2Service {
         return try MLDictionaryFeatureProvider(dictionary: inputFeatures)
     }
 
-    private func createPlaceholderTokenIds(from text: String) -> [Int32] {
+    func createPlaceholderTokenIds(from text: String) -> [Int32] {
         // Simple hash-based tokenization placeholder
         // TODO: Replace with proper LFM2 tokenizer
         let words = text.components(separatedBy: .whitespacesAndNewlines)
@@ -239,9 +241,9 @@ enum EmbeddingDomain: String, CaseIterable {
     var displayName: String {
         switch self {
         case .regulations:
-            return "Government Regulations"
+            "Government Regulations"
         case .userRecords:
-            return "User Acquisition Records"
+            "User Acquisition Records"
         }
     }
 }
@@ -259,19 +261,19 @@ enum LFM2Error: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .modelNotInitialized:
-            return "LFM2 model has not been initialized. Call initializeModel() first."
+            "LFM2 model has not been initialized. Call initializeModel() first."
         case .modelNotFound:
-            return "LFM2 model file not found in app bundle. Ensure model is included in Resources."
+            "LFM2 model file not found in app bundle. Ensure model is included in Resources."
         case .ggufNotSupported:
-            return "GGUF model format not yet supported. Core ML conversion required."
+            "GGUF model format not yet supported. Core ML conversion required."
         case let .invalidEmbeddingDimensions(expected, actual):
-            return "Invalid embedding dimensions. Expected \(expected), got \(actual)."
+            "Invalid embedding dimensions. Expected \(expected), got \(actual)."
         case let .embeddingGenerationFailed(error):
-            return "Embedding generation failed: \(error.localizedDescription)"
+            "Embedding generation failed: \(error.localizedDescription)"
         case .invalidModelOutput:
-            return "Model output format is not recognized or compatible."
+            "Model output format is not recognized or compatible."
         case .tokenizationFailed:
-            return "Text tokenization failed. Check input text format."
+            "Text tokenization failed. Check input text format."
         }
     }
 }
@@ -326,7 +328,7 @@ extension LFM2Service {
     /// Get performance metrics (placeholder for future implementation)
     func getPerformanceMetrics() async -> PerformanceMetrics {
         // TODO: Implement actual performance tracking
-        return PerformanceMetrics(
+        PerformanceMetrics(
             averageEmbeddingTime: 1.5,
             totalEmbeddingsGenerated: 0,
             peakMemoryUsage: 800 * 1024 * 1024, // 800MB estimate

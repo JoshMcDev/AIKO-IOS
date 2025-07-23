@@ -4,7 +4,7 @@
     import UniformTypeIdentifiers
 
     /// macOS-specific image picker implementation
-    public struct macOSImagePicker: NSViewControllerRepresentable {
+    public struct MacOSImagePicker: NSViewControllerRepresentable {
         let onImagePicked: (Data) -> Void
         let onCancel: () -> Void
 
@@ -70,7 +70,7 @@
     }
 
     /// macOS-specific image capture using connected camera
-    public struct macOSImageCapture: NSViewControllerRepresentable {
+    public struct MacOSImageCapture: NSViewControllerRepresentable {
         let onImageCaptured: (Data) -> Void
         let onCancel: () -> Void
 

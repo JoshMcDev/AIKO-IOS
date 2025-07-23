@@ -926,8 +926,7 @@ public final class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol, @un
             if let decimal = value as? Decimal {
                 data.estimatedValue = decimal
             } else if let string = value as? String,
-                      let double = Double(string.replacingOccurrences(of: "$", with: "").replacingOccurrences(of: ",", with: ""))
-            {
+                      let double = Double(string.replacingOccurrences(of: "$", with: "").replacingOccurrences(of: ",", with: "")) {
                 data.estimatedValue = Decimal(double)
             }
         case .requiredDate:

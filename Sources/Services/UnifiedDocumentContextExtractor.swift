@@ -323,8 +323,7 @@ public final class UnifiedDocumentContextExtractor: @unchecked Sendable {
                 } else {
                     // Might be a line item price
                     if let price = Decimal(string: object.value.replacingOccurrences(of: "$", with: "")
-                        .replacingOccurrences(of: ",", with: ""))
-                    {
+                        .replacingOccurrences(of: ",", with: "")) {
                         lineItems.append(APELineItem(
                             description: object.fieldName,
                             quantity: 1,
@@ -495,16 +494,14 @@ public final class UnifiedDocumentContextExtractor: @unchecked Sendable {
 
         // Try ISO8601 first
         if let iso = formatters.first as? ISO8601DateFormatter,
-           let date = iso.date(from: dateString)
-        {
+           let date = iso.date(from: dateString) {
             return date
         }
 
         // Try other formatters
         for formatter in formatters.dropFirst() {
             if let formatter = formatter as? DateFormatter,
-               let date = formatter.date(from: dateString)
-            {
+               let date = formatter.date(from: dateString) {
                 return date
             }
         }
@@ -838,8 +835,7 @@ public final class UnifiedDocumentContextExtractor: @unchecked Sendable {
 
                     if let price = Decimal(string: cleanValue) {
                         if field.label.lowercased().contains("total") ||
-                            field.label.lowercased().contains("amount")
-                        {
+                            field.label.lowercased().contains("amount") {
                             totalPrice = price
                         } else {
                             lineItems.append(APELineItem(
@@ -898,8 +894,7 @@ public final class UnifiedDocumentContextExtractor: @unchecked Sendable {
             for field in result.recognizedFields where field.confidence > 0.7 {
                 let label = field.label.lowercased()
                 if label.contains("spec") || label.contains("technical") ||
-                    label.contains("feature") || label.contains("requirement")
-                {
+                    label.contains("feature") || label.contains("requirement") {
                     if field.value.count > 20 {
                         technicalDetails.append(field.value)
                     }
@@ -910,8 +905,7 @@ public final class UnifiedDocumentContextExtractor: @unchecked Sendable {
             for paragraph in result.documentStructure.paragraphs where paragraph.confidence > 0.8 {
                 let text = paragraph.text.lowercased()
                 if text.contains("specification") || text.contains("technical") ||
-                    text.contains("requirements") || text.contains("performance")
-                {
+                    text.contains("requirements") || text.contains("performance") {
                     if paragraph.text.count > 50 {
                         technicalDetails.append(paragraph.text)
                     }
@@ -993,8 +987,7 @@ public final class UnifiedDocumentContextExtractor: @unchecked Sendable {
             for field in result.recognizedFields where field.confidence > 0.7 {
                 let label = field.label.lowercased()
                 if label.contains("term") || label.contains("condition") ||
-                    label.contains("requirement") || label.contains("clause")
-                {
+                    label.contains("requirement") || label.contains("clause") {
                     if field.value.count > 10 {
                         specialTerms.append(field.value)
                     }
@@ -1006,8 +999,7 @@ public final class UnifiedDocumentContextExtractor: @unchecked Sendable {
                 for item in list.items where item.confidence > 0.8 {
                     let text = item.text.lowercased()
                     if text.contains("term") || text.contains("condition") ||
-                        text.contains("shall") || text.contains("must")
-                    {
+                        text.contains("shall") || text.contains("must") {
                         specialTerms.append(item.text)
                     }
                 }

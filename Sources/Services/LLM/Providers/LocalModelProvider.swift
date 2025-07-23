@@ -76,8 +76,7 @@ public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable 
         get async {
             // Check if local server is running
             if let config = try? await LLMConfigurationManager.shared.loadConfiguration(for: id),
-               let customEndpoint = config.customEndpoint
-            {
+               let customEndpoint = config.customEndpoint {
                 serverURL = customEndpoint
             }
 
@@ -107,8 +106,7 @@ public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable 
     public func chatCompletion(_ request: LLMChatRequest) async throws -> LLMChatResponse {
         // Update server URL if custom endpoint is configured
         if let config = try? await LLMConfigurationManager.shared.loadConfiguration(for: id),
-           let customEndpoint = config.customEndpoint
-        {
+           let customEndpoint = config.customEndpoint {
             serverURL = customEndpoint
         }
 
@@ -190,8 +188,7 @@ public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable 
                 do {
                     // Update server URL if custom endpoint is configured
                     if let config = try? await LLMConfigurationManager.shared.loadConfiguration(for: id),
-                       let customEndpoint = config.customEndpoint
-                    {
+                       let customEndpoint = config.customEndpoint {
                         self.serverURL = customEndpoint
                     }
 
@@ -244,8 +241,7 @@ public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable 
                             let jsonString = String(line.dropFirst(6))
 
                             if let data = jsonString.data(using: .utf8),
-                               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
-                            {
+                               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
                                 if let content = json["content"] as? String {
                                     continuation.yield(LLMStreamChunk(delta: content))
                                 }
@@ -274,8 +270,7 @@ public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable 
     public func tokenCount(for text: String) async throws -> Int {
         // Update server URL if custom endpoint is configured
         if let config = try? await LLMConfigurationManager.shared.loadConfiguration(for: id),
-           let customEndpoint = config.customEndpoint
-        {
+           let customEndpoint = config.customEndpoint {
             serverURL = customEndpoint
         }
 

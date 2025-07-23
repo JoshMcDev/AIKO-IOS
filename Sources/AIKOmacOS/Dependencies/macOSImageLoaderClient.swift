@@ -30,6 +30,6 @@
     }
 
     // Convenience static accessor
-    public enum macOSImageLoaderClient {
+    public enum MacOSImageLoaderClient {
         public static let live = ImageLoaderClient.macOSLive
     }#endif

@@ -159,8 +159,7 @@ final class UserPatternLearningEngine: ObservableObject {
 
         // Update pattern confidence based on feedback
         if let patternId = feedback.patternId,
-           let index = discoveredPatterns.firstIndex(where: { $0.id == patternId })
-        {
+           let index = discoveredPatterns.firstIndex(where: { $0.id == patternId }) {
             var pattern = discoveredPatterns[index]
             pattern.updateConfidence(basedOn: feedback)
             discoveredPatterns[index] = pattern
@@ -612,8 +611,7 @@ extension UserInteraction {
         metadata = [:]
 
         if let metadataData = entity.metadata,
-           let metadata = try? JSONDecoder().decode([String: String].self, from: metadataData)
-        {
+           let metadata = try? JSONDecoder().decode([String: String].self, from: metadataData) {
             self.metadata = metadata
         }
     }

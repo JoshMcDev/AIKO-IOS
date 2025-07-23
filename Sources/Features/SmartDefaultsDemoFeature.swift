@@ -127,11 +127,9 @@ struct SmartDefaultsDemoFeature {
                 }
 
             case .acceptAllDefaults:
-                for index in state.formFields.indices {
-                    if state.formFields[index].status == .suggested {
-                        state.formFields[index].status = .autoFilled
-                        state.formFields[index].userAccepted = true
-                    }
+                for index in state.formFields.indices where state.formFields[index].status == .suggested {
+                    state.formFields[index].status = .autoFilled
+                    state.formFields[index].userAccepted = true
                 }
                 return .send(.updateMetrics)
 

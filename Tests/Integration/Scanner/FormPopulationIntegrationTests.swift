@@ -448,7 +448,7 @@ final class FormPopulationIntegrationTests: XCTestCase {
     }
 
     private func createMockGovernmentFormData() -> Data {
-        return """
+        """
         SOLICITATION NUMBER: W56HZV-24-R-0100
         TITLE: Professional IT Services
         RESPONSE DEADLINE: March 15, 2024
@@ -459,7 +459,7 @@ final class FormPopulationIntegrationTests: XCTestCase {
     }
 
     private func createMockExtractedGovernmentFormData() -> GovernmentFormData {
-        return GovernmentFormData(
+        GovernmentFormData(
             vendorInfo: VendorInfo(
                 name: "Test Vendor Inc",
                 cageCode: "1A2B3",

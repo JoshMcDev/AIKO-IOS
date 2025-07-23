@@ -378,7 +378,7 @@ public struct GlobalScanFeature: Sendable {
         let verticalThreshold: CGFloat = 150.0
         let isHorizontalDrag = abs(offset.width) > abs(offset.height)
 
-        if isHorizontalDrag && abs(offset.width) > horizontalThreshold {
+        if isHorizontalDrag, abs(offset.width) > horizontalThreshold {
             return offset.width > 0 ? .bottomTrailing : .bottomLeading
         } else if abs(offset.height) > verticalThreshold {
             return offset.height < 0 ? .topTrailing : .bottomTrailing

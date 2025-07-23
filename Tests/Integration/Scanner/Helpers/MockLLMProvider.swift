@@ -59,17 +59,17 @@ public final class MockLLMProvider: Sendable {
         var localizedDescription: String {
             switch self {
             case .rateLimited:
-                return "Rate limit exceeded"
+                "Rate limit exceeded"
             case .invalidResponse:
-                return "Invalid response format"
+                "Invalid response format"
             case .networkTimeout:
-                return "Network request timed out"
+                "Network request timed out"
             case .insufficientTokens:
-                return "Insufficient tokens for request"
+                "Insufficient tokens for request"
             case .contentPolicyViolation:
-                return "Content policy violation"
+                "Content policy violation"
             case .serviceUnavailable:
-                return "Service temporarily unavailable"
+                "Service temporarily unavailable"
             }
         }
     }

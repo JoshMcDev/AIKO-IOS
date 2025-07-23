@@ -29,6 +29,6 @@
     }
 
     // Convenience static accessor
-    public enum macOSKeyboardServiceClient {
+    public enum MacOSKeyboardServiceClient {
         public static let live = KeyboardServiceClient.macOSLive
     }#endif

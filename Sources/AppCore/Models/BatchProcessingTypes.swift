@@ -81,12 +81,12 @@ public enum MediaBatchOperationStatus: String, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .pending: return "Pending"
-        case .running: return "Running"
-        case .paused: return "Paused"
-        case .completed: return "Completed"
-        case .failed: return "Failed"
-        case .cancelled: return "Cancelled"
+        case .pending: "Pending"
+        case .running: "Running"
+        case .paused: "Paused"
+        case .completed: "Completed"
+        case .failed: "Failed"
+        case .cancelled: "Cancelled"
         }
     }
 }
@@ -192,10 +192,10 @@ public enum OperationPriority: Int, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .low: return "Low"
-        case .normal: return "Normal"
-        case .high: return "High"
-        case .urgent: return "Urgent"
+        case .low: "Low"
+        case .normal: "Normal"
+        case .high: "High"
+        case .urgent: "Urgent"
         }
     }
 }

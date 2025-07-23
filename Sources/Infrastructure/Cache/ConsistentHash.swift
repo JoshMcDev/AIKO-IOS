@@ -59,7 +59,10 @@ public actor ConsistentHash {
         // Wrap around if necessary
         let position = index < sortedKeys.count ? sortedKeys[index] : sortedKeys[0]
 
-        return ring[position]!
+        guard let node = ring[position] else {
+            fatalError("Inconsistent hash ring state: position not found")
+        }
+        return node
     }
 
     /// Get replica nodes for a key
@@ -76,7 +79,9 @@ public actor ConsistentHash {
         // Find unique nodes
         while replicas.count < count, seenNodes.count < nodeMap.count {
             let position = sortedKeys[index % sortedKeys.count]
-            let nodeId = ring[position]!
+            guard let nodeId = ring[position] else {
+                fatalError("Inconsistent hash ring state: position not found in replica lookup")
+            }
 
             if !seenNodes.contains(nodeId) {
                 seenNodes.insert(nodeId)

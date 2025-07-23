@@ -7,8 +7,12 @@
     public final class macOSScreenService: ScreenServiceProtocol {
         public init() {}
 
-        public var mainScreenBounds: CGRect {
-            NSScreen.main?.frame ?? CGRect(x: 0, y: 0, width: 1920, height: 1080)
+        public var mainScreenBounds: AppCore.CGRect {
+            let nsRect = NSScreen.main?.frame ?? NSRect(x: 0, y: 0, width: 1920, height: 1080)
+            return AppCore.CGRect(
+                origin: AppCore.CGPoint(x: nsRect.origin.x, y: nsRect.origin.y),
+                size: AppCore.CGSize(width: nsRect.size.width, height: nsRect.size.height)
+            )
         }
 
         public var mainScreenWidth: CGFloat {

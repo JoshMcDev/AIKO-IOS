@@ -45,11 +45,11 @@ public enum MediaType: String, Sendable, CaseIterable, Codable {
 
     public var displayName: String {
         switch self {
-        case .photo: return "Photo"
-        case .document: return "Document"
-        case .screenshot: return "Screenshot"
-        case .camera: return "Camera"
-        case .file: return "File"
+        case .photo: "Photo"
+        case .document: "Document"
+        case .screenshot: "Screenshot"
+        case .camera: "Camera"
+        case .file: "File"
         }
     }
 }

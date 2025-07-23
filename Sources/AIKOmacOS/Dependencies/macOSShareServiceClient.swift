@@ -21,6 +21,6 @@
     }
 
     // Convenience static accessor
-    public enum macOSShareServiceClient {
+    public enum MacOSShareServiceClient {
         public static let live = ShareServiceClient.macOSLive
     }#endif

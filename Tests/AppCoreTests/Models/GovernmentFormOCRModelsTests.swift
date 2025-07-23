@@ -501,7 +501,7 @@ final class GovernmentFormOCRModelsTests: XCTestCase {
     }
 
     private func createBatchValidationTestData() -> [(pattern: String, value: String)] {
-        return [
+        [
             (ValidationPatterns.cageCode, "1ABC5"),
             (ValidationPatterns.uei, "ABC123DEF456"),
             (ValidationPatterns.duns, "123456789"),

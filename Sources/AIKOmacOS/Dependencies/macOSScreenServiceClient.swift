@@ -26,6 +26,6 @@
     }
 
     // Convenience static accessor
-    public enum macOSScreenServiceClient {
+    public enum MacOSScreenServiceClient {
         public static let live = ScreenServiceClient.macOSLive
     }#endif

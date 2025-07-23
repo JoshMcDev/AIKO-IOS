@@ -21,6 +21,6 @@
     }
 
     // Convenience static accessor
-    public enum macOSClipboardServiceClient {
+    public enum MacOSClipboardServiceClient {
         public static let live = ClipboardServiceClient.macOSLive
     }#endif

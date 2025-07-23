@@ -474,8 +474,7 @@ class InteractionTracker {
 
         for interaction in interactions where interaction.type == .navigation {
             if let context = interaction.metadata["context"] as? String,
-               context != lastContext
-            {
+               context != lastContext {
                 switches += 1
                 lastContext = context
             }

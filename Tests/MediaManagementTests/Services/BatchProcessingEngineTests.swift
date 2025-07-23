@@ -123,12 +123,12 @@ final class BatchProcessingEngineTests: XCTestCase {
                 progressUpdates.append(progress)
 
                 // Pause after processing 3 items
-                if progress.processedCount == 3 && !progress.isPaused {
+                if progress.processedCount == 3, !progress.isPaused {
                     try await batchEngine.pauseResumeOperation(jobId, true)
                 }
 
                 // Resume after a delay
-                if progress.isPaused && progressUpdates.count > 5 {
+                if progress.isPaused, progressUpdates.count > 5 {
                     try await Task.sleep(nanoseconds: 100_000_000)
                     try await batchEngine.pauseResumeOperation(jobId, false)
                 }
@@ -192,7 +192,7 @@ final class BatchProcessingEngineTests: XCTestCase {
         // Then
         XCTAssertEqual(results.count, 5)
 
-        let successCount = results.filter { $0.isSuccess }.count
+        let successCount = results.filter(\.isSuccess).count
         let failureCount = results.filter { !$0.isSuccess }.count
 
         XCTAssertEqual(successCount, 4)

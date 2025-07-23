@@ -51,7 +51,7 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
 
             var collectedResults: [DocumentImageProcessor.ProcessingResult] = []
             for await result in group {
-                if let result = result {
+                if let result {
                     collectedResults.append(result)
                 }
             }
@@ -322,7 +322,7 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
             XCTAssertEqual(lastProgress.overallProgress, 1.0, accuracy: 0.001)
 
             // Verify processing steps progression
-            let steps = receivedProgress.map { $0.currentStep }
+            let steps = receivedProgress.map(\.currentStep)
             XCTAssertTrue(steps.contains(.preprocessing))
             XCTAssertTrue(steps.contains(.enhancement))
             XCTAssertTrue(steps.contains(.optimization))
@@ -440,7 +440,7 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
     }
 
     private func createFailingProcessor(attemptCount: inout Int) -> DocumentImageProcessor {
-        return DocumentImageProcessor(
+        DocumentImageProcessor(
             processImage: { data, _, _ in
                 attemptCount += 1
                 if attemptCount < 2 {
@@ -479,7 +479,7 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
     }
 
     private func createProcessingOptions() -> DocumentImageProcessor.ProcessingOptions {
-        return DocumentImageProcessor.ProcessingOptions(
+        DocumentImageProcessor.ProcessingOptions(
             qualityTarget: .balanced,
             preserveColors: true,
             optimizeForOCR: true
@@ -487,7 +487,7 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
     }
 
     private func createSpeedProcessingOptions() -> DocumentImageProcessor.ProcessingOptions {
-        return DocumentImageProcessor.ProcessingOptions(
+        DocumentImageProcessor.ProcessingOptions(
             qualityTarget: .speed,
             preserveColors: false,
             optimizeForOCR: false
@@ -495,7 +495,7 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
     }
 
     private func createProgressTrackingOptions(progressCallback: @escaping (ProcessingProgress) -> Void) -> DocumentImageProcessor.ProcessingOptions {
-        return DocumentImageProcessor.ProcessingOptions(
+        DocumentImageProcessor.ProcessingOptions(
             progressCallback: progressCallback,
             qualityTarget: .quality,
             optimizeForOCR: true

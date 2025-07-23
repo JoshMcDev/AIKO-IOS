@@ -150,15 +150,13 @@ public final class DocumentContextExtractor: @unchecked Sendable {
             for match in matches.prefix(10) { // Limit to 10 line items
                 if let descRange = Range(match.range(at: 1), in: document.extractedText),
                    let qtyRange = Range(match.range(at: 2), in: document.extractedText),
-                   let priceRange = Range(match.range(at: 3), in: document.extractedText)
-                {
+                   let priceRange = Range(match.range(at: 3), in: document.extractedText) {
                     let description = String(document.extractedText[descRange]).trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
                     let quantityStr = String(document.extractedText[qtyRange])
                     let priceStr = String(document.extractedText[priceRange]).replacingOccurrences(of: ",", with: "")
 
                     if let quantity = Int(quantityStr),
-                       let unitPrice = Decimal(string: priceStr)
-                    {
+                       let unitPrice = Decimal(string: priceStr) {
                         lineItems.append(APELineItem(
                             id: UUID(),
                             description: description,

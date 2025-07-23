@@ -368,8 +368,7 @@ public class SmartDefaultsProvider: @unchecked Sendable {
             reasoning = "End of fiscal year - urgent processing recommended"
         } else if let value = context.extractedData["totalValue"],
                   let amount = parseAmount(value),
-                  amount > 100_000
-        {
+                  amount > 100_000 {
             priority = "High"
             confidence = 0.7
             reasoning = "High-value acquisition"
@@ -409,8 +408,7 @@ public class SmartDefaultsProvider: @unchecked Sendable {
         case .contractScaffold:
             if let value = context.extractedData["estimatedValue"],
                let amount = parseAmount(value),
-               amount > 250_000
-            {
+               amount > 250_000 {
                 return SmartDefault(
                     field: "contractType",
                     value: "Fixed Price",
@@ -468,8 +466,7 @@ public class SmartDefaultsProvider: @unchecked Sendable {
 
         if condition.contains("high_value") {
             if let value = context.extractedData["totalValue"],
-               let amount = parseAmount(value)
-            {
+               let amount = parseAmount(value) {
                 return amount > 100_000
             }
         }

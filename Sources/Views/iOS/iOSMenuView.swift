@@ -349,12 +349,10 @@
 
             func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
                 if let editedImage = info[.editedImage] as? UIImage,
-                   let imageData = editedImage.jpegData(compressionQuality: 0.8)
-                {
+                   let imageData = editedImage.jpegData(compressionQuality: 0.8) {
                     parent.onImageSelected(imageData)
                 } else if let originalImage = info[.originalImage] as? UIImage,
-                          let imageData = originalImage.jpegData(compressionQuality: 0.8)
-                {
+                          let imageData = originalImage.jpegData(compressionQuality: 0.8) {
                     parent.onImageSelected(imageData)
                 }
 

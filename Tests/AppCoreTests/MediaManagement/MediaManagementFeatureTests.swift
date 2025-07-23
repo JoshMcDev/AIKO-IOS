@@ -213,7 +213,7 @@ final class MediaManagementFeatureTests: XCTestCase {
 
         // When/Then
         await store.send(.selectAllAssets) {
-            $0.selectedAssets = Set(assets.map { $0.id })
+            $0.selectedAssets = Set(assets.map(\.id))
         }
     }
 
@@ -223,7 +223,7 @@ final class MediaManagementFeatureTests: XCTestCase {
         store = TestStore(
             initialState: MediaManagementFeature.State(
                 assets: IdentifiedArrayOf(uniqueElements: assets),
-                selectedAssets: Set(assets.map { $0.id })
+                selectedAssets: Set(assets.map(\.id))
             ),
             reducer: { MediaManagementFeature() }
         )
@@ -338,7 +338,7 @@ final class MediaManagementFeatureTests: XCTestCase {
         store = TestStore(
             initialState: MediaManagementFeature.State(
                 assets: IdentifiedArrayOf(uniqueElements: assets),
-                selectedAssets: Set(assets.map { $0.id })
+                selectedAssets: Set(assets.map(\.id))
             ),
             reducer: { MediaManagementFeature() }
         )
@@ -400,7 +400,7 @@ final class MediaManagementFeatureTests: XCTestCase {
         store = TestStore(
             initialState: MediaManagementFeature.State(
                 assets: IdentifiedArrayOf(uniqueElements: assets),
-                selectedAssets: Set(assets.map { $0.id })
+                selectedAssets: Set(assets.map(\.id))
             ),
             reducer: { MediaManagementFeature() }
         )

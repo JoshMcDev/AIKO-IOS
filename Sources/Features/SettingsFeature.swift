@@ -463,11 +463,11 @@ public struct SettingsFeature: Sendable {
                     state.appSettings.nextScheduledBackup = nil
                     return .none
                 case .daily:
-                    nextBackup = Calendar.current.date(byAdding: .day, value: 1, to: now)!
+                    nextBackup = Calendar.current.date(byAdding: .day, value: 1, to: now) ?? now.addingTimeInterval(86400)
                 case .weekly:
-                    nextBackup = Calendar.current.date(byAdding: .weekOfYear, value: 1, to: now)!
+                    nextBackup = Calendar.current.date(byAdding: .weekOfYear, value: 1, to: now) ?? now.addingTimeInterval(604800)
                 case .monthly:
-                    nextBackup = Calendar.current.date(byAdding: .month, value: 1, to: now)!
+                    nextBackup = Calendar.current.date(byAdding: .month, value: 1, to: now) ?? now.addingTimeInterval(2592000)
                 }
 
                 state.appSettings.nextScheduledBackup = nextBackup

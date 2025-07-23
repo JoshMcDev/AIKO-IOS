@@ -51,16 +51,16 @@ public enum MetadataFieldType: String, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .text: return "Text"
-        case .number: return "Number"
-        case .date: return "Date"
-        case .location: return "Location"
-        case .dimension: return "Dimension"
-        case .duration: return "Duration"
-        case .boolean: return "Boolean"
-        case .url: return "URL"
-        case .identifier: return "Identifier"
-        case .custom: return "Custom"
+        case .text: "Text"
+        case .number: "Number"
+        case .date: "Date"
+        case .location: "Location"
+        case .dimension: "Dimension"
+        case .duration: "Duration"
+        case .boolean: "Boolean"
+        case .url: "URL"
+        case .identifier: "Identifier"
+        case .custom: "Custom"
         }
     }
 }
@@ -77,13 +77,13 @@ public enum MetadataSource: String, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .exif: return "EXIF Data"
-        case .ocr: return "OCR"
-        case .faceDetection: return "Face Detection"
-        case .objectDetection: return "Object Detection"
-        case .manual: return "Manual"
-        case .ai: return "AI Analysis"
-        case .system: return "System"
+        case .exif: "EXIF Data"
+        case .ocr: "OCR"
+        case .faceDetection: "Face Detection"
+        case .objectDetection: "Object Detection"
+        case .manual: "Manual"
+        case .ai: "AI Analysis"
+        case .system: "System"
         }
     }
 }
@@ -172,14 +172,14 @@ public enum LandmarkType: String, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .leftEye: return "Left Eye"
-        case .rightEye: return "Right Eye"
-        case .nose: return "Nose"
-        case .mouth: return "Mouth"
-        case .leftEyebrow: return "Left Eyebrow"
-        case .rightEyebrow: return "Right Eyebrow"
-        case .chin: return "Chin"
-        case .forehead: return "Forehead"
+        case .leftEye: "Left Eye"
+        case .rightEye: "Right Eye"
+        case .nose: "Nose"
+        case .mouth: "Mouth"
+        case .leftEyebrow: "Left Eyebrow"
+        case .rightEyebrow: "Right Eyebrow"
+        case .chin: "Chin"
+        case .forehead: "Forehead"
         }
     }
 }
@@ -207,13 +207,13 @@ public enum Emotion: String, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .happy: return "Happy"
-        case .sad: return "Sad"
-        case .angry: return "Angry"
-        case .surprised: return "Surprised"
-        case .fearful: return "Fearful"
-        case .disgusted: return "Disgusted"
-        case .neutral: return "Neutral"
+        case .happy: "Happy"
+        case .sad: "Sad"
+        case .angry: "Angry"
+        case .surprised: "Surprised"
+        case .fearful: "Fearful"
+        case .disgusted: "Disgusted"
+        case .neutral: "Neutral"
         }
     }
 }
@@ -282,16 +282,16 @@ public enum ObjectCategory: String, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .person: return "Person"
-        case .animal: return "Animal"
-        case .vehicle: return "Vehicle"
-        case .building: return "Building"
-        case .food: return "Food"
-        case .plant: return "Plant"
-        case .technology: return "Technology"
-        case .furniture: return "Furniture"
-        case .clothing: return "Clothing"
-        case .other: return "Other"
+        case .person: "Person"
+        case .animal: "Animal"
+        case .vehicle: "Vehicle"
+        case .building: "Building"
+        case .food: "Food"
+        case .plant: "Plant"
+        case .technology: "Technology"
+        case .furniture: "Furniture"
+        case .clothing: "Clothing"
+        case .other: "Other"
         }
     }
 }

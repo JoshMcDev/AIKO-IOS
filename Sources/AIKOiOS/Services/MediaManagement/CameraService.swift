@@ -16,22 +16,22 @@ public actor CameraService: CameraServiceProtocol {
 
     public func checkCameraAuthorization() async -> Bool {
         // TODO: Check camera authorization status
-        return false
+        false
     }
 
     public func requestCameraAccess() async -> Bool {
         // TODO: Request camera access and return result
-        return false
+        false
     }
 
     public func checkMicrophoneAuthorization() async -> MicrophoneAuthorizationStatus {
         // TODO: Check microphone authorization status
-        return .notDetermined
+        .notDetermined
     }
 
     public func requestMicrophoneAccess() async -> Bool {
         // TODO: Request microphone access and return result
-        return false
+        false
     }
 
     public func capturePhoto(config _: CameraCaptureConfig) async throws -> Data {
@@ -51,12 +51,12 @@ public actor CameraService: CameraServiceProtocol {
 
     public func isCameraAvailable() async -> Bool {
         // TODO: Check if camera is available
-        return false
+        false
     }
 
     public func getAvailableCameraPositions() async -> [String] {
         // TODO: Get available camera positions
-        return []
+        []
     }
 
     public func switchCameraPosition(_: String) async throws {
@@ -68,7 +68,7 @@ public actor CameraService: CameraServiceProtocol {
 
     public func isCameraAvailable(position _: CameraPosition) async -> Bool {
         // TODO: Check AVCaptureDevice availability
-        return false
+        false
     }
 
     public func requestCameraAuthorization() async throws -> CameraAuthorizationStatus {
@@ -83,7 +83,7 @@ public actor CameraService: CameraServiceProtocol {
 
     public func getAuthorizationStatus() async -> (camera: CameraAuthorizationStatus, microphone: MicrophoneAuthorizationStatus) {
         // TODO: Check authorization statuses
-        return (.notDetermined, .notDetermined)
+        (.notDetermined, .notDetermined)
     }
 
     public func capturePhoto(
@@ -114,7 +114,7 @@ public actor CameraService: CameraServiceProtocol {
 
     public func getAvailableCameras() async -> [CameraDevice] {
         // TODO: List AVCaptureDevices
-        return []
+        []
     }
 
     public func switchCamera(to _: CameraPosition) async throws {

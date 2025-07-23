@@ -209,8 +209,7 @@ final class LLMFallbackManager {
             for (provider, health) in self.providerHealth {
                 if !health.isHealthy,
                    let lastFailure = health.lastFailureTime,
-                   now.timeIntervalSince(lastFailure) > 3600
-                { // 1 hour
+                   now.timeIntervalSince(lastFailure) > 3600 { // 1 hour
                     self.logger.info("Resetting health for provider \(provider.name) after cooldown")
                     self.providerHealth[provider] = ProviderHealth(provider: provider)
                 }

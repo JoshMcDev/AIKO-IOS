@@ -269,8 +269,7 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
                                let content = firstCandidate["content"] as? [String: Any],
                                let parts = content["parts"] as? [[String: Any]],
                                let firstPart = parts.first,
-                               let text = firstPart["text"] as? String
-                            {
+                               let text = firstPart["text"] as? String {
                                 continuation.yield(LLMStreamChunk(delta: text))
 
                                 if let finishReason = firstCandidate["finishReason"] as? String {

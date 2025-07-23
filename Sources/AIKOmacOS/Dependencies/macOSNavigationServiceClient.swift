@@ -20,6 +20,6 @@
     }
 
     // Convenience static accessor
-    public enum macOSNavigationServiceClient {
+    public enum MacOSNavigationServiceClient {
         public static let live = NavigationServiceClient.macOSLive
     }#endif

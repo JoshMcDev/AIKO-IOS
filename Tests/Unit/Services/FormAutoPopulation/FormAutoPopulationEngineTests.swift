@@ -38,7 +38,7 @@ final class FormAutoPopulationEngineTests: XCTestCase {
 
         // Then: High confidence fields should have ≥95% accuracy
         let highConfidenceFields = result.fields.filter { $0.confidence.value >= 0.85 }
-        let accurateFields = highConfidenceFields.filter { $0.isAccurate }
+        let accurateFields = highConfidenceFields.filter(\.isAccurate)
         let accuracy = Double(accurateFields.count) / Double(highConfidenceFields.count)
 
         XCTAssertGreaterThanOrEqual(accuracy, 0.95, "High-confidence SF-30 field extraction should achieve ≥95% accuracy")
@@ -54,7 +54,7 @@ final class FormAutoPopulationEngineTests: XCTestCase {
 
         // Then: Medium confidence fields should have ≥85% accuracy
         let mediumConfidenceFields = result.fields.filter { $0.confidence.value >= 0.65 && $0.confidence.value < 0.85 }
-        let accurateFields = mediumConfidenceFields.filter { $0.isAccurate }
+        let accurateFields = mediumConfidenceFields.filter(\.isAccurate)
         let accuracy = Double(accurateFields.count) / Double(mediumConfidenceFields.count)
 
         XCTAssertGreaterThanOrEqual(accuracy, 0.85, "Medium-confidence SF-1449 field extraction should achieve ≥85% accuracy")
@@ -68,24 +68,24 @@ final class FormAutoPopulationEngineTests: XCTestCase {
         let result = try await formAutoPopulationEngine.extractFormData(from: formImageData, formType: .sf30)
 
         // Then: All critical fields should be identified (100% detection)
-        let criticalFields = result.fields.filter { $0.isCritical }
+        let criticalFields = result.fields.filter(\.isCritical)
         let expectedCriticalFieldCount = 5 // Based on PRD: estimated value, funding source, contract type, vendor UEI, vendor CAGE
 
         XCTAssertEqual(criticalFields.count, expectedCriticalFieldCount, "Should identify all critical fields")
-        XCTAssertTrue(criticalFields.allSatisfy { $0.requiresManualReview }, "Critical fields should require manual review")
+        XCTAssertTrue(criticalFields.allSatisfy(\.requiresManualReview), "Critical fields should require manual review")
     }
 
     // MARK: - Helper Methods (These will fail until we implement the classes)
 
     private func createMockSF30ImageData() -> Data {
-        return Data("mock-sf30-image".utf8)
+        Data("mock-sf30-image".utf8)
     }
 
     private func createMockSF1449ImageData() -> Data {
-        return Data("mock-sf1449-image".utf8)
+        Data("mock-sf1449-image".utf8)
     }
 
     private func createMockFormWithCriticalFields() -> Data {
-        return Data("mock-critical-fields-form".utf8)
+        Data("mock-critical-fields-form".utf8)
     }
 }

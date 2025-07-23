@@ -33,17 +33,17 @@ public actor BatchProcessingEngine: BatchProcessingEngineProtocol {
 
     public func getOperationStatus(_: BatchOperationHandle) async -> MediaBatchOperationStatus {
         // TODO: Get operation status
-        return .failed
+        .failed
     }
 
     public func getOperationProgress(_: BatchOperationHandle) async -> BatchProgress {
         // TODO: Get operation progress
-        return BatchProgress()
+        BatchProgress()
     }
 
     public func getOperationResults(_: BatchOperationHandle) async -> [BatchOperationResult] {
         // TODO: Get operation results
-        return []
+        []
     }
 
     public func monitorProgress(_: BatchOperationHandle) -> AsyncStream<BatchProgress> {
@@ -60,12 +60,12 @@ public actor BatchProcessingEngine: BatchProcessingEngineProtocol {
 
     public func getActiveOperations() async -> [BatchOperationHandle] {
         // TODO: Get active operations
-        return []
+        []
     }
 
     public func getOperationHistory(limit _: Int) async -> [BatchOperationSummary] {
         // TODO: Get operation history
-        return []
+        []
     }
 
     public func clearCompletedOperations() async {

@@ -17,6 +17,6 @@
     }
 
     // Convenience static accessor
-    public enum macOSTextFieldServiceClient {
+    public enum MacOSTextFieldServiceClient {
         public static let live = TextFieldServiceClient.macOSLive
     }#endif

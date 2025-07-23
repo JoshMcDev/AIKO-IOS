@@ -53,14 +53,14 @@ public enum WorkflowStepType: String, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .preprocessing: return "Preprocessing"
-        case .analysis: return "Analysis"
-        case .transformation: return "Transformation"
-        case .enhancement: return "Enhancement"
-        case .validation: return "Validation"
-        case .export: return "Export"
-        case .notification: return "Notification"
-        case .custom: return "Custom"
+        case .preprocessing: "Preprocessing"
+        case .analysis: "Analysis"
+        case .transformation: "Transformation"
+        case .enhancement: "Enhancement"
+        case .validation: "Validation"
+        case .export: "Export"
+        case .notification: "Notification"
+        case .custom: "Custom"
         }
     }
 }
@@ -143,15 +143,15 @@ public enum WorkflowCategory: String, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .imageProcessing: return "Image Processing"
-        case .videoProcessing: return "Video Processing"
-        case .audioProcessing: return "Audio Processing"
-        case .documentProcessing: return "Document Processing"
-        case .qualityAssurance: return "Quality Assurance"
-        case .security: return "Security"
-        case .backup: return "Backup"
-        case .sharing: return "Sharing"
-        case .custom: return "Custom"
+        case .imageProcessing: "Image Processing"
+        case .videoProcessing: "Video Processing"
+        case .audioProcessing: "Audio Processing"
+        case .documentProcessing: "Document Processing"
+        case .qualityAssurance: "Quality Assurance"
+        case .security: "Security"
+        case .backup: "Backup"
+        case .sharing: "Sharing"
+        case .custom: "Custom"
         }
     }
 }
@@ -195,12 +195,12 @@ public enum WorkflowExecutionStatus: String, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .pending: return "Pending"
-        case .running: return "Running"
-        case .paused: return "Paused"
-        case .completed: return "Completed"
-        case .failed: return "Failed"
-        case .cancelled: return "Cancelled"
+        case .pending: "Pending"
+        case .running: "Running"
+        case .paused: "Paused"
+        case .completed: "Completed"
+        case .failed: "Failed"
+        case .cancelled: "Cancelled"
         }
     }
 }
@@ -330,10 +330,10 @@ public enum ProcessingQuality: String, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .draft: return "Draft"
-        case .standard: return "Standard"
-        case .high: return "High"
-        case .premium: return "Premium"
+        case .draft: "Draft"
+        case .standard: "Standard"
+        case .high: "High"
+        case .premium: "Premium"
         }
     }
 }
@@ -352,21 +352,21 @@ public enum WorkflowError: Error, Sendable, LocalizedError {
     public var errorDescription: String? {
         switch self {
         case let .invalidConfiguration(message):
-            return "Invalid configuration: \(message)"
+            "Invalid configuration: \(message)"
         case let .stepFailed(message, _):
-            return "Step failed: \(message)"
+            "Step failed: \(message)"
         case let .dependencyNotMet(message):
-            return "Dependency not met: \(message)"
+            "Dependency not met: \(message)"
         case let .timeout(message):
-            return "Timeout: \(message)"
+            "Timeout: \(message)"
         case let .resourceUnavailable(message):
-            return "Resource unavailable: \(message)"
+            "Resource unavailable: \(message)"
         case let .validationFailed(message):
-            return "Validation failed: \(message)"
+            "Validation failed: \(message)"
         case let .cancelled(message):
-            return "Cancelled: \(message)"
+            "Cancelled: \(message)"
         case let .unknown(message):
-            return "Unknown error: \(message)"
+            "Unknown error: \(message)"
         }
     }
 }
@@ -431,15 +431,15 @@ public enum WorkflowInputType: String, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .file: return "File"
-        case .image: return "Image"
-        case .video: return "Video"
-        case .audio: return "Audio"
-        case .text: return "Text"
-        case .number: return "Number"
-        case .boolean: return "Boolean"
-        case .url: return "URL"
-        case .selection: return "Selection"
+        case .file: "File"
+        case .image: "Image"
+        case .video: "Video"
+        case .audio: "Audio"
+        case .text: "Text"
+        case .number: "Number"
+        case .boolean: "Boolean"
+        case .url: "URL"
+        case .selection: "Selection"
         }
     }
 }
@@ -455,12 +455,12 @@ public enum WorkflowOutputType: String, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .processedFile: return "Processed File"
-        case .extractedData: return "Extracted Data"
-        case .analysis: return "Analysis"
-        case .report: return "Report"
-        case .notification: return "Notification"
-        case .metadata: return "Metadata"
+        case .processedFile: "Processed File"
+        case .extractedData: "Extracted Data"
+        case .analysis: "Analysis"
+        case .report: "Report"
+        case .notification: "Notification"
+        case .metadata: "Metadata"
         }
     }
 }
@@ -526,10 +526,10 @@ public enum WorkflowComplexity: String, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .simple: return "Simple"
-        case .moderate: return "Moderate"
-        case .complex: return "Complex"
-        case .advanced: return "Advanced"
+        case .simple: "Simple"
+        case .moderate: "Moderate"
+        case .complex: "Complex"
+        case .advanced: "Advanced"
         }
     }
 }

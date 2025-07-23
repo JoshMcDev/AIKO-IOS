@@ -231,7 +231,7 @@ final class GlobalScanPerformanceTests: XCTestCase {
     private var averageTimeForLastMeasurement: TimeInterval {
         // This would integrate with XCTest's measure block results
         // Placeholder implementation
-        return 0.05 // 50ms placeholder
+        0.05 // 50ms placeholder
     }
 }
 
@@ -305,5 +305,5 @@ private func getCurrentCPUUsage() -> Double {
 private func getPeakCPUUsage() -> Double {
     // This would integrate with system monitoring
     // Placeholder implementation
-    return getCurrentCPUUsage() + 0.15 // Simulate 15% spike
+    getCurrentCPUUsage() + 0.15 // Simulate 15% spike
 }

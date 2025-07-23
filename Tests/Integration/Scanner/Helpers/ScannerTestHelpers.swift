@@ -165,7 +165,7 @@ public final class ScannerTestHelpers {
     /// - Returns: Minimal JPEG data for testing
     public static func createTestImageData() -> Data {
         // Minimal JPEG header for testing
-        return Data([
+        Data([
             0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46,
             0x49, 0x46, 0x00, 0x01, 0x01, 0x01, 0x00, 0x48,
             0x00, 0x48, 0x00, 0x00, 0xFF, 0xD9,
@@ -271,7 +271,7 @@ public final class ScannerTestHelpers {
         pageNumber: Int = 1,
         imageData: Data? = nil
     ) -> ScannedPage {
-        return ScannedPage(
+        ScannedPage(
             id: UUID(),
             imageData: imageData ?? createTestImageData(),
             pageNumber: pageNumber
@@ -286,10 +286,10 @@ public final class ScannerTestHelpers {
     ///   - iterations: Number of iterations to run
     ///   - operation: The async operation to measure
     /// - Returns: Performance metrics
-    public static func measureAsyncWorkflow<T>(
+    public static func measureAsyncWorkflow(
         description: String,
         iterations: Int = 5,
-        operation: () async throws -> T
+        operation: () async throws -> some Any
     ) async throws -> PerformanceMetrics {
         var executionTimes: [TimeInterval] = []
         var memoryUsages: [UInt64] = []
@@ -343,7 +343,7 @@ public final class ScannerTestHelpers {
     /// Uses Levenshtein distance for similarity calculation
     private static func calculateTextSimilarity(_ text1: String, _ text2: String) -> Double {
         guard !text1.isEmpty || !text2.isEmpty else { return 1.0 }
-        guard !text1.isEmpty && !text2.isEmpty else { return 0.0 }
+        guard !text1.isEmpty, !text2.isEmpty else { return 0.0 }
 
         let distance = levenshteinDistance(text1, text2)
         let maxLength = max(text1.count, text2.count)
@@ -390,7 +390,7 @@ public final class ScannerTestHelpers {
     private static func createMockFormFields(for formType: GovernmentFormType) -> [DocumentFormField] {
         switch formType {
         case .sf18:
-            return [
+            [
                 DocumentFormField(
                     id: "contractor_name",
                     label: "Contractor Name",
@@ -409,7 +409,7 @@ public final class ScannerTestHelpers {
                 ),
             ]
         case .sf26:
-            return [
+            [
                 DocumentFormField(
                     id: "award_number",
                     label: "Award Number",
@@ -420,7 +420,7 @@ public final class ScannerTestHelpers {
                 ),
             ]
         case .dd1155:
-            return [
+            [
                 DocumentFormField(
                     id: "requisition_number",
                     label: "Requisition Number",
@@ -437,20 +437,20 @@ public final class ScannerTestHelpers {
     private static func createMockExtractedText(for formType: GovernmentFormType) -> String {
         switch formType {
         case .sf18:
-            return """
+            """
             REQUEST AND AUTHORIZATION FOR TDY
             Contractor Name: ACME Corporation
             Contract Number: W912HZ-24-C-0001
             Total Contract Value: $1,250,000.00
             """
         case .sf26:
-            return """
+            """
             AWARD/CONTRACT
             Award Number: SP4701-25-A-0042
             DUNS Number: 123456789
             """
         case .dd1155:
-            return """
+            """
             ORDER FOR SUPPLIES OR SERVICES
             Requisition Number: DD-2024-REQ-5532
             Required Delivery Date: 2024-08-15
@@ -552,7 +552,7 @@ public struct PerformanceMetrics {
 public extension TestStore where State == DocumentScannerFeature.State {
     /// Configure test store with scanner test dependencies
     func withScannerTestDependencies() -> TestStore<DocumentScannerFeature.State, DocumentScannerFeature.Action> {
-        return TestStore(initialState: state) {
+        TestStore(initialState: state) {
             DocumentScannerFeature()
         } withDependencies: {
             let testDeps = ScannerTestHelpers.setupScannerTestDependencies()
@@ -566,6 +566,6 @@ public extension XCTestExpectation {
     func withScannerTimeout(_: TimeInterval = ScannerTestHelpers.endToEndWorkflowTimeout) -> Self {
         // Note: XCTestExpectation doesn't have a timeout property to set directly
         // The timeout is specified in the wait/fulfillment call
-        return self
+        self
     }
 }

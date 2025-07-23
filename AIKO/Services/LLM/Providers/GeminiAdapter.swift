@@ -117,8 +117,7 @@ final class GeminiAdapter: LLMProviderAdapter {
                     if let streamResponses = try? decoder.decode([GeminiResponse].self, from: data) {
                         for (index, response) in streamResponses.enumerated() {
                             if let candidate = response.candidates?.first,
-                               let text = candidate.content.parts.first?.text
-                            {
+                               let text = candidate.content.parts.first?.text {
                                 let chunk = LLMStreamChunk(
                                     id: UUID().uuidString,
                                     delta: text,

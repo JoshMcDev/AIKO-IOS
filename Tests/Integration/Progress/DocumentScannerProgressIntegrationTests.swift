@@ -337,7 +337,7 @@ final class DocumentScannerProgressIntegrationTests: XCTestCase {
             XCTAssertFalse(receivedProgressUpdates.isEmpty)
 
             // Verify progress sequence
-            let phases = receivedProgressUpdates.map { $0.phase }
+            let phases = receivedProgressUpdates.map(\.phase)
             XCTAssertTrue(phases.contains(.preparing))
             XCTAssertTrue(phases.contains(.scanning))
             XCTAssertTrue(phases.contains(.completing))

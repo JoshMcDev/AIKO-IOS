@@ -143,9 +143,9 @@ public enum MicrophoneAuthorizationStatus: String, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .notDetermined: return "Not Determined"
-        case .denied: return "Denied"
-        case .authorized: return "Authorized"
+        case .notDetermined: "Not Determined"
+        case .denied: "Denied"
+        case .authorized: "Authorized"
         }
     }
 }
@@ -178,10 +178,10 @@ public enum CameraQuality: String, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .low: return "Low"
-        case .medium: return "Medium"
-        case .high: return "High"
-        case .max: return "Maximum"
+        case .low: "Low"
+        case .medium: "Medium"
+        case .high: "High"
+        case .max: "Maximum"
         }
     }
 }
@@ -193,9 +193,9 @@ public enum CameraFlashMode: String, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .auto: return "Auto"
-        case .on: return "On"
-        case .off: return "Off"
+        case .auto: "Auto"
+        case .on: "On"
+        case .off: "Off"
         }
     }
 }
@@ -244,10 +244,10 @@ public enum PhotoLibraryAuthorizationStatus: String, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .notDetermined: return "Not Determined"
-        case .denied: return "Denied"
-        case .authorized: return "Authorized"
-        case .limited: return "Limited"
+        case .notDetermined: "Not Determined"
+        case .denied: "Denied"
+        case .authorized: "Authorized"
+        case .limited: "Limited"
         }
     }
 }
@@ -261,10 +261,10 @@ public enum PhotoMediaType: String, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .image: return "Images"
-        case .video: return "Videos"
-        case .livePhoto: return "Live Photos"
-        case .audio: return "Audio"
+        case .image: "Images"
+        case .video: "Videos"
+        case .livePhoto: "Live Photos"
+        case .audio: "Audio"
         }
     }
 }
@@ -278,10 +278,10 @@ public enum PhotoSortOrder: String, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .newest: return "Newest First"
-        case .oldest: return "Oldest First"
-        case .name: return "By Name"
-        case .size: return "By Size"
+        case .newest: "Newest First"
+        case .oldest: "Oldest First"
+        case .name: "By Name"
+        case .size: "By Size"
         }
     }
 }
@@ -295,10 +295,10 @@ public enum AlbumType: String, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .userCreated: return "User Created"
-        case .smartAlbum: return "Smart Album"
-        case .syncedAlbum: return "Synced Album"
-        case .cloudSharedAlbum: return "Shared Album"
+        case .userCreated: "User Created"
+        case .smartAlbum: "Smart Album"
+        case .syncedAlbum: "Synced Album"
+        case .cloudSharedAlbum: "Shared Album"
         }
     }
 }
@@ -388,10 +388,10 @@ public struct ExportOptions: Sendable {
 
         public var displayName: String {
             switch self {
-            case .original: return "Original"
-            case .jpeg: return "JPEG"
-            case .png: return "PNG"
-            case .heif: return "HEIF"
+            case .original: "Original"
+            case .jpeg: "JPEG"
+            case .png: "PNG"
+            case .heif: "HEIF"
             }
         }
     }
@@ -480,10 +480,10 @@ public struct ScreenRecordingOptions: Sendable {
 
         public var displayName: String {
             switch self {
-            case .low: return "Low"
-            case .medium: return "Medium"
-            case .high: return "High"
-            case .max: return "Maximum"
+            case .low: "Low"
+            case .medium: "Medium"
+            case .high: "High"
+            case .max: "Maximum"
             }
         }
     }
@@ -683,9 +683,9 @@ public struct IntegrityCheckResult: Sendable {
 
             public var displayName: String {
                 switch self {
-                case .warning: return "Warning"
-                case .error: return "Error"
-                case .critical: return "Critical"
+                case .warning: "Warning"
+                case .error: "Error"
+                case .critical: "Critical"
                 }
             }
         }
@@ -728,11 +728,11 @@ public struct SecurityScanResult: Sendable {
 
             public var displayName: String {
                 switch self {
-                case .malware: return "Malware"
-                case .virus: return "Virus"
-                case .trojan: return "Trojan"
-                case .suspicious: return "Suspicious Content"
-                case .unknown: return "Unknown Threat"
+                case .malware: "Malware"
+                case .virus: "Virus"
+                case .trojan: "Trojan"
+                case .suspicious: "Suspicious Content"
+                case .unknown: "Unknown Threat"
                 }
             }
         }
@@ -745,10 +745,10 @@ public struct SecurityScanResult: Sendable {
 
             public var displayName: String {
                 switch self {
-                case .low: return "Low"
-                case .medium: return "Medium"
-                case .high: return "High"
-                case .critical: return "Critical"
+                case .low: "Low"
+                case .medium: "Medium"
+                case .high: "High"
+                case .critical: "Critical"
                 }
             }
         }

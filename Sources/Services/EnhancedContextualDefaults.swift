@@ -616,16 +616,14 @@ public final class EnhancedContextualDefaultsProvider: @unchecked Sendable {
 
         // Validation 1: Payment terms should align with vendor preferences
         if let _ = validated[.paymentTerms],
-           let _ = validated[.vendorName]
-        {
+           let _ = validated[.vendorName] {
             // Adjust payment terms based on vendor history
             // Implementation would check vendor payment history
         }
 
         // Validation 2: Delivery date should consider inspection requirements
         if let _ = validated[.requiredDate],
-           let _ = validated[.inspectionRequirements]
-        {
+           let _ = validated[.inspectionRequirements] {
             // Add buffer for inspection time if needed
             // Implementation would adjust dates accordingly
         }

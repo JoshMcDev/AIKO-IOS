@@ -169,8 +169,7 @@ final class LearningFeedbackLoop: ObservableObject {
     private func loadHistoricalMetrics() {
         // Load from UserDefaults or Core Data
         if let data = UserDefaults.standard.data(forKey: "LearningMetrics"),
-           let metrics = try? JSONDecoder().decode(LearningMetrics.self, from: data)
-        {
+           let metrics = try? JSONDecoder().decode(LearningMetrics.self, from: data) {
             learningMetrics = metrics
         }
     }

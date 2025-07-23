@@ -116,7 +116,7 @@ final class VisionKitIntegrationTests: XCTestCase {
         XCTAssertTrue(isScanningAvailable, "VisionKit scanning should be available in test environment")
 
         // Verify that when permissions are available, scanning can proceed
-        if hasPermissions && isScanningAvailable {
+        if hasPermissions, isScanningAvailable {
             do {
                 let scannedDocument = try await documentScannerClient.scan()
                 XCTAssertFalse(scannedDocument.pages.isEmpty, "Should successfully scan when permissions are granted")
@@ -465,7 +465,7 @@ final class VisionKitIntegrationTests: XCTestCase {
     }
 
     private func createMockScannedPages(count: Int) -> [ScannedPage] {
-        return (1 ... count).map { pageNumber in
+        (1 ... count).map { pageNumber in
             ScannedPage(
                 imageData: createMockVisionKitData(),
                 pageNumber: pageNumber,

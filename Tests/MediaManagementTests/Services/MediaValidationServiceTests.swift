@@ -222,17 +222,17 @@ final class MediaValidationServiceTests: XCTestCase {
 
     private func createTestImageDataWithEXIF() -> Data {
         // In real implementation, this would include EXIF metadata
-        return createTestImageData()
+        createTestImageData()
     }
 
     private func createTestPDFData() -> Data {
         // Create simple PDF data
-        return "%PDF-1.4\n%âãÏÓ\n".data(using: .utf8)!
+        "%PDF-1.4\n%âãÏÓ\n".data(using: .utf8)!
     }
 
     private func createSuspiciousData() -> Data {
         // Data that would trigger security warnings
-        return "MZ\u{0090}\u{0003}".data(using: .utf8)! // PE header signature
+        "MZ\u{0090}\u{0003}".data(using: .utf8)! // PE header signature
     }
 
     private func createTestAsset() -> MediaAsset {

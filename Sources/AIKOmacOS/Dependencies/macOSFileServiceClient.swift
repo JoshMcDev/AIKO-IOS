@@ -27,6 +27,6 @@
     }
 
     // Convenience static accessor
-    public enum macOSFileServiceClient {
+    public enum MacOSFileServiceClient {
         public static let live = FileServiceClient.macOSLive
     }#endif

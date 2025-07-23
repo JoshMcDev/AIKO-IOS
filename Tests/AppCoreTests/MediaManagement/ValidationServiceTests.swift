@@ -325,8 +325,8 @@ final class ValidationServiceTests: XCTestCase {
 
 @available(iOS 16.0, *)
 extension ValidationServiceTests {
-    func assertThrowsError<T>(
-        _ expression: @autoclosure () async throws -> T,
+    func assertThrowsError(
+        _ expression: @autoclosure () async throws -> some Any,
         file: StaticString = #filePath,
         line: UInt = #line
     ) async {

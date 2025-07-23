@@ -286,11 +286,11 @@ final class EnhancedOCREngineTests: XCTestCase {
 
     private func createTestImageData(formType: String = "generic") -> Data {
         // Create minimal test image data
-        return "test-image-data-\(formType)".data(using: .utf8) ?? Data()
+        "test-image-data-\(formType)".data(using: .utf8) ?? Data()
     }
 
     private func createTestGovernmentFormFields(confidence: Double) -> [EnhancedOCREngine.GovernmentFormField] {
-        return [
+        [
             createTestGovernmentFormField(fieldId: "field1", confidence: confidence),
             createTestGovernmentFormField(fieldId: "field2", confidence: confidence),
             createTestGovernmentFormField(fieldId: "field3", confidence: confidence),
@@ -301,7 +301,7 @@ final class EnhancedOCREngineTests: XCTestCase {
         fieldId: String = "test_field",
         confidence: Double = 0.8
     ) -> EnhancedOCREngine.GovernmentFormField {
-        return EnhancedOCREngine.GovernmentFormField(
+        EnhancedOCREngine.GovernmentFormField(
             fieldId: fieldId,
             label: "Test Field",
             value: "Test Value",
@@ -312,27 +312,25 @@ final class EnhancedOCREngineTests: XCTestCase {
     }
 
     private func createTestOCRResult(formType: EnhancedOCREngine.GovernmentFormType) -> OCRResult {
-        let formFields: [DocumentFormField]
-
-        switch formType {
+        let formFields: [DocumentFormField] = switch formType {
         case .sf298:
-            formFields = [
+            [
                 DocumentFormField(label: "Document Title", value: "Test Contract", confidence: 0.9, boundingBox: CGRect(x: 0, y: 0, width: 200, height: 30)),
                 DocumentFormField(label: "Contract Number", value: "ABC123", confidence: 0.85, boundingBox: CGRect(x: 0, y: 40, width: 150, height: 20)),
                 DocumentFormField(label: "Contractor", value: "Test Corp", confidence: 0.8, boundingBox: CGRect(x: 0, y: 70, width: 180, height: 20)),
             ]
         case .sf1449:
-            formFields = [
+            [
                 DocumentFormField(label: "Solicitation Number", value: "SOL-2024-001", confidence: 0.9, boundingBox: CGRect(x: 0, y: 0, width: 200, height: 20)),
                 DocumentFormField(label: "Issued By", value: "DoD", confidence: 0.85, boundingBox: CGRect(x: 0, y: 30, width: 100, height: 20)),
                 DocumentFormField(label: "NAICS Code", value: "541511", confidence: 0.8, boundingBox: CGRect(x: 0, y: 60, width: 80, height: 20)),
             ]
         case .dd254:
-            formFields = [
+            [
                 DocumentFormField(label: "Classification", value: "UNCLASSIFIED", confidence: 0.95, boundingBox: CGRect(x: 0, y: 0, width: 150, height: 20)),
             ]
         case .unknown, .contractModification:
-            formFields = []
+            []
         }
 
         return OCRResult(

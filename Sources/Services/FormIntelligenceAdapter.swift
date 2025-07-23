@@ -224,8 +224,7 @@ extension FormIntelligenceAdapter: DependencyKey {
 
                 // Check for commercial acquisition
                 if analysis.response.contains("commercial") ||
-                    analysis.response.contains("FAR Part 12")
-                {
+                    analysis.response.contains("FAR Part 12") {
                     recommendedForms.append(.init(
                         formType: GovernmentFormData.FormType.sf1449,
                         formNumber: "SF 1449",
@@ -238,8 +237,7 @@ extension FormIntelligenceAdapter: DependencyKey {
 
                 // Check for simplified acquisition
                 if analysis.response.contains("simplified acquisition") ||
-                    analysis.response.contains("FAR Part 13")
-                {
+                    analysis.response.contains("FAR Part 13") {
                     recommendedForms.append(.init(
                         formType: GovernmentFormData.FormType.sf18,
                         formNumber: "SF 18",
@@ -252,8 +250,7 @@ extension FormIntelligenceAdapter: DependencyKey {
 
                 // Check for contract modification needs
                 if acquisition.status == .inProgress || acquisition.status == .underReview,
-                   requirements.contains("modification") || requirements.contains("change")
-                {
+                   requirements.contains("modification") || requirements.contains("change") {
                     recommendedForms.append(.init(
                         formType: GovernmentFormData.FormType.sf30,
                         formNumber: "SF 30",

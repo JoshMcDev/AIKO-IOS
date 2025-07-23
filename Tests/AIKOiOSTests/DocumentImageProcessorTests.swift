@@ -349,7 +349,7 @@ final class DocumentImageProcessorTests: XCTestCase {
         XCTAssertFalse(progressUpdates.isEmpty, "Progress updates should be reported")
 
         // Verify progress sequence includes expected steps
-        let reportedSteps = Set(progressUpdates.map { $0.currentStep })
+        let reportedSteps = Set(progressUpdates.map(\.currentStep))
         XCTAssertTrue(reportedSteps.contains(.preprocessing), "Should report preprocessing step")
         XCTAssertTrue(reportedSteps.contains(.textRecognition), "Should report text recognition step")
 

@@ -377,8 +377,7 @@ actor PatternRecognitionAlgorithm {
         for interaction in interactions.sorted(by: { $0.timestamp < $1.timestamp }) {
             if let fieldName = interaction.metadata["fieldName"] as? String {
                 if let last = lastTimestamp,
-                   interaction.timestamp.timeIntervalSince(last) > 30
-                {
+                   interaction.timestamp.timeIntervalSince(last) > 30 {
                     // New sequence if more than 30 seconds gap
                     if !currentSequence.isEmpty {
                         sequences.append(currentSequence)

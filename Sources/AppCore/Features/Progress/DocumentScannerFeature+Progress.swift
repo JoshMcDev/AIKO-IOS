@@ -27,8 +27,7 @@ public extension DocumentScannerFeature.State {
         set {
             // Update our scanning state based on progress feedback
             if let currentSession = newValue.currentSession,
-               let _ = newValue.activeSessions[currentSession]
-            {
+               let _ = newValue.activeSessions[currentSession] {
                 // Update our progress tracking based on the progress state
                 // This allows for bidirectional sync
                 _progressSessionId = currentSession

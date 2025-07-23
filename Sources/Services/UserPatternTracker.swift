@@ -160,8 +160,7 @@ extension UserPatternTracker: DependencyKey {
 
                 if let topSequence = relevantSequences.first,
                    let currentIndex = topSequence.documents.firstIndex(of: currentDoc),
-                   currentIndex < topSequence.documents.count - 1
-                {
+                   currentIndex < topSequence.documents.count - 1 {
                     let nextDoc = topSequence.documents[currentIndex + 1]
                     suggestions.append(IntelligentSuggestion(
                         type: .nextDocument,
@@ -259,8 +258,7 @@ private actor PatternStorage {
 
         for i in 0 ..< documentActions.count - 1 {
             if let doc1 = documentActions[i].context.documentType,
-               let doc2 = documentActions[i + 1].context.documentType
-            {
+               let doc2 = documentActions[i + 1].context.documentType {
                 let sequence = "\(doc1)->\(doc2)"
                 sequenceCount[sequence, default: 0] += 1
 
@@ -275,7 +273,7 @@ private actor PatternStorage {
         patterns.documentSequences = sequenceCount.map { key, count in
             let docs = key.split(separator: "->").map(String.init)
             let successCount = sequenceSuccess[key] ?? 0
-            let successRate = !isEmpty ? Double(successCount) / Double(count) : 0
+            let successRate = count > 0 ? Double(successCount) / Double(count) : 0
 
             return UserPatterns.DocumentSequence(
                 documents: docs,

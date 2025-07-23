@@ -8,7 +8,7 @@
 
     public extension VoiceRecordingClient {
         static var macOSLive: Self {
-            let recorder = macOSAudioRecorder()
+            let recorder = MacOSAudioRecorder()
 
             return Self(
                 checkPermissions: {
@@ -34,7 +34,7 @@
 
     // MARK: - macOS Audio Recorder Implementation
 
-    private final class macOSAudioRecorder: NSObject, @unchecked Sendable {
+    private final class MacOSAudioRecorder: NSObject, @unchecked Sendable {
         private var audioRecorder: AVAudioRecorder?
         private let audioEngine = AVAudioEngine()
         private var audioFileURL: URL?
@@ -55,7 +55,8 @@
                 AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue,
             ]
 
-            audioRecorder = try AVAudioRecorder(url: audioFileURL!, settings: settings)
+            guard let audioFileURL else { throw VoiceRecordingError.recordingFailed }
+            audioRecorder = try AVAudioRecorder(url: audioFileURL, settings: settings)
             audioRecorder?.prepareToRecord()
             audioRecorder?.record()
 

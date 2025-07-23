@@ -152,8 +152,7 @@ public final class DocumentParserValidator {
                     if row.count >= 2,
                        let quantity = Double(row[0]),
                        let priceString = row.last?.replacingOccurrences(of: "$", with: "").replacingOccurrences(of: ",", with: ""),
-                       let unitPrice = Decimal(string: priceString)
-                    {
+                       let unitPrice = Decimal(string: priceString) {
                         let lineItem = LineItem(
                             itemNumber: nil,
                             description: row.count > 2 ? row[1] : "Item",
@@ -349,8 +348,7 @@ public final class DocumentParserValidator {
 
         // Check if date is not too far in the past (e.g., 10 years)
         if let tenYearsAgo = calendar.date(byAdding: .year, value: -10, to: now),
-           date < tenYearsAgo
-        {
+           date < tenYearsAgo {
             throw DocumentParserValidationError.invalidField(
                 field,
                 "date is too far in the past"
@@ -359,8 +357,7 @@ public final class DocumentParserValidator {
 
         // Check if date is not too far in the future (e.g., 5 years)
         if let fiveYearsFromNow = calendar.date(byAdding: .year, value: 5, to: now),
-           date > fiveYearsFromNow
-        {
+           date > fiveYearsFromNow {
             throw DocumentParserValidationError.invalidField(
                 field,
                 "date is too far in the future"

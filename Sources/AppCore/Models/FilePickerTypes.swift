@@ -89,17 +89,17 @@ public enum FilePickerError: Error, Sendable, LocalizedError {
     public var errorDescription: String? {
         switch self {
         case let .accessDenied(message):
-            return "Access denied: \(message)"
+            "Access denied: \(message)"
         case let .fileTooLarge(message):
-            return "File too large: \(message)"
+            "File too large: \(message)"
         case let .tooManyFiles(message):
-            return "Too many files: \(message)"
+            "Too many files: \(message)"
         case let .unsupportedType(message):
-            return "Unsupported file type: \(message)"
+            "Unsupported file type: \(message)"
         case let .readError(message):
-            return "Read error: \(message)"
+            "Read error: \(message)"
         case let .unknown(message):
-            return "Unknown error: \(message)"
+            "Unknown error: \(message)"
         }
     }
 }

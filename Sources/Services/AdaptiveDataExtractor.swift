@@ -241,11 +241,9 @@ public class AdaptiveDataExtractor: @unchecked Sendable {
                        in: line,
                        options: [],
                        range: NSRange(line.startIndex..., in: line)
-                   )
-                {
+                   ) {
                     if let keyRange = Range(match.range(at: 1), in: line),
-                       let valueRange = Range(match.range(at: 2), in: line)
-                    {
+                       let valueRange = Range(match.range(at: 2), in: line) {
                         let key = String(line[keyRange]).trimmingCharacters(in: .whitespaces)
                         let value = String(line[valueRange]).trimmingCharacters(in: .whitespaces)
 
@@ -299,8 +297,7 @@ public class AdaptiveDataExtractor: @unchecked Sendable {
         ]
         for pattern in datePatterns {
             if let regex = try? NSRegularExpression(pattern: pattern, options: []),
-               regex.firstMatch(in: value, options: [], range: NSRange(value.startIndex..., in: value)) != nil
-            {
+               regex.firstMatch(in: value, options: [], range: NSRange(value.startIndex..., in: value)) != nil {
                 return .date
             }
         }
@@ -316,8 +313,7 @@ public class AdaptiveDataExtractor: @unchecked Sendable {
             options: []
         )
         if let regex = phoneRegex,
-           regex.firstMatch(in: value, options: [], range: NSRange(value.startIndex..., in: value)) != nil
-        {
+           regex.firstMatch(in: value, options: [], range: NSRange(value.startIndex..., in: value)) != nil {
             return .phone
         }
 
@@ -443,12 +439,10 @@ public class AdaptiveDataExtractor: @unchecked Sendable {
 
         // Try regex extraction first
         if let regexPattern = mapping.extractionRegex,
-           let regex = try? NSRegularExpression(pattern: regexPattern, options: .caseInsensitive)
-        {
+           let regex = try? NSRegularExpression(pattern: regexPattern, options: .caseInsensitive) {
             if let match = regex.firstMatch(in: text, options: [], range: NSRange(text.startIndex..., in: text)) {
                 if match.numberOfRanges > 1,
-                   let range = Range(match.range(at: 1), in: text)
-                {
+                   let range = Range(match.range(at: 1), in: text) {
                     return String(text[range])
                 }
             }
@@ -458,8 +452,7 @@ public class AdaptiveDataExtractor: @unchecked Sendable {
         for variation in mapping.variations {
             let searchPattern = "\(variation):?\\s*([^\\n]+)"
             if let regex = try? NSRegularExpression(pattern: searchPattern, options: .caseInsensitive),
-               let match = regex.firstMatch(in: text, options: [], range: NSRange(text.startIndex..., in: text))
-            {
+               let match = regex.firstMatch(in: text, options: [], range: NSRange(text.startIndex..., in: text)) {
                 if let range = Range(match.range(at: 1), in: text) {
                     return String(text[range]).trimmingCharacters(in: .whitespaces)
                 }
@@ -524,8 +517,7 @@ public class AdaptiveDataExtractor: @unchecked Sendable {
     private func loadLearnedPatterns() {
         // Load from Core Data or JSON file
         if let data = UserDefaults.standard.data(forKey: "LearnedPatterns"),
-           let patterns = try? JSONDecoder().decode([String: LearnedPattern].self, from: data)
-        {
+           let patterns = try? JSONDecoder().decode([String: LearnedPattern].self, from: data) {
             learnedPatterns = patterns
         }
     }

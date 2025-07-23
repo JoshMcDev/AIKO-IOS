@@ -260,8 +260,7 @@ public final class DataExtractor {
         for pattern in patterns {
             if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
                let match = regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)),
-               let range = Range(match.range(at: 1), in: text)
-            {
+               let range = Range(match.range(at: 1), in: text) {
                 return String(text[range])
             }
         }
@@ -279,8 +278,7 @@ public final class DataExtractor {
         for pattern in ueiPatterns {
             if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
                let match = regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)),
-               let range = Range(match.range(at: 1), in: text)
-            {
+               let range = Range(match.range(at: 1), in: text) {
                 return String(text[range])
             }
         }
@@ -288,8 +286,7 @@ public final class DataExtractor {
         // Fallback to generic UEI pattern
         let matches = ueiRegex.matches(in: text, range: NSRange(text.startIndex..., in: text))
         if let match = matches.first,
-           let range = Range(match.range, in: text)
-        {
+           let range = Range(match.range, in: text) {
             let candidate = String(text[range])
             // Basic validation - UEI should not be all numbers
             if !candidate.allSatisfy(\.isNumber) {
@@ -309,8 +306,7 @@ public final class DataExtractor {
         for pattern in cagePatterns {
             if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
                let match = regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)),
-               let range = Range(match.range(at: 1), in: text)
-            {
+               let range = Range(match.range(at: 1), in: text) {
                 return String(text[range])
             }
         }
@@ -339,8 +335,7 @@ public final class DataExtractor {
                             potentialAddressLine.range(of: "\\b[A-Z]{2}\\s+\\d{5}(?:-\\d{4})?\\b",
                                                        options: .regularExpression) != nil ||
                             potentialAddressLine.range(of: "P\\.?O\\.?\\s*Box",
-                                                       options: [.regularExpression, .caseInsensitive]) != nil
-                        {
+                                                       options: [.regularExpression, .caseInsensitive]) != nil {
                             addressLines.append(potentialAddressLine)
                         }
                     }
@@ -410,8 +405,7 @@ public final class DataExtractor {
         for pattern in patterns {
             if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
                let match = regex.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)),
-               let range = Range(match.range(at: 1), in: line)
-            {
+               let range = Range(match.range(at: 1), in: line) {
                 return Decimal(string: String(line[range]))
             }
         }
@@ -449,8 +443,7 @@ public final class DataExtractor {
         for pattern in patterns {
             if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
                let match = regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)),
-               let range = Range(match.range(at: 1), in: text)
-            {
+               let range = Range(match.range(at: 1), in: text) {
                 let terms = String(text[range]).trimmingCharacters(in: .whitespacesAndNewlines)
                 if !terms.isEmpty {
                     return terms

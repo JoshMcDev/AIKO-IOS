@@ -41,7 +41,7 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
 
     public func validateMetadata(_: [MetadataField]) async -> ValidationResult {
         // TODO: Validate metadata fields
-        return ValidationResult(
+        ValidationResult(
             isValid: true,
             validatedFields: [],
             invalidFields: [],

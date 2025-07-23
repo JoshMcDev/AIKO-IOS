@@ -310,8 +310,7 @@ public extension URLSession {
 public final class PinnedSessionDelegate: NSObject, URLSessionDelegate {
     public func urlSession(_: URLSession,
                            didReceive challenge: URLAuthenticationChallenge,
-                           completionHandler: @escaping @Sendable (URLSession.AuthChallengeDisposition, URLCredential?) -> Void)
-    {
+                           completionHandler: @escaping @Sendable (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         guard challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
               let serverTrust = challenge.protectionSpace.serverTrust,
               true

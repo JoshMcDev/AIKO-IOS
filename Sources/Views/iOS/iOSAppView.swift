@@ -117,8 +117,7 @@
             // Method 1: Try loading from bundle with different approaches
             if let url = Bundle.main.url(forResource: "AppIcon", withExtension: "png"),
                let data = try? Data(contentsOf: url),
-               let uiImage = UIImage(data: data)
-            {
+               let uiImage = UIImage(data: data) {
                 return Image(uiImage: uiImage)
             }
 
@@ -135,8 +134,7 @@
             // Method 4: Try from module bundle (for SPM)
             if let bundleURL = Bundle.module.url(forResource: "AppIcon", withExtension: "png"),
                let data = try? Data(contentsOf: bundleURL),
-               let uiImage = UIImage(data: data)
-            {
+               let uiImage = UIImage(data: data) {
                 return Image(uiImage: uiImage)
             }
 
@@ -319,8 +317,7 @@
 
             func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
                 if let image = info[.originalImage] as? UIImage,
-                   let imageData = image.jpegData(compressionQuality: 0.8)
-                {
+                   let imageData = image.jpegData(compressionQuality: 0.8) {
                     DispatchQueue.main.async {
                         self.parent.onImagePicked(imageData)
                     }

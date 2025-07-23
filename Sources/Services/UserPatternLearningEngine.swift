@@ -709,8 +709,7 @@ public final class UserPatternLearningEngine: @unchecked Sendable {
 
     private func loadPatterns() {
         if let data = UserDefaults.standard.data(forKey: persistenceKey),
-           let decoded = try? JSONDecoder().decode([String: [PatternData]].self, from: data)
-        {
+           let decoded = try? JSONDecoder().decode([String: [PatternData]].self, from: data) {
             // Convert string keys back to RequirementField
             for (key, value) in decoded {
                 if let field = RequirementField(rawValue: key) {
@@ -722,16 +721,14 @@ public final class UserPatternLearningEngine: @unchecked Sendable {
 
     private func loadContextualPatterns() {
         if let data = UserDefaults.standard.data(forKey: contextPersistenceKey),
-           let decoded = try? JSONDecoder().decode([ContextualPattern].self, from: data)
-        {
+           let decoded = try? JSONDecoder().decode([ContextualPattern].self, from: data) {
             contextualPatterns = decoded
         }
     }
 
     private func loadFieldRelationships() {
         if let data = UserDefaults.standard.data(forKey: relationshipPersistenceKey),
-           let decoded = try? JSONDecoder().decode([FieldRelationship].self, from: data)
-        {
+           let decoded = try? JSONDecoder().decode([FieldRelationship].self, from: data) {
             fieldRelationships = decoded
         }
     }
@@ -1022,8 +1019,7 @@ extension UserPatternLearningEngine {
         // Combine insights
         if let weighted = bestWeighted,
            let cluster = bestCluster,
-           weighted.key == cluster.representative
-        {
+           weighted.key == cluster.representative {
             // Strong agreement
             return (weighted.key, min(weighted.value * 1.2, 1.0))
         } else if let weighted = bestWeighted {

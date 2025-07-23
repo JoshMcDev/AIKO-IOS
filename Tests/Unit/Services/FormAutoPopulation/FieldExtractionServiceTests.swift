@@ -312,7 +312,7 @@ final class FieldExtractionServiceTests: XCTestCase {
     // MARK: - Test Helper Methods
 
     private func createMockSF30DocumentData() -> Data {
-        return """
+        """
         STANDARD FORM 30
         Contract Number: N00421-25-C-0001
         Modification Number: P00001
@@ -322,7 +322,7 @@ final class FieldExtractionServiceTests: XCTestCase {
     }
 
     private func createMockSF1449DocumentData() -> Data {
-        return """
+        """
         STANDARD FORM 1449
         Requisition Number: REQ-2025-001
         Contract Number: W56HZV-25-D-0001
@@ -333,7 +333,7 @@ final class FieldExtractionServiceTests: XCTestCase {
     }
 
     private func createMockDocumentWithVariedFormatting() -> Data {
-        return """
+        """
         Contract Information:
         **Contract Number:** N00421-25-C-0001
         *Total Amount:* $125,000.00
@@ -343,7 +343,7 @@ final class FieldExtractionServiceTests: XCTestCase {
     }
 
     private func createMockHighQualityDocument() -> Data {
-        return """
+        """
         HIGH QUALITY DOCUMENT
         Contract Number: N00421-25-C-0001
         Total Amount: $125,000.00
@@ -354,7 +354,7 @@ final class FieldExtractionServiceTests: XCTestCase {
     }
 
     private func createMockMediumQualityDocument() -> Data {
-        return """
+        """
         MEDIUM QUALITY DOC
         Contract Num: N00421-25-C-0001
         Amount: $125,000
@@ -364,7 +364,7 @@ final class FieldExtractionServiceTests: XCTestCase {
     }
 
     private func createMockLowQualityDocument() -> Data {
-        return """
+        """
         LOW QUAL DOC
         Contr: N00421
         Amt: 125000
@@ -372,7 +372,7 @@ final class FieldExtractionServiceTests: XCTestCase {
     }
 
     private func createMockSinglePageDocument() -> Data {
-        return "Single page document for performance testing".data(using: .utf8) ?? Data()
+        "Single page document for performance testing".data(using: .utf8) ?? Data()
     }
 
     private func createMockMultiPageDocument(pages: Int) -> Data {
@@ -382,7 +382,7 @@ final class FieldExtractionServiceTests: XCTestCase {
     }
 
     private func createMockDocumentWithDateFormats() -> Data {
-        return """
+        """
         Various Date Formats:
         Effective Date: 2025-02-01
         Delivery Date: 02/01/2025
@@ -392,7 +392,7 @@ final class FieldExtractionServiceTests: XCTestCase {
     }
 
     private func createMockDocumentWithCurrencyFormats() -> Data {
-        return """
+        """
         Various Currency Formats:
         Total Amount: $125,000.00
         Line Item Amount: 1250.50

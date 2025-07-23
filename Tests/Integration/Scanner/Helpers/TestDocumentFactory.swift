@@ -17,16 +17,16 @@ public enum TestDocumentFactory {
 
         var displayName: String {
             switch self {
-            case .sf18: return "Request and Authorization for Job Analysis"
-            case .sf26: return "Request for Job Analysis"
-            case .dd1155: return "Request and Receipt for Issue of Subsistence"
+            case .sf18: "Request and Authorization for Job Analysis"
+            case .sf26: "Request for Job Analysis"
+            case .dd1155: "Request and Receipt for Issue of Subsistence"
             }
         }
 
         var expectedFields: [String] {
             switch self {
             case .sf18:
-                return [
+                [
                     "Employee Name",
                     "Employee ID",
                     "Department",
@@ -36,7 +36,7 @@ public enum TestDocumentFactory {
                     "Reason for Request",
                 ]
             case .sf26:
-                return [
+                [
                     "Requestor Name",
                     "Organization",
                     "Job Title",
@@ -45,7 +45,7 @@ public enum TestDocumentFactory {
                     "Due Date",
                 ]
             case .dd1155:
-                return [
+                [
                     "Service Member Name",
                     "Rank/Grade",
                     "Unit",
@@ -71,25 +71,25 @@ public enum TestDocumentFactory {
 
         var confidenceRange: ClosedRange<Double> {
             switch self {
-            case .clean: return 0.95 ... 1.0
-            case .damaged: return 0.6 ... 0.8
-            case .rotated: return 0.8 ... 0.9
-            case .blurry: return 0.5 ... 0.7
-            case .lowContrast: return 0.6 ... 0.8
-            case .skewed: return 0.7 ... 0.85
-            case .handwritten: return 0.4 ... 0.7
+            case .clean: 0.95 ... 1.0
+            case .damaged: 0.6 ... 0.8
+            case .rotated: 0.8 ... 0.9
+            case .blurry: 0.5 ... 0.7
+            case .lowContrast: 0.6 ... 0.8
+            case .skewed: 0.7 ... 0.85
+            case .handwritten: 0.4 ... 0.7
             }
         }
 
         var ocrAccuracyRange: ClosedRange<Double> {
             switch self {
-            case .clean: return 0.95 ... 0.99
-            case .damaged: return 0.7 ... 0.85
-            case .rotated: return 0.85 ... 0.95
-            case .blurry: return 0.5 ... 0.75
-            case .lowContrast: return 0.65 ... 0.8
-            case .skewed: return 0.75 ... 0.9
-            case .handwritten: return 0.4 ... 0.7
+            case .clean: 0.95 ... 0.99
+            case .damaged: 0.7 ... 0.85
+            case .rotated: 0.85 ... 0.95
+            case .blurry: 0.5 ... 0.75
+            case .lowContrast: 0.65 ... 0.8
+            case .skewed: 0.75 ... 0.9
+            case .handwritten: 0.4 ... 0.7
             }
         }
     }
@@ -211,7 +211,7 @@ public enum TestDocumentFactory {
     public static func generateQualityVariationBatch(
         formType: GovernmentFormType
     ) -> [ScannedDocument] {
-        return DocumentQuality.allCases.map { quality in
+        DocumentQuality.allCases.map { quality in
             generateTestDocument(formType: formType, quality: quality)
         }
     }
@@ -222,7 +222,7 @@ public enum TestDocumentFactory {
     public static func generateFormTypeBatch(
         quality: DocumentQuality = .clean
     ) -> [ScannedDocument] {
-        return GovernmentFormType.allCases.map { formType in
+        GovernmentFormType.allCases.map { formType in
             generateTestDocument(formType: formType, quality: quality)
         }
     }
@@ -246,7 +246,7 @@ public enum TestDocumentFactory {
     private static func getSampleFormText(for formType: GovernmentFormType) -> String {
         switch formType {
         case .sf18:
-            return """
+            """
             REQUEST AND AUTHORIZATION FOR JOB ANALYSIS
             SF-18 (Rev. 10-83)
 
@@ -264,7 +264,7 @@ public enum TestDocumentFactory {
             """
 
         case .sf26:
-            return """
+            """
             REQUEST FOR JOB ANALYSIS
             SF-26 (Rev. 05-89)
 
@@ -281,7 +281,7 @@ public enum TestDocumentFactory {
             """
 
         case .dd1155:
-            return """
+            """
             REQUEST AND RECEIPT FOR ISSUE OF SUBSISTENCE
             DD FORM 1155, JUN 2003
 
@@ -303,18 +303,18 @@ public enum TestDocumentFactory {
     private static func applyQualityEffects(to text: String, quality: DocumentQuality) -> String {
         switch quality {
         case .clean:
-            return text
+            text
         case .damaged:
-            return text.replacingOccurrences(of: "a", with: "o")
+            text.replacingOccurrences(of: "a", with: "o")
                 .replacingOccurrences(of: "e", with: "c")
         case .rotated, .skewed:
-            return text.replacingOccurrences(of: "0", with: "O")
+            text.replacingOccurrences(of: "0", with: "O")
                 .replacingOccurrences(of: "1", with "l")
         case .blurry, .lowContrast:
-            return text.replacingOccurrences(of: "m", with: "n")
+            text.replacingOccurrences(of: "m", with: "n")
                 .replacingOccurrences(of: "r", with: "n")
         case .handwritten:
-            return text.replacingOccurrences(of: "Smith", with: "5m1th")
+            text.replacingOccurrences(of: "Smith", with: "5m1th")
                 .replacingOccurrences(of: "Date", with: "Oate")
         }
     }
@@ -327,19 +327,19 @@ public enum TestDocumentFactory {
     private static func getAppliedFilters(for quality: DocumentQuality) -> [String] {
         switch quality {
         case .clean:
-            return ["noise_reduction", "contrast_enhancement"]
+            ["noise_reduction", "contrast_enhancement"]
         case .damaged:
-            return ["edge_enhancement", "fill_gaps", "noise_reduction"]
+            ["edge_enhancement", "fill_gaps", "noise_reduction"]
         case .rotated:
-            return ["rotation_correction", "contrast_enhancement"]
+            ["rotation_correction", "contrast_enhancement"]
         case .blurry:
-            return ["sharpening", "deconvolution", "contrast_enhancement"]
+            ["sharpening", "deconvolution", "contrast_enhancement"]
         case .lowContrast:
-            return ["histogram_equalization", "gamma_correction"]
+            ["histogram_equalization", "gamma_correction"]
         case .skewed:
-            return ["perspective_correction", "rotation_correction"]
+            ["perspective_correction", "rotation_correction"]
         case .handwritten:
-            return ["morphological_closing", "contrast_enhancement", "noise_reduction"]
+            ["morphological_closing", "contrast_enhancement", "noise_reduction"]
         }
     }
 

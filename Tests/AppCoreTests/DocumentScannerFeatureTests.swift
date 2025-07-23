@@ -479,7 +479,7 @@ extension DocumentScannerFeatureTests {
 
     /// Creates mock OCR result for testing
     private func createMockOCRResult(confidence: Double = 0.95) -> OCRResult {
-        return OCRResult(
+        OCRResult(
             fullText: "Mock OCR Text Content",
             confidence: confidence,
             recognizedFields: [
