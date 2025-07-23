@@ -31,7 +31,7 @@ public final class SF30Form: BaseGovernmentForm {
             formNumber: "SF30",
             formTitle: "Amendment of Solicitation/Modification of Contract",
             revision: revision,
-            effectiveDate: DateComponents(calendar: .current, year: 2023, month: 10, day: 1).date!,
+            effectiveDate: DateComponents(calendar: .current, year: 2023, month: 10, day: 1).date ?? Date(),
             expirationDate: nil,
             isElectronic: true,
             metadata: metadata

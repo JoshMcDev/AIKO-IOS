@@ -31,7 +31,7 @@ public final class SF26Form: BaseGovernmentForm {
             formNumber: "SF26",
             formTitle: "Award/Contract",
             revision: revision,
-            effectiveDate: DateComponents(calendar: .current, year: 2018, month: 4, day: 1).date!,
+            effectiveDate: DateComponents(calendar: .current, year: 2018, month: 4, day: 1).date ?? Date(),
             expirationDate: nil,
             isElectronic: true,
             metadata: metadata

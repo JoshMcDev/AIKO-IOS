@@ -116,7 +116,7 @@ public actor ConsistentHash {
         guard hasNode(nodeId) else { return [] }
 
         // Temporarily remove the node
-        let positions = nodeMap[nodeId]!
+        guard let positions = nodeMap[nodeId] else { return [] }
         for position in positions {
             ring.removeValue(forKey: position)
         }
@@ -168,7 +168,7 @@ public actor ConsistentHash {
         for i in 0 ..< keyCount {
             let key = "test-key-\(i)"
             let nodeId = getNode(for: key)
-            distribution[nodeId]! += 1
+            distribution[nodeId, default: 0] += 1
         }
 
         // Convert to percentages
@@ -228,7 +228,7 @@ public actor ConsistentHash {
             // Show first 10 positions
             let positions = sortedKeys.prefix(10)
             for position in positions {
-                let nodeId = ring[position]!
+                guard let nodeId = ring[position] else { continue }
                 output += String(format: "Position %010u -> Node: %@\n", position, nodeId)
             }
 

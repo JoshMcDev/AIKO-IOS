@@ -25,7 +25,7 @@ public final class SF33Form: BaseGovernmentForm {
             formNumber: "SF33",
             formTitle: "Solicitation, Offer and Award",
             revision: revision,
-            effectiveDate: DateComponents(calendar: .current, year: 2020, month: 9, day: 1).date!,
+            effectiveDate: DateComponents(calendar: .current, year: 2020, month: 9, day: 1).date ?? Date(),
             expirationDate: nil,
             isElectronic: true,
             metadata: metadata

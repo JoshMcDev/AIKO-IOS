@@ -32,7 +32,7 @@ class LFM2ServiceTests: XCTestCase {
 
         let expectation = XCTestExpectation(description: "Service initialization")
 
-        Task {
+        Task { [self] in
             do {
                 try await lfm2Service.initializeModel()
                 expectation.fulfill()
@@ -50,8 +50,8 @@ class LFM2ServiceTests: XCTestCase {
         // RED: Should fail until tensor rank fix is properly integrated
         let testText = "This is a test sentence for tensor processing."
 
-        XCTAssertNoThrow {
-            let featureProvider = try lfm2Service.preprocessTextWithTensorRankFix(testText)
+        XCTAssertNoThrow { [self] in
+            let featureProvider = try self.lfm2Service.preprocessTextWithTensorRankFix(testText)
 
             // Validate feature provider structure
             XCTAssertNotNil(featureProvider.featureValue(for: "input_ids"),
@@ -80,8 +80,8 @@ class LFM2ServiceTests: XCTestCase {
         // RED: Should fail until empty text handling is implemented
         let emptyText = ""
 
-        XCTAssertNoThrow {
-            let featureProvider = try lfm2Service.preprocessTextWithTensorRankFix(emptyText)
+        XCTAssertNoThrow { [self] in
+            let featureProvider = try self.lfm2Service.preprocessTextWithTensorRankFix(emptyText)
 
             // Should still return valid feature provider with default values
             XCTAssertNotNil(featureProvider.featureValue(for: "input_ids"))
@@ -100,8 +100,8 @@ class LFM2ServiceTests: XCTestCase {
         // RED: Should fail until comparison method is implemented
         let testText = "Test input for tensor rank comparison analysis."
 
-        XCTAssertNoThrow {
-            let comparisonResult = try lfm2Service.compareTensorRankImplementations(testText)
+        XCTAssertNoThrow { [self] in
+            let comparisonResult = try self.lfm2Service.compareTensorRankImplementations(testText)
 
             // Validate comparison structure
             XCTAssertEqual(comparisonResult.originalRank, 2, "Original implementation should use rank-2")
@@ -127,7 +127,7 @@ class LFM2ServiceTests: XCTestCase {
         // RED: Should fail until proper model loading is implemented
         let expectation = XCTestExpectation(description: "Model loading")
 
-        Task {
+        Task { [self] in
             do {
                 try await lfm2Service.initializeModel()
 
@@ -153,7 +153,7 @@ class LFM2ServiceTests: XCTestCase {
         // RED: Should fail until GGUF fallback logic is implemented
         let expectation = XCTestExpectation(description: "GGUF fallback")
 
-        Task {
+        Task { [self] in
             do {
                 // This test assumes no CoreML model is available, triggering GGUF fallback
                 try await lfm2Service.initializeModel()
@@ -178,7 +178,7 @@ class LFM2ServiceTests: XCTestCase {
         let testText = "Sample regulation text for embedding generation testing."
         let expectation = XCTestExpectation(description: "Embedding generation")
 
-        Task {
+        Task { [self] in
             do {
                 try await lfm2Service.initializeModel()
 
@@ -217,7 +217,7 @@ class LFM2ServiceTests: XCTestCase {
         ]
         let expectation = XCTestExpectation(description: "Batch embedding generation")
 
-        Task {
+        Task { [self] in
             do {
                 try await lfm2Service.initializeModel()
 
@@ -257,7 +257,7 @@ class LFM2ServiceTests: XCTestCase {
         measure {
             let expectation = XCTestExpectation(description: "Latency measurement")
 
-            Task {
+            Task { [self] in
                 do {
                     try await lfm2Service.initializeModel()
                     _ = try await lfm2Service.generateEmbedding(text: testText, domain: .regulations)
@@ -280,7 +280,7 @@ class LFM2ServiceTests: XCTestCase {
         measure {
             let expectation = XCTestExpectation(description: "Throughput measurement")
 
-            Task {
+            Task { [self] in
                 do {
                     try await lfm2Service.initializeModel()
                     _ = try await lfm2Service.generateBatchEmbeddings(texts: batchTexts, domain: .regulations)
@@ -306,7 +306,7 @@ class LFM2ServiceTests: XCTestCase {
             autoreleasepool {
                 let expectation = XCTestExpectation(description: "Memory test iteration \(i)")
 
-                Task {
+                Task { [self] in
                     do {
                         let testText = "Memory test iteration \(i) text content."
                         try await lfm2Service.initializeModel()
@@ -339,7 +339,7 @@ class LFM2ServiceTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Edge case handling")
         expectation.expectedFulfillmentCount = edgeCaseInputs.count
 
-        Task {
+        Task { [self] in
             do {
                 try await lfm2Service.initializeModel()
 

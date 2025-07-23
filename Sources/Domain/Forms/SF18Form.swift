@@ -28,7 +28,7 @@ public final class SF18Form: BaseGovernmentForm {
             formNumber: "SF18",
             formTitle: "Request for Quotations",
             revision: revision,
-            effectiveDate: DateComponents(calendar: .current, year: 2016, month: 6, day: 1).date!,
+            effectiveDate: DateComponents(calendar: .current, year: 2016, month: 6, day: 1).date ?? Date(),
             expirationDate: nil,
             isElectronic: true,
             metadata: metadata
@@ -394,7 +394,7 @@ public final class SF18Factory: BaseFormFactory<SF18Form> {
                 contractingOfficer: SolicitationInformation.ContractingOfficerInfo(
                     name: "",
                     title: "",
-                    phoneNumber: (try? PhoneNumber("000-000-0000"))!,
+                    phoneNumber: (try? PhoneNumber("000-000-0000")) ?? PhoneNumber.empty,
                     email: nil
                 )
             )

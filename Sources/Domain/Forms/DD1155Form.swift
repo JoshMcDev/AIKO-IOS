@@ -34,7 +34,7 @@ public final class DD1155Form: BaseGovernmentForm {
             formNumber: "DD1155",
             formTitle: "Order for Supplies or Services",
             revision: revision,
-            effectiveDate: DateComponents(calendar: .current, year: 2022, month: 6, day: 1).date!,
+            effectiveDate: DateComponents(calendar: .current, year: 2022, month: 6, day: 1).date ?? Date(),
             expirationDate: nil,
             isElectronic: true,
             metadata: metadata
@@ -537,7 +537,7 @@ public final class DD1155Factory: BaseFormFactory<DD1155Form> {
             orderInfo: OrderInformation(
                 orderNumber: "ORDER-00000",
                 orderDate: Date(),
-                requisitionNumber: (try? RequisitionNumber("REQ-00000"))!,
+                requisitionNumber: (try? RequisitionNumber("REQ-00000")) ?? RequisitionNumber.default,
                 issuingOffice: OrderInformation.IssuingOfficeInfo(
                     name: "",
                     code: "",
@@ -548,8 +548,8 @@ public final class DD1155Factory: BaseFormFactory<DD1155Form> {
             contractor: ContractorInformation(
                 name: "",
                 address: emptyAddress,
-                cageCode: (try? CageCode("00000"))!,
-                phoneNumber: (try? PhoneNumber("000-000-0000"))!
+                cageCode: (try? CageCode("00000")) ?? CageCode.empty,
+                phoneNumber: (try? PhoneNumber("000-000-0000")) ?? PhoneNumber.empty
             ),
             deliveryInfo: DD1155DeliveryInformation(
                 fobPoint: .destination,
@@ -561,7 +561,7 @@ public final class DD1155Factory: BaseFormFactory<DD1155Form> {
             ),
             itemsOrdered: ItemsOrderedSection(
                 items: [],
-                totalAmount: (try? Money(amount: 0, currency: .usd))!
+                totalAmount: (try? Money(amount: 0, currency: .usd)) ?? Money.zero
             ),
             accounting: AccountingData(
                 appropriation: "",

@@ -142,7 +142,7 @@ class TensorOperationsTests: XCTestCase {
         let expectation = XCTestExpectation(description: "End-to-end pipeline validation")
         expectation.expectedFulfillmentCount = testDocuments.count
 
-        Task {
+        Task { [self] in
             let service = LFM2Service.shared
 
             do {

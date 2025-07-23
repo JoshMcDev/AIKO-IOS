@@ -19,14 +19,14 @@ class LFM2TensorRankFixTests: XCTestCase {
         // RED: This test should fail until rank-4 tensor creation is implemented
         let tokenIds: [Int32] = [1, 2, 3, 4, 5]
 
-        XCTAssertNoThrow {
+        XCTAssertNoThrow { [self] in
             let tensor = try LFM2TensorRankFix.createRank4TokenTensor(tokenIds: tokenIds)
 
             // Validate rank-4 shape: [batch_size=1, sequence_length=512, embedding_dim=768, feature_depth=1]
             XCTAssertEqual(tensor.shape.count, 4, "Tensor should have rank 4")
             XCTAssertEqual(tensor.shape[0].intValue, 1, "Batch size should be 1")
-            XCTAssertEqual(tensor.shape[1].intValue, maxTokenLength, "Sequence length should be 512")
-            XCTAssertEqual(tensor.shape[2].intValue, embeddingDimensions, "Embedding dimensions should be 768")
+            XCTAssertEqual(tensor.shape[1].intValue, self.maxTokenLength, "Sequence length should be 512")
+            XCTAssertEqual(tensor.shape[2].intValue, self.embeddingDimensions, "Embedding dimensions should be 768")
             XCTAssertEqual(tensor.shape[3].intValue, 1, "Feature depth should be 1")
 
             // Validate data type
@@ -43,7 +43,7 @@ class LFM2TensorRankFixTests: XCTestCase {
         // RED: Should fail until empty token handling is implemented
         let emptyTokenIds: [Int32] = []
 
-        XCTAssertNoThrow {
+        XCTAssertNoThrow { [self] in
             let tensor = try LFM2TensorRankFix.createRank4TokenTensor(tokenIds: emptyTokenIds)
 
             XCTAssertEqual(tensor.shape.count, 4)
@@ -58,10 +58,10 @@ class LFM2TensorRankFixTests: XCTestCase {
         // RED: Should fail until truncation logic is implemented
         let oversizedTokenIds = [Int32](1 ... (maxTokenLength + 100))
 
-        XCTAssertNoThrow {
+        XCTAssertNoThrow { [self] in
             let tensor = try LFM2TensorRankFix.createRank4TokenTensor(tokenIds: oversizedTokenIds)
 
-            XCTAssertEqual(tensor.shape[1].intValue, maxTokenLength)
+            XCTAssertEqual(tensor.shape[1].intValue, self.maxTokenLength)
             // Should contain only first maxTokenLength tokens
             XCTAssertEqual(tensor[0].int32Value, 1)
         }
@@ -73,15 +73,15 @@ class LFM2TensorRankFixTests: XCTestCase {
     /// DoS: Valid rank-4 tensors should pass validation
     func testValidateTensorRank_withValidRank4Tensor_returnsValid() {
         // RED: Should fail until validation is implemented
-        XCTAssertNoThrow {
-            let tensor = try LFM2TensorRankFix.createRank4TokenTensor(tokenIds: validTokenIds)
+        XCTAssertNoThrow { [self] in
+            let tensor = try LFM2TensorRankFix.createRank4TokenTensor(tokenIds: self.validTokenIds)
             let validation = LFM2TensorRankFix.validateTensorRank(tensor)
 
             XCTAssertTrue(validation.isValid, "Valid rank-4 tensor should pass validation")
 
             if case let .valid(rank, shape) = validation {
                 XCTAssertEqual(rank, 4)
-                XCTAssertEqual(shape, [1, maxTokenLength, embeddingDimensions, 1])
+                XCTAssertEqual(shape, [1, self.maxTokenLength, self.embeddingDimensions, 1])
             } else {
                 XCTFail("Expected valid result")
             }
@@ -92,8 +92,8 @@ class LFM2TensorRankFixTests: XCTestCase {
     /// DoS: Rank-2 tensors should fail validation with specific error
     func testValidateTensorRank_withRank2Tensor_returnsInvalidRank() {
         // RED: Should fail until rank-2 detection is implemented
-        XCTAssertNoThrow {
-            let rank2Tensor = try LFM2TensorRankFix.createRank2TokenTensor(tokenIds: validTokenIds)
+        XCTAssertNoThrow { [self] in
+            let rank2Tensor = try LFM2TensorRankFix.createRank2TokenTensor(tokenIds: self.validTokenIds)
             let validation = LFM2TensorRankFix.validateTensorRank(rank2Tensor)
 
             XCTAssertFalse(validation.isValid, "Rank-2 tensor should fail validation")
@@ -117,17 +117,17 @@ class LFM2TensorRankFixTests: XCTestCase {
     /// DoS: Converted tensor should maintain data integrity
     func testConvertRank2ToRank4_withValidInput_maintainsDataIntegrity() {
         // RED: Should fail until conversion logic is implemented
-        XCTAssertNoThrow {
-            let originalTensor = try LFM2TensorRankFix.createRank2TokenTensor(tokenIds: validTokenIds)
+        XCTAssertNoThrow { [self] in
+            let originalTensor = try LFM2TensorRankFix.createRank2TokenTensor(tokenIds: self.validTokenIds)
             let convertedTensor = try LFM2TensorRankFix.convertRank2ToRank4(originalTensor)
 
             // Validate conversion correctness
             XCTAssertEqual(convertedTensor.shape.count, 4, "Converted tensor should have rank 4")
 
             // Validate data preservation (first few tokens should match)
-            for i in 0 ..< min(validTokenIds.count, 5) {
-                let flatIndex = i * embeddingDimensions
-                XCTAssertEqual(convertedTensor[flatIndex].int32Value, validTokenIds[i],
+            for i in 0 ..< min(self.validTokenIds.count, 5) {
+                let flatIndex = i * self.embeddingDimensions
+                XCTAssertEqual(convertedTensor[flatIndex].int32Value, self.validTokenIds[i],
                                "Token data should be preserved during conversion")
             }
         }
@@ -137,8 +137,8 @@ class LFM2TensorRankFixTests: XCTestCase {
     /// DoS: Conversion should throw appropriate error for invalid input
     func testConvertRank2ToRank4_withInvalidRankInput_throwsError() {
         // RED: Should fail until error handling is implemented
-        XCTAssertNoThrow {
-            let rank3Tensor = try LFM2TensorRankFix.createRank3TokenTensor(tokenIds: validTokenIds)
+        XCTAssertNoThrow { [self] in
+            let rank3Tensor = try LFM2TensorRankFix.createRank3TokenTensor(tokenIds: self.validTokenIds)
 
             XCTAssertThrowsError(try LFM2TensorRankFix.convertRank2ToRank4(rank3Tensor)) { error in
                 if let tensorError = error as? LFM2TensorError {
@@ -161,8 +161,8 @@ class LFM2TensorRankFixTests: XCTestCase {
     /// DoS: Feature provider should contain correctly formatted MLMultiArray
     func testCreateFeatureProvider_withRank4Preference_returnsValidProvider() {
         // RED: Should fail until feature provider creation is implemented
-        XCTAssertNoThrow {
-            let provider = try LFM2TensorRankFix.createFeatureProvider(tokenIds: validTokenIds, preferredRank: 4)
+        XCTAssertNoThrow { [self] in
+            let provider = try LFM2TensorRankFix.createFeatureProvider(tokenIds: self.validTokenIds, preferredRank: 4)
 
             // Validate feature provider structure
             XCTAssertNotNil(provider.featureValue(for: "input_ids"), "Feature provider should contain input_ids")

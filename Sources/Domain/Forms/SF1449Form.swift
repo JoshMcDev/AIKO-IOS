@@ -34,7 +34,7 @@ public final class SF1449Form: BaseGovernmentForm {
             formNumber: "SF1449",
             formTitle: "Solicitation/Contract/Order for Commercial Products and Commercial Services",
             revision: revision,
-            effectiveDate: DateComponents(calendar: .current, year: 2021, month: 11, day: 1).date!,
+            effectiveDate: DateComponents(calendar: .current, year: 2021, month: 11, day: 1).date ?? Date(),
             expirationDate: nil,
             isElectronic: true,
             metadata: metadata
