@@ -3,7 +3,7 @@
     import SwiftUI
 
     /// macOS-specific navigation container that provides desktop optimizations
-    public struct macOSNavigationStack<Content: View>: View {
+    public struct MacOSNavigationStack<Content: View>: View {
         let content: () -> Content
 
         public init(@ViewBuilder content: @escaping () -> Content) {
@@ -15,12 +15,12 @@
                 content()
             }
             .navigationSplitViewStyle(.automatic)
-            .modifier(macOSWindowStyleModifier())
+            .modifier(MacOSWindowStyleModifier())
         }
     }
 
     /// macOS-specific window styling
-    public struct macOSWindowStyleModifier: ViewModifier {
+    public struct MacOSWindowStyleModifier: ViewModifier {
         public init() {}
 
         public func body(content: Content) -> some View {
@@ -42,7 +42,7 @@
     }
 
     /// macOS-specific sidebar navigation
-    public struct macOSSidebarNavigation<SidebarContent: View, DetailContent: View>: View {
+    public struct MacOSSidebarNavigation<SidebarContent: View, DetailContent: View>: View {
         let sidebarContent: () -> SidebarContent
         let detailContent: () -> DetailContent
 
@@ -66,7 +66,7 @@
     }
 
     /// macOS-specific toolbar configuration
-    public struct macOSToolbarModifier: ViewModifier {
+    public struct MacOSToolbarModifier: ViewModifier {
         public init() {}
 
         public func body(content: Content) -> some View {
@@ -76,7 +76,7 @@
     }
 
     /// macOS-specific window controls overlay
-    public struct macOSWindowControlsOverlay: ViewModifier {
+    public struct MacOSWindowControlsOverlay: ViewModifier {
         public init() {}
 
         public func body(content: Content) -> some View {
