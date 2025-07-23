@@ -15,7 +15,7 @@ public struct ProfileView: View {
     }
 
     public var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(store, observe: { $0 }, content: { viewStore in
             ScrollView {
                 VStack(spacing: Theme.Spacing.extraLarge) {
                     // Info message about profile usage
@@ -281,7 +281,7 @@ public struct ProfileView: View {
                 .onAppear {
                     viewStore.send(.loadProfile)
                 }
-        }
+        })
     }
 }
 

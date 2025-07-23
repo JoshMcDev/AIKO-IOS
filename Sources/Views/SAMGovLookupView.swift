@@ -259,7 +259,7 @@ struct SearchEntryView: View {
             // Search type filter buttons
             HStack {
                 ForEach(SAMGovLookupView.SearchType.allCases, id: \.self) { type in
-                    Button(action: { entry.type = type }) {
+                    Button(action: { entry.type = type }, label: {
                         HStack(spacing: 4) {
                             Image(systemName: type.icon)
                                 .font(.caption)
@@ -278,7 +278,7 @@ struct SearchEntryView: View {
                                 .stroke(entry.type == type ? Color.clear : Color.gray.opacity(0.3), lineWidth: 1)
                         )
                         .cornerRadius(Theme.CornerRadius.small)
-                    }
+                    })
                 }
 
                 Spacer()
@@ -306,10 +306,10 @@ struct SearchEntryView: View {
                     }
 
                 if !entry.text.isEmpty {
-                    Button(action: { entry.text = "" }) {
+                    Button(action: { entry.text = "" }, label: {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundColor(.secondary)
-                    }
+                    })
                 }
 
                 // Search button with magnifying glass

@@ -622,6 +622,23 @@ private enum ActionExecutionError: LocalizedError {
     }
 }
 
+private enum ObjectActionError: LocalizedError {
+    case encodingFailed
+    case invalidInput(String)
+    case processingFailed(String)
+    
+    var errorDescription: String? {
+        switch self {
+        case .encodingFailed:
+            "Failed to encode action output"
+        case let .invalidInput(reason):
+            "Invalid input: \(reason)"
+        case let .processingFailed(reason):
+            "Processing failed: \(reason)"
+        }
+    }
+}
+
 // MARK: - Supporting Functions
 
 private func hasPermission(for _: ActionType, in _: ActionContext) -> Bool {

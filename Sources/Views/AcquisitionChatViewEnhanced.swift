@@ -302,7 +302,7 @@ struct SmartSuggestionsView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     ForEach(options, id: \.self) { suggestion in
-                        Button(action: { onSelect(suggestion) }) {
+                        Button(action: { onSelect(suggestion) }, label: {
                             Text(suggestion)
                                 .font(.caption)
                                 .padding(.horizontal, 12)
@@ -310,7 +310,7 @@ struct SmartSuggestionsView: View {
                                 .background(Theme.Colors.aikoPrimary.opacity(0.1))
                                 .foregroundColor(Theme.Colors.aikoPrimary)
                                 .cornerRadius(12)
-                        }
+                        })
                     }
                 }
             }

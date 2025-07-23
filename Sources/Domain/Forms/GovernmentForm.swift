@@ -159,7 +159,7 @@ public struct SolicitationNumber: ValueObject {
 }
 
 /// Requisition/Purchase request number
-public struct RequisitionNumber: ValueObject {
+public struct RequisitionNumber: ValueObject, Sendable {
     public let value: String
 
     public init(_ value: String) throws {
@@ -172,6 +172,11 @@ public struct RequisitionNumber: ValueObject {
             throw FormError.missingRequiredField("requisitionNumber")
         }
     }
+    
+    /// Default placeholder requisition number for forms
+    public static let `default`: RequisitionNumber = {
+        return try! RequisitionNumber("REQ-00000")
+    }()
 }
 
 /// Delivery order number
@@ -216,7 +221,7 @@ public struct FormNAICSCode: ValueObject {
 }
 
 /// Cage code value object
-public struct CageCode: ValueObject {
+public struct CageCode: ValueObject, Sendable {
     public let value: String
 
     public init(_ value: String) throws {
@@ -234,6 +239,11 @@ public struct CageCode: ValueObject {
             throw FormError.invalidField("cageCode - must be 5 characters")
         }
     }
+    
+    /// Empty placeholder CAGE code for forms
+    public static let empty: CageCode = {
+        return try! CageCode("00000")
+    }()
 }
 
 /// DUNS number value object

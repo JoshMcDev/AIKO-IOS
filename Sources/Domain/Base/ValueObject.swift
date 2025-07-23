@@ -26,7 +26,7 @@ public struct Email: ValueObject {
 }
 
 /// Phone number value object
-public struct PhoneNumber: ValueObject {
+public struct PhoneNumber: ValueObject, Sendable {
     public let value: String
 
     public init(_ value: String) throws {
@@ -50,10 +50,15 @@ public struct PhoneNumber: ValueObject {
 
         return "(\(areaCode)) \(prefix)-\(number)"
     }
+    
+    /// Empty placeholder phone number for forms
+    public static let empty: PhoneNumber = {
+        return try! PhoneNumber("0000000000")
+    }()
 }
 
 /// Money value object
-public struct Money: ValueObject {
+public struct Money: ValueObject, Sendable {
     public let amount: Decimal
     public let currency: Currency
 
@@ -89,10 +94,15 @@ public struct Money: ValueObject {
         }
         return try Money(amount: lhs.amount - rhs.amount, currency: lhs.currency)
     }
+    
+    /// Zero amount in USD for use in forms
+    public static let zero: Money = {
+        return try! Money(amount: 0, currency: .usd)
+    }()
 }
 
 /// Currency enumeration
-public enum Currency: String, CaseIterable {
+public enum Currency: String, CaseIterable, Sendable {
     case usd = "USD"
     case eur = "EUR"
     case gbp = "GBP"
