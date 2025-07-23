@@ -7,7 +7,7 @@ final class FilePickerServiceTests: XCTestCase {
     var sut: FilePickerService?
 
     private var sutUnwrapped: FilePickerService {
-        guard let sut = sut else { fatalError("sut not initialized") }
+        guard let sut else { fatalError("sut not initialized") }
         return sut
     }
 

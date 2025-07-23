@@ -9,12 +9,12 @@ final class AIDocumentGeneratorTests: XCTestCase {
     var mockProviderUnwrapped: MockAIProvider?
 
     private var generatorUnwrapped: AIDocumentGenerator {
-        guard let generator = generator else { fatalError("generator not initialized") }
+        guard let generator else { fatalError("generator not initialized") }
         return generator
     }
 
     private var mockProviderUnwrappedUnwrapped: MockAIProvider {
-        guard let mockProviderUnwrapped = mockProviderUnwrapped else { fatalError("mockProviderUnwrapped not initialized") }
+        guard let mockProviderUnwrapped else { fatalError("mockProviderUnwrapped not initialized") }
         return mockProviderUnwrapped
     }
 

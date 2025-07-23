@@ -5,7 +5,7 @@ final class ProgressTrackingEngineTests: XCTestCase {
     private var engine: ProgressTrackingEngine?
 
     private var engineUnwrapped: ProgressTrackingEngine {
-        guard let engine = engine else { fatalError("engine not initialized") }
+        guard let engine else { fatalError("engine not initialized") }
         return engine
     }
 

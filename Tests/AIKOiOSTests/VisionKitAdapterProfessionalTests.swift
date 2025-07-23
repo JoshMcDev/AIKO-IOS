@@ -16,22 +16,22 @@
         private var mockDocument: ScannedDocument?
 
         private var adapterUnwrapped: VisionKitAdapter {
-            guard let adapter = adapter else { fatalError("adapter not initialized") }
+            guard let adapter else { fatalError("adapter not initialized") }
             return adapter
         }
 
         private var professionalConfigUnwrapped: VisionKitAdapter.ScanConfiguration {
-            guard let professionalConfig = professionalConfig else { fatalError("professionalConfig not initialized") }
+            guard let professionalConfig else { fatalError("professionalConfig not initialized") }
             return professionalConfig
         }
 
         private var mockImageDataUnwrapped: Data {
-            guard let mockImageData = mockImageData else { fatalError("mockImageData not initialized") }
+            guard let mockImageData else { fatalError("mockImageData not initialized") }
             return mockImageData
         }
 
         private var mockDocumentUnwrapped: ScannedDocument {
-            guard let mockDocument = mockDocument else { fatalError("mockDocument not initialized") }
+            guard let mockDocument else { fatalError("mockDocument not initialized") }
             return mockDocument
         }
 

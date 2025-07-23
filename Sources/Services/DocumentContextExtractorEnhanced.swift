@@ -178,7 +178,8 @@ public class DocumentContextExtractorEnhanced: @unchecked Sendable {
                 if object.dataType == .array {
                     // Handle array of features
                     if let arrayData = object.value.data(using: .utf8),
-                       let features = try? JSONDecoder().decode([String].self, from: arrayData) {
+                       let features = try? JSONDecoder().decode([String].self, from: arrayData)
+                    {
                         details.append(contentsOf: features)
                     }
                 } else if object.dataType == .text, object.value.count > 20 {

@@ -7,7 +7,7 @@ final class UnifiedDocumentCacheServiceTests: XCTestCase {
     var service: UnifiedDocumentCacheService?
 
     private var serviceUnwrapped: UnifiedDocumentCacheService {
-        guard let service = service else { fatalError("service not initialized") }
+        guard let service else { fatalError("service not initialized") }
         return service
     }
 

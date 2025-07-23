@@ -9,12 +9,12 @@ final class UnitDocumentRepositoryTests: XCTestCase {
     private var context: NSManagedObjectContext?
 
     private var sutUnwrapped: DocumentRepository {
-        guard let sut = sut else { fatalError("sut not initialized") }
+        guard let sut else { fatalError("sut not initialized") }
         return sut
     }
 
     private var contextUnwrapped: NSManagedObjectContext {
-        guard let context = context else { fatalError("context not initialized") }
+        guard let context else { fatalError("context not initialized") }
         return context
     }
 

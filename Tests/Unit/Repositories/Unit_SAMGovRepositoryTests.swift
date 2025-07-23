@@ -10,17 +10,17 @@ final class UnitSAMGovRepositoryTests: XCTestCase {
     private var mockAPIClient: MockSAMGovAPIClient?
 
     private var sutUnwrapped: SAMGovRepository {
-        guard let sut = sut else { fatalError("sut not initialized") }
+        guard let sut else { fatalError("sut not initialized") }
         return sut
     }
 
     private var contextUnwrapped: NSManagedObjectContext {
-        guard let context = context else { fatalError("context not initialized") }
+        guard let context else { fatalError("context not initialized") }
         return context
     }
 
     private var mockAPIClientUnwrapped: MockSAMGovAPIClient {
-        guard let mockAPIClient = mockAPIClient else { fatalError("mockAPIClient not initialized") }
+        guard let mockAPIClient else { fatalError("mockAPIClient not initialized") }
         return mockAPIClient
     }
 

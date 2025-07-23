@@ -18,10 +18,12 @@ public class MetricMeasurementEntity: NSManagedObject {
         // Decode metric type
         let type: MetricMeasurement.MetricType
         if let mopString = mopType,
-           let mop = MeasureOfPerformance(rawValue: mopString) {
+           let mop = MeasureOfPerformance(rawValue: mopString)
+        {
             type = .mop(mop)
         } else if let moeString = moeType,
-                  let moe = MeasureOfEffectiveness(rawValue: moeString) {
+                  let moe = MeasureOfEffectiveness(rawValue: moeString)
+        {
             type = .moe(moe)
         } else {
             return nil

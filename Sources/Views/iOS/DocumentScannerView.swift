@@ -81,7 +81,8 @@
                     // Processing Progress Overlay
                     Group {
                         if viewStore.showProcessingProgress,
-                           let progress = viewStore.pageProcessingProgress {
+                           let progress = viewStore.pageProcessingProgress
+                        {
                             ProcessingProgressOverlay(progress: progress)
                         }
                     }
@@ -91,7 +92,8 @@
                     set: { _ in viewStore.send(.hideEnhancementPreview) }
                 )) {
                     if let pageId = viewStore.enhancementPreviewPageId,
-                       let page = viewStore.scannedPages[id: pageId] {
+                       let page = viewStore.scannedPages[id: pageId]
+                    {
                         EnhancementPreviewView(page: page)
                     }
                 }
@@ -627,7 +629,8 @@
                             Spacer()
 
                             if let remainingTime = progress.processingProgress.estimatedTimeRemaining,
-                               remainingTime > 0 {
+                               remainingTime > 0
+                            {
                                 Text("~\(Int(remainingTime))s remaining")
                                     .font(.caption)
                                     .foregroundColor(.white.opacity(0.8))
@@ -657,7 +660,8 @@
                     // Before/After comparison
                     if let enhancedData = page.enhancedImageData,
                        let originalImage = UIImage(data: page.imageData),
-                       let enhancedImage = UIImage(data: enhancedData) {
+                       let enhancedImage = UIImage(data: enhancedData)
+                    {
                         ScrollView {
                             VStack(spacing: 20) {
                                 // Original image

@@ -436,13 +436,8 @@ struct APISettingsView: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
 
-<<<<<<< HEAD
                         if let url = URL(string: "https://open.gsa.gov/api/entity-api/") {
                             Link("Get a free API key at SAM.gov", destination: url)
-=======
-                        if let samURL = URL(string: "https://open.gsa.gov/api/entity-api/") {
-                            Link("Get a free API key at SAM.gov", destination: samURL)
->>>>>>> Main
                                 .font(.caption)
                         }
                     }

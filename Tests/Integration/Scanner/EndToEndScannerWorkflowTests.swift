@@ -17,17 +17,17 @@ final class EndToEndScannerWorkflowTests: XCTestCase {
     private var testDocuments: [ScannedDocument]?
 
     private var testStoreUnwrapped: TestStore<DocumentScannerFeature.State, DocumentScannerFeature.Action> {
-        guard let testStore = testStore else { fatalError("testStore not initialized") }
+        guard let testStore else { fatalError("testStore not initialized") }
         return testStore
     }
 
     private var mockLLMProviderUnwrapped: MockLLMProvider {
-        guard let mockLLMProvider = mockLLMProvider else { fatalError("mockLLMProvider not initialized") }
+        guard let mockLLMProvider else { fatalError("mockLLMProvider not initialized") }
         return mockLLMProvider
     }
 
     private var testDocumentsUnwrapped: [ScannedDocument] {
-        guard let testDocuments = testDocuments else { fatalError("testDocuments not initialized") }
+        guard let testDocuments else { fatalError("testDocuments not initialized") }
         return testDocuments
     }
 

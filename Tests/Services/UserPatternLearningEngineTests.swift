@@ -5,7 +5,7 @@ class UserPatternLearningEngineTests: XCTestCase {
     var sut: UserPatternLearningEngine?
 
     private var sutUnwrapped: UserPatternLearningEngine {
-        guard let sut = sut else { fatalError("sut not initialized") }
+        guard let sut else { fatalError("sut not initialized") }
         return sut
     }
 

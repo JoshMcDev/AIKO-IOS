@@ -9,17 +9,17 @@ final class FormAutoPopulationEngineTests: XCTestCase {
     private var formAutoPopulationEngine: FormAutoPopulationEngine?
 
     private var mockDocumentProcessorUnwrapped: DocumentImageProcessor {
-        guard let mockDocumentProcessor = mockDocumentProcessor else { fatalError("mockDocumentProcessor not initialized") }
+        guard let mockDocumentProcessor else { fatalError("mockDocumentProcessor not initialized") }
         return mockDocumentProcessor
     }
 
     private var mockSmartDefaultsUnwrapped: SmartDefaultsEngine {
-        guard let mockSmartDefaults = mockSmartDefaults else { fatalError("mockSmartDefaults not initialized") }
+        guard let mockSmartDefaults else { fatalError("mockSmartDefaults not initialized") }
         return mockSmartDefaults
     }
 
     private var formAutoPopulationEngineUnwrapped: FormAutoPopulationEngine {
-        guard let formAutoPopulationEngine = formAutoPopulationEngine else { fatalError("formAutoPopulationEngine not initialized") }
+        guard let formAutoPopulationEngine else { fatalError("formAutoPopulationEngine not initialized") }
         return formAutoPopulationEngine
     }
 

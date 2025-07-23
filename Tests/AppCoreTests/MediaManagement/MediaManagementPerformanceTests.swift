@@ -10,22 +10,22 @@ final class MediaManagementPerformanceTests: XCTestCase {
     var workflowCoordinator: MediaWorkflowCoordinator?
 
     private var metadataServiceUnwrapped: MediaMetadataService {
-        guard let metadataService = metadataService else { fatalError("metadataService not initialized") }
+        guard let metadataService else { fatalError("metadataService not initialized") }
         return metadataService
     }
 
     private var validationServiceUnwrapped: ValidationService {
-        guard let validationService = validationService else { fatalError("validationService not initialized") }
+        guard let validationService else { fatalError("validationService not initialized") }
         return validationService
     }
 
     private var batchEngineUnwrapped: BatchProcessingEngine {
-        guard let batchEngine = batchEngine else { fatalError("batchEngine not initialized") }
+        guard let batchEngine else { fatalError("batchEngine not initialized") }
         return batchEngine
     }
 
     private var workflowCoordinatorUnwrapped: MediaWorkflowCoordinator {
-        guard let workflowCoordinator = workflowCoordinator else { fatalError("workflowCoordinator not initialized") }
+        guard let workflowCoordinator else { fatalError("workflowCoordinator not initialized") }
         return workflowCoordinator
     }
 

@@ -7,7 +7,7 @@ final class MediaMetadataServiceTests: XCTestCase {
     var sut: MediaMetadataService?
 
     private var sutUnwrapped: MediaMetadataService {
-        guard let sut = sut else { fatalError("sut not initialized") }
+        guard let sut else { fatalError("sut not initialized") }
         return sut
     }
 

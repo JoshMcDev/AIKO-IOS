@@ -7,7 +7,7 @@ final class DocumentParserEnhancedTests: XCTestCase {
     private var parser: DocumentParserEnhanced?
 
     private var parserUnwrapped: DocumentParserEnhanced {
-        guard let parser = parser else { fatalError("parser not initialized") }
+        guard let parser else { fatalError("parser not initialized") }
         return parser
     }
 

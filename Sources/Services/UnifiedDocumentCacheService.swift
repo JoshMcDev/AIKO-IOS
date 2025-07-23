@@ -625,7 +625,7 @@ enum CacheError: LocalizedError {
             "Data integrity check failed"
         case .configurationChangeRequiresClear:
             "Configuration change requires clearing the cache"
-        case .invalidKey(let key):
+        case let .invalidKey(key):
             "Invalid key: \(key)"
         }
     }

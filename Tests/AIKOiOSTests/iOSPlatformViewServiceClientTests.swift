@@ -8,9 +8,10 @@
         var client: IOSPlatformViewServiceClient?
 
         private var clientUnwrapped: IOSPlatformViewServiceClient {
-            guard let client = client else { fatalError("client not initialized") }
+            guard let client else { fatalError("client not initialized") }
             return client
         }
+
         override func setUp() async throws {
             try await super.setUp()
             client = IOSPlatformViewServiceClient()

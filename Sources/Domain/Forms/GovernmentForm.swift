@@ -172,11 +172,9 @@ public struct RequisitionNumber: ValueObject, Sendable {
             throw FormError.missingRequiredField("requisitionNumber")
         }
     }
-    
+
     /// Default placeholder requisition number for forms
-    public static let `default`: RequisitionNumber = {
-        return try! RequisitionNumber("REQ-00000")
-    }()
+    public static let `default`: RequisitionNumber = try! RequisitionNumber("REQ-00000")
 }
 
 /// Delivery order number
@@ -239,11 +237,9 @@ public struct CageCode: ValueObject, Sendable {
             throw FormError.invalidField("cageCode - must be 5 characters")
         }
     }
-    
+
     /// Empty placeholder CAGE code for forms
-    public static let empty: CageCode = {
-        return try! CageCode("00000")
-    }()
+    public static let empty: CageCode = try! CageCode("00000")
 }
 
 /// DUNS number value object

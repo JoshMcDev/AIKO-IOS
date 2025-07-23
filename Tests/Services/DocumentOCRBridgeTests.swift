@@ -16,17 +16,17 @@ final class DocumentOCRBridgeTests: XCTestCase {
     private var testSessionIDUnwrapped: DocumentSessionID?
 
     private var bridgeUnwrapped: DocumentOCRBridge {
-        guard let bridge = bridge else { fatalError("bridge not initialized") }
+        guard let bridge else { fatalError("bridge not initialized") }
         return bridge
     }
 
     private var mockUnifiedExtractorUnwrappedUnwrapped: MockUnifiedDocumentContextExtractor {
-        guard let mockUnifiedExtractorUnwrapped = mockUnifiedExtractorUnwrapped else { fatalError("mockUnifiedExtractorUnwrapped not initialized") }
+        guard let mockUnifiedExtractorUnwrapped else { fatalError("mockUnifiedExtractorUnwrapped not initialized") }
         return mockUnifiedExtractorUnwrapped
     }
 
     private var testSessionIDUnwrappedUnwrapped: DocumentSessionID {
-        guard let testSessionIDUnwrapped = testSessionIDUnwrapped else { fatalError("testSessionIDUnwrapped not initialized") }
+        guard let testSessionIDUnwrapped else { fatalError("testSessionIDUnwrapped not initialized") }
         return testSessionIDUnwrapped
     }
 

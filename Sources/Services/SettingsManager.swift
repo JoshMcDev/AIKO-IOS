@@ -271,7 +271,8 @@ extension SettingsManager: DependencyKey {
 
                 if status == errSecSuccess,
                    let data = result as? Data,
-                   let key = String(data: data, encoding: .utf8) {
+                   let key = String(data: data, encoding: .utf8)
+                {
                     return key
                 }
 
@@ -364,7 +365,8 @@ extension SettingsManager: DependencyKey {
                     templates: templates.map { template in
                         // Convert CustomTemplate to JSON string
                         if let data = try? JSONEncoder().encode(template),
-                           let jsonString = String(data: data, encoding: .utf8) {
+                           let jsonString = String(data: data, encoding: .utf8)
+                        {
                             return jsonString
                         }
                         return ""
@@ -413,7 +415,8 @@ extension SettingsManager: DependencyKey {
                     @Dependency(\.templateStorageService) var templateService
                     for templateJSON in backupData.templates {
                         if let data = templateJSON.data(using: .utf8),
-                           let template = try? JSONDecoder().decode(CustomTemplate.self, from: data) {
+                           let template = try? JSONDecoder().decode(CustomTemplate.self, from: data)
+                        {
                             try? await templateService.saveTemplate(template)
                         }
                     }

@@ -1,12 +1,11 @@
-import XCTest
 import CoreML
 @testable import GraphRAG
+import XCTest
 
 /// Performance benchmarks and end-to-end validation tests for tensor operations
 /// Implements MoP (Measures of Performance) criteria from TDD rubric
 @MainActor
 class TensorOperationsTests: XCTestCase {
-
     // MARK: - Test Configuration
 
     let performanceTestIterations = 100
@@ -20,11 +19,11 @@ class TensorOperationsTests: XCTestCase {
     /// DoS: Should achieve minimum throughput for production use
     func testTensorCreationThroughput() {
         // RED: Should fail until throughput optimization is implemented
-        let tokenIds = Array<Int32>(1...512)
+        let tokenIds = [Int32](1 ... 512)
         var createdTensors: [MLMultiArray] = []
 
         measure(metrics: [XCTClockMetric(), XCTMemoryMetric()]) {
-            for _ in 0..<performanceTestIterations {
+            for _ in 0 ..< performanceTestIterations {
                 do {
                     let tensor = try LFM2TensorRankFix.createRank4TokenTensor(tokenIds: tokenIds)
                     createdTensors.append(tensor)
@@ -36,14 +35,14 @@ class TensorOperationsTests: XCTestCase {
 
         // Validate all tensors were created successfully
         XCTAssertEqual(createdTensors.count, performanceTestIterations,
-                      "All tensors should be created successfully")
+                       "All tensors should be created successfully")
     }
 
     /// MoP: Latency - Measure individual tensor operation latency
     /// DoS: Individual operations should complete within acceptable time
     func testTensorOperationLatency() {
         // RED: Should fail until latency optimization is implemented
-        let tokenIds = Array<Int32>(1...256)
+        let tokenIds = [Int32](1 ... 256)
 
         // Test rank-4 tensor creation latency
         measure(metrics: [XCTClockMetric()]) {
@@ -79,7 +78,7 @@ class TensorOperationsTests: XCTestCase {
     /// DoS: Operations should not cause excessive resource consumption
     func testResourceUtilizationEfficiency() {
         // RED: Should fail until resource optimization is implemented
-        let largeBatch = Array(repeating: Array<Int32>(1...512), count: 50)
+        let largeBatch = Array(repeating: [Int32](1 ... 512), count: 50)
 
         measure(metrics: [XCTMemoryMetric(), XCTCPUMetric()]) {
             for tokenIds in largeBatch {
@@ -104,7 +103,7 @@ class TensorOperationsTests: XCTestCase {
         var results: [Int: TimeInterval] = [:]
 
         for size in inputSizes {
-            let tokenIds = Array<Int32>(1...Int32(size))
+            let tokenIds = [Int32](1 ... Int32(size))
             let startTime = CFAbsoluteTimeGetCurrent()
 
             do {
@@ -114,7 +113,7 @@ class TensorOperationsTests: XCTestCase {
 
                 // Performance should not degrade exponentially
                 XCTAssertLessThan(endTime - startTime, expectedTensorCreationTimeThreshold * Double(size) / 10.0,
-                                 "Performance should scale reasonably for size \(size)")
+                                  "Performance should scale reasonably for size \(size)")
             } catch {
                 XCTFail("Scalability test failed for size \(size): \(error)")
             }
@@ -137,7 +136,7 @@ class TensorOperationsTests: XCTestCase {
             "State policy mandating environmental impact assessments for new projects.",
             "Municipal ordinance establishing noise control measures in residential areas.",
             "Industry standard for cybersecurity protocols in financial institutions.",
-            "International treaty on intellectual property rights protection."
+            "International treaty on intellectual property rights protection.",
         ]
 
         let expectation = XCTestExpectation(description: "End-to-end pipeline validation")
@@ -185,9 +184,9 @@ class TensorOperationsTests: XCTestCase {
     func testTensorMathematicalCorrectness() {
         // RED: Should fail until mathematical validation is implemented
         let testCases = [
-            (tokenIds: Array<Int32>(1...5), expectedFirstValue: Int32(1)),
-            (tokenIds: Array<Int32>(10...15), expectedFirstValue: Int32(10)),
-            (tokenIds: Array<Int32>([42, 24, 12, 6]), expectedFirstValue: Int32(42))
+            (tokenIds: [Int32](1 ... 5), expectedFirstValue: Int32(1)),
+            (tokenIds: [Int32](10 ... 15), expectedFirstValue: Int32(10)),
+            (tokenIds: [Int32]([42, 24, 12, 6]), expectedFirstValue: Int32(42)),
         ]
 
         for (caseIndex, testCase) in testCases.enumerated() {
@@ -199,21 +198,21 @@ class TensorOperationsTests: XCTestCase {
 
                 // Validate data preservation across different representations
                 XCTAssertEqual(rank2Tensor[0].int32Value, testCase.expectedFirstValue,
-                              "Case \(caseIndex): Rank-2 should preserve first token")
+                               "Case \(caseIndex): Rank-2 should preserve first token")
 
                 // For rank-3 and rank-4, the first token should be at the appropriate flat index
                 let rank3FirstTokenIndex = 0 * 768 // embedding_dim offset
                 let rank4FirstTokenIndex = 0 * 768 * 1 // embedding_dim * feature_depth offset
 
                 XCTAssertEqual(rank3Tensor[rank3FirstTokenIndex].int32Value, testCase.expectedFirstValue,
-                              "Case \(caseIndex): Rank-3 should preserve first token at correct index")
+                               "Case \(caseIndex): Rank-3 should preserve first token at correct index")
                 XCTAssertEqual(rank4Tensor[rank4FirstTokenIndex].int32Value, testCase.expectedFirstValue,
-                              "Case \(caseIndex): Rank-4 should preserve first token at correct index")
+                               "Case \(caseIndex): Rank-4 should preserve first token at correct index")
 
                 // Test conversion correctness
                 let convertedTensor = try LFM2TensorRankFix.convertRank2ToRank4(rank2Tensor)
                 XCTAssertEqual(convertedTensor[rank4FirstTokenIndex].int32Value, testCase.expectedFirstValue,
-                              "Case \(caseIndex): Conversion should preserve data correctly")
+                               "Case \(caseIndex): Conversion should preserve data correctly")
 
             } catch {
                 XCTFail("Mathematical correctness test case \(caseIndex) failed: \(error)")
@@ -227,11 +226,11 @@ class TensorOperationsTests: XCTestCase {
         // RED: Should fail until robustness measures are implemented
         let stressTestScenarios = [
             // Large batch processing
-            Array(repeating: Array<Int32>(1...512), count: 100),
+            Array(repeating: [Int32](1 ... 512), count: 100),
             // Rapid repeated operations
-            Array(repeating: Array<Int32>(1...10), count: 1000),
+            Array(repeating: [Int32](1 ... 10), count: 1000),
             // Mixed sizes
-            (1...50).map { Array<Int32>(1...Int32($0 * 10)) }
+            (1 ... 50).map { [Int32](1 ... Int32($0 * 10)) },
         ]
 
         for (scenarioIndex, scenario) in stressTestScenarios.enumerated() {
@@ -258,7 +257,7 @@ class TensorOperationsTests: XCTestCase {
 
                 // Should maintain high success rate even under stress
                 XCTAssertGreaterThanOrEqual(successRate, 0.95,
-                                          "Scenario \(scenarioIndex): Should maintain 95%+ success rate under stress")
+                                            "Scenario \(scenarioIndex): Should maintain 95%+ success rate under stress")
 
                 print("Stress scenario \(scenarioIndex): \(successCount)/\(scenario.count) operations succeeded in \(String(format: "%.2f", endTime - startTime))s")
             }
@@ -271,16 +270,16 @@ class TensorOperationsTests: XCTestCase {
     /// DoS: Same inputs should produce identical outputs across runs
     func testDeterministicBehavior() {
         // RED: Should fail until deterministic behavior is ensured
-        let testTokenIds = Array<Int32>(1...100)
+        let testTokenIds = [Int32](1 ... 100)
         let numRuns = 10
         var tensorHashes: Set<String> = []
 
-        for run in 0..<numRuns {
+        for run in 0 ..< numRuns {
             do {
                 let tensor = try LFM2TensorRankFix.createRank4TokenTensor(tokenIds: testTokenIds)
 
                 // Create a hash of the tensor data for comparison
-                let tensorData = (0..<min(100, tensor.count)).map { tensor[$0].int32Value }
+                let tensorData = (0 ..< min(100, tensor.count)).map { tensor[$0].int32Value }
                 let tensorHash = String(describing: tensorData)
                 tensorHashes.insert(tensorHash)
 
@@ -291,19 +290,19 @@ class TensorOperationsTests: XCTestCase {
 
         // All runs should produce identical results
         XCTAssertEqual(tensorHashes.count, 1,
-                      "All runs should produce identical tensors (deterministic behavior)")
+                       "All runs should produce identical tensors (deterministic behavior)")
     }
 
     /// MoP: Baseline Comparison - Compare with previous implementation
     /// DoS: New implementation should meet or exceed baseline performance
     func testPerformanceRegressionPrevention() {
         // RED: Should fail until baseline comparison is implemented
-        let testTokenIds = Array<Int32>(1...256)
+        let testTokenIds = [Int32](1 ... 256)
         let iterations = 50
 
         // Measure new rank-4 implementation
         var newImplementationTimes: [TimeInterval] = []
-        for _ in 0..<iterations {
+        for _ in 0 ..< iterations {
             let startTime = CFAbsoluteTimeGetCurrent()
             do {
                 _ = try LFM2TensorRankFix.createRank4TokenTensor(tokenIds: testTokenIds)
@@ -316,7 +315,7 @@ class TensorOperationsTests: XCTestCase {
 
         // Measure legacy rank-2 implementation (for comparison)
         var legacyImplementationTimes: [TimeInterval] = []
-        for _ in 0..<iterations {
+        for _ in 0 ..< iterations {
             let startTime = CFAbsoluteTimeGetCurrent()
             do {
                 _ = try LFM2TensorRankFix.createRank2TokenTensor(tokenIds: testTokenIds)
@@ -334,7 +333,7 @@ class TensorOperationsTests: XCTestCase {
         // Allow for reasonable overhead due to increased functionality
         let acceptableOverhead = 3.0 // 3x overhead is acceptable for the additional functionality
         XCTAssertLessThan(newAverage, legacyAverage * acceptableOverhead,
-                         "New implementation should not exceed \(acceptableOverhead)x legacy performance")
+                          "New implementation should not exceed \(acceptableOverhead)x legacy performance")
 
         print("Performance comparison - Legacy: \(String(format: "%.4f", legacyAverage))s, New: \(String(format: "%.4f", newAverage))s")
     }
@@ -343,7 +342,6 @@ class TensorOperationsTests: XCTestCase {
 // MARK: - Test Validation Helpers
 
 extension TensorOperationsTests {
-
     /// Validate the quality and properties of generated embeddings
     func validateEmbeddingQuality(_ embedding: [Float], documentIndex: Int) {
         // Basic quality checks
@@ -366,8 +364,8 @@ extension TensorOperationsTests {
         guard embeddings.count > 1 else { return }
 
         // Check that embeddings are distinct (not identical)
-        for i in 0..<embeddings.count {
-            for j in (i+1)..<embeddings.count {
+        for i in 0 ..< embeddings.count {
+            for j in (i + 1) ..< embeddings.count {
                 let similarity = cosineSimilarity(embeddings[i], embeddings[j])
 
                 // Embeddings should be distinct but not completely unrelated
@@ -385,16 +383,16 @@ extension TensorOperationsTests {
         let magnitudeA = sqrt(a.map { $0 * $0 }.reduce(0, +))
         let magnitudeB = sqrt(b.map { $0 * $0 }.reduce(0, +))
 
-        guard magnitudeA > 0 && magnitudeB > 0 else { return 0 }
+        guard magnitudeA > 0, magnitudeB > 0 else { return 0 }
 
         return dotProduct / (magnitudeA * magnitudeB)
     }
 
     /// Create test data with specific characteristics for stress testing
     func createStressTestData(count: Int, maxTokenLength: Int) -> [[Int32]] {
-        return (0..<count).map { index in
+        (0 ..< count).map { index in
             let length = (index % maxTokenLength) + 1
-            return Array<Int32>(1...Int32(length))
+            return [Int32](1 ... Int32(length))
         }
     }
 }

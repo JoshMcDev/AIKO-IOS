@@ -265,7 +265,7 @@ public actor SecureCache: OfflineCacheProtocol {
         do {
             let decoder = JSONDecoder()
             metadata = try decoder.decode([String: SecureCacheMetadata].self, from: data)
-            logger.debug("Loaded secure metadata with \(self.metadata.count) entries")
+            logger.debug("Loaded secure metadata with \(metadata.count) entries")
         } catch {
             logger.error("Failed to load secure metadata: \(error)")
             metadata = [:]

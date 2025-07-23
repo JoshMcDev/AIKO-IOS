@@ -125,7 +125,8 @@ public class UserPatternLearner {
         // Get insights for each field
         for field in formFields {
             if let insight = await getInsights(for: field, context: context),
-               insight.confidence >= 0.7 {
+               insight.confidence >= 0.7
+            {
                 defaults[field] = insight.suggestedValue
             }
         }

@@ -5,7 +5,7 @@ final class AdaptivePromptingEngineTests: XCTestCase {
     var engine: AdaptivePromptingEngine?
 
     private var engineUnwrapped: AdaptivePromptingEngine {
-        guard let engine = engine else { fatalError("engine not initialized") }
+        guard let engine else { fatalError("engine not initialized") }
         return engine
     }
 
@@ -283,12 +283,12 @@ final class AdaptivePromptingIntegrationTests: XCTestCase {
     var documentParser: DocumentParserEnhanced?
 
     private var engineUnwrapped: AdaptivePromptingEngine {
-        guard let engine = engine else { fatalError("engine not initialized") }
+        guard let engine else { fatalError("engine not initialized") }
         return engine
     }
 
     private var documentParserUnwrapped: DocumentParserEnhanced {
-        guard let documentParser = documentParser else { fatalError("documentParser not initialized") }
+        guard let documentParser else { fatalError("documentParser not initialized") }
         return documentParser
     }
 

@@ -50,11 +50,9 @@ public struct PhoneNumber: ValueObject, Sendable {
 
         return "(\(areaCode)) \(prefix)-\(number)"
     }
-    
+
     /// Empty placeholder phone number for forms
-    public static let empty: PhoneNumber = {
-        return try! PhoneNumber("0000000000")
-    }()
+    public static let empty: PhoneNumber = try! PhoneNumber("0000000000")
 }
 
 /// Money value object
@@ -94,11 +92,9 @@ public struct Money: ValueObject, Sendable {
         }
         return try Money(amount: lhs.amount - rhs.amount, currency: lhs.currency)
     }
-    
+
     /// Zero amount in USD for use in forms
-    public static let zero: Money = {
-        return try! Money(amount: 0, currency: .usd)
-    }()
+    public static let zero: Money = try! Money(amount: 0, currency: .usd)
 }
 
 /// Currency enumeration

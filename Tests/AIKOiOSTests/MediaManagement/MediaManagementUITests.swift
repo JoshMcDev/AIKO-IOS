@@ -11,7 +11,7 @@ final class MediaManagementUITests: XCTestCase {
     var store: Store<MediaManagementFeature.State, MediaManagementFeature.Action>?
 
     private var storeUnwrapped: Store<MediaManagementFeature.State, MediaManagementFeature.Action> {
-        guard let store = store else { fatalError("store not initialized") }
+        guard let store else { fatalError("store not initialized") }
         return store
     }
 

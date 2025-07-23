@@ -7,7 +7,7 @@ public struct EmailConfiguration: Sendable {
     public let body: String
     public let isHTML: Bool
     public let attachments: [(data: Data, mimeType: String, fileName: String)]?
-    
+
     public init(
         recipients: [String],
         subject: String,
@@ -28,7 +28,7 @@ public struct EmailComposerConfiguration: Sendable {
     public let recipients: [String]
     public let subject: String
     public let body: String
-    
+
     public init(
         recipients: [String],
         subject: String,

@@ -81,7 +81,8 @@ struct LLMProviderSettingsFeature {
             case let .providersLoaded(providers, activeId):
                 state.availableProviders = IdentifiedArray(uniqueElements: providers)
                 if let activeId,
-                   let activeProvider = providers.first(where: { $0.id == activeId })?.provider {
+                   let activeProvider = providers.first(where: { $0.id == activeId })?.provider
+                {
                     state.activeProvider = activeProvider
                 }
                 return .none

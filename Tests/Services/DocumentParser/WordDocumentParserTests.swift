@@ -6,7 +6,7 @@ final class WordDocumentParserTests: XCTestCase {
     var parser: WordDocumentParser?
 
     private var parserUnwrapped: WordDocumentParser {
-        guard let parser = parser else { fatalError("parser not initialized") }
+        guard let parser else { fatalError("parser not initialized") }
         return parser
     }
 

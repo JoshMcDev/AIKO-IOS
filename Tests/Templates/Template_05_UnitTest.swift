@@ -16,7 +16,7 @@ final class FeatureNameTests: XCTestCase {
     var store: TestStore<FeatureName.State, FeatureName.Action>?
 
     private var storeUnwrapped: TestStore<FeatureName.State, FeatureName.Action> {
-        guard let store = store else { fatalError("store not initialized") }
+        guard let store else { fatalError("store not initialized") }
         return store
     }
 

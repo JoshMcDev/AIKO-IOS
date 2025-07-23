@@ -10,12 +10,12 @@ final class IntegrationSAMGovRepositoryTests: XCTestCase {
     private var context: NSManagedObjectContext?
 
     private var sutUnwrapped: SAMGovRepository {
-        guard let sut = sut else { fatalError("sut not initialized") }
+        guard let sut else { fatalError("sut not initialized") }
         return sut
     }
 
     private var contextUnwrapped: NSManagedObjectContext {
-        guard let context = context else { fatalError("context not initialized") }
+        guard let context else { fatalError("context not initialized") }
         return context
     }
 

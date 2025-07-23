@@ -14,8 +14,9 @@ final class IntegrationFARPart53Tests: XCTestCase {
     private var mockEventStore: InMemoryEventStore?
 
     // MARK: - Computed Properties for Safe Access
+
     private var contextUnwrapped: NSManagedObjectContext {
-        guard let context = context else { fatalError("context not initialized") }
+        guard let context else { fatalError("context not initialized") }
         return context
     }
 

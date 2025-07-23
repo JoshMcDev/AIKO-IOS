@@ -7,17 +7,17 @@ final class ConfidenceBasedAutoFillTests: XCTestCase {
     var patternLearningEngine: UserPatternLearningEngine?
 
     private var autoFillEngineUnwrapped: ConfidenceBasedAutoFillEngine {
-        guard let autoFillEngine = autoFillEngine else { fatalError("autoFillEngine not initialized") }
+        guard let autoFillEngine else { fatalError("autoFillEngine not initialized") }
         return autoFillEngine
     }
 
     private var smartDefaultsEngineUnwrapped: SmartDefaultsEngine {
-        guard let smartDefaultsEngine = smartDefaultsEngine else { fatalError("smartDefaultsEngine not initialized") }
+        guard let smartDefaultsEngine else { fatalError("smartDefaultsEngine not initialized") }
         return smartDefaultsEngine
     }
 
     private var patternLearningEngineUnwrapped: UserPatternLearningEngine {
-        guard let patternLearningEngine = patternLearningEngine else { fatalError("patternLearningEngine not initialized") }
+        guard let patternLearningEngine else { fatalError("patternLearningEngine not initialized") }
         return patternLearningEngine
     }
 

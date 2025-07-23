@@ -565,7 +565,7 @@ extension AdaptiveDocumentCache: DependencyKey {
                 // Implementation
             },
             getCacheStatistics: {
-                guard (try? await getStorage()) != nil else {
+                guard await (try? getStorage()) != nil else {
                     return CacheStatistics(
                         totalCachedDocuments: 0,
                         totalCachedAnalyses: 0,

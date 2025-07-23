@@ -6,7 +6,7 @@ final class DocumentParserValidatorTests: XCTestCase {
     var validator: DocumentParserValidator?
 
     private var validatorUnwrapped: DocumentParserValidator {
-        guard let validator = validator else { fatalError("validator not initialized") }
+        guard let validator else { fatalError("validator not initialized") }
         return validator
     }
 

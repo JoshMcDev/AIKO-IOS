@@ -8,9 +8,10 @@
         var client: IOSThemeServiceClient?
 
         private var clientUnwrapped: IOSThemeServiceClient {
-            guard let client = client else { fatalError("client not initialized") }
+            guard let client else { fatalError("client not initialized") }
             return client
         }
+
         override func setUp() async throws {
             try await super.setUp()
             client = IOSThemeServiceClient()

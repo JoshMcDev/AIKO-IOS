@@ -14,8 +14,9 @@ final class OneTapWorkflowEngineTests: XCTestCase {
     private var invoiceConfig: OneTapWorkflowEngine.OneTapConfiguration?
 
     // MARK: - Computed Properties for Safe Access
+
     private var engineUnwrapped: OneTapWorkflowEngine {
-        guard let engine = engine else { fatalError("engine not initialized") }
+        guard let engine else { fatalError("engine not initialized") }
         return engine
     }
 

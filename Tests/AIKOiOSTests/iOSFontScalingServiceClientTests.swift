@@ -8,9 +8,10 @@
         var client: IOSFontScalingServiceClient?
 
         private var clientUnwrapped: IOSFontScalingServiceClient {
-            guard let client = client else { fatalError("client not initialized") }
+            guard let client else { fatalError("client not initialized") }
             return client
         }
+
         override func setUp() async throws {
             try await super.setUp()
             client = IOSFontScalingServiceClient()

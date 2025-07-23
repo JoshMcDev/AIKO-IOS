@@ -7,7 +7,7 @@ final class MediaWorkflowCoordinatorTests: XCTestCase {
     var sut: MediaWorkflowCoordinator?
 
     private var sutUnwrapped: MediaWorkflowCoordinator {
-        guard let sut = sut else { fatalError("sut not initialized") }
+        guard let sut else { fatalError("sut not initialized") }
         return sut
     }
 

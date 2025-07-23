@@ -106,48 +106,48 @@ public struct DocumentExecutionFeature: Sendable {
                 state.isExecuting = true
 
                 return .run { [documentTypes = state.executingDocumentTypes, dfDocumentTypes = state.executingDFDocumentTypes] send in
-                        // Special handling for FAR Updates
-                        if documentTypes.contains(.farUpdates) {
-                            // FAR Updates doesn't need information gathering
-                            await send(.informationCheckCompleted(true, []))
-                            return
-                        }
+                    // Special handling for FAR Updates
+                    if documentTypes.contains(.farUpdates) {
+                        // FAR Updates doesn't need information gathering
+                        await send(.informationCheckCompleted(true, []))
+                        return
+                    }
 
-                        // Simulate checking if we have enough information
-                        // In real implementation, this would call the LLM to check
-                        try await clock.sleep(for: .seconds(1))
+                    // Simulate checking if we have enough information
+                    // In real implementation, this would call the LLM to check
+                    try await clock.sleep(for: .seconds(1))
 
-                        // For demo, let's say we need more info for certain document types
-                        let needsMoreInfo = documentTypes.contains(.acquisitionPlan) ||
-                            documentTypes.contains(.costEstimate) ||
-                            dfDocumentTypes.contains(.jaOtherThanFullOpenCompetition)
+                    // For demo, let's say we need more info for certain document types
+                    let needsMoreInfo = documentTypes.contains(.acquisitionPlan) ||
+                        documentTypes.contains(.costEstimate) ||
+                        dfDocumentTypes.contains(.jaOtherThanFullOpenCompetition)
 
-                        if needsMoreInfo {
-                            let questions = [
-                                InformationQuestion(
-                                    question: "What is the estimated contract value?",
-                                    fieldType: .number,
-                                    placeholder: "Enter amount in USD",
-                                    isRequired: true
-                                ),
-                                InformationQuestion(
-                                    question: "What is the period of performance?",
-                                    fieldType: .text,
-                                    placeholder: "e.g., 12 months",
-                                    isRequired: true
-                                ),
-                                InformationQuestion(
-                                    question: "Please describe the primary objectives of this acquisition:",
-                                    fieldType: .multilineText,
-                                    placeholder: "Enter detailed objectives...",
-                                    isRequired: true
-                                ),
-                            ]
+                    if needsMoreInfo {
+                        let questions = [
+                            InformationQuestion(
+                                question: "What is the estimated contract value?",
+                                fieldType: .number,
+                                placeholder: "Enter amount in USD",
+                                isRequired: true
+                            ),
+                            InformationQuestion(
+                                question: "What is the period of performance?",
+                                fieldType: .text,
+                                placeholder: "e.g., 12 months",
+                                isRequired: true
+                            ),
+                            InformationQuestion(
+                                question: "Please describe the primary objectives of this acquisition:",
+                                fieldType: .multilineText,
+                                placeholder: "Enter detailed objectives...",
+                                isRequired: true
+                            ),
+                        ]
 
-                            await send(.informationCheckCompleted(false, questions))
-                        } else {
-                            await send(.informationCheckCompleted(true, []))
-                        }
+                        await send(.informationCheckCompleted(false, questions))
+                    } else {
+                        await send(.informationCheckCompleted(true, []))
+                    }
                 }
 
             case let .informationCheckCompleted(hasSufficientInfo, questions):
@@ -190,28 +190,28 @@ public struct DocumentExecutionFeature: Sendable {
                 state.executionProgress = 0.0
 
                 return .run { [documentTypes = state.executingDocumentTypes, dfDocumentTypes = state.executingDFDocumentTypes] send in
-                        // Simulate document generation with progress updates
-                        for progress in stride(from: 0.0, through: 1.0, by: 0.1) {
-                            try await clock.sleep(for: .milliseconds(500))
-                            await send(.updateProgress(progress))
-                        }
+                    // Simulate document generation with progress updates
+                    for progress in stride(from: 0.0, through: 1.0, by: 0.1) {
+                        try await clock.sleep(for: .milliseconds(500))
+                        await send(.updateProgress(progress))
+                    }
 
-                        // Generate mock content based on selected documents
-                        var content = "# Generated Documents\n\n"
+                    // Generate mock content based on selected documents
+                    var content = "# Generated Documents\n\n"
 
-                        for docType in documentTypes {
-                            content += "## \(docType.rawValue)\n\n"
-                            content += "This is the generated content for \(docType.rawValue).\n"
-                            content += "Based on the requirements and gathered information.\n\n"
-                        }
+                    for docType in documentTypes {
+                        content += "## \(docType.rawValue)\n\n"
+                        content += "This is the generated content for \(docType.rawValue).\n"
+                        content += "Based on the requirements and gathered information.\n\n"
+                    }
 
-                        for dfDocType in dfDocumentTypes {
-                            content += "## \(dfDocType.rawValue)\n\n"
-                            content += "This is the generated determination and findings for \(dfDocType.rawValue).\n"
-                            content += "FAR Reference: \(dfDocType.farReference)\n\n"
-                        }
+                    for dfDocType in dfDocumentTypes {
+                        content += "## \(dfDocType.rawValue)\n\n"
+                        content += "This is the generated determination and findings for \(dfDocType.rawValue).\n"
+                        content += "FAR Reference: \(dfDocType.farReference)\n\n"
+                    }
 
-                        await send(.generationCompleted(content))
+                    await send(.generationCompleted(content))
                 }
 
             case let .updateProgress(progress):

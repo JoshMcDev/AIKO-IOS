@@ -8,12 +8,12 @@ final class UnitAcquisitionAggregateTests: XCTestCase {
     private var mockEventPublisherUnwrapped: MockDomainEventPublisher?
 
     private var sutUnwrapped: AcquisitionAggregate {
-        guard let sut = sut else { fatalError("sut not initialized") }
+        guard let sut else { fatalError("sut not initialized") }
         return sut
     }
 
     private var mockEventPublisherUnwrappedUnwrapped: MockDomainEventPublisher {
-        guard let mockEventPublisherUnwrapped = mockEventPublisherUnwrapped else { fatalError("mockEventPublisherUnwrapped not initialized") }
+        guard let mockEventPublisherUnwrapped else { fatalError("mockEventPublisherUnwrapped not initialized") }
         return mockEventPublisherUnwrapped
     }
 

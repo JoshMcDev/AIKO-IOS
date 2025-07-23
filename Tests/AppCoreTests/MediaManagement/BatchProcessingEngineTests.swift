@@ -7,7 +7,7 @@ final class BatchProcessingEngineTests: XCTestCase {
     var sut: BatchProcessingEngine?
 
     private var sutUnwrapped: BatchProcessingEngine {
-        guard let sut = sut else { fatalError("sut not initialized") }
+        guard let sut else { fatalError("sut not initialized") }
         return sut
     }
 

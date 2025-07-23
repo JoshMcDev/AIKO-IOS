@@ -17,7 +17,7 @@ final class DocumentChainMetadataTests: XCTestCase {
     var context: NSManagedObjectContext?
 
     private var contextUnwrapped: NSManagedObjectContext {
-        guard let context = context else { fatalError("context not initialized") }
+        guard let context else { fatalError("context not initialized") }
         return context
     }
 

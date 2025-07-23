@@ -16,12 +16,12 @@ final class IntegrationTestName: XCTestCase {
     var mockDependencyUnwrapped: MockDependency?
 
     private var systemUnderTestUnwrappedUnwrapped: SystemType {
-        guard let systemUnderTestUnwrapped = systemUnderTestUnwrapped else { fatalError("systemUnderTestUnwrapped not initialized") }
+        guard let systemUnderTestUnwrapped else { fatalError("systemUnderTestUnwrapped not initialized") }
         return systemUnderTestUnwrapped
     }
 
     private var mockDependencyUnwrappedUnwrapped: MockDependency {
-        guard let mockDependencyUnwrapped = mockDependencyUnwrapped else { fatalError("mockDependencyUnwrapped not initialized") }
+        guard let mockDependencyUnwrapped else { fatalError("mockDependencyUnwrapped not initialized") }
         return mockDependencyUnwrapped
     }
 

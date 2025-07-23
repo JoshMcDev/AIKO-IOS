@@ -9,7 +9,7 @@
         var client: IOSHapticManagerClient?
 
         private var clientUnwrapped: IOSHapticManagerClient {
-            guard let client = client else { fatalError("client not initialized") }
+            guard let client else { fatalError("client not initialized") }
             return client
         }
 

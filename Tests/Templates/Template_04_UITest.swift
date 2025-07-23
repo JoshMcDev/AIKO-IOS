@@ -18,12 +18,12 @@ final class ScreenNameUITests: XCTestCase {
     var store: Store<FeatureName.State, FeatureName.Action>?
 
     private var sutUnwrapped: ScreenNameView {
-        guard let sut = sut else { fatalError("sut not initialized") }
+        guard let sut else { fatalError("sut not initialized") }
         return sut
     }
 
     private var storeUnwrapped: Store<FeatureName.State, FeatureName.Action> {
-        guard let store = store else { fatalError("store not initialized") }
+        guard let store else { fatalError("store not initialized") }
         return store
     }
 

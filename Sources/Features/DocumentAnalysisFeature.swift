@@ -128,34 +128,6 @@ public struct DocumentAnalysisFeature {
                     return .concatenate(
                         .send(.createAcquisition),
                         .run { [requirements = state.requirements, uploadedDocs = state.uploadedDocuments, requirementAnalyzer = self.requirementAnalyzer] send in
-                                // Build enhanced requirements including uploaded documents
-                                var enhancedRequirements = requirements
-
-                                if !uploadedDocs.isEmpty {
-                                    enhancedRequirements += "\n\nAdditional context from uploaded documents:\n"
-                                    for doc in uploadedDocs {
-                                        if let summary = doc.contentSummary {
-                                            enhancedRequirements += "\n- \(doc.fileName): \(summary)"
-                                        }
-                                    }
-                                }
-
-                                await send(.addToConversation("User: \(requirements)"))
-                                if !uploadedDocs.isEmpty {
-                                    await send(.addToConversation("[Uploaded \(uploadedDocs.count) document(s)]"))
-                                }
-
-                                do {
-                                    let (response, recommendedDocs) = try await requirementAnalyzer.analyzeRequirements(enhancedRequirements)
-                                    await send(.requirementsAnalyzed(response, recommendedDocs))
-                                } catch {
-                                    await send(.analysisError(error.localizedDescription))
-                                }
-                        }
-                    )
-                } else {
-                    // Acquisition already exists, just analyze
-                    return .run { [requirements = state.requirements, uploadedDocs = state.uploadedDocuments, requirementAnalyzer = self.requirementAnalyzer] send in
                             // Build enhanced requirements including uploaded documents
                             var enhancedRequirements = requirements
 
@@ -179,6 +151,34 @@ public struct DocumentAnalysisFeature {
                             } catch {
                                 await send(.analysisError(error.localizedDescription))
                             }
+                        }
+                    )
+                } else {
+                    // Acquisition already exists, just analyze
+                    return .run { [requirements = state.requirements, uploadedDocs = state.uploadedDocuments, requirementAnalyzer = self.requirementAnalyzer] send in
+                        // Build enhanced requirements including uploaded documents
+                        var enhancedRequirements = requirements
+
+                        if !uploadedDocs.isEmpty {
+                            enhancedRequirements += "\n\nAdditional context from uploaded documents:\n"
+                            for doc in uploadedDocs {
+                                if let summary = doc.contentSummary {
+                                    enhancedRequirements += "\n- \(doc.fileName): \(summary)"
+                                }
+                            }
+                        }
+
+                        await send(.addToConversation("User: \(requirements)"))
+                        if !uploadedDocs.isEmpty {
+                            await send(.addToConversation("[Uploaded \(uploadedDocs.count) document(s)]"))
+                        }
+
+                        do {
+                            let (response, recommendedDocs) = try await requirementAnalyzer.analyzeRequirements(enhancedRequirements)
+                            await send(.requirementsAnalyzed(response, recommendedDocs))
+                        } catch {
+                            await send(.analysisError(error.localizedDescription))
+                        }
                     }
                 }
 
@@ -573,7 +573,8 @@ public struct DocumentAnalysisFeature {
                         // Save automation settings
                         let encoder = JSONEncoder()
                         if let settingsData = try? encoder.encode(settings),
-                           let settingsString = String(data: settingsData, encoding: .utf8) {
+                           let settingsString = String(data: settingsData, encoding: .utf8)
+                        {
                             let collectedData = CollectedData(data: ["automationSettings": settingsString])
                             try await workflowEngine.collectData(acquisitionId, collectedData)
                         }
@@ -740,7 +741,8 @@ public struct DocumentAnalysisFeature {
         for pattern in patterns {
             if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
                let match = regex.firstMatch(in: response, options: [], range: NSRange(location: 0, length: response.count)),
-               let scoreRange = Range(match.range(at: 1), in: response) {
+               let scoreRange = Range(match.range(at: 1), in: response)
+            {
                 if let score = Int(response[scoreRange]) {
                     return score
                 }

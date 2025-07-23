@@ -195,7 +195,8 @@ public struct DocumentStatusFeature {
         for pattern in patterns {
             if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
                let match = regex.firstMatch(in: response, options: [], range: NSRange(location: 0, length: response.count)),
-               let scoreRange = Range(match.range(at: 1), in: response) {
+               let scoreRange = Range(match.range(at: 1), in: response)
+            {
                 if let score = Int(response[scoreRange]) {
                     return score
                 }

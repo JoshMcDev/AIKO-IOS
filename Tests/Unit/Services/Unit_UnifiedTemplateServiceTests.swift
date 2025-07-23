@@ -7,7 +7,7 @@ final class UnifiedTemplateServiceTests: XCTestCase {
     var service: UnifiedTemplateService?
 
     private var serviceUnwrapped: UnifiedTemplateService {
-        guard let service = service else { fatalError("service not initialized") }
+        guard let service else { fatalError("service not initialized") }
         return service
     }
 

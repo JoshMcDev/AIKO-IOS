@@ -766,11 +766,10 @@ public final class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol, @un
 
             // Learn from this interaction
             let suggestedValue = session.suggestedAnswers?[question.field]
-            let acceptedSuggestion: Bool
-            if let suggestedValue = suggestedValue {
-                acceptedSuggestion = String(describing: suggestedValue) == String(describing: response.value)
+            let acceptedSuggestion: Bool = if let suggestedValue {
+                String(describing: suggestedValue) == String(describing: response.value)
             } else {
-                acceptedSuggestion = false
+                false
             }
 
             let interaction = APEUserInteraction(
@@ -933,7 +932,8 @@ public final class AdaptivePromptingEngine: AdaptivePromptingEngineProtocol, @un
             if let decimal = value as? Decimal {
                 data.estimatedValue = decimal
             } else if let string = value as? String,
-                      let double = Double(string.replacingOccurrences(of: "$", with: "").replacingOccurrences(of: ",", with: "")) {
+                      let double = Double(string.replacingOccurrences(of: "$", with: "").replacingOccurrences(of: ",", with: ""))
+            {
                 data.estimatedValue = Decimal(double)
             }
         case .requiredDate:

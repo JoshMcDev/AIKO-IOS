@@ -37,7 +37,8 @@ final class DocumentScannerProgressIntegrationTests: XCTestCase {
 
             // Verify progress sequence
             guard let firstProgress = receivedProgress.first,
-                  let lastProgress = receivedProgress.last else {
+                  let lastProgress = receivedProgress.last
+            else {
                 XCTFail("Failed to get first or last progress")
                 return
             }

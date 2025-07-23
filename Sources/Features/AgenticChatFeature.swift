@@ -321,7 +321,8 @@ public struct AgenticChatFeature {
         case .identifyVendors:
             // Create vendor comparison card
             if let vendorData = output as? [String: Any],
-               let vendors = vendorData["vendors"] as? [String] {
+               let vendors = vendorData["vendors"] as? [String]
+            {
                 let vendorInfos = vendors.map { name in
                     VendorInfo(
                         name: name,
@@ -340,7 +341,8 @@ public struct AgenticChatFeature {
         case .monitorCompliance:
             // Create compliance card
             if let complianceData = output as? [String: Any],
-               let score = complianceData["complianceScore"] as? Double {
+               let score = complianceData["complianceScore"] as? Double
+            {
                 return MessageCard(
                     type: .compliance,
                     title: "Compliance Status",

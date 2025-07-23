@@ -8,9 +8,10 @@
         var client: IOSFileServiceClient?
 
         private var clientUnwrapped: IOSFileServiceClient {
-            guard let client = client else { fatalError("client not initialized") }
+            guard let client else { fatalError("client not initialized") }
             return client
         }
+
         override func setUp() async throws {
             try await super.setUp()
             client = IOSFileServiceClient()
@@ -117,7 +118,7 @@
             }
 
             // Open may return nil in test environment
-            if let openUrl = openUrl {
+            if let openUrl {
                 XCTAssertTrue(openUrl.isFileURL, "Open result should be nil or valid URL")
             }
 

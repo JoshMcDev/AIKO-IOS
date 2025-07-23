@@ -20,7 +20,7 @@ final class FARComplianceManagerTests: XCTestCase {
 
     func testCompleteComplianceCheck() async throws {
         let document = createTestDocument()
-        guard let manager = manager else {
+        guard let manager else {
             XCTFail("Manager not initialized")
             return
         }
@@ -84,7 +84,7 @@ final class FARComplianceManagerTests: XCTestCase {
         let clause = try await manager.getClause(number: clauseNumber)
 
         XCTAssertNotNil(clause)
-        if let clause = clause {
+        if let clause {
             XCTAssertEqual(clause.clauseNumber, clauseNumber)
             XCTAssertFalse(clause.title.isEmpty)
             XCTAssertFalse(clause.content.isEmpty)

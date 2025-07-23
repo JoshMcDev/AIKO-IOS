@@ -7,7 +7,7 @@ final class ValidationServiceTests: XCTestCase {
     var sut: ValidationService?
 
     private var sutUnwrapped: ValidationService {
-        guard let sut = sut else { fatalError("sut not initialized") }
+        guard let sut else { fatalError("sut not initialized") }
         return sut
     }
 

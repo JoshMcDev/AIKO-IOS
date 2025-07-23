@@ -14,12 +14,13 @@ final class DocumentProcessorIntegrationTests: XCTestCase {
     private var processor: DocumentImageProcessor?
 
     private var processorUnwrapped: DocumentImageProcessor {
-        guard let processor = processor else {
+        guard let processor else {
             XCTFail("processor not initialized")
             return DocumentImageProcessor.testValue
         }
         return processor
     }
+
     private let concurrentRequestCount = 5
     private let testTimeout: TimeInterval = 15.0
 

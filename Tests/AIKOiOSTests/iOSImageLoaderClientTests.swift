@@ -6,11 +6,10 @@
     import XCTest
 
     final class IOSImageLoaderClientTests: XCTestCase {
-
         private var clientUnwrapped: IOSImageLoaderClient {
-            guard let client = client else { fatalError("client not initialized") }
+            guard let client else { fatalError("client not initialized") }
             return client
-        }        var client: IOSImageLoaderClient?
+        } var client: IOSImageLoaderClient?
 
         override func setUp() async throws {
             try await super.setUp()

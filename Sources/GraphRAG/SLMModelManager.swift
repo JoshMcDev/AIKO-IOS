@@ -1,5 +1,5 @@
-import Foundation
 import CoreML
+import Foundation
 import OSLog
 import UIKit
 
@@ -39,14 +39,14 @@ actor SLMModelManager {
             priority: 2, // Fallback model
             compatibleDevices: [.iPadProM4],
             optimizations: ["Q4_0", "Q4_K_M", "Q6_K", "Q8_0"]
-        )
+        ),
     ]
 
     // MARK: - Initialization
 
     private init() {
-        self.deviceCapability = DeviceCapability.detect()
-        self.memoryMonitor = MemoryMonitor()
+        deviceCapability = DeviceCapability.detect()
+        memoryMonitor = MemoryMonitor()
         logger.info("🚀 SLMModelManager initializing for device: \(deviceCapability.rawValue)")
     }
 
@@ -104,7 +104,8 @@ actor SLMModelManager {
         case .iPadProM4:
             // Preferred: Qwen 2.5 7B (4GB model + 1.2GB overhead + 2GB for LFM2)
             guard let qwenConfig = modelConfigurations[.qwen25_7B],
-                  let phi3Config = modelConfigurations[.phi3Mini] else {
+                  let phi3Config = modelConfigurations[.phi3Mini]
+            else {
                 logger.error("❌ Model configurations not found")
                 throw SLMError.modelNotFound("Required model configurations")
             }
@@ -154,7 +155,7 @@ actor SLMModelManager {
                 memoryMonitor: memoryMonitor
             )
 
-            self.currentModel = model
+            currentModel = model
 
             logger.info("✅ \(config.name) model loaded successfully")
             logger.info("📊 Model size: \(String(format: "%.1f", Double(config.size) / 1024 / 1024 / 1024))GB")
@@ -199,7 +200,6 @@ actor SLMModelManager {
         maxTokens: Int = 512,
         temperature: Float = 0.7
     ) async throws -> String {
-
         guard isInitialized, let model = currentModel else {
             throw SLMError.modelNotInitialized
         }
@@ -272,18 +272,18 @@ enum SLMModelType: String, CaseIterable {
 
     var displayName: String {
         switch self {
-        case .phi3Mini: return "Phi-3-mini-4k-instruct"
-        case .qwen25_7B: return "Qwen 2.5 7B"
+        case .phi3Mini: "Phi-3-mini-4k-instruct"
+        case .qwen25_7B: "Qwen 2.5 7B"
         }
     }
 }
 
 struct SLMModelConfig {
     let name: String
-    let size: Int64              // Model file size in bytes
+    let size: Int64 // Model file size in bytes
     let memoryRequirement: Int64 // Total memory needed during inference
-    let contextWindow: Int       // Maximum context length
-    let priority: Int           // 1 = primary, 2 = fallback
+    let contextWindow: Int // Maximum context length
+    let priority: Int // 1 = primary, 2 = fallback
     let compatibleDevices: [DeviceCapability]
     let optimizations: [String] // Available quantization formats
 }
@@ -291,7 +291,7 @@ struct SLMModelConfig {
 enum DeviceCapability: String {
     case iPhone15Pro = "iPhone15Pro_8GB"
     case iPadProM4 = "iPadProM4_16GB"
-    case unsupported = "unsupported"
+    case unsupported
 
     static func detect() -> DeviceCapability {
         // Detect device capability based on hardware
@@ -310,9 +310,9 @@ enum DeviceCapability: String {
 
     var totalRAM: Int64 {
         switch self {
-        case .iPhone15Pro: return 8 * 1024 * 1024 * 1024 // 8GB
-        case .iPadProM4: return 16 * 1024 * 1024 * 1024  // 16GB
-        case .unsupported: return 0
+        case .iPhone15Pro: 8 * 1024 * 1024 * 1024 // 8GB
+        case .iPadProM4: 16 * 1024 * 1024 * 1024 // 16GB
+        case .unsupported: 0
         }
     }
 }
@@ -330,11 +330,11 @@ enum SLMError: Error, LocalizedError {
         switch self {
         case .modelNotInitialized:
             return "SLM model not initialized. Call initialize() first."
-        case .modelNotFound(let name):
+        case let .modelNotFound(name):
             return "SLM model '\(name)' not found in app bundle."
-        case .modelLoadingFailed(let error):
+        case let .modelLoadingFailed(error):
             return "Failed to load SLM model: \(error.localizedDescription)"
-        case .insufficientMemory(let required, let available):
+        case let .insufficientMemory(required, available):
             let reqGB = Double(required) / 1024 / 1024 / 1024
             let availGB = Double(available) / 1024 / 1024 / 1024
             return "Insufficient memory. Required: \(String(format: "%.1f", reqGB))GB, Available: \(String(format: "%.1f", availGB))GB"
@@ -342,7 +342,7 @@ enum SLMError: Error, LocalizedError {
             return "Device not supported for SLM models. Requires iPhone 15 Pro or iPad Pro M4."
         case .memoryPressure:
             return "Memory pressure too high for SLM inference."
-        case .inferenceError(let error):
+        case let .inferenceError(error):
             return "SLM inference failed: \(error.localizedDescription)"
         }
     }
@@ -356,11 +356,11 @@ extension SLMModelManager {
 
         let memoryStatus = await memoryMonitor.checkMemoryStatus()
 
-        return SLMModelInfo(
+        return await SLMModelInfo(
             type: model.type,
             config: model.config,
             memoryUsage: memoryStatus,
-            canCoexistWithLFM2: await canCoexistWithLFM2(),
+            canCoexistWithLFM2: canCoexistWithLFM2(),
             deviceCapability: deviceCapability
         )
     }

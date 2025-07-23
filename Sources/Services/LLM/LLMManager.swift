@@ -62,7 +62,8 @@ public final class LLMManager: ObservableObject {
         // Find first configured provider in priority order
         for providerId in providerPriority {
             if configuredProviders.contains(providerId),
-               let provider = providerInstances[providerId] {
+               let provider = providerInstances[providerId]
+            {
                 let isValid = await provider.isConfigured
                 if isValid {
                     activeProvider = provider

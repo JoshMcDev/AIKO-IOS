@@ -353,7 +353,7 @@
         }
 
         // MARK: - Document Scanner Processing
-        
+
         /// Configuration for document scanner processing
         private struct DocumentScannerProcessingConfig: Sendable {
             let ciImage: CIImage
