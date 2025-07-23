@@ -304,7 +304,7 @@ extension LFM2Service {
     /// - Parameter text: Input text to preprocess
     /// - Returns: MLFeatureProvider with correctly shaped rank-4+ tensors
     /// - Throws: Preprocessing errors
-    func preprocessTextWithTensorRankFix(_ text: String) throws -> MLFeatureProvider {
+    nonisolated func preprocessTextWithTensorRankFix(_ text: String) throws -> MLFeatureProvider {
         // Clean and truncate text (unchanged from original)
         let cleanText = text.trimmingCharacters(in: .whitespacesAndNewlines)
         let truncatedText = String(cleanText.prefix(LFM2TensorRankFix.TensorShape.maxTokenLength * 4))
@@ -320,7 +320,7 @@ extension LFM2Service {
     /// - Parameter text: Input text
     /// - Returns: Comparison result
     /// - Throws: Preprocessing errors
-    func compareTensorRankImplementations(_ text: String) throws -> TensorRankComparisonResult {
+    nonisolated func compareTensorRankImplementations(_ text: String) throws -> TensorRankComparisonResult {
         let tokenIds = createPlaceholderTokenIds(from: text)
 
         // Original rank-2 implementation

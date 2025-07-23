@@ -56,7 +56,7 @@ class LFM2TensorRankFixTests: XCTestCase {
     /// DoS: Large token arrays should be truncated to max length
     func testCreateRank4TokenTensor_withOversizedTokens_truncatesCorrectly() {
         // RED: Should fail until truncation logic is implemented
-        let oversizedTokenIds = [Int32](1 ... (maxTokenLength + 100))
+        let oversizedTokenIds = [Int32]((1 ... (maxTokenLength + 100)).map { Int32($0) })
 
         XCTAssertNoThrow { [self] in
             let tensor = try LFM2TensorRankFix.createRank4TokenTensor(tokenIds: oversizedTokenIds)
@@ -177,7 +177,7 @@ class LFM2TensorRankFixTests: XCTestCase {
     /// DoS: Invalid rank preference should throw specific error
     func testCreateFeatureProvider_withUnsupportedRank_throwsError() {
         // RED: Should fail until rank validation is implemented
-        XCTAssertThrowsError(try LFM2TensorRankFix.createFeatureProvider(tokenIds: validTokenIds, preferredRank: 5)) { error in
+        XCTAssertThrowsError(try LFM2TensorRankFix.createFeatureProvider(tokenIds: self.validTokenIds, preferredRank: 5)) { error in
             if let tensorError = error as? LFM2TensorError {
                 if case let .unsupportedRank(rank) = tensorError {
                     XCTAssertEqual(rank, 5)

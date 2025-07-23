@@ -142,7 +142,7 @@ class TensorOperationsTests: XCTestCase {
         let expectation = XCTestExpectation(description: "End-to-end pipeline validation")
         expectation.expectedFulfillmentCount = testDocuments.count
 
-        Task { [self] in
+        Task {
             let service = LFM2Service.shared
 
             do {
@@ -159,7 +159,7 @@ class TensorOperationsTests: XCTestCase {
                         )
 
                         // Validate embedding quality
-                        validateEmbeddingQuality(embedding, documentIndex: index)
+                        self.validateEmbeddingQuality(embedding, documentIndex: index)
                         allEmbeddings.append(embedding)
 
                         expectation.fulfill()
@@ -169,7 +169,7 @@ class TensorOperationsTests: XCTestCase {
                 }
 
                 // Test embedding consistency and distinctiveness
-                validateEmbeddingConsistency(allEmbeddings)
+                self.validateEmbeddingConsistency(allEmbeddings)
 
             } catch {
                 XCTFail("End-to-end pipeline initialization failed: \(error)")
