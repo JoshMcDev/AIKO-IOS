@@ -15,6 +15,8 @@ let package = Package(
         .package(url: "https://github.com/jamesrochabrun/SwiftAnthropic", branch: "main"),
         .package(url: "https://github.com/apple/swift-collections", from: "1.0.0"),
         .package(url: "https://github.com/vapor/multipart-kit", from: "4.5.0"),
+        .package(url: "https://github.com/nalexn/ViewInspector", from: "0.9.0"),
+        .package(url: "https://github.com/apple/swift-atomics", from: "1.2.0"),
     ],
     targets: [
         // MARK: - Compatibility Module for Non-Sendable Dependencies
@@ -151,6 +153,7 @@ let package = Package(
                 "AppCore",
                 "AIKO",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "Atomics", package: "swift-atomics"),
             ],
             path: "Tests/AppCoreTests"
         ),
@@ -160,6 +163,8 @@ let package = Package(
                 .target(name: "AIKOiOS", condition: .when(platforms: [.iOS])),
                 "AppCore",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "ViewInspector", package: "ViewInspector"),
+                .product(name: "Atomics", package: "swift-atomics"),
             ],
             path: "Tests/AIKOiOSTests"
         ),
@@ -169,6 +174,7 @@ let package = Package(
                 .target(name: "AIKOmacOS", condition: .when(platforms: [.macOS])),
                 "AppCore",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "Atomics", package: "swift-atomics"),
             ],
             path: "Tests/AIKOmacOSTests"
         ),

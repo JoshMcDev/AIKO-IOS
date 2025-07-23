@@ -5,7 +5,7 @@
     import SwiftUI
 
     /// macOS-specific implementation of MenuView
-    public struct macOSMenuView: View {
+    public struct MacOSMenuView: View {
         let store: StoreOf<AppFeature>
         @Binding var isShowing: Bool
         @Binding var selectedMenuItem: AppFeature.MenuItem?

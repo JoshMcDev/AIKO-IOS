@@ -25,7 +25,7 @@ public struct MenuView: View {
                 selectedMenuItem: $selectedMenuItem
             )
         #elseif os(macOS)
-            macOSMenuView(
+            MacOSMenuView(
                 store: store,
                 isShowing: $isShowing,
                 selectedMenuItem: $selectedMenuItem

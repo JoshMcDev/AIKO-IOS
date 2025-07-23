@@ -16,7 +16,7 @@ public struct AppView: View {
         #if os(iOS)
             iOSAppView(store: store)
         #elseif os(macOS)
-            macOSAppView(store: store)
+            MacOSAppView(store: store)
         #endif
     }
 }

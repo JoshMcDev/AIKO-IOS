@@ -438,8 +438,8 @@ struct APISettingsView: View {
 
                         if let samURL = URL(string: "https://open.gsa.gov/api/entity-api/") {
                             Link("Get a free API key at SAM.gov", destination: samURL)
+                                .font(.caption)
                         }
-                            .font(.caption)
                     }
                 }
 

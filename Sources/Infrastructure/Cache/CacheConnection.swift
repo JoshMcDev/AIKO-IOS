@@ -337,6 +337,7 @@ public actor CacheConnection {
 // MARK: - Errors
 
 public enum CacheConnectionError: Error {
+    case invalidKey
     case invalidEndpoint
     case notConnected
     case connectionClosed

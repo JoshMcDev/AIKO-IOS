@@ -20,7 +20,7 @@ public final class SAMGovRepository: @unchecked Sendable {
     /// Search for entities by query
     public func searchEntities(_ query: String) async throws -> EntitySearchResult {
         guard var components = URLComponents(string: "\(baseURL)/entities") else {
-            throw SAMGovError.invalidURL
+            throw SAMGovServiceError.invalidURL
         }
         components.queryItems = [
             URLQueryItem(name: "api_key", value: apiKey),
@@ -69,7 +69,7 @@ public final class SAMGovRepository: @unchecked Sendable {
     /// Get entity details by UEI
     public func getEntityByUEI(_ uei: String) async throws -> EntityDetail {
         guard var components = URLComponents(string: "\(baseURL)/entities/\(uei)") else {
-            throw SAMGovError.invalidURL
+            throw SAMGovServiceError.invalidURL
         }
         components.queryItems = [
             URLQueryItem(name: "api_key", value: apiKey),

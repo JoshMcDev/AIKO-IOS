@@ -511,26 +511,26 @@ struct ProfileCompletionView: View {
                         Button(action: {
                             imageSourceType = .camera
                             showingImagePicker = true
-                        }) {
+                        }, label: {
                             Label("Take Photo", systemImage: "camera.fill")
                                 .frame(maxWidth: .infinity)
                                 .padding()
                                 .background(Theme.Colors.aikoPrimary)
                                 .foregroundColor(.white)
                                 .cornerRadius(Theme.CornerRadius.small)
-                        }
+                        })
 
                         Button(action: {
                             imageSourceType = .photoLibrary
                             showingImagePicker = true
-                        }) {
+                        }, label: {
                             Label("Choose from Library", systemImage: "photo.fill")
                                 .frame(maxWidth: .infinity)
                                 .padding()
                                 .background(Theme.Colors.aikoSecondary)
                                 .foregroundColor(.white)
                                 .cornerRadius(Theme.CornerRadius.small)
-                        }
+                        })
 
                         Button("Cancel", role: .cancel) {
                             dismiss()

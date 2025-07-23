@@ -1,6 +1,11 @@
 import ComposableArchitecture
 import Foundation
 
+/// SAM.gov service-specific errors
+public enum SAMGovServiceError: Error, Equatable, Sendable {
+    case invalidURL
+}
+
 /// Service for interacting with SAM.gov Entity API
 public struct SAMGovService: Sendable {
     public var searchEntity: @Sendable (String) async throws -> EntitySearchResult

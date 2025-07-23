@@ -5,7 +5,7 @@
     import SwiftUI
 
     /// macOS-specific implementation of AppView
-    public struct macOSAppView: View {
+    public struct MacOSAppView: View {
         let store: StoreOf<AppFeature>
 
         public init(store: StoreOf<AppFeature>) {
@@ -34,10 +34,10 @@
     }
 
     /// macOS implementation of platform services
-    struct macOSAppViewServices: AppViewPlatformServices {
+    struct MacOSAppViewServices: AppViewPlatformServices {
         typealias NavigationStack = AnyView
-        typealias DocumentPickerView = macOSDocumentPicker
-        typealias ImagePickerView = macOSImagePicker
+        typealias DocumentPickerView = MacOSDocumentPicker
+        typealias ImagePickerView = MacOSImagePicker
         typealias ShareView = EmptyView
 
         func makeNavigationStack(@ViewBuilder content: @escaping () -> some View) -> AnyView {
@@ -113,7 +113,7 @@
 
     // MARK: - macOS Document Picker
 
-    struct macOSDocumentPicker: View {
+    struct MacOSDocumentPicker: View {
         let onDocumentsPicked: ([(Data, String)]) -> Void
 
         var body: some View {
@@ -161,7 +161,7 @@
 
     // MARK: - macOS Image Picker
 
-    struct macOSImagePicker: View {
+    struct MacOSImagePicker: View {
         let onImagePicked: (Data) -> Void
 
         var body: some View {
