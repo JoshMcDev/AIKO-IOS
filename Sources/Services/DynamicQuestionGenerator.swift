@@ -121,7 +121,7 @@ public final class DynamicQuestionGenerator: @unchecked Sendable {
             questions.append(DynamicQuestion(
                 field: .estimatedValue,
                 prompt: context.pricing?.totalPrice != nil ?
-                    "We found a price of $\(context.pricing!.totalPrice!). Is this the total acquisition value?" :
+                    "We found a price of $\(context.pricing?.totalPrice ?? 0). Is this the total acquisition value?" :
                     "What is the estimated total value of this acquisition?",
                 responseType: .numeric,
                 validation: ValidationRule(
@@ -137,7 +137,7 @@ public final class DynamicQuestionGenerator: @unchecked Sendable {
             questions.append(DynamicQuestion(
                 field: .requiredDate,
                 prompt: context.dates?.deliveryDate != nil ?
-                    "We found a delivery date of \(formatDate(context.dates!.deliveryDate!)). Is this correct?" :
+                    "We found a delivery date of \(formatDate(context.dates?.deliveryDate ?? Date())). Is this correct?" :
                     "When do you need this delivered or completed by?",
                 responseType: .date,
                 validation: ValidationRule(

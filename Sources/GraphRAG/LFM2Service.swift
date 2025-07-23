@@ -197,11 +197,11 @@ actor LFM2Service {
         return try MLDictionaryFeatureProvider(dictionary: inputFeatures)
     }
 
-    func createPlaceholderTokenIds(from text: String) -> [Int32] {
+    nonisolated func createPlaceholderTokenIds(from text: String) -> [Int32] {
         // Simple hash-based tokenization placeholder
         // TODO: Replace with proper LFM2 tokenizer
         let words = text.components(separatedBy: .whitespacesAndNewlines)
-        return words.prefix(maxTokenLength).map { word in
+        return words.prefix(LFM2TensorRankFix.TensorShape.maxTokenLength).map { word in
             Int32(abs(word.hashValue) % 50000 + 1) // Ensure non-zero
         }
     }

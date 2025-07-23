@@ -217,14 +217,14 @@ public final class EnhancedContextualDefaultsProvider: @unchecked Sendable {
         if factors.isEndOfFiscalYear, factors.daysUntilFYEnd < 60 {
             // Urgent delivery needed before FY end
             let maxDays = max(factors.daysUntilFYEnd - 10, 14) // At least 2 weeks
-            suggestedDate = calendar.date(byAdding: .day, value: maxDays, to: Date())!
+            suggestedDate = calendar.date(byAdding: .day, value: maxDays, to: Date()) ?? Date().addingTimeInterval(TimeInterval(maxDays * 86400))
             confidence = 0.9
             reasoning = "End of fiscal year urgency - must deliver before \(factors.fiscalYear) ends"
         }
         // Factor 2: End of quarter considerations
         else if factors.isEndOfQuarter, factors.daysUntilQuarterEnd < 30 {
             let targetDays = min(factors.daysUntilQuarterEnd - 5, 25)
-            suggestedDate = calendar.date(byAdding: .day, value: targetDays, to: Date())!
+            suggestedDate = calendar.date(byAdding: .day, value: targetDays, to: Date()) ?? Date().addingTimeInterval(TimeInterval(targetDays * 86400))
             confidence = 0.85
             reasoning = "End of quarter - delivery before \(factors.fiscalQuarter) ends"
         }

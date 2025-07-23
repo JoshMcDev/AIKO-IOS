@@ -168,7 +168,9 @@ extension SAMGovService: DependencyKey {
                 }
 
                 // Build URL with query parameters
-                var components = URLComponents(string: "https://api.sam.gov/entity-information/v3/entities")!
+                guard var components = URLComponents(string: "https://api.sam.gov/entity-information/v3/entities") else {
+                    throw SAMGovServiceError.invalidURL
+                }
                 components.queryItems = [
                     URLQueryItem(name: "api_key", value: apiKey),
                     URLQueryItem(name: "q", value: query),
@@ -255,7 +257,9 @@ extension SAMGovService: DependencyKey {
 
                 // Build URL for specific entity
                 let urlString = "https://api.sam.gov/entity-information/v3/entities/\(uei)"
-                var components = URLComponents(string: urlString)!
+                guard var components = URLComponents(string: urlString) else {
+                    throw SAMGovServiceError.invalidURL
+                }
                 components.queryItems = [
                     URLQueryItem(name: "api_key", value: apiKey),
                     URLQueryItem(name: "includeSections", value: "entityRegistration,coreData,assertions,repsAndCerts,integrityInformation"),

@@ -4,6 +4,7 @@ import XCTest
 
 /// Integration tests for LFM2Service with tensor rank fix functionality
 /// Validates CoreML pipeline integrity and data flow according to TDD rubric
+@MainActor
 class LFM2ServiceTests: XCTestCase {
     // MARK: - Test Properties
 
@@ -14,11 +15,19 @@ class LFM2ServiceTests: XCTestCase {
 
     override func setUpWithError() throws {
         try super.setUpWithError()
-        lfm2Service = LFM2Service.shared
+        Task {
+            await MainActor.run {
+                lfm2Service = LFM2Service.shared
+            }
+        }
     }
 
     override func tearDown() {
-        lfm2Service = nil
+        Task {
+            await MainActor.run {
+                lfm2Service = nil
+            }
+        }
         super.tearDown()
     }
 

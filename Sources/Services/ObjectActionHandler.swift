@@ -418,7 +418,9 @@ private func executeActionInternal(_ action: ObjectAction) async throws -> Actio
 
 private func handleCreateAction(_ action: ObjectAction) async throws -> ActionOutput {
     // Implementation would create the object based on type
-    let data = "Created \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
+    guard let data = "Created \(action.objectType) with ID: \(action.objectId)".data(using: .utf8) else {
+        throw ObjectActionError.encodingFailed
+    }
     return ActionOutput(type: .json, data: data, metadata: ["created": "true"])
 }
 
@@ -435,43 +437,59 @@ private func handleAnalyzeAction(_ action: ObjectAction) async throws -> ActionO
 
 private func handleGenerateAction(_ action: ObjectAction) async throws -> ActionOutput {
     // Implementation would generate content
-    let generated = "Generated content for \(action.objectType)".data(using: .utf8)!
+    guard let generated = "Generated content for \(action.objectType)".data(using: .utf8) else {
+        throw ObjectActionError.encodingFailed
+    }
     return ActionOutput(type: .document, data: generated, metadata: ["generated": "true"])
 }
 
 // Additional handlers would be implemented similarly...
 private func handleReadAction(_ action: ObjectAction) async throws -> ActionOutput {
-    let data = "Read \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
+    guard let data = "Read \(action.objectType) with ID: \(action.objectId)".data(using: .utf8) else {
+        throw ObjectActionError.encodingFailed
+    }
     return ActionOutput(type: .json, data: data)
 }
 
 private func handleUpdateAction(_ action: ObjectAction) async throws -> ActionOutput {
-    let data = "Updated \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
+    guard let data = "Updated \(action.objectType) with ID: \(action.objectId)".data(using: .utf8) else {
+        throw ObjectActionError.encodingFailed
+    }
     return ActionOutput(type: .json, data: data)
 }
 
 private func handleDeleteAction(_ action: ObjectAction) async throws -> ActionOutput {
-    let data = "Deleted \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
+    guard let data = "Deleted \(action.objectType) with ID: \(action.objectId)".data(using: .utf8) else {
+        throw ObjectActionError.encodingFailed
+    }
     return ActionOutput(type: .json, data: data)
 }
 
 private func handleValidateAction(_ action: ObjectAction) async throws -> ActionOutput {
-    let data = "Validated \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
+    guard let data = "Validated \(action.objectType) with ID: \(action.objectId)".data(using: .utf8) else {
+        throw ObjectActionError.encodingFailed
+    }
     return ActionOutput(type: .json, data: data)
 }
 
 private func handleExecuteAction(_ action: ObjectAction) async throws -> ActionOutput {
-    let data = "Executed \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
+    guard let data = "Executed \(action.objectType) with ID: \(action.objectId)".data(using: .utf8) else {
+        throw ObjectActionError.encodingFailed
+    }
     return ActionOutput(type: .json, data: data)
 }
 
 private func handleLearnAction(_ action: ObjectAction) async throws -> ActionOutput {
-    let data = "Learning from \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
+    guard let data = "Learning from \(action.objectType) with ID: \(action.objectId)".data(using: .utf8) else {
+        throw ObjectActionError.encodingFailed
+    }
     return ActionOutput(type: .json, data: data)
 }
 
 private func handleOptimizeAction(_ action: ObjectAction) async throws -> ActionOutput {
-    let data = "Optimized \(action.objectType) with ID: \(action.objectId)".data(using: .utf8)!
+    guard let data = "Optimized \(action.objectType) with ID: \(action.objectId)".data(using: .utf8) else {
+        throw ObjectActionError.encodingFailed
+    }
     return ActionOutput(type: .json, data: data)
 }
 

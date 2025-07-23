@@ -63,9 +63,9 @@ public final class DomainEventDispatcher: @unchecked Sendable {
 
         handlersQueue.async(flags: .barrier) {
             if self.handlers[typeId] != nil {
-                self.handlers[typeId]!.append(anyHandler)
+                self.handlers[typeId]?.append(anyHandler)
                 // Sort by priority (descending)
-                self.handlers[typeId]!.sort { $0.priority > $1.priority }
+                self.handlers[typeId]?.sort { $0.priority > $1.priority }
             } else {
                 self.handlers[typeId] = [anyHandler]
             }

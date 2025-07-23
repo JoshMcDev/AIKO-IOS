@@ -43,7 +43,7 @@ class LFM2TensorRankFixTests: XCTestCase {
         // RED: Should fail until empty token handling is implemented
         let emptyTokenIds: [Int32] = []
 
-        XCTAssertNoThrow { [self] in
+        XCTAssertNoThrow {
             let tensor = try LFM2TensorRankFix.createRank4TokenTensor(tokenIds: emptyTokenIds)
 
             XCTAssertEqual(tensor.shape.count, 4)

@@ -4,6 +4,7 @@ import CoreML
 
 /// Performance benchmarks and end-to-end validation tests for tensor operations
 /// Implements MoP (Measures of Performance) criteria from TDD rubric
+@MainActor
 class TensorOperationsTests: XCTestCase {
 
     // MARK: - Test Configuration
