@@ -372,7 +372,6 @@ extension DocumentChainManager: DependencyKey {
             }
         )
     }
-}
 
 // MARK: - Chain Errors
 

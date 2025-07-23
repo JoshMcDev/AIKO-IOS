@@ -1,3 +1,4 @@
+#if os(iOS)
 @testable import AIKOiOS
 @testable import AppCore
 import ComposableArchitecture
@@ -625,3 +626,4 @@ struct MediaSettingsView: View {
         }
     }
 }
+#endif

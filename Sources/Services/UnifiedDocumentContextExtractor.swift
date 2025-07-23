@@ -316,20 +316,19 @@ public final class UnifiedDocumentContextExtractor: @unchecked Sendable {
         var lineItems: [APELineItem] = []
 
         for object in result.valueObjects where object.dataType == .currency {
-                if object.fieldName.lowercased().contains("total") {
-                    totalPrice = Decimal(string: object.value.replacingOccurrences(of: "$", with: "")
-                        .replacingOccurrences(of: ",", with: ""))
-                } else {
-                    // Might be a line item price
-                    if let price = Decimal(string: object.value.replacingOccurrences(of: "$", with: "")
-                        .replacingOccurrences(of: ",", with: "")) {
-                        lineItems.append(APELineItem(
-                            description: object.fieldName,
-                            quantity: 1,
-                            unitPrice: price,
-                            totalPrice: price
-                        ))
-                    }
+            if object.fieldName.lowercased().contains("total") {
+                totalPrice = Decimal(string: object.value.replacingOccurrences(of: "$", with: "")
+                    .replacingOccurrences(of: ",", with: ""))
+            } else {
+                // Might be a line item price
+                if let price = Decimal(string: object.value.replacingOccurrences(of: "$", with: "")
+                    .replacingOccurrences(of: ",", with: "")) {
+                    lineItems.append(APELineItem(
+                        description: object.fieldName,
+                        quantity: 1,
+                        unitPrice: price,
+                        totalPrice: price
+                    ))
                 }
             }
         }
@@ -346,20 +345,19 @@ public final class UnifiedDocumentContextExtractor: @unchecked Sendable {
         var hasData = false
 
         for object in result.valueObjects where object.dataType == .date {
-                if let date = parseDate(object.value) {
-                    switch object.fieldName.lowercased() {
-                    case "quote_date", "date":
-                        dates.quoteDate = date
-                        hasData = true
-                    case "valid_until", "expiration":
-                        dates.validUntil = date
-                        hasData = true
-                    case "delivery_date", "due_date":
-                        dates.deliveryDate = date
-                        hasData = true
-                    default:
-                        break
-                    }
+            if let date = parseDate(object.value) {
+                switch object.fieldName.lowercased() {
+                case "quote_date", "date":
+                    dates.quoteDate = date
+                    hasData = true
+                case "valid_until", "expiration":
+                    dates.validUntil = date
+                    hasData = true
+                case "delivery_date", "due_date":
+                    dates.deliveryDate = date
+                    hasData = true
+                default:
+                    break
                 }
             }
         }
@@ -1067,7 +1065,6 @@ public final class UnifiedDocumentContextExtractor: @unchecked Sendable {
 
         return nil
     }
-}
 
 // MARK: - Supporting Types
 

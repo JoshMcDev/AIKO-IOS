@@ -181,13 +181,12 @@ extension SLATemplateService: DependencyKey {
 
                 // Add sections
                 for section in template.sections where !customization.excludedSections.contains(section.title) {
-                        content += """
-                        \(section.title.uppercased())
+                    content += """
+                    \(section.title.uppercased())
 
-                        \(section.content)
+                    \(section.content)
 
-                        """
-                    }
+                    """
                 }
 
                 // Add custom metrics
@@ -345,7 +344,6 @@ extension SLATemplateService: DependencyKey {
             }
         )
     }
-}
 
 // MARK: - Industry-Specific Templates
 

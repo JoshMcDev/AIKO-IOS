@@ -195,15 +195,14 @@ public class SmartDefaultsProvider: @unchecked Sendable {
             .sorted { $0.priority > $1.priority }
 
         for rule in applicableRules where evaluateRuleCondition(rule.condition, context: context) {
-                return SmartDefault(
-                    field: field,
-                    value: rule.value,
-                    confidence: 0.95,
-                    source: .organizationalRule,
-                    reasoning: "Organization policy requires: \(rule.condition)",
-                    alternatives: []
-                )
-            }
+            return SmartDefault(
+                field: field,
+                value: rule.value,
+                confidence: 0.95,
+                source: .organizationalRule,
+                reasoning: "Organization policy requires: \(rule.condition)",
+                alternatives: []
+            )
         }
 
         return nil
@@ -578,7 +577,6 @@ public class SmartDefaultsProvider: @unchecked Sendable {
 
         return Double(cleanValue)
     }
-}
 
 // MARK: - Supporting Types
 

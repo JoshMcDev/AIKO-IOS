@@ -550,7 +550,6 @@ extension FormIntelligenceAdapter: DependencyKey {
                 return insights
             }
         )
-    }
 }
 
 // MARK: - Dependency Values

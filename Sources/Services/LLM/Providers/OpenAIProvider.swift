@@ -407,4 +407,3 @@ public final class OpenAIProvider: LLMProviderProtocol, @unchecked Sendable {
             retryCount: 3
         )
     }
-}

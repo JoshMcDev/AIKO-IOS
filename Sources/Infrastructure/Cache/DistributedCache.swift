@@ -291,7 +291,6 @@ public actor DistributedCache: DistributedCacheProtocol {
                     connections[nodeId] = try await CacheConnection.connect(to: info.endpoint)
 
                     eventSubject.send(.nodeJoined(nodeId: nodeId))
-                    }
                 }
 
                 break // Successfully joined

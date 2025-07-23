@@ -363,7 +363,6 @@ public final class DocumentParserValidator {
             )
         }
     }
-}
 
 // MARK: - Validation Result Type
 

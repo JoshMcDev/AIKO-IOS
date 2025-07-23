@@ -278,4 +278,3 @@ public final class ClaudeProvider: LLMProviderProtocol, @unchecked Sendable {
             retryCount: 3
         )
     }
-}

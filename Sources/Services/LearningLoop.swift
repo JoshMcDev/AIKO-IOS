@@ -365,7 +365,6 @@ private struct InsightGenerator {
         let timeSaving = Double(pattern.frequency) * pattern.significance * 5 // minutes
         return "Save approximately \(Int(timeSaving)) minutes per week"
     }
-}
 
 // MARK: - Adaptive Engine
 

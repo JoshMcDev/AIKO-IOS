@@ -61,8 +61,7 @@ actor APIRequestBatcher {
             let results = try await batchAnalyze(requirements: requirements)
 
             for (index, result) in results.enumerated() where index < batch.count {
-                    batch[index].1.resume(returning: result)
-                }
+                batch[index].1.resume(returning: result)
             }
         } catch {
             // On error, fail all requests in the batch
@@ -119,7 +118,6 @@ actor APIRequestBatcher {
             return (response: response.trimmingCharacters(in: .whitespacesAndNewlines), recommendedDocuments: recommendedTypes)
         }
     }
-}
 
 // MARK: - Dependency Implementation
 

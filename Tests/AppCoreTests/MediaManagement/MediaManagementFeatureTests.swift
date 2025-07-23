@@ -530,8 +530,8 @@ extension MediaManagementFeatureTests {
         MediaWorkflow(
             name: "Test Workflow",
             steps: [
-                WorkflowStep(type: .validate, name: "Validate"),
-                WorkflowStep(type: .compress, name: "Compress"),
+                MediaWorkflowStep(type: .validate, name: "Validate"),
+                MediaWorkflowStep(type: .compress, name: "Compress"),
             ]
         )
     }
