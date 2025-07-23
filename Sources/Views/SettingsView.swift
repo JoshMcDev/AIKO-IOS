@@ -118,7 +118,7 @@ struct SettingsSidebar: View {
             .listStyle(SidebarListStyle())
             .navigationTitle("Settings")
             .frame(minWidth: 200)
-        }
+        })
     }
 }
 
