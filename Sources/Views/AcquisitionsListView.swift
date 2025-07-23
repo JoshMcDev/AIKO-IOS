@@ -204,10 +204,10 @@ struct SearchFilterBar: View {
                     .foregroundColor(.white)
 
                 if !searchText.isEmpty {
-                    Button(action: { searchText = "" }) {
+                    Button(action: { searchText = "" }, label: {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundColor(.secondary)
-                    }
+                    })
                 }
             }
             .padding(.horizontal, Theme.Spacing.medium)
@@ -226,9 +226,9 @@ struct SearchFilterBar: View {
                         }
                         Divider()
                         ForEach(AcquisitionStatus.allCases, id: \.self) { status in
-                            Button(action: { selectedStatus = status }) {
+                            Button(action: { selectedStatus = status }, label: {
                                 Label(status.displayName, systemImage: status.icon)
-                            }
+                            })
                         }
                     } label: {
                         FilterChip(
@@ -435,9 +435,9 @@ struct AcquisitionCard: View {
 
                     Divider()
 
-                    Button(role: .destructive, action: { showingDeleteConfirmation = true }) {
+                    Button(role: .destructive, action: { showingDeleteConfirmation = true }, label: {
                         Label("Delete", systemImage: "trash")
-                    }
+                    })
                 } label: {
                     Image(systemName: "ellipsis.circle")
                         .font(.title3)

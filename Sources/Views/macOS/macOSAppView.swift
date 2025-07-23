@@ -13,7 +13,7 @@
         }
 
         public var body: some View {
-            WithViewStore(store, observe: { $0 }) { viewStore in
+            WithViewStore(store, observe: { $0 }, content: { viewStore in
                 SharedAppView(
                     store: store,
                     services: MacOSAppViewServices()
@@ -29,7 +29,7 @@
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .aikoSheet()
                 }
-            }
+            })
         }
     }
 

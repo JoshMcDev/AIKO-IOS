@@ -93,7 +93,7 @@ struct SAMGovLookupView: View {
                         // Add more button
                         Button(action: {
                             searchEntries.append(SearchEntry())
-                        }) {
+                        }, label: {
                             HStack {
                                 Image(systemName: "plus.circle.fill")
                                     .font(.title2)
@@ -108,7 +108,7 @@ struct SAMGovLookupView: View {
                                 RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                                     .stroke(Theme.Colors.aikoPrimary, style: StrokeStyle(lineWidth: 2, dash: [5]))
                             )
-                        }
+                        })
                         .padding(.horizontal)
 
                         // Search all button
