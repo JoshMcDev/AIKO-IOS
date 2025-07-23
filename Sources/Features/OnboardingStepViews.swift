@@ -320,7 +320,7 @@ struct AddressesStepView: View {
             // Tab selector
             HStack(spacing: 0) {
                 ForEach(ProfileFeature.State.AddressType.allCases, id: \.self) { type in
-                    Button(action: { selectedTab = type }) {
+                    Button(action: { selectedTab = type }, label: {
                         Text(type.rawValue)
                             .font(.caption)
                             .fontWeight(selectedTab == type ? .semibold : .regular)
@@ -330,7 +330,7 @@ struct AddressesStepView: View {
                             .background(
                                 selectedTab == type ? Theme.Colors.aikoAccent : Color.clear
                             )
-                    }
+                    })
                 }
             }
             .background(Theme.Colors.aikoSecondary)
@@ -520,8 +520,13 @@ struct APIKeyStepView: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
 
+<<<<<<< HEAD
                 if let url = URL(string: "https://console.anthropic.com/api") ?? URL(string: "https://anthropic.com") {
                     Link(destination: url) {
+=======
+                if let apiURL = URL(string: "https://console.anthropic.com/api") {
+                    Link(destination: apiURL) {
+>>>>>>> Main
                     HStack {
                         Image(systemName: "link")
                         Text("console.anthropic.com/api")
@@ -530,8 +535,11 @@ struct APIKeyStepView: View {
                     .font(.subheadline)
                     .foregroundColor(Theme.Colors.aikoAccent)
                     }
+<<<<<<< HEAD
+=======
+                    .padding(.vertical, Theme.Spacing.extraSmall)
+>>>>>>> Main
                 }
-                .padding(.vertical, Theme.Spacing.extraSmall)
             }
 
             // API Key Input
@@ -569,10 +577,10 @@ struct APIKeyStepView: View {
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .disabled(isLoading)
 
-                    Button(action: { onToggleShowAPIKey(!showingAPIKey) }) {
+                    Button(action: { onToggleShowAPIKey(!showingAPIKey) }, label: {
                         Image(systemName: showingAPIKey ? "eye.slash" : "eye")
                             .foregroundColor(.secondary)
-                    }
+                    })
 
                     Button(action: onValidate) {
                         if isLoading {

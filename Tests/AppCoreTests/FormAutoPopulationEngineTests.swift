@@ -20,7 +20,7 @@ final class FormAutoPopulationEngineTests: XCTestCase {
         let highConfidenceFields = result.populatedFields.filter { $0.confidence >= 0.85 }
         XCTAssertGreaterThanOrEqual(highConfidenceFields.count, 4, "Should have at least 4 high-confidence fields")
 
-        let averageConfidence = highConfidenceFields.map { $0.confidence }.reduce(0, +) / Double(highConfidenceFields.count)
+        let averageConfidence = highConfidenceFields.map(\.confidence).reduce(0, +) / Double(highConfidenceFields.count)
         XCTAssertGreaterThanOrEqual(averageConfidence, 0.95, "High-confidence fields should achieve ≥95% accuracy")
 
         // Validate specific field extractions
@@ -40,7 +40,7 @@ final class FormAutoPopulationEngineTests: XCTestCase {
         let mediumConfidenceFields = result.populatedFields.filter { $0.confidence >= 0.65 && $0.confidence < 0.85 }
         XCTAssertGreaterThanOrEqual(mediumConfidenceFields.count, 2, "Should have at least 2 medium-confidence fields")
 
-        let averageConfidence = mediumConfidenceFields.map { $0.confidence }.reduce(0, +) / Double(mediumConfidenceFields.count)
+        let averageConfidence = mediumConfidenceFields.map(\.confidence).reduce(0, +) / Double(mediumConfidenceFields.count)
         XCTAssertGreaterThanOrEqual(averageConfidence, 0.85, "Medium-confidence fields should achieve ≥85% accuracy")
 
         // Validate processing time meets performance target
@@ -62,7 +62,7 @@ final class FormAutoPopulationEngineTests: XCTestCase {
 
         // Validate critical field accuracy
         let criticalFields = result.populatedFields.filter { criticalFieldNames.contains($0.fieldName) }
-        let criticalAccuracy = criticalFields.map { $0.confidence }.reduce(0, +) / Double(criticalFields.count)
+        let criticalAccuracy = criticalFields.map(\.confidence).reduce(0, +) / Double(criticalFields.count)
         XCTAssertGreaterThanOrEqual(criticalAccuracy, 0.85, "Critical fields should achieve ≥85% accuracy")
     }
 
@@ -95,7 +95,7 @@ final class FormAutoPopulationEngineTests: XCTestCase {
         let highConfidenceFields = result.populatedFields.filter { $0.confidence >= 0.85 }
         XCTAssertGreaterThanOrEqual(highConfidenceFields.count, 3, "Should have at least 3 high-confidence fields")
 
-        let averageConfidence = highConfidenceFields.map { $0.confidence }.reduce(0, +) / Double(highConfidenceFields.count)
+        let averageConfidence = highConfidenceFields.map(\.confidence).reduce(0, +) / Double(highConfidenceFields.count)
         XCTAssertGreaterThanOrEqual(averageConfidence, 0.95, "High-confidence fields should achieve ≥95% accuracy")
 
         // Validate SF-30 specific fields
@@ -112,7 +112,7 @@ final class FormAutoPopulationEngineTests: XCTestCase {
 
         // Validate ≥85% accuracy for medium-confidence extractions
         let mediumConfidenceFields = result.populatedFields.filter { $0.confidence >= 0.65 && $0.confidence < 0.85 }
-        let averageConfidence = mediumConfidenceFields.isEmpty ? 0 : mediumConfidenceFields.map { $0.confidence }.reduce(0, +) / Double(mediumConfidenceFields.count)
+        let averageConfidence = mediumConfidenceFields.isEmpty ? 0 : mediumConfidenceFields.map(\.confidence).reduce(0, +) / Double(mediumConfidenceFields.count)
 
         if !mediumConfidenceFields.isEmpty {
             XCTAssertGreaterThanOrEqual(averageConfidence, 0.85, "Medium-confidence fields should achieve ≥85% accuracy")
@@ -134,7 +134,7 @@ final class FormAutoPopulationEngineTests: XCTestCase {
         let highConfidenceFields = result.populatedFields.filter { $0.confidence >= 0.85 }
         XCTAssertGreaterThanOrEqual(highConfidenceFields.count, 3, "Should have at least 3 high-confidence fields")
 
-        let averageConfidence = highConfidenceFields.map { $0.confidence }.reduce(0, +) / Double(highConfidenceFields.count)
+        let averageConfidence = highConfidenceFields.map(\.confidence).reduce(0, +) / Double(highConfidenceFields.count)
         XCTAssertGreaterThanOrEqual(averageConfidence, 0.95, "High-confidence fields should achieve ≥95% accuracy")
 
         // Validate DD-1155 specific fields
@@ -333,7 +333,7 @@ final class FormAutoPopulationEngineTests: XCTestCase {
     // MARK: - Helper Methods
 
     private func createHighConfidenceSF1449OCRData() -> GovernmentFormOCRModels.SF1449OCRData {
-        return GovernmentFormOCRModels.SF1449OCRData(
+        GovernmentFormOCRModels.SF1449OCRData(
             solicitationNumber: OCRFieldExtraction(
                 rawText: "W52P1J-23-R-0001",
                 processedText: "W52P1J-23-R-0001",
@@ -382,7 +382,7 @@ final class FormAutoPopulationEngineTests: XCTestCase {
     }
 
     private func createMediumConfidenceSF1449OCRData() -> GovernmentFormOCRModels.SF1449OCRData {
-        return GovernmentFormOCRModels.SF1449OCRData(
+        GovernmentFormOCRModels.SF1449OCRData(
             solicitationNumber: OCRFieldExtraction(
                 rawText: "W52P1J-23-R-000l", // 'l' instead of '1' - OCR error
                 processedText: "W52P1J-23-R-0001",
@@ -405,11 +405,11 @@ final class FormAutoPopulationEngineTests: XCTestCase {
     }
 
     private func createSF1449OCRDataWithCriticalFields() -> GovernmentFormOCRModels.SF1449OCRData {
-        return createHighConfidenceSF1449OCRData()
+        createHighConfidenceSF1449OCRData()
     }
 
     private func createSF1449OCRDataWithNoise() -> GovernmentFormOCRModels.SF1449OCRData {
-        return GovernmentFormOCRModels.SF1449OCRData(
+        GovernmentFormOCRModels.SF1449OCRData(
             solicitationNumber: OCRFieldExtraction(
                 rawText: "W52P1J-23-R-0001",
                 processedText: "W52P1J-23-R-0001",
@@ -432,7 +432,7 @@ final class FormAutoPopulationEngineTests: XCTestCase {
     }
 
     private func createHighConfidenceSF30OCRData() -> GovernmentFormOCRModels.SF30OCRData {
-        return GovernmentFormOCRModels.SF30OCRData(
+        GovernmentFormOCRModels.SF30OCRData(
             amendmentNumber: OCRFieldExtraction(
                 rawText: "0001",
                 processedText: "0001",
@@ -471,7 +471,7 @@ final class FormAutoPopulationEngineTests: XCTestCase {
     }
 
     private func createMediumConfidenceSF30OCRData() -> GovernmentFormOCRModels.SF30OCRData {
-        return GovernmentFormOCRModels.SF30OCRData(
+        GovernmentFormOCRModels.SF30OCRData(
             amendmentNumber: OCRFieldExtraction(
                 rawText: "000l", // OCR error
                 processedText: "0001",
@@ -484,7 +484,7 @@ final class FormAutoPopulationEngineTests: XCTestCase {
     }
 
     private func createHighConfidenceDD1155OCRData() -> GovernmentFormOCRModels.DD1155OCRData {
-        return GovernmentFormOCRModels.DD1155OCRData(
+        GovernmentFormOCRModels.DD1155OCRData(
             requestNumber: OCRFieldExtraction(
                 rawText: "TDY-2025-001",
                 processedText: "TDY-2025-001",
@@ -525,11 +525,11 @@ final class FormAutoPopulationEngineTests: XCTestCase {
     }
 
     private func createDD1155OCRDataWithCriticalFields() -> GovernmentFormOCRModels.DD1155OCRData {
-        return createHighConfidenceDD1155OCRData()
+        createHighConfidenceDD1155OCRData()
     }
 
     private func createHighConfidencePopulatedFields() -> [ExtractedPopulatedField] {
-        return [
+        [
             ExtractedPopulatedField(
                 fieldName: "Solicitation Number",
                 fieldType: .text,
@@ -566,7 +566,7 @@ final class FormAutoPopulationEngineTests: XCTestCase {
     }
 
     private func createPopulatedFieldsWithCAGECode() -> [ExtractedPopulatedField] {
-        return [
+        [
             ExtractedPopulatedField(
                 fieldName: "CAGE Code",
                 fieldType: .text,
@@ -579,7 +579,7 @@ final class FormAutoPopulationEngineTests: XCTestCase {
     }
 
     private func createPopulatedFieldsWithCurrency() -> [ExtractedPopulatedField] {
-        return [
+        [
             ExtractedPopulatedField(
                 fieldName: "Total Amount",
                 fieldType: .currency,
@@ -601,15 +601,15 @@ final class FormAutoPopulationEngineTests: XCTestCase {
 
     private func createLargeFormOCRData() -> GovernmentFormOCRModels.SF1449OCRData {
         // Create a larger dataset for performance testing
-        return createHighConfidenceSF1449OCRData()
+        createHighConfidenceSF1449OCRData()
     }
 
     private func createStandardSF1449OCRData() -> GovernmentFormOCRModels.SF1449OCRData {
-        return createHighConfidenceSF1449OCRData()
+        createHighConfidenceSF1449OCRData()
     }
 
     private func createPopulatedFieldsForConfidenceTest() -> [ExtractedPopulatedField] {
-        return createHighConfidencePopulatedFields()
+        createHighConfidencePopulatedFields()
     }
 
     private func createSF1449TestDocument() -> ScannedDocument {
@@ -701,7 +701,7 @@ final class FormAutoPopulationEngineTests: XCTestCase {
     }
 
     private func createPopulatedFieldsWithInvalidFormats() -> [ExtractedPopulatedField] {
-        return [
+        [
             ExtractedPopulatedField(
                 fieldName: "CAGE Code",
                 fieldType: .text,

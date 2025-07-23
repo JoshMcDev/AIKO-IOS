@@ -519,20 +519,25 @@ public final class DD1155Factory: BaseFormFactory<DD1155Form> {
             purpose: "Order for supplies or services"
         )
 
-        let emptyAddress = try! PostalAddress(
-            street: "TBD",
-            city: "TBD",
-            state: "TBD",
-            zipCode: "00000",
-            country: "USA"
-        )
+        let emptyAddress: PostalAddress
+        do {
+            emptyAddress = try PostalAddress(
+                street: "TBD",
+                city: "TBD",
+                state: "TBD",
+                zipCode: "00000",
+                country: "USA"
+            )
+        } catch {
+            fatalError("Failed to create default postal address: \(error)")
+        }
 
         return DD1155Form(
             metadata: metadata,
             orderInfo: OrderInformation(
                 orderNumber: "ORDER-00000",
                 orderDate: Date(),
-                requisitionNumber: try! RequisitionNumber("REQ-00000"),
+                requisitionNumber: (try? RequisitionNumber("REQ-00000")) ?? RequisitionNumber.default,
                 issuingOffice: OrderInformation.IssuingOfficeInfo(
                     name: "",
                     code: "",
@@ -543,8 +548,8 @@ public final class DD1155Factory: BaseFormFactory<DD1155Form> {
             contractor: ContractorInformation(
                 name: "",
                 address: emptyAddress,
-                cageCode: try! CageCode("00000"),
-                phoneNumber: try! PhoneNumber("000-000-0000")
+                cageCode: (try? CageCode("00000")) ?? CageCode.empty,
+                phoneNumber: (try? PhoneNumber("000-000-0000")) ?? PhoneNumber.empty
             ),
             deliveryInfo: DD1155DeliveryInformation(
                 fobPoint: .destination,
@@ -556,7 +561,7 @@ public final class DD1155Factory: BaseFormFactory<DD1155Form> {
             ),
             itemsOrdered: ItemsOrderedSection(
                 items: [],
-                totalAmount: try! Money(amount: 0, currency: .usd)
+                totalAmount: (try? Money(amount: 0, currency: .usd)) ?? Money.zero
             ),
             accounting: AccountingData(
                 appropriation: "",

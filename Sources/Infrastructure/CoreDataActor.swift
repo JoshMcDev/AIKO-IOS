@@ -199,7 +199,7 @@ public actor CoreDataActor {
     /// Checks if any objects exist matching the predicate
     public func exists(_ type: (some NSManagedObject).Type, predicate: NSPredicate) async throws -> Bool {
         let count = try await count(type, predicate: predicate)
-        return !isEmpty
+        return count > 0
     }
 
     // MARK: - Context Management

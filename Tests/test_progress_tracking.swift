@@ -20,12 +20,12 @@ enum ProgressPhase: String, CaseIterable {
 
     var displayName: String {
         switch self {
-        case .idle: return "Ready"
-        case .preparing: return "Preparing"
-        case .scanning: return "Scanning"
-        case .processing: return "Processing"
-        case .analyzing: return "Analyzing"
-        case .completing: return "Completing"
+        case .idle: "Ready"
+        case .preparing: "Preparing"
+        case .scanning: "Scanning"
+        case .processing: "Processing"
+        case .analyzing: "Analyzing"
+        case .completing: "Completing"
         }
     }
 }
@@ -143,7 +143,7 @@ actor ProgressSessionManager {
     }
 
     func getSessionCount() -> Int {
-        return activeSessions.count
+        activeSessions.count
     }
 }
 

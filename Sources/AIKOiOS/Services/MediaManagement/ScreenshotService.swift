@@ -48,11 +48,11 @@ public actor ScreenshotService: ScreenshotServiceProtocol {
 
     public func checkScreenRecordingPermission() async -> Bool {
         // TODO: Check RPScreenRecorder availability
-        return RPScreenRecorder.shared().isAvailable
+        RPScreenRecorder.shared().isAvailable
     }
 
     public func requestScreenRecordingPermission() async -> Bool {
         // TODO: Check RPScreenRecorder availability
-        return RPScreenRecorder.shared().isAvailable
+        RPScreenRecorder.shared().isAvailable
     }
 }

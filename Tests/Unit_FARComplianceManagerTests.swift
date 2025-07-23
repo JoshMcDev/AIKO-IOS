@@ -84,9 +84,11 @@ final class FARComplianceManagerTests: XCTestCase {
         let clause = try await manager.getClause(number: clauseNumber)
 
         XCTAssertNotNil(clause)
-        XCTAssertEqual(clause?.clauseNumber, clauseNumber)
-        XCTAssertFalse(clause?.title.isEmpty ?? true)
-        XCTAssertFalse(clause?.content.isEmpty ?? true)
+        if let clause = clause {
+            XCTAssertEqual(clause.clauseNumber, clauseNumber)
+            XCTAssertFalse(clause.title.isEmpty)
+            XCTAssertFalse(clause.content.isEmpty)
+        }
     }
 
     func testGetRequiredClausesForAcquisition() async throws {

@@ -19,12 +19,12 @@ public actor FilePickerService: FilePickerServiceProtocol {
 
     public func getSupportedTypes() async -> [AppCore.UTType] {
         // TODO: Return supported UTTypes
-        return []
+        []
     }
 
     public func isTypeSupported(_: AppCore.UTType) async -> Bool {
         // TODO: Check if type is supported
-        return false
+        false
     }
 
     public func setDefaultOptions(_: FilePickerOptions) async {
@@ -33,7 +33,7 @@ public actor FilePickerService: FilePickerServiceProtocol {
 
     public func getCurrentOptions() async -> FilePickerOptions {
         // TODO: Get current options
-        return FilePickerOptions(
+        FilePickerOptions(
             allowedTypes: [],
             allowsMultipleSelection: false,
             maxFileSize: nil

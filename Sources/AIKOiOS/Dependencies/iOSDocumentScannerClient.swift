@@ -693,7 +693,11 @@
                                     width: listBounds.size.width,
                                     height: listBounds.size.height
                                 ),
+<<<<<<< HEAD
                                 listType: currentListType ?? .bulleted
+=======
+                                listType: currentListType ?? .unordered
+>>>>>>> Main
                             ))
 
                             listItems = []

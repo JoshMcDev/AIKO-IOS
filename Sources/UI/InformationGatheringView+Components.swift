@@ -107,7 +107,7 @@ struct SelectionFieldView: View {
             ForEach(options, id: \.self) { option in
                 Button(action: {
                     selectedOption = option
-                }) {
+                }, label: {
                     HStack {
                         Text(option)
                             .foregroundColor(.white)
@@ -126,7 +126,7 @@ struct SelectionFieldView: View {
                         RoundedRectangle(cornerRadius: Theme.CornerRadius.md)
                             .stroke(selectedOption == option ? Color.blue : Color.white.opacity(0.3), lineWidth: 1)
                     )
-                }
+                })
             }
         }
     }

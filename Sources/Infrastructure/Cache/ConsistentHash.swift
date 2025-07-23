@@ -60,8 +60,12 @@ public actor ConsistentHash {
         let position = index < sortedKeys.count ? sortedKeys[index] : sortedKeys[0]
 
         guard let node = ring[position] else {
+<<<<<<< HEAD
             // This should never happen if the ring is properly maintained
             fatalError("Ring inconsistency detected: position \(position) not found")
+=======
+            fatalError("Inconsistent hash ring state: position not found")
+>>>>>>> Main
         }
         return node
     }
@@ -81,8 +85,12 @@ public actor ConsistentHash {
         while replicas.count < count, seenNodes.count < nodeMap.count {
             let position = sortedKeys[index % sortedKeys.count]
             guard let nodeId = ring[position] else {
+<<<<<<< HEAD
                 index += 1
                 continue // Skip invalid positions
+=======
+                fatalError("Inconsistent hash ring state: position not found in replica lookup")
+>>>>>>> Main
             }
 
             if !seenNodes.contains(nodeId) {
@@ -118,9 +126,13 @@ public actor ConsistentHash {
         guard hasNode(nodeId) else { return [] }
 
         // Temporarily remove the node
+<<<<<<< HEAD
         guard let positions = nodeMap[nodeId] else {
             return [] // Node not found
         }
+=======
+        guard let positions = nodeMap[nodeId] else { return [] }
+>>>>>>> Main
         for position in positions {
             ring.removeValue(forKey: position)
         }
@@ -232,9 +244,13 @@ public actor ConsistentHash {
             // Show first 10 positions
             let positions = sortedKeys.prefix(10)
             for position in positions {
+<<<<<<< HEAD
                 guard let nodeId = ring[position] else {
                     continue // Skip invalid positions
                 }
+=======
+                guard let nodeId = ring[position] else { continue }
+>>>>>>> Main
                 output += String(format: "Position %010u -> Node: %@\n", position, nodeId)
             }
 

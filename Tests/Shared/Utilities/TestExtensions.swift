@@ -114,8 +114,8 @@ public enum TestAssertions {
         throw AssertionError(message)
     }
 
-    public static func assertThrows<T>(
-        _ expression: @escaping () async throws -> T,
+    public static func assertThrows(
+        _ expression: @escaping () async throws -> some Any,
         expectedError: (Error) -> Bool = { _ in true },
         message: String = "Expected expression to throw"
     ) async throws {
@@ -154,9 +154,9 @@ public enum PerformanceTesting {
         return (result, duration)
     }
 
-    public static func measureAverageTime<T>(
+    public static func measureAverageTime(
         iterations: Int = 10,
-        operation: () async throws -> T
+        operation: () async throws -> some Any
     ) async rethrows -> TimeInterval {
         var totalTime: TimeInterval = 0
 

@@ -1,6 +1,11 @@
 import ComposableArchitecture
 import Foundation
 
+/// SAM.gov service-specific errors
+public enum SAMGovServiceError: Error, Equatable, Sendable {
+    case invalidURL
+}
+
 /// Service for interacting with SAM.gov Entity API
 public struct SAMGovService: Sendable {
     public var searchEntity: @Sendable (String) async throws -> EntitySearchResult
@@ -169,7 +174,11 @@ extension SAMGovService: DependencyKey {
 
                 // Build URL with query parameters
                 guard var components = URLComponents(string: "https://api.sam.gov/entity-information/v3/entities") else {
+<<<<<<< HEAD
                     throw SAMGovError.networkError("Invalid URL")
+=======
+                    throw SAMGovServiceError.invalidURL
+>>>>>>> Main
                 }
                 components.queryItems = [
                     URLQueryItem(name: "api_key", value: apiKey),
@@ -258,7 +267,11 @@ extension SAMGovService: DependencyKey {
                 // Build URL for specific entity
                 let urlString = "https://api.sam.gov/entity-information/v3/entities/\(uei)"
                 guard var components = URLComponents(string: urlString) else {
+<<<<<<< HEAD
                     throw SAMGovError.networkError("Invalid URL")
+=======
+                    throw SAMGovServiceError.invalidURL
+>>>>>>> Main
                 }
                 components.queryItems = [
                     URLQueryItem(name: "api_key", value: apiKey),

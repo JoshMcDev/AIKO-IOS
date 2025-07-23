@@ -245,11 +245,19 @@ public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable 
                     for try await line in bytes.lines where line.hasPrefix("data: ") {
                         let jsonString = String(line.dropFirst(6))
 
+<<<<<<< HEAD
                         if let data = jsonString.data(using: .utf8),
                            let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
                             if let content = json["content"] as? String {
                                 continuation.yield(LLMStreamChunk(delta: content))
                             }
+=======
+                            if let data = jsonString.data(using: .utf8),
+                               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                                if let content = json["content"] as? String {
+                                    continuation.yield(LLMStreamChunk(delta: content))
+                                }
+>>>>>>> Main
 
                             if let stop = json["stop"] as? Bool, stop {
                                 let stoppedLimit = json["stopped_limit"] as? Bool ?? false

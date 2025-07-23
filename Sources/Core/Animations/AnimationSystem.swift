@@ -52,7 +52,7 @@ struct AnimatedButton<Label: View>: View {
             }
 
             action()
-        }) {
+        }, label: {
             label()
                 .scaleEffect(isPressed ? 0.92 : 1.0)
                 .opacity(isPressed ? 0.8 : 1.0)
@@ -70,7 +70,7 @@ struct AnimatedButton<Label: View>: View {
                     }
                     .clipped()
                 )
-        }
+        })
         .buttonStyle(.plain)
         .onLongPressGesture(minimumDuration: .infinity, maximumDistance: .infinity) {} onPressingChanged: { pressing in
             withAnimation(AnimationSystem.microScale) {

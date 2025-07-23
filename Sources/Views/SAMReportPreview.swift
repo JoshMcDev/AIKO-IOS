@@ -37,12 +37,12 @@ struct SAMReportPreview: View {
                         Spacer()
                         Button(action: {
                             showShareSheet = true
-                        }) {
+                        }, label: {
                             Image(systemName: "square.and.arrow.up")
                                 .foregroundColor(.white)
                                 .padding(8)
                                 .background(Circle().fill(Color.white.opacity(0.1)))
-                        }
+                        })
                     }
                     .padding(.horizontal)
 
@@ -129,11 +129,11 @@ struct SAMReportPreview: View {
 
                             Button(action: {
                                 showingSATBotAlert = true
-                            }) {
+                            }, label: {
                                 Text("View SAT Bot Details")
                                     .foregroundColor(.purple)
                                     .font(.caption)
-                            }
+                            })
                         }
                     }
                     .padding()

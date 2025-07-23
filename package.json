@@ -7,11 +7,7 @@
     "swift-build": "xcodebuild -scheme AIKO -destination 'platform=iOS Simulator,name=iPhone 16 Pro' -skipPackagePluginValidation build",
     "swift-test": "swift test",
     "swift-format": "swiftformat .",
-    "swift-lint": "swiftlint",
-    "prepare": "husky install"
-  },
-  "devDependencies": {
-    "husky": "^9.1.6"
+    "swift-lint": "swiftlint"
   },
   "engines": {
     "node": ">=18.0.0"

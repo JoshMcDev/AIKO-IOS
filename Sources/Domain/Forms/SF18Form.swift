@@ -360,13 +360,18 @@ public final class SF18Factory: BaseFormFactory<SF18Form> {
             purpose: "Request for quotations"
         )
 
-        let emptyAddress = try! PostalAddress(
-            street: "TBD",
-            city: "TBD",
-            state: "TBD",
-            zipCode: "00000",
-            country: "USA"
-        )
+        let emptyAddress: PostalAddress
+        do {
+            emptyAddress = try PostalAddress(
+                street: "TBD",
+                city: "TBD",
+                state: "TBD",
+                zipCode: "00000",
+                country: "USA"
+            )
+        } catch {
+            fatalError("Failed to create default postal address: \(error)")
+        }
 
         return SF18Form(
             metadata: metadata,
@@ -389,7 +394,7 @@ public final class SF18Factory: BaseFormFactory<SF18Form> {
                 contractingOfficer: SolicitationInformation.ContractingOfficerInfo(
                     name: "",
                     title: "",
-                    phoneNumber: try! PhoneNumber("000-000-0000"),
+                    phoneNumber: (try? PhoneNumber("000-000-0000")) ?? PhoneNumber.empty,
                     email: nil
                 )
             )

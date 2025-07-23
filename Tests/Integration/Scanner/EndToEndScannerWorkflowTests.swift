@@ -535,9 +535,9 @@ private enum TestError: Error {
 
     var localizedDescription: String {
         switch self {
-        case .noPages: return "Document has no pages"
-        case .processingFailed: return "Processing failed"
-        case .invalidConfiguration: return "Invalid test configuration"
+        case .noPages: "Document has no pages"
+        case .processingFailed: "Processing failed"
+        case .invalidConfiguration: "Invalid test configuration"
         }
     }
 }
@@ -546,7 +546,7 @@ private enum TestError: Error {
 
 private extension Array {
     func chunked(into size: Int) -> [[Element]] {
-        return stride(from: 0, to: count, by: size).map {
+        stride(from: 0, to: count, by: size).map {
             Array(self[$0 ..< Swift.min($0 + size, count)])
         }
     }

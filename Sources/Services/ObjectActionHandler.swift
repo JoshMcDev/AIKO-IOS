@@ -415,7 +415,13 @@ private func executeActionInternal(_ action: ObjectAction) async throws -> Actio
 
 private func handleCreateAction(_ action: ObjectAction) async throws -> ActionOutput {
     // Implementation would create the object based on type
+<<<<<<< HEAD
     let data = Data("Created \(action.objectType) with ID: \(action.objectId)".utf8)
+=======
+    guard let data = "Created \(action.objectType) with ID: \(action.objectId)".data(using: .utf8) else {
+        throw ObjectActionError.encodingFailed
+    }
+>>>>>>> Main
     return ActionOutput(type: .json, data: data, metadata: ["created": "true"])
 }
 
@@ -432,43 +438,91 @@ private func handleAnalyzeAction(_ action: ObjectAction) async throws -> ActionO
 
 private func handleGenerateAction(_ action: ObjectAction) async throws -> ActionOutput {
     // Implementation would generate content
+<<<<<<< HEAD
     let generated = Data("Generated content for \(action.objectType)".utf8)
+=======
+    guard let generated = "Generated content for \(action.objectType)".data(using: .utf8) else {
+        throw ObjectActionError.encodingFailed
+    }
+>>>>>>> Main
     return ActionOutput(type: .document, data: generated, metadata: ["generated": "true"])
 }
 
 // Additional handlers would be implemented similarly...
 private func handleReadAction(_ action: ObjectAction) async throws -> ActionOutput {
+<<<<<<< HEAD
     let data = Data("Read \(action.objectType) with ID: \(action.objectId)".utf8)
+=======
+    guard let data = "Read \(action.objectType) with ID: \(action.objectId)".data(using: .utf8) else {
+        throw ObjectActionError.encodingFailed
+    }
+>>>>>>> Main
     return ActionOutput(type: .json, data: data)
 }
 
 private func handleUpdateAction(_ action: ObjectAction) async throws -> ActionOutput {
+<<<<<<< HEAD
     let data = Data("Updated \(action.objectType) with ID: \(action.objectId)".utf8)
+=======
+    guard let data = "Updated \(action.objectType) with ID: \(action.objectId)".data(using: .utf8) else {
+        throw ObjectActionError.encodingFailed
+    }
+>>>>>>> Main
     return ActionOutput(type: .json, data: data)
 }
 
 private func handleDeleteAction(_ action: ObjectAction) async throws -> ActionOutput {
+<<<<<<< HEAD
     let data = Data("Deleted \(action.objectType) with ID: \(action.objectId)".utf8)
+=======
+    guard let data = "Deleted \(action.objectType) with ID: \(action.objectId)".data(using: .utf8) else {
+        throw ObjectActionError.encodingFailed
+    }
+>>>>>>> Main
     return ActionOutput(type: .json, data: data)
 }
 
 private func handleValidateAction(_ action: ObjectAction) async throws -> ActionOutput {
+<<<<<<< HEAD
     let data = Data("Validated \(action.objectType) with ID: \(action.objectId)".utf8)
+=======
+    guard let data = "Validated \(action.objectType) with ID: \(action.objectId)".data(using: .utf8) else {
+        throw ObjectActionError.encodingFailed
+    }
+>>>>>>> Main
     return ActionOutput(type: .json, data: data)
 }
 
 private func handleExecuteAction(_ action: ObjectAction) async throws -> ActionOutput {
+<<<<<<< HEAD
     let data = Data("Executed \(action.objectType) with ID: \(action.objectId)".utf8)
+=======
+    guard let data = "Executed \(action.objectType) with ID: \(action.objectId)".data(using: .utf8) else {
+        throw ObjectActionError.encodingFailed
+    }
+>>>>>>> Main
     return ActionOutput(type: .json, data: data)
 }
 
 private func handleLearnAction(_ action: ObjectAction) async throws -> ActionOutput {
+<<<<<<< HEAD
     let data = Data("Learning from \(action.objectType) with ID: \(action.objectId)".utf8)
+=======
+    guard let data = "Learning from \(action.objectType) with ID: \(action.objectId)".data(using: .utf8) else {
+        throw ObjectActionError.encodingFailed
+    }
+>>>>>>> Main
     return ActionOutput(type: .json, data: data)
 }
 
 private func handleOptimizeAction(_ action: ObjectAction) async throws -> ActionOutput {
+<<<<<<< HEAD
     let data = Data("Optimized \(action.objectType) with ID: \(action.objectId)".utf8)
+=======
+    guard let data = "Optimized \(action.objectType) with ID: \(action.objectId)".data(using: .utf8) else {
+        throw ObjectActionError.encodingFailed
+    }
+>>>>>>> Main
     return ActionOutput(type: .json, data: data)
 }
 
@@ -597,6 +651,23 @@ private enum ActionExecutionError: LocalizedError {
             "Missing capabilities: \(capabilities.map(\.rawValue).joined(separator: ", "))"
         case let .executionFailed(reason):
             "Execution failed: \(reason)"
+        }
+    }
+}
+
+private enum ObjectActionError: LocalizedError {
+    case encodingFailed
+    case invalidInput(String)
+    case processingFailed(String)
+    
+    var errorDescription: String? {
+        switch self {
+        case .encodingFailed:
+            "Failed to encode action output"
+        case let .invalidInput(reason):
+            "Invalid input: \(reason)"
+        case let .processingFailed(reason):
+            "Processing failed: \(reason)"
         }
     }
 }

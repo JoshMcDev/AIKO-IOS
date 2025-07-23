@@ -398,7 +398,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
     // MARK: - Helper Methods
 
     private func createGovernmentFormFields() -> [RequirementField] {
-        return [
+        [
             .projectTitle,
             .contractNumber,
             .vendorName,
@@ -413,7 +413,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
     }
 
     private func createCriticalGovernmentFields() -> [RequirementField] {
-        return [
+        [
             .estimatedValue,
             .fundingSource,
             .contractType,
@@ -424,11 +424,11 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
     }
 
     private func createExtensiveGovernmentFormFields() -> [RequirementField] {
-        return RequirementField.allCases.prefix(20).map { $0 }
+        RequirementField.allCases.prefix(20).map { $0 }
     }
 
     private func createGovernmentFormContext() -> SmartDefaultContext {
-        return SmartDefaultContext(
+        SmartDefaultContext(
             sessionId: UUID(),
             userId: "government-user",
             organizationUnit: "Procurement Office",
@@ -450,7 +450,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
     }
 
     private func createHighValueContractContext() -> SmartDefaultContext {
-        return SmartDefaultContext(
+        SmartDefaultContext(
             sessionId: UUID(),
             userId: "contracting-officer",
             organizationUnit: "Contracting Office",
@@ -467,7 +467,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
     }
 
     private func createContextWithCAGECode() -> SmartDefaultContext {
-        return SmartDefaultContext(
+        SmartDefaultContext(
             sessionId: UUID(),
             userId: "test-user",
             extractedData: ["cageCode": "1ABC5"],
@@ -476,7 +476,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
     }
 
     private func createContextWithUEI() -> SmartDefaultContext {
-        return SmartDefaultContext(
+        SmartDefaultContext(
             sessionId: UUID(),
             userId: "test-user",
             extractedData: ["uei": "ABC123DEF456"],
@@ -485,7 +485,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
     }
 
     private func createContextWithCurrency() -> SmartDefaultContext {
-        return SmartDefaultContext(
+        SmartDefaultContext(
             sessionId: UUID(),
             userId: "test-user",
             extractedData: [
@@ -497,7 +497,7 @@ final class ConfidenceBasedAutoFillEnhancedTests: XCTestCase {
     }
 
     private func createContextWithDates() -> SmartDefaultContext {
-        return SmartDefaultContext(
+        SmartDefaultContext(
             sessionId: UUID(),
             userId: "test-user",
             extractedData: [

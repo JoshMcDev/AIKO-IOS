@@ -150,7 +150,7 @@ public struct LLMConfirmationDialog: View {
 
                                 Button(action: {
                                     viewStore.send(.analysis(.confirmRequirements(true)))
-                                }) {
+                                }, label: {
                                     HStack(spacing: Theme.Spacing.medium) {
                                         Image(systemName: "checkmark.circle.fill")
                                             .font(.title3)
@@ -170,7 +170,7 @@ public struct LLMConfirmationDialog: View {
                                     )
                                     .cornerRadius(Theme.CornerRadius.large)
                                     .shadow(color: .green.opacity(0.3), radius: 8, x: 0, y: 4)
-                                }
+                                })
                                 .padding(.horizontal, Theme.Spacing.large)
                                 .padding(.vertical, Theme.Spacing.large)
                                 .background(Color.black)
@@ -182,7 +182,7 @@ public struct LLMConfirmationDialog: View {
                 .modifier(NavigationBarHiddenModifier())
                 .preferredColorScheme(.dark)
             }
-        }
+        })
     }
 
     private func statusColor(for status: DocumentStatusFeature.DocumentStatus) -> Color {
@@ -311,16 +311,16 @@ public struct DocumentRecommendationDialog: View {
                     VStack(spacing: Theme.Spacing.medium) {
                         Button(action: {
                             viewStore.send(.generateRecommendedDocuments)
-                        }) {
+                        }, label: {
                             Text("Auto-Generate Recommended Documents")
-                        }
+                        })
                         .aikoButton(variant: .primary, size: .large)
 
                         Button(action: {
                             viewStore.send(.analysis(.showDocumentRecommendation(false)))
-                        }) {
+                        }, label: {
                             Text("Let Me Select Manually")
-                        }
+                        })
                         .aikoButton(variant: .secondary, size: .medium)
                     }
                     .padding(.horizontal, Theme.Spacing.large)
@@ -398,7 +398,7 @@ public struct DeliveryOptionsDialog: View {
                         ForEach(DocumentDeliveryFeature.DeliveryOption.allCases, id: \.self) { option in
                             Button(action: {
                                 viewStore.send(.delivery(.deliverDocuments(option)))
-                            }) {
+                            }, label: {
                                 HStack(spacing: Theme.Spacing.large) {
                                     Image(systemName: option.icon)
                                         .font(.title2)
@@ -420,7 +420,7 @@ public struct DeliveryOptionsDialog: View {
                                     RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
                                         .stroke(Color.blue.opacity(0.3), lineWidth: 1)
                                 )
-                            }
+                            })
                             .buttonStyle(PlainButtonStyle())
                         }
                     }
@@ -517,17 +517,17 @@ public struct EmailConfirmationDialog: View {
                     VStack(spacing: Theme.Spacing.medium) {
                         Button(action: {
                             viewStore.send(.delivery(.sendDocumentsViaEmail))
-                        }) {
+                        }, label: {
                             Text("Send Documents")
-                        }
+                        })
                         .aikoButton(variant: .primary, size: .large)
                         .disabled(!canSendEmail(viewStore))
 
                         Button(action: {
                             viewStore.send(.delivery(.showEmailConfirmation(false)))
-                        }) {
+                        }, label: {
                             Text("Cancel")
-                        }
+                        })
                         .aikoButton(variant: .ghost, size: .medium)
                     }
                     .padding(.horizontal, Theme.Spacing.large)

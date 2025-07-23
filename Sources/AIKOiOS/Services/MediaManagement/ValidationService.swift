@@ -39,12 +39,12 @@ public actor ValidationService: ValidationServiceProtocol {
 
     public func generateRulesForContentType(_: String) async -> ValidationRules {
         // TODO: Return type-specific rules
-        return ValidationRules()
+        ValidationRules()
     }
 
     public func getDefaultRules() async -> ValidationRules {
         // TODO: Return default validation rules
-        return ValidationRules()
+        ValidationRules()
     }
 
     public func validateBatch(_: [(Data, ValidationRules)]) async throws -> [Bool] {

@@ -1044,11 +1044,11 @@ struct UnifiedInputBar: View {
                         store.send(.sendMessage(inputText))
                         inputText = ""
                     }
-                }) {
+                }, label: {
                     Image(systemName: "arrow.up.circle.fill")
                         .font(.title2)
                         .foregroundColor(inputText.isEmpty ? .gray : .blue)
-                }
+                })
                 .disabled(inputText.isEmpty)
             }
             .padding()

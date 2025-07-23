@@ -68,9 +68,9 @@
             AnyView(
                 MacOSDocumentDropZone(onDocumentsDropped: { documents in
                     onItemsDropped(documents.map { $0 as Any })
-                }) {
+                }, content: {
                     content()
-                }
+                })
             )
         }
     }

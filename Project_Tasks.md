@@ -180,7 +180,7 @@
 #### Core GraphRAG System
 - [ ] **Implement On-Device GraphRAG with LFM2 Models and Auto-Update System**
   - Priority: High
-  - Status: 🚧 Planning - Complete architecture designed, ready for implementation
+  - Status: 🚧 Not started - Reset for Phase 5 restart
   - Description: Full on-device GraphRAG system using Liquid AI's LFM2-700M-GGUF Q6_K (612MB) for embeddings and vector search. Includes auto-update regulation processing, personal repository support, and offline-first architecture.
   - **Key Architecture**: HTML → regulationParser.ts → Text Chunks → LFM2 → Vector Embeddings → ObjectBox → Instant Semantic Search
   - **Model Specifications**: LFM2-700M-GGUF Q6_K variant (612MB, optimal quality/size balance)
@@ -193,16 +193,24 @@
     - Local vector search and retrieval with sub-second performance
     - Smart update detection (timestamps/hashes) for minimal data transfer
 
-- [x] **Convert LFM2-700M-GGUF Q6_K to Core ML Format and Embed in Project**
+- [ ] **Convert LFM2-700M-GGUF Q6_K to Core ML Format and Embed in Project**
   - Priority: High
+<<<<<<< HEAD
   - Status: ✅ **COMPLETED** - Model successfully converted and integrated with Git LFS
   - Description: LFM2-700M-Unsloth-XL (607MB GGUF → 149MB Core ML) integrated into AIKO project with comprehensive Swift service layer for dual-domain GraphRAG (regulations + user records).
   - **Model Location**: `/Users/J/aiko/Sources/Resources/LFM2-700M-Unsloth-XL-GraphRAG.mlmodel` (149MB)
   - **Git LFS**: Configured for large file handling, successfully pushed to GitHub
   - **Swift Service**: `LFM2Service.swift` actor-based wrapper implemented and ready
+=======
+  - Status: 🚧 Not started - Reset for Phase 5 restart
+  - Description: Convert LFM2-700M-Unsloth-XL-GraphRAG.mlmodel (correct model) and integrate into AIKO project with comprehensive Swift service layer for dual-domain GraphRAG (regulations + user records).
+  - **Model File**: `LFM2-700M-Unsloth-XL-GraphRAG.mlmodel` (current CoreML model with tensor rank issues)
+  - **Swift Service**: `LFM2Service.swift` actor-based wrapper implemented
+>>>>>>> Main
   - **Target Integration**: Dual-namespace GraphRAG supporting both government regulations and user acquisition records
   - **Performance**: Core ML optimized for iOS with 75% size reduction (607MB → 149MB)
   - Technical Tasks:
+<<<<<<< HEAD
     - ✅ Model downloaded (unsloth/LFM2-700M-GGUF UD-Q6_K_XL variant - 607MB)
     - ✅ Core ML conversion environment setup with Python virtual environment
     - ✅ **Core ML conversion completed** - 149MB working model created
@@ -217,6 +225,16 @@
     - ⏳ Test embedding performance (target: < 2s per 512-token chunk)
     - ⏳ Validate semantic similarity quality across both domains
     - ⏳ Document memory usage patterns (target: < 800MB peak during processing)
+=======
+    - [ ] Fix CoreML model tensor rank error (token_embedding layer rank 2 → rank 4+)
+    - [ ] Validate model input/output specifications
+    - [ ] Test model loading in LFM2Service.swift
+    - [ ] Implement dual-domain embedding generation architecture (regulations + user records)
+    - [ ] Add performance monitoring and error handling infrastructure
+    - [ ] Test embedding performance (target: < 2s per 512-token chunk)
+    - [ ] Validate semantic similarity quality across both domains
+    - [ ] Document memory usage patterns (target: < 800MB peak during processing)
+>>>>>>> Main
 
 - [ ] **Implement ObjectBox Semantic Index Vector Database with Auto-Update Support**
   - Priority: High  

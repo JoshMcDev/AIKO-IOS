@@ -71,7 +71,7 @@ public struct CustomTemplateDetailView: View {
                     HStack(spacing: Theme.Spacing.medium) {
                         Button(action: {
                             showingDeleteConfirmation = true
-                        }) {
+                        }, label: {
                             Label("Delete Template", systemImage: "trash")
                                 .font(.subheadline)
                                 .foregroundColor(.red)
@@ -81,7 +81,7 @@ public struct CustomTemplateDetailView: View {
                                     RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                                         .fill(Color.red.opacity(0.2))
                                 )
-                        }
+                        })
 
                         Spacer()
 
@@ -91,7 +91,7 @@ public struct CustomTemplateDetailView: View {
                             } else {
                                 startEditing()
                             }
-                        }) {
+                        }, label: {
                             Label(isEditing ? "Save Changes" : "Edit Template",
                                   systemImage: isEditing ? "checkmark.circle" : "pencil.circle")
                                 .font(.subheadline)
@@ -102,7 +102,7 @@ public struct CustomTemplateDetailView: View {
                                     RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                                         .fill(isEditing ? Color.green.opacity(0.2) : Theme.Colors.aikoSecondary)
                                 )
-                        }
+                        })
 
                         if isEditing {
                             Button(action: cancelEditing) {

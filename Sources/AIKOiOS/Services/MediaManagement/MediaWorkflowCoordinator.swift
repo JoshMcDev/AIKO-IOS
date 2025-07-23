@@ -20,7 +20,7 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
 
     public func getWorkflowDefinitions() async -> [WorkflowDefinition] {
         // TODO: Return workflow definitions
-        return []
+        []
     }
 
     public func createWorkflowFromTemplate(_: WorkflowTemplate) async throws -> MediaWorkflow {
@@ -30,12 +30,12 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
 
     public func getExecutionStatus(_: WorkflowExecutionHandle) async throws -> WorkflowExecutionStatus {
         // TODO: Get execution status
-        return .failed
+        .failed
     }
 
     public func getExecutionResults(_ handle: WorkflowExecutionHandle) async throws -> WorkflowExecutionResult {
         // TODO: Get execution results
-        return WorkflowExecutionResult(
+        WorkflowExecutionResult(
             handle: handle,
             status: .failed,
             executionTime: 0.0
@@ -44,22 +44,22 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
 
     public func getAvailableTemplates() async -> [WorkflowTemplate] {
         // TODO: Return available templates
-        return []
+        []
     }
 
     public func getWorkflowCategories() async -> [WorkflowCategory] {
         // TODO: Return workflow categories
-        return []
+        []
     }
 
     public func getWorkflowHistory(limit _: Int) async -> [WorkflowExecutionResult] {
         // TODO: Return workflow history
-        return []
+        []
     }
 
     public func validateWorkflow(_: WorkflowDefinition) async -> WorkflowValidationResult {
         // TODO: Validate workflow definition
-        return WorkflowValidationResult(isValid: true)
+        WorkflowValidationResult(isValid: true)
     }
 
     // MARK: - Extended Methods
@@ -108,7 +108,7 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
 
     public func listWorkflowTemplates() async -> [WorkflowTemplate] {
         // TODO: List workflow templates
-        return []
+        []
     }
 
     public func deleteWorkflowTemplate(_: String) async throws {

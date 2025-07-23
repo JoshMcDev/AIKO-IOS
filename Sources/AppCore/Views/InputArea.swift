@@ -99,23 +99,23 @@ public struct InputArea: View {
                             if !requirements.isEmpty {
                                 onEnhancePrompt()
                             }
-                        }) {
+                        }, label: {
                             Image(systemName: "sparkles")
                                 .font(.title3)
                                 .foregroundColor(!requirements.isEmpty ? .yellow : .secondary)
                                 .frame(width: 32, height: 32)
                                 .scaleEffect(!requirements.isEmpty ? 1.0 : 0.9)
                                 .animation(.easeInOut(duration: 0.2), value: requirements.isEmpty)
-                        }
+                        })
                         .disabled(requirements.isEmpty || isGenerating)
 
                         // Upload options
-                        Button(action: { showingUploadOptions.toggle() }) {
+                        Button(action: { showingUploadOptions.toggle() }, label: {
                             Image(systemName: "plus")
                                 .font(.title3)
                                 .foregroundColor(.secondary)
                                 .frame(width: 32, height: 32)
-                        }
+                        })
                         .confirmationDialog("Add Content", isPresented: $showingUploadOptions) {
                             Button("📄 Upload Documents") {
                                 onShowDocumentPicker()
@@ -135,14 +135,14 @@ public struct InputArea: View {
                             } else {
                                 onStartRecording()
                             }
-                        }) {
+                        }, label: {
                             Image(systemName: isRecording ? "mic.fill" : "mic")
                                 .font(.title3)
                                 .foregroundColor(isRecording ? .red : .secondary)
                                 .frame(width: 32, height: 32)
                                 .scaleEffect(isRecording ? 1.2 : 1.0)
                                 .animation(.easeInOut(duration: 0.2), value: isRecording)
-                        }
+                        })
                         .disabled(isGenerating && !isRecording)
 
                         // Analyze button

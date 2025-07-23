@@ -217,14 +217,22 @@ public final class EnhancedContextualDefaultsProvider: @unchecked Sendable {
         if factors.isEndOfFiscalYear, factors.daysUntilFYEnd < 60 {
             // Urgent delivery needed before FY end
             let maxDays = max(factors.daysUntilFYEnd - 10, 14) // At least 2 weeks
+<<<<<<< HEAD
             suggestedDate = calendar.date(byAdding: .day, value: maxDays, to: Date()) ?? Date().addingTimeInterval(TimeInterval(maxDays * 24 * 60 * 60))
+=======
+            suggestedDate = calendar.date(byAdding: .day, value: maxDays, to: Date()) ?? Date().addingTimeInterval(TimeInterval(maxDays * 86400))
+>>>>>>> Main
             confidence = 0.9
             reasoning = "End of fiscal year urgency - must deliver before \(factors.fiscalYear) ends"
         }
         // Factor 2: End of quarter considerations
         else if factors.isEndOfQuarter, factors.daysUntilQuarterEnd < 30 {
             let targetDays = min(factors.daysUntilQuarterEnd - 5, 25)
+<<<<<<< HEAD
             suggestedDate = calendar.date(byAdding: .day, value: targetDays, to: Date()) ?? Date().addingTimeInterval(TimeInterval(targetDays * 24 * 60 * 60))
+=======
+            suggestedDate = calendar.date(byAdding: .day, value: targetDays, to: Date()) ?? Date().addingTimeInterval(TimeInterval(targetDays * 86400))
+>>>>>>> Main
             confidence = 0.85
             reasoning = "End of quarter - delivery before \(factors.fiscalQuarter) ends"
         }
@@ -615,15 +623,25 @@ public final class EnhancedContextualDefaultsProvider: @unchecked Sendable {
         let validated = defaults
 
         // Validation 1: Payment terms should align with vendor preferences
+<<<<<<< HEAD
         if validated[.paymentTerms] != nil,
            validated[.vendorName] != nil {
+=======
+        if let _ = validated[.paymentTerms],
+           let _ = validated[.vendorName] {
+>>>>>>> Main
             // Adjust payment terms based on vendor history
             // Implementation would check vendor payment history
         }
 
         // Validation 2: Delivery date should consider inspection requirements
+<<<<<<< HEAD
         if validated[.requiredDate] != nil,
            validated[.inspectionRequirements] != nil {
+=======
+        if let _ = validated[.requiredDate],
+           let _ = validated[.inspectionRequirements] {
+>>>>>>> Main
             // Add buffer for inspection time if needed
             // Implementation would adjust dates accordingly
         }

@@ -81,7 +81,7 @@ struct SettingsView: View {
                     Text(error)
                 }
             }
-        }
+        })
     }
 }
 
@@ -94,7 +94,7 @@ struct SettingsSidebar: View {
                 ForEach(SettingsFeature.SettingsSection.allCases, id: \.self) { section in
                     Button(action: {
                         viewStore.send(.selectSection(section))
-                    }) {
+                    }, label: {
                         HStack {
                             Image(systemName: section.icon)
                                 .frame(width: 20)
@@ -105,7 +105,7 @@ struct SettingsSidebar: View {
                                     .foregroundColor(.accentColor)
         })
                         }
-                    }
+                    })
                     .buttonStyle(PlainButtonStyle())
                     .padding(.vertical, 4)
                     .background(
@@ -118,7 +118,7 @@ struct SettingsSidebar: View {
             .listStyle(SidebarListStyle())
             .navigationTitle("Settings")
             .frame(minWidth: 200)
-        }
+        })
     }
 }
 
@@ -191,13 +191,13 @@ struct GeneralSettingsView: View {
                                         .overlay(
                                             Circle()
                                                 .stroke(
-                                                    store.appSettings.accentColor == color ?
+                                                    viewStore.appSettings.accentColor == color ?
                                                         Color.primary : Color.clear,
                                                     lineWidth: 2
                                                 )
                                         )
                                         .onTapGesture {
-                                            store.send(.updateAccentColor(color))
+                                            viewStore.send(.updateAccentColor(color))
                                         }
                                 }
                             }
@@ -246,12 +246,12 @@ struct GeneralSettingsView: View {
                             send: { .toggleAutoSave($0) }
                         ))
 
-                        if store.appSettings.autoSaveEnabled {
+                        if viewStore.appSettings.autoSaveEnabled {
                             HStack {
                                 Text("Auto-save interval")
                                 Spacer()
                                 Stepper(
-                                    "\(store.appSettings.autoSaveInterval) seconds",
+                                    "\(viewStore.appSettings.autoSaveInterval) seconds",
                                     value: viewStore.binding(
                                         get: { $0.appSettings.autoSaveInterval },
                                         send: { .updateAutoSaveInterval($0) }
@@ -297,7 +297,7 @@ struct GeneralSettingsView: View {
                             send: { .toggleBackup($0) }
                         ))
 
-                        if store.appSettings.backupEnabled {
+                        if viewStore.appSettings.backupEnabled {
                             HStack {
                                 Text("Backup schedule")
                                 Spacer()
@@ -313,7 +313,7 @@ struct GeneralSettingsView: View {
                                 .frame(width: 150)
                             }
 
-                            if let nextBackup = store.appSettings.nextScheduledBackup {
+                            if let nextBackup = viewStore.appSettings.nextScheduledBackup {
                                 HStack {
                                     Text("Next backup")
                                     Spacer()
@@ -323,7 +323,7 @@ struct GeneralSettingsView: View {
                             }
                         }
 
-                        if let lastBackup = store.appSettings.lastBackupDate {
+                        if let lastBackup = viewStore.appSettings.lastBackupDate {
                             HStack {
                                 Text("Last backup")
                                 Spacer()
@@ -334,7 +334,7 @@ struct GeneralSettingsView: View {
 
                         HStack {
                             Button("Backup Now") {
-                                store.send(.backupNow)
+                                viewStore.send(.backupNow)
                             }
                             .buttonStyle(.borderedProminent)
 
@@ -347,7 +347,7 @@ struct GeneralSettingsView: View {
                         // Restore button
                         HStack {
                             Button(role: .destructive) {
-                                store.send(.restoreDefaults)
+                                viewStore.send(.restoreDefaults)
                             } label: {
                                 Label("Restore to Factory Settings", systemImage: "arrow.counterclockwise")
                             }
@@ -383,7 +383,7 @@ struct GeneralSettingsView: View {
             } message: {
                 Text("Are you sure you want to restore the app to factory settings? This will:\n\n• Clear all settings\n• Remove all saved data\n• Delete your API key\n• Clear all caches\n\nThis action cannot be undone.")
             }
-        }
+        })
     }
 }
 
@@ -436,8 +436,13 @@ struct APISettingsView: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
 
+<<<<<<< HEAD
                         if let url = URL(string: "https://open.gsa.gov/api/entity-api/") {
                             Link("Get a free API key at SAM.gov", destination: url)
+=======
+                        if let samURL = URL(string: "https://open.gsa.gov/api/entity-api/") {
+                            Link("Get a free API key at SAM.gov", destination: samURL)
+>>>>>>> Main
                                 .font(.caption)
                         }
                     }
@@ -451,10 +456,10 @@ struct APISettingsView: View {
                             Text("Manage Anthropic API Keys")
                                 .font(.headline)
                             Spacer()
-                            Button(action: { showingAddKey = true }) {
+                            Button(action: { showingAddKey = true }, label: {
                                 Label("Add Key", systemImage: "plus.circle.fill")
                                     .font(.subheadline)
-                            }
+                            })
                             .buttonStyle(.borderedProminent)
                         }
 
@@ -504,7 +509,7 @@ struct APISettingsView: View {
                     }
                 )
             }
-        }
+        })
     }
 }
 
@@ -685,7 +690,7 @@ struct DocumentSettingsView: View {
                     }
                 }
             }
-        }
+        })
     }
 }
 
@@ -706,7 +711,7 @@ struct NotificationSettingsView: View {
         })
                 }
             }
-        }
+        })
     }
 }
 
@@ -745,7 +750,7 @@ struct DataPrivacySettingsView: View {
                     }
                 }
             }
-        }
+        })
     }
 }
 
@@ -872,7 +877,7 @@ struct AdvancedSettingsView: View {
                     }
                 }
             }
-        }
+        })
     }
 }
 

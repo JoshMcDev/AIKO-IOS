@@ -19,7 +19,7 @@ struct ShareButton: View {
     }
 
     var body: some View {
-        Button(action: { showShareSheet = true }) {
+        Button(action: { showShareSheet = true }, label: {
             switch buttonStyle {
             case .icon:
                 Image(systemName: "square.and.arrow.up")
@@ -35,7 +35,7 @@ struct ShareButton: View {
                 }
                 .foregroundColor(Theme.Colors.aikoPrimary)
             }
-        }
+        })
         .task(id: showShareSheet) {
             if showShareSheet {
                 await shareContent()

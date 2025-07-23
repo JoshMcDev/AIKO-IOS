@@ -267,6 +267,7 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
                     for try await line in bytes.lines where line.hasPrefix("data: ") {
                         let jsonString = String(line.dropFirst(6))
 
+<<<<<<< HEAD
                         if let data = jsonString.data(using: .utf8),
                            let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                            let candidates = json["candidates"] as? [[String: Any]],
@@ -276,6 +277,17 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
                            let firstPart = parts.first,
                            let text = firstPart["text"] as? String {
                             continuation.yield(LLMStreamChunk(delta: text))
+=======
+                            if let data = jsonString.data(using: .utf8),
+                               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                               let candidates = json["candidates"] as? [[String: Any]],
+                               let firstCandidate = candidates.first,
+                               let content = firstCandidate["content"] as? [String: Any],
+                               let parts = content["parts"] as? [[String: Any]],
+                               let firstPart = parts.first,
+                               let text = firstPart["text"] as? String {
+                                continuation.yield(LLMStreamChunk(delta: text))
+>>>>>>> Main
 
                                 if let finishReason = firstCandidate["finishReason"] as? String {
                                     let reason: FinishReason = switch finishReason {

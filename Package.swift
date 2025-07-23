@@ -15,6 +15,7 @@ let package = Package(
         .package(url: "https://github.com/jamesrochabrun/SwiftAnthropic", branch: "main"),
         .package(url: "https://github.com/apple/swift-collections", from: "1.0.0"),
         .package(url: "https://github.com/vapor/multipart-kit", from: "4.5.0"),
+        .package(url: "https://github.com/nalexn/ViewInspector", from: "0.9.0"),
     ],
     targets: [
         // MARK: - Compatibility Module for Non-Sendable Dependencies
@@ -81,12 +82,27 @@ let package = Package(
             ]
         ),
 
+        // MARK: - GraphRAG Module (LFM2 Embedding and Tensor Operations)
+
+        .target(
+            name: "GraphRAG",
+            dependencies: [
+                "AppCore",
+            ],
+            path: "Sources/GraphRAG",
+            swiftSettings: [
+                // Swift 6 strict concurrency enabled for GraphRAG module
+                .unsafeFlags(["-strict-concurrency=complete"]),
+            ]
+        ),
+
         // MARK: - Main App Target (Orchestrates Platform Modules)
 
         .target(
             name: "AIKO",
             dependencies: [
                 "AppCore",
+                "GraphRAG",
                 .target(name: "AIKOiOS", condition: .when(platforms: [.iOS])),
                 .target(name: "AIKOmacOS", condition: .when(platforms: [.macOS])),
                 .product(name: "MultipartKit", package: "multipart-kit"),
@@ -97,6 +113,7 @@ let package = Package(
                 "AIKOiOS", // Exclude AIKOiOS subdirectory
                 "AIKOmacOS", // Exclude AIKOmacOS subdirectory
                 "AikoCompat", // Exclude AikoCompat subdirectory
+                "GraphRAG", // Exclude GraphRAG subdirectory
                 "Models/CoreData/FORM_MIGRATION_GUIDE.md",
                 "Resources/Clauses/clauseSelectionEngine.ts",
                 "Resources/Clauses/ClauseSelectionEngine.md",
@@ -145,6 +162,7 @@ let package = Package(
                 .target(name: "AIKOiOS", condition: .when(platforms: [.iOS])),
                 "AppCore",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "ViewInspector", package: "ViewInspector"),
             ],
             path: "Tests/AIKOiOSTests"
         ),
@@ -158,6 +176,15 @@ let package = Package(
             path: "Tests/AIKOmacOSTests"
         ),
         .testTarget(
+            name: "GraphRAGTests",
+            dependencies: [
+                "GraphRAG",
+                "AppCore",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+            ],
+            path: "Tests/GraphRAGTests"
+        ),
+        .testTarget(
             name: "AIKOTests",
             dependencies: ["AppCore"],
             path: "Tests",
@@ -168,6 +195,7 @@ let package = Package(
                 "AppCoreTests",
                 "AIKOiOSTests",
                 "AIKOmacOSTests",
+                "GraphRAGTests", // Exclude GraphRAGTests subdirectory
                 // "Shared", // Re-enabled for proper test utilities
                 // Keep remaining tests that haven't been migrated yet
                 "Integration",

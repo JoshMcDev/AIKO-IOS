@@ -273,7 +273,7 @@ private actor PatternStorage {
         patterns.documentSequences = sequenceCount.map { key, count in
             let docs = key.split(separator: "->").map(String.init)
             let successCount = sequenceSuccess[key] ?? 0
-            let successRate = !isEmpty ? Double(successCount) / Double(count) : 0
+            let successRate = count > 0 ? Double(successCount) / Double(count) : 0
 
             return UserPatterns.DocumentSequence(
                 documents: docs,

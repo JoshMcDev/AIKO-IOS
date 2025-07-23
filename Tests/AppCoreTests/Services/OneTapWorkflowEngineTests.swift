@@ -239,7 +239,7 @@ final class OneTapWorkflowEngineTests: XCTestCase {
                 let containsDecimal = currencyField.value.contains(".")
                 let isNumeric = currencyField.value.replacingOccurrences(of: "$", with: "")
                     .replacingOccurrences(of: ",", with: "")
-                    .replacingOccurrences(of: ".", with: "").allSatisfy { $0.isNumber }
+                    .replacingOccurrences(of: ".", with: "").allSatisfy(\.isNumber)
 
                 XCTAssertTrue(containsDollarSign || containsDecimal || isNumeric,
                               "Currency field should be properly formatted")

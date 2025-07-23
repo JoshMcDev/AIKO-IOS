@@ -140,10 +140,10 @@ public enum CameraDevice: String, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .front: return "Front Camera"
-        case .back: return "Back Camera"
-        case .ultraWide: return "Ultra Wide Camera"
-        case .telephoto: return "Telephoto Camera"
+        case .front: "Front Camera"
+        case .back: "Back Camera"
+        case .ultraWide: "Ultra Wide Camera"
+        case .telephoto: "Telephoto Camera"
         }
     }
 }
@@ -156,9 +156,9 @@ public enum FlashMode: String, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .auto: return "Auto Flash"
-        case .on: return "Flash On"
-        case .off: return "Flash Off"
+        case .auto: "Auto Flash"
+        case .on: "Flash On"
+        case .off: "Flash Off"
         }
     }
 }
@@ -172,10 +172,10 @@ public enum ImageQuality: String, Sendable, CaseIterable {
 
     public var compressionQuality: Float {
         switch self {
-        case .low: return 0.3
-        case .medium: return 0.6
-        case .high: return 0.8
-        case .maximum: return 1.0
+        case .low: 0.3
+        case .medium: 0.6
+        case .high: 0.8
+        case .maximum: 1.0
         }
     }
 }
@@ -189,19 +189,19 @@ public enum VideoResolution: String, Sendable, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .sd480p: return "480p SD"
-        case .hd720p: return "720p HD"
-        case .hd1080p: return "1080p HD"
-        case .uhd4k: return "4K UHD"
+        case .sd480p: "480p SD"
+        case .hd720p: "720p HD"
+        case .hd1080p: "1080p HD"
+        case .uhd4k: "4K UHD"
         }
     }
 
     public var dimensions: (width: Int, height: Int) {
         switch self {
-        case .sd480p: return (640, 480)
-        case .hd720p: return (1280, 720)
-        case .hd1080p: return (1920, 1080)
-        case .uhd4k: return (3840, 2160)
+        case .sd480p: (640, 480)
+        case .hd720p: (1280, 720)
+        case .hd1080p: (1920, 1080)
+        case .uhd4k: (3840, 2160)
         }
     }
 }
@@ -214,7 +214,7 @@ public enum VideoFrameRate: Int, Sendable, CaseIterable {
     case fps120 = 120
 
     public var displayName: String {
-        return "\(rawValue) fps"
+        "\(rawValue) fps"
     }
 }
 
@@ -227,10 +227,10 @@ public enum VideoQuality: String, Sendable, CaseIterable {
 
     public var bitRate: Int {
         switch self {
-        case .low: return 1_000_000 // 1 Mbps
-        case .medium: return 5_000_000 // 5 Mbps
-        case .high: return 10_000_000 // 10 Mbps
-        case .maximum: return 20_000_000 // 20 Mbps
+        case .low: 1_000_000 // 1 Mbps
+        case .medium: 5_000_000 // 5 Mbps
+        case .high: 10_000_000 // 10 Mbps
+        case .maximum: 20_000_000 // 20 Mbps
         }
     }
 }

@@ -104,12 +104,12 @@
 
         @ViewBuilder
         private var profileButton: some View {
-            Button(action: { showingImageSourceDialog = true }) {
+            Button(action: { showingImageSourceDialog = true }, label: {
                 ZStack {
                     profileImageView
                     cameraIconOverlay
                 }
-            }
+            })
             .buttonStyle(.plain)
             .popover(isPresented: $showingImageSourceDialog) {
                 VStack(spacing: 12) {
@@ -211,7 +211,7 @@
                                 regularMenuItem(item: item)
         })
                         }
-                    }
+                    })
                 }
                 .padding(Theme.Spacing.medium)
             }
@@ -233,7 +233,7 @@
         private func quickReferencesButton(viewStore: ViewStore<AppFeature.State, AppFeature.Action>, item: AppFeature.MenuItem) -> some View {
             Button(action: {
                 viewStore.send(.toggleQuickReferences(!viewStore.showingQuickReferences))
-            }) {
+            }, label: {
                 HStack(spacing: Theme.Spacing.medium) {
                     Image(systemName: item.icon)
                         .font(.title3)
@@ -264,7 +264,7 @@
                     RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                         .fill(viewStore.showingQuickReferences ? Color.blue.opacity(0.1) : Color.clear)
                 )
-            }
+            })
             .buttonStyle(.plain)
         }
 
@@ -279,7 +279,7 @@
         private func quickReferenceButton(reference: AppFeature.QuickReference, viewStore: ViewStore<AppFeature.State, AppFeature.Action>) -> some View {
             Button(action: {
                 viewStore.send(.selectQuickReference(reference))
-            }) {
+            }, label: {
                 HStack(spacing: Theme.Spacing.medium) {
                     Image(systemName: reference.icon)
                         .font(.body)
@@ -309,7 +309,7 @@
                     RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
                         .fill(Color.blue.opacity(0.05))
                 )
-            }
+            })
             .buttonStyle(.plain)
         }
 
@@ -325,7 +325,7 @@
         })
                     }
                 )
-            }
+            })
         }
     }
 #endif

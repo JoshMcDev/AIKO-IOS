@@ -151,7 +151,7 @@ final class ProcessingJobTests: XCTestCase {
         ]
 
         // When
-        let successCount = job.results.filter { $0.isSuccess }.count
+        let successCount = job.results.filter(\.isSuccess).count
         let successRate = Double(successCount) / Double(job.results.count)
 
         // Then

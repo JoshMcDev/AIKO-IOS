@@ -208,8 +208,13 @@ final class MediaManagementIntegrationTests: XCTestCase {
             ]
 
             // Validate all assets
+<<<<<<< HEAD
             let urls = assets.map { $0.url }
             let validationResults = try await validationServiceUnwrapped.validateBatch(
+=======
+            let urls = assets.map(\.url)
+            let validationResults = try await validationService.validateBatch(
+>>>>>>> Main
                 urls,
                 rules: ValidationRules.default
             )
@@ -600,8 +605,8 @@ final class MediaManagementIntegrationTests: XCTestCase {
 
 @available(iOS 16.0, *)
 extension MediaManagementIntegrationTests {
-    func assertThrowsError<T>(
-        _ expression: @autoclosure () async throws -> T,
+    func assertThrowsError(
+        _ expression: @autoclosure () async throws -> some Any,
         file: StaticString = #filePath,
         line: UInt = #line
     ) async {

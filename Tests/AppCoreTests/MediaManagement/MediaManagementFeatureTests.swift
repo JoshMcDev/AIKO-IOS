@@ -217,8 +217,13 @@ final class MediaManagementFeatureTests: XCTestCase {
         )
 
         // When/Then
+<<<<<<< HEAD
         await storeUnwrapped.send(.selectAllAssets) {
             $0.selectedAssets = Set(assets.map { $0.id })
+=======
+        await store.send(.selectAllAssets) {
+            $0.selectedAssets = Set(assets.map(\.id))
+>>>>>>> Main
         }
     }
 
@@ -228,7 +233,7 @@ final class MediaManagementFeatureTests: XCTestCase {
         store = TestStore(
             initialState: MediaManagementFeature.State(
                 assets: IdentifiedArrayOf(uniqueElements: assets),
-                selectedAssets: Set(assets.map { $0.id })
+                selectedAssets: Set(assets.map(\.id))
             ),
             reducer: { MediaManagementFeature() }
         )
@@ -343,7 +348,7 @@ final class MediaManagementFeatureTests: XCTestCase {
         store = TestStore(
             initialState: MediaManagementFeature.State(
                 assets: IdentifiedArrayOf(uniqueElements: assets),
-                selectedAssets: Set(assets.map { $0.id })
+                selectedAssets: Set(assets.map(\.id))
             ),
             reducer: { MediaManagementFeature() }
         )
@@ -405,7 +410,7 @@ final class MediaManagementFeatureTests: XCTestCase {
         store = TestStore(
             initialState: MediaManagementFeature.State(
                 assets: IdentifiedArrayOf(uniqueElements: assets),
-                selectedAssets: Set(assets.map { $0.id })
+                selectedAssets: Set(assets.map(\.id))
             ),
             reducer: { MediaManagementFeature() }
         )

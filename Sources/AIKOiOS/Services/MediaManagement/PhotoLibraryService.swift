@@ -15,7 +15,7 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
 
     public func getAuthorizationStatus() async -> PhotoLibraryAuthorizationStatus {
         // TODO: Check PHPhotoLibrary.authorizationStatus
-        return .notDetermined
+        .notDetermined
     }
 
     public func fetchPhotos(
@@ -59,6 +59,6 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
 
     public func assetExists(_: String) async -> Bool {
         // TODO: Check if PHAsset exists
-        return false
+        false
     }
 }

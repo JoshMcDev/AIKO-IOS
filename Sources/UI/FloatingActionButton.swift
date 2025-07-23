@@ -142,7 +142,7 @@ public struct FloatingActionButton: View {
                         .scaleEffect(1.2)
         })
             }
-        }
+        })
     }
 
     // MARK: - Button Background
@@ -268,7 +268,7 @@ public struct FloatingActionButtonContainer: View {
                 }
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)
-        }
+        })
     }
 
     private func calculatePosition(for position: FloatingPosition, in geometry: GeometryProxy) -> CoreFoundation.CGPoint {

@@ -228,7 +228,13 @@ extension SecureCache {
     func checkHealth() async -> Bool {
         // Verify keychain is accessible
         let testKey = "health_check_test"
+<<<<<<< HEAD
         let testData = Data("test".utf8)
+=======
+        guard let testData = "test".data(using: .utf8) else {
+            return false
+        }
+>>>>>>> Main
 
         // Try to store and retrieve
         do {

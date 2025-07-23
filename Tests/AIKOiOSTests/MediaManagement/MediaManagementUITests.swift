@@ -374,8 +374,8 @@ final class MediaManagementUITests: XCTestCase {
 
 @available(iOS 16.0, *)
 extension MediaManagementUITests {
-    func assertViewExists<V: View>(
-        _ view: V,
+    func assertViewExists(
+        _ view: some View,
         file: StaticString = #filePath,
         line: UInt = #line,
         inspection: (InspectableView<ViewType.View>) throws -> Void
