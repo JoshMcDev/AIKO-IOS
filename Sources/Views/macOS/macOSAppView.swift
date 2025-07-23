@@ -16,7 +16,7 @@
             WithViewStore(store, observe: { $0 }) { viewStore in
                 SharedAppView(
                     store: store,
-                    services: macOSAppViewServices()
+                    services: MacOSAppViewServices()
                 )
                 .preferredColorScheme(.dark)
                 .sheet(isPresented: .init(
@@ -47,13 +47,13 @@
         }
 
         @MainActor
-        func makeDocumentPicker(onDocumentsPicked: @escaping ([(Data, String)]) -> Void) -> macOSDocumentPicker {
-            macOSDocumentPicker(onDocumentsPicked: onDocumentsPicked)
+        func makeDocumentPicker(onDocumentsPicked: @escaping ([(Data, String)]) -> Void) -> MacOSDocumentPicker {
+            MacOSDocumentPicker(onDocumentsPicked: onDocumentsPicked)
         }
 
         @MainActor
-        func makeImagePicker(onImagePicked: @escaping (Data) -> Void) -> macOSImagePicker {
-            macOSImagePicker(onImagePicked: onImagePicked)
+        func makeImagePicker(onImagePicked: @escaping (Data) -> Void) -> MacOSImagePicker {
+            MacOSImagePicker(onImagePicked: onImagePicked)
         }
 
         func makeShareSheet(items _: [Any]) -> EmptyView? {
@@ -97,7 +97,7 @@
 
     // MARK: - macOS-specific Image Loading
 
-    extension macOSAppViewServices: PlatformImageLoader {
+    extension MacOSAppViewServices: PlatformImageLoader {
         func loadImage(named name: String, in _: Bundle?) -> Image? {
             if let nsImage = NSImage(named: name) {
                 return Image(nsImage: nsImage)
