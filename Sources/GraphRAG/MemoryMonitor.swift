@@ -20,7 +20,7 @@ actor MemoryMonitor {
     private let criticalMemoryThreshold: Double = 0.95 // 95% memory usage
     private let warningMemoryThreshold: Double = 0.85 // 85% memory usage
     private let safeMemoryThreshold: Double = 0.70 // 70% memory usage
-    
+
     // Logging state
     private var lastLogTime = Date.distantPast
     private var lastMemoryPressure: MemoryPressure = .normal
@@ -56,14 +56,14 @@ actor MemoryMonitor {
         }
 
         logger.info("🚀 Starting memory monitoring (interval: \(self.updateInterval)s)")
-        isMonitoring = true
+        self.isMonitoring = true
 
-        monitoringTask = Task { [weak self] in
+        monitoringTask = Task {
             while !Task.isCancelled {
-                await self?.updateMemoryStatus()
+                await self.updateMemoryStatus()
 
                 do {
-                    try await Task.sleep(nanoseconds: UInt64(self?.updateInterval ?? 2.0 * 1_000_000_000))
+                    try await Task.sleep(nanoseconds: UInt64(self.updateInterval * 1_000_000_000))
                 } catch {
                     // Task was cancelled
                     break
@@ -76,9 +76,9 @@ actor MemoryMonitor {
     func stopMonitoring() {
         logger.info("🛑 Stopping memory monitoring")
 
-        monitoringTask?.cancel()
-        monitoringTask = nil
-        isMonitoring = false
+        self.monitoringTask?.cancel()
+        self.monitoringTask = nil
+        self.isMonitoring = false
     }
 
     /// Get current memory status (immediate read)
@@ -160,7 +160,7 @@ actor MemoryMonitor {
         )
 
         // Update on main actor
-        currentMemoryStatus = newStatus
+        self.currentMemoryStatus = newStatus
 
         // Log significant changes
         logMemoryChanges(newStatus: newStatus, usagePercentage: usagePercentage)

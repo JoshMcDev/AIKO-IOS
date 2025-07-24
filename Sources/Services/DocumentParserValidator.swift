@@ -144,225 +144,225 @@ public final class DocumentParserValidator {
 
         // Validate tables that contain line items
         for table in data.tables where table.headers.contains(where: { $0.lowercased().contains("price") || $0.lowercased().contains("amount") }) {
-                // Extract and validate line items from table
-                var lineItems: [LineItem] = []
-                for row in table.rows {
-                    // Simple extraction - could be improved
-                    if row.count >= 2,
-                       let quantity = Double(row[0]),
-                       let priceString = row.last?.replacingOccurrences(of: "$", with: "").replacingOccurrences(of: ",", with: ""),
-                       let unitPrice = Decimal(string: priceString) {
-                        let lineItem = LineItem(
-                            itemNumber: nil,
-                            description: row.count > 2 ? row[1] : "Item",
-                            quantity: quantity,
-                            unitPrice: unitPrice,
-                            totalPrice: Decimal(quantity) * unitPrice
-                        )
-                        lineItems.append(lineItem)
-                    }
+            // Extract and validate line items from table
+            var lineItems: [LineItem] = []
+            for row in table.rows {
+                // Simple extraction - could be improved
+                if row.count >= 2,
+                   let quantity = Double(row[0]),
+                   let priceString = row.last?.replacingOccurrences(of: "$", with: "").replacingOccurrences(of: ",", with: ""),
+                   let unitPrice = Decimal(string: priceString) {
+                    let lineItem = LineItem(
+                        itemNumber: nil,
+                        description: row.count > 2 ? row[1] : "Item",
+                        quantity: quantity,
+                        unitPrice: unitPrice,
+                        totalPrice: Decimal(quantity) * unitPrice
+                    )
+                    lineItems.append(lineItem)
                 }
-                try validateLineItems(lineItems)
             }
+            try validateLineItems(lineItems)
         }
     }
+}
 
-    // MARK: - Private Methods
+// MARK: - Private Methods
 
-    private func isSupportedType(_ type: UniformTypeIdentifiers.UTType) -> Bool {
-        // Check direct identifier match
-        if DocumentParserValidator.supportedTypes.contains(type.identifier) {
+private func isSupportedType(_ type: UniformTypeIdentifiers.UTType) -> Bool {
+    // Check direct identifier match
+    if DocumentParserValidator.supportedTypes.contains(type.identifier) {
+        return true
+    }
+
+    // Check conformance to supported types
+    if type.conforms(to: .pdf) || type.conforms(to: .text) || type.conforms(to: .image) {
+        return true
+    }
+
+    // Check for Word document types
+    let wordExtensions = ["doc", "docx"]
+    for ext in wordExtensions {
+        if let wordType = UniformTypeIdentifiers.UTType(filenameExtension: ext), type.conforms(to: wordType) {
             return true
         }
-
-        // Check conformance to supported types
-        if type.conforms(to: .pdf) || type.conforms(to: .text) || type.conforms(to: .image) {
-            return true
-        }
-
-        // Check for Word document types
-        let wordExtensions = ["doc", "docx"]
-        for ext in wordExtensions {
-            if let wordType = UniformTypeIdentifiers.UTType(filenameExtension: ext), type.conforms(to: wordType) {
-                return true
-            }
-        }
-
-        return false
     }
 
-    private func validateDocumentStructure(_ data: Data, type: UniformTypeIdentifiers.UTType) throws {
-        if type == .pdf {
-            // Check PDF header
-            let pdfHeader: [UInt8] = [0x25, 0x50, 0x44, 0x46] // %PDF
-            guard data.count >= 4 else {
-                throw DocumentParserValidationError.corruptedDocument("PDF too small")
-            }
+    return false
+}
 
-            let header = Array(data.prefix(4))
-            guard header == pdfHeader else {
-                throw DocumentParserValidationError.corruptedDocument("Invalid PDF header")
-            }
-        } else if type.conforms(to: .image) {
-            // Basic image validation is handled by UIImage/NSImage initialization
-            // Additional checks can be added here if needed
+private func validateDocumentStructure(_ data: Data, type: UniformTypeIdentifiers.UTType) throws {
+    if type == .pdf {
+        // Check PDF header
+        let pdfHeader: [UInt8] = [0x25, 0x50, 0x44, 0x46] // %PDF
+        guard data.count >= 4 else {
+            throw DocumentParserValidationError.corruptedDocument("PDF too small")
         }
-        // Word documents are validated during parsing
+
+        let header = Array(data.prefix(4))
+        guard header == pdfHeader else {
+            throw DocumentParserValidationError.corruptedDocument("Invalid PDF header")
+        }
+    } else if type.conforms(to: .image) {
+        // Basic image validation is handled by UIImage/NSImage initialization
+        // Additional checks can be added here if needed
+    }
+    // Word documents are validated during parsing
+}
+
+private func containsMeaningfulContent(_ text: String) -> Bool {
+    // Check if text contains actual words (not just numbers/symbols)
+    let words = text.components(separatedBy: .whitespacesAndNewlines)
+        .filter { !$0.isEmpty && $0.rangeOfCharacter(from: .letters) != nil }
+
+    return words.count >= 3 // At least 3 words with letters
+}
+
+private func validateVendorName(_ name: String) throws {
+    let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !trimmed.isEmpty else {
+        throw DocumentParserValidationError.invalidField("Vendor Name", "cannot be empty")
     }
 
-    private func containsMeaningfulContent(_ text: String) -> Bool {
-        // Check if text contains actual words (not just numbers/symbols)
-        let words = text.components(separatedBy: .whitespacesAndNewlines)
-            .filter { !$0.isEmpty && $0.rangeOfCharacter(from: .letters) != nil }
-
-        return words.count >= 3 // At least 3 words with letters
+    guard trimmed.count >= 2 else {
+        throw DocumentParserValidationError.invalidField("Vendor Name", "too short")
     }
 
-    private func validateVendorName(_ name: String) throws {
-        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else {
-            throw DocumentParserValidationError.invalidField("Vendor Name", "cannot be empty")
-        }
+    guard trimmed.count <= 200 else {
+        throw DocumentParserValidationError.invalidField("Vendor Name", "too long")
+    }
+}
 
-        guard trimmed.count >= 2 else {
-            throw DocumentParserValidationError.invalidField("Vendor Name", "too short")
-        }
+private func validateEmail(_ email: String) throws {
+    let emailRegex = #"^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,64}$"#
+    let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
 
-        guard trimmed.count <= 200 else {
-            throw DocumentParserValidationError.invalidField("Vendor Name", "too long")
-        }
+    guard emailPredicate.evaluate(with: email) else {
+        throw DocumentParserValidationError.invalidField("Email", "invalid format")
+    }
+}
+
+private func validatePhone(_ phone: String) throws {
+    // Remove common phone formatting characters
+    let cleaned = phone.replacingOccurrences(of: "[^0-9+]", with: "", options: .regularExpression)
+
+    guard !cleaned.isEmpty else {
+        throw DocumentParserValidationError.invalidField("Phone", "cannot be empty")
     }
 
-    private func validateEmail(_ email: String) throws {
-        let emailRegex = #"^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,64}$"#
-        let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
+    // Basic length check (international numbers can vary)
+    guard cleaned.count >= 7, cleaned.count <= 20 else {
+        throw DocumentParserValidationError.invalidField("Phone", "invalid length")
+    }
+}
 
-        guard emailPredicate.evaluate(with: email) else {
-            throw DocumentParserValidationError.invalidField("Email", "invalid format")
-        }
+private func validateUEI(_ uei: String) throws {
+    // UEI should be exactly 12 alphanumeric characters
+    let cleaned = uei.trimmingCharacters(in: .whitespacesAndNewlines)
+
+    guard cleaned.count == 12 else {
+        throw DocumentParserValidationError.invalidField("UEI", "must be 12 characters")
     }
 
-    private func validatePhone(_ phone: String) throws {
-        // Remove common phone formatting characters
-        let cleaned = phone.replacingOccurrences(of: "[^0-9+]", with: "", options: .regularExpression)
+    let alphanumericSet = CharacterSet.alphanumerics
+    guard cleaned.unicodeScalars.allSatisfy({ alphanumericSet.contains($0) }) else {
+        throw DocumentParserValidationError.invalidField("UEI", "must be alphanumeric")
+    }
+}
 
-        guard !cleaned.isEmpty else {
-            throw DocumentParserValidationError.invalidField("Phone", "cannot be empty")
-        }
+private func validateCAGE(_ cage: String) throws {
+    // CAGE code should be 5 alphanumeric characters
+    let cleaned = cage.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        // Basic length check (international numbers can vary)
-        guard cleaned.count >= 7, cleaned.count <= 20 else {
-            throw DocumentParserValidationError.invalidField("Phone", "invalid length")
-        }
+    guard cleaned.count == 5 else {
+        throw DocumentParserValidationError.invalidField("CAGE", "must be 5 characters")
     }
 
-    private func validateUEI(_ uei: String) throws {
-        // UEI should be exactly 12 alphanumeric characters
-        let cleaned = uei.trimmingCharacters(in: .whitespacesAndNewlines)
+    let alphanumericSet = CharacterSet.alphanumerics
+    guard cleaned.unicodeScalars.allSatisfy({ alphanumericSet.contains($0) }) else {
+        throw DocumentParserValidationError.invalidField("CAGE", "must be alphanumeric")
+    }
+}
 
-        guard cleaned.count == 12 else {
-            throw DocumentParserValidationError.invalidField("UEI", "must be 12 characters")
-        }
-
-        let alphanumericSet = CharacterSet.alphanumerics
-        guard cleaned.unicodeScalars.allSatisfy({ alphanumericSet.contains($0) }) else {
-            throw DocumentParserValidationError.invalidField("UEI", "must be alphanumeric")
-        }
+private func validatePrice(_ price: Decimal) throws {
+    guard price >= 0 else {
+        throw DocumentParserValidationError.invalidField("Price", "cannot be negative")
     }
 
-    private func validateCAGE(_ cage: String) throws {
-        // CAGE code should be 5 alphanumeric characters
-        let cleaned = cage.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard cleaned.count == 5 else {
-            throw DocumentParserValidationError.invalidField("CAGE", "must be 5 characters")
-        }
-
-        let alphanumericSet = CharacterSet.alphanumerics
-        guard cleaned.unicodeScalars.allSatisfy({ alphanumericSet.contains($0) }) else {
-            throw DocumentParserValidationError.invalidField("CAGE", "must be alphanumeric")
-        }
+    // Check for reasonable maximum (e.g., $1 billion)
+    guard price <= 1_000_000_000 else {
+        throw DocumentParserValidationError.invalidField("Price", "exceeds reasonable maximum")
     }
+}
 
-    private func validatePrice(_ price: Decimal) throws {
-        guard price >= 0 else {
-            throw DocumentParserValidationError.invalidField("Price", "cannot be negative")
-        }
-
-        // Check for reasonable maximum (e.g., $1 billion)
-        guard price <= 1_000_000_000 else {
-            throw DocumentParserValidationError.invalidField("Price", "exceeds reasonable maximum")
-        }
-    }
-
-    private func validateLineItems(_ items: [LineItem]) throws {
-        for (index, item) in items.enumerated() {
-            // Validate description
-            let trimmedDesc = item.description.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !trimmedDesc.isEmpty else {
-                throw DocumentParserValidationError.invalidField(
-                    "Line Item \(index + 1) Description",
-                    "cannot be empty"
-                )
-            }
-
-            // Validate quantity
-            guard item.quantity > 0 else {
-                throw DocumentParserValidationError.invalidField(
-                    "Line Item \(index + 1) Quantity",
-                    "must be positive"
-                )
-            }
-
-            // Validate unit price
-            guard item.unitPrice >= 0 else {
-                throw DocumentParserValidationError.invalidField(
-                    "Line Item \(index + 1) Unit Price",
-                    "cannot be negative"
-                )
-            }
-
-            // Validate total price
-            guard item.totalPrice >= 0 else {
-                throw DocumentParserValidationError.invalidField(
-                    "Line Item \(index + 1) Total Price",
-                    "cannot be negative"
-                )
-            }
-
-            // Verify calculation if possible
-            let calculatedTotal = Decimal(item.quantity) * item.unitPrice
-            let tolerance: Decimal = 0.01 // Allow for rounding differences
-
-            if abs(calculatedTotal - item.totalPrice) > tolerance {
-                // This is a warning, not necessarily an error
-                // Could log this for review
-            }
-        }
-    }
-
-    private func validateDate(_ date: Date, field: String) throws {
-        let calendar = Calendar.current
-        let now = Date()
-
-        // Check if date is not too far in the past (e.g., 10 years)
-        if let tenYearsAgo = calendar.date(byAdding: .year, value: -10, to: now),
-           date < tenYearsAgo {
+private func validateLineItems(_ items: [LineItem]) throws {
+    for (index, item) in items.enumerated() {
+        // Validate description
+        let trimmedDesc = item.description.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedDesc.isEmpty else {
             throw DocumentParserValidationError.invalidField(
-                field,
-                "date is too far in the past"
+                "Line Item \(index + 1) Description",
+                "cannot be empty"
             )
         }
 
-        // Check if date is not too far in the future (e.g., 5 years)
-        if let fiveYearsFromNow = calendar.date(byAdding: .year, value: 5, to: now),
-           date > fiveYearsFromNow {
+        // Validate quantity
+        guard item.quantity > 0 else {
             throw DocumentParserValidationError.invalidField(
-                field,
-                "date is too far in the future"
+                "Line Item \(index + 1) Quantity",
+                "must be positive"
             )
         }
+
+        // Validate unit price
+        guard item.unitPrice >= 0 else {
+            throw DocumentParserValidationError.invalidField(
+                "Line Item \(index + 1) Unit Price",
+                "cannot be negative"
+            )
+        }
+
+        // Validate total price
+        guard item.totalPrice >= 0 else {
+            throw DocumentParserValidationError.invalidField(
+                "Line Item \(index + 1) Total Price",
+                "cannot be negative"
+            )
+        }
+
+        // Verify calculation if possible
+        let calculatedTotal = Decimal(item.quantity) * item.unitPrice
+        let tolerance: Decimal = 0.01 // Allow for rounding differences
+
+        if abs(calculatedTotal - item.totalPrice) > tolerance {
+            // This is a warning, not necessarily an error
+            // Could log this for review
+        }
     }
+}
+
+private func validateDate(_ date: Date, field: String) throws {
+    let calendar = Calendar.current
+    let now = Date()
+
+    // Check if date is not too far in the past (e.g., 10 years)
+    if let tenYearsAgo = calendar.date(byAdding: .year, value: -10, to: now),
+       date < tenYearsAgo {
+        throw DocumentParserValidationError.invalidField(
+            field,
+            "date is too far in the past"
+        )
+    }
+
+    // Check if date is not too far in the future (e.g., 5 years)
+    if let fiveYearsFromNow = calendar.date(byAdding: .year, value: 5, to: now),
+       date > fiveYearsFromNow {
+        throw DocumentParserValidationError.invalidField(
+            field,
+            "date is too far in the future"
+        )
+    }
+}
 
 // MARK: - Validation Result Type
 

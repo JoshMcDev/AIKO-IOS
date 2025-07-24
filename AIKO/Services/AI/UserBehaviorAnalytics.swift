@@ -465,7 +465,8 @@ class InteractionTracker {
         guard recentInteractions.count >= 2 else { return 0 }
 
         guard let lastInteraction = recentInteractions.last,
-              let firstInteraction = recentInteractions.first else {
+              let firstInteraction = recentInteractions.first
+        else {
             return 0
         }
 

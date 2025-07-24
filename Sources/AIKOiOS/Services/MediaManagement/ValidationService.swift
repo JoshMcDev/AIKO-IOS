@@ -1,6 +1,5 @@
 import AppCore
 import Foundation
-import UIKit
 
 /// iOS implementation of validation service
 @available(iOS 16.0, *)

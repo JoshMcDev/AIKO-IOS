@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import AppCore
 
 struct InformationGatheringView: View {
     let store: StoreOf<DocumentExecutionFeature>

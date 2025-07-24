@@ -73,7 +73,7 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
     }
 
     public func validateCredentials() async throws -> Bool {
-        guard let config = try await LLMConfigurationManager.shared.loadConfiguration(for: id) else {
+        guard try await LLMConfigurationManager.shared.loadConfiguration(for: id) != nil else {
             throw LLMProviderError.notConfigured
         }
 
@@ -107,7 +107,7 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
         if let systemPrompt = request.systemPrompt {
             contents.append([
                 "role": "user",
-                "parts": [["text": "System: \(systemPrompt)"]]
+                "parts": [["text": "System: \(systemPrompt)"]],
             ])
         }
 
@@ -116,21 +116,21 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
             let role = message.role == .assistant ? "model" : "user"
             contents.append([
                 "role": role,
-                "parts": [["text": message.content]]
+                "parts": [["text": message.content]],
             ])
         }
 
         // Build request body
-        var body: [String: Any] = [
+        let body: [String: Any] = [
             "contents": contents,
             "generationConfig": [
                 "temperature": request.temperature,
-                "maxOutputTokens": request.maxTokens ?? 8192
-            ]
+                "maxOutputTokens": request.maxTokens ?? 8192,
+            ],
         ]
 
         // Gemini API endpoint
-        let url = "https://generativelanguage.googleapis.com/v1beta/models/\(request.model):generateContent?key=\(config.apiKey)"
+        let url = "https://generativelanguage.googleapis.com/v1beta/models/\(request.model):generateContent?key=\(config.apiKey ?? "")"
 
         // Make API request
         guard let urlObject = URL(string: url) else {
@@ -222,7 +222,7 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
                     if let systemPrompt = request.systemPrompt {
                         contents.append([
                             "role": "user",
-                            "parts": [["text": "System: \(systemPrompt)"]]
+                            "parts": [["text": "System: \(systemPrompt)"]],
                         ])
                     }
 
@@ -230,7 +230,7 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
                         let role = message.role == .assistant ? "model" : "user"
                         contents.append([
                             "role": role,
-                            "parts": [["text": message.content]]
+                            "parts": [["text": message.content]],
                         ])
                     }
 
@@ -239,12 +239,12 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
                         "contents": contents,
                         "generationConfig": [
                             "temperature": request.temperature,
-                            "maxOutputTokens": request.maxTokens ?? 8192
-                        ]
+                            "maxOutputTokens": request.maxTokens ?? 8192,
+                        ],
                     ]
 
                     // Gemini streaming endpoint
-                    let url = "https://generativelanguage.googleapis.com/v1beta/models/\(request.model):streamGenerateContent?key=\(config.apiKey)"
+                    let url = "https://generativelanguage.googleapis.com/v1beta/models/\(request.model):streamGenerateContent?key=\(config.apiKey ?? "")"
 
                     guard let urlObject = URL(string: url) else {
                         throw LLMProviderError.networkError("Invalid URL")
@@ -302,11 +302,11 @@ public final class GeminiProvider: LLMProviderProtocol, @unchecked Sendable {
         let body: [String: Any] = [
             "model": "models/text-embedding-004",
             "content": [
-                "parts": [["text": text]]
-            ]
+                "parts": [["text": text]],
+            ],
         ]
 
-        let url = "https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=\(config.apiKey)"
+        let url = "https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=\(config.apiKey ?? "")"
 
         guard let urlObject = URL(string: url) else {
             throw LLMProviderError.networkError("Invalid URL")

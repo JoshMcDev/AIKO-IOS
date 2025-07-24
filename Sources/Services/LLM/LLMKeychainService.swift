@@ -9,17 +9,17 @@ public enum LLMKeychainError: Error, LocalizedError {
     case keychainError(OSStatus)
     case notFound
     case invalidData
-    
+
     public var errorDescription: String? {
         switch self {
-        case .encodingError(let message):
-            return "Encoding error: \(message)"
-        case .keychainError(let status):
-            return "Keychain error: \(status)"
+        case let .encodingError(message):
+            "Encoding error: \(message)"
+        case let .keychainError(status):
+            "Keychain error: \(status)"
         case .notFound:
-            return "API key not found"
+            "API key not found"
         case .invalidData:
-            return "Invalid keychain data"
+            "Invalid keychain data"
         }
     }
 }

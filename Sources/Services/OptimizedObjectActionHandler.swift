@@ -29,7 +29,7 @@ public extension OptimizedObjectActionHandler {
         public let errors: [String]
         public let warnings: [String]
         public let suggestions: [String]
-        
+
         public init(isValid: Bool, errors: [String], warnings: [String], suggestions: [String]) {
             self.isValid = isValid
             self.errors = errors

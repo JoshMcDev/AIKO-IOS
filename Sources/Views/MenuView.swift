@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import AppCore
 
 /// Shared MenuView that delegates to platform-specific implementations
 public struct MenuView: View {

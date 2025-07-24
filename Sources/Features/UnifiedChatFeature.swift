@@ -424,8 +424,7 @@ public struct UnifiedChatFeature: Sendable {
         case .addAssistantMessage:
             // Sync message to unified view
             if let acquisition = state.acquisitionState,
-               let lastMessage = acquisition.messages.last
-            {
+               let lastMessage = acquisition.messages.last {
                 let role: MessageRole = lastMessage.role == AcquisitionChatFeature.MessageRole.user ? .user : .assistant
                 let unifiedMsg = UnifiedMessage(
                     id: lastMessage.id,
@@ -462,8 +461,7 @@ public struct UnifiedChatFeature: Sendable {
         case .messageReceived:
             // Sync message to unified view
             if let agentic = state.agenticState,
-               let lastMessage = agentic.messages.last
-            {
+               let lastMessage = agentic.messages.last {
                 let unifiedMsg = UnifiedMessage(
                     id: lastMessage.id,
                     role: lastMessage.role,

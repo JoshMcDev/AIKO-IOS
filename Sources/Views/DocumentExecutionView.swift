@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import AppCore
 
 struct DocumentExecutionView: View {
     let store: StoreOf<DocumentExecutionFeature>

@@ -351,7 +351,7 @@ public final class DataExtractor {
         let lines = text.components(separatedBy: .newlines)
 
         // Look for table-like structures or price patterns
-        for (_, line) in lines.enumerated() {
+        for line in lines {
             // Skip if line is too short
             guard line.count > 10 else { continue }
 
@@ -374,7 +374,7 @@ public final class DataExtractor {
                         .trimmingCharacters(in: .punctuationCharacters)
 
                     if !description.isEmpty, description.count > 3 {
-                        let unitPrice = quantityDecimal > 0 ? price / quantityDecimal: price
+                        let unitPrice = quantityDecimal > 0 ? price / quantityDecimal : price
 
                         lineItems.append(LineItem(
                             itemNumber: "\(lineItems.count + 1)",

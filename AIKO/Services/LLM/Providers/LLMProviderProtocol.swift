@@ -202,8 +202,7 @@ struct LLMFunction: Codable, Equatable {
 
         // Decode parameters as JSON string
         if let jsonData = try? container.decode(Data.self, forKey: .parameters),
-           let json = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any]
-        {
+           let json = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any] {
             parameters = json
         } else {
             parameters = [:]

@@ -1,5 +1,6 @@
 import Charts
 import SwiftUI
+import AppCore
 
 // MARK: - Message Card Container
 

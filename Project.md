@@ -31,20 +31,30 @@ tests/integration/ScannerTests.swift
 ## 🎯 Project Overview
 
 **Project**: AIKO (Adaptive Intelligence for Kontract Optimization)  
-**Version**: 5.2 (Enhanced Document Processing)  
+**Version**: 6.0 (Unified Refactoring Architecture)  
 **Type**: iOS Application  
 **Domain**: Government Contracting  
-**Last Updated**: January 19, 2025  
-**Progress**: 25% Complete (5/20 Main Tasks) - Phase 4.2 Document Scanner
+**Last Updated**: January 24, 2025  
+**Progress**: 44% Complete (24/54 Main Tasks) - Unified Refactoring Initiative Launched
 
 ### Project Vision
 Build a focused iOS productivity tool that revolutionizes government contracting by leveraging user-chosen LLM providers for all intelligence features. No backend services, no cloud complexity - just powerful automation through a simple native interface.
 
 **Core Philosophy**: Let LLMs handle intelligence. Let iOS handle the interface. Let users achieve more with less effort.
 
+**Unified Refactoring (2025)**: Transform from complex TCA-based architecture to streamlined 5 Core Engines system with native SwiftUI, reducing codebase by 48% (484 → 250 files) while maintaining full feature compatibility through a systematic 12-week implementation.
+
 ---
 
 ## 🏆 Recent Major Achievements (January 2025)
+
+### Unified Refactoring Initiative ✅ LAUNCHED
+- **12-Week Master Plan**: Comprehensive unified refactoring strategy combining AI services consolidation with UI modernization
+- **5 Core Engines Architecture**: AIOrchestrator, DocumentEngine, PromptRegistry, ComplianceValidator, PersonalizationEngine
+- **VanillaIce Consensus**: Multi-model validation of implementation plan (5/5 models approved) and testing rubric (3/3 models approved)
+- **Parallel Track Strategy**: AI consolidation (weeks 1-6) enabling UI modernization (weeks 5-12)
+- **Target Goals**: 48% file reduction (484 → 250 files), 80% AI service consolidation (90 → 15-20 files), Swift 6 compliance
+- **Documentation**: Complete implementation plan, testing rubric, and master plan created
 
 ### Phase 4.1 - Enhanced Image Processing ✅ COMPLETE
 - **Core Image API Modernization**: Fixed deprecation warnings in iOSDocumentImageProcessor.swift
@@ -80,14 +90,16 @@ Build a focused iOS productivity tool that revolutionizes government contracting
 
 ## 🏗️ Project Architecture
 
-### Core Technologies
-- **Frontend**: SwiftUI + The Composable Architecture (TCA) ✅
-- **Storage**: Core Data (local only) + CfA audit trails
-- **LLM Integration**: Universal multi-provider system with dynamic discovery ✅
-- **Document Processing**: VisionKit Scanner + Enhanced OCR + Smart Filing
-- **Intelligence Layer**: All via user's LLM API keys
-- **Security**: Keychain Services + LocalAuthentication (Face ID/Touch ID)
-- **Integrations**: iOS Native (Mail, Calendar, Reminders) + Google Maps
+### Core Technologies (Unified Refactoring Target)
+- **Frontend**: SwiftUI + Observable Pattern (TCA → SwiftUI migration) 🚧
+- **Architecture**: 5 Core Engines (AIOrchestrator, DocumentEngine, PromptRegistry, ComplianceValidator, PersonalizationEngine) 🎯
+- **Storage**: Core Data (local only) + CfA audit trails ✅
+- **LLM Integration**: Unified provider adapter with 90 → 15-20 file consolidation 🎯
+- **Document Processing**: VisionKit Scanner + Enhanced OCR + Smart Filing ✅
+- **Intelligence Layer**: GraphRAG with on-device LFM2-700M model 🎯
+- **Security**: Keychain Services + LocalAuthentication (Face ID/Touch ID) ✅
+- **Integrations**: iOS Native (Mail, Calendar, Reminders) + Google Maps ✅
+- **Build System**: 6 → 3 SPM targets, Swift 6 strict concurrency 🎯
 
 ### Clean Multi-Platform Architecture
 
@@ -118,18 +130,18 @@ AIKO Multi-Platform Architecture (Clean Separation)
 ## 📋 Current Project Status
 
 ### Current Sprint Focus
-**Sprint**: Phase 4.2 - Professional Document Scanner  
-**Duration**: 1.5 weeks remaining  
-**Start Date**: January 19, 2025  
-**Expected Completion**: February 5, 2025  
+**Sprint**: Execute Unified Refactoring Master Plan  
+**Duration**: 12 weeks (Parallel Track Implementation)  
+**Start Date**: January 24, 2025  
+**Expected Completion**: April 18, 2025  
 
 **Goals**:
-1. Implement VisionKit scanner with edge detection
-2. Integrate OCR with enhanced image preprocessing pipeline  
-3. Create one-tap scanning UI/UX from any screen
-4. Add smart processing for auto-populating forms from enhanced scans
+1. **Weeks 1-4**: AI Core Engines & Quick Wins (AIOrchestrator, DocumentEngine, PromptRegistry)
+2. **Weeks 5-8**: TCA → SwiftUI Migration & Architecture Consolidation (6 → 3 targets)
+3. **Weeks 9-10**: GraphRAG Integration & Swift 6 Compliance
+4. **Weeks 11-12**: Production Polish & Performance Optimization
 
-### Progress Overview: 25% Complete (5/20 Main Tasks)
+### Progress Overview: 44% Complete (24/54 Main Tasks)
 
 #### Completed Phases ✅
 - ✅ **Phase 1**: Foundation & Architecture (SwiftUI + TCA)
@@ -137,27 +149,32 @@ AIKO Multi-Platform Architecture (Clean Separation)
 - ✅ **Phase 3**: LLM Integration (Multi-provider system with OpenAI, Claude, Gemini, Azure)  
 - ✅ **Phase 3.5**: Triple Architecture Migration (153+ conditionals eliminated)
 - ✅ **Phase 4.1**: Enhanced Image Processing (Core Image modernization, Metal GPU acceleration)
+- ✅ **Phase 4.2**: Professional Document Scanner (VisionKit, OCR, Smart Processing)
+- ✅ **Unified Refactoring**: Master plan created with VanillaIce consensus validation
 
-#### In Progress
-- 🚧 **Phase 4.2**: Professional Document Scanner (VisionKit, OCR, Smart Processing)
+#### In Progress (12-Week Implementation)
+- 🚧 **Unified Refactoring Execution**: 12-week parallel track implementation
+  - **Weeks 1-4**: AI Core Engines & Quick Wins
+  - **Weeks 5-8**: TCA → SwiftUI Migration & Architecture Consolidation
+  - **Weeks 9-10**: GraphRAG Integration & Swift 6 Compliance
+  - **Weeks 11-12**: Production Polish & Performance Optimization
 
-#### Planned (70% remaining)
-- 📅 **Phase 5**: Smart Integrations & Provider Flexibility (1.5 weeks)
-  - Including Task 8.3: Launch-Time Regulation Fetcher
-  - Including Task 8.4: iPad Compatibility & Apple Pencil Integration
-- 📅 **Phase 6**: LLM Intelligence & Compliance Automation (2 weeks)
-  - Including Task 9: Enhanced Intelligent Workflow System
-- 📅 **Phase 7**: Polish & App Store Release (2 weeks)
+#### Target Outcomes (56% remaining)
+- 🎯 **File Reduction**: 48% reduction (484 → 250 files)
+- 🎯 **AI Consolidation**: 80% reduction (90 → 15-20 files)
+- 🎯 **Swift 6 Compliance**: 100% strict concurrency compliance
+- 🎯 **Performance**: <10s build time, <200MB memory usage
+- 🎯 **Architecture**: Native SwiftUI with Observable pattern
 
 ---
 
 ## 🤖 LLM-Powered Intelligence Features
 
-### 1. Prompt Optimization Engine (Phase 5)
-**One-tap prompt enhancement with 15+ patterns**
+### 1. PromptRegistry Engine (Weeks 1-4)
+**Centralized prompt optimization with 15+ patterns**
 
 ```swift
-struct PromptOptimizationEngine {
+actor PromptRegistry {
     let patterns: [PromptPattern] = [
         // Instruction patterns
         .plain,              // Simple direct instruction
@@ -178,50 +195,79 @@ struct PromptOptimizationEngine {
         .react,             // Reason + Act pattern
         .pal                // Program-aided language model
     ]
-}
-```
-
-### 2. GraphRAG Regulatory Intelligence (Phase 6)
-**Deep FAR/DFARS analysis with knowledge graphs**
-
-- Relationship mapping between clauses
-- Conflict detection and resolution
-- Dependency tracking
-- Confidence-scored citations
-- Visual graph exploration
-
-### 3. CASE FOR ANALYSIS Framework (Phase 6)
-**Automatic justification for every AI decision**
-
-```swift
-struct CaseForAnalysis {
-    let context: String      // Situation overview
-    let authority: [String]  // FAR/DFARS citations
-    let situation: String    // Specific analysis
-    let evidence: [String]   // Supporting data
-    let confidence: Double   // Decision confidence
     
-    // Automatic generation with every recommendation
-    // Collapsible UI cards for transparency
-    // JSON export for audit trails
-}
-```
-
-### 4. Universal Provider Support (Phase 5)
-**Support any LLM with automatic discovery**
-
-```swift
-struct ProviderDiscoveryService {
-    func discoverAPI(endpoint: URL, apiKey: String) async -> ProviderAdapter? {
-        // Test connection
-        // Analyze API structure
-        // Generate dynamic adapter
-        // Store configuration securely
+    func optimizePrompt(_ prompt: String, for context: Context) async -> OptimizedPrompt {
+        // Centralized prompt optimization logic
     }
 }
 ```
 
-### 5. Enhanced Document Processing (Phase 4.1 ✅ / Phase 4.2 🚧)
+### 2. AIOrchestrator Engine (Weeks 1-4)
+**Central routing hub for all AI operations**
+
+```swift
+actor AIOrchestrator {
+    private let providerManager: UnifiedProviderAdapter
+    private let documentEngine: DocumentEngine
+    private let promptRegistry: PromptRegistry
+    
+    func routeRequest(_ request: AIRequest) async throws -> AIResponse {
+        // Provider abstraction and request routing
+        // Automatic failover between providers
+        // Performance monitoring and caching
+    }
+}
+```
+
+### 3. GraphRAG Regulatory Intelligence (Weeks 9-10)
+**Deep FAR/DFARS analysis with knowledge graphs**
+
+- On-device LFM2-700M model integration
+- ObjectBox vector database for sub-second search
+- Relationship mapping between clauses
+- Conflict detection and resolution
+- Dependency tracking
+- Confidence-scored citations
+
+### 4. ComplianceValidator Engine (Weeks 3-4)
+**Automated FAR/DFARS compliance checking**
+
+```swift
+actor ComplianceValidator {
+    func validateCompliance(_ document: Document) async -> ComplianceReport {
+        // Automated compliance checking
+        // FAR/DFARS citation validation
+        // Risk assessment and mitigation
+    }
+    
+    func generateCaseForAnalysis(_ decision: AIDecision) async -> CaseForAnalysis {
+        // Automatic justification for every AI decision
+        // C-A-S-E structure (Context, Authority, Situation, Evidence)
+        // Confidence scoring and audit trails
+    }
+}
+```
+
+### 5. PersonalizationEngine (Weeks 3-4)
+**User preference and pattern learning**
+
+```swift
+actor PersonalizationEngine {
+    func learnFromUserInteraction(_ interaction: UserInteraction) async {
+        // Pattern recognition and preference learning
+        // Privacy-preserving local processing
+        // Smart defaults and suggestions
+    }
+    
+    func personalizeRecommendations(for user: User) async -> [Recommendation] {
+        // Personalized workflow suggestions
+        // Context-aware document templates
+        // Adaptive user interface
+    }
+}
+```
+
+### 6. Enhanced Document Processing ✅ COMPLETE
 **Modern Core Image API with Metal GPU acceleration**
 
 ```swift
@@ -234,7 +280,7 @@ actor DocumentImageProcessor {
         // Quality metrics and confidence scoring
     }
     
-    // Phase 4.2 🚧 IN PROGRESS  
+    // Phase 4.2 ✅ COMPLETE  
     func scanDocument() async throws -> [ProcessedImage] {
         // VisionKit integration with edge detection
         // Multi-page scanning support
@@ -248,12 +294,13 @@ actor DocumentImageProcessor {
 
 ## 🚀 Project-Specific Workflows
 
-### Enhanced Document Scanner Workflow (Phase 4.2)
-1. **Capture**: VisionKit edge detection with perspective correction
-2. **Process**: Enhanced OCR with specialized text recognition filters
-3. **Analyze**: Form field detection with confidence scoring
-4. **File**: Smart categorization based on content analysis
-5. **Use**: Auto-populate forms with extracted data
+### Unified Refactoring Workflow (12-Week Implementation)
+1. **Plan**: VanillaIce consensus validation of implementation strategy
+2. **Consolidate**: AI services into 5 Core Engines (Weeks 1-6)
+3. **Migrate**: TCA → SwiftUI with Observable pattern (Weeks 5-8)
+4. **Modernize**: Swift 6 strict concurrency compliance (Weeks 7-10)
+5. **Integrate**: GraphRAG with LFM2-700M model (Weeks 9-10)
+6. **Polish**: Performance optimization and production release (Weeks 11-12)
 
 ### LLM Intelligence Workflow
 1. **Input**: User query or document
@@ -331,11 +378,14 @@ self.autoFillEngine = ConfidenceBasedAutoFillEngine(
 
 ## 🎯 Business Value Metrics
 
-### Development Efficiency (Achieved through Clean Architecture)
-- **Timeline**: 7.5 weeks vs 12+ months (original estimate)
-- **Complexity**: 95% reduction through platform separation
-- **Maintenance**: 90% lower burden (153+ conditionals eliminated)
-- **App Size**: < 50MB target (on track)
+### Development Efficiency (Unified Refactoring Target)
+- **Timeline**: 12 weeks for complete architecture transformation
+- **File Reduction**: 48% reduction (484 → 250 files)
+- **AI Consolidation**: 80% reduction (90 → 15-20 service files)
+- **Complexity**: 95% reduction through 5 Core Engines architecture
+- **Maintenance**: 90% lower burden through clean abstractions
+- **Build Performance**: <10s build time (from 16.45s)
+- **Memory Usage**: <200MB target (improved efficiency)
 
 ### User Impact
 - **Time Saved**: 15 minutes per acquisition
@@ -357,38 +407,52 @@ self.autoFillEngine = ConfidenceBasedAutoFillEngine(
 
 ## 📊 Progress Tracking
 
-### Completed Phases (5/20 - 25%)
+### Completed Phases (24/54 - 44%)
 - ✅ Phase 1: Foundation & Architecture
 - ✅ Phase 2: Resources & Templates (44 document templates)
 - ✅ Phase 3: LLM Integration (Multi-provider system)
 - ✅ Phase 3.5: Triple Architecture Migration (153+ conditionals eliminated)
 - ✅ Phase 4.1: Enhanced Image Processing (Core Image modernization)
+- ✅ Phase 4.2: Professional Document Scanner (VisionKit integration)
+- ✅ Unified Refactoring: Master plan and implementation strategy
 
-### Current Phase
-- 🚧 Phase 4.2: Professional Document Scanner (Starting Jan 19, 2025)
+### Current Implementation (12-Week Unified Refactoring)
+- 🚧 **Weeks 1-4**: AI Core Engines & Quick Wins
+- 🚧 **Weeks 5-8**: TCA → SwiftUI Migration & Architecture Consolidation
+- 🚧 **Weeks 9-10**: GraphRAG Integration & Swift 6 Compliance
+- 🚧 **Weeks 11-12**: Production Polish & Performance Optimization
 
-### Upcoming Phases (15/20 - 75% remaining)
-- 📅 Phase 5: Smart Integrations & Provider Flexibility (1.5 weeks)
-- 📅 Phase 6: LLM Intelligence & Compliance Automation (2 weeks)
-- 📅 Phase 7: Polish & App Store Release (2 weeks)
+### Target Outcomes (30/54 - 56% remaining)
+- 🎯 **Architecture**: 5 Core Engines operational
+- 🎯 **UI Migration**: Native SwiftUI with Observable pattern
+- 🎯 **GraphRAG**: On-device LFM2-700M intelligence
+- 🎯 **Performance**: <10s build, <200MB memory, Swift 6 compliance
 
-### Key Deliverables by Phase
-1. **Phase 4.2**: Professional scanner with VisionKit and enhanced OCR
-2. **Phase 5**: Prompt Optimization + Universal Provider Support + iPad/Apple Pencil
-3. **Phase 6**: CfA + GraphRAG + Enhanced Workflow System
-4. **Phase 7**: App Store release
+### Key Deliverables by Unified Refactoring Phase
+1. **Weeks 1-4**: 5 Core Engines operational with 80% AI service consolidation
+2. **Weeks 5-8**: TCA → SwiftUI migration complete with 6 → 3 target consolidation
+3. **Weeks 9-10**: GraphRAG integration with LFM2-700M and Swift 6 compliance
+4. **Weeks 11-12**: Production-ready unified architecture with performance optimization
 
 ---
 
 ## 🔄 Version History
 
+- **v6.0** (2025-01-24) - Unified Refactoring Architecture
+  - **MAJOR**: Unified Refactoring Initiative launched with 12-week implementation plan
+  - 5 Core Engines Architecture designed (AIOrchestrator, DocumentEngine, PromptRegistry, ComplianceValidator, PersonalizationEngine)
+  - VanillaIce consensus validation of implementation strategy and testing rubric
+  - Target: 48% file reduction (484 → 250 files), TCA → SwiftUI migration, Swift 6 compliance
+  - **CURRENT**: Execute unified refactoring master plan
+
 - **v5.2** (2025-01-19) - Enhanced Document Processing
   - **MAJOR**: Phase 4.1 Enhanced Image Processing complete
+  - **MAJOR**: Phase 4.2 Professional Document Scanner complete
   - Core Image API modernization with Metal GPU acceleration
   - Actor-based concurrency for thread-safe progress tracking
   - OCR optimization filters for improved text recognition
+  - VisionKit integration with one-tap scanning from all screens
   - Comprehensive testing and documentation
-  - **CURRENT**: Phase 4.2 Document Scanner in progress
 
 - **v5.1** (2025-01-17) - Clean Architecture Achievement
   - **MAJOR**: Phase 3.5 Triple Architecture Migration complete
@@ -416,7 +480,7 @@ self.autoFillEngine = ConfidenceBasedAutoFillEngine(
 
 ---
 
-**Last Updated**: 2025-01-19  
+**Last Updated**: 2025-01-24  
 **Project Lead**: Mr. Joshua  
 **Configuration Type**: Project-Specific (AIKO)  
-**Status**: 25% Complete - Phase 4.2 Document Scanner In Progress
+**Status**: 44% Complete - Unified Refactoring Initiative Implementation

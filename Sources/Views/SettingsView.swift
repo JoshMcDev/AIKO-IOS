@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import AppCore
 
 struct SettingsView: View {
     let store: StoreOf<SettingsFeature>
@@ -410,7 +411,7 @@ struct APISettingsView: View {
                             Text("Claude 4 Sonnet")
                                 .font(.headline)
                                 .foregroundColor(.blue)
-        }
+                        }
 
                         Text("The latest Claude model is used for all document generation")
                             .font(.caption)

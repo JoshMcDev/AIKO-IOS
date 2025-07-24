@@ -3,9 +3,9 @@ import Foundation
 
 // MARK: - Document Scanner Service Dependency Registration
 
-/// Note: DependencyKey conformance for DocumentScannerService is already declared
-/// in DocumentScannerProtocol.swift with proper liveValue and testValue implementations.
-/// This file provides additional integration helpers and migration utilities.
+// Note: DependencyKey conformance for DocumentScannerService is already declared
+// in DocumentScannerProtocol.swift with proper liveValue and testValue implementations.
+// This file provides additional integration helpers and migration utilities.
 
 // MARK: - Migration Helper
 

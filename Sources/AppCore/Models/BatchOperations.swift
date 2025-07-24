@@ -9,7 +9,7 @@ public struct BatchOperationHandle: Identifiable, Sendable, Codable, Equatable {
     public let type: BatchOperationType
     public let assetIds: [UUID]
     public let startTime: Date
-    
+
     public init(
         id: UUID = UUID(),
         operationId: UUID,
@@ -37,7 +37,7 @@ public enum BatchOperationType: String, Sendable, CaseIterable, Codable {
     case export
     case enhance
     case ocr
-    
+
     public var displayName: String {
         switch self {
         case .compress: "Compress"
@@ -67,7 +67,7 @@ public struct BatchProgress: Sendable, Codable, Equatable {
     public let status: BatchOperationStatus
     public let message: String?
     public let timestamp: Date
-    
+
     public init(
         operationId: UUID,
         totalItems: Int,
@@ -93,13 +93,13 @@ public struct BatchProgress: Sendable, Codable, Equatable {
         self.message = message
         self.timestamp = timestamp
     }
-    
+
     /// Progress as percentage (0-100)
     public var progressPercentage: Double {
         guard totalItems > 0 else { return 0 }
         return Double(completedItems) / Double(totalItems) * 100
     }
-    
+
     /// Bytes progress as percentage (0-100)
     public var bytesProgressPercentage: Double {
         guard totalBytes > 0 else { return 0 }
@@ -115,7 +115,7 @@ public enum BatchOperationStatus: String, Sendable, CaseIterable, Codable {
     case completed
     case failed
     case cancelled
-    
+
     public var displayName: String {
         switch self {
         case .pending: "Pending"
@@ -126,13 +126,13 @@ public enum BatchOperationStatus: String, Sendable, CaseIterable, Codable {
         case .cancelled: "Cancelled"
         }
     }
-    
+
     public var isActive: Bool {
         switch self {
         case .running, .paused:
-            return true
+            true
         case .pending, .completed, .failed, .cancelled:
-            return false
+            false
         }
     }
 }
@@ -147,7 +147,7 @@ public struct BatchOperationResult: Identifiable, Sendable, Codable, Equatable {
     public let error: String?
     public let processingTime: TimeInterval
     public let completedAt: Date?
-    
+
     public init(
         id: UUID = UUID(),
         assetId: UUID,
@@ -176,7 +176,7 @@ public enum BatchItemStatus: String, Sendable, CaseIterable, Codable {
     case completed
     case failed
     case skipped
-    
+
     public var displayName: String {
         switch self {
         case .pending: "Pending"
@@ -200,7 +200,7 @@ public struct BatchOperationSummary: Identifiable, Sendable, Codable, Equatable 
     public let totalProcessingTime: TimeInterval
     public let completedAt: Date?
     public let errors: [String]
-    
+
     public init(
         id: UUID = UUID(),
         handle: BatchOperationHandle,
@@ -232,7 +232,7 @@ public enum OperationPriority: String, Sendable, CaseIterable, Codable {
     case normal
     case high
     case urgent
-    
+
     public var displayName: String {
         switch self {
         case .low: "Low"
@@ -241,7 +241,7 @@ public enum OperationPriority: String, Sendable, CaseIterable, Codable {
         case .urgent: "Urgent"
         }
     }
-    
+
     public var sortValue: Int {
         switch self {
         case .low: 0
@@ -259,7 +259,7 @@ public struct BatchEngineSettings: Sendable, Codable, Equatable {
     public let defaultTimeout: TimeInterval
     public let retryAttempts: Int
     public let enableProgressCallbacks: Bool
-    
+
     public init(
         maxConcurrentOperations: Int = 3,
         maxMemoryUsage: Int64 = 100 * 1024 * 1024, // 100MB
@@ -283,7 +283,7 @@ public struct BatchOperation: Identifiable, Sendable, Codable, Equatable {
     public let parameters: [String: String]
     public let priority: OperationPriority
     public let settings: BatchEngineSettings?
-    
+
     public init(
         id: UUID = UUID(),
         type: BatchOperationType,
@@ -307,7 +307,7 @@ public struct MediaBatchOperationStatus: Sendable, Codable, Equatable {
     public let completedOperations: [BatchOperationSummary]
     public let totalItemsProcessing: Int
     public let estimatedTimeRemaining: TimeInterval?
-    
+
     public init(
         activeOperations: [BatchOperationHandle] = [],
         completedOperations: [BatchOperationSummary] = [],

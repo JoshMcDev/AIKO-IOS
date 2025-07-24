@@ -522,13 +522,13 @@ struct APIKeyStepView: View {
 
                 if let apiURL = URL(string: "https://console.anthropic.com/api") {
                     Link(destination: apiURL) {
-                    HStack {
-                        Image(systemName: "link")
-                        Text("console.anthropic.com/api")
-                        Image(systemName: "arrow.up.right.square")
-                    }
-                    .font(.subheadline)
-                    .foregroundColor(Theme.Colors.aikoAccent)
+                        HStack {
+                            Image(systemName: "link")
+                            Text("console.anthropic.com/api")
+                            Image(systemName: "arrow.up.right.square")
+                        }
+                        .font(.subheadline)
+                        .foregroundColor(Theme.Colors.aikoAccent)
                     }
                     .padding(.vertical, Theme.Spacing.extraSmall)
                 }

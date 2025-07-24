@@ -12,7 +12,7 @@ private struct PageProcessingConfig: Sendable {
     let progressSession: String
     let progressHandler: @Sendable (Double) async -> Void
     let perPageCompletion: @Sendable (SessionPage.ID, Result<Void, Error>) async -> Void
-    
+
     init(
         page: SessionPage,
         index: Int,

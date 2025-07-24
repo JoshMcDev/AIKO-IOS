@@ -643,11 +643,10 @@ struct ValuePatternClusterer {
             var assigned = false
 
             for i in 0 ..< clusters.count where calculateSimilarity(value, clusters[i].centroid) >= similarity {
-                    clusters[i].members.append(value)
-                    clusters[i].updateCentroid()
-                    assigned = true
-                    break
-                }
+                clusters[i].members.append(value)
+                clusters[i].updateCentroid()
+                assigned = true
+                break
             }
 
             if !assigned {

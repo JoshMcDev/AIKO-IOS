@@ -40,14 +40,14 @@ final class OfflineCacheManager: ObservableObject {
     private init(configuration: OfflineCacheConfiguration = .default) {
         self.configuration = configuration
         memoryCache = MemoryCache(configuration: configuration)
-        
+
         do {
             diskCache = try DiskCache(configuration: configuration)
         } catch {
             // Fallback to a basic disk cache if initialization fails
             diskCache = try! DiskCache()
         }
-        
+
         secureCache = SecureCache(configuration: configuration)
 
         logger.info("OfflineCacheManager initialized with max size: \(configuration.maxSize)")

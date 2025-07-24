@@ -34,7 +34,12 @@ final class BackgroundSyncHandler {
                 forTaskWithIdentifier: Self.syncTaskIdentifier,
                 using: nil
             ) { task in
-                self.handleBackgroundSync(task: task as! BGProcessingTask)
+                guard let processingTask = task as? BGProcessingTask else {
+                    self.logger.error("Invalid task type received for background sync")
+                    task.setTaskCompleted(success: false)
+                    return
+                }
+                self.handleBackgroundSync(task: processingTask)
             }
 
             logger.info("Background sync task registered")

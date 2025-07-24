@@ -43,8 +43,7 @@ public class MetricInsightEntity: NSManagedObject {
         entity.timestamp = model.timestamp
 
         if !model.affectedMetrics.isEmpty,
-           let metricsData = try? JSONEncoder().encode(model.affectedMetrics)
-        {
+           let metricsData = try? JSONEncoder().encode(model.affectedMetrics) {
             entity.affectedMetricsData = metricsData
         }
 

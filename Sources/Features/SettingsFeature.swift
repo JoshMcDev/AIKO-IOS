@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import Foundation
 import SwiftUI
+import AppCore
 
 @Reducer
 public struct SettingsFeature: Sendable {
@@ -465,9 +466,9 @@ public struct SettingsFeature: Sendable {
                 case .daily:
                     nextBackup = Calendar.current.date(byAdding: .day, value: 1, to: now) ?? now.addingTimeInterval(86400)
                 case .weekly:
-                    nextBackup = Calendar.current.date(byAdding: .weekOfYear, value: 1, to: now) ?? now.addingTimeInterval(604800)
+                    nextBackup = Calendar.current.date(byAdding: .weekOfYear, value: 1, to: now) ?? now.addingTimeInterval(604_800)
                 case .monthly:
-                    nextBackup = Calendar.current.date(byAdding: .month, value: 1, to: now) ?? now.addingTimeInterval(2592000)
+                    nextBackup = Calendar.current.date(byAdding: .month, value: 1, to: now) ?? now.addingTimeInterval(2_592_000)
                 }
 
                 state.appSettings.nextScheduledBackup = nextBackup

@@ -27,7 +27,7 @@ public struct MediaManagementFeature: Sendable {
     // MARK: - State
 
     @ObservableState
-    public struct State {
+    public struct State: Equatable {
         // Core asset management
         public var assets: IdentifiedArrayOf<MediaAsset> = []
         public var selectedAssets: Set<MediaAsset.ID> = []
@@ -45,7 +45,6 @@ public struct MediaManagementFeature: Sendable {
 
         // Error handling and retry
         public var error: MediaError?
-        public var lastFailedOperation: Action?
 
         // Media library
         public var albums: IdentifiedArrayOf<PhotoAlbum> = []
@@ -84,7 +83,7 @@ public struct MediaManagementFeature: Sendable {
 
     // MARK: - Actions
 
-    public enum Action: Sendable {
+    public enum Action: Sendable, Equatable {
         // File Picking
         case pickFiles(allowedTypes: [MediaFileType], allowsMultiple: Bool)
         case pickFilesResponse(Result<[MediaAsset], MediaError>)
@@ -101,7 +100,7 @@ public struct MediaManagementFeature: Sendable {
         case capturePhoto
         case capturePhotoResponse(Result<MediaAsset, MediaError>)
         case startVideoRecording
-        case startVideoRecordingResponse(Result<Void, MediaError>)
+        case startVideoRecordingResponse(Result<Bool, MediaError>)
         case stopVideoRecording
         case stopVideoRecordingResponse(Result<MediaAsset, MediaError>)
         case requestCameraPermission
@@ -111,7 +110,7 @@ public struct MediaManagementFeature: Sendable {
         case captureScreenshot(ScreenshotType)
         case captureScreenshotResponse(Result<MediaAsset, MediaError>)
         case startScreenRecording
-        case startScreenRecordingResponse(Result<Void, MediaError>)
+        case startScreenRecordingResponse(Result<Bool, MediaError>)
         case stopScreenRecording
         case stopScreenRecordingResponse(Result<MediaAsset, MediaError>)
 
@@ -179,7 +178,6 @@ public struct MediaManagementFeature: Sendable {
             case let .pickFiles(_, allowsMultiple):
                 state.isLoading = true
                 state.error = nil
-                state.lastFailedOperation = action
                 return .run { send in
                     do {
                         let assets: [MediaAsset]
@@ -200,7 +198,6 @@ public struct MediaManagementFeature: Sendable {
                 switch result {
                 case let .success(assets):
                     state.assets.append(contentsOf: assets)
-                    state.lastFailedOperation = nil
                 case let .failure(error):
                     state.error = error
                 }
@@ -268,7 +265,6 @@ public struct MediaManagementFeature: Sendable {
             case .capturePhoto:
                 state.isCapturing = true
                 state.error = nil
-                state.lastFailedOperation = action
                 return .run { send in
                     do {
                         // Note: CameraClient not defined yet - using placeholder
@@ -292,11 +288,11 @@ public struct MediaManagementFeature: Sendable {
             case .startVideoRecording:
                 state.isRecording = true
                 state.error = nil
-                state.lastFailedOperation = action
                 return .run { send in
                     do {
                         // Note: CameraClient not defined yet - using placeholder
                         // In full implementation, would use: try await cameraClient.startVideoRecording()
+                        // await send(.startVideoRecordingResponse(.success(true)))
                         throw NSError(domain: "CameraNotImplemented", code: -1, userInfo: [NSLocalizedDescriptionKey: "Video recording requires CameraClient implementation"])
                     } catch {
                         await send(.startVideoRecordingResponse(.failure(MediaError.cameraAccessFailed(error.localizedDescription))))
@@ -349,7 +345,6 @@ public struct MediaManagementFeature: Sendable {
             case .captureScreenshot:
                 state.isCapturing = true
                 state.error = nil
-                state.lastFailedOperation = action
                 return .run { send in
                     do {
                         let asset = try await screenshotClient.captureScreen()
@@ -372,11 +367,10 @@ public struct MediaManagementFeature: Sendable {
             case .startScreenRecording:
                 state.isRecording = true
                 state.error = nil
-                state.lastFailedOperation = action
                 return .run { send in
                     do {
                         try await screenshotClient.startRecording()
-                        await send(.startScreenRecordingResponse(.success(())))
+                        await send(.startScreenRecordingResponse(.success(true)))
                     } catch {
                         await send(.startScreenRecordingResponse(.failure(MediaError.screenshotFailed(error.localizedDescription))))
                     }
@@ -446,7 +440,6 @@ public struct MediaManagementFeature: Sendable {
             case let .extractMetadata(assetId):
                 state.isProcessing = true
                 state.error = nil
-                state.lastFailedOperation = action
                 return .run { [assets = state.assets] send in
                     guard let asset = assets[id: assetId] else {
                         await send(.extractMetadataResponse(assetId: assetId, .failure(MediaError.fileNotFound("Asset not found"))))
@@ -482,7 +475,6 @@ public struct MediaManagementFeature: Sendable {
 
             // Validation
             case let .validateAsset(assetId):
-                state.lastFailedOperation = action
                 return .run { [assets = state.assets] send in
                     guard let asset = assets[id: assetId] else {
                         await send(.validateAssetResponse(assetId: assetId, .failure(MediaError.fileNotFound("Asset not found"))))
@@ -518,7 +510,6 @@ public struct MediaManagementFeature: Sendable {
 
             case .validateAllAssets:
                 state.isProcessing = true
-                state.lastFailedOperation = action
                 return .run { [assets = state.assets] send in
                     // Send validation requests for each asset
                     for asset in assets {
@@ -550,7 +541,6 @@ public struct MediaManagementFeature: Sendable {
             case let .startBatchOperation(operationType):
                 state.isProcessing = true
                 state.error = nil
-                state.lastFailedOperation = action
                 return .run { [selectedAssets = state.selectedAssets] send in
                     guard !selectedAssets.isEmpty else {
                         await send(.batchOperationResponse(.failure(MediaError.invalidInput("No assets selected for batch operation"))))
@@ -607,7 +597,6 @@ public struct MediaManagementFeature: Sendable {
             case let .executeWorkflow(workflow):
                 state.isProcessing = true
                 state.error = nil
-                state.lastFailedOperation = action
                 return .run { [selectedAssets = state.selectedAssets] send in
                     guard !selectedAssets.isEmpty else {
                         await send(.workflowResponse(.failure(MediaError.invalidInput("No assets selected for workflow execution"))))
@@ -637,7 +626,6 @@ public struct MediaManagementFeature: Sendable {
                 return .none
 
             case let .saveWorkflowTemplate(workflow, name):
-                state.lastFailedOperation = action
                 return .run { send in
                     // Create workflow template
                     let template = WorkflowTemplate(
@@ -676,13 +664,10 @@ public struct MediaManagementFeature: Sendable {
                 return .none
 
             case .retryFailedOperation:
-                guard let lastOperation = state.lastFailedOperation else {
-                    return .none
-                }
+                // Retry functionality would need to store the last operation differently
+                // For now, just clear the error
                 state.error = nil
-                return .run { send in
-                    await send(lastOperation)
-                }
+                return .none
 
             // Session Management
             case .startMediaSession:

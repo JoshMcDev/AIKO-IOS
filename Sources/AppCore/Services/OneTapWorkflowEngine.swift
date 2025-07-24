@@ -10,7 +10,7 @@ public actor OneTapWorkflowEngine {
 
     // MARK: - Types
 
-    public enum OneTapWorkflow: Sendable, CaseIterable {
+    public enum OneTapWorkflow: Sendable, CaseIterable, Equatable {
         case governmentFormProcessing
         case contractDocumentScan
         case invoiceProcessing
@@ -22,7 +22,7 @@ public actor OneTapWorkflowEngine {
         }
     }
 
-    public struct WorkflowDefinition: Sendable, Codable {
+    public struct WorkflowDefinition: Sendable, Codable, Equatable {
         public let name: String
         public let steps: [WorkflowStep]
         public let expectedFormType: FormType?
@@ -372,7 +372,8 @@ public actor OneTapWorkflowEngine {
         try await Task.sleep(nanoseconds: UInt64(scanDelay * 1_000_000_000))
 
         // Create mock scanned document with realistic data
-        guard let mockImageData = "mock_government_form_scan_data".data(using: .utf8) else {
+        let mockImageData = Data("mock_government_form_scan_data".utf8)
+        guard !mockImageData.isEmpty else {
             throw OneTapError.processingFailed(NSError(domain: "OneTapWorkflow", code: 1005, userInfo: [NSLocalizedDescriptionKey: "Failed to create mock image data"]))
         }
         let scannedPage = ScannedPage(

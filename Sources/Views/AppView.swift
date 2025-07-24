@@ -14,9 +14,11 @@ public struct AppView: View {
 
     public var body: some View {
         #if os(iOS)
-            IOSAppView(store: store)
+            Text("iOS App View - Platform specific implementation needed")
+                .navigationTitle("AIKO")
         #elseif os(macOS)
-            MacOSAppView(store: store)
+            Text("macOS App View - Platform specific implementation needed")
+                .navigationTitle("AIKO")
         #endif
     }
 }

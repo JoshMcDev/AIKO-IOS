@@ -2,7 +2,7 @@ import CoreML
 import Foundation
 import OSLog
 #if canImport(UIKit)
-import UIKit
+    import UIKit
 #endif
 
 /// Dynamic Small Language Model manager for AIKO GraphRAG system
@@ -33,7 +33,7 @@ actor SLMModelManager {
             compatibleDevices: [.iPhone15Pro, .iPadProM4],
             optimizations: ["Q4_0", "Q4_K_M", "Q6_K"]
         )
-        
+
         let qwenConfig = SLMModelConfig(
             name: "Qwen 2.5 7B",
             size: Int64(4.0 * 1024 * 1024 * 1024), // 4GB
@@ -43,10 +43,10 @@ actor SLMModelManager {
             compatibleDevices: [.iPadProM4],
             optimizations: ["Q4_0", "Q4_K_M", "Q6_K", "Q8_0"]
         )
-        
+
         return [
             .phi3Mini: phi3Config,
-            .qwen25_7B: qwenConfig
+            .qwen25_7B: qwenConfig,
         ]
     }()
 
@@ -203,9 +203,9 @@ actor SLMModelManager {
 
     /// Generate text completion using the loaded SLM
     func generateCompletion(
-        prompt: String,
+        prompt _: String,
         maxTokens: Int = 512,
-        temperature: Float = 0.7
+        temperature _: Float = 0.7
     ) async throws -> String {
         guard isInitialized, currentModel != nil else {
             throw SLMError.modelNotInitialized
@@ -223,7 +223,7 @@ actor SLMModelManager {
         // TODO: Implement CoreML-based text generation
         // For now, return a placeholder response
         let completion = "SLM inference not yet implemented for CoreML"
-        
+
         logger.debug("✅ Completion generated successfully")
         return completion
     }
@@ -356,22 +356,20 @@ extension SLMModelManager {
         guard currentModel != nil, let config = currentModelConfig else { return nil }
 
         let memoryStatus = await memoryMonitor.checkMemoryStatus()
-        
+
         // Determine model type from config
         let modelType: SLMModelType = {
-            for (type, storedConfig) in modelConfigurations {
-                if storedConfig.name == config.name {
-                    return type
-                }
+            for (type, storedConfig) in modelConfigurations where storedConfig.name == config.name {
+                return type
             }
             return .phi3Mini // default fallback
         }()
 
-        return SLMModelInfo(
+        return await SLMModelInfo(
             type: modelType,
             config: config,
             memoryUsage: memoryStatus,
-            canCoexistWithLFM2: await canCoexistWithLFM2(),
+            canCoexistWithLFM2: canCoexistWithLFM2(),
             deviceCapability: deviceCapability
         )
     }

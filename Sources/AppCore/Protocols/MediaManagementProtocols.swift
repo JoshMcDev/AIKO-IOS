@@ -639,7 +639,7 @@ public struct DimensionConstraints: Sendable {
 }
 
 /// Media dimensions
-public struct MediaDimensions: Sendable {
+public struct MediaDimensions: Sendable, Codable, Equatable {
     public let width: Int
     public let height: Int
     public let aspectRatio: Double
@@ -706,52 +706,6 @@ public struct SecurityScanResult: Sendable {
         self.isSafe = isSafe
         self.threats = threats
         self.scanDuration = scanDuration
-    }
-
-    public struct SecurityThreat: Sendable {
-        public let type: ThreatType
-        public let severity: Severity
-        public let description: String
-
-        public init(type: ThreatType, severity: Severity, description: String) {
-            self.type = type
-            self.severity = severity
-            self.description = description
-        }
-
-        public enum ThreatType: String, Sendable, CaseIterable {
-            case malware
-            case virus
-            case trojan
-            case suspicious
-            case unknown
-
-            public var displayName: String {
-                switch self {
-                case .malware: "Malware"
-                case .virus: "Virus"
-                case .trojan: "Trojan"
-                case .suspicious: "Suspicious Content"
-                case .unknown: "Unknown Threat"
-                }
-            }
-        }
-
-        public enum Severity: String, Sendable, CaseIterable {
-            case low
-            case medium
-            case high
-            case critical
-
-            public var displayName: String {
-                switch self {
-                case .low: "Low"
-                case .medium: "Medium"
-                case .high: "High"
-                case .critical: "Critical"
-                }
-            }
-        }
     }
 }
 

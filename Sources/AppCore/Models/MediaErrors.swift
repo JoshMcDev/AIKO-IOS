@@ -20,7 +20,7 @@ public enum MediaError: Error, Sendable, LocalizedError, Equatable {
     case quotaExceeded(String)
     case versionMismatch(String)
     case unknown(String)
-    
+
     // Specific media operation errors
     case filePickingFailed(String)
     case photoLibraryAccessFailed(String)
@@ -30,6 +30,14 @@ public enum MediaError: Error, Sendable, LocalizedError, Equatable {
     case validationFailed(String)
     case batchOperationFailed(String)
     case workflowExecutionFailed(String)
+
+    // Cache-specific errors
+    case cacheFull(String)
+    case cacheError(String)
+
+    // Batch processing errors
+    case operationNotFound(String)
+    case invalidOperation(String)
 
     public var errorDescription: String? {
         switch self {
@@ -81,6 +89,14 @@ public enum MediaError: Error, Sendable, LocalizedError, Equatable {
             "Batch operation failed: \(message)"
         case let .workflowExecutionFailed(message):
             "Workflow execution failed: \(message)"
+        case let .cacheFull(message):
+            "Cache is full: \(message)"
+        case let .cacheError(message):
+            "Cache error: \(message)"
+        case let .operationNotFound(message):
+            "Operation not found: \(message)"
+        case let .invalidOperation(message):
+            "Invalid operation: \(message)"
         }
     }
 
@@ -134,6 +150,14 @@ public enum MediaError: Error, Sendable, LocalizedError, Equatable {
             "Batch processing operation failed"
         case .workflowExecutionFailed:
             "Workflow execution encountered an error"
+        case .cacheFull:
+            "The cache has reached its maximum capacity"
+        case .cacheError:
+            "An error occurred while accessing the cache"
+        case .operationNotFound:
+            "The requested operation could not be found"
+        case .invalidOperation:
+            "The operation is not valid in the current state"
         }
     }
 
@@ -187,6 +211,14 @@ public enum MediaError: Error, Sendable, LocalizedError, Equatable {
             "Retry the batch operation or process files individually"
         case .workflowExecutionFailed:
             "Review workflow settings and try again"
+        case .cacheFull:
+            "Clear cache or increase cache size limit"
+        case .cacheError:
+            "Restart the application or clear cache"
+        case .operationNotFound:
+            "Verify the operation ID and try again"
+        case .invalidOperation:
+            "Check operation state before performing this action"
         }
     }
 }

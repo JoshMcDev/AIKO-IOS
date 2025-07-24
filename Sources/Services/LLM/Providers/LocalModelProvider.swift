@@ -43,7 +43,7 @@ public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable 
                     id: "mistral:latest",
                     name: "Mistral",
                     description: "Mistral local model",
-                    contextLength: 32_000,
+                    contextLength: 32000,
                     pricing: ModelPricing(
                         inputPricePerMillion: 0.0,
                         outputPricePerMillion: 0.0
@@ -139,9 +139,9 @@ public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable 
             "messages": messages,
             "options": [
                 "temperature": request.temperature,
-                "num_predict": request.maxTokens ?? 4096
+                "num_predict": request.maxTokens ?? 4096,
             ],
-            "stream": false
+            "stream": false,
         ]
 
         // Local model API endpoint (Ollama format)
@@ -236,9 +236,9 @@ public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable 
                         "messages": messages,
                         "options": [
                             "temperature": request.temperature,
-                            "num_predict": request.maxTokens ?? 4096
+                            "num_predict": request.maxTokens ?? 4096,
                         ],
-                        "stream": true
+                        "stream": true,
                     ]
 
                     // Local model streaming endpoint
@@ -292,7 +292,7 @@ public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable 
 
         let body: [String: Any] = [
             "model": "nomic-embed-text", // Default embedding model for Ollama
-            "prompt": text
+            "prompt": text,
         ]
 
         let url = "\(endpoint)/api/embeddings"

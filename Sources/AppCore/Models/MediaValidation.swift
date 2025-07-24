@@ -7,7 +7,7 @@ public struct MediaClientValidationResult: Sendable, Codable, Equatable {
     public let isValid: Bool
     public let issues: [String]?
     public let warnings: [String]?
-    
+
     public init(
         isValid: Bool,
         issues: [String]? = nil,
@@ -25,7 +25,7 @@ public struct AssetValidationResult: Sendable, Codable, Equatable {
     public let issues: [String]
     public let assetId: UUID
     public let validatedAt: Date
-    
+
     public init(
         isValid: Bool,
         issues: [String] = [],

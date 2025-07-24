@@ -94,8 +94,7 @@ public actor ObjectActionCache {
 
             // Encode parameters as sorted JSON for consistent hashing
             if let data = try? JSONSerialization.data(withJSONObject: action.parameters.sorted(by: { $0.key < $1.key })),
-               let json = String(data: data, encoding: .utf8)
-            {
+               let json = String(data: data, encoding: .utf8) {
                 parameters = json
             } else {
                 parameters = ""
@@ -404,19 +403,19 @@ public actor ObjectActionCache {
             // For now, we'll just mark it for warming
         }
     }
-    
+
     // MARK: - Actor-Isolated Cache Helpers
-    
+
     /// Actor-isolated helper for L3 cache retrieval
     private func retrieveFromL3Cache(key: String) async throws -> CachedAction? {
-        return try await l3Cache.retrieve(CachedAction.self, forKey: key)
+        try await l3Cache.retrieve(CachedAction.self, forKey: key)
     }
-    
+
     /// Actor-isolated helper for L3 cache storage
     private func storeToL3Cache(_ cached: CachedAction, key: String) async throws {
         try await l3Cache.store(cached, forKey: key)
     }
-    
+
     /// Actor-isolated helper for L3 cache clearing
     private func clearL3Cache() async throws {
         try await l3Cache.clearAll()

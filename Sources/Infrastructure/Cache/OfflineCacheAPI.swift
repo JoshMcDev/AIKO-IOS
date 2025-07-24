@@ -161,8 +161,8 @@ extension OfflineCacheManager {
         let sizePercentage = Double(totalSize) / Double(configuration.maxSize)
 
         let isHealthy = memoryHealth.level == .healthy && diskHealth.level == .healthy && secureHealth.level == .healthy
-        
-        let overallHealth: CacheHealthStatus.HealthLevel = if isHealthy && sizePercentage < 0.9 {
+
+        let overallHealth: CacheHealthStatus.HealthLevel = if isHealthy, sizePercentage < 0.9 {
             .healthy
         } else if sizePercentage > 0.95 {
             .critical
@@ -303,7 +303,7 @@ extension OfflineCacheManager {
         isSecure: Bool = false
     ) async throws {
         // Add priority metadata
-        var metadata = OfflineCacheMetadata(
+        let metadata = OfflineCacheMetadata(
             key: key,
             size: 0, // Will be calculated
             contentType: type,
@@ -312,7 +312,8 @@ extension OfflineCacheManager {
             accessCount: 0,
             expiresAt: nil
         )
-        metadata.priority = priority
+        // TODO: Add priority field to OfflineCacheMetadata if needed
+        // metadata.priority = priority
 
         // Store with priority consideration
         try await store(object, forKey: key, type: type, isSecure: isSecure)
@@ -446,8 +447,7 @@ extension OfflineCacheManager {
         }
 
         if let lastCleanup = statistics.lastCleanup,
-           Date().timeIntervalSince(lastCleanup) > 86400 * 7
-        {
+           Date().timeIntervalSince(lastCleanup) > 86400 * 7 {
             issues.append("Cache cleanup overdue")
         }
 
@@ -607,12 +607,7 @@ struct SizeDistribution {
 
 extension OfflineCacheMetadata {
     var priority: CachePriority {
-        get {
-            // Get from stored metadata
-            .normal
-        }
-        set {
-            // Store in metadata
-        }
+        // Get from stored metadata
+        .normal
     }
 }

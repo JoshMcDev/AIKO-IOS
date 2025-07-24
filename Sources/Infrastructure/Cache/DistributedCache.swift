@@ -73,7 +73,7 @@ public actor DistributedCache: DistributedCacheProtocol {
         // Determine which node owns this key
         let nodeId = await consistentHash.getNode(for: key)
 
-        if let nodeId = nodeId, nodeId == configuration.nodeId {
+        if let nodeId, nodeId == configuration.nodeId {
             // Local lookup
             if let cachedAction = await getCachedAction(for: key) {
                 let data = try JSONEncoder().encode(cachedAction)
@@ -82,7 +82,7 @@ public actor DistributedCache: DistributedCacheProtocol {
                 await recordMetrics(operation: DistributedCacheMetrics.MetricOperation.get, duration: Date().timeIntervalSince(startTime), hit: true)
                 return result
             }
-        } else if let nodeId = nodeId {
+        } else if let nodeId {
             // Remote lookup
             if let connection = getConnection(nodeId) {
                 if let data = try await connection.get(key: key) {
@@ -114,10 +114,10 @@ public actor DistributedCache: DistributedCacheProtocol {
         let replicaNodes: [String] = []
 
         // Write to primary
-        if let primaryNode = primaryNode, primaryNode == configuration.nodeId {
+        if let primaryNode, primaryNode == configuration.nodeId {
             // Local write
             await setCachedAction(key: key, data: data, ttl: ttl)
-        } else if let primaryNode = primaryNode {
+        } else if let primaryNode {
             // Remote write
             if let connection = connections[primaryNode] {
                 try await connection.set(key: key, data: data, ttl: ttl)
@@ -574,11 +574,11 @@ private struct DistributedCacheMetrics {
     }
 
     var hitRate: Double {
-        totalRequests > 0 ? Double(cacheHits) / Double(totalRequests): 0
+        totalRequests > 0 ? Double(cacheHits) / Double(totalRequests) : 0
     }
 
     var averageLatency: TimeInterval {
-        totalRequests > 0 ? totalLatency / Double(totalRequests): 0
+        totalRequests > 0 ? totalLatency / Double(totalRequests) : 0
     }
 
     mutating func record(operation: MetricOperation, duration: TimeInterval, hit: Bool = false) {

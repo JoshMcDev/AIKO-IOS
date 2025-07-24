@@ -8,7 +8,7 @@ public struct SAMGovService: Sendable {
     public var searchEntity: @Sendable (String) async throws -> EntitySearchResult
     public var getEntityByCAGE: @Sendable (String) async throws -> EntityDetail
     public var getEntityByUEI: @Sendable (String) async throws -> EntityDetail
-    
+
     public init(
         searchEntity: @escaping @Sendable (String) async throws -> EntitySearchResult,
         getEntityByCAGE: @escaping @Sendable (String) async throws -> EntityDetail,
@@ -24,7 +24,7 @@ public struct SAMGovService: Sendable {
 
 /// Detailed entity information from SAM.gov
 public struct EntityDetail: Codable, Sendable, Identifiable {
-    public let id = UUID()
+    public var id: UUID { UUID() }
     public let ueiSAM: String
     public let entityName: String
     public let legalBusinessName: String
@@ -52,7 +52,7 @@ public struct EntityDetail: Codable, Sendable, Identifiable {
     public let responsibilityInformation: ResponsibilityInformation?
     public let architectEngineerQualifications: ArchitectEngineerQualifications?
     public let physicalAddress: PhysicalAddress?
-    
+
     public init(
         ueiSAM: String,
         entityName: String,
@@ -116,7 +116,7 @@ public struct EntityDetail: Codable, Sendable, Identifiable {
 public struct EntitySearchResult: Codable, Sendable {
     public let entities: [EntitySummary]
     public let totalCount: Int
-    
+
     public init(entities: [EntitySummary], totalCount: Int) {
         self.entities = entities
         self.totalCount = totalCount
@@ -125,12 +125,12 @@ public struct EntitySearchResult: Codable, Sendable {
 
 /// Summary information for search results
 public struct EntitySummary: Codable, Sendable, Identifiable {
-    public let id = UUID()
+    public var id: UUID { UUID() }
     public let ueiSAM: String
     public let entityName: String
     public let cageCode: String?
     public let registrationStatus: String
-    
+
     public init(ueiSAM: String, entityName: String, cageCode: String? = nil, registrationStatus: String = "Active") {
         self.ueiSAM = ueiSAM
         self.entityName = entityName
@@ -147,7 +147,7 @@ public struct EntityAddress: Codable, Sendable {
     public let state: String
     public let zipCode: String
     public let country: String
-    
+
     public init(line1: String, line2: String? = nil, city: String, state: String, zipCode: String, country: String = "USA") {
         self.line1 = line1
         self.line2 = line2
@@ -165,7 +165,7 @@ public struct PointOfContact: Codable, Sendable {
     public let title: String?
     public let email: String?
     public let phone: String?
-    
+
     public init(firstName: String, lastName: String, title: String? = nil, email: String? = nil, phone: String? = nil) {
         self.firstName = firstName
         self.lastName = lastName
@@ -180,7 +180,7 @@ public struct NAICSCode: Codable, Sendable {
     public let code: String
     public let description: String
     public let isPrimary: Bool
-    
+
     public init(code: String, description: String, isPrimary: Bool = false) {
         self.code = code
         self.description = description
@@ -192,7 +192,7 @@ public struct NAICSCode: Codable, Sendable {
 public struct Section889Certifications: Codable, Sendable {
     public let doesNotProvideProhibitedTelecom: Bool?
     public let doesNotUseProhibitedTelecom: Bool?
-    
+
     public init(doesNotProvideProhibitedTelecom: Bool? = nil, doesNotUseProhibitedTelecom: Bool? = nil) {
         self.doesNotProvideProhibitedTelecom = doesNotProvideProhibitedTelecom
         self.doesNotUseProhibitedTelecom = doesNotUseProhibitedTelecom
@@ -206,7 +206,7 @@ public struct ForeignGovernmentEntity: Codable, Sendable, Equatable {
     public let interestType: String?
     public let ownershipPercentage: String?
     public let controlDescription: String?
-    
+
     public init(name: String, country: String, interestType: String? = nil, ownershipPercentage: String? = nil, controlDescription: String? = nil) {
         self.name = name
         self.country = country
@@ -221,7 +221,7 @@ public struct ResponsibilityInformation: Codable, Sendable {
     public let hasDelinquentFederalDebt: Bool?
     public let hasUnpaidTaxLiability: Bool?
     public let integrityRecords: [IntegrityRecord]
-    
+
     public init(hasDelinquentFederalDebt: Bool? = nil, hasUnpaidTaxLiability: Bool? = nil, integrityRecords: [IntegrityRecord] = []) {
         self.hasDelinquentFederalDebt = hasDelinquentFederalDebt
         self.hasUnpaidTaxLiability = hasUnpaidTaxLiability
@@ -234,7 +234,7 @@ public struct IntegrityRecord: Codable, Sendable {
     public let proceedingType: String?
     public let proceedingDescription: String?
     public let agency: String?
-    
+
     public init(proceedingType: String? = nil, proceedingDescription: String? = nil, agency: String? = nil) {
         self.proceedingType = proceedingType
         self.proceedingDescription = proceedingDescription
@@ -247,7 +247,7 @@ public struct ArchitectEngineerQualifications: Codable, Sendable {
     public let hasArchitectEngineerResponses: Bool
     public let hasSF330Filed: Bool
     public let disciplines: [String]
-    
+
     public init(hasArchitectEngineerResponses: Bool = false, hasSF330Filed: Bool = false, disciplines: [String] = []) {
         self.hasArchitectEngineerResponses = hasArchitectEngineerResponses
         self.hasSF330Filed = hasSF330Filed
@@ -262,7 +262,7 @@ public struct PhysicalAddress: Codable, Sendable {
     public let state: String?
     public let zipCode: String?
     public let country: String?
-    
+
     public init(streetAddress: String? = nil, city: String? = nil, state: String? = nil, zipCode: String? = nil, country: String? = nil) {
         self.streetAddress = streetAddress
         self.city = city
@@ -282,21 +282,21 @@ public enum SAMGovError: Error, LocalizedError, Sendable {
     case invalidResponse
     case rateLimitExceeded
     case apiKeyRequired
-    
+
     public var errorDescription: String? {
         switch self {
         case .invalidAPIKey:
-            return "Invalid or missing SAM.gov API key"
+            "Invalid or missing SAM.gov API key"
         case .entityNotFound:
-            return "Entity not found in SAM.gov database"
-        case .networkError(let message):
-            return "Network error: \(message)"
+            "Entity not found in SAM.gov database"
+        case let .networkError(message):
+            "Network error: \(message)"
         case .invalidResponse:
-            return "Invalid response from SAM.gov API"
+            "Invalid response from SAM.gov API"
         case .rateLimitExceeded:
-            return "API rate limit exceeded"
+            "API rate limit exceeded"
         case .apiKeyRequired:
-            return "SAM.gov API key is required"
+            "SAM.gov API key is required"
         }
     }
 }
@@ -307,11 +307,11 @@ public enum SAMGovError: Error, LocalizedError, Sendable {
 public actor SAMGovRepository {
     private let apiKey: String
     private let baseURL = "https://api.sam.gov/entity-information/v3"
-    
+
     public init(apiKey: String) {
         self.apiKey = apiKey
     }
-    
+
     public func searchEntities(_ query: String) async throws -> EntitySearchResult {
         // Mock implementation for now
         let mockEntity = EntitySummary(
@@ -320,13 +320,13 @@ public actor SAMGovRepository {
             cageCode: "MOCK1",
             registrationStatus: "Active"
         )
-        
+
         return EntitySearchResult(entities: [mockEntity], totalCount: 1)
     }
-    
+
     public func getEntityByCAGE(_ cageCode: String) async throws -> EntityDetail {
         // Mock implementation
-        return EntityDetail(
+        EntityDetail(
             ueiSAM: "MOCK123456789",
             entityName: "Mock Entity for CAGE \(cageCode)",
             legalBusinessName: "Mock Entity for CAGE \(cageCode)",
@@ -341,10 +341,10 @@ public actor SAMGovRepository {
             )
         )
     }
-    
+
     public func getEntityByUEI(_ uei: String) async throws -> EntityDetail {
         // Mock implementation
-        return EntityDetail(
+        EntityDetail(
             ueiSAM: uei,
             entityName: "Mock Entity for UEI \(uei)",
             legalBusinessName: "Mock Entity for UEI \(uei)",
@@ -364,7 +364,7 @@ public actor SAMGovRepository {
 // MARK: - Live Implementation
 
 public extension SAMGovService {
-    static let live: SAMGovService = SAMGovService(
+    static let live: SAMGovService = .init(
         searchEntity: { query in
             // Mock implementation
             let mockEntity = EntitySummary(

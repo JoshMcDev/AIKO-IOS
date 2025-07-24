@@ -39,35 +39,35 @@
     }
 
     // MARK: - Progress Tracker
-    
+
     private final class ProgressTracker: Sendable {
         private let totalSteps: Int
         private let startTime: CFAbsoluteTime
         private let options: DocumentImageProcessor.ProcessingOptions
         private let currentStepIndex = OSAllocatedUnfairLock(initialState: 0)
-        
+
         init(totalSteps: Int, startTime: CFAbsoluteTime, options: DocumentImageProcessor.ProcessingOptions) {
             self.totalSteps = totalSteps
             self.startTime = startTime
             self.options = options
         }
-        
+
         func makeUpdateProgress() -> @Sendable (ProcessingStep, Double) -> Void {
             { [weak self] step, stepProgress in
-                guard let self = self else { return }
-                
-                let currentIndex = self.currentStepIndex.withLock { index in
+                guard let self else { return }
+
+                let currentIndex = currentStepIndex.withLock { index in
                     let current = index
                     if stepProgress >= 1.0 {
                         index += 1
                     }
                     return current
                 }
-                
-                let overallProgress = (Double(currentIndex) + stepProgress) / Double(self.totalSteps)
-                let remainingTime = self.estimateRemainingTime(progress: overallProgress)
-                
-                self.options.progressCallback?(ProcessingProgress(
+
+                let overallProgress = (Double(currentIndex) + stepProgress) / Double(totalSteps)
+                let remainingTime = estimateRemainingTime(progress: overallProgress)
+
+                options.progressCallback?(ProcessingProgress(
                     currentStep: step,
                     stepProgress: stepProgress,
                     overallProgress: overallProgress,
@@ -75,7 +75,7 @@
                 ))
             }
         }
-        
+
         private func estimateRemainingTime(progress: Double) -> TimeInterval? {
             guard progress > 0 else { return nil }
             let elapsedTime = CFAbsoluteTimeGetCurrent() - startTime
@@ -135,7 +135,7 @@
         ) async throws -> DocumentImageProcessor.ProcessingResult {
             var processedImage = ciImage
             let totalSteps = mode == .documentScanner ? 8 : (mode == .enhanced ? 6 : 3)
-            
+
             // Create a helper to track progress without capturing mutable state
             let progressTracker = ProgressTracker(totalSteps: totalSteps, startTime: startTime, options: options)
             let updateProgress = progressTracker.makeUpdateProgress()

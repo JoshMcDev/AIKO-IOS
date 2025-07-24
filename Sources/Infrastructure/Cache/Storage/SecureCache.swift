@@ -241,16 +241,16 @@ public actor SecureCache: OfflineCacheProtocol {
             logger.debug("Removed \(expiredKeys.count) expired secure entries")
         }
     }
-    
+
     /// Remove expired secure entries (alias)
     public func removeExpiredSecureEntries() async {
         await removeExpiredEntries()
     }
-    
+
     /// Get metadata for a key
     func getMetadata(forKey key: String) async -> OfflineCacheMetadata? {
         guard let meta = metadata[key], !meta.isExpired else { return nil }
-        
+
         return OfflineCacheMetadata(
             key: key,
             size: meta.size,
@@ -261,13 +261,13 @@ public actor SecureCache: OfflineCacheProtocol {
             expiresAt: meta.expiresAt
         )
     }
-    
+
     /// Check cache health
     func checkHealth() async -> CacheHealthStatus {
         let totalEntries = metadata.count
-        let _ = metadata.values.filter { $0.isExpired }.count
+        _ = metadata.values.filter(\.isExpired).count
         let totalSize = metadata.values.reduce(0) { $0 + $1.size }
-        
+
         return CacheHealthStatus(
             level: .healthy,
             totalSize: totalSize,
@@ -278,25 +278,23 @@ public actor SecureCache: OfflineCacheProtocol {
             issues: []
         )
     }
-    
+
     /// Export all data
     func exportAllData() async -> SendableExportData {
         var exportData: SendableExportData = [:]
-        
-        for (key, meta) in metadata {
-            if !meta.isExpired {
-                // For security, we export only metadata, not the actual data
-                exportData[key] = [
-                    "createdAt": meta.createdAt.timeIntervalSince1970,
-                    "lastAccessedAt": meta.lastAccessedAt.timeIntervalSince1970,
-                    "expiresAt": meta.expiresAt?.timeIntervalSince1970 ?? 0,
-                    "accessCount": meta.accessCount,
-                    "size": meta.size,
-                    "note": "Data not exported for security reasons"
-                ]
-            }
+
+        for (key, meta) in metadata where !meta.isExpired {
+            // For security, we export only metadata, not the actual data
+            exportData[key] = [
+                "createdAt": meta.createdAt.timeIntervalSince1970,
+                "lastAccessedAt": meta.lastAccessedAt.timeIntervalSince1970,
+                "expiresAt": meta.expiresAt?.timeIntervalSince1970 ?? 0,
+                "accessCount": meta.accessCount,
+                "size": meta.size,
+                "note": "Data not exported for security reasons",
+            ]
         }
-        
+
         return exportData
     }
 

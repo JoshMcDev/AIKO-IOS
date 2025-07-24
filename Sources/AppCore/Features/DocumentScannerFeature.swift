@@ -1096,7 +1096,7 @@ public struct DocumentScannerFeature: Sendable {
                     await send(.startBatchProcessing)
                 }
 
-            case let .batchOperationProgress(progress):
+            case .batchOperationProgress:
                 state.batchOperationStatus = .running
                 return Effect.none
 

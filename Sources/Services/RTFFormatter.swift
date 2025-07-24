@@ -87,7 +87,10 @@ public enum RTFFormatter {
 
             // Bullet points
             if processedLine.hasPrefix("- ") || processedLine.hasPrefix("• ") {
-                let bulletParagraphStyle = paragraphStyle.mutableCopy() as! NSMutableParagraphStyle
+                guard let bulletParagraphStyle = paragraphStyle.mutableCopy() as? NSMutableParagraphStyle else {
+                    // Fallback: use original paragraph style
+                    continue
+                }
                 bulletParagraphStyle.firstLineHeadIndent = 0
                 bulletParagraphStyle.headIndent = 20
 

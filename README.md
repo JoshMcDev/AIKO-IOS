@@ -1,14 +1,21 @@
 # AIKO (Adaptive Intelligence for Kontract Optimization)
 
-**Date**: January 19, 2025  
-**Version**: 5.2 (Enhanced Document Processing)  
+**Date**: January 24, 2025  
+**Version**: 6.0 (Unified Refactoring Architecture)  
 **Platform**: iOS 17.0+  
-**Architecture**: SwiftUI + The Composable Architecture (TCA)  
-**Progress**: 43% Complete (20/46 Main Tasks) - Phase 4 Complete, Phase 5 GraphRAG System Implementation
+**Architecture**: SwiftUI + 5 Core Engines (TCA → SwiftUI Migration)  
+**Progress**: 44% Complete (24/54 Main Tasks) - Phase 4 Complete, Unified Refactoring Initiative Launched
 
 ## ALWAYS use Bash(cd /Users/J/aiko && xcodebuild -scheme AIKO -destination "platform=iOS Simulator,name=iPhone 16 Pro" -skipPackagePluginValidation build 2>&1 | grep -E "(error:|…)
 
-## 🏆 Recent Major Achievements (July 2025)
+## 🏆 Recent Major Achievements (January 2025)
+
+### Unified Refactoring Initiative ✅ LAUNCHED
+- **12-Week Strategy**: Comprehensive unified refactoring plan combining AI services consolidation with UI modernization
+- **5 Core Engines Architecture**: AIOrchestrator, DocumentEngine, PromptRegistry, ComplianceValidator, PersonalizationEngine
+- **Parallel Track Execution**: AI consolidation (weeks 1-6) enabling UI modernization (weeks 5-12)
+- **VanillaIce Consensus**: Multi-model validation of implementation plan and testing rubric
+- **Target Goals**: 48% file reduction (484 → 250 files), Swift 6 compliance, TCA → SwiftUI migration
 
 ### Phase 4.2 - Professional Document Scanner ✅ COMPLETE
 - **One-Tap Scanning UI**: Implemented GlobalScanFeature with floating action button accessible from all 19 app screens
@@ -35,6 +42,8 @@
 ## Overview
 
 AIKO is a focused iOS productivity tool that revolutionizes government contract management by leveraging user-chosen LLM providers for all intelligence features. With no backend cloud services, AIKO gives users complete control over their data, LLM provider choice, and costs while delivering powerful automation through a simple native interface.
+
+**UNIFIED REFACTORING (2025)**: Currently undergoing a comprehensive 12-week architecture modernization to transform from complex TCA-based architecture to a streamlined 5 Core Engines system with native SwiftUI, reducing codebase by 48% while maintaining full feature compatibility.
 
 ## Core Philosophy
 
@@ -102,16 +111,18 @@ AIKO is a focused iOS productivity tool that revolutionizes government contract 
 
 ## Architecture
 
-### Technology Stack
-- **Frontend**: SwiftUI + TCA (The Composable Architecture)
+### Technology Stack (Unified Refactoring Target)
+- **Frontend**: SwiftUI + Observable Pattern (TCA → SwiftUI migration in progress)
 - **Platform**: iOS 17.0+ with macOS support via platform-specific modules
+- **Architecture**: 5 Core Engines (AIOrchestrator, DocumentEngine, PromptRegistry, ComplianceValidator, PersonalizationEngine)
 - **Storage**: Core Data (local only) + CfA audit trails
-- **LLM Integration**: Universal multi-provider system with dynamic discovery
-- **Intelligence**: All provided by user-chosen LLM providers
+- **LLM Integration**: Unified provider adapter with 90 → 15-20 file consolidation
+- **Intelligence**: GraphRAG with on-device LFM2-700M model
 - **Scanner**: VisionKit with enhanced image processing pipeline
 - **File Access**: UIDocumentPickerViewController
 - **Maps**: Google Maps SDK (vendor search only)
 - **Security**: LocalAuthentication (Face ID/Touch ID)
+- **Build System**: 6 → 3 SPM targets, Swift 6 strict concurrency
 
 ### Clean Architecture Overview
 
@@ -185,45 +196,46 @@ AIKO Multi-Platform Architecture
 
 ## Development Progress
 
-### Current Status: Phase 5 GraphRAG System Implementation (In Progress)
+### Current Status: Unified Refactoring Initiative (12-Week Implementation)
 
-**Completed Phases (43% - 20/46 Main Tasks)**:
+**Completed Phases (44% - 24/54 Main Tasks)**:
 - ✅ **Phase 1**: Foundation & Architecture (SwiftUI + TCA)
 - ✅ **Phase 2**: Resources & Templates (44 document templates)
 - ✅ **Phase 3**: LLM Integration (Multi-provider system)
 - ✅ **Phase 3.5**: Triple Architecture Migration (153+ conditionals eliminated)
 - ✅ **Phase 4.1**: Enhanced Image Processing (Core Image modernization)
 - ✅ **Phase 4.2**: Professional Document Scanner (One-tap scanning, real-time progress, multi-page sessions)
+- ✅ **Unified Refactoring**: Master plan created with VanillaIce consensus validation
 
-**Current Sprint**: Phase 5 - GraphRAG Intelligence System
-- **Goals**: LFM2-700M model integration, ObjectBox vector database, auto-update regulation pipeline
-- **Implementation Guide**: Comprehensive PRD available at `AIKO_GraphRAG_PRD_Implementation_Plan.md`
-- **Expected Completion**: Advanced on-device regulation intelligence with sub-second semantic search
+**Current Sprint**: Execute Unified Refactoring Master Plan
+- **Timeline**: 12-week parallel track implementation (AI consolidation weeks 1-6, UI modernization weeks 5-12)
+- **Architecture**: 5 Core Engines replacing 90+ AI service files
+- **Target**: 48% file reduction (484 → 250 files), Swift 6 compliance, TCA → SwiftUI migration
+- **Documentation**: `unified_refactoring_master_plan.md`, `unified_refactoring_implementation.md`, `unified_refactoring_rubric.md`
 
-### Upcoming Phases (Timeline: Phase 5-6 Implementation)
+### Unified Refactoring Implementation (12-Week Timeline)
 
-### Phase 5: GraphRAG Intelligence System (In Progress)
-- **Core GraphRAG System**: LFM2-700M-GGUF Q6_K model integration (612MB on-device AI)
-- **Vector Database**: ObjectBox Semantic Index for sub-second regulation search
-- **Processing Pipeline**: HTML → regulationParser.ts → Text Chunks → LFM2 → Vector Embeddings → Instant Search
-- **Auto-Update System**: Background regulation fetching with smart incremental updates
-- **Personal Repository Support**: GitHub OAuth for organization-specific regulations
-- **iOS Native Integrations**: Document Picker, Mail, Calendar, Google Maps vendor search
-- **iPad Compatibility**: Apple Pencil integration for document annotation and signature capture
+### Weeks 1-4: AI Core Engines & Quick Wins
+- **AIOrchestrator**: Central routing hub for all AI operations with provider abstraction
+- **DocumentEngine**: Consolidated document generation with template management
+- **PromptRegistry**: Centralized prompt optimization with 15+ pattern library
+- **ComplianceValidator**: Automated FAR/DFARS compliance checking
+- **PersonalizationEngine**: User preference and pattern learning
+- **Quick Wins**: 10+ dead/duplicate file removal, feature flag system
 
-### Phase 5 (Continued): Smart Integrations & Provider Flexibility
-- **Prompt Optimization Engine**: 15+ pattern library for enhanced LLM interactions
-- **Universal LLM Provider Support**: Dynamic discovery for any OpenAI-compatible API
-- **Local Security**: Face ID/Touch ID authentication with secure credential management
-- **Advanced Threshold Management**: CONUS/OCONUS, emergency, and contingency FAR thresholds
+### Weeks 5-8: TCA → SwiftUI Migration & Architecture Consolidation
+- **SwiftUI Observable Pattern**: Replace TCA state management with native SwiftUI
+- **Target Consolidation**: 6 → 3 SPM targets with clean dependency management
+- **Package.swift Modernization**: Updated dependencies and build configuration
+- **AppFeature.swift Elimination**: Complete removal of complex TCA structure
+- **Navigation Modernization**: SwiftUI NavigationStack implementation
 
-### Phase 6: Enhanced Intelligent Workflow System
-- **CASE FOR ANALYSIS Framework**: Logical narrative justification for every AI recommendation
-- **AI-Powered Escape Clause Detection**: Intelligent contract risk analysis
-- **Enhanced Follow-On Actions**: Outcome-based contracting with intelligent workflow suggestions
-- **Intelligent Document Lifecycle Management**: AI-powered categorization and version control
-- **Enhanced Decision Support**: Multi-factor analysis with regulatory compliance scoring
-- **Compliance Automation**: Automated FAR/DFARS compliance checking and workflow guidance
+### Weeks 9-12: GraphRAG Integration & Production Polish
+- **LFM2-700M Integration**: On-device AI model for embedding generation
+- **ObjectBox Vector Database**: Sub-second semantic search implementation
+- **Swift 6 Strict Concurrency**: 100% compliance across all targets
+- **Performance Optimization**: <10s build time, <200MB memory usage
+- **Production Release**: Complete testing, documentation, and deployment
 
 ## Performance Metrics
 
@@ -234,11 +246,14 @@ AIKO Multi-Platform Architecture
 | **Document Scanner** | One-tap access | ✅ GlobalScanFeature from all 19 screens |
 | **Progress Tracking** | < 200ms latency | ✅ Real-time progress with ProgressBridge |
 | **Build Quality** | Clean builds | ✅ 16.45s build time, 0 errors |
-| **Swift 6 Migration** | Full compliance | ✅ 80% complete (4/5 targets) |
+| **Swift 6 Migration** | Full compliance | 🚧 80% complete (4/5 targets) → 100% target |
 | **LLM Response Time** | < 3 seconds | ✅ Multi-provider system |
 | **Provider Setup** | < 5 steps | ✅ Wizard implemented |
 | **Platform Support** | iOS + macOS | ✅ Clean platform separation |
-| **GraphRAG Search** | < 1 second | 🚧 Phase 5 implementation |
+| **GraphRAG Search** | < 1 second | 🚧 Weeks 9-10 implementation |
+| **File Reduction** | 48% reduction | 🎯 484 → 250 files target |
+| **AI Consolidation** | 80% reduction | 🎯 90 → 15-20 files target |
+| **Build Time** | < 10 seconds | 🎯 16.45s → <10s target |
 
 ## Testing
 
@@ -254,23 +269,28 @@ swift test --filter DocumentImageProcessorTests
 
 ## Documentation
 
-- [Project Details](Project.md) - Comprehensive project overview and roadmap
-- [Architecture Guide](Project_Architecture.md) - Technical architecture and design patterns  
-- [Deployment Plan](Project_Deployment_Plan.md) - Release strategy and timeline
-- [Business Strategy](Project_Strategy.md) - Market positioning and strategy
-- [Project Tasks](Project_Tasks.md) - Detailed task management with 46 total tasks (20 completed, 26 pending)
+- [Project Details](project.md) - Comprehensive project overview and roadmap
+- [Architecture Guide](project_architecture.md) - Technical architecture and design patterns  
+- [Business Strategy](project_strategy.md) - Market positioning and unified refactoring strategy
+- [Project Tasks](Project_Tasks.md) - Detailed task management with 54 total tasks (24 completed, 30 pending)
+- **Unified Refactoring Documentation**:
+  - [Master Plan](unified_refactoring_master_plan.md) - 12-week comprehensive strategy
+  - [Implementation Guide](unified_refactoring_implementation.md) - Technical implementation details
+  - [Testing Rubric](unified_refactoring_rubric.md) - VanillaIce consensus-validated testing strategy
 - [GraphRAG Implementation Guide](AIKO_GraphRAG_Implementation_Guide.md) - Complete beginner's guide to on-device regulation intelligence
-- [GraphRAG PRD & Implementation Plan](AIKO_GraphRAG_PRD_Implementation_Plan.md) - Consensus-validated comprehensive implementation plan
 - [Swift 6 Migration Status](Documentation/SWIFT_6_MIGRATION_STATUS_REPORT.md) - 80% complete migration status report
 
 ## Key Achievements
 
+- **Unified Refactoring Initiative**: 12-week comprehensive architecture modernization launched
+- **5 Core Engines Architecture**: Strategic consolidation of 90+ AI services into 5 engines
+- **VanillaIce Consensus Validation**: Multi-model approval of implementation and testing strategies
 - **Document Scanner Excellence**: One-tap scanning accessible from all 19 app screens with <200ms initiation
 - **Real-Time Progress**: Sub-200ms latency progress tracking with comprehensive session management
 - **Swift 6 Migration**: 80% complete with 4/5 targets fully compliant with strict concurrency
 - **Clean Architecture**: Eliminated 153+ platform conditionals for maintainable codebase
 - **Enhanced Processing**: Modern Core Image API with Metal GPU acceleration
-- **GraphRAG Intelligence**: On-device LFM2-700M model for instant regulation search (Phase 5)
+- **GraphRAG Intelligence**: On-device LFM2-700M model for instant regulation search (Weeks 9-10)
 - **Multi-Platform**: Clean separation between iOS and macOS implementations
 - **LLM Flexibility**: Universal provider support with dynamic discovery
 - **Privacy-First**: No backend services, direct API calls only
@@ -295,4 +315,4 @@ This project is proprietary software. All rights reserved.
 
 ---
 
-*Built with SwiftUI and The Composable Architecture - 43% Complete (20/46 tasks), Phase 5 GraphRAG Intelligence System Implementation*
+*Built with SwiftUI and 5 Core Engines Architecture - 44% Complete (24/54 tasks), Unified Refactoring Initiative Implementation*

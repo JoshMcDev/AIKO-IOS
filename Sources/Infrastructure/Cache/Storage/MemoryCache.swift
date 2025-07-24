@@ -143,7 +143,7 @@ actor MemoryCache: OfflineCacheProtocol {
             logger.debug("Removed \(expiredKeys.count) expired entries")
         }
     }
-    
+
     /// Remove expired memory entries (alias)
     func removeExpiredMemoryEntries() async {
         await removeExpiredEntries()
@@ -222,11 +222,11 @@ actor MemoryCache: OfflineCacheProtocol {
             currentSize -= entry.size
         }
     }
-    
+
     /// Get metadata for a key
     func getMetadata(forKey key: String) async -> OfflineCacheMetadata? {
         guard let entry = storage[key], !entry.isExpired else { return nil }
-        
+
         return OfflineCacheMetadata(
             key: key,
             size: entry.size,
@@ -237,12 +237,12 @@ actor MemoryCache: OfflineCacheProtocol {
             expiresAt: entry.expiresAt
         )
     }
-    
+
     /// Check cache health
     func checkHealth() async -> CacheHealthStatus {
         let totalEntries = storage.count
-        let _ = storage.values.filter { $0.isExpired }.count
-        
+        _ = storage.values.filter(\.isExpired).count
+
         return CacheHealthStatus(
             level: .healthy,
             totalSize: currentSize,
@@ -253,24 +253,22 @@ actor MemoryCache: OfflineCacheProtocol {
             issues: []
         )
     }
-    
+
     /// Export all data
     func exportAllData() async -> SendableExportData {
         var exportData: SendableExportData = [:]
-        
-        for (key, entry) in storage {
-            if !entry.isExpired {
-                exportData[key] = [
-                    "data": entry.data.base64EncodedString(),
-                    "createdAt": entry.createdAt.timeIntervalSince1970,
-                    "lastAccessedAt": entry.lastAccessedAt.timeIntervalSince1970,
-                    "expiresAt": entry.expiresAt?.timeIntervalSince1970 ?? 0,
-                    "accessCount": entry.accessCount,
-                    "size": entry.size
-                ]
-            }
+
+        for (key, entry) in storage where !entry.isExpired {
+            exportData[key] = [
+                "data": entry.data.base64EncodedString(),
+                "createdAt": entry.createdAt.timeIntervalSince1970,
+                "lastAccessedAt": entry.lastAccessedAt.timeIntervalSince1970,
+                "expiresAt": entry.expiresAt?.timeIntervalSince1970 ?? 0,
+                "accessCount": entry.accessCount,
+                "size": entry.size,
+            ]
         }
-        
+
         return exportData
     }
 }

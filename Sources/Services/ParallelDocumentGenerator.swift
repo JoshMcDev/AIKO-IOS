@@ -351,12 +351,7 @@ public struct ParallelDocumentGenerator: Sendable {
         config: DocumentGenerationConfig
     ) async throws -> GeneratedDocument {
         let totalStartTime = Date()
-        let cacheCheckStartTime = Date()
-        var apiCallDuration: TimeInterval?
-        var templateLoadDuration: TimeInterval = 0
-        var spellCheckDuration: TimeInterval = 0
         // Prepare prompt
-        let templateStartTime = Date()
         let prompt: String
         if let template = config.template {
             var processedTemplate = template
@@ -378,7 +373,6 @@ public struct ParallelDocumentGenerator: Sendable {
                 profile: config.profile
             )
         }
-        templateLoadDuration = Date().timeIntervalSince(templateStartTime)
 
         // Use preloaded system prompt or generate if not available
         let finalSystemPrompt = config.systemPrompt ?? AIDocumentGenerator.getSystemPrompt(for: config.documentType)
@@ -397,16 +391,12 @@ public struct ParallelDocumentGenerator: Sendable {
         )
 
         // Generate content
-        let apiStartTime = Date()
         let result = try await config.aiProvider.complete(request)
-        apiCallDuration = Date().timeIntervalSince(apiStartTime)
 
         let content = result.content
 
         // Spell check
-        let spellCheckStartTime = Date()
         let correctedContent = await spellCheckService.checkAndCorrect(content)
-        spellCheckDuration = Date().timeIntervalSince(spellCheckStartTime)
 
         // Cache the result
         await cache.cacheDocument(
@@ -431,16 +421,11 @@ public struct ParallelDocumentGenerator: Sendable {
         config: DFDocumentGenerationConfig
     ) async throws -> GeneratedDocument {
         let totalStartTime = Date()
-        let cacheCheckStartTime = Date()
-        var apiCallDuration: TimeInterval?
-        var templateLoadDuration: TimeInterval = 0
-        var spellCheckDuration: TimeInterval = 0
         guard let template = config.template else {
             throw AIDocumentGeneratorError.noContent
         }
 
         // Process template
-        let templateStartTime = Date()
         var processedTemplate = template.template
         if let profile = config.profile {
             for (key, value) in profile.templateVariables {
@@ -456,7 +441,6 @@ public struct ParallelDocumentGenerator: Sendable {
             quickReference: template.quickReferenceGuide,
             profile: config.profile
         )
-        templateLoadDuration = Date().timeIntervalSince(templateStartTime)
 
         // Use preloaded system prompt or generate if not available
         let finalSystemPrompt = config.systemPrompt ?? AIDocumentGenerator.getDFSystemPrompt(for: config.dfDocumentType)
@@ -475,16 +459,12 @@ public struct ParallelDocumentGenerator: Sendable {
         )
 
         // Generate content
-        let apiStartTime = Date()
         let result = try await config.aiProvider.complete(request)
-        apiCallDuration = Date().timeIntervalSince(apiStartTime)
 
         let content = result.content
 
         // Spell check
-        let spellCheckStartTime = Date()
         let correctedContent = await spellCheckService.checkAndCorrect(content)
-        spellCheckDuration = Date().timeIntervalSince(spellCheckStartTime)
 
         // Cache the result
         await cache.cacheDocument(

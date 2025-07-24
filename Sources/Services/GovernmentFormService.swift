@@ -182,7 +182,11 @@ public actor GovernmentFormService: DomainService {
         )
 
         // Use factory to create the form
-        return try formFactory.createForm(with: formData) as! T
+        let createdForm = try formFactory.createForm(with: formData)
+        guard let typedForm = createdForm as? T else {
+            throw ServiceError.invalidData("Form factory returned incorrect type for \(T.self)")
+        }
+        return typedForm
     }
 
     // MARK: - Private Helpers

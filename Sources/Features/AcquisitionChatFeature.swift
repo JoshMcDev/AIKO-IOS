@@ -141,7 +141,7 @@ public struct AcquisitionChatFeature: Sendable {
         }
 
         // Convert to global RequirementsData type for use with services
-        public func toGlobalRequirementsData() -> AIKO.RequirementsData {
+        public func toGlobalRequirementsData() -> AppCore.RequirementsData {
             // Parse estimated value to Decimal
             let cleanedValue = estimatedValue.replacingOccurrences(of: "$", with: "")
                 .replacingOccurrences(of: ",", with: "")
@@ -162,16 +162,16 @@ public struct AcquisitionChatFeature: Sendable {
             // Parse special conditions from specialConsiderations
             let specialConds = specialConsiderations.isEmpty ? [] : [specialConsiderations]
 
-            return AIKO.RequirementsData(
+            return AppCore.RequirementsData(
                 projectTitle: projectTitle.isEmpty ? nil : projectTitle,
                 description: productOrService.isEmpty ? nil : productOrService,
-                estimatedValue: decimalValue,
+                estimatedValue: decimalValue.map { NSDecimalNumber(decimal: $0).doubleValue },
                 requiredDate: nil, // Not captured in this form
                 technicalRequirements: techReqs,
                 vendorInfo: nil, // Not captured in this form
                 specialConditions: specialConds,
                 attachments: [], // Not captured in this form
-                performancePeriod: nil, // Could parse performancePeriod string to DateInterval
+                performancePeriod: performancePeriod.isEmpty ? nil : performancePeriod,
                 placeOfPerformance: nil, // Not captured in this form
                 businessJustification: businessNeed.isEmpty ? nil : businessNeed,
                 acquisitionType: requirementType.isEmpty ? nil : requirementType,

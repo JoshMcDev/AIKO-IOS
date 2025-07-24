@@ -31,7 +31,7 @@ struct LLMProviderSettingsView: View {
                                     Text(activeProvider.model.name)
                                         .font(.caption)
                                         .foregroundColor(.secondary)
-        })
+                                }
 
                                 Spacer()
 

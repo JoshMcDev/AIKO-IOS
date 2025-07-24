@@ -108,8 +108,7 @@ extension GeneratedFile {
     func toAppCoreModel() -> GeneratedDocument {
         // Determine document type from fileType
         let documentType: DocumentType = if let fileType,
-                                            let docType = DocumentType.allCases.first(where: { $0.rawValue == fileType })
-        {
+                                            let docType = DocumentType.allCases.first(where: { $0.rawValue == fileType }) {
             docType
         } else {
             // Default to SOW if type cannot be determined

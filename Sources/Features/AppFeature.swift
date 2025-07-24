@@ -419,8 +419,7 @@ public struct AppFeature: Sendable {
             case let .selectQuickReference(reference):
                 state.selectedQuickReference = reference
                 if let reference,
-                   let url = URL(string: reference.url)
-                {
+                   let url = URL(string: reference.url) {
                     return .run { send in
                         await send(.openURL(url))
                     }
@@ -717,8 +716,7 @@ public struct AppFeature: Sendable {
                         // Add all documents
                         for document in acquisition.generatedFilesArray {
                             if !document.content.isEmpty,
-                               let documentType = document.documentType
-                            {
+                               let documentType = document.documentType {
                                 let fileName = documentType.shortName
                                 let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(fileName).txt")
                                 try? document.content.write(to: url, atomically: true, encoding: .utf8)
@@ -733,8 +731,7 @@ public struct AppFeature: Sendable {
 
                         for document in selectedDocs {
                             if !document.content.isEmpty,
-                               let documentType = document.documentType
-                            {
+                               let documentType = document.documentType {
                                 let fileName = documentType.shortName
                                 let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(fileName).txt")
                                 try? document.content.write(to: url, atomically: true, encoding: .utf8)

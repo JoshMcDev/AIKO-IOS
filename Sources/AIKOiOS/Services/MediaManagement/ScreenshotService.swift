@@ -2,7 +2,6 @@ import AppCore
 import Foundation
 import ReplayKit
 import SwiftUI
-import UIKit
 
 /// iOS implementation of screenshot service
 @available(iOS 16.0, *)

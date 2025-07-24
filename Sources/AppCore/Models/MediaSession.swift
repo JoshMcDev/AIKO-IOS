@@ -13,7 +13,7 @@ public struct MediaSession: Identifiable, Sendable, Equatable {
     public var lastError: MediaError?
     public var metadata: MediaSessionMetadata
     public var workflowExecutions: [WorkflowExecutionHandle]
-    
+
     public init(
         id: UUID = UUID(),
         assets: IdentifiedArrayOf<MediaAsset> = [],
@@ -41,7 +41,7 @@ public struct MediaItem: Identifiable, Sendable {
     public var validationResult: MediaValidationResult?
     public var workflowHistory: [WorkflowExecutionHandle]
     public var order: Int
-    
+
     public init(
         id: UUID = UUID(),
         asset: MediaAsset,
@@ -66,7 +66,7 @@ public enum MediaSessionStatus: String, Sendable, CaseIterable, Codable {
     case paused
     case completed
     case error
-    
+
     public var displayName: String {
         switch self {
         case .ready: "Ready"
@@ -87,7 +87,7 @@ public enum MediaProcessingStatus: String, Sendable, CaseIterable, Codable {
     case converting
     case completed
     case failed
-    
+
     public var displayName: String {
         switch self {
         case .pending: "Pending"
@@ -108,7 +108,7 @@ public struct MediaSessionMetadata: Equatable, Sendable, Codable {
     public var totalProcessingTime: TimeInterval
     public var sessionTitle: String
     public var tags: [String]
-    
+
     public init(
         createdAt: Date = Date(),
         lastModified: Date = Date(),

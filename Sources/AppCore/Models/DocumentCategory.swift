@@ -1,7 +1,7 @@
 import Foundation
 
 /// Document categories for organizing acquisition documents
-public enum DocumentCategory: String, CaseIterable {
+public enum DocumentCategory: String, CaseIterable, Sendable {
     case requirements = "Requirements Studio"
     case marketIntelligence = "Market Intelligence"
     case planning = "Acquisition Planning"

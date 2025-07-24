@@ -1,4 +1,5 @@
 import SwiftUI
+import AppCore
 
 public struct UserGuideView: View {
     @Environment(\.dismiss) var dismiss

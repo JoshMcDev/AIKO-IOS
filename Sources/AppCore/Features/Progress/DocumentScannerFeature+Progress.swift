@@ -41,8 +41,9 @@ public extension DocumentScannerFeature.State {
             // Store in metadata or similar - for now return nil
             nil
         }
-        set {
+        set(newValue) {
             // Store the session ID - implementation would store in metadata
+            _ = newValue // Acknowledge the parameter to avoid unused warning
         }
     }
 
@@ -149,9 +150,10 @@ public extension MultiPageSession {
             // For now, we'll use the session ID as the progress session ID
             id
         }
-        set {
+        set(newValue) {
             // In a real implementation, this would update the metadata
             // For now, we use the session ID as the progress session ID
+            _ = newValue // Acknowledge the parameter to avoid unused warning
         }
     }
 
@@ -179,9 +181,10 @@ public extension MultiPageSession {
             // If no page is currently processing, return overall completion
             return Double(processedPagesCount) / Double(totalPagesScanned)
         }
-        set {
+        set(newValue) {
             // In a real implementation, this would update the current page's progress
             // For now, this is a computed property
+            _ = newValue // Acknowledge the parameter to avoid unused warning
         }
     }
 

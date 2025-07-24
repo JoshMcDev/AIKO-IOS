@@ -6,9 +6,9 @@
 
     /// iOS implementation of ScreenServiceProtocol
     public final class IOSScreenService: ScreenServiceProtocol, @unchecked Sendable {
-        // Thread-safe cached values - use UIKit types internally
-        private let cachedBounds: UIKit.CGRect
-        private let cachedScale: UIKit.CGFloat
+        // Thread-safe cached values - use CoreGraphics types internally
+        private let cachedBounds: CoreGraphics.CGRect
+        private let cachedScale: CoreGraphics.CGFloat
         private let cachedIsCompact: Bool
 
         public init() {
@@ -30,14 +30,14 @@
             } else {
                 // Fallback values - should rarely be needed in practice
                 // Most screen services are initialized on the main thread during app startup
-                cachedBounds = UIKit.CGRect(x: 0, y: 0, width: 390, height: 844) // iPhone 14 size
+                cachedBounds = CoreGraphics.CGRect(x: 0, y: 0, width: 390, height: 844) // iPhone 14 size
                 cachedScale = 3.0
                 cachedIsCompact = true
             }
         }
 
         public var mainScreenBounds: AppCore.CGRect {
-            // Convert UIKit.CGRect to AppCore.CGRect
+            // Convert CoreGraphics.CGRect to AppCore.CGRect
             AppCore.CGRect(
                 x: Double(cachedBounds.origin.x),
                 y: Double(cachedBounds.origin.y),

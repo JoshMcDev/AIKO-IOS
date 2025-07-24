@@ -11,7 +11,7 @@ public struct MediaWorkflow: Identifiable, Sendable, Codable, Equatable {
     public let steps: [MediaWorkflowStep]
     public let createdAt: Date
     public let modifiedAt: Date
-    
+
     public init(
         id: UUID = UUID(),
         name: String,
@@ -36,7 +36,7 @@ public struct MediaWorkflowStep: Identifiable, Sendable, Codable, Equatable {
     public let name: String
     public let parameters: [String: String]
     public let order: Int
-    
+
     public init(
         id: UUID = UUID(),
         type: WorkflowStepType,
@@ -64,7 +64,7 @@ public enum WorkflowStepType: String, Sendable, CaseIterable, Codable {
     case export
     case tag
     case organize
-    
+
     public var displayName: String {
         switch self {
         case .validate: "Validate"
@@ -90,7 +90,7 @@ public struct WorkflowTemplate: Identifiable, Sendable, Codable, Equatable {
     public let category: WorkflowCategory
     public let isSystem: Bool
     public let createdAt: Date
-    
+
     public init(
         id: UUID = UUID(),
         name: String,
@@ -118,7 +118,7 @@ public enum WorkflowCategory: String, Sendable, CaseIterable, Codable {
     case videos
     case compression
     case enhancement
-    
+
     public var displayName: String {
         switch self {
         case .general: "General"
@@ -137,7 +137,7 @@ public struct WorkflowExecutionHandle: Identifiable, Sendable, Codable, Equatabl
     public let workflowId: UUID
     public let assetIds: [UUID]
     public let startTime: Date
-    
+
     public init(
         id: UUID = UUID(),
         workflowId: UUID,
@@ -159,7 +159,7 @@ public enum WorkflowExecutionStatus: String, Sendable, CaseIterable, Codable {
     case completed
     case failed
     case cancelled
-    
+
     public var displayName: String {
         switch self {
         case .pending: "Pending"
@@ -182,7 +182,7 @@ public struct WorkflowExecutionResult: Identifiable, Sendable, Codable, Equatabl
     public let errors: [String]
     public let duration: TimeInterval
     public let completedAt: Date?
-    
+
     public init(
         id: UUID = UUID(),
         executionHandle: WorkflowExecutionHandle,
@@ -213,7 +213,7 @@ public struct WorkflowExecutionUpdate: Sendable, Codable, Equatable {
     public let processedAssets: Int
     public let message: String?
     public let timestamp: Date
-    
+
     public init(
         executionId: UUID,
         status: WorkflowExecutionStatus,
@@ -240,7 +240,7 @@ public struct WorkflowDefinition: Identifiable, Sendable, Codable, Equatable {
     public let version: String
     public let requiredSteps: [WorkflowStepType]
     public let supportedFormats: Set<String>
-    
+
     public init(
         id: UUID = UUID(),
         name: String,
@@ -261,7 +261,7 @@ public struct WorkflowValidationResult: Sendable, Codable, Equatable {
     public let isValid: Bool
     public let errors: [String]
     public let warnings: [String]
-    
+
     public init(
         isValid: Bool,
         errors: [String] = [],
@@ -272,4 +272,3 @@ public struct WorkflowValidationResult: Sendable, Codable, Equatable {
         self.warnings = warnings
     }
 }
-

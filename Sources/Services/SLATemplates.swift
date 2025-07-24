@@ -176,7 +176,7 @@ extension SLATemplateService: DependencyKey {
                             Service Provider will respond to service requests as follows:
 
                             Priority 1 (Critical): {{P1_RESPONSE}} minutes
-                            Priority 2 (High): {{P2_RESPONSE}} hours  
+                            Priority 2 (High): {{P2_RESPONSE}} hours
                             Priority 3 (Medium): {{P3_RESPONSE}} hours
                             Priority 4 (Low): {{P4_RESPONSE}} business days
 
@@ -209,12 +209,12 @@ extension SLATemplateService: DependencyKey {
                             - Mean Opinion Score (MOS): ≥ {{MIN_MOS}}
                             - Post Dial Delay: < {{MAX_PDD}}ms
                             """
-                        )
+                        ),
                     ],
                     metrics: [],
                     penalties: []
                 )
-                
+
                 switch industry {
                 case .telecommunications:
                     return telecommunicationsSLATemplate

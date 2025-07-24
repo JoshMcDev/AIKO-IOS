@@ -1,7 +1,7 @@
 import Foundation
 
-/// Migration helpers to ease the transition from direct SwiftAnthropic usage
-/// to the API-agnostic AIProvider interface
+// Migration helpers to ease the transition from direct SwiftAnthropic usage
+// to the API-agnostic AIProvider interface
 
 // MARK: - Factory Migration
 

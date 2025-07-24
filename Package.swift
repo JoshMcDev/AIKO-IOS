@@ -120,7 +120,6 @@ let package = Package(
                 "Resources/Clauses/ClauseDatabase.json",
                 "Resources/Clauses/ClauseSelection_QuickReference.md",
                 "AIKOiOS/Service-Concurrency-Guide.md", // Exclude documentation file
-                "Services/ConfidenceBasedAutoFillEnhanced.swift.disabled", // Exclude disabled file
             ],
             resources: [
                 .copy("Resources/DFTemplates"),
@@ -186,7 +185,11 @@ let package = Package(
         ),
         .testTarget(
             name: "AIKOTests",
-            dependencies: ["AppCore"],
+            dependencies: [
+                "AppCore",
+                "AIKO",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+            ],
             path: "Tests",
             exclude: [
                 "README.md",

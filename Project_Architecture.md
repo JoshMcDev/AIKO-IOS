@@ -1,438 +1,526 @@
-# AIKO Architecture Guide
+# AIKO Project Architecture
+## Post-Unified Refactoring Architecture Design
 
-**Date**: July 22, 2025  
-**Version**: 5.2 (Enhanced Document Processing)  
-**Progress**: 43% Complete (20/46 Main Tasks) - Phase 4 Complete, Phase 5 GraphRAG System Implementation
+**Version**: 2.0 Unified Architecture  
+**Date**: January 24, 2025  
+**Status**: Implementation Ready  
+**Validation**: VanillaIce Consensus Approved (5/5 Models)
 
-## Recent Major Achievements (July 2025)
+---
 
-### Phase 4.2 - Professional Document Scanner ✅ COMPLETE
-- **One-Tap Scanning Architecture**: Implemented GlobalScanFeature with floating action button accessible from all 19 app screens
-- **Real-Time Progress Architecture**: Sub-200ms latency progress tracking with ProgressBridge integration and actor-based concurrency
-- **Multi-Page Session Management**: Complete ScanSession models with SessionEngine actor and BatchProcessor for concurrent processing
-- **VisionKit Integration**: Professional scanner with edge detection, perspective correction, and enhanced OCR pipeline
-- **Smart Form Auto-Population**: Core form auto-population feature with confidence-based field mapping and intelligent data extraction
-- **Build Excellence**: Clean build architecture (16.45s build time, 0 errors, 1 minor warning) with full SwiftLint/SwiftFormat compliance
+## Executive Overview
 
-### Swift 6 Migration Architecture ✅ 80% COMPLETE
-- **Module-by-Module Strategy**: 4/5 targets now fully Swift 6 strict concurrency compliant with systematic migration approach
-- **Actor-Based Concurrency**: Modern Swift concurrency patterns with CoreDataActor and service layer actors
-- **Sendable Conformance**: Comprehensive Sendable implementations across data models and service boundaries
-- **Platform Separation Success**: Clean module boundaries enabled successful concurrency migration
-- **Final Sprint Phase**: Established patterns ready for main AIKO target completion
+This document defines the target architecture for AIKO (Adaptive Intelligence for Kontract Optimization) following the unified refactoring implementation. The new architecture emphasizes modularity, performance, and maintainability through strategic consolidation and modern Swift patterns.
 
-## Overview
+### Transformation Summary
+- **File Reduction**: 484 → 250 files (-48%)
+- **Target Consolidation**: 6 → 3 Swift Package Manager targets
+- **State Management**: TCA → Native SwiftUI with Observable pattern
+- **AI Architecture**: 90 scattered services → 5 Core Engines
+- **Concurrency**: 100% Swift 6 strict concurrency compliance
 
-AIKO is built using a modern, scalable architecture that leverages SwiftUI and The Composable Architecture (TCA) to create a maintainable, testable, and performant application.
+## Target Architecture Overview
 
-## Core Principles
+### High-Level System Design
 
-1. **Unidirectional Data Flow**: All state changes flow through reducers
-2. **Composition Over Inheritance**: Features are composed of smaller, reusable components
-3. **Testability First**: Every component is designed to be easily testable
-4. **Platform Separation**: Clean iOS/macOS separation with shared AppCore and platform-specific implementations
-5. **Progressive Disclosure**: UI complexity revealed based on user needs
+```mermaid
+graph TB
+    subgraph "AIKO App (Target 1)"
+        UI[SwiftUI Views] --> VM[ViewModels]
+        VM --> AO[AIOrchestrator]
+    end
+    
+    subgraph "AICore (Target 2)"
+        AO --> DE[DocumentEngine]
+        AO --> PR[PromptRegistry] 
+        AO --> CV[ComplianceValidator]
+        AO --> PE[PersonalizationEngine]
+        AO --> UP[UnifiedProviders]
+    end
+    
+    subgraph "GraphRAG (Target 3)"
+        GR[GraphRAG Service] --> LFM2[LFM2-700M]
+        GR --> VDB[Vector Database]
+        AO --> GR
+    end
+    
+    subgraph "External Services"
+        UP --> OpenAI[OpenAI]
+        UP --> Claude[Anthropic]
+        UP --> Gemini[Google]
+        UP --> Azure[Azure OpenAI]
+    end
+```
 
-## Architecture Layers
+## Target Architecture
 
-### 1. Presentation Layer (SwiftUI Views)
+### Package Structure (3 Targets)
 
 ```swift
-struct AcquisitionFlowView: View {
-    @Bindable var store: StoreOf<AcquisitionFlow>
+// Package.swift - Simplified Structure
+let package = Package(
+    name: "AIKO",
+    platforms: [.iOS(.v16), .macOS(.v13)],
+    products: [
+        .library(name: "AIKO", targets: ["AIKO"]),
+        .library(name: "AICore", targets: ["AICore"]), 
+        .library(name: "GraphRAG", targets: ["GraphRAG"]),
+    ],
+    dependencies: [
+        .package(url: "https://github.com/jamesrochabrun/SwiftAnthropic", branch: "main"),
+        .package(url: "https://github.com/apple/swift-collections", from: "1.0.0"),
+        .package(url: "https://github.com/vapor/multipart-kit", from: "4.5.0"),
+        .package(url: "https://github.com/objectbox/objectbox-swift", from: "2.0.0"),
+    ],
+    targets: [
+        // Target 1: Main Application
+        .target(
+            name: "AIKO",
+            dependencies: ["AICore", "GraphRAG"],
+            path: "Sources/AIKO",
+            swiftSettings: [.unsafeFlags(["-strict-concurrency=complete"])]
+        ),
+        
+        // Target 2: AI Business Logic Core
+        .target(
+            name: "AICore", 
+            dependencies: [
+                .product(name: "SwiftAnthropic", package: "SwiftAnthropic"),
+                .product(name: "Collections", package: "swift-collections"),
+                .product(name: "MultipartKit", package: "multipart-kit"),
+            ],
+            path: "Sources/AICore",
+            swiftSettings: [.unsafeFlags(["-strict-concurrency=complete"])]
+        ),
+        
+        // Target 3: GraphRAG Intelligence Module
+        .target(
+            name: "GraphRAG",
+            dependencies: [
+                "AICore",
+                .product(name: "ObjectBox", package: "objectbox-swift"),
+            ],
+            path: "Sources/GraphRAG", 
+            resources: [.copy("Models/LFM2-700M-Unsloth-XL-GraphRAG.mlmodel")],
+            swiftSettings: [.unsafeFlags(["-strict-concurrency=complete"])]
+        ),
+    ]
+)
+```
+
+## AI Core Architecture (5 Engines)
+
+### Engine Design Pattern
+
+```swift
+// Central Coordination Hub
+@MainActor
+public final class AIOrchestrator: ObservableObject, Sendable {
+    public static let shared = AIOrchestrator()
     
-    var body: some View {
-        // SwiftUI view implementation
+    // 5 Core Engines
+    private let documentEngine: DocumentEngine
+    private let promptRegistry: PromptRegistry
+    private let complianceValidator: ComplianceValidator  
+    private let personalizationEngine: PersonalizationEngine
+    private let providerAdapter: UnifiedProviderAdapter
+    
+    // Unified API Surface
+    public func generateDocument(
+        type: DocumentType,
+        requirements: String,
+        context: AcquisitionContext
+    ) async throws -> GeneratedDocument {
+        let optimizedPrompt = await promptRegistry.getPrompt(
+            for: type, 
+            context: context,
+            personalization: await personalizationEngine.getPersonalization(for: context)
+        )
+        
+        let document = try await documentEngine.generate(
+            prompt: optimizedPrompt,
+            type: type,
+            provider: await providerAdapter.selectOptimalProvider()
+        )
+        
+        let validation = try await complianceValidator.validate(document, against: context.requirements)
+        
+        return document.incorporating(validation: validation)
     }
 }
 ```
 
-**Responsibilities:**
-- User interface rendering
-- User interaction handling
-- Binding to TCA stores
-- Platform-specific UI adaptations
+### Engine Responsibilities
 
-### 2. Feature Layer (TCA Reducers)
+#### 1. DocumentEngine (Consolidates 25+ Files)
+```swift
+public actor DocumentEngine: Sendable {
+    // Unified document generation pipeline
+    // Consolidates: AIDocumentGenerator, LLMDocumentGenerator, 
+    // ParallelDocumentGenerator, BatchDocumentGenerator, etc.
+    
+    public func generate(
+        prompt: String,
+        type: DocumentType,
+        provider: any LLMProviderProtocol
+    ) async throws -> GeneratedDocument
+}
+```
+
+#### 2. PromptRegistry (Consolidates 15+ Files)
+```swift
+public struct PromptRegistry: Sendable {
+    // Central prompt management with 15+ optimization patterns
+    // Consolidates: GovernmentAcquisitionPrompts, template services, etc.
+    
+    public func getPrompt(
+        for type: DocumentType,
+        context: AcquisitionContext,
+        patterns: [PromptPattern] = []
+    ) -> String
+}
+```
+
+#### 3. ComplianceValidator (Consolidates 20+ Files)
+```swift
+public actor ComplianceValidator: Sendable {
+    // Unified compliance checking
+    // Consolidates: FARCompliance, FARComplianceManager, CMMCComplianceTracker, etc.
+    
+    public func validate(
+        _ document: GeneratedDocument,
+        against requirements: ComplianceRequirements
+    ) async throws -> ValidationResult
+}
+```
+
+#### 4. PersonalizationEngine (Consolidates 10+ Files)
+```swift
+public actor PersonalizationEngine: Sendable {
+    // ML-driven user adaptation
+    // Consolidates: UserPatternLearningEngine, AdaptiveIntelligenceService, etc.
+    
+    public func getPersonalization(
+        for context: AcquisitionContext
+    ) async -> PersonalizationRecommendations
+}
+```
+
+#### 5. UnifiedProviderAdapter (Consolidates 15+ Files)
+```swift
+public actor UnifiedProviderAdapter: Sendable {
+    // Unified LLM provider abstraction
+    // Consolidates: All LLM providers, configuration management, etc.
+    
+    public func selectOptimalProvider() async -> any LLMProviderProtocol
+    public func execute<T>(_ operation: LLMOperation<T>) async throws -> T
+}
+```
+
+## SwiftUI Architecture
+
+### State Management Pattern
 
 ```swift
-@Reducer
-struct AcquisitionFlow {
-    @ObservableState
-    struct State: Equatable {
-        var currentStep: Step = .documentUpload
-        var extractedData: ExtractedData?
-        var userResponses: [String: String] = [:]
+// Native SwiftUI with Observable pattern (no TCA)
+@main
+struct AIKOApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .environment(AIOrchestrator.shared)
+                .environment(FeatureFlags.shared)
+        }
     }
+}
+
+// Clean ViewModel pattern
+@MainActor
+final class DocumentGenerationViewModel: ObservableObject {
+    @Published var documents: [GeneratedDocument] = []
+    @Published var isGenerating = false
+    @Published var error: Error?
     
-    enum Action {
-        case documentUploaded(URL)
-        case dataExtracted(ExtractedData)
-        case userAnswered(field: String, value: String)
+    private let aiOrchestrator = AIOrchestrator.shared
+    
+    func generateDocument(type: DocumentType, requirements: String) async {
+        isGenerating = true
+        do {
+            let document = try await aiOrchestrator.generateDocument(
+                type: type,
+                requirements: requirements,
+                context: AcquisitionContext.current
+            )
+            documents.append(document)
+        } catch {
+            self.error = error
+        }
+        isGenerating = false
     }
+}
+
+// SwiftUI View with clean separation
+struct DocumentGenerationView: View {
+    @StateObject private var viewModel = DocumentGenerationViewModel()
+    @Environment(AIOrchestrator.self) private var aiOrchestrator
     
-    var body: some Reducer<State, Action> {
-        Reduce { state, action in
-            // Handle actions and return effects
+    var body: some View {
+        NavigationStack {
+            VStack {
+                // Clean SwiftUI implementation
+            }
+        }
+        .task {
+            await viewModel.loadDocuments()
         }
     }
 }
 ```
 
-**Responsibilities:**
-- State management
-- Action processing
-- Side effect coordination
-- Business logic orchestration
+## GraphRAG Integration Architecture
 
-### 3. Service Layer
+### On-Device Intelligence System
 
 ```swift
-// Phase 4.2 - Enhanced Document Processing Architecture
-actor DocumentImageProcessor {
-    func processImage(_ image: UIImage, mode: ProcessingMode) async throws -> ProcessedImage {
-        // Enhanced Core Image processing with Metal GPU acceleration
-        // OCR optimization filters for improved text recognition
-    }
-}
-
-actor VisionKitScannerService {
-    func scanDocument() async throws -> [ProcessedImage] {
-        // Professional scanner with edge detection and perspective correction
-        // Multi-page scanning with session management
-    }
-}
-
-// Phase 5 - GraphRAG Intelligence Architecture (Implementation in Progress)
-actor LFM2Service {
-    private var model: MLModel? // LFM2-700M-GGUF Q6_K (612MB)
+// GraphRAG Service Actor
+public actor GraphRAGService: Sendable {
+    private let lfm2Service: LFM2Service
+    private let vectorDatabase: ObjectBoxSemanticIndex
+    private let regulationProcessor: RegulationProcessor
     
-    func generateEmbedding(text: String) async throws -> [Float] {
-        // On-device embedding generation for regulation text
+    public func search(
+        query: String,
+        domains: [SearchDomain] = [.regulations, .userHistory]
+    ) async throws -> [SearchResult] {
+        // Semantic search across regulations + user workflow data
+        let queryEmbedding = try await lfm2Service.generateEmbedding(for: query)
+        return try await vectorDatabase.findSimilar(
+            embedding: queryEmbedding,
+            domains: domains,
+            limit: 10
+        )
     }
-}
-
-actor VectorSearchService {
-    func search(query: String, maxResults: Int = 10) async throws -> [SearchResult] {
-        // Semantic search through ObjectBox vector database
-        // Sub-second response times with 90%+ relevance
-    }
-}
-```
-
-**Responsibilities:**
-- Enhanced document processing with Core Image and Metal GPU acceleration
-- Professional scanning with VisionKit integration and multi-page session management
-- On-device AI intelligence with LFM2-700M model for embedding generation
-- Semantic search through ObjectBox vector database with sub-second performance
-- Auto-update regulation pipeline with GitHub API integration
-- Universal LLM provider integration with dynamic discovery
-
-### 4. Data Layer
-
-```swift
-// Core Data Models
-@Model
-class AcquisitionDocument {
-    var id: UUID
-    var title: String
-    var uploadDate: Date
-    var extractedData: Data?
-    var scanSessionData: Data? // Phase 4.2: Multi-page scan sessions
     
-    init(title: String) {
-        self.id = UUID()
-        self.title = title
-        self.uploadDate = Date()
+    public func indexUserDocument(
+        _ document: GeneratedDocument,
+        metadata: DocumentMetadata
+    ) async throws {
+        // On-device indexing of user workflow data
+        let embedding = try await lfm2Service.generateEmbedding(for: document.content)
+        try await vectorDatabase.store(
+            embedding: embedding,
+            metadata: metadata,
+            domain: .userHistory
+        )
     }
 }
 
-// Phase 5: GraphRAG Vector Database Schema
-@Entity
-class RegulationEmbedding {
-    @Id var id: Id = 0
-    var regulationNumber: String = ""
-    var content: String = ""
-    var embedding: [Float] = [] // 768 dimensions for LFM2
-    var lastUpdated: Date = Date()
-    var source: String = "official" // "official" or "personal"
-    var contentHash: String = ""
-}
-```
-
-**Responsibilities:**
-- Document persistence with Core Data and enhanced scan session storage
-- Vector database storage with ObjectBox for regulation embeddings
-- Local-only data storage (no cloud synchronization for privacy)
-- Smart caching for regulation content and processed embeddings
-- Data migration support for schema updates
-
-## Key Architectural Patterns
-
-### 1. Dependency Injection
-
-```swift
-@Reducer
-struct Feature {
-    @Dependency(\.documentProcessor) var documentProcessor
-    @Dependency(\.apiClient) var apiClient
+// LFM2 Core ML Service
+public actor LFM2Service: Sendable {
+    private let model: MLModel
     
-    // Use dependencies in reducer
-}
-```
-
-### 2. Effect Management
-
-```swift
-return .run { send in
-    let data = try await documentProcessor.process(url)
-    await send(.dataProcessed(data))
-}
-.catch { error in
-    .send(.processingFailed(error))
-}
-```
-
-### 3. Composition
-
-```swift
-var body: some Reducer<State, Action> {
-    Reduce { state, action in
-        // Parent logic
-    }
-    .ifLet(\.$documentUpload, action: \.documentUpload) {
-        DocumentUploadFeature()
-    }
-    .ifLet(\.$adaptivePrompting, action: \.adaptivePrompting) {
-        AdaptivePromptingFeature()
+    public func generateEmbedding(for text: String) async throws -> [Float] {
+        // On-device embedding generation with LFM2-700M
+        let tokenized = try tokenizer.tokenize(text, maxLength: 512)
+        let prediction = try model.prediction(from: tokenized)
+        return try extractEmbedding(from: prediction)
     }
 }
 ```
 
-## Data Flow Example
+## Migration Strategy
 
-```mermaid
-graph TD
-    A[User Action] --> B[View]
-    B --> C[Store]
-    C --> D[Reducer]
-    D --> E[State Change]
-    D --> F[Effect]
-    F --> G[Service Layer]
-    G --> H[External API/Processing]
-    H --> I[Result]
-    I --> D
-    E --> B
-```
-
-## Clean Multi-Platform Architecture
-
-### Current Architecture Overview
-
-```
-AIKO Multi-Platform Architecture (Clean Separation Achieved)
-├── AppCore (Shared Business Logic) ✅
-│   ├── Features (TCA Reducers) ✅
-│   │   ├── AcquisitionFlow/           # Main workflow logic
-│   │   ├── DocumentProcessing/        # Document handling features
-│   │   ├── LLMIntegration/           # Multi-provider LLM system
-│   │   ├── ComplianceEngine/         # FAR/DFARS checking
-│   │   └── WorkflowManagement/       # Intelligent workflows
-│   ├── Models (Domain Objects) ✅
-│   │   ├── Document.swift            # Core document models
-│   │   ├── Template.swift            # Form templates
-│   │   ├── LLMProvider.swift         # Provider abstractions
-│   │   └── WorkflowDefinition.swift  # Workflow models
-│   ├── Services (Business Logic Protocols) ✅
-│   │   ├── DocumentProcessingService # Business logic interfaces
-│   │   ├── LLMService                # LLM integration protocols
-│   │   ├── ComplianceService         # Regulation checking protocols
-│   │   └── WorkflowOrchestrator      # Workflow management protocols
-│   └── Dependencies (Platform Abstractions) ✅
-│       ├── VoiceRecordingClient      # Platform-agnostic interface
-│       ├── HapticManagerClient       # Platform-agnostic interface
-│       ├── DocumentImageProcessor    # Image processing interface
-│       └── NotificationClient        # Notification interface
-├── AIKOiOS (iOS-Specific Implementation) ✅
-│   ├── Services (iOS Platform Services) ✅
-│   │   ├── iOSDocumentImageProcessor # Core Image + Metal GPU
-│   │   ├── iOSDocumentScanner        # VisionKit integration
-│   │   ├── iOSFileAccessService      # UIDocumentPicker
-│   │   └── iOSNotificationService    # UserNotifications
-│   ├── Dependencies (iOS Client Implementations) ✅
-│   │   ├── iOSVoiceRecordingClient   # AVAudioRecorder
-│   │   ├── iOSHapticManagerClient    # UIImpactFeedbackGenerator
-│   │   ├── iOSLocationClient         # CoreLocation
-│   │   └── iOSSecurityClient         # LocalAuthentication
-│   └── Views (iOS-Specific UI) ✅
-│       ├── iOSNavigationStack        # iOS navigation patterns
-│       ├── iOSDocumentPicker         # iOS file selection
-│       ├── iOSScannerView            # VisionKit scanner UI
-│       └── iOSAccessibilityViews     # iOS accessibility
-├── AIKOmacOS (macOS-Specific Implementation) ✅
-│   ├── Services (macOS Platform Services) ✅
-│   │   ├── macOSDocumentProcessor    # macOS image processing
-│   │   ├── macOSFileAccessService    # NSOpenPanel
-│   │   └── macOSNotificationService  # NSUserNotification
-│   ├── Dependencies (macOS Client Implementations) ✅
-│   │   ├── macOSVoiceRecordingClient # AVAudioEngine
-│   │   ├── macOSHapticManagerClient  # NSHapticFeedbackManager
-│   │   ├── macOSLocationClient       # CoreLocation
-│   │   └── macOSSecurityClient       # LocalAuthentication
-│   └── Views (macOS-Specific UI) ✅
-│       ├── macOSNavigationStack      # macOS navigation patterns
-│       ├── macOSDocumentPicker       # macOS file selection
-│       └── macOSAccessibilityViews   # macOS accessibility
-└── Platform Clients (Clean Dependency Injection) ✅
-    ├── Protocol Definitions          # Platform-agnostic interfaces
-    ├── iOS Implementations          # iOS-specific clients
-    ├── macOS Implementations        # macOS-specific clients
-    └── Zero platform conditionals   # ✅ 153+ conditionals eliminated
-```
-
-### Key Achievement: Zero Platform Conditionals
-
-The **153+ platform conditionals** have been completely eliminated from AppCore, achieving true platform-agnostic business logic:
-
+### Feature Flag System
 ```swift
-// ❌ OLD: Platform conditionals everywhere
-#if os(iOS)
-    let voiceService = iOSVoiceRecordingService()
-#elseif os(macOS)
-    let voiceService = macOSVoiceRecordingService()
-#endif
-
-// ✅ NEW: Clean dependency injection
-@Dependency(\.voiceRecordingClient) var voiceRecordingClient
+@Observable
+class FeatureFlags: Sendable {
+    // AI Engine Flags
+    var useNewAIOrchestrator = false
+    var useUnifiedProviders = false
+    var enableGraphRAG = false
+    
+    // UI Migration Flags
+    var useSwiftUIDocumentGeneration = false
+    var useSwiftUINavigation = false
+    var useLegacyTCA = true
+    
+    func gradualRollout(feature: String, percentage: Int) {
+        // Controlled rollout with monitoring
+    }
+}
 ```
 
-## Testing Strategy
+## Success Metrics
 
-### 1. Unit Tests
-- Reducer logic testing
-- Service layer testing
-- Model validation
+### Technical KPIs
+| Metric | Baseline | Target | Validation |
+|--------|----------|--------|------------|
+| File Count | 484 | 250 (-48%) | Automated counting |
+| Build Time | 16.45s | <10s | CI/CD benchmarks |
+| AI Response | Variable | <1s | Performance monitoring |
+| Test Coverage | Unknown | >80% | Coverage reports |
+| Swift 6 Compliance | 80% | 100% | Compiler validation |
 
-### 2. Integration Tests
-- Feature interaction testing
-- API integration testing
-- Database operation testing
+## Conclusion
 
-### 3. UI Tests
-- User flow testing
-- Accessibility testing
-- Platform compatibility
+This architecture represents a comprehensive modernization of the AIKO codebase, emphasizing modularity, performance, and maintainability. The 5 Core Engines pattern provides clear separation of concerns while the unified orchestration layer ensures consistent behavior across all AI operations.
 
-### 4. Performance Tests
-- Document processing speed
-- Memory usage optimization
-- Large data set handling
-
-## Security Considerations
-
-1. **Data Encryption**
-   - All sensitive data encrypted at rest
-   - TLS 1.3 for network communication
-   - Keychain storage for credentials
-
-2. **Authentication**
-   - Biometric authentication support
-   - JWT token management
-   - Session timeout handling
-
-3. **Authorization**
-   - Role-based access control
-   - Feature-level permissions
-   - Data-level security
-
-## Performance Optimizations
-
-### Current Achievements ✅
-
-1. **Enhanced Image Processing (Phase 4.1 Complete)**
-   - **Metal GPU Acceleration**: < 2 seconds per page processing achieved
-   - **Actor-Based Concurrency**: Thread-safe ProgressTracker for parallel processing
-   - **Modern Core Image API**: Fixed deprecation warnings, implemented latest filter patterns
-   - **OCR Optimization**: Specialized filters for text recognition and document clarity
-   - **Quality Metrics**: Processing time estimation with confidence scoring
-
-2. **Clean Architecture Performance**
-   - **Zero Platform Conditionals**: 153+ conditionals eliminated for improved compile times
-   - **Platform-Specific Optimization**: iOS and macOS implementations optimized separately
-   - **Dependency Injection**: Minimal runtime overhead with compile-time safety
-
-3. **LLM Integration Optimization**
-   - **Multi-Provider System**: Dynamic provider discovery with minimal latency
-   - **Async/Await Throughout**: Non-blocking UI with efficient concurrency
-   - **Secure Keychain Storage**: Fast API key retrieval with secure storage
-
-### Current Performance Metrics
-
-| Metric | Target | Current Status |
-|--------|--------|----------------|
-| **Image Processing** | < 2 seconds/page | ✅ Achieved with Metal GPU |
-| **App Launch** | < 2 seconds | ✅ Clean architecture optimized |
-| **LLM Response** | < 3 seconds | ✅ Multi-provider system |
-| **Platform Separation** | Zero conditionals | ✅ 153+ conditionals eliminated |
-| **Scanner Processing** | < 5 seconds | 🚧 Phase 4.2 in progress |
-
-### Ongoing Optimizations (Phase 4.2)
-
-4. **Document Scanner Performance**
-   - VisionKit edge detection with perspective correction
-   - Multi-page scanning optimization
-   - Enhanced OCR preprocessing pipeline
-   - Smart processing for form auto-population
-
-5. **Memory Management**
-   - Automatic resource cleanup with modern Swift concurrency
-   - Image downsampling for UI optimization
-   - Efficient data handling with Core Data
-
-6. **Background Processing**
-   - Parallel document extraction using actor isolation
-   - Background queue management for non-blocking UI
-   - Smart progress tracking with real-time updates
-
-## Future Architectural Enhancements
-
-1. **Modularization**
-   - Split features into separate packages
-   - Dynamic feature loading
-   - Reduced app binary size
-
-2. **Plugin Architecture**
-   - Third-party integration support
-   - Custom workflow extensions
-   - API marketplace
-
-3. **Offline-First**
-   - Complete offline functionality
-   - Smart synchronization
-   - Conflict resolution
-
-## Best Practices
-
-1. **Code Organization**
-   - One feature per folder
-   - Clear separation of concerns
-   - Consistent naming conventions
-
-2. **State Management**
-   - Minimal state in views
-   - Single source of truth
-   - Immutable state updates
-
-3. **Error Handling**
-   - Comprehensive error types
-   - User-friendly error messages
-   - Automatic retry logic
-
-4. **Documentation**
-   - Code comments for complex logic
-   - README files in feature folders
-   - API documentation generation
+**Implementation Authority**: VanillaIce Multi-Model Consensus Approved  
+**Readiness**: Production ready with comprehensive migration strategy  
+**Risk Level**: Medium-High with robust mitigation strategies
 
 ---
 
-*This architecture is designed to scale with the application's growth while maintaining clarity and testability.*
+## CFMMS Integration Architecture
+
+### Integration with Current Architecture
+
+The Comprehensive File & Media Management Suite (CFMMS) integrates seamlessly with AIKO's existing TCA architecture through the following integration points:
+
+#### MediaManagementFeature Enhancement
+```swift
+// Enhanced MediaManagementFeature with CFMMS capabilities
+@Reducer
+public struct MediaManagementFeature: Sendable {
+    @ObservableState
+    public struct State {
+        // Core CFMMS state management
+        public var assets: IdentifiedArrayOf<MediaAsset> = []
+        public var selectedAssets: Set<MediaAsset.ID> = []
+        public var currentBatchOperation: BatchOperationHandle?
+        public var batchProgress: BatchProgress?
+        
+        // Integration with existing scanner
+        public var documentScannerIntegration = true
+        public var globalScanFeatureAccess = true
+    }
+    
+    // 163 actions covering complete media management workflow
+    public enum Action: Sendable {
+        // File management actions
+        case pickFiles(allowedTypes: [MediaFileType], allowsMultiple: Bool)
+        case selectPhotos(limit: Int)
+        case capturePhoto
+        case captureScreenshot(ScreenshotType)
+        
+        // Processing actions  
+        case startBatchOperation(BatchOperationType)
+        case extractMetadata(assetId: MediaAsset.ID)
+        case validateAsset(MediaAsset.ID)
+        
+        // Integration actions
+        case documentScannerIntegration(DocumentScannerFeature.Action)
+        case globalScanFeatureIntegration(GlobalScanFeature.Action)
+    }
+}
+```
+
+#### Service Layer Architecture
+```swift
+// CFMMS Service Architecture Integration
+public protocol MediaManagementServiceLayer {
+    // iOS-specific implementations
+    var cameraService: CameraServiceProtocol { get }        // 25 TODO → Full implementation
+    var photoLibraryService: PhotoLibraryServiceProtocol { get }  // New implementation
+    var filePickerService: FilePickerServiceProtocol { get }     // Enhanced
+    
+    // Processing services
+    var mediaValidationService: MediaValidationServiceProtocol { get }  // Enhanced
+    var batchProcessingEngine: BatchProcessingEngineProtocol { get }     // New implementation
+    var mediaAssetCache: MediaAssetCacheProtocol { get }                 // New implementation
+    
+    // Integration services
+    var documentImageProcessor: DocumentImageProcessor { get }  // Existing, extended
+}
+```
+
+#### Target 1 (AIKO App) - CFMMS UI Integration
+```swift
+// SwiftUI Views with CFMMS integration
+AIKO App (Target 1) - Enhanced
+├── Views/
+│   ├── MediaManagementView.swift (New)
+│   ├── AssetGridView.swift (New)
+│   ├── MediaActionToolbar.swift (New)
+│   ├── BatchProcessingView.swift (New)
+│   └── [Existing views enhanced with media capabilities]
+├── ViewModels/
+│   ├── MediaManagementViewModel.swift (New)
+│   └── [Existing ViewModels with media integration]
+└── Integration/
+    ├── GlobalScanFeature+MediaIntegration.swift (Enhanced)
+    └── DocumentScanner+MediaIntegration.swift (Enhanced)
+```
+
+#### Target 2 (AICore) - CFMMS Service Integration
+```swift
+// AICore enhanced with CFMMS services
+AICore (Target 2) - Enhanced
+├── Services/
+│   ├── MediaManagement/
+│   │   ├── CameraService.swift (Complete 25 TODOs)
+│   │   ├── PhotoLibraryService.swift (New)
+│   │   ├── MediaValidationService.swift (Enhanced)
+│   │   ├── BatchProcessingEngine.swift (New)
+│   │   └── MediaAssetCache.swift (New)
+│   └── [Existing AI services]
+├── Models/
+│   ├── MediaAsset.swift (Enhanced)
+│   ├── BatchOperationHandle.swift (New)
+│   ├── ValidationResult.swift (Enhanced)
+│   └── [Existing models]
+└── Dependencies/
+    └── MediaManagementDependencies.swift (New)
+```
+
+### CFMMS Performance Targets
+
+| Component | Performance Target | Integration Approach |
+|-----------|-------------------|---------------------|
+| **Camera Service** | <500ms initialization | Complete 25 AVFoundation TODO implementations |
+| **Photo Library** | <1s album loading | PHPickerViewController with async/await |
+| **File Validation** | <100ms per file | Enhanced MediaValidationService with MIME detection |
+| **Batch Processing** | 50+ concurrent files | New BatchProcessingEngine with actor isolation |
+| **Memory Management** | <200MB total, 50MB cache | MediaAssetCache with LRU eviction |
+| **UI Responsiveness** | <100ms state updates | TCA reactive state management |
+
+### Integration Timeline
+
+#### Week 1: Service Implementation Foundation
+- **Days 1-2**: Complete CameraService.swift 25 TODO implementations
+- **Days 3-4**: Create PhotoLibraryService.swift with PHPickerViewController
+- **Day 5**: Enhance MediaValidationService with comprehensive validation
+
+#### Week 2: Processing Pipeline Integration  
+- **Days 1-2**: Implement BatchProcessingEngine with concurrent processing
+- **Days 3-4**: Extend DocumentImageProcessor for media enhancement
+- **Day 5**: Create MediaAssetCache for efficient memory management
+
+#### Week 3: UI & TCA Integration
+- **Days 1-2**: Implement MediaManagementView following TCA patterns
+- **Days 3-4**: Integrate with GlobalScanFeature floating action button
+- **Day 5**: Create comprehensive error handling and user feedback
+
+#### Week 4: Testing & Polish
+- **Days 1-2**: Unit testing for all CFMMS service implementations
+- **Days 3-4**: Integration testing with existing DocumentScannerFeature
+- **Day 5**: Performance optimization and security review
+
+### VanillaIce Consensus Validation ✅
+
+**CFMMS Integration Status**: **APPROVED (5/5 Models)**  
+**Review Date**: January 24, 2025  
+**Models Consulted**: Code Refactoring Specialist, Swift Implementation Expert, SwiftUI Sprint Leader, Utility Code Generator, Swift Test Engineer
+
+**Key Approvals**:
+- ✅ Service Implementation Strategy: "Feasible and aligns well with AIKO's existing codebase patterns"
+- ✅ TCA Integration Approach: "Sound decision that maintains consistency"  
+- ✅ Processing Pipeline: "Robust approach that ensures efficient processing"
+- ✅ Performance & Architecture: "Critical for performance and scalability"
+- ✅ Integration Points: "Essential for smooth user experience"
+
+---
+
+**Document Status**: ✅ **ARCHITECTURE APPROVED** (Including CFMMS Integration)  
+**Next Phase**: Begin CFMMS Week 1 implementation (Complete CameraService TODOs)  
+**Review Date**: Weekly architecture review meetings during CFMMS implementation

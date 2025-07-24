@@ -2,7 +2,6 @@ import AppCore
 import AVFoundation
 import CoreImage
 import Foundation
-import UIKit
 import Vision
 
 public typealias ValidationResult = AppCore.ValidationResult
@@ -72,7 +71,7 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
 
     public func generateThumbnail(
         from _: URL,
-        size _: UIKit.CGSize,
+        size _: AppCore.CGSize,
         time _: TimeInterval?
     ) async throws -> Data {
         // TODO: Implement thumbnail generation

@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import AppCore
 
 struct SAMGovLookupView: View {
     @Environment(\.dismiss) private var dismiss
@@ -725,8 +726,7 @@ struct EntityDetailView: View {
 
             // Architect-Engineer Qualifications
             if let aeInfo = entity.architectEngineerQualifications,
-               aeInfo.hasArchitectEngineerResponses
-            {
+               aeInfo.hasArchitectEngineerResponses {
                 VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                     Text("Architect-Engineer Qualifications")
                         .font(.headline)

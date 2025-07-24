@@ -9,11 +9,15 @@ public struct MediaAsset: Identifiable, Sendable, Codable, Equatable {
     public let originalURL: URL?
     public let processedURL: URL?
     public var metadata: MediaMetadata
+    public let data: Data?
+    public let processingState: MediaProcessingState
+    public let sourceInfo: MediaSource?
     public let createdAt: Date
     public let size: Int64
     public let fileSize: Int64
     public let mimeType: String
 
+    // Primary initializer (existing interface)
     public init(
         id: UUID = UUID(),
         type: MediaType,
@@ -32,10 +36,42 @@ public struct MediaAsset: Identifiable, Sendable, Codable, Equatable {
         self.originalURL = originalURL
         self.processedURL = processedURL
         self.metadata = metadata
+        self.data = nil
+        self.processingState = .pending
+        self.sourceInfo = nil
         self.createdAt = createdAt
         self.size = size > 0 ? size : fileSize
         self.fileSize = fileSize > 0 ? fileSize : size
         self.mimeType = mimeType
+    }
+
+    // Test-compatible initializer (exact match for ProcessingJobTests)
+    public init(
+        id: UUID = UUID(),
+        type: MediaType,
+        data: Data,
+        metadata: MediaMetadata,
+        processingState: MediaProcessingState,
+        sourceInfo: MediaSource,
+        createdAt: Date = Date()
+    ) {
+        self.id = id
+        self.type = type
+        self.data = data
+        self.metadata = metadata
+        self.processingState = processingState
+        self.sourceInfo = sourceInfo
+        self.createdAt = createdAt
+
+        // Extract values from metadata if available
+        self.size = metadata.fileSize ?? 0
+        self.fileSize = metadata.fileSize ?? 0
+        self.mimeType = metadata.mimeType ?? ""
+
+        // URLs are nil for data-based assets
+        self.url = nil
+        self.originalURL = nil
+        self.processedURL = nil
     }
 }
 
@@ -49,7 +85,7 @@ public enum MediaType: String, Sendable, CaseIterable, Codable {
     case screenshot
     case camera
     case file
-    
+
     public var displayName: String {
         switch self {
         case .image: "Image"
@@ -72,6 +108,14 @@ public struct MediaMetadata: Sendable, Codable, Equatable {
     public let location: MediaLocation?
     public let deviceInfo: MediaDeviceInfo?
 
+    // Additional fields for test compatibility
+    public let fileName: String?
+    public let fileSize: Int64?
+    public let mimeType: String?
+    public let securityInfo: SecurityInfo?
+    public let dimensions: MediaDimensions?
+
+    // Primary initializer (existing interface)
     public init(
         width: Int? = nil,
         height: Int? = nil,
@@ -81,6 +125,66 @@ public struct MediaMetadata: Sendable, Codable, Equatable {
     ) {
         self.width = width
         self.height = height
+        self.exifData = exifData
+        self.location = location
+        self.deviceInfo = deviceInfo
+        self.fileName = nil
+        self.fileSize = nil
+        self.mimeType = nil
+        self.securityInfo = nil
+        self.dimensions = if let width = width, let height = height {
+            MediaDimensions(width: width, height: height)
+        } else {
+            nil
+        }
+    }
+
+    // Test-compatible initializer
+    public init(
+        fileName: String,
+        fileSize: Int64,
+        mimeType: String,
+        securityInfo: SecurityInfo,
+        width: Int? = nil,
+        height: Int? = nil,
+        exifData: [String: String] = [:],
+        location: MediaLocation? = nil,
+        deviceInfo: MediaDeviceInfo? = nil
+    ) {
+        self.fileName = fileName
+        self.fileSize = fileSize
+        self.mimeType = mimeType
+        self.securityInfo = securityInfo
+        self.width = width
+        self.height = height
+        self.exifData = exifData
+        self.location = location
+        self.deviceInfo = deviceInfo
+        self.dimensions = if let width = width, let height = height {
+            MediaDimensions(width: width, height: height)
+        } else {
+            nil
+        }
+    }
+
+    // Test-compatible initializer with dimensions
+    public init(
+        fileName: String,
+        fileSize: Int64,
+        mimeType: String,
+        dimensions: MediaDimensions,
+        securityInfo: SecurityInfo,
+        exifData: [String: String] = [:],
+        location: MediaLocation? = nil,
+        deviceInfo: MediaDeviceInfo? = nil
+    ) {
+        self.fileName = fileName
+        self.fileSize = fileSize
+        self.mimeType = mimeType
+        self.securityInfo = securityInfo
+        self.width = dimensions.width
+        self.height = dimensions.height
+        self.dimensions = dimensions
         self.exifData = exifData
         self.location = location
         self.deviceInfo = deviceInfo
@@ -112,6 +216,7 @@ public struct MediaDeviceInfo: Sendable, Codable, Equatable {
 }
 
 // MARK: - ValidationResult Types
+
 // These types are defined here to avoid conflicts and provide media-specific validation
 
 /// Result of media validation process
@@ -119,7 +224,7 @@ public struct MediaValidationResult: Sendable, Equatable {
     public let isValid: Bool
     public let errors: [MediaValidationError]
     public let warnings: [MediaValidationWarning]
-    
+
     public init(isValid: Bool, errors: [MediaValidationError] = [], warnings: [MediaValidationWarning] = []) {
         self.isValid = isValid
         self.errors = errors
@@ -131,7 +236,7 @@ public struct MediaValidationResult: Sendable, Equatable {
 public struct MediaValidationError: Sendable, Equatable {
     public let message: String
     public let code: String?
-    
+
     public init(message: String, code: String? = nil) {
         self.message = message
         self.code = code
@@ -142,7 +247,7 @@ public struct MediaValidationError: Sendable, Equatable {
 public struct MediaValidationWarning: Sendable, Equatable {
     public let message: String
     public let suggestion: String?
-    
+
     public init(message: String, suggestion: String? = nil) {
         self.message = message
         self.suggestion = suggestion

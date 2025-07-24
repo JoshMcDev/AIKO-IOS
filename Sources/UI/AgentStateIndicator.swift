@@ -1,4 +1,5 @@
 import SwiftUI
+import AppCore
 
 // MARK: - Agent State Indicator
 

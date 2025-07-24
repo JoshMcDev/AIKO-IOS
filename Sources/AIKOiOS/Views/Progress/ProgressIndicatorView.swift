@@ -1,6 +1,29 @@
+#if os(iOS)
+import UIKit
+#endif
 import AppCore
 import ComposableArchitecture
 import SwiftUI
+
+// MARK: - Color Compatibility
+
+#if os(iOS)
+private var backgroundColorCompat: Color {
+    Color(UIColor.systemBackground)
+}
+
+private var strokeColorCompat: Color {
+    Color(UIColor.systemGray4)
+}
+#else
+private var backgroundColorCompat: Color {
+    Color.primary.opacity(0.05)
+}
+
+private var strokeColorCompat: Color {
+    Color.gray.opacity(0.3)
+}
+#endif
 
 /// Main progress indicator view that switches between different presentation styles
 public struct ProgressIndicatorView: View {
@@ -70,7 +93,7 @@ struct DetailedProgressView: View {
             }
         }
         .padding()
-        .background(Color(.systemBackground))
+        .background(backgroundColorCompat)
         .cornerRadius(12)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(progressState.accessibilityLabel)
@@ -144,11 +167,11 @@ struct AccessibleProgressView: View {
             }
         }
         .padding(20)
-        .background(Color(.systemBackground))
+        .background(backgroundColorCompat)
         .cornerRadius(16)
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .stroke(Color(.systemGray4), lineWidth: 1)
+                .stroke(strokeColorCompat, lineWidth: 1)
         )
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(progressState.accessibilityLabel)
