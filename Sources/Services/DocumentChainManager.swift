@@ -276,7 +276,6 @@ extension DocumentChainManager: DependencyKey {
                             return document
                         }
                     }
-                }
 
                 return nil
             },
@@ -372,6 +371,7 @@ extension DocumentChainManager: DependencyKey {
             }
         )
     }
+}
 
 // MARK: - Chain Errors
 

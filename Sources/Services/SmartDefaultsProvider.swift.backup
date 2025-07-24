@@ -618,5 +618,3 @@ public class OrganizationalRuleEngine {
         ]
     }
 }
-
-} // Missing closing brace for SmartDefaultsProvider class

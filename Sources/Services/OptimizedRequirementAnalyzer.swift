@@ -118,6 +118,7 @@ actor APIRequestBatcher {
             return (response: response.trimmingCharacters(in: .whitespacesAndNewlines), recommendedDocuments: recommendedTypes)
         }
     }
+}
 
 // MARK: - Dependency Implementation
 
@@ -238,16 +239,15 @@ extension OptimizedRequirementAnalyzer: DependencyKey {
                     let results = try await batcher.batchAnalyze(requirements: requirementsToAnalyze)
 
                     for (i, result) in results.enumerated() where i < uncachedRequirements.count {
-                            let originalIndex = uncachedRequirements[i].0
-                            apiResults.append((originalIndex, result))
+                        let originalIndex = uncachedRequirements[i].0
+                        apiResults.append((originalIndex, result))
 
-                            // Cache the result
-                            try? await cacheService.cacheAnalysisResponse(
-                                uncachedRequirements[i].1,
-                                result.response,
-                                result.recommendedDocuments
-                            )
-                        }
+                        // Cache the result
+                        try? await cacheService.cacheAnalysisResponse(
+                            uncachedRequirements[i].1,
+                            result.response,
+                            result.recommendedDocuments
+                        )
                     }
                 }
 
@@ -324,6 +324,7 @@ public enum OptimizedRequirementAnalyzerError: Error {
 public extension RequirementAnalyzer {
     /// Creates an optimized version of the requirement analyzer
     var optimized: OptimizedRequirementAnalyzer {
-        OptimizedRequirementAnalyzer.liveValue
+        @Dependency(\.optimizedRequirementAnalyzer) var analyzer
+        return analyzer
     }
 }
