@@ -265,7 +265,8 @@ public final class LocalModelProvider: LLMProviderProtocol, @unchecked Sendable 
                         if let data = line.data(using: .utf8),
                            let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                            let message = json["message"] as? [String: Any],
-                           let content = message["content"] as? String {
+                           let content = message["content"] as? String
+                        {
                             continuation.yield(LLMStreamChunk(delta: content))
 
                             if let done = json["done"] as? Bool, done {

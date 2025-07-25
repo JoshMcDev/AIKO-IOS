@@ -32,8 +32,8 @@ public struct DFTemplateService: Sendable {
     }
 }
 
-extension DFTemplateService {
-    public static var liveValue: DFTemplateService {
+public extension DFTemplateService {
+    static var liveValue: DFTemplateService {
         DFTemplateService(
             loadTemplate: { documentType in
                 // Load from app bundle
@@ -92,7 +92,7 @@ extension DFTemplateService {
         )
     }
 
-    public static var testValue: DFTemplateService {
+    static var testValue: DFTemplateService {
         DFTemplateService(
             loadTemplate: { documentType in
                 DFTemplate(

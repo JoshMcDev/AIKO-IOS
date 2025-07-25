@@ -18,8 +18,8 @@ public struct RequirementAnalyzer: Sendable {
     }
 }
 
-extension RequirementAnalyzer {
-    public static var liveValue: RequirementAnalyzer {
+public extension RequirementAnalyzer {
+    static var liveValue: RequirementAnalyzer {
         RequirementAnalyzer(
             analyzeRequirements: { requirements in
                 guard let aiProvider = await AIProviderFactory.defaultProvider() else {
@@ -166,7 +166,7 @@ extension RequirementAnalyzer {
         )
     }
 
-    public static var testValue: RequirementAnalyzer {
+    static var testValue: RequirementAnalyzer {
         RequirementAnalyzer(
             analyzeRequirements: { requirements in
                 let mockResponse = """

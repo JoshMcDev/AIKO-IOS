@@ -44,8 +44,8 @@ public enum DocumentFormat: CaseIterable {
     }
 }
 
-extension DocumentDeliveryService {
-    public static var liveValue: DocumentDeliveryService {
+public extension DocumentDeliveryService {
+    static var liveValue: DocumentDeliveryService {
         DocumentDeliveryService(
             downloadDocuments: { documents in
                 print("📥 Downloading \(documents.count) documents...")
@@ -114,7 +114,7 @@ extension DocumentDeliveryService {
         )
     }
 
-    public static var testValue: DocumentDeliveryService {
+    static var testValue: DocumentDeliveryService {
         DocumentDeliveryService(
             downloadDocuments: { documents in
                 print("Test: Downloaded \(documents.count) documents")

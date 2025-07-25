@@ -19,8 +19,8 @@ public struct FilePickerClient: Sendable {
     }
 }
 
-extension FilePickerClient {
-    public static let liveValue = FilePickerClient(
+public extension FilePickerClient {
+    static let liveValue = FilePickerClient(
         pickFile: { throw NSError(domain: "NotImplemented", code: -1) },
         pickMultipleFiles: { throw NSError(domain: "NotImplemented", code: -1) },
         supportedFileTypes: { [] }
@@ -45,8 +45,8 @@ public struct PhotoLibraryClient: Sendable {
     }
 }
 
-extension PhotoLibraryClient {
-    public static let liveValue = PhotoLibraryClient(
+public extension PhotoLibraryClient {
+    static let liveValue = PhotoLibraryClient(
         pickPhoto: { throw NSError(domain: "NotImplemented", code: -1) },
         pickMultiplePhotos: { throw NSError(domain: "NotImplemented", code: -1) },
         requestAccess: { false }
@@ -74,8 +74,8 @@ public struct ScreenshotClient: Sendable {
     }
 }
 
-extension ScreenshotClient {
-    public static let liveValue = ScreenshotClient(
+public extension ScreenshotClient {
+    static let liveValue = ScreenshotClient(
         captureScreen: { throw NSError(domain: "NotImplemented", code: -1) },
         startRecording: { throw NSError(domain: "NotImplemented", code: -1) },
         stopRecording: { throw NSError(domain: "NotImplemented", code: -1) },
@@ -104,8 +104,8 @@ public struct MediaValidationClient: Sendable {
     }
 }
 
-extension MediaValidationClient {
-    public static let liveValue = MediaValidationClient(
+public extension MediaValidationClient {
+    static let liveValue = MediaValidationClient(
         validateFile: { _ in MediaClientValidationResult(isValid: true) },
         validateFileSize: { _ in MediaClientValidationResult(isValid: true) },
         validateMimeType: { _ in MediaClientValidationResult(isValid: true) },
@@ -131,8 +131,8 @@ public struct MediaMetadataClient: Sendable {
     }
 }
 
-extension MediaMetadataClient {
-    public static let liveValue = MediaMetadataClient(
+public extension MediaMetadataClient {
+    static let liveValue = MediaMetadataClient(
         extractMetadata: { _ in MediaMetadata() },
         extractEXIF: { _ in [:] },
         generateThumbnail: { _ in Data() }

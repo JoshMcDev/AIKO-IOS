@@ -163,8 +163,8 @@ private actor CMMCStatusStorage {
 
 // MARK: - Implementation
 
-extension CMMCComplianceTracker {
-    public static var liveValue: CMMCComplianceTracker {
+public extension CMMCComplianceTracker {
+    static var liveValue: CMMCComplianceTracker {
         // Thread-safe storage for requirement status
         let storage = CMMCStatusStorage()
 

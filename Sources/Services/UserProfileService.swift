@@ -20,8 +20,8 @@ public struct UserProfileService: Sendable {
     }
 }
 
-extension UserProfileService {
-    public static var liveValue: UserProfileService {
+public extension UserProfileService {
+    static var liveValue: UserProfileService {
         guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
             fatalError("Unable to access documents directory")
         }
@@ -58,7 +58,7 @@ extension UserProfileService {
         )
     }
 
-    public static var testValue: UserProfileService {
+    static var testValue: UserProfileService {
         let testStorage = TestProfileStorage()
 
         return UserProfileService(

@@ -1215,10 +1215,10 @@ private func convertToParameterValue(_ value: Any) -> ParameterValue {
 
 // MARK: - Dependency Registration
 
-extension ObjectActionPerformanceMonitor {
-    public static let liveValue = ObjectActionPerformanceMonitor()
+public extension ObjectActionPerformanceMonitor {
+    static let liveValue = ObjectActionPerformanceMonitor()
 }
 
-extension OptimizedObjectActionHandler {
-    public static let liveValue = OptimizedObjectActionHandler.live
+public extension OptimizedObjectActionHandler {
+    static let liveValue = OptimizedObjectActionHandler.live
 }

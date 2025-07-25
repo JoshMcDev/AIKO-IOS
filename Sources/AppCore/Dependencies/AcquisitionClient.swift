@@ -12,8 +12,8 @@ public struct AcquisitionClient: Sendable {
     public var updateStatus: @Sendable (UUID, Acquisition.Status) async throws -> Void
 }
 
-extension AcquisitionClient {
-    public static let testValue = Self(
+public extension AcquisitionClient {
+    static let testValue = Self(
         createAcquisition: { title, requirements, _ in
             Acquisition(title: title, requirements: requirements)
         },
@@ -26,7 +26,7 @@ extension AcquisitionClient {
         updateStatus: { _, _ in }
     )
 
-    public static let previewValue = Self(
+    static let previewValue = Self(
         createAcquisition: { title, requirements, _ in
             Acquisition(title: title, requirements: requirements)
         },

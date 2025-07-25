@@ -185,7 +185,8 @@ private extension ProgressTrackingEngine {
 
         // Check progress doesn't go backwards (except for errors)
         if update.phase != .error,
-           update.overallProgress < tracker.currentState.overallProgress {
+           update.overallProgress < tracker.currentState.overallProgress
+        {
             return false
         }
 

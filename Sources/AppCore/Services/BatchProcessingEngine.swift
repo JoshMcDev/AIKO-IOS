@@ -160,7 +160,8 @@ public actor BatchProcessingEngine: BatchProcessingEngineProtocol {
         let completedSummaries: [BatchOperationSummary] = handles.values.compactMap { handle in
             guard let status = operationStatus[handle.operationId],
                   !status.isActive,
-                  let progress = operationProgress[handle.operationId] else {
+                  let progress = operationProgress[handle.operationId]
+            else {
                 return nil
             }
 
@@ -362,7 +363,8 @@ public actor BatchProcessingEngine: BatchProcessingEngineProtocol {
         let completedOperations = handles.values.compactMap { handle -> BatchOperationSummary? in
             guard let status = operationStatus[handle.operationId],
                   !status.isActive,
-                  let progress = operationProgress[handle.operationId] else {
+                  let progress = operationProgress[handle.operationId]
+            else {
                 return nil
             }
 
@@ -381,7 +383,7 @@ public actor BatchProcessingEngine: BatchProcessingEngineProtocol {
     }
 
     public func clearCompletedOperations() async {
-        let completedIds = operationStatus.compactMap { (id, status) in
+        let completedIds = operationStatus.compactMap { id, status in
             status.isActive ? nil : id
         }
 

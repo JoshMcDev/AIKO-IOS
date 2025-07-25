@@ -78,7 +78,7 @@ public enum ProcessingResult: Sendable, Equatable {
 
     public var asset: MediaAsset? {
         switch self {
-        case .success(let asset, _): asset
+        case let .success(asset, _): asset
         case .failure: nil
         }
     }
@@ -86,21 +86,21 @@ public enum ProcessingResult: Sendable, Equatable {
     public var originalAsset: MediaAsset? {
         switch self {
         case .success: nil
-        case .failure(let asset, _, _): asset
+        case let .failure(asset, _, _): asset
         }
     }
 
     public var error: MediaError? {
         switch self {
         case .success: nil
-        case .failure(_, let error, _): error
+        case let .failure(_, error, _): error
         }
     }
 
     public var processingDuration: TimeInterval {
         switch self {
-        case .success(_, let duration): duration
-        case .failure(_, _, let duration): duration
+        case let .success(_, duration): duration
+        case let .failure(_, _, duration): duration
         }
     }
 }

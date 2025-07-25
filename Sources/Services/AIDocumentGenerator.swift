@@ -15,8 +15,8 @@ public struct AIDocumentGenerator: Sendable {
     }
 }
 
-extension AIDocumentGenerator {
-    public static var liveValue: AIDocumentGenerator {
+public extension AIDocumentGenerator {
+    static var liveValue: AIDocumentGenerator {
         AIDocumentGenerator(
             generateDocuments: { requirements, documentTypes in
                 // TODO: Replace with proper dependency injection
@@ -230,7 +230,7 @@ extension AIDocumentGenerator {
         )
     }
 
-    public static var testValue: AIDocumentGenerator {
+    static var testValue: AIDocumentGenerator {
         AIDocumentGenerator(
             generateDocuments: { requirements, documentTypes in
                 documentTypes.map { documentType in
@@ -253,7 +253,7 @@ extension AIDocumentGenerator {
         )
     }
 
-    public static func createPrompt(for documentType: DocumentType, requirements: String, profile: UserProfile?) -> String {
+    static func createPrompt(for documentType: DocumentType, requirements: String, profile: UserProfile?) -> String {
         // Build the requirements with user profile if available
         var fullRequirements = requirements
 
@@ -275,7 +275,7 @@ extension AIDocumentGenerator {
         return GovernmentAcquisitionPrompts.promptForDocumentType(documentType, requirements: fullRequirements)
     }
 
-    public static func getSystemPrompt(for _: DocumentType) -> String {
+    static func getSystemPrompt(for _: DocumentType) -> String {
         // Use the government acquisition expert prompts
         GovernmentAcquisitionPrompts.systemPrompt + "\n\n" + GovernmentAcquisitionPrompts.contextPrompt
     }
@@ -772,7 +772,7 @@ extension AIDocumentGenerator {
         }
     }
 
-    public static func createDFPrompt(
+    static func createDFPrompt(
         for dfDocumentType: DFDocumentType,
         requirements: String,
         template: String,
@@ -803,7 +803,7 @@ extension AIDocumentGenerator {
         """
     }
 
-    public static func getDFSystemPrompt(for dfDocumentType: DFDocumentType) -> String {
+    static func getDFSystemPrompt(for dfDocumentType: DFDocumentType) -> String {
         let formattingInstructions = """
 
         FORMATTING INSTRUCTIONS:
@@ -825,7 +825,7 @@ extension AIDocumentGenerator {
         """
     }
 
-    public static func createTemplateBasedPrompt(
+    static func createTemplateBasedPrompt(
         for documentType: DocumentType,
         requirements: String,
         template: String,

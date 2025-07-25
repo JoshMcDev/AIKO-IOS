@@ -33,13 +33,13 @@ public struct AcquisitionService: Sendable {
     }
 }
 
-extension AcquisitionService {
-    public nonisolated static var liveValue: AcquisitionService {
+public extension AcquisitionService {
+    nonisolated static var liveValue: AcquisitionService {
         // Always use repository-based implementation as part of Phase 4 migration
         .repositoryBased
     }
 
-    public static var testValue: AcquisitionService {
+    static var testValue: AcquisitionService {
         liveValue
     }
 }

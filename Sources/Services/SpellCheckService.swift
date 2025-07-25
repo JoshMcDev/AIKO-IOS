@@ -59,8 +59,8 @@ public struct SpellCheckService: Sendable {
     }
 }
 
-extension SpellCheckService {
-    public static var liveValue: SpellCheckService {
+public extension SpellCheckService {
+    static var liveValue: SpellCheckService {
         let customDictionary = CustomDictionary()
 
         return SpellCheckService(
@@ -243,7 +243,7 @@ extension SpellCheckService {
         )
     }
 
-    public static var testValue: SpellCheckService {
+    static var testValue: SpellCheckService {
         SpellCheckService(
             checkDocument: { text in
                 SpellCheckResult(
@@ -265,7 +265,7 @@ extension SpellCheckService {
         )
     }
 
-    public static var previewValue: SpellCheckService {
+    static var previewValue: SpellCheckService {
         testValue
     }
 }

@@ -26,8 +26,8 @@ public struct ProgressClient: Sendable {
 
 // MARK: - Live Implementation
 
-extension ProgressClient {
-    public static let liveValue: Self = {
+public extension ProgressClient {
+    static let liveValue: Self = {
         let engine = ProgressTrackingEngine()
 
         // Start cleanup timer
@@ -64,7 +64,7 @@ extension ProgressClient {
         )
     }()
 
-    public static let testValue: Self = .init(
+    static let testValue: Self = .init(
         startSession: { sessionId, _ in
             AsyncStream { continuation in
                 // Send initial update
@@ -133,7 +133,7 @@ extension ProgressClient {
         isAvailable: { true }
     )
 
-    public static let previewValue: Self = testValue
+    static let previewValue: Self = testValue
 }
 
 // MARK: - Dependency Registration

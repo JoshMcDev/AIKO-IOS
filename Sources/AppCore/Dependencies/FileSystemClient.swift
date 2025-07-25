@@ -140,7 +140,7 @@ public struct FileSystemClient: Sendable {
     public var createDirectory: @Sendable (URL) async throws -> Void
 
     // MARK: - Initializer
-    
+
     public init(
         directoryURL: @escaping @Sendable (FileDirectory) throws -> URL,
         listFiles: @escaping @Sendable (URL, FileType?) async throws -> [FileItem],
@@ -168,8 +168,8 @@ public struct FileSystemClient: Sendable {
 
 // MARK: - Dependency Registration
 
-extension FileSystemClient {
-    public static let liveValue: Self = .init(
+public extension FileSystemClient {
+    static let liveValue: Self = .init(
         directoryURL: { _ in URL(fileURLWithPath: NSTemporaryDirectory()) },
         listFiles: { _, _ in [] },
         save: { _, filename, _ in URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(filename) },
@@ -181,7 +181,7 @@ extension FileSystemClient {
         createDirectory: { _ in }
     )
 
-    public static let testValue: Self = .init(
+    static let testValue: Self = .init(
         directoryURL: { _ in URL(fileURLWithPath: "/tmp") },
         listFiles: { _, _ in [] },
         save: { _, filename, _ in URL(fileURLWithPath: "/tmp/\(filename)") },

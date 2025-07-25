@@ -1,13 +1,12 @@
+import CryptoKit
 import Foundation
 import UniformTypeIdentifiers
-import CryptoKit
 
 // MARK: - MediaValidationService Implementation
 
 /// Concrete implementation of MediaValidationService
 /// Implements comprehensive validation capabilities for CFMMS requirements
 public actor MediaValidationService: MediaValidationServiceProtocol {
-
     public init() {}
 
     // MARK: - Enhanced File Validation
@@ -138,7 +137,7 @@ public actor MediaValidationService: MediaValidationServiceProtocol {
         )
     }
 
-    public func quarantineThreat(scanResult: EnhancedSecurityScanResult, originalData: Data) async throws -> QuarantineResult {
+    public func quarantineThreat(scanResult _: EnhancedSecurityScanResult, originalData _: Data) async throws -> QuarantineResult {
         // In a real implementation, this would move the file to a secure quarantine location
         let quarantineId = UUID().uuidString
         let quarantinePath = "/tmp/quarantine/\(quarantineId)"
@@ -202,7 +201,8 @@ public actor MediaValidationService: MediaValidationServiceProtocol {
             let actualDimensions = extractDimensions(from: data, mediaType: .image)
             if let actualDimensions = actualDimensions,
                providedDimensions.width != actualDimensions.width ||
-               providedDimensions.height != actualDimensions.height {
+               providedDimensions.height != actualDimensions.height
+            {
                 issues.append("Dimension mismatch: metadata claims \(providedDimensions.width)x\(providedDimensions.height), actual is \(actualDimensions.width)x\(actualDimensions.height)")
             }
         }
@@ -375,7 +375,7 @@ public actor MediaValidationService: MediaValidationServiceProtocol {
 
     // MARK: - Batch Operations
 
-    public func validateBatch(assets: [MediaAsset], specification: BatchValidationSpec, progressHandler: (@Sendable (BatchValidationProgress) -> Void)?) async throws -> [BatchItemValidationResult] {
+    public func validateBatch(assets: [MediaAsset], specification _: BatchValidationSpec, progressHandler: (@Sendable (BatchValidationProgress) -> Void)?) async throws -> [BatchItemValidationResult] {
         var results: [BatchItemValidationResult] = []
 
         for (index, asset) in assets.enumerated() {
@@ -450,7 +450,7 @@ public actor MediaValidationService: MediaValidationServiceProtocol {
         }
     }
 
-    nonisolated public func validateFileSize(_ fileSize: Int64, _ mediaType: MediaType) -> Bool {
+    public nonisolated func validateFileSize(_ fileSize: Int64, _ mediaType: MediaType) -> Bool {
         let maxSize: Int64
         switch mediaType {
         case .image: maxSize = 10 * 1024 * 1024 // 10MB
@@ -490,7 +490,7 @@ public actor MediaValidationService: MediaValidationServiceProtocol {
         )
     }
 
-    public func validateMediaAsset(_ asset: MediaAsset, _ rules: ValidationRules) async throws -> MediaValidationResult {
+    public func validateMediaAsset(_ asset: MediaAsset, _: ValidationRules) async throws -> MediaValidationResult {
         guard let data = asset.data else {
             return MediaValidationResult(
                 isValid: false,
@@ -529,7 +529,6 @@ public actor MediaValidationService: MediaValidationServiceProtocol {
 // MARK: - Private Helper Methods
 
 private extension MediaValidationService {
-
     func detectMimeType(from data: Data, fileName: String) -> String {
         // Check magic bytes for common formats
         if data.count >= 4 {
@@ -587,7 +586,7 @@ private extension MediaValidationService {
         if data.count >= 4 && data.prefix(4) == Data([0x7F, 0x45, 0x4C, 0x46]) { return true }
         // Check for Mach-O (macOS) executable
         if data.count >= 4 && (data.prefix(4) == Data([0xFE, 0xED, 0xFA, 0xCE]) ||
-                               data.prefix(4) == Data([0xFE, 0xED, 0xFA, 0xCF])) { return true }
+            data.prefix(4) == Data([0xFE, 0xED, 0xFA, 0xCF])) { return true }
 
         return false
     }
@@ -600,7 +599,7 @@ private extension MediaValidationService {
         return suspiciousStrings.contains { dataString.lowercased().contains($0.lowercased()) }
     }
 
-    func extractDimensions(from data: Data, mediaType: MediaType) -> MediaDimensions? {
+    func extractDimensions(from _: Data, mediaType: MediaType) -> MediaDimensions? {
         guard mediaType == .image else { return nil }
 
         // Simplified dimension extraction - in real implementation would use ImageIO
@@ -608,18 +607,18 @@ private extension MediaValidationService {
         return MediaDimensions(width: 1920, height: 1080)
     }
 
-    func extractEXIFData(from data: Data) -> [String: String] {
+    func extractEXIFData(from _: Data) -> [String: String] {
         // Simplified EXIF extraction
         return [
             "Make": "Apple",
             "Model": "iPhone",
             "DateTime": "2024:01:24 12:00:00",
             "GPS_Latitude": "37.7749",
-            "GPS_Longitude": "-122.4194"
+            "GPS_Longitude": "-122.4194",
         ]
     }
 
-    func generateThumbnail(from data: Data) -> Data? {
+    func generateThumbnail(from _: Data) -> Data? {
         // Simplified thumbnail generation
         return Data(repeating: 0x89, count: 1024) // Mock thumbnail data
     }
@@ -641,7 +640,7 @@ private extension MediaValidationService {
         let overallQuality: Double
     }
 
-    func extractColorProfile(from data: Data) -> ColorProfile? {
+    func extractColorProfile(from _: Data) -> ColorProfile? {
         return ColorProfile(
             colorSpace: "sRGB",
             profileName: "sRGB IEC61966-2.1",
@@ -649,7 +648,7 @@ private extension MediaValidationService {
         )
     }
 
-    func extractColorProfileNested(from data: Data) -> EnhancedMetadataResult.ColorProfile? {
+    func extractColorProfileNested(from _: Data) -> EnhancedMetadataResult.ColorProfile? {
         return EnhancedMetadataResult.ColorProfile(
             name: "sRGB IEC61966-2.1",
             colorSpace: "sRGB"
@@ -664,7 +663,7 @@ private extension MediaValidationService {
         )
     }
 
-    func extractDimensionsCGSize(from data: Data, mediaType: MediaType) -> CGSize? {
+    func extractDimensionsCGSize(from _: Data, mediaType: MediaType) -> CGSize? {
         guard mediaType == .image || mediaType == .video else { return nil }
         // Simplified dimension extraction - in real implementation would use ImageIO/AVFoundation
         return CGSize(width: 1920, height: 1080)
@@ -693,7 +692,7 @@ private extension MediaValidationService {
         return data.count < 100 // Very small files are likely corrupted
     }
 
-    func extractColorProfileName(from data: Data) -> String? {
+    func extractColorProfileName(from _: Data) -> String? {
         return "sRGB IEC61966-2.1"
     }
 
@@ -726,7 +725,7 @@ private extension MediaValidationService {
         )
     }
 
-    func calculateImageQuality(_ data: Data) -> ImageQualityMetrics {
+    func calculateImageQuality(_: Data) -> ImageQualityMetrics {
         // Simplified quality calculation
         return ImageQualityMetrics(
             sharpness: 0.8,
@@ -738,17 +737,17 @@ private extension MediaValidationService {
         )
     }
 
-    func estimateVideoDuration(_ data: Data) -> TimeInterval? {
+    func estimateVideoDuration(_: Data) -> TimeInterval? {
         // Simplified duration estimation
         return 30.0 // 30 seconds default
     }
 
-    func estimateVideoBitrate(_ data: Data) -> Int? {
+    func estimateVideoBitrate(_: Data) -> Int? {
         // Simplified bitrate estimation
         return 5000 // 5000 kbps default
     }
 
-    func calculateOverallScore(results: [String: Any]) -> Double {
+    func calculateOverallScore(results _: [String: Any]) -> Double {
         // Simple scoring algorithm
         return 0.85 // 85% default score
     }
@@ -772,7 +771,7 @@ private extension Data {
 
 // MARK: - DependencyKey Conformance
 
-extension MediaValidationService {
-    public static let liveValue: any MediaValidationServiceProtocol = MediaValidationService()
-    public static let testValue: any MediaValidationServiceProtocol = TestMediaValidationService()
+public extension MediaValidationService {
+    static let liveValue: any MediaValidationServiceProtocol = MediaValidationService()
+    static let testValue: any MediaValidationServiceProtocol = TestMediaValidationService()
 }

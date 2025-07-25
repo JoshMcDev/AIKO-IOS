@@ -17,9 +17,9 @@ public struct NavigationServiceClient: Sendable {
     }
 }
 
-extension NavigationServiceClient {
-    public static let testValue = Self()
-    public static let previewValue = Self(
+public extension NavigationServiceClient {
+    static let testValue = Self()
+    static let previewValue = Self(
         supportsNavigationStack: { true },
         defaultNavigationStyle: { .stack },
         supportsNavigationBarDisplayMode: { true }

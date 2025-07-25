@@ -152,8 +152,8 @@ public struct DocumentScannerClient: Sendable {
 
 // MARK: - Dependency Registration
 
-extension DocumentScannerClient {
-    public static let liveValue: Self = .init(
+public extension DocumentScannerClient {
+    static let liveValue: Self = .init(
         scan: {
             ScannedDocument(
                 pages: [
@@ -196,7 +196,7 @@ extension DocumentScannerClient {
         saveToDocumentPipeline: { _ in }
     )
 
-    public static let testValue: Self = .init(
+    static let testValue: Self = .init(
         scan: {
             ScannedDocument(
                 pages: [

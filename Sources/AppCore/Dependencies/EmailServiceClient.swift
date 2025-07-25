@@ -21,6 +21,6 @@ public struct EmailServiceClient: Sendable {
     }
 }
 
-extension EmailServiceClient {
-    public static let liveValue: Self = .init()
+public extension EmailServiceClient {
+    static let liveValue: Self = .init()
 }

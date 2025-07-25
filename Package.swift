@@ -121,6 +121,12 @@ let package = Package(
                 .copy("Resources/Forms/SF26_Form.md"),
                 .copy("Resources/Forms/SF44_Form.md"),
                 .copy("Resources/Forms/DD1155_Form.md"),
+                // LFM2 Model Resources (conditionally included based on build configuration)
+                // Note: These large model files are excluded by default to prevent Xcode indexing issues
+                // Uncomment for production builds that need the actual model files:
+                // .copy("Resources/Models/LFM2-700M-Unsloth-XL-GraphRAG.mlmodel"),
+                // .copy("Resources/Models/LFM2-700M-Q6K.gguf"),
+                // .copy("Resources/Models/LFM2-700M.mlmodel"),
             ],
             swiftSettings: [
                 .unsafeFlags(["-strict-concurrency=complete"]),
@@ -151,6 +157,14 @@ let package = Package(
                 "AppCore",
             ],
             path: "Tests/AIKOmacOSTests"
+        ),
+        .testTarget(
+            name: "GraphRAGTests",
+            dependencies: [
+                "GraphRAG",
+                "AppCore",
+            ],
+            path: "Tests/GraphRAGTests"
         ),
         .testTarget(
             name: "AIKOTests",

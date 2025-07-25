@@ -20,6 +20,6 @@ public struct ClipboardServiceClient: Sendable {
     }
 }
 
-extension ClipboardServiceClient {
-    public static let liveValue: Self = .init()
+public extension ClipboardServiceClient {
+    static let liveValue: Self = .init()
 }

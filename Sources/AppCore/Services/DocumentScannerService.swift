@@ -45,9 +45,9 @@ public final class DocumentScannerServiceImpl: ObservableObject {
     // MARK: - Initialization
 
     public init() {
-        self.imageProcessor = nil
-        self.scannerClient = nil
-        self.uuidGenerator = UUID.init
+        imageProcessor = nil
+        scannerClient = nil
+        uuidGenerator = UUID.init
         logger.info("DocumentScannerService initialized")
         loadPerformanceInsights()
     }

@@ -10,8 +10,8 @@ public struct WorkflowEngineClient: Sendable {
     public var generatePrompts: @Sendable (WorkflowContext) async throws -> [SuggestedPrompt]
 }
 
-extension WorkflowEngineClient {
-    public static let testValue = Self(
+public extension WorkflowEngineClient {
+    static let testValue = Self(
         startWorkflow: { _ in WorkflowContext() },
         loadWorkflow: { _ in WorkflowContext() },
         updateWorkflowState: { _, state in WorkflowContext(currentState: state) },

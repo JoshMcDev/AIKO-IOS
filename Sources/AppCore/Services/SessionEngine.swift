@@ -258,9 +258,9 @@ public actor SessionEngine {
 
 // MARK: - Dependency Registration
 
-extension SessionEngine {
-    public static let liveValue: SessionEngine = .init()
-    public static let testValue: SessionEngine = .init()
+public extension SessionEngine {
+    static let liveValue: SessionEngine = .init()
+    static let testValue: SessionEngine = .init()
 }
 
 // MARK: - Session Storage

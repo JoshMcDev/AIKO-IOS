@@ -51,8 +51,8 @@ public struct DependencyValidation: Equatable, Sendable {
 
 // MARK: - Document Dependency Definitions
 
-extension DocumentDependencyService {
-    public nonisolated static var liveValue: DocumentDependencyService {
+public extension DocumentDependencyService {
+    nonisolated static var liveValue: DocumentDependencyService {
         // Define the dependency graph
         let dependencyGraph = buildDependencyGraph()
 

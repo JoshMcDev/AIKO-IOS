@@ -6,8 +6,8 @@ public struct RequirementAnalyzerClient: Sendable {
     public var enhancePrompt: @Sendable (String) async throws -> String
 }
 
-extension RequirementAnalyzerClient {
-    public static let testValue = Self(
+public extension RequirementAnalyzerClient {
+    static let testValue = Self(
         analyzeRequirements: { _ in ("", []) },
         analyzeDocumentContent: { _, _ in ("", []) },
         enhancePrompt: { _ in "" }

@@ -36,14 +36,15 @@ public enum StandardTemplateError: Error, LocalizedError {
 
 // MARK: - Dependency Implementation
 
-extension StandardTemplateService {
-    public static var liveValue: StandardTemplateService {
+public extension StandardTemplateService {
+    static var liveValue: StandardTemplateService {
         StandardTemplateService(
             loadTemplate: { documentType in
                 let templateFileName
 
                     // Map document type to template file name
-                    = switch documentType {
+                    = switch documentType
+                {
                 case .sow:
                     "SOW"
                 case .pws:
@@ -123,7 +124,7 @@ extension StandardTemplateService {
         )
     }
 
-    public static var testValue: StandardTemplateService {
+    static var testValue: StandardTemplateService {
         StandardTemplateService(
             loadTemplate: { documentType in
                 // Return a simple test template

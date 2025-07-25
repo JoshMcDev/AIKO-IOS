@@ -15,9 +15,9 @@ public struct BlurEffectServiceClient: Sendable {
         supportsNativeBlur: @escaping @Sendable () -> Bool = { false },
         recommendedBlurStyle: @escaping @Sendable () -> Material = { .ultraThin }
     ) {
-        self._createBlurredBackground = createBlurredBackground
-        self._supportsNativeBlur = supportsNativeBlur
-        self._recommendedBlurStyle = recommendedBlurStyle
+        _createBlurredBackground = createBlurredBackground
+        _supportsNativeBlur = supportsNativeBlur
+        _recommendedBlurStyle = recommendedBlurStyle
     }
 }
 
@@ -35,8 +35,8 @@ extension BlurEffectServiceClient: BlurEffectServiceProtocol {
     }
 }
 
-extension BlurEffectServiceClient {
-    public static let liveValue: Self = .init()
+public extension BlurEffectServiceClient {
+    static let liveValue: Self = .init()
 }
 
 // MARK: - Environment Extension

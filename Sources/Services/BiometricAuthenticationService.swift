@@ -29,8 +29,8 @@ public struct BiometricAuthenticationService: Sendable {
     }
 }
 
-extension BiometricAuthenticationService {
-    public static var liveValue: BiometricAuthenticationService {
+public extension BiometricAuthenticationService {
+    static var liveValue: BiometricAuthenticationService {
         BiometricAuthenticationService(
             biometricType: {
                 let context = LAContext()
@@ -79,14 +79,14 @@ extension BiometricAuthenticationService {
         )
     }
 
-    public static var testValue: BiometricAuthenticationService {
+    static var testValue: BiometricAuthenticationService {
         BiometricAuthenticationService(
             biometricType: { .faceID },
             authenticate: { _ in true }
         )
     }
 
-    public static var previewValue: BiometricAuthenticationService {
+    static var previewValue: BiometricAuthenticationService {
         BiometricAuthenticationService(
             biometricType: { .none },
             authenticate: { _ in true }

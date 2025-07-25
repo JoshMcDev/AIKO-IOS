@@ -56,7 +56,7 @@ actor MemoryMonitor {
         }
 
         logger.info("🚀 Starting memory monitoring (interval: \(self.updateInterval)s)")
-        self.isMonitoring = true
+        isMonitoring = true
 
         monitoringTask = Task {
             while !Task.isCancelled {
@@ -76,9 +76,9 @@ actor MemoryMonitor {
     func stopMonitoring() {
         logger.info("🛑 Stopping memory monitoring")
 
-        self.monitoringTask?.cancel()
-        self.monitoringTask = nil
-        self.isMonitoring = false
+        monitoringTask?.cancel()
+        monitoringTask = nil
+        isMonitoring = false
     }
 
     /// Get current memory status (immediate read)
@@ -160,7 +160,7 @@ actor MemoryMonitor {
         )
 
         // Update on main actor
-        self.currentMemoryStatus = newStatus
+        currentMemoryStatus = newStatus
 
         // Log significant changes
         logMemoryChanges(newStatus: newStatus, usagePercentage: usagePercentage)

@@ -499,8 +499,8 @@ public enum DiskCacheError: Error, LocalizedError {
 
 // MARK: - Dependency Registration
 
-extension DiskCache {
-    public static var liveValue: DiskCache {
+public extension DiskCache {
+    static var liveValue: DiskCache {
         do {
             return try DiskCache()
         } catch {

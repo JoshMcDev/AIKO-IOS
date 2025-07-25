@@ -132,8 +132,8 @@ public struct MarketResearchData: Equatable {
 
 // MARK: - Implementation
 
-extension FARPart12ComplianceService {
-    public static var liveValue: FARPart12ComplianceService {
+public extension FARPart12ComplianceService {
+    static var liveValue: FARPart12ComplianceService {
         FARPart12ComplianceService(
             validateCommercialItem: { content, _ in
                 let lowercaseContent = content.lowercased()

@@ -509,7 +509,7 @@ public enum ParallelDocumentGeneratorError: Error {
 
 // MARK: - Dependency Key
 
-public struct ParallelDocumentGeneratorKey {
+public enum ParallelDocumentGeneratorKey {
     public nonisolated static let liveValue = ParallelDocumentGenerator()
     public nonisolated static let testValue = ParallelDocumentGenerator()
 }
@@ -540,24 +540,24 @@ public struct DocumentGenerationPreloader: Sendable {
     }
 
     public func preloadData(
-        for documentTypes: [DocumentType],
-        dfDocumentTypes: [DFDocumentType]
+        for _: [DocumentType],
+        dfDocumentTypes _: [DFDocumentType]
     ) async throws -> PreloadedData {
         return PreloadedData()
     }
 
     public func preloadCachedDocuments(
-        for documentTypes: [DocumentType],
-        requirements: String,
-        profile: UserProfile?
+        for _: [DocumentType],
+        requirements _: String,
+        profile _: UserProfile?
     ) async throws -> [DocumentType: String] {
         return [:]
     }
 
     public func preloadCachedDFDocuments(
-        for dfDocumentTypes: [DFDocumentType],
-        requirements: String,
-        profile: UserProfile?
+        for _: [DFDocumentType],
+        requirements _: String,
+        profile _: UserProfile?
     ) async throws -> [DFDocumentType: String] {
         return [:]
     }

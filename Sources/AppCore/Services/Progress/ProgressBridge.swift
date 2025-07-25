@@ -184,7 +184,7 @@ public class ProgressSession: @unchecked Sendable {
 
 // MARK: - Dependency Registration
 
-extension ProgressBridge {
-    public static let liveValue: ProgressBridge = .init()
-    public static let testValue: ProgressBridge = .init()
+public extension ProgressBridge {
+    static let liveValue: ProgressBridge = .init()
+    static let testValue: ProgressBridge = .init()
 }

@@ -155,5 +155,5 @@ public extension EnvironmentValues {
 }
 
 private struct FontScalingServiceEnvironmentKey: EnvironmentKey {
-    static let defaultValue: FontScalingServiceClient = FontScalingServiceClient()
+    static let defaultValue: FontScalingServiceClient = .init()
 }

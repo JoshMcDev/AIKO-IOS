@@ -8,14 +8,14 @@ public struct UserProfileClient: Sendable {
     public var hasProfile: @Sendable () async -> Bool = { false }
 }
 
-extension UserProfileClient {
-    public static let testValue = Self(
+public extension UserProfileClient {
+    static let testValue = Self(
         loadProfile: { nil },
         saveProfile: { _ in },
         deleteProfile: {}
     )
 
-    public static let previewValue = Self(
+    static let previewValue = Self(
         loadProfile: { nil },
         saveProfile: { _ in },
         deleteProfile: {},

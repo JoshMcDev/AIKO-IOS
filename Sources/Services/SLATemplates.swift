@@ -143,8 +143,8 @@ public struct SLAValidation: Sendable {
 
 // MARK: - Live Value
 
-extension SLATemplateService {
-    public static var liveValue: SLATemplateService {
+public extension SLATemplateService {
+    static var liveValue: SLATemplateService {
         SLATemplateService(
             loadTemplate: { industry in
                 let telecommunicationsSLATemplate = SLATemplate(

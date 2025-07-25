@@ -231,7 +231,8 @@ public class FARUpdateService: ObservableObject {
             // Check if there are new updates since last check
             let newUpdates = history.filter { update in
                 if let dateString = update["effectiveDate"] as? String,
-                   let date = ISO8601DateFormatter().date(from: dateString) {
+                   let date = ISO8601DateFormatter().date(from: dateString)
+                {
                     return date > lastCheck
                 }
                 return false
@@ -442,7 +443,8 @@ public class FARUpdateService: ObservableObject {
     private func loadUpdateStatus() {
         // Load from UserDefaults or local storage
         if let data = UserDefaults.standard.data(forKey: "FARUpdateStatus"),
-           let status = try? JSONDecoder().decode(FARUpdateStatus.self, from: data) {
+           let status = try? JSONDecoder().decode(FARUpdateStatus.self, from: data)
+        {
             updateStatus = status
         }
     }

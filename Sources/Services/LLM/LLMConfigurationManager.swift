@@ -236,20 +236,23 @@ final class LLMConfigurationManager: ObservableObject, @unchecked Sendable {
     private func loadConfigurations() {
         // Load provider configurations
         if let data = UserDefaults.standard.data(forKey: UserDefaultsKeys.providerConfigs),
-           let configs = try? JSONDecoder().decode([LLMProvider: LLMProviderConfig].self, from: data) {
+           let configs = try? JSONDecoder().decode([LLMProvider: LLMProviderConfig].self, from: data)
+        {
             configuredProviders = configs
         }
 
         // Load active provider
         if let activeProviderString = UserDefaults.standard.string(forKey: UserDefaultsKeys.activeProvider),
            let activeProvider = LLMProvider(rawValue: activeProviderString),
-           let config = configuredProviders[activeProvider] {
+           let config = configuredProviders[activeProvider]
+        {
             activeProviderConfig = config
         }
 
         // Load provider priority
         if let data = UserDefaults.standard.data(forKey: UserDefaultsKeys.providerPriority),
-           let priority = try? JSONDecoder().decode(LLMProviderPriority.self, from: data) {
+           let priority = try? JSONDecoder().decode(LLMProviderPriority.self, from: data)
+        {
             providerPriority = priority
         }
     }
@@ -313,7 +316,7 @@ public struct LLMConfigurationClient: Sendable {
     public var clearAllConfigurations: @Sendable () async throws -> Void
 
     // MARK: - Initializer
-    
+
     public init(
         configureProvider: @escaping @Sendable (LLMProvider, String, LLMProviderConfig?) async throws -> Void,
         removeProvider: @escaping @Sendable (LLMProvider) async throws -> Void,
@@ -339,8 +342,8 @@ public struct LLMConfigurationClient: Sendable {
     }
 }
 
-extension LLMConfigurationClient {
-    public static let liveValue = Self(
+public extension LLMConfigurationClient {
+    static let liveValue = Self(
         configureProvider: { provider, apiKey, config in
             try await MainActor.run {
                 try LLMConfigurationManager.shared.configureProvider(provider, apiKey: apiKey, config: config)
@@ -402,5 +405,5 @@ public extension EnvironmentValues {
 }
 
 public struct LLMConfigurationEnvironmentKey: EnvironmentKey {
-    public static let defaultValue: LLMConfigurationClient = LLMConfigurationClient.liveValue
+    public static let defaultValue: LLMConfigurationClient = .liveValue
 }

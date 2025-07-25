@@ -19,6 +19,6 @@ public struct FileServiceClient: Sendable {
     }
 }
 
-extension FileServiceClient {
-    public static let liveValue: Self = .init()
+public extension FileServiceClient {
+    static let liveValue: Self = .init()
 }

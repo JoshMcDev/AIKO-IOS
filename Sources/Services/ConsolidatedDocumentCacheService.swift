@@ -15,10 +15,10 @@ public final class ConsolidatedDocumentCacheService {
     private let unifiedInterface: CacheUnifiedInterface
 
     public init() {
-        self.memoryCache = NSCache<NSString, CachedDocument>()
-        self.encryptionManager = CacheEncryptionManager()
-        self.adaptiveOptimizer = CacheAdaptiveOptimizer()
-        self.unifiedInterface = CacheUnifiedInterface()
+        memoryCache = NSCache<NSString, CachedDocument>()
+        encryptionManager = CacheEncryptionManager()
+        adaptiveOptimizer = CacheAdaptiveOptimizer()
+        unifiedInterface = CacheUnifiedInterface()
 
         setupCache()
     }
@@ -82,7 +82,7 @@ private final class CachedDocument: @unchecked Sendable {
     init<T: Codable>(content: T, encrypted: Bool) throws {
         self.content = try JSONEncoder().encode(content)
         self.encrypted = encrypted
-        self.timestamp = Date()
+        timestamp = Date()
     }
 }
 
@@ -98,7 +98,7 @@ private struct CacheEncryptionManager: Sendable {
 }
 
 private struct CacheAdaptiveOptimizer: Sendable {
-    func optimizeForKey(_ key: String) async {
+    func optimizeForKey(_: String) async {
         // Optimization logic placeholder
     }
 }

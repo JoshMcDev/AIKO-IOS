@@ -75,5 +75,5 @@ public extension EnvironmentValues {
 }
 
 private struct AccessibilityServiceEnvironmentKey: EnvironmentKey {
-    static let defaultValue: AccessibilityServiceClient = AccessibilityServiceClient()
+    static let defaultValue: AccessibilityServiceClient = .init()
 }

@@ -27,6 +27,6 @@ public struct ImageLoaderClient: Sendable {
     }
 }
 
-extension ImageLoaderClient {
-    public static let liveValue: Self = .init()
+public extension ImageLoaderClient {
+    static let liveValue: Self = .init()
 }

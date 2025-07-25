@@ -779,8 +779,8 @@ enum FARError: LocalizedError, Sendable {
 
 // MARK: - Dependency Implementation
 
-extension FARComplianceManager {
-    public static var liveValue: FARComplianceManager {
+public extension FARComplianceManager {
+    static var liveValue: FARComplianceManager {
         let storage = Task {
             try await FARComplianceStorage()
         }

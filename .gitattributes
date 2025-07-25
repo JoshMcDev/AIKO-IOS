@@ -1,1 +1,21 @@
+# Core ML model files (managed via Git LFS due to large size)
 *.mlmodel filter=lfs diff=lfs merge=lfs -text
+
+# GGUF model files (managed via Git LFS due to large size)
+*.gguf filter=lfs diff=lfs merge=lfs -text
+
+# Specific LFM2 model files
+Sources/Resources/Models/LFM2-*.mlmodel filter=lfs diff=lfs merge=lfs -text
+Sources/Resources/Models/LFM2-*.gguf filter=lfs diff=lfs merge=lfs -text
+
+# Other large model formats that might be added in the future
+*.onnx filter=lfs diff=lfs merge=lfs -text
+*.tflite filter=lfs diff=lfs merge=lfs -text
+*.bin filter=lfs diff=lfs merge=lfs -text
+*.safetensors filter=lfs diff=lfs merge=lfs -text
+
+# Model metadata and configuration files (not LFS - these are small text files)
+*.json text
+*.yaml text
+*.yml text
+*.md text

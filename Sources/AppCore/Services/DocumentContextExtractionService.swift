@@ -13,7 +13,7 @@ public protocol DocumentContextExtractionService: Sendable {
 
 // MARK: - Dependency Registration
 
-public struct DocumentContextExtractionServiceKey {
+public enum DocumentContextExtractionServiceKey {
     public static var liveValue: DocumentContextExtractionService {
         LiveDocumentContextExtractionService()
     }

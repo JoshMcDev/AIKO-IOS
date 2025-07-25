@@ -83,7 +83,8 @@
 
             // Get the current window and present the picker
             if let window = NSApplication.shared.keyWindow,
-               let contentView = window.contentView {
+               let contentView = window.contentView
+            {
                 let rect = NSRect(x: contentView.bounds.midX - 50, y: contentView.bounds.midY, width: 100, height: 50)
                 picker.show(relativeTo: rect, of: contentView, preferredEdge: .minY)
             }

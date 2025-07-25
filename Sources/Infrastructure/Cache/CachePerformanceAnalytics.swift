@@ -842,8 +842,8 @@ extension CachePerformanceAnalytics {
 
 // MARK: - Dependency Registration
 
-extension CachePerformanceAnalytics {
-    public static var liveValue: CachePerformanceAnalytics {
+public extension CachePerformanceAnalytics {
+    static var liveValue: CachePerformanceAnalytics {
         CachePerformanceAnalytics()
     }
 }

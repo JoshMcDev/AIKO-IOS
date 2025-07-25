@@ -1,9 +1,8 @@
-import XCTest
 @testable import AppCore
+import XCTest
 
 /// Basic functionality test to verify core components compile and work
 final class BasicFunctionalityTest: XCTestCase {
-
     func testBasicDocumentTypeEnum() {
         // Test that DocumentType enum is accessible and works
         let docType = DocumentType.sow

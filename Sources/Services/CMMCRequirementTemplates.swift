@@ -173,8 +173,8 @@ public struct ChecklistItem: Sendable {
 
 // MARK: - Live Value
 
-extension CMMCRequirementTemplates {
-    public static var liveValue: CMMCRequirementTemplates {
+public extension CMMCRequirementTemplates {
+    static var liveValue: CMMCRequirementTemplates {
         CMMCRequirementTemplates(
             loadTemplate: { domain, level in
                 switch (domain, level) {

@@ -8,8 +8,8 @@ public struct DocumentChainManagerClient: Sendable {
     public var getNextInChain: @Sendable (UUID) async throws -> DocumentType?
 }
 
-extension DocumentChainManagerClient {
-    public static let testValue = Self(
+public extension DocumentChainManagerClient {
+    static let testValue = Self(
         createChain: { acquisitionId, documentOrder in DocumentChainProgress(acquisitionId: acquisitionId, documentOrder: documentOrder) },
         validateChain: { _ in ChainValidation(isValid: true) },
         updateChainProgress: { acquisitionId, _, _ in DocumentChainProgress(acquisitionId: acquisitionId, documentOrder: []) },

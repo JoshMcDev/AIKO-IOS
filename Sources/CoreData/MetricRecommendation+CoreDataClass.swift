@@ -26,7 +26,8 @@ public class MetricRecommendationEntity: NSManagedObject {
         // Decode expected impact
         var metricImprovements: [String: Double] = [:]
         if let impactData = expectedImpactData,
-           let impactDict = try? JSONDecoder().decodeDictionary(from: impactData) {
+           let impactDict = try? JSONDecoder().decodeDictionary(from: impactData)
+        {
             metricImprovements = (impactDict["metricImprovements"] as? [String: Double]) ?? [:]
         }
 

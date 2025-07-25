@@ -1,5 +1,5 @@
 #if os(iOS)
-import UIKit
+    import UIKit
 #endif
 import AppCore
 import SwiftUI
@@ -7,21 +7,21 @@ import SwiftUI
 // MARK: - Color Compatibility
 
 #if os(iOS)
-private var backgroundColorCompat: Color {
-    Color(UIColor.systemBackground)
-}
+    private var backgroundColorCompat: Color {
+        Color(UIColor.systemBackground)
+    }
 
-private var strokeColorCompat: Color {
-    Color(UIColor.systemGray4)
-}
+    private var strokeColorCompat: Color {
+        Color(UIColor.systemGray4)
+    }
 #else
-private var backgroundColorCompat: Color {
-    Color.primary.opacity(0.05)
-}
+    private var backgroundColorCompat: Color {
+        Color.primary.opacity(0.05)
+    }
 
-private var strokeColorCompat: Color {
-    Color.gray.opacity(0.3)
-}
+    private var strokeColorCompat: Color {
+        Color.gray.opacity(0.3)
+    }
 #endif
 
 /// Main progress indicator view that switches between different presentation styles

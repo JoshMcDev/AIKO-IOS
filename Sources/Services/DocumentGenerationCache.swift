@@ -475,7 +475,7 @@ public struct DocumentGenerationCacheStatistics {
 
 // MARK: - Dependency Key
 
-public struct DocumentGenerationCacheKey {
+public enum DocumentGenerationCacheKey {
     public static let liveValue = DocumentGenerationCache()
     public static let testValue = DocumentGenerationCache()
 }

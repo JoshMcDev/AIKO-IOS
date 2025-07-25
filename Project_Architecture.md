@@ -643,7 +643,156 @@ The TCA→SwiftUI migration enhances the existing architecture while preserving:
 
 ---
 
-**Document Status**: ✅ **ARCHITECTURE APPROVED** (Including TCA→SwiftUI Migration)  
-**Next Phase**: Begin TCA→SwiftUI Migration Week 0 preparation (Codegen scripts & analysis)  
-**Implementation Authority**: VanillaIce consensus-validated implementation plan  
-**Review Date**: Weekly migration progress meetings with performance validation gates
+## GraphRAG Integration Architecture (Weeks 9-10)
+
+### GraphRAG Intelligence System Integration
+
+**Status**: ✅ **CONSENSUS-APPROVED IMPLEMENTATION READY**  
+**VanillaIce Validation**: 5/5 models approved (consensus-2025-07-25-13-19-42)  
+**Implementation Plan**: Execute_unified_refactoring_master_plan_Weeks_9-10_GraphRAG_Integration_Testing_implementation.md
+
+#### Core GraphRAG Components
+
+```mermaid
+graph TB
+    subgraph "GraphRAG Intelligence Layer (Consensus-Approved 🆕)"
+        LFM2[LFM2Service ✅<br/>149MB Core ML Model] --> OBI[ObjectBox Vector DB<br/>Dual-Namespace]
+        RP[RegulationProcessor<br/>HTML→Chunks→Embeddings] --> OBI
+        US[UnifiedSearchService<br/>Cross-Domain Search] --> OBI
+        UWT[UserWorkflowTracker<br/>Privacy-Preserving] --> OBI
+    end
+    
+    subgraph "AI Core Engines Integration (Existing ✅)"
+        OBI --> AO[AIOrchestrator]
+        AO --> DE[DocumentEngine]
+        AO --> PR[PromptRegistry]
+        AO --> CV[ComplianceValidator]
+        AO --> PE[PersonalizationEngine]
+    end
+    
+    subgraph "SwiftUI Integration (TCA Migration Foundation ✅)"
+        SV[SemanticSearchView] --> US
+        CV[ChatView] --> US
+        DV[DocumentView] --> US
+    end
+    
+    subgraph "Data Sources (Government Contracting)"
+        REG[FAR/DFARS Regulations<br/>1000+ Files] --> RP
+        USER[User Workflow Data<br/>Encrypted Local] --> UWT
+    end
+```
+
+#### GraphRAG Service Architecture
+
+```swift
+// GraphRAG Integration with AI Core Engines
+@MainActor
+public final class AIOrchestrator: ObservableObject {
+    // Existing core engines ✅
+    private let documentEngine: DocumentEngine
+    private let promptRegistry: PromptRegistry
+    private let complianceValidator: ComplianceValidator
+    
+    // New GraphRAG integration 🆕
+    private let graphRAGService: UnifiedSearchService
+    private let semanticIndex: ObjectBoxSemanticIndex
+    
+    // Enhanced document generation with semantic context
+    public func generateDocumentWithSemanticContext(
+        type: DocumentType,
+        requirements: String,
+        context: AcquisitionContext
+    ) async throws -> GeneratedDocument {
+        // 1. Search for relevant regulations using GraphRAG
+        let regulationContext = try await graphRAGService.search(
+            query: requirements,
+            domains: [.regulations],
+            limit: 5
+        )
+        
+        // 2. Find user workflow precedents
+        let userContext = try await graphRAGService.search(
+            query: requirements,
+            domains: [.userHistory],
+            limit: 3
+        )
+        
+        // 3. Generate with enhanced semantic context
+        return try await documentEngine.generateWithContext(
+            type: type,
+            requirements: requirements,
+            regulationContext: regulationContext,
+            userPrecedents: userContext,
+            context: context
+        )
+    }
+}
+```
+
+#### Performance Targets (Consensus-Validated)
+
+| Component | Target | Consensus Status | Validation |
+|-----------|--------|------------------|------------|
+| **LFM2 Embedding** | <2s per 512-token chunk | ✅ Approved | Performance monitoring |
+| **Vector Search** | <1s similarity search | ✅ Approved | Load testing 1000+ regs |
+| **Memory Usage** | <800MB peak | ✅ Approved | Real-time monitoring |
+| **Test Coverage** | >80% GraphRAG | ✅ Approved | Automated validation |
+
+#### Privacy-First Architecture
+
+```swift
+// Privacy-preserving user workflow tracking
+public actor UserWorkflowTracker: Sendable {
+    // Consensus-enhanced privacy protection
+    private let encryptionManager: LocalEncryptionManager
+    private let privacyAuditor: PrivacyComplianceAuditor
+    
+    // On-device processing with zero external transmission
+    public func trackDocumentGeneration(
+        document: GeneratedDocument,
+        context: AcquisitionContext
+    ) async throws {
+        // Privacy audit before processing
+        let compliance = await privacyAuditor.auditDocumentData(document)
+        guard compliance.isCompliant else {
+            throw UserWorkflowError.privacyComplianceViolation
+        }
+        
+        // Encrypt and store locally
+        let encryptedData = try await encryptionManager.encrypt(document.metadata)
+        try await semanticIndex.storeUserWorkflowEmbedding(
+            content: document.sanitizedContent,
+            embedding: embedding,
+            encryptedMetadata: encryptedData
+        )
+    }
+}
+```
+
+#### Government Contracting Specialization
+
+**Consensus Enhancement**: *"Regulation processing pipeline adequately handles government contracting requirements"*
+
+- **FAR/DFARS Processing**: Smart chunking preserving section boundaries
+- **Metadata Extraction**: Regulation references, compliance requirements, acquisition phases
+- **Contracting Officer Guidance**: Domain-specific expertise integration
+- **Socioeconomic Programs**: Automated identification and context enhancement
+
+#### Integration with Existing Architecture
+
+GraphRAG enhances the existing 5 Core Engines without disruption:
+
+1. **DocumentEngine**: Enhanced with semantic regulation context
+2. **PromptRegistry**: Optimized with government contracting patterns  
+3. **ComplianceValidator**: Augmented with regulation cross-references
+4. **PersonalizationEngine**: Enhanced with user workflow precedents
+5. **AIOrchestrator**: Coordinated semantic search across all operations
+
+**Consensus Validation**: *"Integration strategy is technically sound and maintains architectural consistency"*
+
+---
+
+**Document Status**: ✅ **ARCHITECTURE APPROVED** (Including GraphRAG Integration)  
+**Next Phase**: Weeks 9-10 GraphRAG Implementation → Weeks 11-12 Production Polish  
+**Implementation Authority**: VanillaIce consensus-validated with 5/5 model approval  
+**Review Date**: Weekly implementation progress with performance validation gates

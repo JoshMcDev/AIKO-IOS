@@ -26,6 +26,6 @@ public struct KeyboardServiceClient: Sendable {
     }
 }
 
-extension KeyboardServiceClient {
-    public static let liveValue: Self = .init()
+public extension KeyboardServiceClient {
+    static let liveValue: Self = .init()
 }

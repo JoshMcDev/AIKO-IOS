@@ -14,6 +14,6 @@ public struct TextFieldServiceClient: Sendable {
     }
 }
 
-extension TextFieldServiceClient {
-    public static let testValue = Self()
+public extension TextFieldServiceClient {
+    static let testValue = Self()
 }

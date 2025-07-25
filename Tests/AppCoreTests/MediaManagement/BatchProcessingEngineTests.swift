@@ -1,9 +1,9 @@
-import XCTest
 @testable import AppCore
+import XCTest
 
 @available(iOS 16.0, *)
 final class BatchProcessingEngineTests: XCTestCase {
-    private var batchEngine: BatchProcessingEngine!
+    private var batchEngine: BatchProcessingEngine?
 
     override func setUp() async throws {
         try await super.setUp()
@@ -11,7 +11,9 @@ final class BatchProcessingEngineTests: XCTestCase {
     }
 
     override func tearDown() async throws {
-        await batchEngine.clearCompletedOperations()
+        if let engine = batchEngine {
+            await engine.clearCompletedOperations()
+        }
         batchEngine = nil
         try await super.tearDown()
     }
@@ -20,6 +22,11 @@ final class BatchProcessingEngineTests: XCTestCase {
 
     func testStartBatchOperation() async throws {
         // Given
+        guard let engine = batchEngine else {
+            XCTFail("BatchEngine not initialized")
+            return
+        }
+
         let assetIds = [UUID(), UUID(), UUID()]
         let operation = BatchOperation(
             type: .compress,
@@ -28,7 +35,7 @@ final class BatchProcessingEngineTests: XCTestCase {
         )
 
         // When
-        let handle = try await batchEngine.startBatchOperation(operation)
+        let handle = try await engine.startBatchOperation(operation)
 
         // Then
         XCTAssertEqual(handle.operationId, operation.id)
@@ -37,19 +44,24 @@ final class BatchProcessingEngineTests: XCTestCase {
         XCTAssertTrue(handle.startTime <= Date())
 
         // Verify operation status
-        let status = await batchEngine.getOperationStatus(handle)
+        let status = await engine.getOperationStatus(handle)
         XCTAssertEqual(status.activeOperations.count, 1)
         XCTAssertEqual(status.totalItemsProcessing, 3)
     }
 
     func testOperationProgress() async throws {
         // Given
+        guard let engine = batchEngine else {
+            XCTFail("BatchEngine not initialized")
+            return
+        }
+
         let assetIds = [UUID(), UUID()]
         let operation = BatchOperation(type: .validate, assetIds: assetIds)
-        let handle = try await batchEngine.startBatchOperation(operation)
+        let handle = try await engine.startBatchOperation(operation)
 
         // When
-        let progress = await batchEngine.getOperationProgress(handle)
+        let progress = await engine.getOperationProgress(handle)
 
         // Then
         XCTAssertEqual(progress.operationId, operation.id)
@@ -59,34 +71,44 @@ final class BatchProcessingEngineTests: XCTestCase {
 
     func testPauseOperation() async throws {
         // Given
+        guard let engine = batchEngine else {
+            XCTFail("BatchEngine not initialized")
+            return
+        }
+
         let operation = BatchOperation(type: .ocr, assetIds: [UUID(), UUID(), UUID()])
-        let handle = try await batchEngine.startBatchOperation(operation)
+        let handle = try await engine.startBatchOperation(operation)
 
         // When
-        try await batchEngine.pauseOperation(handle)
+        try await engine.pauseOperation(handle)
 
         // Then
-        let progress = await batchEngine.getOperationProgress(handle)
+        let progress = await engine.getOperationProgress(handle)
         XCTAssertEqual(progress.status, .paused)
         XCTAssertEqual(progress.message, "Operation paused")
     }
 
     func testResumeOperation() async throws {
         // Given - Use OCR operation with multiple assets (2 seconds each, so longer total time)
+        guard let engine = batchEngine else {
+            XCTFail("BatchEngine not initialized")
+            return
+        }
+
         let operation = BatchOperation(type: .ocr, assetIds: [UUID(), UUID()])
-        let handle = try await batchEngine.startBatchOperation(operation)
+        let handle = try await engine.startBatchOperation(operation)
 
         // Pause immediately to prevent completion
         try await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
-        try await batchEngine.pauseOperation(handle)
-        let pausedProgress = await batchEngine.getOperationProgress(handle)
+        try await engine.pauseOperation(handle)
+        let pausedProgress = await engine.getOperationProgress(handle)
         XCTAssertEqual(pausedProgress.status, .paused)
 
         // When
-        try await batchEngine.resumeOperation(handle)
+        try await engine.resumeOperation(handle)
 
         // Then - Check that resume worked (status is either running or completed)
-        let resumedProgress = await batchEngine.getOperationProgress(handle)
+        let resumedProgress = await engine.getOperationProgress(handle)
         XCTAssertTrue([.running, .completed].contains(resumedProgress.status), "Operation should be running or completed after resume")
         // The message may be "Operation resumed" or "Processing item X" or "Operation completed"
         XCTAssertNotEqual(resumedProgress.message, "Operation paused")
@@ -94,14 +116,19 @@ final class BatchProcessingEngineTests: XCTestCase {
 
     func testCancelOperation() async throws {
         // Given
+        guard let engine = batchEngine else {
+            XCTFail("BatchEngine not initialized")
+            return
+        }
+
         let operation = BatchOperation(type: .backup, assetIds: [UUID(), UUID()])
-        let handle = try await batchEngine.startBatchOperation(operation)
+        let handle = try await engine.startBatchOperation(operation)
 
         // When
-        try await batchEngine.cancelOperation(handle)
+        try await engine.cancelOperation(handle)
 
         // Then
-        let progress = await batchEngine.getOperationProgress(handle)
+        let progress = await engine.getOperationProgress(handle)
         XCTAssertEqual(progress.status, .cancelled)
         XCTAssertEqual(progress.message, "Operation cancelled")
         XCTAssertNil(progress.estimatedTimeRemaining)
@@ -111,15 +138,20 @@ final class BatchProcessingEngineTests: XCTestCase {
 
     func testOperationResults() async throws {
         // Given
+        guard let engine = batchEngine else {
+            XCTFail("BatchEngine not initialized")
+            return
+        }
+
         let assetIds = [UUID(), UUID()]
         let operation = BatchOperation(type: .validate, assetIds: assetIds)
-        let handle = try await batchEngine.startBatchOperation(operation)
+        let handle = try await engine.startBatchOperation(operation)
 
         // Wait for completion (validate operations are fast - 0.2s each)
         try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
 
         // When
-        let results = await batchEngine.getOperationResults(handle)
+        let results = await engine.getOperationResults(handle)
 
         // Then
         XCTAssertEqual(results.count, 2)
@@ -135,14 +167,19 @@ final class BatchProcessingEngineTests: XCTestCase {
 
     func testGetActiveOperations() async throws {
         // Given
+        guard let engine = batchEngine else {
+            XCTFail("BatchEngine not initialized")
+            return
+        }
+
         let operation1 = BatchOperation(type: .compress, assetIds: [UUID()])
         let operation2 = BatchOperation(type: .resize, assetIds: [UUID()])
 
         // When
-        let handle1 = try await batchEngine.startBatchOperation(operation1)
-        let handle2 = try await batchEngine.startBatchOperation(operation2)
+        let handle1 = try await engine.startBatchOperation(operation1)
+        let handle2 = try await engine.startBatchOperation(operation2)
 
-        let activeOperations = await batchEngine.getActiveOperations()
+        let activeOperations = await engine.getActiveOperations()
 
         // Then
         XCTAssertEqual(activeOperations.count, 2)
@@ -154,11 +191,16 @@ final class BatchProcessingEngineTests: XCTestCase {
 
     func testSetOperationPriority() async throws {
         // Given
+        guard let engine = batchEngine else {
+            XCTFail("BatchEngine not initialized")
+            return
+        }
+
         let operation = BatchOperation(type: .convert, assetIds: [UUID()], priority: .normal)
-        let handle = try await batchEngine.startBatchOperation(operation)
+        let handle = try await engine.startBatchOperation(operation)
 
         // When
-        try await batchEngine.setOperationPriority(handle, priority: .high)
+        try await engine.setOperationPriority(handle, priority: .high)
 
         // Then - This test verifies the method doesn't throw, priority change is internal
         // In a real implementation, we could verify priority affects processing order
@@ -166,6 +208,11 @@ final class BatchProcessingEngineTests: XCTestCase {
 
     func testConfigureEngine() async throws {
         // Given
+        guard let engine = batchEngine else {
+            XCTFail("BatchEngine not initialized")
+            return
+        }
+
         let settings = BatchEngineSettings(
             maxConcurrentOperations: 5,
             maxMemoryUsage: 200 * 1024 * 1024,
@@ -175,7 +222,7 @@ final class BatchProcessingEngineTests: XCTestCase {
         )
 
         // When
-        await batchEngine.configureEngine(settings)
+        await engine.configureEngine(settings)
 
         // Then - Configuration is applied (internal state)
         // This test verifies the method works without throwing
@@ -185,14 +232,19 @@ final class BatchProcessingEngineTests: XCTestCase {
 
     func testOperationHistory() async throws {
         // Given
+        guard let engine = batchEngine else {
+            XCTFail("BatchEngine not initialized")
+            return
+        }
+
         let operation = BatchOperation(type: .tag, assetIds: [UUID()])
-        let handle = try await batchEngine.startBatchOperation(operation)
+        let handle = try await engine.startBatchOperation(operation)
 
         // Wait for completion
         try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
 
         // When
-        let history = await batchEngine.getOperationHistory(limit: 10)
+        let history = await engine.getOperationHistory(limit: 10)
 
         // Then
         XCTAssertGreaterThanOrEqual(history.count, 1)
@@ -206,21 +258,26 @@ final class BatchProcessingEngineTests: XCTestCase {
 
     func testClearCompletedOperations() async throws {
         // Given
+        guard let engine = batchEngine else {
+            XCTFail("BatchEngine not initialized")
+            return
+        }
+
         let operation = BatchOperation(type: .validate, assetIds: [UUID()])
-        let handle = try await batchEngine.startBatchOperation(operation)
+        let handle = try await engine.startBatchOperation(operation)
 
         // Wait for completion
         try await Task.sleep(nanoseconds: 500_000_000)
 
         // Verify operation exists in history
-        let historyBefore = await batchEngine.getOperationHistory(limit: 10)
+        let historyBefore = await engine.getOperationHistory(limit: 10)
         XCTAssertTrue(historyBefore.contains { $0.handle.operationId == handle.operationId })
 
         // When
-        await batchEngine.clearCompletedOperations()
+        await engine.clearCompletedOperations()
 
         // Then
-        let historyAfter = await batchEngine.getOperationHistory(limit: 10)
+        let historyAfter = await engine.getOperationHistory(limit: 10)
         XCTAssertFalse(historyAfter.contains { $0.handle.operationId == handle.operationId })
     }
 
@@ -228,16 +285,20 @@ final class BatchProcessingEngineTests: XCTestCase {
 
     func testMonitorProgress() async throws {
         // Given
+        guard let engine = batchEngine else {
+            XCTFail("BatchEngine not initialized")
+            return
+        }
+
         let operation = BatchOperation(type: .enhance, assetIds: [UUID(), UUID()])
-        let handle = try await batchEngine.startBatchOperation(operation)
+        let handle = try await engine.startBatchOperation(operation)
 
         var progressUpdates: [BatchProgress] = []
         let expectation = XCTestExpectation(description: "Progress monitoring")
 
         // When
-        let batchEngineRef = batchEngine!
         let monitorTask = Task {
-            for await progress in await batchEngineRef.monitorProgress(handle) {
+            for await progress in await engine.monitorProgress(handle) {
                 progressUpdates.append(progress)
 
                 if !progress.status.isActive {
@@ -260,15 +321,20 @@ final class BatchProcessingEngineTests: XCTestCase {
 
     func testResumeNonPausedOperation() async throws {
         // Given
+        guard let engine = batchEngine else {
+            XCTFail("BatchEngine not initialized")
+            return
+        }
+
         let operation = BatchOperation(type: .compress, assetIds: [UUID()])
-        let handle = try await batchEngine.startBatchOperation(operation)
+        let handle = try await engine.startBatchOperation(operation)
 
         // When/Then
         do {
-            try await batchEngine.resumeOperation(handle)
+            try await engine.resumeOperation(handle)
             XCTFail("Should throw error when resuming non-paused operation")
         } catch let error as MediaError {
-            if case .invalidOperation(let message) = error {
+            if case let .invalidOperation(message) = error {
                 XCTAssertEqual(message, "Operation is not paused")
             } else {
                 XCTFail("Wrong error type: \(error)")
@@ -280,6 +346,11 @@ final class BatchProcessingEngineTests: XCTestCase {
 
     func testOperationNotFound() async throws {
         // Given
+        guard let engine = batchEngine else {
+            XCTFail("BatchEngine not initialized")
+            return
+        }
+
         let fakeHandle = BatchOperationHandle(
             operationId: UUID(),
             type: .compress,
@@ -288,10 +359,10 @@ final class BatchProcessingEngineTests: XCTestCase {
 
         // When/Then
         do {
-            try await batchEngine.pauseOperation(fakeHandle)
+            try await engine.pauseOperation(fakeHandle)
             XCTFail("Should throw error for non-existent operation")
         } catch let error as MediaError {
-            if case .operationNotFound(let message) = error {
+            if case let .operationNotFound(message) = error {
                 XCTAssertEqual(message, "Operation not found")
             } else {
                 XCTFail("Wrong error type: \(error)")
@@ -305,26 +376,31 @@ final class BatchProcessingEngineTests: XCTestCase {
 
     func testMultipleOperationsPerformance() async throws {
         // Given
+        guard let engine = batchEngine else {
+            XCTFail("BatchEngine not initialized")
+            return
+        }
+
         let operationCount = 5
         var handles: [BatchOperationHandle] = []
 
         // When
         let startTime = Date()
 
-        for i in 0..<operationCount {
+        for i in 0 ..< operationCount {
             let operation = BatchOperation(
                 type: .validate, // Fast operation type
                 assetIds: [UUID()],
                 priority: i < 2 ? .high : .normal
             )
-            let handle = try await batchEngine.startBatchOperation(operation)
+            let handle = try await engine.startBatchOperation(operation)
             handles.append(handle)
         }
 
         // Wait for all to complete
         var allCompleted = false
         while !allCompleted {
-            let activeOps = await batchEngine.getActiveOperations()
+            let activeOps = await engine.getActiveOperations()
             allCompleted = activeOps.isEmpty
 
             if !allCompleted {
@@ -340,7 +416,7 @@ final class BatchProcessingEngineTests: XCTestCase {
 
         // Verify all operations completed
         for handle in handles {
-            let progress = await batchEngine.getOperationProgress(handle)
+            let progress = await engine.getOperationProgress(handle)
             XCTAssertTrue([.completed, .failed].contains(progress.status))
         }
     }

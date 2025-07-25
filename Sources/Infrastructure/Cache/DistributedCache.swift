@@ -599,6 +599,6 @@ enum DistributedCacheError: Error {
 
 // MARK: - Dependency Registration
 
-extension DistributedCache {
-    public static let liveValue = DistributedCache()
+public extension DistributedCache {
+    static let liveValue = DistributedCache()
 }

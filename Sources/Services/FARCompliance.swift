@@ -101,8 +101,8 @@ public struct ComplianceIssue {
     }
 }
 
-extension FARComplianceService {
-    public nonisolated static var liveValue: FARComplianceService {
+public extension FARComplianceService {
+    nonisolated static var liveValue: FARComplianceService {
         FARComplianceService(
             getRecommendedDocuments: { requirements, category in
                 // Analyze requirements and category to recommend appropriate documents
@@ -177,7 +177,7 @@ extension FARComplianceService {
         )
     }
 
-    public static var testValue: FARComplianceService {
+    static var testValue: FARComplianceService {
         FARComplianceService(
             getRecommendedDocuments: { _, _ in
                 [

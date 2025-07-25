@@ -397,6 +397,6 @@ public extension SAMGovService {
 
 // MARK: - Dependency Registration
 
-extension SAMGovService {
-    public static let liveValue = SAMGovService.live
+public extension SAMGovService {
+    static let liveValue = SAMGovService.live
 }

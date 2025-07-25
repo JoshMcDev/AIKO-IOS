@@ -343,8 +343,8 @@ public enum TrendDirection: String, CaseIterable, Equatable, Sendable {
 
 // MARK: - Dependency Registration
 
-extension DocumentScannerService {
-    public static let liveValue: Self = .init(
+public extension DocumentScannerService {
+    static let liveValue: Self = .init(
         scanDocument: {
             ScannedDocument(
                 pages: [
@@ -404,7 +404,7 @@ extension DocumentScannerService {
         restoreSessionState: { _ in nil }
     )
 
-    public static let testValue: Self = .init(
+    static let testValue: Self = .init(
         scanDocument: {
             ScannedDocument(
                 pages: [

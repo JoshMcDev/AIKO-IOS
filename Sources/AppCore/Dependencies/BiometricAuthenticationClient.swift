@@ -6,9 +6,9 @@ public struct BiometricAuthenticationClient: Sendable {
     public var authenticate: @Sendable (String) async throws -> Bool
 }
 
-extension BiometricAuthenticationClient {
-    public static let testValue = Self(authenticate: { _ in false })
-    public static let previewValue = Self(
+public extension BiometricAuthenticationClient {
+    static let testValue = Self(authenticate: { _ in false })
+    static let previewValue = Self(
         biometricType: { .none },
         authenticate: { _ in true }
     )

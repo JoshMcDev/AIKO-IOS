@@ -36,9 +36,9 @@ public struct MediaAsset: Identifiable, Sendable, Codable, Equatable {
         self.originalURL = originalURL
         self.processedURL = processedURL
         self.metadata = metadata
-        self.data = nil
-        self.processingState = .pending
-        self.sourceInfo = nil
+        data = nil
+        processingState = .pending
+        sourceInfo = nil
         self.createdAt = createdAt
         self.size = size > 0 ? size : fileSize
         self.fileSize = fileSize > 0 ? fileSize : size
@@ -64,14 +64,14 @@ public struct MediaAsset: Identifiable, Sendable, Codable, Equatable {
         self.createdAt = createdAt
 
         // Extract values from metadata if available
-        self.size = metadata.fileSize ?? 0
-        self.fileSize = metadata.fileSize ?? 0
-        self.mimeType = metadata.mimeType ?? ""
+        size = metadata.fileSize ?? 0
+        fileSize = metadata.fileSize ?? 0
+        mimeType = metadata.mimeType ?? ""
 
         // URLs are nil for data-based assets
-        self.url = nil
-        self.originalURL = nil
-        self.processedURL = nil
+        url = nil
+        originalURL = nil
+        processedURL = nil
     }
 }
 
@@ -128,11 +128,11 @@ public struct MediaMetadata: Sendable, Codable, Equatable {
         self.exifData = exifData
         self.location = location
         self.deviceInfo = deviceInfo
-        self.fileName = nil
-        self.fileSize = nil
-        self.mimeType = nil
-        self.securityInfo = nil
-        self.dimensions = if let width = width, let height = height {
+        fileName = nil
+        fileSize = nil
+        mimeType = nil
+        securityInfo = nil
+        dimensions = if let width = width, let height = height {
             MediaDimensions(width: width, height: height)
         } else {
             nil
@@ -160,7 +160,7 @@ public struct MediaMetadata: Sendable, Codable, Equatable {
         self.exifData = exifData
         self.location = location
         self.deviceInfo = deviceInfo
-        self.dimensions = if let width = width, let height = height {
+        dimensions = if let width = width, let height = height {
             MediaDimensions(width: width, height: height)
         } else {
             nil
@@ -182,8 +182,8 @@ public struct MediaMetadata: Sendable, Codable, Equatable {
         self.fileSize = fileSize
         self.mimeType = mimeType
         self.securityInfo = securityInfo
-        self.width = dimensions.width
-        self.height = dimensions.height
+        width = dimensions.width
+        height = dimensions.height
         self.dimensions = dimensions
         self.exifData = exifData
         self.location = location

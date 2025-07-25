@@ -22,6 +22,6 @@ public struct ShareServiceClient: Sendable {
     }
 }
 
-extension ShareServiceClient {
-    public static let liveValue: Self = .init()
+public extension ShareServiceClient {
+    static let liveValue: Self = .init()
 }

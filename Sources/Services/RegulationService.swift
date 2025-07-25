@@ -354,8 +354,8 @@ public enum GSADITAConfig {
 
 // MARK: - Dependency Implementation
 
-extension RegulationService {
-    public static var liveValue: RegulationService {
+public extension RegulationService {
+    static var liveValue: RegulationService {
         let urlSession = URLSession.shared
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601

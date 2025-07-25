@@ -383,7 +383,7 @@ public struct BenchmarkTestResult: Sendable {
 
 // MARK: - Dependency Key
 
-public struct DocumentGenerationPerformanceMonitorKey {
+public enum DocumentGenerationPerformanceMonitorKey {
     public static let liveValue = DocumentGenerationPerformanceMonitor()
     public static let testValue = DocumentGenerationPerformanceMonitor()
 }

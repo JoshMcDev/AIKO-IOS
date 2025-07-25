@@ -22,18 +22,18 @@ public struct VoiceRecordingClient: Sendable {
     }
 }
 
-extension VoiceRecordingClient {
-    public static let testValue = Self(
-        startRecording: { },
+public extension VoiceRecordingClient {
+    static let testValue = Self(
+        startRecording: {},
         stopRecording: { "test-recording.m4a" },
-        cancelRecording: { }
+        cancelRecording: {}
     )
 }
 
-extension VoiceRecordingClient {
-    public static let liveValue: Self = .init(
-        startRecording: { },
+public extension VoiceRecordingClient {
+    static let liveValue: Self = .init(
+        startRecording: {},
         stopRecording: { "live-recording.m4a" },
-        cancelRecording: { }
+        cancelRecording: {}
     )
 }

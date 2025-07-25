@@ -126,29 +126,6 @@ By consolidating 90+ AI service files into 5 Core Engines (AIOrchestrator, Docum
 - **Target Goals**: 48% file reduction (484 → 250 files), 80% AI service consolidation (90 → 15-20 files), Swift 6 compliance
 - **Documentation**: Complete implementation plan, testing rubric, and master plan created
 
-### What to Remove
-
-#### Services to Delete
-- `UserPatternLearner.swift`
-- `PatternRecognitionAlgorithm.swift`
-- `AdaptiveIntelligenceService.swift`
-- `UserBehaviorAnalytics.swift`
-- `LearningFeedbackLoop.swift`
-- `UserPreferenceStore.swift` (complex ML version)
-- `HistoricalDataMatchingService.swift`
-- All ML/AI related services
-
-#### Features to Remove
-- On-device ML pattern recognition
-- Adaptive intelligence systems
-- Enterprise features (multi-tenant, SSO)
-- Complex caching systems
-- Distributed processing
-- n8n workflow automation
-- Custom analytics engines
-
----
-
 ## Unified Refactoring Architecture
 
 ### 5 Core Engines System

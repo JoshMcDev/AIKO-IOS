@@ -87,8 +87,8 @@ public struct OfficeTemplate: Identifiable, Codable, Equatable, Sendable {
 
 // MARK: - Dependency Implementation
 
-extension TemplateStorageService {
-    public static var liveValue: TemplateStorageService {
+public extension TemplateStorageService {
+    static var liveValue: TemplateStorageService {
         guard let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
             fatalError("Unable to access documents directory")
         }
@@ -166,7 +166,7 @@ extension TemplateStorageService {
         )
     }
 
-    public static var testValue: TemplateStorageService {
+    static var testValue: TemplateStorageService {
         let storage = TestTemplateStorage()
 
         return TemplateStorageService(

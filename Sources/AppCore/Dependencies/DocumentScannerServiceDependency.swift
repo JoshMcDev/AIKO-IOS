@@ -151,7 +151,7 @@ public enum DocumentScannerPerformanceIntegration {
 
     /// Gets performance insights for dashboard display
     public static func getInsightsForDashboard() async -> PerformanceInsights {
-        // Return default insights for now  
+        // Return default insights for now
         return PerformanceInsights(
             averageScanTime: 2.0,
             averageProcessingTime: 1.5,

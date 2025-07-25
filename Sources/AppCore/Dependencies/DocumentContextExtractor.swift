@@ -29,8 +29,8 @@ public struct DocumentContextExtractor: Sendable {
 
 // MARK: - Dependency Registration
 
-extension DocumentContextExtractor {
-    public static let liveValue: Self = .init(
+public extension DocumentContextExtractor {
+    static let liveValue: Self = .init(
         extractComprehensiveContext: { ocrResults, pageImageData, hints in
             // Live implementation would perform sophisticated ML/AI analysis
             // For now, return mock comprehensive context based on OCR results
@@ -94,7 +94,7 @@ extension DocumentContextExtractor {
         }
     )
 
-    public static let testValue: Self = .init(
+    static let testValue: Self = .init(
         extractComprehensiveContext: { _, _, _ in
             ScannerDocumentContext(
                 documentType: .contract,

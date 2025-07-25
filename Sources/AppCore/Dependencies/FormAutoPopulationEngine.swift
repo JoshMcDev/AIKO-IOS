@@ -465,8 +465,8 @@ public struct ValidationWarning: Equatable, Sendable {
 
 // MARK: - Dependency Registration
 
-extension FormAutoPopulationEngine {
-    public static let liveValue: Self = .init(
+public extension FormAutoPopulationEngine {
+    static let liveValue: Self = .init(
         extractFormData: { document in
             // Live implementation would use sophisticated ML/AI processing
             // For now, return mock data based on document content
@@ -504,7 +504,7 @@ extension FormAutoPopulationEngine {
         }
     )
 
-    public static let testValue: Self = .init(
+    static let testValue: Self = .init(
         extractFormData: { _ in
             let extractedData = GovernmentFormData(
                 vendorInfo: VendorInfo(name: "Test Vendor"),

@@ -93,7 +93,8 @@ public actor ObjectActionCache {
 
             // Encode parameters as sorted JSON for consistent hashing
             if let data = try? JSONSerialization.data(withJSONObject: action.parameters.sorted(by: { $0.key < $1.key })),
-               let json = String(data: data, encoding: .utf8) {
+               let json = String(data: data, encoding: .utf8)
+            {
                 parameters = json
             } else {
                 parameters = ""
@@ -621,6 +622,6 @@ extension ActionContext {
 
 // MARK: - Dependency Registration
 
-extension ObjectActionCache {
-    public static let liveValue = ObjectActionCache()
+public extension ObjectActionCache {
+    static let liveValue = ObjectActionCache()
 }

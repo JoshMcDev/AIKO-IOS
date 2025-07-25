@@ -775,6 +775,6 @@ private struct MetricsAnalyzer {
 
 // MARK: - Dependency Registration
 
-extension MetricsService {
-    public static let liveValue: MetricsService = .live
+public extension MetricsService {
+    static let liveValue: MetricsService = .live
 }

@@ -194,8 +194,8 @@ public extension RegulationRepository {
 
 // MARK: - Dependency Key
 
-extension RegulationRepository {
-    public static var liveValue: RegulationRepository {
+public extension RegulationRepository {
+    static var liveValue: RegulationRepository {
         RegulationRepository(
             getRegulationsForAgency: { agency in
                 let regulations = Self.regulationsForAgency(agency)

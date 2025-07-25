@@ -64,7 +64,8 @@ public actor ConsistentHash {
 
         // Wrap around to the first node
         guard let firstHash = sortedHashes.first,
-              let firstNode = ring[firstHash] else {
+              let firstNode = ring[firstHash]
+        else {
             return nil // This should never happen due to the guard above
         }
         return firstNode

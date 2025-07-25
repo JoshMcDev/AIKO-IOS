@@ -23,9 +23,9 @@ public struct ScreenServiceClient: Sendable {
     }
 }
 
-extension ScreenServiceClient {
-    public static let testValue = Self()
-    public static let previewValue = Self(
+public extension ScreenServiceClient {
+    static let testValue = Self()
+    static let previewValue = Self(
         mainScreenBounds: { CGRect(x: 0, y: 0, width: 390, height: 844) },
         mainScreenWidth: { 390 },
         mainScreenHeight: { 844 },

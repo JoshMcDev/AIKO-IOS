@@ -106,7 +106,7 @@ public struct CameraClient: Sendable {
     public var availablePositions: @Sendable () -> [CameraPosition] = { [] }
 
     // MARK: - Initializer
-    
+
     public init(
         checkAvailability: @escaping @Sendable () async -> Bool = { false },
         requestAuthorization: @escaping @Sendable () async -> CameraAuthorizationStatus = { .denied },
@@ -126,10 +126,10 @@ public struct CameraClient: Sendable {
 
 // MARK: - Dependency Registration
 
-extension CameraClient {
-    public static let liveValue: Self = .init(capturePhoto: { CapturedPhoto(imageData: Data(), metadata: nil) }, switchCamera: { .back })
+public extension CameraClient {
+    static let liveValue: Self = .init(capturePhoto: { CapturedPhoto(imageData: Data(), metadata: nil) }, switchCamera: { .back })
 
-    public static let testValue: Self = .init(
+    static let testValue: Self = .init(
         checkAvailability: { true },
         requestAuthorization: { .authorized },
         authorizationStatus: { .authorized },

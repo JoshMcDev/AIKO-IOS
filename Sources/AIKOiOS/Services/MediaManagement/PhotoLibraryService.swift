@@ -1,8 +1,8 @@
 import AppCore
+import CoreLocation
 import Foundation
 import Photos
 import PhotosUI
-import CoreLocation
 
 /// iOS implementation of photo library service
 @available(iOS 16.0, *)
@@ -53,7 +53,7 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
                 assetCount: 25,
                 albumType: .smartAlbum,
                 localIdentifier: "favorites-identifier"
-            )
+            ),
         ]
     }
 

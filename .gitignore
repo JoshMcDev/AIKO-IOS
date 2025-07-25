@@ -43,3 +43,16 @@ tasks/
 .env.production
 *.pem
 *.key 
+
+# Large ML model files (managed via Git LFS or external storage)
+Sources/Resources/Models/LFM2-*.mlmodel
+Sources/Resources/Models/LFM2-*.gguf
+Sources/Resources/Models/*.mlmodel
+Sources/Resources/Models/*.gguf
+*.mlmodel
+*.gguf
+
+# Model-related temporary files
+Sources/Resources/Models/temp/
+Sources/Resources/Models/converted/
+model_cache/

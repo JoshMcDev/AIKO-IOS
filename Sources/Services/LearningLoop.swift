@@ -181,8 +181,8 @@ public struct Insight: Equatable, Sendable {
 
 // MARK: - Implementation
 
-extension LearningLoop {
-    public nonisolated static var liveValue: LearningLoop {
+public extension LearningLoop {
+    nonisolated static var liveValue: LearningLoop {
         let eventQueue = EventQueue()
         let patternDetector = PatternDetector()
         let insightGenerator = InsightGenerator()

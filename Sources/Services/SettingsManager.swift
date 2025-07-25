@@ -174,8 +174,8 @@ public struct AdvancedSettingsData: Codable, Equatable, Sendable {
     public init() {}
 }
 
-extension SettingsManager {
-    public nonisolated static var liveValue: SettingsManager {
+public extension SettingsManager {
+    nonisolated static var liveValue: SettingsManager {
         let settingsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("aiko_settings.json")
 
@@ -195,7 +195,7 @@ extension SettingsManager {
             try data.write(to: settingsURL)
         }
 
-        // Shared settings state  
+        // Shared settings state
         let currentSettings = OSAllocatedUnfairLock(initialState: SettingsData())
 
         return SettingsManager(
@@ -271,7 +271,8 @@ extension SettingsManager {
 
                 if status == errSecSuccess,
                    let data = result as? Data,
-                   let key = String(data: data, encoding: .utf8) {
+                   let key = String(data: data, encoding: .utf8)
+                {
                     return key
                 }
 
@@ -364,7 +365,8 @@ extension SettingsManager {
                     templates: templates.map { template in
                         // Convert CustomTemplate to JSON string
                         if let data = try? JSONEncoder().encode(template),
-                           let jsonString = String(data: data, encoding: .utf8) {
+                           let jsonString = String(data: data, encoding: .utf8)
+                        {
                             return jsonString
                         }
                         return ""
@@ -413,7 +415,8 @@ extension SettingsManager {
                     let templateService = TemplateStorageService.liveValue
                     for templateJSON in backupData.templates {
                         if let data = templateJSON.data(using: .utf8),
-                           let template = try? JSONDecoder().decode(CustomTemplate.self, from: data) {
+                           let template = try? JSONDecoder().decode(CustomTemplate.self, from: data)
+                        {
                             try? await templateService.saveTemplate(template)
                         }
                     }
@@ -423,7 +426,7 @@ extension SettingsManager {
         )
     }
 
-    public static var testValue: SettingsManager {
+    static var testValue: SettingsManager {
         SettingsManager(
             loadSettings: { SettingsData() },
             saveSettings: {},
@@ -440,7 +443,7 @@ extension SettingsManager {
         )
     }
 
-    public static var previewValue: SettingsManager {
+    static var previewValue: SettingsManager {
         SettingsManager(
             loadSettings: {
                 var settings = SettingsData()

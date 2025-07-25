@@ -48,8 +48,8 @@ public struct WorkflowEngine: Sendable {
     }
 }
 
-extension WorkflowEngine {
-    public static var liveValue: WorkflowEngine {
+public extension WorkflowEngine {
+    static var liveValue: WorkflowEngine {
         _ = CoreDataStack.shared
         _ = RequirementAnalyzer.liveValue
         let userProfileService = UserProfileService.liveValue

@@ -15,8 +15,8 @@ public struct SettingsManagerClient: Sendable {
     public var restoreBackup: @Sendable (URL, @escaping (Double) -> Void) async throws -> Void
 }
 
-extension SettingsManagerClient {
-    public static let testValue = Self(
+public extension SettingsManagerClient {
+    static let testValue = Self(
         loadSettings: { SettingsData() },
         saveSettings: { _ in },
         resetToDefaults: {},
@@ -29,7 +29,7 @@ extension SettingsManagerClient {
         restoreBackup: { _, _ in }
     )
 
-    public static let previewValue = Self(
+    static let previewValue = Self(
         loadSettings: { SettingsData() },
         saveSettings: { _ in },
         resetToDefaults: {},

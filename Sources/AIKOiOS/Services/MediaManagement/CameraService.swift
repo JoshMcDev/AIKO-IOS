@@ -42,7 +42,7 @@ public actor CameraService: CameraServiceProtocol {
         return status
     }
 
-    public func capturePhoto(config: CameraCaptureConfig) async throws -> Data {
+    public func capturePhoto(config _: CameraCaptureConfig) async throws -> Data {
         guard AVCaptureDevice.default(for: .video) != nil else {
             throw MediaError.resourceUnavailable("Camera not available")
         }
@@ -68,7 +68,7 @@ public actor CameraService: CameraServiceProtocol {
         return data
     }
 
-    public func startVideoRecording(config: CameraCaptureConfig) async throws -> String {
+    public func startVideoRecording(config _: CameraCaptureConfig) async throws -> String {
         guard AVCaptureDevice.default(for: .video) != nil else {
             throw MediaError.resourceUnavailable("Camera not available")
         }

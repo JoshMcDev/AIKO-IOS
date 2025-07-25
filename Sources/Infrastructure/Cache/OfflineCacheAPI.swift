@@ -299,7 +299,7 @@ extension OfflineCacheManager {
         _ object: some Codable & Sendable,
         forKey key: String,
         type: CacheContentType,
-        priority: CachePriority,
+        priority _: CachePriority,
         isSecure: Bool = false
     ) async throws {
         // Add priority metadata
@@ -447,7 +447,8 @@ extension OfflineCacheManager {
         }
 
         if let lastCleanup = statistics.lastCleanup,
-           Date().timeIntervalSince(lastCleanup) > 86400 * 7 {
+           Date().timeIntervalSince(lastCleanup) > 86400 * 7
+        {
             issues.append("Cache cleanup overdue")
         }
 

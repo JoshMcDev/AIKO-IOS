@@ -285,9 +285,9 @@ public actor BatchProcessor: BatchProcessing {
 
 // MARK: - Dependency Registration
 
-extension BatchProcessor {
-    public static let liveValue: BatchProcessor = .init()
-    public static let testValue: BatchProcessor = .init()
+public extension BatchProcessor {
+    static let liveValue: BatchProcessor = .init()
+    static let testValue: BatchProcessor = .init()
 }
 
 // MARK: - Batch Operation Status

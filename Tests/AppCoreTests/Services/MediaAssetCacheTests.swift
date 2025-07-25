@@ -1,8 +1,8 @@
-import XCTest
 @testable import AppCore
+import XCTest
 
 final class MediaAssetCacheTests: XCTestCase {
-    private var cache: MediaAssetCache!
+    private var cache: MediaAssetCache?
 
     override func setUp() async throws {
         try await super.setUp()
@@ -10,7 +10,7 @@ final class MediaAssetCacheTests: XCTestCase {
     }
 
     override func tearDown() async throws {
-        await cache.clearCache()
+        await cache?.clearCache()
         cache = nil
         try await super.tearDown()
     }
@@ -27,6 +27,7 @@ final class MediaAssetCacheTests: XCTestCase {
         )
 
         // When
+        let cache = try await XCTUnwrap(cache)
         try await cache.cacheAsset(asset)
         let retrievedAsset = try await cache.loadAsset(asset.id)
 
@@ -42,6 +43,7 @@ final class MediaAssetCacheTests: XCTestCase {
         let nonExistentId = UUID()
 
         // When
+        let cache = try await XCTUnwrap(cache)
         let retrievedAsset = try await cache.loadAsset(nonExistentId)
 
         // Then
@@ -55,6 +57,7 @@ final class MediaAssetCacheTests: XCTestCase {
 
     func testCacheHit() async throws {
         // Given
+        let cache = try await XCTUnwrap(cache)
         let asset = MediaAsset(type: .image, size: 512, fileSize: 512)
         try await cache.cacheAsset(asset)
 
@@ -81,6 +84,7 @@ final class MediaAssetCacheTests: XCTestCase {
         let asset2 = MediaAsset(type: .video, size: 2048, fileSize: 2048)
 
         // When
+        let cache = try await XCTUnwrap(cache)
         let initialSize = await cache.currentCacheSize()
         try await cache.cacheAsset(asset1)
         let sizeAfterFirst = await cache.currentCacheSize()
@@ -100,7 +104,7 @@ final class MediaAssetCacheTests: XCTestCase {
         let numberOfAssets = 6 // 6 * 10MB = 60MB > 50MB limit
 
         var assets: [MediaAsset] = []
-        for _ in 0..<numberOfAssets {
+        for _ in 0 ..< numberOfAssets {
             let asset = MediaAsset(
                 type: .video,
                 size: largeAssetSize,
@@ -111,6 +115,7 @@ final class MediaAssetCacheTests: XCTestCase {
         }
 
         // When - Cache assets one by one
+        let cache = try await XCTUnwrap(cache)
         for asset in assets {
             try await cache.cacheAsset(asset)
         }
@@ -135,11 +140,12 @@ final class MediaAssetCacheTests: XCTestCase {
         )
 
         // When/Then
+        let cache = try await XCTUnwrap(cache)
         do {
             try await cache.cacheAsset(oversizedAsset)
             XCTFail("Should throw error for oversized asset")
         } catch let error as MediaError {
-            if case .cacheFull(let message) = error {
+            if case let .cacheFull(message) = error {
                 XCTAssertTrue(message.contains("exceeds maximum cache size"))
             } else {
                 XCTFail("Wrong error type: \(error)")
@@ -157,7 +163,8 @@ final class MediaAssetCacheTests: XCTestCase {
         var assets: [MediaAsset] = []
 
         // Create 5 assets (50MB total - exactly at limit)
-        for _ in 0..<5 {
+        let cache = try await XCTUnwrap(cache)
+        for _ in 0 ..< 5 {
             let asset = MediaAsset(type: .image, size: assetSize, fileSize: assetSize)
             assets.append(asset)
             try await cache.cacheAsset(asset)
@@ -187,6 +194,7 @@ final class MediaAssetCacheTests: XCTestCase {
 
     func testRetrievalPerformance() async throws {
         // Given
+        let cache = try await XCTUnwrap(cache)
         let asset = MediaAsset(type: .image, size: 1024, fileSize: 1024)
         try await cache.cacheAsset(asset)
 
@@ -202,8 +210,9 @@ final class MediaAssetCacheTests: XCTestCase {
 
     func testBulkRetrievalPerformance() async throws {
         // Given - Cache multiple assets
+        let cache = try await XCTUnwrap(cache)
         var assets: [MediaAsset] = []
-        for _ in 0..<100 {
+        for _ in 0 ..< 100 {
             let asset = MediaAsset(type: .image, size: 1024, fileSize: 1024)
             assets.append(asset)
             try await cache.cacheAsset(asset)
@@ -230,6 +239,7 @@ final class MediaAssetCacheTests: XCTestCase {
         let asset2 = MediaAsset(type: .video, size: 2048, fileSize: 2048)
 
         // When
+        let cache = try await XCTUnwrap(cache)
         try await cache.cacheAsset(asset1)
         try await cache.cacheAsset(asset2)
 
@@ -252,7 +262,8 @@ final class MediaAssetCacheTests: XCTestCase {
         let assetSize: Int64 = 15 * 1024 * 1024 // 15MB each
 
         // When - Add 4 assets (60MB total, exceeds 50MB limit)
-        for _ in 0..<4 {
+        let cache = try await XCTUnwrap(cache)
+        for _ in 0 ..< 4 {
             let asset = MediaAsset(type: .video, size: assetSize, fileSize: assetSize)
             try await cache.cacheAsset(asset)
         }
@@ -271,6 +282,7 @@ final class MediaAssetCacheTests: XCTestCase {
         let asset1 = MediaAsset(type: .image, size: 1024, fileSize: 1024)
         let asset2 = MediaAsset(type: .video, size: 2048, fileSize: 2048)
 
+        let cache = try await XCTUnwrap(cache)
         try await cache.cacheAsset(asset1)
         try await cache.cacheAsset(asset2)
 
@@ -304,6 +316,7 @@ final class MediaAssetCacheTests: XCTestCase {
             fileSize: 1024,
             mimeType: "image/jpeg"
         )
+        let cache = try await XCTUnwrap(cache)
         try await cache.cacheAsset(originalAsset)
 
         // When - Update with same ID but different size
@@ -341,6 +354,7 @@ final class MediaAssetCacheTests: XCTestCase {
         )
 
         // When
+        let cache = try await XCTUnwrap(cache)
         try await cache.cacheAsset(zeroSizeAsset)
         let retrievedAsset = try await cache.loadAsset(zeroSizeAsset.id)
 
@@ -354,16 +368,17 @@ final class MediaAssetCacheTests: XCTestCase {
 
     func testConcurrentAccess() async throws {
         // Given
+        let cache = try await XCTUnwrap(cache)
         let asset = MediaAsset(type: .image, size: 1024, fileSize: 1024)
         try await cache.cacheAsset(asset)
 
         // When - Concurrent reads
-        let results = await withTaskGroup(of: MediaAsset?.self) { group in
+        let results = await withTaskGroup(of: MediaAsset?.self, returning: [MediaAsset?].self) { group in
             var results: [MediaAsset?] = []
 
-            for _ in 0..<10 {
+            for _ in 0 ..< 10 {
                 let assetId = asset.id
-                let cache = self.cache!
+                guard let cache = self.cache else { return [] }
                 group.addTask {
                     try? await cache.loadAsset(assetId)
                 }

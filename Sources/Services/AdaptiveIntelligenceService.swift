@@ -207,8 +207,8 @@ public struct Pattern: Equatable {
 
 // MARK: - Implementation
 
-extension AdaptiveIntelligenceService {
-    public static var liveValue: AdaptiveIntelligenceService {
+public extension AdaptiveIntelligenceService {
+    static var liveValue: AdaptiveIntelligenceService {
         let mlService = MachineLearningService()
         _ = AnalyticsService()
 

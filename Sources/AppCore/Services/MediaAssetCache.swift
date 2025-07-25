@@ -1,6 +1,7 @@
 import Foundation
 
 // MARK: - MediaAssetCache Protocol
+
 /// Protocol defining the interface for media asset caching
 public protocol MediaAssetCacheProtocol: Actor {
     /// Cache a media asset with LRU eviction policy
@@ -20,6 +21,7 @@ public protocol MediaAssetCacheProtocol: Actor {
 }
 
 // MARK: - Cache Statistics
+
 public struct CacheStatistics: Sendable, Equatable {
     public let totalItems: Int
     public let totalSize: Int64
@@ -48,14 +50,16 @@ public struct CacheStatistics: Sendable, Equatable {
 }
 
 // MARK: - MediaAssetCache Implementation
+
 /// Actor-based media asset cache with LRU eviction and 50MB size limit
 public actor MediaAssetCache: MediaAssetCacheProtocol {
-
     // MARK: - Constants
+
     private static let maxCacheSize: Int64 = 50 * 1024 * 1024 // 50MB
     private static let maxRetrievalTime: TimeInterval = 0.01 // 10ms
 
     // MARK: - Cache Storage
+
     private var cache: [UUID: CacheEntry] = [:]
     private var accessOrder: [UUID] = [] // LRU order (most recent last)
     private var totalSize: Int64 = 0
@@ -73,9 +77,9 @@ public actor MediaAssetCache: MediaAssetCacheProtocol {
 
         init(asset: MediaAsset) {
             self.asset = asset
-            self.size = max(asset.size, asset.fileSize)
-            self.cachedAt = Date()
-            self.lastAccessed = Date()
+            size = max(asset.size, asset.fileSize)
+            cachedAt = Date()
+            lastAccessed = Date()
         }
 
         mutating func markAccessed() {
@@ -208,7 +212,8 @@ public actor MediaAssetCache: MediaAssetCacheProtocol {
 
     private func evictLeastRecentlyUsed() async {
         guard let lruId = accessOrder.first,
-              let entry = cache[lruId] else {
+              let entry = cache[lruId]
+        else {
             return
         }
 

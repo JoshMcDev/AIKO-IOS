@@ -25,7 +25,7 @@ public struct DocumentImageProcessor: Sendable {
     public var isOCRAvailable: @Sendable () -> Bool = { false }
 
     // MARK: - Initializer
-    
+
     public init(
         processImage: @escaping @Sendable (Data, ProcessingMode, ProcessingOptions) async throws -> ProcessingResult,
         estimateProcessingTime: @escaping @Sendable (Data, ProcessingMode) async throws -> TimeInterval,
@@ -459,8 +459,8 @@ public enum ProcessingStep: String, CaseIterable, Equatable, Sendable {
 
 // MARK: - Dependency Registration
 
-extension DocumentImageProcessor {
-    public static let liveValue: Self = .init(
+public extension DocumentImageProcessor {
+    static let liveValue: Self = .init(
         processImage: { data, _, _ in
             ProcessingResult(
                 processedImageData: data,
@@ -504,7 +504,7 @@ extension DocumentImageProcessor {
         }
     )
 
-    public static let testValue: Self = .init(
+    static let testValue: Self = .init(
         processImage: { data, _, options in
             // Simulate processing delay
             try await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds

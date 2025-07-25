@@ -375,75 +375,75 @@ public enum ImageFormat: Sendable {
 public struct TestMediaValidationService: MediaValidationServiceProtocol {
     public init() {}
 
-    public func validateFile(data: Data, fileName: String, expectedMimeType: String?) async throws -> EnhancedValidationResult {
+    public func validateFile(data _: Data, fileName _: String, expectedMimeType _: String?) async throws -> EnhancedValidationResult {
         throw MediaError.validationFailed("MediaValidationService.validateFile() not implemented - TDD RED phase")
     }
 
-    public func validateFileSize(data: Data, mediaType: MediaType, maxSize: Int64) async throws -> FileSizeValidationResult {
+    public func validateFileSize(data _: Data, mediaType _: MediaType, maxSize _: Int64) async throws -> FileSizeValidationResult {
         throw MediaError.validationFailed("MediaValidationService.validateFileSize() not implemented - TDD RED phase")
     }
 
-    public func performSecurityScan(data: Data, fileName: String, scanLevel: ScanLevel) async throws -> EnhancedSecurityScanResult {
+    public func performSecurityScan(data _: Data, fileName _: String, scanLevel _: ScanLevel) async throws -> EnhancedSecurityScanResult {
         throw MediaError.validationFailed("MediaValidationService.performSecurityScan() not implemented - TDD RED phase")
     }
 
-    public func quarantineThreat(scanResult: EnhancedSecurityScanResult, originalData: Data) async throws -> QuarantineResult {
+    public func quarantineThreat(scanResult _: EnhancedSecurityScanResult, originalData _: Data) async throws -> QuarantineResult {
         throw MediaError.validationFailed("MediaValidationService.quarantineThreat() not implemented - TDD RED phase")
     }
 
-    public func extractMetadata(data: Data, mediaType: MediaType, includeEXIF: Bool, includeThumbnail: Bool) async throws -> EnhancedMetadataResult {
+    public func extractMetadata(data _: Data, mediaType _: MediaType, includeEXIF _: Bool, includeThumbnail _: Bool) async throws -> EnhancedMetadataResult {
         throw MediaError.validationFailed("MediaValidationService.extractMetadata() not implemented - TDD RED phase")
     }
 
-    public func validateMetadata(data: Data, providedMetadata: MediaMetadata) async throws -> MetadataValidationResult {
+    public func validateMetadata(data _: Data, providedMetadata _: MediaMetadata) async throws -> MetadataValidationResult {
         throw MediaError.validationFailed("MediaValidationService.validateMetadata() not implemented - TDD RED phase")
     }
 
-    public func validateImage(data: Data, requirements: ImageValidationRequirements) async throws -> ImageValidationResult {
+    public func validateImage(data _: Data, requirements _: ImageValidationRequirements) async throws -> ImageValidationResult {
         throw MediaError.validationFailed("MediaValidationService.validateImage() not implemented - TDD RED phase")
     }
 
-    public func validateVideo(data: Data, requirements: VideoValidationRequirements) async throws -> VideoValidationResult {
+    public func validateVideo(data _: Data, requirements _: VideoValidationRequirements) async throws -> VideoValidationResult {
         throw MediaError.validationFailed("MediaValidationService.validateVideo() not implemented - TDD RED phase")
     }
 
-    public func performComprehensiveValidation(asset: MediaAsset, specification: ComprehensiveValidationSpec) async throws -> ComprehensiveValidationResult {
+    public func performComprehensiveValidation(asset _: MediaAsset, specification _: ComprehensiveValidationSpec) async throws -> ComprehensiveValidationResult {
         throw MediaError.validationFailed("MediaValidationService.performComprehensiveValidation() not implemented - TDD RED phase")
     }
 
-    public func validateBatch(assets: [MediaAsset], specification: BatchValidationSpec, progressHandler: (@Sendable (BatchValidationProgress) -> Void)?) async throws -> [BatchItemValidationResult] {
+    public func validateBatch(assets _: [MediaAsset], specification _: BatchValidationSpec, progressHandler _: (@Sendable (BatchValidationProgress) -> Void)?) async throws -> [BatchItemValidationResult] {
         throw MediaError.validationFailed("MediaValidationService.validateBatch() not implemented - TDD RED phase")
     }
 
     // Legacy interface implementations (existing tests)
-    public func validateFileType(_ data: Data, _ fileName: String) async throws -> MediaType {
+    public func validateFileType(_: Data, _: String) async throws -> MediaType {
         throw MediaError.validationFailed("MediaValidationService.validateFileType() not implemented - TDD RED phase")
     }
 
-    public func validateFileSize(_ fileSize: Int64, _ mediaType: MediaType) -> Bool {
+    public func validateFileSize(_: Int64, _: MediaType) -> Bool {
         return false // Always fail in RED phase
     }
 
-    public func scanForMalware(_ data: Data) async throws -> SecurityInfo {
+    public func scanForMalware(_: Data) async throws -> SecurityInfo {
         throw MediaError.validationFailed("MediaValidationService.scanForMalware() not implemented - TDD RED phase")
     }
 
-    public func extractMetadata(_ data: Data, _ mediaType: MediaType) async throws -> MediaMetadata {
+    public func extractMetadata(_: Data, _: MediaType) async throws -> MediaMetadata {
         throw MediaError.validationFailed("MediaValidationService.extractMetadata() legacy not implemented - TDD RED phase")
     }
 
-    public func validateMediaAsset(_ asset: MediaAsset, _ rules: ValidationRules) async throws -> MediaValidationResult {
+    public func validateMediaAsset(_: MediaAsset, _: ValidationRules) async throws -> MediaValidationResult {
         throw MediaError.validationFailed("MediaValidationService.validateMediaAsset() not implemented - TDD RED phase")
     }
 
-    public func validateBatch(_ assets: [MediaAsset], _ rules: ValidationRules) async throws -> [MediaValidationResult] {
+    public func validateBatch(_: [MediaAsset], _: ValidationRules) async throws -> [MediaValidationResult] {
         throw MediaError.validationFailed("MediaValidationService.validateBatch() legacy not implemented - TDD RED phase")
     }
 }
 
 // MARK: - SwiftUI Environment Key
 
-public struct MediaValidationServiceKey {
+public enum MediaValidationServiceKey {
     public static let liveValue: any MediaValidationServiceProtocol = TestMediaValidationService()
     public static let testValue: any MediaValidationServiceProtocol = TestMediaValidationService()
 }

@@ -78,8 +78,8 @@ public struct OTTemplateGuidance {
 
 // MARK: - Live Value
 
-extension OTAgreementTemplates {
-    public static var liveValue: OTAgreementTemplates {
+public extension OTAgreementTemplates {
+    static var liveValue: OTAgreementTemplates {
         OTAgreementTemplates(
             selectTemplate: { type in
                 switch type {

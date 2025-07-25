@@ -171,8 +171,8 @@ private actor ChainStorage {
     }
 }
 
-extension DocumentChainManager {
-    public nonisolated static var liveValue: DocumentChainManager {
+public extension DocumentChainManager {
+    nonisolated static var liveValue: DocumentChainManager {
         let documentDependencyService = DocumentDependencyService.liveValue
         _ = AcquisitionService.liveValue
 
