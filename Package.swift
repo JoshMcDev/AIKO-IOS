@@ -15,7 +15,6 @@ let package = Package(
         .package(url: "https://github.com/jamesrochabrun/SwiftAnthropic", branch: "main"),
         .package(url: "https://github.com/apple/swift-collections", from: "1.0.0"),
         .package(url: "https://github.com/vapor/multipart-kit", from: "4.5.0"),
-        .package(url: "https://github.com/nalexn/ViewInspector", from: "0.9.0"),
     ],
     targets: [
         // MARK: - Compatibility Module for Non-Sendable Dependencies
@@ -142,7 +141,6 @@ let package = Package(
             dependencies: [
                 .target(name: "AIKOiOS", condition: .when(platforms: [.iOS])),
                 "AppCore",
-                .product(name: "ViewInspector", package: "ViewInspector"),
             ],
             path: "Tests/AIKOiOSTests"
         ),
