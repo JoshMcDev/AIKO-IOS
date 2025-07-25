@@ -79,16 +79,7 @@ public struct HapticManagerClient: Sendable {
 
 // MARK: - Dependency
 
-import ComposableArchitecture
-
-public extension DependencyValues {
-    var hapticManager: HapticManagerClient {
-        get { self[HapticManagerKey.self] }
-        set { self[HapticManagerKey.self] = newValue }
-    }
-}
-
-private enum HapticManagerKey: DependencyKey {
+private enum HapticManagerKey {
     static let liveValue = HapticManagerClient(
         impact: { _ in },
         notification: { _ in },
@@ -104,4 +95,17 @@ private enum HapticManagerKey: DependencyKey {
     )
 
     static let testValue = liveValue
+}
+
+// MARK: - Environment Extension
+
+public extension EnvironmentValues {
+    var hapticManager: HapticManagerClient {
+        get { self[HapticManagerEnvironmentKey.self] }
+        set { self[HapticManagerEnvironmentKey.self] = newValue }
+    }
+}
+
+private struct HapticManagerEnvironmentKey: EnvironmentKey {
+    static let defaultValue: HapticManagerClient = HapticManagerKey.liveValue
 }

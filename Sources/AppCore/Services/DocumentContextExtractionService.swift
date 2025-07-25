@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 
 // MARK: - Document Context Extraction Service
@@ -14,20 +13,13 @@ public protocol DocumentContextExtractionService: Sendable {
 
 // MARK: - Dependency Registration
 
-public struct DocumentContextExtractionServiceKey: DependencyKey {
+public struct DocumentContextExtractionServiceKey {
     public static var liveValue: DocumentContextExtractionService {
         LiveDocumentContextExtractionService()
     }
 
     public static var testValue: DocumentContextExtractionService {
         MockDocumentContextExtractionService()
-    }
-}
-
-public extension DependencyValues {
-    var documentContextExtractor: DocumentContextExtractionService {
-        get { self[DocumentContextExtractionServiceKey.self] }
-        set { self[DocumentContextExtractionServiceKey.self] = newValue }
     }
 }
 

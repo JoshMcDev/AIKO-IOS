@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 
 /// Global actor for scan session operations
@@ -56,7 +55,7 @@ public actor SessionEngine {
         // Reorder remaining pages
         for (index, var page) in currentSession.pages.enumerated() {
             page.order = index
-            currentSession.pages[id: page.id] = page
+            currentSession.pages[index] = page
         }
 
         currentSession.touch()
@@ -71,14 +70,14 @@ public actor SessionEngine {
             throw ScanError.invalidPageOrder
         }
 
-        guard Set(pageIDs) == Set(currentSession.pages.ids) else {
+        guard Set(pageIDs) == Set(currentSession.pages.map(\.id)) else {
             throw ScanError.invalidPageOrder
         }
 
-        var reorderedPages: IdentifiedArrayOf<SessionPage> = []
+        var reorderedPages: [SessionPage] = []
 
         for (newOrder, pageID) in pageIDs.enumerated() {
-            guard var page = currentSession.pages[id: pageID] else {
+            guard var page = currentSession.pages.first(where: { $0.id == pageID }) else {
                 throw ScanError.pageNotFound(pageID)
             }
             page.order = newOrder
@@ -95,11 +94,11 @@ public actor SessionEngine {
     /// Update page processing status
     @discardableResult
     public func updatePageStatus(id: SessionPage.ID, status: PageProcessingStatus) async throws -> ScanSession {
-        guard currentSession.pages[id: id] != nil else {
+        guard let pageIndex = currentSession.pages.firstIndex(where: { $0.id == id }) else {
             throw ScanError.pageNotFound(id)
         }
 
-        currentSession.pages[id: id]?.processingStatus = status
+        currentSession.pages[pageIndex].processingStatus = status
         currentSession.touch()
 
         // Update batch operation state if in progress
@@ -259,16 +258,9 @@ public actor SessionEngine {
 
 // MARK: - Dependency Registration
 
-extension SessionEngine: DependencyKey {
+extension SessionEngine {
     public static let liveValue: SessionEngine = .init()
     public static let testValue: SessionEngine = .init()
-}
-
-public extension DependencyValues {
-    var sessionEngine: SessionEngine {
-        get { self[SessionEngine.self] }
-        set { self[SessionEngine.self] = newValue }
-    }
 }
 
 // MARK: - Session Storage

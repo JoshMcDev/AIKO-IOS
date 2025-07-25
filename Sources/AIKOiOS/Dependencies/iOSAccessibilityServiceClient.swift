@@ -1,6 +1,5 @@
 #if os(iOS)
     import AppCore
-    import ComposableArchitecture
     import SwiftUI
 
     /// iOS Accessibility Service Client using SimpleServiceTemplate

@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "AIKO",
-    platforms: [.iOS(.v16), .macOS(.v13)],
+    platforms: [.iOS(.v17), .macOS(.v14)],
     products: [
         .library(name: "AIKO", targets: ["AIKO"]),
         .library(name: "AppCore", targets: ["AppCore"]),
@@ -11,7 +11,7 @@ let package = Package(
         .library(name: "AIKOmacOS", targets: ["AIKOmacOS"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.8.0"),
+        // TCA dependency removed ✅
         .package(url: "https://github.com/jamesrochabrun/SwiftAnthropic", branch: "main"),
         .package(url: "https://github.com/apple/swift-collections", from: "1.0.0"),
         .package(url: "https://github.com/vapor/multipart-kit", from: "4.5.0"),
@@ -19,7 +19,6 @@ let package = Package(
     ],
     targets: [
         // MARK: - Compatibility Module for Non-Sendable Dependencies
-
         .target(
             name: "AikoCompat",
             dependencies: [
@@ -28,62 +27,51 @@ let package = Package(
             path: "Sources/AikoCompat",
             exclude: ["README.md"],
             swiftSettings: [
-                // Swift 6 strict concurrency enabled - provides Sendable-safe wrappers
                 .unsafeFlags(["-strict-concurrency=complete"]),
             ]
         ),
 
         // MARK: - Shared Core Module (Platform-Agnostic)
-
         .target(
             name: "AppCore",
             dependencies: [
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                "AikoCompat", // Use our Sendable-safe wrapper instead of SwiftAnthropic directly
+                "AikoCompat",
                 .product(name: "Collections", package: "swift-collections"),
             ],
             path: "Sources/AppCore",
             exclude: ["README.md"],
             swiftSettings: [
-                // Swift 6 strict concurrency enabled for platform-agnostic core
                 .unsafeFlags(["-strict-concurrency=complete"]),
             ]
         ),
 
         // MARK: - iOS Platform Module
-
         .target(
             name: "AIKOiOS",
             dependencies: [
                 "AppCore",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Sources/AIKOiOS",
             exclude: ["README.md", "Service-Concurrency-Guide.md"],
             swiftSettings: [
-                // Swift 6 strict concurrency enabled for iOS platform
                 .unsafeFlags(["-strict-concurrency=complete"]),
             ]
         ),
 
         // MARK: - macOS Platform Module
-
         .target(
             name: "AIKOmacOS",
             dependencies: [
                 "AppCore",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Sources/AIKOmacOS",
             exclude: ["README.md"],
             swiftSettings: [
-                // Swift 6 strict concurrency enabled for macOS platform
                 .unsafeFlags(["-strict-concurrency=complete"]),
             ]
         ),
 
-        // MARK: - GraphRAG Module (LFM2 Embedding and Tensor Operations)
-
+        // MARK: - GraphRAG Module
         .target(
             name: "GraphRAG",
             dependencies: [
@@ -91,13 +79,11 @@ let package = Package(
             ],
             path: "Sources/GraphRAG",
             swiftSettings: [
-                // Swift 6 strict concurrency enabled for GraphRAG module
                 .unsafeFlags(["-strict-concurrency=complete"]),
             ]
         ),
 
-        // MARK: - Main App Target (Orchestrates Platform Modules)
-
+        // MARK: - Main App Target
         .target(
             name: "AIKO",
             dependencies: [
@@ -109,17 +95,17 @@ let package = Package(
             ],
             path: "Sources",
             exclude: [
-                "AppCore", // Exclude AppCore subdirectory
-                "AIKOiOS", // Exclude AIKOiOS subdirectory
-                "AIKOmacOS", // Exclude AIKOmacOS subdirectory
-                "AikoCompat", // Exclude AikoCompat subdirectory
-                "GraphRAG", // Exclude GraphRAG subdirectory
+                "AppCore",
+                "AIKOiOS", 
+                "AIKOmacOS",
+                "AikoCompat",
+                "GraphRAG",
                 "Models/CoreData/FORM_MIGRATION_GUIDE.md",
                 "Resources/Clauses/clauseSelectionEngine.ts",
                 "Resources/Clauses/ClauseSelectionEngine.md",
                 "Resources/Clauses/ClauseDatabase.json",
                 "Resources/Clauses/ClauseSelection_QuickReference.md",
-                "AIKOiOS/Service-Concurrency-Guide.md", // Exclude documentation file
+                "AIKOiOS/Service-Concurrency-Guide.md",
             ],
             resources: [
                 .copy("Resources/DFTemplates"),
@@ -129,7 +115,6 @@ let package = Package(
                 .copy("Models/AIKO_Updated.xcdatamodeld"),
                 .process("Resources/AppIcon.png"),
                 .process("Resources/SAMIcon.png"),
-                // .copy("Resources/LFM2-700M-Unsloth-XL-GraphRAG.mlmodel"), // Removed - 700MB model causing build hang
                 .copy("Resources/Forms/SF1449_Form.md"),
                 .copy("Resources/Forms/SF33_Form.md"),
                 .copy("Resources/Forms/SF30_Form.md"),
@@ -139,19 +124,16 @@ let package = Package(
                 .copy("Resources/Forms/DD1155_Form.md"),
             ],
             swiftSettings: [
-                // Swift 6 strict concurrency enabled - actor boundaries properly established
                 .unsafeFlags(["-strict-concurrency=complete"]),
             ]
         ),
 
         // MARK: - Test Targets
-
         .testTarget(
             name: "AppCoreTests",
             dependencies: [
                 "AppCore",
                 "AIKO",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Tests/AppCoreTests"
         ),
@@ -160,7 +142,6 @@ let package = Package(
             dependencies: [
                 .target(name: "AIKOiOS", condition: .when(platforms: [.iOS])),
                 "AppCore",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "ViewInspector", package: "ViewInspector"),
             ],
             path: "Tests/AIKOiOSTests"
@@ -170,25 +151,14 @@ let package = Package(
             dependencies: [
                 .target(name: "AIKOmacOS", condition: .when(platforms: [.macOS])),
                 "AppCore",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Tests/AIKOmacOSTests"
-        ),
-        .testTarget(
-            name: "GraphRAGTests",
-            dependencies: [
-                "GraphRAG",
-                "AppCore",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-            ],
-            path: "Tests/GraphRAGTests"
         ),
         .testTarget(
             name: "AIKOTests",
             dependencies: [
                 "AppCore",
                 "AIKO",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Tests",
             exclude: [
@@ -198,9 +168,7 @@ let package = Package(
                 "AppCoreTests",
                 "AIKOiOSTests",
                 "AIKOmacOSTests",
-                "GraphRAGTests", // Exclude GraphRAGTests subdirectory
-                // "Shared", // Re-enabled for proper test utilities
-                // Keep remaining tests that haven't been migrated yet
+                "GraphRAGTests",
                 "Integration",
                 "Performance",
                 "Security",

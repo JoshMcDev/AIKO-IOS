@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import CoreData
 import Foundation
 
@@ -49,7 +48,7 @@ public struct WorkflowEngine: Sendable {
     }
 }
 
-extension WorkflowEngine: DependencyKey {
+extension WorkflowEngine {
     public static var liveValue: WorkflowEngine {
         _ = CoreDataStack.shared
         _ = RequirementAnalyzer.liveValue
@@ -484,12 +483,5 @@ enum WorkflowError: LocalizedError {
         case .notImplemented:
             "Feature not yet implemented"
         }
-    }
-}
-
-public extension DependencyValues {
-    var workflowEngine: WorkflowEngine {
-        get { self[WorkflowEngine.self] }
-        set { self[WorkflowEngine.self] = newValue }
     }
 }

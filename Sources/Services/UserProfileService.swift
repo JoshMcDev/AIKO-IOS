@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import Foundation
 
 public struct UserProfileService: Sendable {
@@ -21,7 +20,7 @@ public struct UserProfileService: Sendable {
     }
 }
 
-extension UserProfileService: DependencyKey {
+extension UserProfileService {
     public static var liveValue: UserProfileService {
         guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
             fatalError("Unable to access documents directory")
@@ -90,12 +89,5 @@ private actor TestProfileStorage {
 
     func hasProfile() -> Bool {
         savedProfile != nil
-    }
-}
-
-public extension DependencyValues {
-    var userProfileService: UserProfileService {
-        get { self[UserProfileService.self] }
-        set { self[UserProfileService.self] = newValue }
     }
 }

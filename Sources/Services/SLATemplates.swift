@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 
 // MARK: - SLA Template Service
@@ -144,7 +143,7 @@ public struct SLAValidation: Sendable {
 
 // MARK: - Live Value
 
-extension SLATemplateService: DependencyKey {
+extension SLATemplateService {
     public static var liveValue: SLATemplateService {
         SLATemplateService(
             loadTemplate: { industry in
@@ -961,10 +960,3 @@ public extension SLATemplateService {
 }
 
 // MARK: - Dependency Registration
-
-public extension DependencyValues {
-    var slaTemplateService: SLATemplateService {
-        get { self[SLATemplateService.self] }
-        set { self[SLATemplateService.self] = newValue }
-    }
-}

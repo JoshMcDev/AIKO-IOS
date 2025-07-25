@@ -318,7 +318,7 @@ struct AddressSectionView: View {
                 }
             }
         }
-        .onChange(of: address) { newAddress in
+        .onChange(of: address) { _, newAddress in
             localAddress = newAddress
         }
     }

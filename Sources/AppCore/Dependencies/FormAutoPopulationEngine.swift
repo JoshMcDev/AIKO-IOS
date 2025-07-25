@@ -1,10 +1,8 @@
-import ComposableArchitecture
 import Foundation
 
 // MARK: - Form Auto-Population Engine
 
 /// Intelligent engine for extracting and mapping form data from scanned documents
-@DependencyClient
 public struct FormAutoPopulationEngine: Sendable {
     /// Extracts form data from a scanned document and maps to known form types
     public var extractFormData: @Sendable (ScannedDocument) async throws -> FormAutoPopulationResult
@@ -467,7 +465,7 @@ public struct ValidationWarning: Equatable, Sendable {
 
 // MARK: - Dependency Registration
 
-extension FormAutoPopulationEngine: DependencyKey {
+extension FormAutoPopulationEngine {
     public static let liveValue: Self = .init(
         extractFormData: { document in
             // Live implementation would use sophisticated ML/AI processing
@@ -541,11 +539,4 @@ extension FormAutoPopulationEngine: DependencyKey {
             0.9
         }
     )
-}
-
-public extension DependencyValues {
-    var formAutoPopulationEngine: FormAutoPopulationEngine {
-        get { self[FormAutoPopulationEngine.self] }
-        set { self[FormAutoPopulationEngine.self] = newValue }
-    }
 }

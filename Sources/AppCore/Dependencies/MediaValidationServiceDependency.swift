@@ -1,5 +1,5 @@
-import Dependencies
 import Foundation
+import SwiftUI
 
 // MARK: - MediaValidationService Protocol (Placeholder for TDD RED Phase)
 
@@ -441,11 +441,21 @@ public struct TestMediaValidationService: MediaValidationServiceProtocol {
     }
 }
 
-// MARK: - Dependency Registration
+// MARK: - SwiftUI Environment Key
 
-extension TestMediaValidationService: DependencyKey {
+public struct MediaValidationServiceKey {
     public static let liveValue: any MediaValidationServiceProtocol = TestMediaValidationService()
     public static let testValue: any MediaValidationServiceProtocol = TestMediaValidationService()
 }
 
-// DependencyValues extension moved to MediaValidationService.swift
+// EnvironmentKey implementation for SwiftUI dependency injection
+private struct MediaValidationServiceEnvironmentKey: EnvironmentKey {
+    static let defaultValue: any MediaValidationServiceProtocol = MediaValidationServiceKey.liveValue
+}
+
+public extension EnvironmentValues {
+    var mediaValidationService: any MediaValidationServiceProtocol {
+        get { self[MediaValidationServiceEnvironmentKey.self] }
+        set { self[MediaValidationServiceEnvironmentKey.self] = newValue }
+    }
+}

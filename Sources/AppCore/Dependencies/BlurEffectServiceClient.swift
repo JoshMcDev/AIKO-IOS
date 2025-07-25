@@ -1,7 +1,5 @@
-import ComposableArchitecture
 import SwiftUI
 
-@DependencyClient
 public struct BlurEffectServiceClient: Sendable {
     public var _createBlurredBackground: @Sendable (CGFloat) -> AnyView = { _ in
         AnyView(Rectangle().fill(Material.ultraThin))
@@ -9,6 +7,18 @@ public struct BlurEffectServiceClient: Sendable {
 
     public var _supportsNativeBlur: @Sendable () -> Bool = { false }
     public var _recommendedBlurStyle: @Sendable () -> Material = { .ultraThin }
+
+    public init(
+        createBlurredBackground: @escaping @Sendable (CGFloat) -> AnyView = { _ in
+            AnyView(Rectangle().fill(Material.ultraThin))
+        },
+        supportsNativeBlur: @escaping @Sendable () -> Bool = { false },
+        recommendedBlurStyle: @escaping @Sendable () -> Material = { .ultraThin }
+    ) {
+        self._createBlurredBackground = createBlurredBackground
+        self._supportsNativeBlur = supportsNativeBlur
+        self._recommendedBlurStyle = recommendedBlurStyle
+    }
 }
 
 extension BlurEffectServiceClient: BlurEffectServiceProtocol {
@@ -25,13 +35,19 @@ extension BlurEffectServiceClient: BlurEffectServiceProtocol {
     }
 }
 
-extension BlurEffectServiceClient: DependencyKey {
+extension BlurEffectServiceClient {
     public static let liveValue: Self = .init()
 }
 
-public extension DependencyValues {
+// MARK: - Environment Extension
+
+public extension EnvironmentValues {
     var blurEffectService: BlurEffectServiceClient {
-        get { self[BlurEffectServiceClient.self] }
-        set { self[BlurEffectServiceClient.self] = newValue }
+        get { self[BlurEffectServiceEnvironmentKey.self] }
+        set { self[BlurEffectServiceEnvironmentKey.self] = newValue }
     }
+}
+
+private struct BlurEffectServiceEnvironmentKey: EnvironmentKey {
+    static let defaultValue: BlurEffectServiceClient = .liveValue
 }

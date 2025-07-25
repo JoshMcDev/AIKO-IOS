@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 
 // MARK: - Multi-Page Scanning Session
@@ -8,7 +7,7 @@ import Foundation
 public struct MultiPageSession: Equatable, Sendable, Identifiable {
     public let id: UUID
     public var title: String
-    public var pages: IdentifiedArrayOf<ScannedPage>
+    public var pages: [ScannedPage]
     public var sessionState: SessionState
     public var configuration: SessionConfiguration
     public var metadata: SessionMetadata
@@ -30,7 +29,7 @@ public struct MultiPageSession: Equatable, Sendable, Identifiable {
     public init(
         id: UUID = UUID(),
         title: String = "New Document Session",
-        pages: IdentifiedArrayOf<ScannedPage> = [],
+        pages: [ScannedPage] = [],
         sessionState: SessionState = .active,
         configuration: SessionConfiguration = SessionConfiguration(),
         metadata: SessionMetadata = SessionMetadata(),
@@ -70,7 +69,7 @@ public struct MultiPageSession: Equatable, Sendable, Identifiable {
 
     /// Removes a page from the session and renumbers remaining pages
     public mutating func removePage(withId pageId: ScannedPage.ID) {
-        pages.remove(id: pageId)
+        pages.removeAll { $0.id == pageId }
         renumberPages()
         lastModified = Date()
     }
@@ -84,8 +83,8 @@ public struct MultiPageSession: Equatable, Sendable, Identifiable {
 
     /// Renumbers all pages sequentially
     private mutating func renumberPages() {
-        for (index, page) in pages.enumerated() {
-            pages[id: page.id]?.pageNumber = index + 1
+        for index in pages.indices {
+            pages[index].pageNumber = index + 1
         }
     }
 

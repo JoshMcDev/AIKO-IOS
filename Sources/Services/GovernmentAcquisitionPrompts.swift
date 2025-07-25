@@ -1,6 +1,18 @@
 import AppCore
 import Foundation
 
+public enum ChatPhase {
+    case initial
+    case gatheringBasics
+    case gatheringDetails
+    case detailedRequirements
+    case analyzingRequirements
+    case confirmingPredictions
+    case readyToGenerate
+    case review
+    case finalization
+}
+
 public enum GovernmentAcquisitionPrompts {
     // MARK: - System Prompt
 
@@ -324,7 +336,7 @@ public enum GovernmentAcquisitionPrompts {
 
     // MARK: - Chat Mode Prompt
 
-    public static func chatPrompt(for phase: AcquisitionChatFeature.ChatPhase, previousContext: String = "", targetDocuments: Set<DocumentType> = []) -> String {
+    public static func chatPrompt(for phase: ChatPhase, previousContext: String = "", targetDocuments: Set<DocumentType> = []) -> String {
         let basePrompt = generateCompletePrompt()
 
         var chatInstructions = "\n\nYou are conducting an interactive acquisition planning session. "
@@ -420,6 +432,33 @@ public enum GovernmentAcquisitionPrompts {
             - Recommended contract documents
             - Identified risks or considerations
             - Next steps in the acquisition process
+            """
+
+        case .detailedRequirements:
+            chatInstructions += """
+            Gather detailed requirements and specifications:
+            - Technical specifications
+            - Performance standards
+            - Evaluation criteria
+            - Contract terms and conditions
+            """
+
+        case .review:
+            chatInstructions += """
+            Review and validate all gathered information:
+            - Verify completeness of requirements
+            - Confirm accuracy of data
+            - Identify any gaps or inconsistencies
+            - Prepare for document generation
+            """
+
+        case .finalization:
+            chatInstructions += """
+            Finalize the acquisition planning:
+            - Complete all requirements validation
+            - Prepare final documentation package
+            - Confirm stakeholder approvals
+            - Ready for contract execution
             """
         }
 

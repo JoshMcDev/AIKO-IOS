@@ -1,5 +1,4 @@
 import Foundation
-import Dependencies
 import UniformTypeIdentifiers
 import CryptoKit
 
@@ -773,14 +772,7 @@ private extension Data {
 
 // MARK: - DependencyKey Conformance
 
-extension MediaValidationService: DependencyKey {
+extension MediaValidationService {
     public static let liveValue: any MediaValidationServiceProtocol = MediaValidationService()
     public static let testValue: any MediaValidationServiceProtocol = TestMediaValidationService()
-}
-
-public extension DependencyValues {
-    var mediaValidationService: any MediaValidationServiceProtocol {
-        get { self[MediaValidationService.self] }
-        set { self[MediaValidationService.self] = newValue }
-    }
 }

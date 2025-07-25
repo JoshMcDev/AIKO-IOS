@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import CoreData
 import Foundation
 
@@ -34,7 +33,7 @@ public struct AcquisitionService: Sendable {
     }
 }
 
-extension AcquisitionService: DependencyKey {
+extension AcquisitionService {
     public nonisolated static var liveValue: AcquisitionService {
         // Always use repository-based implementation as part of Phase 4 migration
         .repositoryBased
@@ -69,12 +68,5 @@ enum AcquisitionError: LocalizedError, Sendable {
         case .invalidData:
             "Invalid acquisition data"
         }
-    }
-}
-
-public extension DependencyValues {
-    var acquisitionService: AcquisitionService {
-        get { self[AcquisitionService.self] }
-        set { self[AcquisitionService.self] = newValue }
     }
 }

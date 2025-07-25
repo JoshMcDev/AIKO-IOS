@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import Foundation
 
 /// Service for managing custom template storage
@@ -88,7 +87,7 @@ public struct OfficeTemplate: Identifiable, Codable, Equatable, Sendable {
 
 // MARK: - Dependency Implementation
 
-extension TemplateStorageService: DependencyKey {
+extension TemplateStorageService {
     public static var liveValue: TemplateStorageService {
         guard let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
             fatalError("Unable to access documents directory")
@@ -233,10 +232,3 @@ actor TestTemplateStorage {
 }
 
 // MARK: - DependencyValues Extension
-
-public extension DependencyValues {
-    var templateStorageService: TemplateStorageService {
-        get { self[TemplateStorageService.self] }
-        set { self[TemplateStorageService.self] = newValue }
-    }
-}

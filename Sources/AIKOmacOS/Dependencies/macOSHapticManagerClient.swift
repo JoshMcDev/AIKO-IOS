@@ -1,7 +1,6 @@
 #if os(macOS)
     import AppCore
     import AppKit
-    import ComposableArchitecture
     import CoreHaptics
 
     // MARK: - macOS Haptic Manager Client

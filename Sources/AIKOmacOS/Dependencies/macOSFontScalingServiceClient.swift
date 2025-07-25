@@ -1,6 +1,5 @@
 #if os(macOS)
     import AppCore
-    import ComposableArchitecture
     import SwiftUI
 
     public extension FontScalingServiceClient {

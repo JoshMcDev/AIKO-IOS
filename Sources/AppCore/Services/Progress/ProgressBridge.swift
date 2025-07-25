@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 
 /// Bridge between existing progress systems and the new ProgressClient
@@ -185,14 +184,7 @@ public class ProgressSession: @unchecked Sendable {
 
 // MARK: - Dependency Registration
 
-extension ProgressBridge: DependencyKey {
+extension ProgressBridge {
     public static let liveValue: ProgressBridge = .init()
     public static let testValue: ProgressBridge = .init()
-}
-
-public extension DependencyValues {
-    var progressBridge: ProgressBridge {
-        get { self[ProgressBridge.self] }
-        set { self[ProgressBridge.self] = newValue }
-    }
 }

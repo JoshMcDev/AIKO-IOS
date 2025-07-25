@@ -1,7 +1,6 @@
 #if os(macOS)
     import AppCore
     import AVFoundation
-    import ComposableArchitecture
     import Foundation
 
     // MARK: - macOS Voice Recording Client

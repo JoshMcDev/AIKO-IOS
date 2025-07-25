@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import SwiftUI
 
 /// Platform-agnostic view service for creating platform-specific UI components
@@ -42,7 +41,6 @@ public protocol PlatformViewServiceProtocol: Sendable {
     ) -> AnyView
 }
 
-@DependencyClient
 public struct PlatformViewServiceClient: Sendable {
     public var _createNavigationStack: @MainActor (@escaping () -> AnyView) -> AnyView = { content in content() }
     public var _createDocumentPicker: @MainActor (@escaping ([(Data, String)]) -> Void) -> AnyView = { _ in AnyView(EmptyView()) }
@@ -52,6 +50,26 @@ public struct PlatformViewServiceClient: Sendable {
     public var _applyWindowStyle: @MainActor (AnyView) -> AnyView = { view in view }
     public var _applyToolbarStyle: @MainActor (AnyView) -> AnyView = { view in view }
     public var _createDropZone: @MainActor (@escaping () -> AnyView, @escaping ([Any]) -> Void) -> AnyView = { content, _ in content() }
+
+    public init(
+        _createNavigationStack: @escaping @MainActor (@escaping () -> AnyView) -> AnyView = { content in content() },
+        _createDocumentPicker: @escaping @MainActor (@escaping ([(Data, String)]) -> Void) -> AnyView = { _ in AnyView(EmptyView()) },
+        _createImagePicker: @escaping @MainActor (@escaping (Data) -> Void) -> AnyView = { _ in AnyView(EmptyView()) },
+        _createShareSheet: @escaping @MainActor ([Any]) -> AnyView = { _ in AnyView(EmptyView()) },
+        _createSidebarNavigation: @escaping @MainActor (@escaping () -> AnyView, @escaping () -> AnyView) -> AnyView = { _, detail in detail() },
+        _applyWindowStyle: @escaping @MainActor (AnyView) -> AnyView = { view in view },
+        _applyToolbarStyle: @escaping @MainActor (AnyView) -> AnyView = { view in view },
+        _createDropZone: @escaping @MainActor (@escaping () -> AnyView, @escaping ([Any]) -> Void) -> AnyView = { content, _ in content() }
+    ) {
+        self._createNavigationStack = _createNavigationStack
+        self._createDocumentPicker = _createDocumentPicker
+        self._createImagePicker = _createImagePicker
+        self._createShareSheet = _createShareSheet
+        self._createSidebarNavigation = _createSidebarNavigation
+        self._applyWindowStyle = _applyWindowStyle
+        self._applyToolbarStyle = _applyToolbarStyle
+        self._createDropZone = _createDropZone
+    }
 }
 
 // Protocol conformance
@@ -105,13 +123,6 @@ extension PlatformViewServiceClient: PlatformViewServiceProtocol {
 
 // MARK: - Dependency
 
-private enum PlatformViewServiceKey: DependencyKey {
+private enum PlatformViewServiceKey {
     static let liveValue: PlatformViewServiceProtocol = PlatformViewServiceClient()
-}
-
-public extension DependencyValues {
-    var platformViewService: PlatformViewServiceProtocol {
-        get { self[PlatformViewServiceKey.self] }
-        set { self[PlatformViewServiceKey.self] = newValue }
-    }
 }

@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import Foundation
 import PDFKit
 
@@ -45,7 +44,7 @@ public enum DocumentFormat: CaseIterable {
     }
 }
 
-extension DocumentDeliveryService: DependencyKey {
+extension DocumentDeliveryService {
     public static var liveValue: DocumentDeliveryService {
         DocumentDeliveryService(
             downloadDocuments: { documents in
@@ -87,7 +86,8 @@ extension DocumentDeliveryService: DependencyKey {
                 }
 
                 // Spell check the email body
-                @Dependency(\.spellCheckService) var spellCheckService
+                // TODO: Replace with proper dependency injection
+                let spellCheckService = SpellCheckService.liveValue
                 let emailBody = createEmailBody(for: documents)
                 let correctedEmailBody = await spellCheckService.checkAndCorrect(emailBody)
 
@@ -324,11 +324,4 @@ private func createEmailBody(for documents: [GeneratedDocument]) -> String {
     Best regards,
     AIKO Team
     """
-}
-
-public extension DependencyValues {
-    var documentDeliveryService: DocumentDeliveryService {
-        get { self[DocumentDeliveryService.self] }
-        set { self[DocumentDeliveryService.self] = newValue }
-    }
 }

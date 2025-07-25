@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import Foundation
 
 // MARK: - FAR Part 12 Compliance Service
@@ -133,7 +132,7 @@ public struct MarketResearchData: Equatable {
 
 // MARK: - Implementation
 
-extension FARPart12ComplianceService: DependencyKey {
+extension FARPart12ComplianceService {
     public static var liveValue: FARPart12ComplianceService {
         FARPart12ComplianceService(
             validateCommercialItem: { content, _ in
@@ -440,10 +439,3 @@ private func getCommercialItemClauses() -> [CommercialItemClause] {
 }
 
 // MARK: - Dependency
-
-public extension DependencyValues {
-    var farPart12Compliance: FARPart12ComplianceService {
-        get { self[FARPart12ComplianceService.self] }
-        set { self[FARPart12ComplianceService.self] = newValue }
-    }
-}

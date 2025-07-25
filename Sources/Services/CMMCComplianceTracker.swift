@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 
 // MARK: - CMMC Compliance Tracker
@@ -164,7 +163,7 @@ private actor CMMCStatusStorage {
 
 // MARK: - Implementation
 
-extension CMMCComplianceTracker: DependencyKey {
+extension CMMCComplianceTracker {
     public static var liveValue: CMMCComplianceTracker {
         // Thread-safe storage for requirement status
         let storage = CMMCStatusStorage()
@@ -418,10 +417,3 @@ private func generateRecommendations(for gaps: [CMMCRequirement], level: CMMCLev
 }
 
 // MARK: - Dependency
-
-public extension DependencyValues {
-    var cmmcComplianceTracker: CMMCComplianceTracker {
-        get { self[CMMCComplianceTracker.self] }
-        set { self[CMMCComplianceTracker.self] = newValue }
-    }
-}

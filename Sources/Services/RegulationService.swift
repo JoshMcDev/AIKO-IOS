@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 
 /// Main service for regulatory API integration
@@ -355,7 +354,7 @@ public enum GSADITAConfig {
 
 // MARK: - Dependency Implementation
 
-extension RegulationService: DependencyKey {
+extension RegulationService {
     public static var liveValue: RegulationService {
         let urlSession = URLSession.shared
         let decoder = JSONDecoder()
@@ -800,12 +799,5 @@ public enum RegulationServiceError: LocalizedError {
         case .rateLimitExceeded:
             "API Rate Limit Exceeded"
         }
-    }
-}
-
-public extension DependencyValues {
-    var regulationService: RegulationService {
-        get { self[RegulationService.self] }
-        set { self[RegulationService.self] = newValue }
     }
 }

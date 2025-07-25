@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 
 /// Comprehensive analytics system for cache performance monitoring and optimization
@@ -843,15 +842,8 @@ extension CachePerformanceAnalytics {
 
 // MARK: - Dependency Registration
 
-extension CachePerformanceAnalytics: DependencyKey {
+extension CachePerformanceAnalytics {
     public static var liveValue: CachePerformanceAnalytics {
         CachePerformanceAnalytics()
-    }
-}
-
-public extension DependencyValues {
-    var cachePerformanceAnalytics: CachePerformanceAnalytics {
-        get { self[CachePerformanceAnalytics.self] }
-        set { self[CachePerformanceAnalytics.self] = newValue }
     }
 }

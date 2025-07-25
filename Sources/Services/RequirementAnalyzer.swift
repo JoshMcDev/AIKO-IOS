@@ -1,6 +1,5 @@
 import AikoCompat
 import AppCore
-import ComposableArchitecture
 import Foundation
 
 public struct RequirementAnalyzer: Sendable {
@@ -19,7 +18,7 @@ public struct RequirementAnalyzer: Sendable {
     }
 }
 
-extension RequirementAnalyzer: DependencyKey {
+extension RequirementAnalyzer {
     public static var liveValue: RequirementAnalyzer {
         RequirementAnalyzer(
             analyzeRequirements: { requirements in
@@ -244,11 +243,4 @@ public enum RequirementAnalyzerError: Error {
     case invalidResponse
     case analysisError
     case noProvider
-}
-
-public extension DependencyValues {
-    var requirementAnalyzer: RequirementAnalyzer {
-        get { self[RequirementAnalyzer.self] }
-        set { self[RequirementAnalyzer.self] = newValue }
-    }
 }

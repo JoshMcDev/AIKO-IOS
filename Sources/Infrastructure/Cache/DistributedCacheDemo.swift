@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import Foundation
 
 /// Demo showcasing distributed cache functionality

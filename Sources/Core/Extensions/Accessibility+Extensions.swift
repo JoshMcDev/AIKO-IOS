@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import SwiftUI
 
 // MARK: - Accessibility Extensions
@@ -66,7 +65,7 @@ enum HeaderLevel {
 enum AccessibilityAnnouncement {
     @MainActor
     static func announce(_ message: String, priority: AnnouncementPriority = .high) {
-        @Dependency(\.accessibilityService) var accessibilityService
+        @Environment(\.accessibilityService) var accessibilityService
         let servicePriority: AccessibilityAnnouncementPriority = priority == .high ? .high : .low
         accessibilityService.announceNotification(message, priority: servicePriority)
     }
@@ -159,7 +158,7 @@ extension View {
 
 struct VoiceOverDetector: ViewModifier {
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
-    @Dependency(\.accessibilityService) var accessibilityService
+    @Environment(\.accessibilityService) var accessibilityService
     let onVoiceOverChange: (Bool) -> Void
 
     func body(content: Content) -> some View {

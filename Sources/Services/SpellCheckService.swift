@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 import NaturalLanguage
 #if os(macOS)
@@ -60,7 +59,7 @@ public struct SpellCheckService: Sendable {
     }
 }
 
-extension SpellCheckService: DependencyKey {
+extension SpellCheckService {
     public static var liveValue: SpellCheckService {
         let customDictionary = CustomDictionary()
 
@@ -367,12 +366,5 @@ actor CustomDictionary {
 
     func remove(_ word: String) {
         words.remove(word)
-    }
-}
-
-public extension DependencyValues {
-    var spellCheckService: SpellCheckService {
-        get { self[SpellCheckService.self] }
-        set { self[SpellCheckService.self] = newValue }
     }
 }

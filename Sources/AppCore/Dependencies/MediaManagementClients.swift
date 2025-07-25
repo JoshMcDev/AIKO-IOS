@@ -1,4 +1,4 @@
-import Dependencies
+// import Dependencies // Removed - migrated from TCA
 import Foundation
 
 // MARK: - FilePickerClient
@@ -19,7 +19,7 @@ public struct FilePickerClient: Sendable {
     }
 }
 
-extension FilePickerClient: DependencyKey {
+extension FilePickerClient {
     public static let liveValue = FilePickerClient(
         pickFile: { throw NSError(domain: "NotImplemented", code: -1) },
         pickMultipleFiles: { throw NSError(domain: "NotImplemented", code: -1) },
@@ -45,7 +45,7 @@ public struct PhotoLibraryClient: Sendable {
     }
 }
 
-extension PhotoLibraryClient: DependencyKey {
+extension PhotoLibraryClient {
     public static let liveValue = PhotoLibraryClient(
         pickPhoto: { throw NSError(domain: "NotImplemented", code: -1) },
         pickMultiplePhotos: { throw NSError(domain: "NotImplemented", code: -1) },
@@ -74,7 +74,7 @@ public struct ScreenshotClient: Sendable {
     }
 }
 
-extension ScreenshotClient: DependencyKey {
+extension ScreenshotClient {
     public static let liveValue = ScreenshotClient(
         captureScreen: { throw NSError(domain: "NotImplemented", code: -1) },
         startRecording: { throw NSError(domain: "NotImplemented", code: -1) },
@@ -104,7 +104,7 @@ public struct MediaValidationClient: Sendable {
     }
 }
 
-extension MediaValidationClient: DependencyKey {
+extension MediaValidationClient {
     public static let liveValue = MediaValidationClient(
         validateFile: { _ in MediaClientValidationResult(isValid: true) },
         validateFileSize: { _ in MediaClientValidationResult(isValid: true) },
@@ -131,7 +131,7 @@ public struct MediaMetadataClient: Sendable {
     }
 }
 
-extension MediaMetadataClient: DependencyKey {
+extension MediaMetadataClient {
     public static let liveValue = MediaMetadataClient(
         extractMetadata: { _ in MediaMetadata() },
         extractEXIF: { _ in [:] },
@@ -140,30 +140,3 @@ extension MediaMetadataClient: DependencyKey {
 }
 
 // MARK: - Dependency Extensions
-
-public extension DependencyValues {
-    var filePickerClient: FilePickerClient {
-        get { self[FilePickerClient.self] }
-        set { self[FilePickerClient.self] = newValue }
-    }
-
-    var photoLibraryClient: PhotoLibraryClient {
-        get { self[PhotoLibraryClient.self] }
-        set { self[PhotoLibraryClient.self] = newValue }
-    }
-
-    var screenshotClient: ScreenshotClient {
-        get { self[ScreenshotClient.self] }
-        set { self[ScreenshotClient.self] = newValue }
-    }
-
-    var mediaValidationClient: MediaValidationClient {
-        get { self[MediaValidationClient.self] }
-        set { self[MediaValidationClient.self] = newValue }
-    }
-
-    var mediaMetadataClient: MediaMetadataClient {
-        get { self[MediaMetadataClient.self] }
-        set { self[MediaMetadataClient.self] = newValue }
-    }
-}

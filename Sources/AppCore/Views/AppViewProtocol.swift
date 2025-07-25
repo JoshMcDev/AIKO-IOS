@@ -1,12 +1,11 @@
-import ComposableArchitecture
 import SwiftUI
 
 /// Protocol defining the shared interface for AppView across platforms
 /// Note: This protocol is for documentation purposes. The actual implementation
 /// uses concrete types from the main AIKO module.
 public protocol AppViewProtocol: View {
-    associatedtype Feature: Reducer
-    init(store: StoreOf<Feature>)
+    associatedtype ViewModel: ObservableObject
+    init(viewModel: ViewModel)
 }
 
 /// Protocol for platform-specific services that AppView requires
@@ -37,9 +36,9 @@ public protocol AppViewPlatformServices {
 
 /// Protocol for menu view to abstract platform differences
 public protocol MenuViewProtocol: View {
-    associatedtype Feature: Reducer
+    associatedtype ViewModel: ObservableObject
     associatedtype MenuItem
-    init(store: StoreOf<Feature>, isShowing: Binding<Bool>, selectedMenuItem: Binding<MenuItem?>)
+    init(viewModel: ViewModel, isShowing: Binding<Bool>, selectedMenuItem: Binding<MenuItem?>)
 }
 
 /// Protocol for platform-specific image loading

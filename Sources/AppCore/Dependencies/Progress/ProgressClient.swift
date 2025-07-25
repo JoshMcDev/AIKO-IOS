@@ -1,8 +1,6 @@
-import ComposableArchitecture
 import Foundation
 
 /// TCA dependency client for progress tracking operations
-@DependencyClient
 public struct ProgressClient: Sendable {
     /// Start a new progress tracking session
     public var startSession: @Sendable (UUID, ProgressSessionConfig?) async -> AsyncStream<ProgressUpdate> = { _, _ in AsyncStream { _ in } }
@@ -28,7 +26,7 @@ public struct ProgressClient: Sendable {
 
 // MARK: - Live Implementation
 
-extension ProgressClient: DependencyKey {
+extension ProgressClient {
     public static let liveValue: Self = {
         let engine = ProgressTrackingEngine()
 
@@ -139,13 +137,6 @@ extension ProgressClient: DependencyKey {
 }
 
 // MARK: - Dependency Registration
-
-public extension DependencyValues {
-    var progressClient: ProgressClient {
-        get { self[ProgressClient.self] }
-        set { self[ProgressClient.self] = newValue }
-    }
-}
 
 // MARK: - Convenience Extensions
 

@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import CoreData
 import Foundation
 
@@ -172,7 +171,7 @@ private actor ChainStorage {
     }
 }
 
-extension DocumentChainManager: DependencyKey {
+extension DocumentChainManager {
     public nonisolated static var liveValue: DocumentChainManager {
         let documentDependencyService = DocumentDependencyService.liveValue
         _ = AcquisitionService.liveValue
@@ -389,12 +388,5 @@ enum ChainError: LocalizedError {
         case .missingDependencies:
             "Missing required document dependencies"
         }
-    }
-}
-
-public extension DependencyValues {
-    var documentChainManager: DocumentChainManager {
-        get { self[DocumentChainManager.self] }
-        set { self[DocumentChainManager.self] = newValue }
     }
 }

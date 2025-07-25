@@ -2,7 +2,6 @@
 import UIKit
 #endif
 import AppCore
-import ComposableArchitecture
 import SwiftUI
 
 // MARK: - Color Compatibility

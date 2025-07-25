@@ -1,6 +1,5 @@
 #if os(iOS)
     import AppCore
-    import ComposableArchitecture
     @preconcurrency import SwiftUI
     import UIKit
 

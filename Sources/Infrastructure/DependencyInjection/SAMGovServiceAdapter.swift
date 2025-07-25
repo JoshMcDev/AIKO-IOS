@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 
 /// Adapter that bridges the TCA SAMGovService dependency with the new SAMGovRepository
@@ -25,7 +24,8 @@ public extension SAMGovService {
     /// Creates a SAMGovService with API key from settings
     static var repositoryBased: SAMGovService {
         get async throws {
-            @Dependency(\.settingsManager) var settingsManager
+            // TODO: Replace with proper dependency injection
+            let settingsManager = SettingsManager.liveValue
             let settings = try await settingsManager.loadSettings()
             let apiKey = settings.apiSettings.samGovAPIKey
 

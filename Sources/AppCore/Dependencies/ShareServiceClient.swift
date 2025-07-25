@@ -1,8 +1,6 @@
-import ComposableArchitecture
 import Foundation
 
 /// Dependency client for sharing functionality
-@DependencyClient
 public struct ShareServiceClient: Sendable {
     public var share: @Sendable ([Any]) async -> Bool = { _ in false }
     public var createShareableFile: @Sendable (String, String) async throws -> URL = { _, _ in
@@ -10,15 +8,20 @@ public struct ShareServiceClient: Sendable {
     }
 
     public var shareContent: @Sendable (String, String) async -> Void = { _, _ in }
-}
 
-extension ShareServiceClient: DependencyKey {
-    public static let liveValue: Self = .init()
-}
-
-public extension DependencyValues {
-    var shareService: ShareServiceClient {
-        get { self[ShareServiceClient.self] }
-        set { self[ShareServiceClient.self] = newValue }
+    public init(
+        share: @escaping @Sendable ([Any]) async -> Bool = { _ in false },
+        createShareableFile: @escaping @Sendable (String, String) async throws -> URL = { _, _ in
+            throw ShareServiceError.notAvailable
+        },
+        shareContent: @escaping @Sendable (String, String) async -> Void = { _, _ in }
+    ) {
+        self.share = share
+        self.createShareableFile = createShareableFile
+        self.shareContent = shareContent
     }
+}
+
+extension ShareServiceClient {
+    public static let liveValue: Self = .init()
 }

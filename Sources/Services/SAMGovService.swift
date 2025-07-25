@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 
 // MARK: - SAM.gov Service Types
@@ -398,13 +397,6 @@ public extension SAMGovService {
 
 // MARK: - Dependency Registration
 
-extension SAMGovService: DependencyKey {
+extension SAMGovService {
     public static let liveValue = SAMGovService.live
-}
-
-public extension DependencyValues {
-    var samGovService: SAMGovService {
-        get { self[SAMGovService.self] }
-        set { self[SAMGovService.self] = newValue }
-    }
 }

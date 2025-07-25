@@ -1,15 +1,16 @@
-import ComposableArchitecture
 import SwiftUI
 
 // MARK: - Navigation Bar Hidden Modifier
 
 public struct NavigationBarHiddenModifier: ViewModifier {
-    @Dependency(\.themeService) var themeService
+    private let themeService: ThemeServiceProtocol?
 
-    public init() {}
+    public init(themeService: ThemeServiceProtocol? = nil) {
+        self.themeService = themeService
+    }
 
     public func body(content: Content) -> some View {
-        themeService.applyNavigationBarHidden(to: AnyView(content))
+        themeService?.applyNavigationBarHidden(to: AnyView(content)) ?? AnyView(content)
     }
 }
 

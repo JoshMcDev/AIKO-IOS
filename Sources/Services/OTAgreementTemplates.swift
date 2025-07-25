@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 
 // MARK: - OT Agreement Types
@@ -79,7 +78,7 @@ public struct OTTemplateGuidance {
 
 // MARK: - Live Value
 
-extension OTAgreementTemplates: DependencyKey {
+extension OTAgreementTemplates {
     public static var liveValue: OTAgreementTemplates {
         OTAgreementTemplates(
             selectTemplate: { type in
@@ -555,10 +554,3 @@ Mentorship available through {{MENTOR_PROGRAM}}
 """
 
 // MARK: - Dependency Registration
-
-public extension DependencyValues {
-    var otAgreementTemplates: OTAgreementTemplates {
-        get { self[OTAgreementTemplates.self] }
-        set { self[OTAgreementTemplates.self] = newValue }
-    }
-}

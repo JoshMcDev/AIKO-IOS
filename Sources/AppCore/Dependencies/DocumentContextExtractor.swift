@@ -1,10 +1,8 @@
-import ComposableArchitecture
 import Foundation
 
 // MARK: - Document Context Extractor
 
 /// Advanced document context extraction engine using sophisticated analysis
-@DependencyClient
 public struct DocumentContextExtractor: Sendable {
     /// Extracts comprehensive context from OCR results and images
     public var extractComprehensiveContext: @Sendable (
@@ -31,7 +29,7 @@ public struct DocumentContextExtractor: Sendable {
 
 // MARK: - Dependency Registration
 
-extension DocumentContextExtractor: DependencyKey {
+extension DocumentContextExtractor {
     public static let liveValue: Self = .init(
         extractComprehensiveContext: { ocrResults, pageImageData, hints in
             // Live implementation would perform sophisticated ML/AI analysis

@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 
 // MARK: - Platform-Agnostic File System Models
@@ -109,7 +108,6 @@ public enum FileDirectory: Equatable, Sendable {
 // MARK: - File System Client Protocol
 
 /// Platform-agnostic protocol for file system operations
-@DependencyClient
 public struct FileSystemClient: Sendable {
     /// Get URL for a specific directory
     public var directoryURL: @Sendable (FileDirectory) throws -> URL
@@ -140,12 +138,48 @@ public struct FileSystemClient: Sendable {
 
     /// Create directory
     public var createDirectory: @Sendable (URL) async throws -> Void
+
+    // MARK: - Initializer
+    
+    public init(
+        directoryURL: @escaping @Sendable (FileDirectory) throws -> URL,
+        listFiles: @escaping @Sendable (URL, FileType?) async throws -> [FileItem],
+        save: @escaping @Sendable (Data, String, FileDirectory) async throws -> URL,
+        load: @escaping @Sendable (URL) async throws -> Data,
+        delete: @escaping @Sendable (URL) async throws -> Void,
+        move: @escaping @Sendable (URL, URL) async throws -> URL,
+        copy: @escaping @Sendable (URL, URL) async throws -> URL,
+        fileExists: @escaping @Sendable (URL) -> Bool = { _ in false },
+        fileAttributes: @escaping @Sendable (URL) async throws -> FileAttributes,
+        createDirectory: @escaping @Sendable (URL) async throws -> Void
+    ) {
+        self.directoryURL = directoryURL
+        self.listFiles = listFiles
+        self.save = save
+        self.load = load
+        self.delete = delete
+        self.move = move
+        self.copy = copy
+        self.fileExists = fileExists
+        self.fileAttributes = fileAttributes
+        self.createDirectory = createDirectory
+    }
 }
 
 // MARK: - Dependency Registration
 
-extension FileSystemClient: DependencyKey {
-    public static let liveValue: Self = .init()
+extension FileSystemClient {
+    public static let liveValue: Self = .init(
+        directoryURL: { _ in URL(fileURLWithPath: NSTemporaryDirectory()) },
+        listFiles: { _, _ in [] },
+        save: { _, filename, _ in URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(filename) },
+        load: { _ in Data() },
+        delete: { _ in },
+        move: { _, destination in destination },
+        copy: { _, destination in destination },
+        fileAttributes: { _ in FileAttributes() },
+        createDirectory: { _ in }
+    )
 
     public static let testValue: Self = .init(
         directoryURL: { _ in URL(fileURLWithPath: "/tmp") },
@@ -159,13 +193,6 @@ extension FileSystemClient: DependencyKey {
         fileAttributes: { _ in FileAttributes() },
         createDirectory: { _ in }
     )
-}
-
-public extension DependencyValues {
-    var fileSystem: FileSystemClient {
-        get { self[FileSystemClient.self] }
-        set { self[FileSystemClient.self] = newValue }
-    }
 }
 
 // MARK: - File System Errors

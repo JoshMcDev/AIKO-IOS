@@ -1,5 +1,3 @@
-import ComposableArchitecture
-import Dependencies
 import SwiftUI
 
 // MARK: - Download Options Sheet
@@ -233,7 +231,7 @@ public struct DocumentSelectionSheet: View {
     let onCancel: () -> Void
 
     // TODO: acquisitionService needs to be injected from the main module
-    // @Dependency(\.acquisitionService) var acquisitionService
+    // Environment(\.acquisitionService) var acquisitionService
     @State private var acquisition: Acquisition?
     @State private var isLoading = true
 

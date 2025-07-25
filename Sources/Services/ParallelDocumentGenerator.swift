@@ -1,6 +1,5 @@
 import AikoCompat
 import AppCore
-import ComposableArchitecture
 import Foundation
 
 /// Configuration for individual document generation
@@ -35,13 +34,31 @@ public struct ParallelDocumentGenerator: Sendable {
 
     // MARK: - Dependencies
 
-    @Dependency(\.aiDocumentGenerator) var aiDocumentGenerator
-    @Dependency(\.documentGenerationCache) var cache
-    @Dependency(\.standardTemplateService) var templateService
-    @Dependency(\.dfTemplateService) var dfTemplateService
-    @Dependency(\.userProfileService) var userProfileService
-    @Dependency(\.spellCheckService) var spellCheckService
-    @Dependency(\.documentGenerationPreloader) var preloader
+    private let aiDocumentGenerator: AIDocumentGenerator
+    private let cache: DocumentGenerationCache
+    private let templateService: StandardTemplateService
+    private let dfTemplateService: DFTemplateService
+    private let userProfileService: UserProfileService
+    private let spellCheckService: SpellCheckService
+    private let preloader: DocumentGenerationPreloader
+
+    public init(
+        aiDocumentGenerator: AIDocumentGenerator = AIDocumentGenerator.liveValue,
+        cache: DocumentGenerationCache = DocumentGenerationCacheKey.liveValue,
+        templateService: StandardTemplateService = StandardTemplateService.liveValue,
+        dfTemplateService: DFTemplateService = DFTemplateService.liveValue,
+        userProfileService: UserProfileService = UserProfileService.liveValue,
+        spellCheckService: SpellCheckService = SpellCheckService.liveValue,
+        preloader: DocumentGenerationPreloader = DocumentGenerationPreloader.liveValue
+    ) {
+        self.aiDocumentGenerator = aiDocumentGenerator
+        self.cache = cache
+        self.templateService = templateService
+        self.dfTemplateService = dfTemplateService
+        self.userProfileService = userProfileService
+        self.spellCheckService = spellCheckService
+        self.preloader = preloader
+    }
 
     // MARK: - Parallel Generation Methods
 
@@ -54,13 +71,13 @@ public struct ParallelDocumentGenerator: Sendable {
         let startTime = Date()
         // Pre-load all required data in parallel
         async let preloadedDataTask = preloader.preloadData(
-            for: documentTypes,
+            for: Array(documentTypes),
             dfDocumentTypes: []
         )
 
         // Batch check cache for all documents
         async let cachedDocsTask = preloader.preloadCachedDocuments(
-            for: documentTypes,
+            for: Array(documentTypes),
             requirements: requirements,
             profile: profile
         )
@@ -115,12 +132,12 @@ public struct ParallelDocumentGenerator: Sendable {
         // Pre-load all required data in parallel
         async let preloadedDataTask = preloader.preloadData(
             for: [],
-            dfDocumentTypes: dfDocumentTypes
+            dfDocumentTypes: Array(dfDocumentTypes)
         )
 
         // Batch check cache for all documents
         async let cachedDocsTask = preloader.preloadCachedDFDocuments(
-            for: dfDocumentTypes,
+            for: Array(dfDocumentTypes),
             requirements: requirements,
             profile: profile
         )
@@ -492,14 +509,58 @@ public enum ParallelDocumentGeneratorError: Error {
 
 // MARK: - Dependency Key
 
-public struct ParallelDocumentGeneratorKey: DependencyKey {
+public struct ParallelDocumentGeneratorKey {
     public nonisolated static let liveValue = ParallelDocumentGenerator()
     public nonisolated static let testValue = ParallelDocumentGenerator()
 }
 
-public extension DependencyValues {
-    var parallelDocumentGenerator: ParallelDocumentGenerator {
-        get { self[ParallelDocumentGeneratorKey.self] }
-        set { self[ParallelDocumentGeneratorKey.self] = newValue }
+// MARK: - DocumentGenerationPreloader
+
+public struct DocumentGenerationPreloader: Sendable {
+    public struct PreloadedData: Sendable {
+        public let templates: [DocumentType: String]
+        public let dfTemplates: [DFDocumentType: DFTemplate]
+        public let systemPrompts: [DocumentType: String]
+        public let dfSystemPrompts: [DFDocumentType: String]
+        public let profile: UserProfile?
+
+        public init(
+            templates: [DocumentType: String] = [:],
+            dfTemplates: [DFDocumentType: DFTemplate] = [:],
+            systemPrompts: [DocumentType: String] = [:],
+            dfSystemPrompts: [DFDocumentType: String] = [:],
+            profile: UserProfile? = nil
+        ) {
+            self.templates = templates
+            self.dfTemplates = dfTemplates
+            self.systemPrompts = systemPrompts
+            self.dfSystemPrompts = dfSystemPrompts
+            self.profile = profile
+        }
     }
+
+    public func preloadData(
+        for documentTypes: [DocumentType],
+        dfDocumentTypes: [DFDocumentType]
+    ) async throws -> PreloadedData {
+        return PreloadedData()
+    }
+
+    public func preloadCachedDocuments(
+        for documentTypes: [DocumentType],
+        requirements: String,
+        profile: UserProfile?
+    ) async throws -> [DocumentType: String] {
+        return [:]
+    }
+
+    public func preloadCachedDFDocuments(
+        for dfDocumentTypes: [DFDocumentType],
+        requirements: String,
+        profile: UserProfile?
+    ) async throws -> [DFDocumentType: String] {
+        return [:]
+    }
+
+    public static let liveValue = DocumentGenerationPreloader()
 }

@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import Foundation
 
 /// Performance monitoring system for document generation
@@ -384,14 +383,7 @@ public struct BenchmarkTestResult: Sendable {
 
 // MARK: - Dependency Key
 
-public struct DocumentGenerationPerformanceMonitorKey: DependencyKey {
+public struct DocumentGenerationPerformanceMonitorKey {
     public static let liveValue = DocumentGenerationPerformanceMonitor()
     public static let testValue = DocumentGenerationPerformanceMonitor()
-}
-
-public extension DependencyValues {
-    var documentGenerationPerformanceMonitor: DocumentGenerationPerformanceMonitor {
-        get { self[DocumentGenerationPerformanceMonitorKey.self] }
-        set { self[DocumentGenerationPerformanceMonitorKey.self] = newValue }
-    }
 }

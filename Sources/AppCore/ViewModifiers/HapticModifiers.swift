@@ -1,5 +1,4 @@
 import Combine
-import ComposableArchitecture
 import SwiftUI
 
 // MARK: - Haptic Feedback Modifier
@@ -7,7 +6,13 @@ import SwiftUI
 public struct HapticFeedbackModifier: ViewModifier {
     let style: HapticStyle
     let trigger: Bool
-    @Dependency(\.hapticManager) var hapticManager
+    private let hapticManager: HapticManagerProtocol?
+
+    public init(style: HapticStyle, trigger: Bool, hapticManager: HapticManagerProtocol? = nil) {
+        self.style = style
+        self.trigger = trigger
+        self.hapticManager = hapticManager
+    }
 
     public func body(content: Content) -> some View {
         if #available(macOS 14.0, iOS 17.0, *) {
@@ -15,7 +20,7 @@ public struct HapticFeedbackModifier: ViewModifier {
                 .onChange(of: trigger) { _, newValue in
                     if newValue {
                         Task { @MainActor in
-                            hapticManager.impact(style)
+                            hapticManager?.impact(style)
                         }
                     }
                 }
@@ -24,7 +29,7 @@ public struct HapticFeedbackModifier: ViewModifier {
                 .onReceive(Just(trigger)) { newValue in
                     if newValue {
                         Task { @MainActor in
-                            hapticManager.impact(style)
+                            hapticManager?.impact(style)
                         }
                     }
                 }
@@ -36,13 +41,18 @@ public struct HapticFeedbackModifier: ViewModifier {
 
 public struct HapticTapModifier: ViewModifier {
     let style: HapticStyle
-    @Dependency(\.hapticManager) var hapticManager
+    private let hapticManager: HapticManagerProtocol?
+
+    public init(style: HapticStyle, hapticManager: HapticManagerProtocol? = nil) {
+        self.style = style
+        self.hapticManager = hapticManager
+    }
 
     public func body(content: Content) -> some View {
         content
             .onTapGesture {
                 Task { @MainActor in
-                    hapticManager.impact(style)
+                    hapticManager?.impact(style)
                 }
             }
     }
@@ -53,7 +63,13 @@ public struct HapticTapModifier: ViewModifier {
 public struct HapticNotificationModifier: ViewModifier {
     let type: HapticNotificationType
     let trigger: Bool
-    @Dependency(\.hapticManager) var hapticManager
+    private let hapticManager: HapticManagerProtocol?
+
+    public init(type: HapticNotificationType, trigger: Bool, hapticManager: HapticManagerProtocol? = nil) {
+        self.type = type
+        self.trigger = trigger
+        self.hapticManager = hapticManager
+    }
 
     public func body(content: Content) -> some View {
         if #available(macOS 14.0, iOS 17.0, *) {
@@ -61,7 +77,7 @@ public struct HapticNotificationModifier: ViewModifier {
                 .onChange(of: trigger) { _, newValue in
                     if newValue {
                         Task { @MainActor in
-                            hapticManager.notification(type)
+                            hapticManager?.notification(type)
                         }
                     }
                 }
@@ -70,7 +86,7 @@ public struct HapticNotificationModifier: ViewModifier {
                 .onReceive(Just(trigger)) { newValue in
                     if newValue {
                         Task { @MainActor in
-                            hapticManager.notification(type)
+                            hapticManager?.notification(type)
                         }
                     }
                 }
@@ -98,10 +114,11 @@ public extension View {
 
 public struct HapticButtonStyle: ButtonStyle {
     let hapticStyle: HapticStyle
-    @Dependency(\.hapticManager) var hapticManager
+    private let hapticManager: HapticManagerProtocol?
 
-    public init(hapticStyle: HapticStyle = .light) {
+    public init(hapticStyle: HapticStyle = .light, hapticManager: HapticManagerProtocol? = nil) {
         self.hapticStyle = hapticStyle
+        self.hapticManager = hapticManager
     }
 
     public func makeBody(configuration: Configuration) -> some View {
@@ -111,7 +128,7 @@ public struct HapticButtonStyle: ButtonStyle {
                 .onChange(of: configuration.isPressed) { _, newValue in
                     if newValue {
                         Task { @MainActor in
-                            hapticManager.impact(hapticStyle)
+                            hapticManager?.impact(hapticStyle)
                         }
                     }
                 }
@@ -121,7 +138,7 @@ public struct HapticButtonStyle: ButtonStyle {
                 .onReceive(Just(configuration.isPressed)) { isPressed in
                     if isPressed {
                         Task { @MainActor in
-                            hapticManager.impact(hapticStyle)
+                            hapticManager?.impact(hapticStyle)
                         }
                     }
                 }
@@ -142,13 +159,17 @@ public extension ButtonStyle where Self == HapticButtonStyle {
 // MARK: - Haptic Toggle Style
 
 public struct HapticToggleStyle: ToggleStyle {
-    @Dependency(\.hapticManager) var hapticManager
+    private let hapticManager: HapticManagerProtocol?
+
+    public init(hapticManager: HapticManagerProtocol? = nil) {
+        self.hapticManager = hapticManager
+    }
 
     public func makeBody(configuration: Configuration) -> some View {
         Button {
             configuration.isOn.toggle()
             Task { @MainActor in
-                hapticManager.toggleSwitch()
+                hapticManager?.toggleSwitch()
             }
         } label: {
             HStack {

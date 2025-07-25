@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 
 // MARK: - Configuration Types
@@ -36,7 +35,7 @@ private struct PageProcessingConfig: Sendable {
 public protocol BatchProcessing: Sendable {
     /// Process pages in batch with progress tracking
     func processPages(
-        _ pages: IdentifiedArrayOf<SessionPage>,
+        _ pages: [SessionPage],
         sessionEngine: SessionEngine,
         progressHandler: @escaping @Sendable (Double) async -> Void,
         perPageCompletion: @escaping @Sendable (SessionPage.ID, Result<Void, Error>) async -> Void
@@ -54,16 +53,24 @@ public protocol BatchProcessing: Sendable {
 
 /// Actor-based batch processor for scanning operations
 public actor BatchProcessor: BatchProcessing {
-    // Dependencies
-    @Dependency(\.documentScanner) private var documentScanner
-    @Dependency(\.documentImageProcessor) private var documentImageProcessor
-    @Dependency(\.progressBridge) private var progressBridge
+    // Dependencies - injected via initializer
+    private let documentScanner: DocumentScannerClient?
+    private let documentImageProcessor: DocumentImageProcessor?
+    private let progressBridge: ProgressBridge?
 
     // Processing state
     private var currentTask: Task<Void, Error>?
     private var _isProcessing: Bool = false
 
-    public init() {}
+    public init(
+        documentScanner: DocumentScannerClient? = nil,
+        documentImageProcessor: DocumentImageProcessor? = nil,
+        progressBridge: ProgressBridge? = nil
+    ) {
+        self.documentScanner = documentScanner
+        self.documentImageProcessor = documentImageProcessor
+        self.progressBridge = progressBridge
+    }
 
     // MARK: - Processing Status
 
@@ -74,7 +81,7 @@ public actor BatchProcessor: BatchProcessing {
     // MARK: - Batch Processing
 
     public func processPages(
-        _ pages: IdentifiedArrayOf<SessionPage>,
+        _ pages: [SessionPage],
         sessionEngine: SessionEngine,
         progressHandler: @escaping @Sendable (Double) async -> Void,
         perPageCompletion: @escaping @Sendable (SessionPage.ID, Result<Void, Error>) async -> Void
@@ -89,14 +96,14 @@ public actor BatchProcessor: BatchProcessing {
         let total = pages.count
         guard total > 0 else { return }
 
-        // Create progress session for batch operation
+        // Create progress session for batch operation if available
         let sessionId = UUID()
-        let progressSession = await progressBridge.createProgressSession(
+        let progressSession = await progressBridge?.createProgressSession(
             sessionId: sessionId,
             progressClient: ProgressClient.liveValue
         )
 
-        await progressSession.transitionToPhase(.scanning, operation: "Starting batch processing of \(total) pages")
+        await progressSession?.transitionToPhase(.scanning, operation: "Starting batch processing of \(total) pages")
 
         // Process pages with concurrency limit to avoid overwhelming the system
         let maxConcurrency = min(3, total) // Limit to 3 concurrent operations
@@ -147,8 +154,8 @@ public actor BatchProcessor: BatchProcessing {
         }
 
         // Complete progress session
-        await progressSession.complete()
-        await progressBridge.removeProgressSession(sessionId)
+        await progressSession?.complete()
+        await progressBridge?.removeProgressSession(sessionId)
     }
 
     private func processPageInGroup(
@@ -225,11 +232,13 @@ public actor BatchProcessor: BatchProcessing {
             optimizeForOCR: true
         )
 
-        let result = try await documentImageProcessor.processImage(
+        guard let result = try await documentImageProcessor?.processImage(
             imageData,
             .documentScanner,
             options
-        )
+        ) else {
+            return imageData // Return original if processor unavailable
+        }
 
         return result.processedImageData
     }
@@ -238,7 +247,7 @@ public actor BatchProcessor: BatchProcessing {
         let imageData = page.enhancedImageData ?? page.imageData
         let thumbnailSize = CGSize(width: 200, height: 300)
 
-        return try await documentScanner.generateThumbnail(imageData, thumbnailSize)
+        return try await documentScanner?.generateThumbnail(imageData, thumbnailSize) ?? Data()
     }
 
     private func performOCR(on page: SessionPage) async throws -> OCRResult {
@@ -249,7 +258,10 @@ public actor BatchProcessor: BatchProcessing {
             automaticLanguageDetection: true
         )
 
-        let detailedResult = try await documentImageProcessor.extractText(imageData, ocrOptions)
+        guard let detailedResult = try await documentImageProcessor?.extractText(imageData, ocrOptions) else {
+            // Return empty OCR result if processor unavailable
+            return OCRResult(fullText: "", confidence: 0.0)
+        }
 
         // Convert to OCRResult format expected by the system
         return OCRResult(
@@ -273,16 +285,9 @@ public actor BatchProcessor: BatchProcessing {
 
 // MARK: - Dependency Registration
 
-extension BatchProcessor: DependencyKey {
+extension BatchProcessor {
     public static let liveValue: BatchProcessor = .init()
     public static let testValue: BatchProcessor = .init()
-}
-
-public extension DependencyValues {
-    var batchProcessor: BatchProcessor {
-        get { self[BatchProcessor.self] }
-        set { self[BatchProcessor.self] = newValue }
-    }
 }
 
 // MARK: - Batch Operation Status

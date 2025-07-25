@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import Foundation
 
 // MARK: - LLM Manager
@@ -294,14 +293,7 @@ public enum LLMManagerError: LocalizedError {
 
 // MARK: - TCA Dependency
 
-public extension DependencyValues {
-    var llmManager: LLMManager {
-        get { self[LLMManagerKey.self] }
-        set { self[LLMManagerKey.self] = newValue }
-    }
-}
-
-private enum LLMManagerKey: DependencyKey {
+private enum LLMManagerKey {
     static var liveValue: LLMManager {
         MainActor.assumeIsolated {
             LLMManager.shared

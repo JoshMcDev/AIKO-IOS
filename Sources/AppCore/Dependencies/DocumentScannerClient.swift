@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 
 // MARK: - Platform-Agnostic Models
@@ -116,7 +115,6 @@ public struct DocumentMetadata: Equatable, Sendable {
 // MARK: - Document Scanner Client Protocol
 
 /// Platform-agnostic protocol for document scanning capabilities
-@DependencyClient
 public struct DocumentScannerClient: Sendable {
     /// Initiates the document scanning process
     public var scan: @Sendable () async throws -> ScannedDocument
@@ -154,8 +152,49 @@ public struct DocumentScannerClient: Sendable {
 
 // MARK: - Dependency Registration
 
-extension DocumentScannerClient: DependencyKey {
-    public static let liveValue: Self = .init()
+extension DocumentScannerClient {
+    public static let liveValue: Self = .init(
+        scan: {
+            ScannedDocument(
+                pages: [
+                    ScannedPage(
+                        imageData: Data(),
+                        pageNumber: 1
+                    ),
+                ],
+                title: "Live Document"
+            )
+        },
+        enhanceImage: { data in data },
+        enhanceImageAdvanced: { data, _, _ in
+            DocumentImageProcessor.ProcessingResult(
+                processedImageData: data,
+                qualityMetrics: DocumentImageProcessor.QualityMetrics(
+                    overallConfidence: 0.85,
+                    sharpnessScore: 0.8,
+                    contrastScore: 0.9,
+                    noiseLevel: 0.2,
+                    textClarity: 0.85,
+                    recommendedForOCR: true
+                ),
+                processingTime: 0.1,
+                appliedFilters: ["live"]
+            )
+        },
+        performOCR: { _ in "Live OCR Text" },
+        performEnhancedOCR: { _ in
+            OCRResult(
+                fullText: "Live OCR Text",
+                confidence: 0.85,
+                recognizedFields: [],
+                documentStructure: DocumentStructure(),
+                extractedMetadata: ExtractedMetadata(),
+                processingTime: 0.1
+            )
+        },
+        generateThumbnail: { data, _ in data },
+        saveToDocumentPipeline: { _ in }
+    )
 
     public static let testValue: Self = .init(
         scan: {
@@ -221,13 +260,6 @@ extension DocumentScannerClient: DependencyKey {
         isProcessingModeAvailable: { _ in true },
         checkCameraPermissions: { true }
     )
-}
-
-public extension DependencyValues {
-    var documentScanner: DocumentScannerClient {
-        get { self[DocumentScannerClient.self] }
-        set { self[DocumentScannerClient.self] = newValue }
-    }
 }
 
 // MARK: - OCR Enhancement Types

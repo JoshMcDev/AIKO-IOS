@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import Foundation
 
 // MARK: - LLM Conversation Manager
@@ -386,14 +385,7 @@ public enum ConversationError: LocalizedError {
 
 // MARK: - TCA Dependency
 
-public extension DependencyValues {
-    var conversationManager: LLMConversationManager {
-        get { self[ConversationManagerKey.self] }
-        set { self[ConversationManagerKey.self] = newValue }
-    }
-}
-
-private enum ConversationManagerKey: DependencyKey {
+private enum ConversationManagerKey {
     static var liveValue: LLMConversationManager {
         MainActor.assumeIsolated {
             LLMConversationManager.shared

@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import Foundation
 
 /// Unified FAR Compliance Manager consolidating all FAR-related functionality
@@ -780,7 +779,7 @@ enum FARError: LocalizedError, Sendable {
 
 // MARK: - Dependency Implementation
 
-extension FARComplianceManager: DependencyKey {
+extension FARComplianceManager {
     public static var liveValue: FARComplianceManager {
         let storage = Task {
             try await FARComplianceStorage()
@@ -878,12 +877,5 @@ extension FARComplianceManager: DependencyKey {
                 []
             }
         )
-    }
-}
-
-public extension DependencyValues {
-    var farComplianceManager: FARComplianceManager {
-        get { self[FARComplianceManager.self] }
-        set { self[FARComplianceManager.self] = newValue }
     }
 }

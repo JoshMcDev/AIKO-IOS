@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import Foundation
 
 public enum DFTemplateError: Error {
@@ -33,7 +32,7 @@ public struct DFTemplateService: Sendable {
     }
 }
 
-extension DFTemplateService: DependencyKey {
+extension DFTemplateService {
     public static var liveValue: DFTemplateService {
         DFTemplateService(
             loadTemplate: { documentType in
@@ -112,12 +111,5 @@ extension DFTemplateService: DependencyKey {
                 }
             }
         )
-    }
-}
-
-public extension DependencyValues {
-    var dfTemplateService: DFTemplateService {
-        get { self[DFTemplateService.self] }
-        set { self[DFTemplateService.self] = newValue }
     }
 }

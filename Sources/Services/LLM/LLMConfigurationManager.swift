@@ -7,7 +7,6 @@
 //
 
 import AppCore
-import ComposableArchitecture
 import Foundation
 import SwiftUI
 
@@ -301,21 +300,47 @@ final class LLMConfigurationManager: ObservableObject, @unchecked Sendable {
 // MARK: - TCA Integration
 
 /// Configuration client for The Composable Architecture
-struct LLMConfigurationClient {
-    var configureProvider: @Sendable (LLMProvider, String, LLMProviderConfig?) async throws -> Void
-    var removeProvider: @Sendable (LLMProvider) async throws -> Void
-    var setActiveProvider: @Sendable (LLMProvider) async throws -> Void
-    var getAPIKey: @Sendable (LLMProvider) async -> String?
-    var getAvailableProviders: @Sendable () async -> [LLMProvider]
-    var getActiveProvider: @Sendable () async -> LLMProviderConfig?
-    var getNextFallbackProvider: @Sendable (LLMProvider) async -> LLMProvider?
-    var updateProviderPriority: @Sendable (LLMProviderPriority) async -> Void
-    var validateAllProviders: @Sendable () async -> [LLMProvider: Bool]
-    var clearAllConfigurations: @Sendable () async throws -> Void
+public struct LLMConfigurationClient: Sendable {
+    public var configureProvider: @Sendable (LLMProvider, String, LLMProviderConfig?) async throws -> Void
+    public var removeProvider: @Sendable (LLMProvider) async throws -> Void
+    public var setActiveProvider: @Sendable (LLMProvider) async throws -> Void
+    public var getAPIKey: @Sendable (LLMProvider) async -> String?
+    public var getAvailableProviders: @Sendable () async -> [LLMProvider]
+    public var getActiveProvider: @Sendable () async -> LLMProviderConfig?
+    public var getNextFallbackProvider: @Sendable (LLMProvider) async -> LLMProvider?
+    public var updateProviderPriority: @Sendable (LLMProviderPriority) async -> Void
+    public var validateAllProviders: @Sendable () async -> [LLMProvider: Bool]
+    public var clearAllConfigurations: @Sendable () async throws -> Void
+
+    // MARK: - Initializer
+    
+    public init(
+        configureProvider: @escaping @Sendable (LLMProvider, String, LLMProviderConfig?) async throws -> Void,
+        removeProvider: @escaping @Sendable (LLMProvider) async throws -> Void,
+        setActiveProvider: @escaping @Sendable (LLMProvider) async throws -> Void,
+        getAPIKey: @escaping @Sendable (LLMProvider) async -> String?,
+        getAvailableProviders: @escaping @Sendable () async -> [LLMProvider],
+        getActiveProvider: @escaping @Sendable () async -> LLMProviderConfig?,
+        getNextFallbackProvider: @escaping @Sendable (LLMProvider) async -> LLMProvider?,
+        updateProviderPriority: @escaping @Sendable (LLMProviderPriority) async -> Void,
+        validateAllProviders: @escaping @Sendable () async -> [LLMProvider: Bool],
+        clearAllConfigurations: @escaping @Sendable () async throws -> Void
+    ) {
+        self.configureProvider = configureProvider
+        self.removeProvider = removeProvider
+        self.setActiveProvider = setActiveProvider
+        self.getAPIKey = getAPIKey
+        self.getAvailableProviders = getAvailableProviders
+        self.getActiveProvider = getActiveProvider
+        self.getNextFallbackProvider = getNextFallbackProvider
+        self.updateProviderPriority = updateProviderPriority
+        self.validateAllProviders = validateAllProviders
+        self.clearAllConfigurations = clearAllConfigurations
+    }
 }
 
-extension LLMConfigurationClient: DependencyKey {
-    static let liveValue = Self(
+extension LLMConfigurationClient {
+    public static let liveValue = Self(
         configureProvider: { provider, apiKey, config in
             try await MainActor.run {
                 try LLMConfigurationManager.shared.configureProvider(provider, apiKey: apiKey, config: config)
@@ -367,9 +392,15 @@ extension LLMConfigurationClient: DependencyKey {
     )
 }
 
-extension DependencyValues {
+// MARK: - Environment Key for SwiftUI
+
+public extension EnvironmentValues {
     var llmConfiguration: LLMConfigurationClient {
-        get { self[LLMConfigurationClient.self] }
-        set { self[LLMConfigurationClient.self] = newValue }
+        get { self[LLMConfigurationEnvironmentKey.self] }
+        set { self[LLMConfigurationEnvironmentKey.self] = newValue }
     }
+}
+
+public struct LLMConfigurationEnvironmentKey: EnvironmentKey {
+    public static let defaultValue: LLMConfigurationClient = LLMConfigurationClient.liveValue
 }

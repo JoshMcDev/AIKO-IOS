@@ -1,6 +1,5 @@
 #if os(iOS)
     import AppCore
-    import ComposableArchitecture
     import Foundation
 
     /// iOS Clipboard Service Client using SimpleServiceTemplate

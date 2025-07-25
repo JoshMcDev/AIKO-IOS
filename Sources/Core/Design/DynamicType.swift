@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import SwiftUI
 
 // MARK: - Dynamic Type System
@@ -7,7 +6,7 @@ import SwiftUI
 /// Scalable font system that supports Dynamic Type
 struct ScalableFont: ViewModifier {
     @Environment(\.sizeCategory) var sizeCategory
-    @Dependency(\.fontScalingService) var fontScalingService
+    @Environment(\.fontScalingService) var fontScalingService
 
     let textStyle: Font.TextStyle
     let baseSize: CGFloat

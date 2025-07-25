@@ -1,6 +1,5 @@
 import AppCore
 import CommonCrypto
-import ComposableArchitecture
 import Foundation
 
 /// Cache eviction policy
@@ -500,19 +499,12 @@ public enum DiskCacheError: Error, LocalizedError {
 
 // MARK: - Dependency Registration
 
-extension DiskCache: DependencyKey {
+extension DiskCache {
     public static var liveValue: DiskCache {
         do {
             return try DiskCache()
         } catch {
             fatalError("Failed to initialize DiskCache: \(error)")
         }
-    }
-}
-
-public extension DependencyValues {
-    var diskCache: DiskCache {
-        get { self[DiskCache.self] }
-        set { self[DiskCache.self] = newValue }
     }
 }

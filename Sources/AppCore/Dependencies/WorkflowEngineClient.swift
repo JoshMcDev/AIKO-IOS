@@ -1,7 +1,5 @@
-import ComposableArchitecture
 import Foundation
 
-@DependencyClient
 public struct WorkflowEngineClient: Sendable {
     public var startWorkflow: @Sendable (UUID) async throws -> WorkflowContext
     public var loadWorkflow: @Sendable (UUID) async throws -> WorkflowContext
@@ -12,13 +10,14 @@ public struct WorkflowEngineClient: Sendable {
     public var generatePrompts: @Sendable (WorkflowContext) async throws -> [SuggestedPrompt]
 }
 
-extension WorkflowEngineClient: TestDependencyKey {
-    public static let testValue = Self()
-}
-
-public extension DependencyValues {
-    var workflowEngine: WorkflowEngineClient {
-        get { self[WorkflowEngineClient.self] }
-        set { self[WorkflowEngineClient.self] = newValue }
-    }
+extension WorkflowEngineClient {
+    public static let testValue = Self(
+        startWorkflow: { _ in WorkflowContext() },
+        loadWorkflow: { _ in WorkflowContext() },
+        updateWorkflowState: { _, state in WorkflowContext(currentState: state) },
+        collectData: { _, _ in },
+        processLLMResponse: { _, _, _ in WorkflowContext() },
+        processApproval: { _, _, _ in WorkflowContext() },
+        generatePrompts: { _ in [] }
+    )
 }

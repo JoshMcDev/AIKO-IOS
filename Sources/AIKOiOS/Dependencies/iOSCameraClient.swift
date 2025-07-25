@@ -1,7 +1,6 @@
 #if os(iOS)
     import AppCore
     import AVFoundation
-    import ComposableArchitecture
     import Foundation
     import UIKit
 

@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 import LocalAuthentication
 
@@ -30,7 +29,7 @@ public struct BiometricAuthenticationService: Sendable {
     }
 }
 
-extension BiometricAuthenticationService: DependencyKey {
+extension BiometricAuthenticationService {
     public static var liveValue: BiometricAuthenticationService {
         BiometricAuthenticationService(
             biometricType: {
@@ -109,12 +108,5 @@ private func mapError(_ error: NSError) -> BiometricAuthenticationService.Biomet
         .passcodeNotSet
     default:
         .unknown(error)
-    }
-}
-
-public extension DependencyValues {
-    var biometricAuthenticationService: BiometricAuthenticationService {
-        get { self[BiometricAuthenticationService.self] }
-        set { self[BiometricAuthenticationService.self] = newValue }
     }
 }

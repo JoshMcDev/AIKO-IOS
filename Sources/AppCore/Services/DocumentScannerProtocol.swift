@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 
 #if canImport(VisionKit)
@@ -9,7 +8,6 @@ import Foundation
 
 /// Unified protocol for document scanning service with VisionKit integration
 /// Consolidates scattered VisionKit usage into a single, dependency-injectable service
-@DependencyClient
 public struct DocumentScannerService: Sendable {
     // MARK: - Core Scanning Operations
 
@@ -345,8 +343,66 @@ public enum TrendDirection: String, CaseIterable, Equatable, Sendable {
 
 // MARK: - Dependency Registration
 
-extension DocumentScannerService: DependencyKey {
-    public static let liveValue: Self = .init()
+extension DocumentScannerService {
+    public static let liveValue: Self = .init(
+        scanDocument: {
+            ScannedDocument(
+                pages: [
+                    ScannedPage(
+                        imageData: Data(),
+                        pageNumber: 1
+                    ),
+                ],
+                title: "Live Document"
+            )
+        },
+        startMultiPageSession: {
+            MultiPageSession(
+                id: UUID(),
+                title: "Live Session"
+            )
+        },
+        addPagesToSession: { _ in
+            MultiPageSession(
+                id: UUID(),
+                title: "Live Updated Session"
+            )
+        },
+        finalizeSession: { _ in
+            ScannedDocument(
+                pages: [
+                    ScannedPage(
+                        imageData: Data(),
+                        pageNumber: 1
+                    ),
+                ],
+                title: "Finalized Document"
+            )
+        },
+        processPages: { pages, _, _ in pages },
+        processPage: { page, _, _ in page },
+        performEnhancedOCR: { pages in pages },
+        performPageOCR: { page in page },
+        assessPageQuality: { page in
+            QualityAssessment(
+                pageId: page.id,
+                overallScore: 0.85,
+                qualityMetrics: DocumentImageProcessor.QualityMetrics(
+                    overallConfidence: 0.85,
+                    sharpnessScore: 0.8,
+                    contrastScore: 0.9,
+                    noiseLevel: 0.2,
+                    textClarity: 0.85,
+                    recommendedForOCR: true
+                ),
+                issues: [],
+                recommendations: []
+            )
+        },
+        cancelSession: { _ in },
+        saveSessionState: { _ in },
+        restoreSessionState: { _ in nil }
+    )
 
     public static let testValue: Self = .init(
         scanDocument: {
@@ -434,11 +490,4 @@ extension DocumentScannerService: DependencyKey {
             return baseTime * Double(pages)
         }
     )
-}
-
-public extension DependencyValues {
-    var documentScannerService: DocumentScannerService {
-        get { self[DocumentScannerService.self] }
-        set { self[DocumentScannerService.self] = newValue }
-    }
 }

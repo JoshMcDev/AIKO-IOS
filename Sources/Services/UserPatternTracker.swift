@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import Foundation
 
 // MARK: - User Pattern Tracker
@@ -130,7 +129,7 @@ public struct ActionOutcome: Equatable, Sendable {
 
 // MARK: - Implementation
 
-extension UserPatternTracker: DependencyKey {
+extension UserPatternTracker {
     public nonisolated static var liveValue: UserPatternTracker {
         let storage = PatternStorage()
 
@@ -322,12 +321,5 @@ private actor PatternStorage {
         let totalCount = outcomes.count
 
         patterns.successRate = totalCount > 0 ? Double(successCount) / Double(totalCount) : 0.0
-    }
-}
-
-public extension DependencyValues {
-    var userPatternTracker: UserPatternTracker {
-        get { self[UserPatternTracker.self] }
-        set { self[UserPatternTracker.self] = newValue }
     }
 }

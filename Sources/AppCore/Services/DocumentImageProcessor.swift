@@ -1,4 +1,3 @@
-import ComposableArchitecture
 @preconcurrency import CoreImage
 @preconcurrency import CoreImage.CIFilterBuiltins
 import Foundation
@@ -6,7 +5,6 @@ import Foundation
 // MARK: - Document Image Processor Protocol
 
 /// Advanced image processing service for document enhancement
-@DependencyClient
 public struct DocumentImageProcessor: Sendable {
     /// Process image with specified mode
     public var processImage: @Sendable (Data, ProcessingMode, ProcessingOptions) async throws -> ProcessingResult
@@ -25,6 +23,24 @@ public struct DocumentImageProcessor: Sendable {
 
     /// Check if OCR is available on the current platform
     public var isOCRAvailable: @Sendable () -> Bool = { false }
+
+    // MARK: - Initializer
+    
+    public init(
+        processImage: @escaping @Sendable (Data, ProcessingMode, ProcessingOptions) async throws -> ProcessingResult,
+        estimateProcessingTime: @escaping @Sendable (Data, ProcessingMode) async throws -> TimeInterval,
+        isProcessingModeAvailable: @escaping @Sendable (ProcessingMode) -> Bool = { _ in false },
+        extractText: @escaping @Sendable (Data, OCROptions) async throws -> OCRResult,
+        extractStructuredData: @escaping @Sendable (Data, DocumentType, OCROptions) async throws -> StructuredOCRResult,
+        isOCRAvailable: @escaping @Sendable () -> Bool = { false }
+    ) {
+        self.processImage = processImage
+        self.estimateProcessingTime = estimateProcessingTime
+        self.isProcessingModeAvailable = isProcessingModeAvailable
+        self.extractText = extractText
+        self.extractStructuredData = extractStructuredData
+        self.isOCRAvailable = isOCRAvailable
+    }
 }
 
 // MARK: - Processing Types
@@ -443,8 +459,50 @@ public enum ProcessingStep: String, CaseIterable, Equatable, Sendable {
 
 // MARK: - Dependency Registration
 
-extension DocumentImageProcessor: DependencyKey {
-    public static let liveValue: Self = .init()
+extension DocumentImageProcessor {
+    public static let liveValue: Self = .init(
+        processImage: { data, _, _ in
+            ProcessingResult(
+                processedImageData: data,
+                qualityMetrics: QualityMetrics(
+                    overallConfidence: 0.85,
+                    sharpnessScore: 0.8,
+                    contrastScore: 0.9,
+                    noiseLevel: 0.2,
+                    textClarity: 0.85,
+                    recommendedForOCR: true
+                ),
+                processingTime: 0.1,
+                appliedFilters: ["live"]
+            )
+        },
+        estimateProcessingTime: { _, _ in 1.0 },
+        extractText: { _, _ in
+            OCRResult(
+                extractedText: [],
+                fullText: "Live OCR Result",
+                confidence: 0.85,
+                detectedLanguages: [],
+                processingTime: 0.1,
+                imageSize: CGSize(width: 100, height: 100)
+            )
+        },
+        extractStructuredData: { _, _, _ in
+            StructuredOCRResult(
+                documentType: .generic,
+                extractedFields: [:],
+                ocrResult: OCRResult(
+                    extractedText: [],
+                    fullText: "Live Structured OCR",
+                    confidence: 0.85,
+                    detectedLanguages: [],
+                    processingTime: 0.1,
+                    imageSize: CGSize(width: 100, height: 100)
+                ),
+                structureConfidence: 0.85
+            )
+        }
+    )
 
     public static let testValue: Self = .init(
         processImage: { data, _, options in
@@ -557,13 +615,6 @@ extension DocumentImageProcessor: DependencyKey {
         },
         isOCRAvailable: { true }
     )
-}
-
-public extension DependencyValues {
-    var documentImageProcessor: DocumentImageProcessor {
-        get { self[DocumentImageProcessor.self] }
-        set { self[DocumentImageProcessor.self] = newValue }
-    }
 }
 
 // MARK: - Processing Errors

@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 
 // MARK: - Platform-Agnostic Camera Models
@@ -87,7 +86,6 @@ public struct PhotoMetadata: Equatable, Sendable {
 // MARK: - Camera Client Protocol
 
 /// Platform-agnostic protocol for camera capabilities
-@DependencyClient
 public struct CameraClient: Sendable {
     /// Check camera availability
     public var checkAvailability: @Sendable () async -> Bool = { false }
@@ -106,12 +104,30 @@ public struct CameraClient: Sendable {
 
     /// Get available camera positions
     public var availablePositions: @Sendable () -> [CameraPosition] = { [] }
+
+    // MARK: - Initializer
+    
+    public init(
+        checkAvailability: @escaping @Sendable () async -> Bool = { false },
+        requestAuthorization: @escaping @Sendable () async -> CameraAuthorizationStatus = { .denied },
+        authorizationStatus: @escaping @Sendable () -> CameraAuthorizationStatus = { .notDetermined },
+        capturePhoto: @escaping @Sendable () async throws -> CapturedPhoto,
+        switchCamera: @escaping @Sendable () async throws -> CameraPosition,
+        availablePositions: @escaping @Sendable () -> [CameraPosition] = { [] }
+    ) {
+        self.checkAvailability = checkAvailability
+        self.requestAuthorization = requestAuthorization
+        self.authorizationStatus = authorizationStatus
+        self.capturePhoto = capturePhoto
+        self.switchCamera = switchCamera
+        self.availablePositions = availablePositions
+    }
 }
 
 // MARK: - Dependency Registration
 
-extension CameraClient: DependencyKey {
-    public static let liveValue: Self = .init()
+extension CameraClient {
+    public static let liveValue: Self = .init(capturePhoto: { CapturedPhoto(imageData: Data(), metadata: nil) }, switchCamera: { .back })
 
     public static let testValue: Self = .init(
         checkAvailability: { true },
@@ -126,13 +142,6 @@ extension CameraClient: DependencyKey {
         switchCamera: { .front },
         availablePositions: { [.back, .front] }
     )
-}
-
-public extension DependencyValues {
-    var camera: CameraClient {
-        get { self[CameraClient.self] }
-        set { self[CameraClient.self] = newValue }
-    }
 }
 
 // MARK: - Camera Errors

@@ -1,5 +1,4 @@
 import Foundation
-import IdentifiedCollections
 
 // MARK: - Media Workflow Types
 

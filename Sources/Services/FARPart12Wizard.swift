@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 
 // MARK: - FAR Part 12 Determination Wizard
@@ -301,7 +300,7 @@ private let wizardSteps: [String: WizardStep] = [
 
 // MARK: - Live Value
 
-extension FARPart12Wizard: DependencyKey {
+extension FARPart12Wizard {
     public static var liveValue: FARPart12Wizard {
         FARPart12Wizard(
             startWizard: {
@@ -572,10 +571,3 @@ public extension FARPart12Wizard {
 }
 
 // MARK: - Dependency Registration
-
-public extension DependencyValues {
-    var farPart12Wizard: FARPart12Wizard {
-        get { self[FARPart12Wizard.self] }
-        set { self[FARPart12Wizard.self] = newValue }
-    }
-}

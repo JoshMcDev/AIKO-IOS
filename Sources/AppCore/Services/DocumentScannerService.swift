@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 import os.log
 
@@ -15,9 +14,19 @@ import os.log
 public final class DocumentScannerServiceImpl: ObservableObject {
     // MARK: - Dependencies
 
-    @Dependency(\.documentImageProcessor) private var imageProcessor
-    @Dependency(\.documentScanner) private var scannerClient
-    @Dependency(\.uuid) private var uuid
+    private let imageProcessor: DocumentImageProcessor?
+    private let scannerClient: DocumentScannerClient?
+    private let uuidGenerator: () -> UUID
+
+    public init(
+        imageProcessor: DocumentImageProcessor? = nil,
+        scannerClient: DocumentScannerClient? = nil,
+        uuidGenerator: @escaping () -> UUID = UUID.init
+    ) {
+        self.imageProcessor = imageProcessor
+        self.scannerClient = scannerClient
+        self.uuidGenerator = uuidGenerator
+    }
 
     // MARK: - State Management
 
@@ -36,6 +45,9 @@ public final class DocumentScannerServiceImpl: ObservableObject {
     // MARK: - Initialization
 
     public init() {
+        self.imageProcessor = nil
+        self.scannerClient = nil
+        self.uuidGenerator = UUID.init
         logger.info("DocumentScannerService initialized")
         loadPerformanceInsights()
     }
@@ -59,6 +71,9 @@ public final class DocumentScannerServiceImpl: ObservableObject {
 
             do {
                 // Use the existing scannerClient for actual scanning
+                guard let scannerClient = scannerClient else {
+                    throw DocumentScannerError.scanningNotAvailable
+                }
                 let document = try await scannerClient.scan()
 
                 // Record metrics
@@ -68,7 +83,7 @@ public final class DocumentScannerServiceImpl: ObservableObject {
                         scanDuration: scanDuration,
                         pagesScanned: document.pages.count,
                         averagePageSize: calculateAveragePageSize(document.pages),
-                        qualityScores: document.pages.compactMap(\.qualityScore),
+                        qualityScores: document.pages.compactMap { $0.qualityScore },
                         deviceModel: getDeviceModel(),
                         osVersion: getOSVersion()
                     )
@@ -97,7 +112,7 @@ public final class DocumentScannerServiceImpl: ObservableObject {
             }
 
             let session = MultiPageSession(
-                id: uuid(),
+                id: uuidGenerator(),
                 title: "Document Session \(Date().formatted(date: .abbreviated, time: .shortened))"
             )
 
@@ -273,6 +288,9 @@ public final class DocumentScannerServiceImpl: ObservableObject {
 
         do {
             // Use existing image processor
+            guard let imageProcessor = imageProcessor else {
+                throw DocumentScannerError.enhancementFailed
+            }
             let result = try await imageProcessor.processImage(
                 page.imageData,
                 mode,
@@ -324,6 +342,9 @@ public final class DocumentScannerServiceImpl: ObservableObject {
 
         do {
             // Use enhanced OCR from scannerClient
+            guard let scannerClient = scannerClient else {
+                throw DocumentScannerError.ocrFailed("Scanner client not available")
+            }
             let ocrResult = try await scannerClient.performEnhancedOCR(imageData)
 
             updatedPage.ocrText = ocrResult.fullText
@@ -356,6 +377,9 @@ public final class DocumentScannerServiceImpl: ObservableObject {
         }
 
         // Otherwise, process the page to get quality metrics
+        guard let imageProcessor = imageProcessor else {
+            throw DocumentScannerError.unknownError("Image processor not available")
+        }
         let options = DocumentImageProcessor.ProcessingOptions(qualityTarget: .quality)
         let result = try await imageProcessor.processImage(
             page.imageData,
@@ -634,12 +658,10 @@ public enum DocumentScannerServiceFactory {
     /// Creates a test instance with mock behavior
     @MainActor
     public static func createTestService() -> DocumentScannerServiceImpl {
-        // Override dependencies for testing
-        withDependencies {
-            $0.documentImageProcessor = DocumentImageProcessor.testValue
-            $0.documentScanner = DocumentScannerClient.testValue
-        } operation: {
-            DocumentScannerServiceImpl()
-        }
+        // Create test service with mock dependencies
+        DocumentScannerServiceImpl(
+            imageProcessor: DocumentImageProcessor.testValue,
+            scannerClient: DocumentScannerClient.testValue
+        )
     }
 }

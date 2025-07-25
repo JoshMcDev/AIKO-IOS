@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import SwiftUI
 
 #if os(iOS)
@@ -68,7 +67,7 @@ struct VariableBlur: View {
 // Cross-platform blur effect
 struct BlurredBackground: View {
     let radius: CGFloat
-    @Dependency(\.blurEffectService) var blurEffectService
+    @Environment(\.blurEffectService) var blurEffectService
 
     var body: some View {
         blurEffectService.createBlurredBackground(radius: radius)

@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 
 // MARK: - CMMC Requirement Templates Service
@@ -174,7 +173,7 @@ public struct ChecklistItem: Sendable {
 
 // MARK: - Live Value
 
-extension CMMCRequirementTemplates: DependencyKey {
+extension CMMCRequirementTemplates {
     public static var liveValue: CMMCRequirementTemplates {
         CMMCRequirementTemplates(
             loadTemplate: { domain, level in
@@ -790,10 +789,3 @@ public extension CMMCRequirementTemplates {
 }
 
 // MARK: - Dependency Registration
-
-public extension DependencyValues {
-    var cmmcRequirementTemplates: CMMCRequirementTemplates {
-        get { self[CMMCRequirementTemplates.self] }
-        set { self[CMMCRequirementTemplates.self] = newValue }
-    }
-}

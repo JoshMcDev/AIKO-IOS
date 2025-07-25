@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 
 // MARK: - Learning Loop
@@ -182,7 +181,7 @@ public struct Insight: Equatable, Sendable {
 
 // MARK: - Implementation
 
-extension LearningLoop: DependencyKey {
+extension LearningLoop {
     public nonisolated static var liveValue: LearningLoop {
         let eventQueue = EventQueue()
         let patternDetector = PatternDetector()
@@ -440,11 +439,4 @@ private func generateLearnings(from _: [LearningEvent], patterns _: [DetectedPat
 private func detectAnomalies(in _: [LearningEvent]) -> [Anomaly] {
     // Detect anomalies in events
     []
-}
-
-public extension DependencyValues {
-    var learningLoop: LearningLoop {
-        get { self[LearningLoop.self] }
-        set { self[LearningLoop.self] = newValue }
-    }
 }

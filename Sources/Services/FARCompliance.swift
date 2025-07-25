@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import Foundation
 
 public struct FARComplianceService: Sendable {
@@ -102,7 +101,7 @@ public struct ComplianceIssue {
     }
 }
 
-extension FARComplianceService: DependencyKey {
+extension FARComplianceService {
     public nonisolated static var liveValue: FARComplianceService {
         FARComplianceService(
             getRecommendedDocuments: { requirements, category in
@@ -739,11 +738,4 @@ private func generateRecommendations(for documentType: DocumentType, issues: [Co
     }
 
     return recommendations
-}
-
-public extension DependencyValues {
-    var farComplianceService: FARComplianceService {
-        get { self[FARComplianceService.self] }
-        set { self[FARComplianceService.self] = newValue }
-    }
 }

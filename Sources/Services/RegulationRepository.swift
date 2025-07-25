@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 
 // MARK: - Regulation Repository Service
@@ -195,7 +194,7 @@ public extension RegulationRepository {
 
 // MARK: - Dependency Key
 
-extension RegulationRepository: DependencyKey {
+extension RegulationRepository {
     public static var liveValue: RegulationRepository {
         RegulationRepository(
             getRegulationsForAgency: { agency in
@@ -230,12 +229,5 @@ extension RegulationRepository: DependencyKey {
                 []
             }
         )
-    }
-}
-
-public extension DependencyValues {
-    var regulationRepository: RegulationRepository {
-        get { self[RegulationRepository.self] }
-        set { self[RegulationRepository.self] = newValue }
     }
 }

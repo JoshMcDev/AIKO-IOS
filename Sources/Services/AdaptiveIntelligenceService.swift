@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import CoreML
 import Foundation
 import NaturalLanguage
@@ -208,7 +207,7 @@ public struct Pattern: Equatable {
 
 // MARK: - Implementation
 
-extension AdaptiveIntelligenceService: DependencyKey {
+extension AdaptiveIntelligenceService {
     public static var liveValue: AdaptiveIntelligenceService {
         let mlService = MachineLearningService()
         _ = AnalyticsService()
@@ -527,11 +526,4 @@ public struct HistoricalData: Equatable {
 
 public struct WorkflowHistory: Equatable {
     public let outcome: UserInteraction.InteractionOutcome
-}
-
-public extension DependencyValues {
-    var adaptiveIntelligence: AdaptiveIntelligenceService {
-        get { self[AdaptiveIntelligenceService.self] }
-        set { self[AdaptiveIntelligenceService.self] = newValue }
-    }
 }

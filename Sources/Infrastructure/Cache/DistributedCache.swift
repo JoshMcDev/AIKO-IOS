@@ -1,5 +1,4 @@
 @preconcurrency import Combine
-import ComposableArchitecture
 import Foundation
 
 /// Distributed cache implementation with consistent hashing
@@ -600,13 +599,6 @@ enum DistributedCacheError: Error {
 
 // MARK: - Dependency Registration
 
-extension DistributedCache: DependencyKey {
+extension DistributedCache {
     public static let liveValue = DistributedCache()
-}
-
-public extension DependencyValues {
-    var distributedCache: DistributedCache {
-        get { self[DistributedCache.self] }
-        set { self[DistributedCache.self] = newValue }
-    }
 }

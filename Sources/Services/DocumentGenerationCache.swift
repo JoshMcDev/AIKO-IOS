@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import Foundation
 
 /// Multi-level caching system for AI Document Generation
@@ -476,14 +475,7 @@ public struct DocumentGenerationCacheStatistics {
 
 // MARK: - Dependency Key
 
-public struct DocumentGenerationCacheKey: DependencyKey {
+public struct DocumentGenerationCacheKey {
     public static let liveValue = DocumentGenerationCache()
     public static let testValue = DocumentGenerationCache()
-}
-
-public extension DependencyValues {
-    var documentGenerationCache: DocumentGenerationCache {
-        get { self[DocumentGenerationCacheKey.self] }
-        set { self[DocumentGenerationCacheKey.self] = newValue }
-    }
 }

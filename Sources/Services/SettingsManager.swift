@@ -1,7 +1,7 @@
 import AppCore
-import ComposableArchitecture
 import CoreData
 import Foundation
+import os
 import Security
 
 public struct SettingsManager: Sendable {
@@ -174,7 +174,7 @@ public struct AdvancedSettingsData: Codable, Equatable, Sendable {
     public init() {}
 }
 
-extension SettingsManager: DependencyKey {
+extension SettingsManager {
     public nonisolated static var liveValue: SettingsManager {
         let settingsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("aiko_settings.json")
@@ -195,28 +195,28 @@ extension SettingsManager: DependencyKey {
             try data.write(to: settingsURL)
         }
 
-        // Shared settings state
-        let currentSettings = LockIsolated<SettingsData>(SettingsData())
+        // Shared settings state  
+        let currentSettings = OSAllocatedUnfairLock(initialState: SettingsData())
 
         return SettingsManager(
             loadSettings: {
                 let settings = try await loadSettingsData()
-                currentSettings.withValue { $0 = settings }
+                currentSettings.withLock { $0 = settings }
                 return settings
             },
             saveSettings: {
-                let settings = currentSettings.value
+                let settings = currentSettings.withLock { $0 }
                 try await saveSettingsData(settings)
             },
             resetToDefaults: {
                 let defaultSettings = SettingsData()
-                currentSettings.withValue { $0 = defaultSettings }
+                currentSettings.withLock { $0 = defaultSettings }
                 try await saveSettingsData(defaultSettings)
             },
             restoreDefaults: {
                 // Clear all settings and cache
                 let defaultSettings = SettingsData()
-                currentSettings.withValue { $0 = defaultSettings }
+                currentSettings.withLock { $0 = defaultSettings }
                 try await saveSettingsData(defaultSettings)
 
                 // Clear API key from keychain
@@ -289,7 +289,7 @@ extension SettingsManager: DependencyKey {
                 progressHandler(0.1)
 
                 // Gather all data
-                let settings = currentSettings.value
+                let settings = currentSettings.withLock { $0 }
                 progressHandler(0.3)
 
                 // Create export data structure
@@ -312,7 +312,7 @@ extension SettingsManager: DependencyKey {
                 let exportData = try JSONDecoder().decode(ExportData.self, from: data)
 
                 // Import settings
-                currentSettings.withValue { $0 = exportData.settings }
+                currentSettings.withLock { $0 = exportData.settings }
                 try await saveSettingsData(exportData.settings)
             },
             clearCache: {
@@ -331,7 +331,7 @@ extension SettingsManager: DependencyKey {
                 progressHandler(0.1)
 
                 // Gather all data including settings, Core Data, templates
-                let settings = currentSettings.value
+                let settings = currentSettings.withLock { $0 }
                 progressHandler(0.2)
 
                 // Export Core Data
@@ -349,7 +349,7 @@ extension SettingsManager: DependencyKey {
                 // Export templates
                 var templates: [CustomTemplate] = []
                 do {
-                    @Dependency(\.templateStorageService) var templateService
+                    let templateService = TemplateStorageService.liveValue
                     templates = try await templateService.loadTemplates()
                 } catch {
                     print("Failed to export templates: \(error)")
@@ -392,7 +392,7 @@ extension SettingsManager: DependencyKey {
                 progressHandler(0.2)
 
                 // Restore settings
-                currentSettings.withValue { $0 = backupData.settings }
+                currentSettings.withLock { $0 = backupData.settings }
                 try await saveSettingsData(backupData.settings)
                 progressHandler(0.4)
 
@@ -410,7 +410,7 @@ extension SettingsManager: DependencyKey {
 
                 // Restore templates
                 if !backupData.templates.isEmpty {
-                    @Dependency(\.templateStorageService) var templateService
+                    let templateService = TemplateStorageService.liveValue
                     for templateJSON in backupData.templates {
                         if let data = templateJSON.data(using: .utf8),
                            let template = try? JSONDecoder().decode(CustomTemplate.self, from: data) {
@@ -480,11 +480,4 @@ enum SettingsError: Error {
     case keychainError
     case importError
     case exportError
-}
-
-public extension DependencyValues {
-    var settingsManager: SettingsManager {
-        get { self[SettingsManager.self] }
-        set { self[SettingsManager.self] = newValue }
-    }
 }

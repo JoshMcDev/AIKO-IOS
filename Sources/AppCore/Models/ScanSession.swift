@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 
 // MARK: - Scan Session Models
@@ -6,7 +5,7 @@ import Foundation
 /// Immutable session state for multi-page scanning
 public struct ScanSession: Equatable, Sendable {
     public let id: UUID
-    public var pages: IdentifiedArrayOf<SessionPage>
+    public var pages: [SessionPage]
     public var status: SessionStatus
     public var batchOperationState: BatchOperationState
     public var lastError: ScanError?
@@ -14,7 +13,7 @@ public struct ScanSession: Equatable, Sendable {
 
     public init(
         id: UUID = UUID(),
-        pages: IdentifiedArrayOf<SessionPage> = [],
+        pages: [SessionPage] = [],
         status: SessionStatus = .ready,
         batchOperationState: BatchOperationState = .idle,
         lastError: ScanError? = nil,
@@ -114,7 +113,7 @@ extension ScanSession: Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(UUID.self, forKey: .id)
-        pages = try container.decode(IdentifiedArrayOf<SessionPage>.self, forKey: .pages)
+        pages = try container.decode([SessionPage].self, forKey: .pages)
         status = try container.decode(SessionStatus.self, forKey: .status)
         batchOperationState = try container.decode(BatchOperationState.self, forKey: .batchOperationState)
         metadata = try container.decode(ScanSessionMetadata.self, forKey: .metadata)
@@ -338,7 +337,7 @@ public extension ScanSession {
     }
 
     /// Get pages by processing status
-    func pages(withStatus status: PageProcessingStatus) -> [SessionPage] {
+    func getPages(withStatus status: PageProcessingStatus) -> [SessionPage] {
         pages.filter { $0.processingStatus == status }
     }
 

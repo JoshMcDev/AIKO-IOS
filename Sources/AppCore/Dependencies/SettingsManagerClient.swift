@@ -1,8 +1,6 @@
-import ComposableArchitecture
 import Foundation
 
 /// TCA-compatible dependency client for settings management
-@DependencyClient
 public struct SettingsManagerClient: Sendable {
     public var loadSettings: @Sendable () async throws -> SettingsData
     public var saveSettings: @Sendable (SettingsData) async throws -> Void
@@ -17,8 +15,20 @@ public struct SettingsManagerClient: Sendable {
     public var restoreBackup: @Sendable (URL, @escaping (Double) -> Void) async throws -> Void
 }
 
-extension SettingsManagerClient: TestDependencyKey {
-    public static let testValue = Self()
+extension SettingsManagerClient {
+    public static let testValue = Self(
+        loadSettings: { SettingsData() },
+        saveSettings: { _ in },
+        resetToDefaults: {},
+        saveAPIKey: { _ in },
+        loadAPIKey: { nil },
+        exportData: { _ in URL(fileURLWithPath: "/tmp/test.json") },
+        importData: { _ in },
+        clearCache: {},
+        performBackup: { _ in URL(fileURLWithPath: "/tmp/backup.json") },
+        restoreBackup: { _, _ in }
+    )
+
     public static let previewValue = Self(
         loadSettings: { SettingsData() },
         saveSettings: { _ in },
@@ -32,11 +42,4 @@ extension SettingsManagerClient: TestDependencyKey {
         performBackup: { _ in URL(fileURLWithPath: "/tmp/backup.json") },
         restoreBackup: { _, _ in }
     )
-}
-
-public extension DependencyValues {
-    var settingsManagerClient: SettingsManagerClient {
-        get { self[SettingsManagerClient.self] }
-        set { self[SettingsManagerClient.self] = newValue }
-    }
 }

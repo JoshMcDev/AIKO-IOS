@@ -1,6 +1,5 @@
 import AikoCompat
 import AppCore
-import ComposableArchitecture
 import Foundation
 
 /// Batch document generation service that combines multiple document requests into single API calls
@@ -15,11 +14,25 @@ public struct BatchDocumentGenerator: Sendable {
 
     // MARK: - Dependencies
 
-    @Dependency(\.documentGenerationCache) var cache
-    @Dependency(\.userProfileService) var userProfileService
-    @Dependency(\.spellCheckService) var spellCheckService
-    @Dependency(\.standardTemplateService) var templateService
-    @Dependency(\.dfTemplateService) var dfTemplateService
+    private let cache: DocumentGenerationCache
+    private let userProfileService: UserProfileService
+    private let spellCheckService: SpellCheckService
+    private let templateService: StandardTemplateService
+    private let dfTemplateService: DFTemplateService
+
+    public init(
+        cache: DocumentGenerationCache = DocumentGenerationCacheKey.liveValue,
+        userProfileService: UserProfileService = UserProfileService.liveValue,
+        spellCheckService: SpellCheckService = SpellCheckService.liveValue,
+        templateService: StandardTemplateService = StandardTemplateService.liveValue,
+        dfTemplateService: DFTemplateService = DFTemplateService.liveValue
+    ) {
+        self.cache = cache
+        self.userProfileService = userProfileService
+        self.spellCheckService = spellCheckService
+        self.templateService = templateService
+        self.dfTemplateService = dfTemplateService
+    }
 
     // MARK: - Batch Generation Types
 
@@ -563,14 +576,7 @@ public enum BatchDocumentGeneratorError: Error {
 
 // MARK: - Dependency Key
 
-public struct BatchDocumentGeneratorKey: DependencyKey {
+public struct BatchDocumentGeneratorKey {
     public static let liveValue = BatchDocumentGenerator()
     public static let testValue = BatchDocumentGenerator()
-}
-
-public extension DependencyValues {
-    var batchDocumentGenerator: BatchDocumentGenerator {
-        get { self[BatchDocumentGeneratorKey.self] }
-        set { self[BatchDocumentGeneratorKey.self] = newValue }
-    }
 }

@@ -1,4 +1,3 @@
-import ComposableArchitecture
 import Foundation
 
 /// Adaptive intelligence adapter for government forms
@@ -201,7 +200,7 @@ public struct FormInsight: Equatable, Sendable {
 
 // MARK: - Live Implementation
 
-extension FormIntelligenceAdapter: DependencyKey {
+extension FormIntelligenceAdapter {
     public nonisolated static var liveValue: FormIntelligenceAdapter {
         let learningLoop = LearningLoop.liveValue
         let requirementAnalyzer = RequirementAnalyzer.liveValue
@@ -553,10 +552,3 @@ extension FormIntelligenceAdapter: DependencyKey {
 }
 
 // MARK: - Dependency Values
-
-public extension DependencyValues {
-    var formIntelligenceAdapter: FormIntelligenceAdapter {
-        get { self[FormIntelligenceAdapter.self] }
-        set { self[FormIntelligenceAdapter.self] = newValue }
-    }
-}

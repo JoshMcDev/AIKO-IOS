@@ -1,6 +1,5 @@
 import AppCore
 import Combine
-import ComposableArchitecture
 import Foundation
 
 /// Optimized Object Action Handler with smart caching and performance improvements
@@ -57,7 +56,7 @@ public extension OptimizedObjectActionHandler {
                                             qos: .userInitiated,
                                             attributes: .concurrent)
 
-        @Dependency(\.objectActionCache) var cache
+        let cache = ObjectActionCache.liveValue
 
         return Self(
             identifyObjectType: { object in
@@ -1216,24 +1215,10 @@ private func convertToParameterValue(_ value: Any) -> ParameterValue {
 
 // MARK: - Dependency Registration
 
-extension ObjectActionPerformanceMonitor: DependencyKey {
+extension ObjectActionPerformanceMonitor {
     public static let liveValue = ObjectActionPerformanceMonitor()
 }
 
-public extension DependencyValues {
-    var objectActionPerformanceMonitor: ObjectActionPerformanceMonitor {
-        get { self[ObjectActionPerformanceMonitor.self] }
-        set { self[ObjectActionPerformanceMonitor.self] = newValue }
-    }
-}
-
-extension OptimizedObjectActionHandler: DependencyKey {
+extension OptimizedObjectActionHandler {
     public static let liveValue = OptimizedObjectActionHandler.live
-}
-
-public extension DependencyValues {
-    var optimizedObjectActionHandler: OptimizedObjectActionHandler {
-        get { self[OptimizedObjectActionHandler.self] }
-        set { self[OptimizedObjectActionHandler.self] = newValue }
-    }
 }

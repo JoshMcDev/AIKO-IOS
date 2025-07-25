@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import Foundation
 
 /// Multi-tier caching system for Object Action Handler optimization
@@ -622,13 +621,6 @@ extension ActionContext {
 
 // MARK: - Dependency Registration
 
-extension ObjectActionCache: DependencyKey {
+extension ObjectActionCache {
     public static let liveValue = ObjectActionCache()
-}
-
-public extension DependencyValues {
-    var objectActionCache: ObjectActionCache {
-        get { self[ObjectActionCache.self] }
-        set { self[ObjectActionCache.self] = newValue }
-    }
 }

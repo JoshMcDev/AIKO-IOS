@@ -1,13 +1,11 @@
-import ComposableArchitecture
 import Foundation
-import IdentifiedCollections
 
 // MARK: - Media Session Models
 
 /// Immutable session state for media management
 public struct MediaSession: Identifiable, Sendable, Equatable {
     public let id: UUID
-    public var assets: IdentifiedArrayOf<MediaAsset>
+    public var assets: [MediaAsset]
     public var status: MediaSessionStatus
     public var batchOperationState: BatchOperationState
     public var lastError: MediaError?
@@ -16,7 +14,7 @@ public struct MediaSession: Identifiable, Sendable, Equatable {
 
     public init(
         id: UUID = UUID(),
-        assets: IdentifiedArrayOf<MediaAsset> = [],
+        assets: [MediaAsset] = [],
         status: MediaSessionStatus = .ready,
         batchOperationState: BatchOperationState = .idle,
         lastError: MediaError? = nil,

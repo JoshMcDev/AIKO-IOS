@@ -1,8 +1,6 @@
-import ComposableArchitecture
 import Foundation
 
-/// TCA-compatible dependency client for acquisition management
-@DependencyClient
+/// Dependency client for acquisition management
 public struct AcquisitionClient: Sendable {
     public var createAcquisition: @Sendable (String, String, [UploadedDocument]) async throws -> Acquisition
     public var fetchAcquisitions: @Sendable () async throws -> [Acquisition]
@@ -14,8 +12,20 @@ public struct AcquisitionClient: Sendable {
     public var updateStatus: @Sendable (UUID, Acquisition.Status) async throws -> Void
 }
 
-extension AcquisitionClient: TestDependencyKey {
-    public static let testValue = Self()
+extension AcquisitionClient {
+    public static let testValue = Self(
+        createAcquisition: { title, requirements, _ in
+            Acquisition(title: title, requirements: requirements)
+        },
+        fetchAcquisitions: { [] },
+        fetchAcquisition: { _ in nil },
+        updateAcquisition: { _, _ in },
+        deleteAcquisition: { _ in },
+        addUploadedFiles: { _, _ in },
+        addGeneratedDocuments: { _, _ in },
+        updateStatus: { _, _ in }
+    )
+
     public static let previewValue = Self(
         createAcquisition: { title, requirements, _ in
             Acquisition(title: title, requirements: requirements)
@@ -28,11 +38,4 @@ extension AcquisitionClient: TestDependencyKey {
         addGeneratedDocuments: { _, _ in },
         updateStatus: { _, _ in }
     )
-}
-
-public extension DependencyValues {
-    var acquisitionClient: AcquisitionClient {
-        get { self[AcquisitionClient.self] }
-        set { self[AcquisitionClient.self] = newValue }
-    }
 }

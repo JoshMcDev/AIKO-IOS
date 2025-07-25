@@ -1,7 +1,5 @@
-import ComposableArchitecture
 import Foundation
 
-@DependencyClient
 public struct DocumentChainManagerClient: Sendable {
     public var createChain: @Sendable (UUID, [DocumentType]) async throws -> DocumentChainProgress
     public var validateChain: @Sendable (UUID) async throws -> ChainValidation
@@ -10,13 +8,12 @@ public struct DocumentChainManagerClient: Sendable {
     public var getNextInChain: @Sendable (UUID) async throws -> DocumentType?
 }
 
-extension DocumentChainManagerClient: TestDependencyKey {
-    public static let testValue = Self()
-}
-
-public extension DependencyValues {
-    var documentChainManager: DocumentChainManagerClient {
-        get { self[DocumentChainManagerClient.self] }
-        set { self[DocumentChainManagerClient.self] = newValue }
-    }
+extension DocumentChainManagerClient {
+    public static let testValue = Self(
+        createChain: { acquisitionId, documentOrder in DocumentChainProgress(acquisitionId: acquisitionId, documentOrder: documentOrder) },
+        validateChain: { _ in ChainValidation(isValid: true) },
+        updateChainProgress: { acquisitionId, _, _ in DocumentChainProgress(acquisitionId: acquisitionId, documentOrder: []) },
+        extractAndPropagate: { _, _ in CollectedData() },
+        getNextInChain: { _ in nil }
+    )
 }

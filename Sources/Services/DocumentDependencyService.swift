@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import Foundation
 
 // MARK: - Document Dependency Service
@@ -52,7 +51,7 @@ public struct DependencyValidation: Equatable, Sendable {
 
 // MARK: - Document Dependency Definitions
 
-extension DocumentDependencyService: DependencyKey {
+extension DocumentDependencyService {
     public nonisolated static var liveValue: DocumentDependencyService {
         // Define the dependency graph
         let dependencyGraph = buildDependencyGraph()
@@ -386,11 +385,4 @@ private func extractDataFromDocument(_ document: GeneratedDocument) -> Collected
     }
 
     return extractedData
-}
-
-public extension DependencyValues {
-    var documentDependencyService: DocumentDependencyService {
-        get { self[DocumentDependencyService.self] }
-        set { self[DocumentDependencyService.self] = newValue }
-    }
 }

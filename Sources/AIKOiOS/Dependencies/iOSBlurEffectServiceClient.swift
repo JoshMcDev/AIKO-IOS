@@ -1,6 +1,5 @@
 #if os(iOS)
     import AppCore
-    import ComposableArchitecture
     import SwiftUI
 
     /// iOS Blur Effect Service Client using SimpleServiceTemplate
@@ -34,13 +33,13 @@
         static let iOS: Self = {
             let service = IOSBlurEffectService()
             return Self(
-                _createBlurredBackground: { radius in
+                createBlurredBackground: { radius in
                     service.createBlurredBackground(radius: radius)
                 },
-                _supportsNativeBlur: {
+                supportsNativeBlur: {
                     service.supportsNativeBlur()
                 },
-                _recommendedBlurStyle: {
+                recommendedBlurStyle: {
                     service.recommendedBlurStyle()
                 }
             )

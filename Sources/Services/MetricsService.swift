@@ -1,5 +1,4 @@
 import Combine
-import ComposableArchitecture
 import Foundation
 import os.log
 
@@ -776,13 +775,6 @@ private struct MetricsAnalyzer {
 
 // MARK: - Dependency Registration
 
-extension MetricsService: DependencyKey {
+extension MetricsService {
     public static let liveValue: MetricsService = .live
-}
-
-public extension DependencyValues {
-    var metricsService: MetricsService {
-        get { self[MetricsService.self] }
-        set { self[MetricsService.self] = newValue }
-    }
 }

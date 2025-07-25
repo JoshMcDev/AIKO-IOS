@@ -1,6 +1,5 @@
 #if os(macOS)
     import AppCore
-    import ComposableArchitecture
     import Foundation
 
     /// Registers all macOS-specific implementations of AppCore dependencies

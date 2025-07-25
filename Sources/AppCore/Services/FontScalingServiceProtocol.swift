@@ -1,4 +1,3 @@
-import ComposableArchitecture
 @preconcurrency import SwiftUI
 
 // MARK: - Sendable Wrapper Types for Swift 6 Concurrency
@@ -89,13 +88,22 @@ public protocol FontScalingServiceProtocol: Sendable {
     func supportsUIFontMetrics() -> Bool
 }
 
-@DependencyClient
 public struct FontScalingServiceClient: Sendable {
     public var _scaledFontSize: @Sendable (CGFloat, SendableTextStyle, SendableContentSizeCategory) -> CGFloat = { baseSize, _, sizeCategory in
         baseSize * sizeCategory.sizeCategory.scaleFactor
     }
 
     public var _supportsUIFontMetrics: @Sendable () -> Bool = { false }
+
+    public init(
+        _scaledFontSize: @escaping @Sendable (CGFloat, SendableTextStyle, SendableContentSizeCategory) -> CGFloat = { baseSize, _, sizeCategory in
+            baseSize * sizeCategory.sizeCategory.scaleFactor
+        },
+        _supportsUIFontMetrics: @escaping @Sendable () -> Bool = { false }
+    ) {
+        self._scaledFontSize = _scaledFontSize
+        self._supportsUIFontMetrics = _supportsUIFontMetrics
+    }
 }
 
 // Protocol conformance
@@ -133,13 +141,19 @@ public extension ContentSizeCategory {
 
 // MARK: - Dependency
 
-private enum FontScalingServiceKey: DependencyKey {
+private enum FontScalingServiceKey {
     static let liveValue: FontScalingServiceProtocol = FontScalingServiceClient()
 }
 
-public extension DependencyValues {
-    var fontScalingService: FontScalingServiceProtocol {
-        get { self[FontScalingServiceKey.self] }
-        set { self[FontScalingServiceKey.self] = newValue }
+// MARK: - Environment Extension
+
+public extension EnvironmentValues {
+    var fontScalingService: FontScalingServiceClient {
+        get { self[FontScalingServiceEnvironmentKey.self] }
+        set { self[FontScalingServiceEnvironmentKey.self] = newValue }
     }
+}
+
+private struct FontScalingServiceEnvironmentKey: EnvironmentKey {
+    static let defaultValue: FontScalingServiceClient = FontScalingServiceClient()
 }

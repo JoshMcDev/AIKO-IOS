@@ -1,6 +1,5 @@
 import AikoCompat
 import AppCore
-import ComposableArchitecture
 import Foundation
 
 public struct AIDocumentGenerator: Sendable {
@@ -16,14 +15,15 @@ public struct AIDocumentGenerator: Sendable {
     }
 }
 
-extension AIDocumentGenerator: DependencyKey {
+extension AIDocumentGenerator {
     public static var liveValue: AIDocumentGenerator {
         AIDocumentGenerator(
             generateDocuments: { requirements, documentTypes in
-                @Dependency(\.standardTemplateService) var templateService
-                @Dependency(\.userProfileService) var userProfileService
-                @Dependency(\.documentGenerationCache) var cache
-                @Dependency(\.spellCheckService) var spellCheckService
+                // TODO: Replace with proper dependency injection
+                let templateService = StandardTemplateService.liveValue
+                let userProfileService = UserProfileService.liveValue
+                let cache = DocumentGenerationCacheKey.liveValue
+                let spellCheckService = SpellCheckService.liveValue
 
                 guard let aiProvider = await AIProviderFactory.defaultProvider() else {
                     throw AIDocumentGeneratorError.noProvider
@@ -133,10 +133,11 @@ extension AIDocumentGenerator: DependencyKey {
                 return generatedDocuments
             },
             generateDFDocuments: { requirements, dfDocumentTypes in
-                @Dependency(\.dfTemplateService) var dfTemplateService
-                @Dependency(\.userProfileService) var userProfileService
-                @Dependency(\.documentGenerationCache) var cache
-                @Dependency(\.spellCheckService) var spellCheckService
+                // TODO: Replace with proper dependency injection
+                let dfTemplateService = DFTemplateService.liveValue
+                let userProfileService = UserProfileService.liveValue
+                let cache = DocumentGenerationCacheKey.liveValue
+                let spellCheckService = SpellCheckService.liveValue
 
                 guard let aiProvider = await AIProviderFactory.defaultProvider() else {
                     throw AIDocumentGeneratorError.noProvider
@@ -859,11 +860,4 @@ public enum AIDocumentGeneratorError: Error {
     case rateLimitExceeded
     case insufficientCredits
     case noProvider
-}
-
-public extension DependencyValues {
-    var aiDocumentGenerator: AIDocumentGenerator {
-        get { self[AIDocumentGenerator.self] }
-        set { self[AIDocumentGenerator.self] = newValue }
-    }
 }

@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import Foundation
 
 // MARK: - Document Template Model
@@ -804,7 +803,7 @@ enum TemplateError: LocalizedError {
 
 // MARK: - Dependency Implementation
 
-extension UnifiedTemplateService: DependencyKey {
+extension UnifiedTemplateService {
     public static var liveValue: UnifiedTemplateService {
         let storage = Task {
             try await UnifiedTemplateStorage()
@@ -876,12 +875,5 @@ extension UnifiedTemplateService: DependencyKey {
                 return await storage.validateTemplate(template)
             }
         )
-    }
-}
-
-public extension DependencyValues {
-    var unifiedTemplateService: UnifiedTemplateService {
-        get { self[UnifiedTemplateService.self] }
-        set { self[UnifiedTemplateService.self] = newValue }
     }
 }

@@ -1,5 +1,4 @@
 import AppCore
-import ComposableArchitecture
 import Foundation
 
 /// Service for loading standard document templates
@@ -37,7 +36,7 @@ public enum StandardTemplateError: Error, LocalizedError {
 
 // MARK: - Dependency Implementation
 
-extension StandardTemplateService: DependencyKey {
+extension StandardTemplateService {
     public static var liveValue: StandardTemplateService {
         StandardTemplateService(
             loadTemplate: { documentType in
@@ -147,13 +146,6 @@ extension StandardTemplateService: DependencyKey {
 }
 
 // MARK: - DependencyValues Extension
-
-public extension DependencyValues {
-    var standardTemplateService: StandardTemplateService {
-        get { self[StandardTemplateService.self] }
-        set { self[StandardTemplateService.self] = newValue }
-    }
-}
 
 // MARK: - Helper Methods
 

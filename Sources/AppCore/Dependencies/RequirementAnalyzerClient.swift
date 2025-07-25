@@ -1,20 +1,15 @@
-import ComposableArchitecture
 import Foundation
 
-@DependencyClient
 public struct RequirementAnalyzerClient: Sendable {
     public var analyzeRequirements: @Sendable (String) async throws -> (String, [DocumentType])
     public var analyzeDocumentContent: @Sendable (Data, String) async throws -> (String, [DocumentType])
     public var enhancePrompt: @Sendable (String) async throws -> String
 }
 
-extension RequirementAnalyzerClient: TestDependencyKey {
-    public static let testValue = Self()
-}
-
-public extension DependencyValues {
-    var requirementAnalyzer: RequirementAnalyzerClient {
-        get { self[RequirementAnalyzerClient.self] }
-        set { self[RequirementAnalyzerClient.self] = newValue }
-    }
+extension RequirementAnalyzerClient {
+    public static let testValue = Self(
+        analyzeRequirements: { _ in ("", []) },
+        analyzeDocumentContent: { _, _ in ("", []) },
+        enhancePrompt: { _ in "" }
+    )
 }

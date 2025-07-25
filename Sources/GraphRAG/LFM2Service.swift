@@ -1,4 +1,4 @@
-import CoreML
+@preconcurrency import CoreML
 import Foundation
 import os.log
 
@@ -118,7 +118,7 @@ actor LFM2Service {
         let startTime = CFAbsoluteTimeGetCurrent()
 
         do {
-            let prediction = try model.prediction(from: processedInput)
+            let prediction = try await model.prediction(from: processedInput, options: MLPredictionOptions())
             let embedding = try extractEmbedding(from: prediction)
 
             let duration = CFAbsoluteTimeGetCurrent() - startTime
