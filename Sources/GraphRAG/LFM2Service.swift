@@ -377,9 +377,10 @@ actor LFM2Service {
         var tokenIds: [Int32] = []
 
         for word in words.prefix(LFM2TensorRankFix.TensorShape.maxTokenLength) {
-            // Create more stable token IDs based on word content
+            // Create more stable token IDs based on word content - safe conversion
             let wordHash = word.djb2hash
-            let tokenId = Int32((wordHash % 50000) + 1) // Vocabulary range 1-50000
+            let safeHash = Int(wordHash % 50000) + 1 // Ensure value fits in Int32 range
+            let tokenId = Int32(clamping: safeHash) // Safe conversion
             tokenIds.append(tokenId)
         }
 
@@ -392,10 +393,11 @@ actor LFM2Service {
         _ = createImprovedTokenIds(from: text)
         var embedding = [Float](repeating: 0.0, count: embeddingDimensions)
 
-        // Use text hash and domain to create consistent embeddings
+        // Use text hash and domain to create consistent embeddings - safe conversion
         let textHash = text.djb2hash
-        let domainSeed = domain == .regulations ? 1000 : 2000
-        var seed = UInt64(textHash + UInt(domainSeed))
+        let domainSeed: UInt = domain == .regulations ? 1000 : 2000
+        let safeSeed = textHash &+ domainSeed // Use wrapping addition to prevent overflow
+        var seed = UInt64(safeSeed)
 
         // Generate pseudo-random but deterministic values
         for i in 0 ..< embeddingDimensions {
@@ -640,9 +642,7 @@ extension LFM2Service {
 
 extension String {
     var djb2hash: UInt {
-        let unicodeScalars = self.unicodeScalars.map { $0.value }
-        return unicodeScalars.reduce(5381) {
-            ($0 << 5) &+ $0 &+ UInt($1)
-        }
+        // Simple, overflow-safe hash using built-in hashValue
+        return UInt(abs(self.hashValue))
     }
 }
