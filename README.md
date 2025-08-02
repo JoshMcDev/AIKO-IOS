@@ -6,8 +6,6 @@
 **Architecture**: SwiftUI + 5 Core Engines (TCA → SwiftUI Migration)  
 **Progress**: 44% Complete (24/54 Main Tasks) - Phase 4 Complete, Unified Refactoring Initiative Launched
 
-## ALWAYS use Bash(cd /Users/J/aiko && xcodebuild -scheme AIKO -destination "platform=iOS Simulator,name=iPhone 16 Pro" -skipPackagePluginValidation build 2>&1 | grep -E "(error:|…)
-
 ## 🏆 Recent Major Achievements (January 2025)
 
 ### Unified Refactoring Initiative ✅ LAUNCHED

@@ -1,5 +1,6 @@
 import AppCore
 import Foundation
+import SwiftUI
 
 /// Service for managing custom template storage
 public struct TemplateStorageService: Sendable {
@@ -228,6 +229,19 @@ actor TestTemplateStorage {
 
     func loadOfficeTemplates(_ documentType: DocumentType) -> [OfficeTemplate] {
         officeTemplates.filter { $0.documentType == documentType }
+    }
+}
+
+// MARK: - SwiftUI Environment Extension
+
+private struct TemplateStorageServiceEnvironmentKey: EnvironmentKey {
+    static let defaultValue = TemplateStorageService.liveValue
+}
+
+public extension EnvironmentValues {
+    var templateStorageService: TemplateStorageService {
+        get { self[TemplateStorageServiceEnvironmentKey.self] }
+        set { self[TemplateStorageServiceEnvironmentKey.self] = newValue }
     }
 }
 

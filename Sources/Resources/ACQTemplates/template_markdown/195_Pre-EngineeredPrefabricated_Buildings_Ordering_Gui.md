@@ -1,0 +1,1040 @@
+# 195_Pre-EngineeredPrefabricated_Buildings_Ordering_Gui
+
+_Converted from PDF using pdftotext_
+
+GSA Multiple Award Schedule
+Pre-Engineered/Prefabricated Buildings
+
+Ordering Guide
+
+Table of Contents
+Page 3
+• Purpose
+• What are Pre-Engineered/Prefabricated Buildings?
+Page 4
+• Benefits
+Page 6
+• How to Purchase Pre-Engineered/Prefabricated Buildings from GSA
+• Salient Characteristics of a Building
+Page 8
+• Ordering Procedures
+• Frequently Asked Questions
+Page 11
+• GSA Points of Contac
+• Samples
+o Statement of Objectives
+o Statement of Work, and more
+Page 27
+• Appendix with Photos
+
+Page | 2
+
+Purpose
+This purpose of this document is create a comprehensive ordering guide that assists
+ordering agencies, particularly contracting officers, to effectively use the GSA Multiple
+Award Schedules (MAS) to purchase total solutions for Pre-Engineered/Prefabricated
+Buildings. This Ordering Guide is not a stand-alone reference - it is recommended tha
+he reader also become familiar with the MAS Desk Reference Guide and Federal
+Acquisition Regulations (FAR), 8.4 and Federal Supply Schedules. This Ordering
+Guide may be revised from time to time.
+What are Pre-Engineered/Prefabricated Buildings?
+The most widely used form of prefabrication in building and civil engineering is the use
+of prefabricated concrete and prefabricated steel sections in structures where a
+particular part or form is repeated many times. Modular Construction can be
+considered a form of Prefabricated Construction.
+Precast is a construction product (mostly concrete) produced by casting concrete in a
+reusable mold or "form" which is then cured in a controlled environment, transported to
+he construction site and lifted into place. In contrast, standard concrete is poured into
+site-specific forms and cured on site.
+Prefabrication is the practice of assembling components of a structure in a factory or
+other manufacturing site, and transporting complete assemblies or sub-assemblies to
+he construction site where the structure is to be located. The term is used to distinguish
+his process from the more conventional construction practice of transporting the basic
+materials to the construction site where all assembly is carried out.
+The term prefabrication also applies to the manufacturing of things other than structures
+at a fixed site. It is frequently used when fabrication of a section of a machine or any
+movable structure is shifted from the main manufacturing site to another location, and
+he section is supplied assembled and ready to fit. It is not generally used to refer to
+electrical or electronic components of a machine, or mechanical parts such as pumps,
+gearboxes and compressors which are usually supplied as separate items, but to
+sections of the body of the machine which in the past were fabricated with the whole
+machine. Prefabricated parts of the body of the machine may be called 'sub-assemblies'
+o distinguish them from the other components.
+The most widely used form of prefabrication in building and civil engineering is the use
+of prefabricated concrete and prefabricated steel sections in structures where a
+particular part or form is repeated many times. It can be difficult to construct the
+Page | 3
+
+formwork required to mold concrete components on site, and delivering wet concrete to
+he site before it starts to set requires precise time management. Pouring concrete
+sections in a factory brings the advantages of being able to re-use moulds and the
+concrete can be mixed on the spot without having to be transported to and pumped we
+on a congested construction site. Prefabricating steel sections reduces on-site cutting
+and welding costs as well as the associated hazards.
+Pre-engineering is the practice of designing a building and compiling materials to be
+assembled onsite. It removes the need for a contractor to source materials from multiple
+suppliers, as the materials will arrive onsite as a package with a plan set explaining
+assembly, similar to a child’s building block kit. An important difference to note is tha
+he pre-engineered building requires on-site construction.
+Benefits of Pre-engineered/Modular Buildings Compared to Conventional
+Construction
+Modular vs. Conventional Construction:
+A modular building is a pre-engineered structure that is flexible enough to satisfy
+virtually any requirement. It is usually tougher than standard drywall construction as well
+as its ability to be expanded, relocated, reusable, and recyclable. The primary
+advantage of modular/pre-engineered buildings over conventional construction is tha
+hey can save up to 35% on initial construction costs such as labor and materials.
+Applications:
+Office buildings, training centers, aircraft structures, schools, hangers, dormitories,
+dining facilities, temporary office space, restrooms, guard shacks, border stations,
+restrooms, mezzanines, and much more.
+
+The chart on the next page details some benefits of pre-engineered modular buildings:
+
+Page | 4
+
+GREEENER
+
+The factory-controlled
+process generates less
+waste, creates fewer
+site disturbances and
+allows for tighter
+construction.
+
+Less Site
+Disturbance
+
+FASTER
+
+Construction of modular buildings
+occurs simultaneously with site
+work, allowing projects to be
+completed in half the time of
+raditional construction
+
+Reduced Construction
+Schedule
+
+On-site traffic is greatly
+minimized from workers,
+equipment and
+suppliers
+
+Because construction of modular
+buildings can occur simultaneously
+with the site and foundation work,
+projects can be completed 30% to
+50% sooner than traditional
+construction.
+
+Greater Flexibility
+and Reuse
+
+Elimination of Weather
+Delays
+
+Modular buildings can
+be disassembled and
+he modules relocated
+or refurbished for new
+use, reducing the
+demand for raw
+materials and
+minimizing the amoun
+of energy expended to
+create a building to
+meet the new need.
+
+Less Material
+Waste
+
+When building in a
+factory, waste is
+eliminated by recycling
+materials, controlling
+inventory and protecting
+building materials.
+
+Improved Air
+Quality
+
+Because the modular
+structure is substantially
+completed in a factorycontrolled setting using
+dry materials, the
+potential for high levels
+of moisture being
+rapped in the new
+construction is
+eliminated.
+
+Page | 5
+
+60 - 90% of the construction is
+completed inside a factory, which
+mitigates the risk of weather delays.
+Buildings are occupied sooner,
+creating a faster return on
+investment.
+
+Built to Code with Quality
+Materials
+
+Modular buildings are built to meet
+or exceed the same building codes
+and standards as site-buil
+structures, and the same architectspecified materials used in
+conventionally constructed buildings
+are used in modular construction
+projects – wood, concrete and
+steel.
+
+SMARTER
+
+Modular buildings are built with the
+same materials and to the same building codes
+and architectural specifications
+as traditional construction. Once assembled,
+hey are virtually indistinguishable from their
+site-built counterparts.
+
+Safer Construction
+
+The indoor construction environment reduces
+he risks of accidents and related liabilities for
+workers.
+
+Better Engineered Building & BIM
+
+PMC relies on advanced BIM for visualization
+o assess the energy performance and identify
+he most cost-effective efficiency measures.
+PMC is ideal for the use of this technology
+where the construction process is already a
+collaboration of systems, materials and
+people—much like the software itself.
+
+Limitless Design Opportunities
+
+Modular units may be designed to fit in with
+external aesthetics of any existing building and
+modular units, once assembled, are virtually
+indistinguishable from their site-buil
+counterparts.
+
+How to purchase Pre-Engineered/Pre-Fabricated Buildings from GSA
+After agencies have determined their requirements to include the salient characteristics
+of the building (see below), they are ready to start the acquisition phase. GSA has a
+whole host of Pre-fabricated and Pre-engineered buildings available for agencies to
+purchase through our Multiple Award Schedules (MAS) Program.
+Under Facilities the following Special Item Numbers (SIN) are applicable to preengineered and pre-fabricated buildings:
+332311P - Includes storage structures made of wood, fiberglass, steel, aluminum,
+metal, tension fabric, pre-cast concrete, etc. All options include accessories and may
+contain recycled or bio-based materials.
+Installation solutions can be found under the following ancillary SIN:
+238910 - Include installation and site preparation services ordered in conjunction with
+buildings and structures, building materials, storage tanks/systems, services for
+alternative energy solutions or power distribution equipment, and fuel dispensing and
+management systems purchased under this schedule contract.
+
+Salient Characteristics of a Building
+Below are some examples of salient characteristics that can be used to assist in
+determining potential requirements for buildings.
+Building Code Requirements:
+•
+•
+•
+•
+
+International
+Federal
+State
+Local
+
+Building Framing:
+•
+•
+•
+•
+•
+
+Material
+Square Footage
+Framing
+Bay Spacing
+Eaves Heights
+
+Page | 6
+
+• Roof Pitch
+• Sheeting
+• Insulation
+• Rod Bracing
+• Wind Posts
+• Columns
+• Roof Beams
+• Anchor Bolt Layouts
+• Primary and Secondary Structural Components
+• Primed Structural Components, Purlins, and Girts
+• Paint Ready Material
+• Design Adaptability
+• Regulatory Compliance: Federal, State, Local Codes for any location
+•
+Roofing and Gutter Systems:
+• Pitch
+• Seam
+• Roof Panels
+• Roofing Material
+• Fall Protection for Erectors
+• Warranty for Finish Panels
+• Warranty Includes: all structural components...blistering, peeling, cracking or
+chipping
+• Corrosion Protection
+• Design Adaptability
+• Regulatory Compliance: Federal, State, Local Codes for any location
+
+Walls, Fascia Door, Lighting, Electrical, Flooring, HVAC, and Windows:
+• Personnel Doors
+• Windows
+• Vents
+• Access Panels
+• Cargo Doors
+• Corrosion Protection
+• Design Adaptability
+
+Page | 7
+
+Environmental:
+• Environmental Standards
+• Erection Drawings
+• Certified (drawings)
+Service:
+• Customer Service Availability / Engineering Solutions
+• On-Site Technical Representative
+• Site Prep
+• Installation (distance of utilities)
+Logistics:
+• Delivery / Shipmen
+
+Ordering Procedures
+The Federal Acquisition Regulation (FAR) guides the correct use of the MAS Program.
+Ordering procedures vary based on whether or not a Statement of Work (SOW) is
+required. Ordering activities must use the procedures in FAR 8.405-1 when ordering
+Schedule contract supplies (products) and fixed-price services for a specific task, where
+a Statement of Work (SOW) is not required (e.g.; installation, maintenance, and repair).
+For Ordering Procedures for Services Requiring a Statement of Work (SOW) (e.g.,
+when ordering Schedule contract services priced at hourly rates), please refer to FAR
+8.405-2.
+Frequently Asked Questions (FAQ)
+1. Are temporary buildings covered under disaster recovery program?
+Yes. Any temporary building maybe ordered under the disaster recovery program,
+depending on the requirements of the customer.
+2. Do pre-engineered and pre-fabricated buildings and structures include
+electrical wiring and plumbing?
+Yes, the buildings and structures include options that make the units fully operating
+buildings.
+3. Where can I point customers for assistance?
+
+Page | 8
+
+Customers requiring assistance should contact the GSA National Customer Service
+Center 800-488-3111, ncsccustomer.service@gsa.gov. Ask to speak with your agency
+customer account POC.
+4. Are any of the prefabs made with sustainable materials? If so, what? If not,
+is there any future vision in the industry to create sustainable prefabs?
+‘Sustainable’ doesn’t have a definite definition. We have some vendors that have
+buildings made from scrap metal. Ongoing initiative to get sustainable...
+5. Are any of the prefabs LEED certified?
+No buildings are LEED certified at this time
+6. Are sidewalks and utilities required to complete a project covered under any
+ancillary services SINS or categories?
+Sidewalks fall under SIN 238910, installation and site preparation requiring
+construction. Utility hook up is within the scope of SIN 238910; the requirement for utility
+hook up is determined by the customer.
+7. What services (minor construction, ancillary repair) are included in the
+procurement of the prefab building?
+Any services beyond delivery of the building are not covered under the building SIN.
+Services must be solicited and quoted under the applicable services SIN. The
+applicable SIN is determined by the extent of services required to provide a turnkey
+solution.
+8. What types of services are excluded when hooking up a prefab building to
+he utilities?
+Any non-standard electrical requirement within the building.
+9. What is included in the building itself?
+Standard and optional items vary by contract, dependent on the standard and optional
+items offered by the contractor. Non-contract items may can be included in a
+procurement as open market items. However, open market items are subject to
+formal price evaluation procedures.
+10. How does GSA define "Construction", "Ancillary Repair & Alteration", and
+"Minor Construction"?
+Complex construction is not approved under GSA MAS contracts.
+Page | 9
+
+Facilities Structures includes commercial products that may require services in
+conjunction with the purchase of the product.
+There are 3 basic types of services available:
+•
+
+ANCILLARY SIN Ancillary Service for functions such as set up, simple
+installation, training, etc. (excludes construction and services subject to the
+Service Contract Act)
+
+•
+
+ANCRA SIN Ancillary Repair and Alteration requiring minor construction
+(includes Davis Bacon and construction clauses)
+
+•
+
+SIN 238910 Installation and Site Preparation requiring Construction, which is
+necessary, to install a Pre-Engineered or Prefabricated Building or Structure,
+(includes Davis Bacon and Construction Clauses).
+
+Ancillary Repair & Alteration SINs are available in conjunction with purchase of
+products that require minor construction to be installed properly, such as minor
+construction necessary to install a door or window, repair drywall, or paint a room.
+SIN categories are also available to provide installation and site prep requiring
+construction, services ordered in conjunction with purchase of products to be installed
+under the Schedule contract—i.e., a prefabricated building, solar energy system,
+roofing, generator, transformer, etc. Davis Bacon and Construction Clauses are
+incorporated into Facilities Structures contracts offering installation and site preparation
+requiring construction and R&A. GSA negotiates fixed rates for services (rates include
+consideration of prevailing Davis Bacon wage rates). The applicable Davis Bacon wage
+determination is incorporated at the task order level, when place of performance has
+been determined.
+11. Does the schedule include furniture, bathroom fixtures, kitchenettes, etc.?
+Contracts usually do not include furniture. However, it is routine to include optional
+bathroom fixtures or kitchenettes depending on the building and contractor. A
+eaming arrangement may be necessary to furnish the building or structure.
+12. What preconditions are required at the proposed site? This would include
+water and sewer lines, electric and gas connections etc.
+These utilities must be available at the site.
+13. If extensive site preparation is required, is this covered under the schedule?
+Site prep is covered under the installation and site preparation SINs, which cover
+specific products categories:
+
+Page | 10
+
+SIN 238910 Site preparation is limited to the immediate location of the installation,
+such as leveling and clearing ground, pouring a cement pad, etc.
+14. Is the foundation part of the schedule?
+Yes, a foundation is included under installation and site preparation requiring
+construction SIN 238910.
+15. Since foundations are necessary, is this considered ancillary?
+A foundation is considered under installation and site preparation.
+16. Are there limits on site preparation costs?
+No, any cost/price decision is determined by the customer. GSA MAS contracts
+do not include a limitation at the contract or order level.
+17. Are there options for leasing? Yes, SIN 532490P Lease/Rental of PreEngineered/Prefabricated Buildings and Structures. This includes portable/mobile office
+buildings, restroom facilities, and temporary living quarters such as mobile homes and
+ension fabric structures. The lease or rental of these portable structures are suitable for
+emergencies and disaster recovery efforts.
+GSA Points of Contac
+Kyle Finegan, Contracting Officer
+kyle.finegan@gsa.gov
+817-850-8233
+Mataya Jordan, Section Chief
+mataya.jordan@gsa.gov
+817-850-8161
+Ahisha Alexander, Branch Chief
+ahisha.alexander@gsa.gov
+817-850-8358
+
+Sample Statement of Objectives and Statement of Work
+When writing a Statement of Objective or Statement of Work, when possible state the
+purpose, rather than the specific detail. This will allow the contractor to propose based
+on the materials they would use, rather than the materials necessary to complete the
+project. This can result in lower pricing. If a specific detail is required, then list.
+Page | 11
+
+STATEMENT OF OBJECTIVES (SOO)
+Title: Secure Temporary Office Modular Project (STOMP)
+1.0 Purpose. This Statement of Objectives (SOO) describes the basic objectives for the
+completion of a Secure Temporary Office Modular Project (STOMP). The Statement of
+Objectives is provided in lieu of a Government written Statement of Work (SOW). This
+approach provides potential offerors the flexibility to develop cost effective solutions and
+he opportunity to assess the offeror's understanding of all aspects of the effort to be
+performed by eliminating the "how to'' instructions to accomplish the required effor
+normally contained on the SOW the government provides to prospective offerors.
+Teaming (teaming arrangement) with other schedule holders may be necessary to
+complete your proposal.
+2.0 Period and Place of Performance. 150 days. Hill Air Force Base, Utah
+3.0 Background. The STOMP shall have the following attributes:
+• Minimum of 32,600 SQFT to house approximately 300 staff and required equipment.
+(Attached floor plan solution utilizes 46 trailers at 11’-10” x 60’)
+252 work stations (cubicles).
+• 11 private Supervisors Offices
+• 3 Planning (Conference) Rooms
+• 2 Men’s multi-stall restrooms
+• 2 Women’s multi stall restrooms
+• Lobby with Security Checkpoint desk
+• Entry Vestibule
+• 1 Men’s and 1 Women’s Lobby Restroom
+• 1 Break Area/Kitchen
+• 1 Communications Room
+• 1 private MCCR (Communications Manager) Office
+• 1 Receiving Bay with Rollup Door
+• 1 janitor’s close
+• 4 storage closets (1 in lobby)
+• 1 Mechanical Room
+• 1 Electrical Room
+Specifications:
+Basis of proposal: Proposal is based on the statement of objectives and drawings
+reflected herein. It is the intent of these documents to outline the requirements for a
+emporary modular office complex to be factory manufactured off-site and delivered to a
+specified location. The contractor is also responsible to prepare the site and connect the
+utilities to the temporary facility.
+Page | 12
+
+Transportation permits: Transportation permits are the responsibility of the contractor.
+Performance & Payment bonds: Performance and/or Payment bonds are required.
+Insurance: Standard general liability and builder's risk coverage until work is complete.
+Wage rates: Davis Bacon and prevailing wage rates and certified payroll excluded for
+manufacture, delivery and incidental work relating to installation. Davis Bacon and
+prevailing wage rates and certified payroll applies to only non-incidental work
+performed on site.
+Inspection approvals: Standard base inspection protocol will be utilized.
+Close-out documents: Standard Operating & Maintenance manuals including warranty
+information provided at the completion of the project.
+Codes, Design Criteria: 2009 IBC/UFC/ADA/NEC/IPC/IMC/IECC. Buildings will be
+constructed to meet or exceed standards as defined in 2009 IBC Occupancy Group B,
+and Type V-B construction, sprinkled per UFC 3-600-1. The buildings are built in
+compliance with UT state modular program. The Trailer Facilities are within allowable
+story and floor limits for Occupancy and Type. The Trailer Facility buildings are no
+subject to progressive collapse requirements (less than 3 stories). The Trailer Facility
+structures are not subject to ATFP requirements due to both the nature of the structures
+(relocatable building) and duration of intended use (5 years or less) UFC 4-010-01.
+Design criteria: Wind - 90 mph wind exposure c; sprinkled; seismic as required for
+HAFB, Utah; 50 psf floor load; 40 psf roof load.
+Architectural/Engineering: Contractor shall employ the services of engineering
+professionals as necessary to meet design criteria and meet applicable codes.
+Frame: Perimeter type steel c-channel, sized to meet design criteria.
+Transportation rigging: Removed and returned to mfg.
+Floor Insulation: R-30 no moisture barrier
+Joists: Sized and spaced to meet design criteria
+Floor Decking: Minimum ¾” T&G
+Underfloor board: 5/8” Plywood on underside of floor joists 3
+Floor cover #1: Commercial carpet tiles all common staff areas, supervisor offices,
+MCCR, conference rooms.
+Page | 13
+
+Floor cover #2: 1/8” Armstrong 12”x12” VCT floor tiles in bathrooms, lobby, Comm,
+kitchen, break area, janitors closets, Mech room, Elec room, storage closets, and
+hallways.
+Floor cover #3: Recycled Tire Tread entrance flooring in Entry Vestibule. Also provide
+a 6’x6’ area at the Side Lobby entrance.
+Base molding #1: 4" continuous vinyl cove base- throughout building.
+Exterior Walls: 2" x 6" wood studs spaced to meet design criteria. 5/8” Exterior
+Plywood Sheathing, 5/8” Interior Sheetrock, R-21 insulation.
+Siding: 29 gauge ¾” HI Rib Metal
+Exterior trim: To match siding.
+Perimeter Skirting: Siding/framing to match exterior finish with chain-link security
+barrier buried to 12” depth below grade.
+Interior Walls: 2x4 framing spaced to meet design criteria, ½” Sheetrock, R-13 sound
+batts except around Lobby and RCV Bay, where sheetrock is 5/8” both sides.
+Support Walls: Utilize mid-span walls/columns in each trailer module to lighten roof
+beams/trusses.
+Interior finish #1: Tape, texture to level 4 finish and paint in all areas except as noted.
+Interior finish #2: Fiberglass reinforced panel (frp) - full height over 5/8" substrate on
+wet walls in restrooms, janitor's closet.
+Beams, Rafters, joists: Sized and spaced to meet design criteria.
+Ceiling: 2' x 2' suspended acoustic with square edge.
+Ceiling height: nominal 9'
+Ceiling Insulation: R-38
+Roof Sheathing: 5/8" plywood
+Roof Joist Underside: 5/8” Sheetrock
+Roofing: 60 mil epdm, 20 yr material warranty
+Roof slope: 1/8 in 12
+
+Page | 14
+
+Rain Gutters: Mini over Doors
+Emergency Exit: Double 3’-0" x 6'-8" 18 gallon painted reinforced metal door w/ 16
+gallon HM with center stile between doors.
+• Doors shall be secured with emergency egress hardware on the inside. No exterior
+hardware. Egress hardware shall incorporate an integral Audible alarm which activates
+upon opening.
+• Doors shall be equipped with an automatic, non-hold door-closer which shall be
+installed internal to the Facility.
+• Hinges shall incorporate non-removal hinge pins
+Interior Lockable Doors (Offices, Planning, MCCR, Storage, Janitor, Comm): 3’-0”
+x 6’-8” Solid Core Prefinished Wood w/ Alum Frame.
+• Provide with lockable lever hardware with removable cores.
+• Offices, MCCR, Comm, Planning rooms to have glazing kits.
+Interior Public Doors (Restrooms, Breakroom, Hallways): 3’-0” x 6’-8” single or
+double (as shown) Solid Core Prefinished Wood w/ Alum Frame.
+• Hardware to be Push-Pull with closers.
+• Hallway and Breakroom doors to have glazing kits.
+Outer Vestibule Entry Doors: Double 3’-0” x 6’-8” aluminum store front, mill bronze.
+• Pull handles on exterior. Push handles in interior.
+• Removable-core lock w/ integral simultaneous top/bottom latch on active leaf.
+• Hinges shall incorporate non-removable hinge pins.
+Inner Vestibule Access Doors: Double 3’-0” x 6’-8” 18 gallon painted reinforced metal
+door w/ full lite, 16 gallon HM frame with center stile between doors.
+• Doors shall be equipped with an automatic, non-hold door-closer which shall be
+installed internal to the Facility
+• Exit Door shall be equipped with emergency egress hardware on the inside.
+• Entry Door shall have a removable-core lockable lever handle on the Lobby side.
+Secured side hardware shall be a passage lever.
+• Hinges shall incorporate non-removable hinge pins
+• Entry door shall be provided with electric strike and installed so as to accommodate
+Vindicator access.
+Lobby Side Door: 3’-0" x 6'-8" 18 gallon painted reinforced metal door w/ 16 gallon HM
+frame as configured on drawing.
+• Door shall be equipped with an automatic, non-hold door-closer which shall be
+installed internal to the Facility
+• Door shall be equipped with emergency egress hardware on the inside.
+• Door shall have a pull handle on the exterior of the door with a high security keyway
+for use in the event of an access control system failure.
+• Hinges shall utilize non-removable hinge pins
+Page | 15
+
+• Door shall have glazing kit.
+Secure Access Doors (Lobby into Controlled Space): Separate 3'-0" x 6'-8" 18
+gallon painted reinforced metal door w/ 16 gallon HM frame configured as per drawing.
+One door is entrance to secure space. Other door is exit from secure space.
+• Doors shall be equipped with an automatic, non-hold door-closer which shall be
+installed on the secured side.
+• The exit door shall be equipped with emergency egress hardware on the secure side.
+No hardware on the lobby side
+• Entrance door shall have a removable-core lockable latch handle installed on the
+lobby side of the door and a passage latch handle installed on the secure side.
+• Hinges shall utilize non-removable hinge pins
+• Both doors shall have glazing kits.
+Rollup Door: 8’x 7’ Insulated Rolling Door, 18 gallon minimum.
+• Secure interior slide latches (both sides of door)
+Equipment Room Doors: 3'-0" x 6'-8" 18 gallon painted reinforced metal door w/ 16
+gallon HM frame configured as per drawing.
+• Provide with lockable knob hardware with removable cores.
+Glazing Kit: 6”x27” Reinforced Vision Kit where specified above.
+Windows: 3'-0" x 4'-0" Fixed.
+Glazing: Clear, dual glazed, low-e
+Blinds: I" metal at each exterior window
+Window Security: Windows shall be protected by permanently affixed reinforced steel
+bars.
+(a) Bars shall be a minimum of 1/2 inch diameter steel, welded vertically and
+horizontally six inches on center. The bars shall be welded at intersections.
+(b) The bars shall be secured to a frame. This frame shall be permanently anchored to
+he secure-side wall with six inch anchors. Anchors shall be non-removable.
+Electrical Service: Provide three phase 480/277 volt service for HVAC Units and
+Lighting. Transform down to 208/120 volt for all other loads.
+Panels: Provide and install interior sub panels and transformers, sized per design
+criteria and code. Provide and install MDP as or if required. Connect sub panels to MDP
+or disconnects on site as required.
+Main Building panel: Provide and install exterior/interior mounted main distribution
+panel (MDP) for a single point of connection ready for final utility connection.
+
+Page | 16
+
+Service connections: Provide and install conduit and wire to connect sub panels to
+MDP.
+Ground: Provide and install service ground rod at each MDP.
+Transformers - regulators: Provide, install and connect all necessary transformers.
+Circuit wiring: Per code #12 awg wire or greater
+Conduit: EMT, MC cable
+Interior lights: 2' x 4' fluorescent 3 bulbs recessed, t-8 electronic ballasts, prismatic. All
+conference rooms to have dimmers for fluorescent lights.
+Exterior lights: General purpose exterior lighting providing 360-degree facility
+coverage.
+Exit signs: As required by code
+Emergency lights: 2' x 4' fluorescent 4 bulb, recessed, t-8 electronic ballasts, prismatic
+diffusers with battery back-up, per code
+Receptacles: 20 amp 125 VAC two pole 3 wire installed as per code. Also install 15
+receptacles at office equipment to be locations designated by bldg. user (at drawing
+review stage).
+Dedicated receptacles or circuits: Dedicated wired j-box in ceiling above fire alarm
+panel location prep for installed fire alarm system. Provide dedicated wired j-boxes in
+ceiling for cubicle power interconnection at a rate of two workstations per circuit.
+Office Furniture: Contractor to provide and install 152 cubicle workstations and
+security desk workstation as per attached floor plan. Private offices and remaining
+workstation locations shall be roughed for data and electrical (i.e. conduits/cables/fiber)
+such that each location is ready for future furniture installation.
+Break Room Appliances:
+Exterior Outlets: Install outlets at exterior perimeter at the following locations:
+• Near rollup door
+• Near front entrance
+• Adjacent to each HVAC uni
+Voice & data: Provide and install boxes at 15 designated office equipment (printer, etc.)
+locations with home run capability (via conduits and/or cable trays) to Data/Comm
+Room.
+Provide and install j-boxes above ceiling at all cubicle locations for interconnection to
+cubicle workstations. Each cubicle requires capacity for 8 cables (either copper or fiber).
+Provide home run capability (via conduits and/or cable trays) to Data/Comm Room.
+Page | 17
+
+Provide and install j-boxes in wall at all supervisor offices. Each cubicle requires
+capacity for 8 cables (either copper or fiber) divided among 3 separate boxes/conduits
+on each of 2 designated walls in each office. Provide home run capability (via conduits
+and/or cable trays) to Data/Comm Room.
+Provide, install and interconnect cable trays and conduits above ceiling between
+modular units.
+Fire Alarm: Provide & install fire protection flow switch and other alarm devices as
+required by applicable codes.
+Fire Alarm Connection: Provide devices (Monaco transmitter) to communicate fire
+alarm signals with Fire Department. Provide all interconnecting conduit and wiring within
+he building for a complete, working system.
+Fire sprinkler system: Provide and install wet pipe fire sprinkler system to include riser
+and shut off valves within the building.
+Fire sprinkler system - interconnection: Provide labor and materials to connect fire
+sprinkler system together to a single connection point below the floor (within the
+crawlspace under the fire sprinkler closet). Design shall be based on adequate water
+pressure being provided by customer. Testing included.
+*Site Utilities: in the final purchase package, a site map will be included which
+indicates existing utility locations, distances, and conditions.
+Fire sprinkler system connection: Professionally size and connect building fire
+sprinkler riser to site water source as indicated on Site Plan. Include backflow preventer,
+post indicator valve, two fire hydrants, pumps, etc. as required.
+Gas Connection: Professionally size and connect all gas-fired HVAC Units to
+underground gas main at location indicated on site plan.
+Electrical Utility Connection: Bring electrical from power source to single poin
+electrical connection (480/277 Volt) at building. This will include the necessity of a stepdown transformer from the existing overhead service. Contractor to make final
+connection to site power source. Refer to site plan.
+Comm/Data Utility Connections: Run 2 each 4” Conduits from Communications
+Room underground to a location 5’ east of the Modular Complex. Cap buried
+underground ends. Insert pull strings in both conduits.
+Potable Water Connection: Professionally size and connect building water system to
+appropriate underground water main as indicated on site plan. Include meters, pressure
+regulators, backflow preventers, etc.
+
+Page | 18
+
+Site preparation: Prepare site by grading and excavating for the foundation, utilities
+and new parking. Compact as required per design. Prepare SWPPP and grade site
+accordingly.
+Below grade concrete: Labor and materials to provide engineered below grade
+reinforced concrete footings. Bottom of footings to be below frost line (30”).
+Site Concrete: Provide and install concrete steps, ramps, sidewalks, curbs, gutters,
+utility pads per site drawing and ADA requirements. As a minimum, site concrete work
+should include the following:
+• Concrete stairs and landing at main entrance.
+• 3’ x 8’ Concrete dock at Rolling Door
+• Concrete handicap ramp at main entrance
+• Concrete sidewalk/walkway from proposed parking lot area to main entry steps/ramp.
+Emergency exit stairs: Provide metal (Galvanized steel or aluminum) landing and
+stairs with handrails at all emergency exit locations and at side Lobby Door and
+Equipment room door. Landings to be 5’x7’. Utilize open stair tread material for
+stairs/landing.
+Fire extinguishers: As required by code
+Water lines: PEX / copper
+Shutoff valves: Chrome all fixtures
+Exterior faucets: Frost proof with plumbers key
+Water line interconnections: Make crossover connections (hot and cold water lines) a
+modular mainlines, as or if required
+Waste lines: PVC schedule 40 drains & vent, individual stubs to crawl space
+Sewer manifold: Provide labor and materials as necessary to manifold individual sewer
+stubs together to a single point of connection within crawl space (including clean-outs
+per code).
+Water coolers: Two (2) dual height, ADA compliant, electric in areas designated by
+customer
+Water heaters: Multiple electric on-demand sized appropriate for use requirements and
+conditions.
+Janitors sink: Floor mounted commercial grade, includes faucet and dual handles.
+Brackets and shelving to hold housekeeping items.
+
+Page | 19
+
+Toilets: Floor mounted, flush valve, elongated bowl, vitreous china, ADA compliant
+Urinals: Wall hung vitreous china with flush valve
+ADA grab bars: Brushed, stainless steel, per code
+Rest room accessories: Dual roll toilet paper holder at each toilet. Paper towel,
+dispensers, mirrors.
+Toilet partitions: Baked Enamel
+HVAC: Wall mount Gas/Electric HVAC Package Unit. Natural gas heat, 3 phase
+electric. Quantity and sized to be determined by Mechanical designer. In addition to the
+calculated building loads, 10 tons of cooling should be allotted to the Communications
+Room. All HVAC units to be interconnected to single HVAC emergency shutoff located
+at security desk.
+HVAC Security: Vents or duct openings that penetrate the perimeter of the Facility and
+exceed 96 square inches shall be protected with permanently affixed bars or grills.
+(a) If bars are used, they shall be a minimum of 1/2 inch diameter steel, welded
+vertically and horizontally six inches on center. The bars shall be welded a
+intersections. The bars shall be secured to a frame. This frame shall be anchored to the
+secure-side wall with six inch anchors.
+(b) If grills are used, they shall be of ¾ inch-mesh, #9 (10 gauge), case-hardened,
+expanded metal.
+(c) If bars or grill are required, an access port shall be installed inside the secure
+perimeter of the Secure Facility to allow visual inspection of the bars or grill.
+Supply ducts: Galvanized with exterior insulation
+Registers: 24" x 24" adjustable manufacturer's std
+Return air: 24" x 24" adjustable manufacturer's std
+Thermostats: 7 day programmable with occupant override variable, include locking
+covers over thermostats.
+Test & balance: Certified test and balance
+Bath exhaust: Switched fans, sized per code.
+Counter tops: Solid surface w/ integral sinks
+Backsplash: Ceramic tile backsplash or equal
+Cabinets: Base and overheads, with solid hardwood fronts
+Page | 20
+
+Shelving: Melamine covered, at storage closets
+Cleaning: Clean entire building, remove all labels, vacuum floor, strip, 2 coats sealer
+and 3 coats wax on all VCT.
+4.0 Performance Objectives. The purpose of this statement of objectives is to obtain a
+contractor to support the Temporary Modular Trailer Facility. Under this effort the
+contractor is responsible for providing all personnel, supplies, and logistics for the
+completion of this project. The contractor performs the required work in accordance with
+all industry standards and regulations.
+4.2 Subcontractor Expenditures Plan - Deliverable. The Contractor shall prepare and
+deliver a Subcontract Expenditures Report that discloses actual subcontrac
+expenditures by company name, business size standard (i.e., Woman Owned Business,
+Veteran Owned Business, etc.), and other socioeconomic programs (i.e., Indian
+Incentive Program, Historically Black Colleges and Universities and Minority Institutions,
+etc.). See FAR Part 19.
+4.3 Quality Assurance Surveillance Plan (QASP). The Conductor shall establish a
+complete Quality Control Program (QC P) to assure the requirements of the contract are
+provided as specified. The QCP shall be an identifying issue in the quality of services
+before the level of performance is unacceptable, and should be contained within a
+formal written Quality Assurance Surveillance Plan which must be submitted with the
+vendor final proposal. The program and document shall be subject to the approval of
+he Contracting Officer (CO) and the Contracting Officer's Technical
+Representative(COTR).
+4.4 Applicable Information. Contractor is responsible for providing:
+• Recommendations for industry proven cost cutting methods, and improved
+performance measures under the contract.
+• Effectively ensuring quality control.
+• Ensure that all contractor and subcontractor personnel proposed to work on the
+premises under this contract are US Citizens or Naturalized Citizens and must be
+eligible to work on premises. Failure to comply with these requirements may result in
+ermination of this contract or removal of some contractor's employees form facilities.
+4.5 Constraints. Contractor shall work normal hours of 8 am to 4:30 pm Monday thru
+Friday. Work outside these hours must be approved in advance. Contractor must notify
+he Contracting Officer of any utility interruption 48 hours in advance. Normal operations
+of the campus must be kept in operation while the construction is being performed. The
+contractor must supply any temporary equipment or work needed to keep operations
+functioning with respect to utility interruptions. Roads and parking areas must be kep
+operational except for short durations and then only one lane closure is acceptable. Any
+damage to the Govt is the responsibility of the contractor to repair including the
+Page | 21
+
+grounds, roadways, curbs and sidewalks. Contractor must comply with base safety and
+construction policies and with all state and federal safety requirements.
+
+STATEMENT OF WORK (SOW)
+Statement of Work – Modular Office Space 1
+1 – Scope of Contrac
+Provide and set-up a 24’ x 60’modular office. Set-up shall include blocking, leveling,
+seismic anchors and skirting. The contractor shall provide a permanent accessible
+entrance ramp and landing meeting ABA Accessibility Standards: http://www.accessboard.gov/guidelines-and-standards/buildings-and-sites/about-the-aba-standards/abastandards . Offerers shall submit with their proposal, a floor plan and complete
+specifications on materials and construction details to demonstrate the ability to mee
+he requirements herein. As an option the contractor shall install utility lines from the
+existing office trailer to the new modular office location including power, water, sewer,
+phone and data (conduit only for data and phone). Connect power, water and sewer as
+shown on the drawings and specified herein. As an option the contractor shall unhook
+all utilities from the existing office trailer leaving the stub outs in place and demolish the
+existing office trailer.
+List of Attachments:
+• VicinityMap
+• Almanor District Site Plan
+1.1 – Project Location:
+The site is located at 900 Highway 36 in Chester, CA. The contractor shall confirm the
+acceptability of the route to the pad.
+1.2 – Government Furnished Property
+Government Furnished & Contractor Installed: None
+Government Furnished and Government Installed:
+• Data/Telecommnetwork equipment and main lines from the existing Fire Trailer
+• Refrigerator
+1.3 – Contractor Furnished Property and Submittals
+The Contractor shall furnish all labor, materials (except as listed in paragraph 1.2),
+equipment, supervision, and transportation necessary for the successful completion of
+he work described in this contract. A complete set of drawings, stamped by a California
+licensed engineer and specifications for products to be incorporated in the modular uni
+shall be submitted for approval 30 days prior to beginning production. Drawings shall
+include plan, elevation and detail views of the building, foundation,
+Page | 22
+
+anchoring and skirting sufficient to determine conformance to the contract. Plans shall
+also include electrical load calculations so the government can ensure Pacific Gas&
+Electric (PG&E) has sufficient power to the meter.
+1.4 – Utilities(Option B)
+Contractor shall be responsible for locating and protecting above and below ground
+utilities in the project area. At the site for the new office there used to be a residence
+which had water, sewer, power and LPG lines. All these utilities have been abandoned
+but may still be in place. The power line was an overhead line and is indicated on the
+site plan. See site plan for location of existing utility tie-in points.
+1.4.1 - Power
+Disconnect the underground conductors that feed the existing office trailer from the box
+on the west side of the building or from the control panel?. Provide a new PG&E
+approved service entrance panel on the modular office exterior wall at the location
+shown on the site plan. Install underground 3” PVC conduit from under the existing
+abandoned office trailer to the new modular service entrance panel. Conduit shall be
+buried at code depth with properly compacted bedding and backfill material. Where the
+rench is under asphalt, backfill the top 9” with 6” of compacted ¾” minus crushed
+aggregate and 3” of ½” minus asphalt. In all other locations, the top 6” of the trench
+shall be compacted ¾” minus crushed aggregate. Run proper sized conductors from the
+meter pedestal to the new service entrance panel.
+1.4.2 - Water
+Install underground water line conduit from under the existing abandoned office trailer to
+he new modular service entrance panel. Conduit shall be buried at code depth with
+properly compacted bedding and backfill material. Where the trench is under asphalt,
+backfill the top 9” with 6” of compacted ¾” minus crushed aggregate and 3” of ½” minus
+asphalt. In all other locations, the top 6” of the trench shall be compacted ¾” minus
+crushed aggregate. Tie into existing 1-inch PVC waterline at existing service modular
+office. Install a new NIBCO4660-S ball valve that is reachable through a Hallmann
+Sales, LLC GP-100 10”x10” access door installed in the skirting. Insulate all piping with
+self-sealing closed cell foam tubing
+1.4.3 - Sewer
+Install underground sewer line conduit from under the existing abandoned office trailer
+o the new modular service entrance panel. Maintain a minimum of 1% slope in the new
+sewer line from the new modular office to the existing sewer connection under the
+existing abandoned office trailer. Conduit shall be buried at code depth with properly
+compacted bedding and backfill material. Where the trench is under asphalt, backfill the
+op 9” with 6” of compacted ¾” minus crushed aggregate and 3” of ½” minus asphalt. In
+all other locations, the top 6” of the trench shall be compacted ¾” minus crushed
+aggregate. Tie into existing sewer line to service the modular office. Modify and extend
+underground line as necessary to provide a new accessible cleanout in a plastic valve
+box labeled “SEWER”.
+
+Page | 23
+
+1.4.4 – Data/Telecom
+Protect existing conduit that stubs up under the existing mobile office trailer for reuse by
+he government.
+1.5 - Use of Utilities
+Contractor may use electric, water and sanitary facilities at the project area.
+1.6 – Protection of Existing improvements
+Pavement, buildings, landscaping and other improvements shall be protected by the
+Contractor. The
+Contractor shall be responsible for repairing any damage to improvements.
+1.7 – Office Trailer Demolition(Option A)Statement of Work – Modular Office Space 3
+The existing office trailer shall be removed and disposed of off the existing governmen
+property. Work includes utility disconnection, removal and disposal of office trailer.
+A. Regulatory Requirements: Comply with governing EPA notification regulations before
+beginning demolition. Comply with hauling and disposal regulations of authorities having
+jurisdiction.
+B. Hazardous Materials: It is not expected that hazardous materials will be encountered
+in the Work.
+1. The Government before start of the Work will remove hazardous materials.
+2. If materials suspected of containing hazardous materials are encountered, do no
+disturb; immediately notify the CO. The Government under a separate contract will
+remove hazardous materials.
+C. Existing Utilities: Locate, identify, disconnect, and seal or cap off indicated utilities
+serving buildings and structures to be demolished.
+1. Arrange to shut off indicated utilities with utility companies.
+2. If utility services are required to be removed, relocated, or abandoned, before
+proceeding with building demolition provide temporary utilities that bypass buildings and
+structures to be demolished and that maintain continuity of service to other buildings
+and structures.
+3. Cut off pipe or conduit a minimum of 24 inches (610 mm) below grade. Cap, valve, or
+plug and seal remaining portion of pipe or conduit after bypassing. Leave a t-post or lath
+at each utility location with a label indicating each utility so they can be located when
+performing the utility work for the new modular office.
+1.8 – Modular Office Pad
+The government will provide a site that is relatively level and capable of a minimum
+1500 psf bearing capacity.
+1.9 – Modular Office Uni
+Bathroom dimensions shall be adjusted as necessary to meet accessibility standards.
+Below are the minimum requirements that must be met:
+
+Page | 24
+
+General:
+1. Unit shall be fully accessible and meet the International Building Code. Unit shall be
+designed and installed to meet the snow, wind and seismic forces for the location.
+2. Office area shall consist of four private offices with the balance of space being open
+office area for maximum flexibility.
+3. Provide accessible entry door(s) as required by code with photocell metal halide
+security lights. Entry door(s) shall be ANSI/SDI-100, Grade III, extra heavy-duty, Model
+2 + 2A, with minimum 16-gauge galvanized steel faces. Frame(s) shall be 16-gauge
+galvanized steel with one piece welded construction.
+4. Minimum R-19 wall, R-38 roof and R-11 floor insulation or meet latest California code
+requirement, whichever is greater.
+5. Roof shall be gable style with minimum 12 inch eaves and rakes. Provide minimum
+30 year standing seam roof. Color shall be selected by the Contracting Officer from the
+manufacturers standard color selections.
+6. Exterior siding and skirting shall be LP Architectural Collection 16 inch Double 8” Bold
+Profile or approved equal. Skirting shall be secured to the ground with 2” x 4” pressure
+reated wood rated for ground contact. Remaining framing to support skirting shall be 2”
+x 4” @ 16” OC and installed straight with no visible waviness in the finished skirting.
+Use matching LP SmartSide trim and fascia for building and skirting and LP SmartSide
+Soffit for the eave and rake enclosures.
+7. Provide minimum ½” drywall interior with manufacturer’s standard finish. Color shall
+be selected by the Contracting Officer from the manufacturers standard color selections.
+8. Ceiling shall be heavy duty Armstrong 15/16” T-grid with Armstrong #1733, 2' x 4' x
+5/8" acoustical lay-in tiles or approved equal. Any damaged components from shipping
+o the site shall be replaced with new.
+9. Interior doors shall be NWWDA I.S.1-A solid core or better with factory finish. Color
+shall be selected by the Contracting Officer from the manufacturers standard color
+selections.
+10. All door hardware shall be heavy duty commercial grade with satin chrome finish.
+Entrance lockset shall be Schlage ND53PD RHO 626 or approved equal. Office
+locksets shall be AL50PD SAT 626 or approved equal. Exterior door(s) shall have
+continuous weather seals and keyed alike locks. Private offices shall have locks keyed
+separately that will also unlock entrance door(s).
+11. Windows shall be Milgard Style Line Horizontal Sliders with Suncoat Low-E glass or
+approved equal. Minimum size shall be 4’0” x 3’6”.
+12. Wall to wall carpet throughout office areas shall be minimum 26 oz. commercial
+grade loop pile. Install by direct glue down method. Color shall be selected by the
+Contracting Officer from the manufacturers standard color selections.
+13. Exterior siding and trim colors shall be selected by the Contracting Officer from the
+manufacturers standard color selections. Paint shall be Kelly Moore, Benjamin Moore,
+Sherwin Williams acrylic latex or approved equal.
+Bathrooms:
+1. One Men’s & one Women’s fully accessible bathroom in compliance with the ABA
+Accessibility Standards.
+2. One commercial duty toilet or approved equal per bathroom.
+Page | 25
+
+3. One vitreous china sink, 304 SS framed mirror, GFCI outlet, 304 SS double roll toilet
+paper holder and 304 SS tri-fold paper towel dispenser per bathroom.
+4. Ventilation fan in each bathroom that comes on with the light and has adjustable off
+delay.
+5. Commercial 0.080” sheet vinyl flooring. Color shall be selected by the Contracting
+Officer from the manufacturers standard color selections.
+Kitchenette: (Option C)
+1. Base cabinet length shall be 5 feet to include a 30” sink base with double doors and
+30” base with two drawers and double doors. Leave room for a 36” governmen
+furnished refrigerator between the cabinet and the wall.
+2. Matching wall cabinet length shall be 5 feet to include two 30” wide by 42” tall double
+door cabinets.
+3. Matte finish one piece laminate countertop with bull nose drip edge and integral
+backsplash.
+4. Single bowl stainless steel sink with soap tray, Elkay Model ECC2522 or approved
+equal.
+5. Moen Model 7425BC Chateau single lever faucet or approved equal.
+6. Cabinets shall be Armstrong Allwood in Branford style or approved equal. Wood
+finish to match interior doors.
+7. All doors and drawers shall have brushed stainless steel wire pull handles.
+8. Mounted 5 pound Type A-B-C fire extinguisher in semi-recessed wall cabinet.
+HVAC & Plumbing:
+1. Instantaneous electric water heaters mounted under all sinks.
+2. Ducted high efficiency HVAC system using external wall mounted high efficiency hea
+pumps with economizers and auxiliary electric heat. No jump ducts allowed.
+3. Ducted bathroom exhaust fans per code requirements
+4. 7-day programmable thermostat with battery backup.
+5. All copper or Pex waterlines. Insulate all piping with self-sealing closed cell foam
+ubing
+6. Provide a cleanout for the trunk lines under the modular and extend to the skirting
+with a stainless steel Watts CO-480-RD cover or approved equal.
+Electrical/Communications:
+1. Provide T-8 2’ x 4’ lay-in fluorescent lighting with prismatic diffusers and electronic
+ballasts throughout. Lighting levels shall be appropriate for office occupancy.
+2. Provide a minimum of 20 duplex wall outlets and 4 duplex floor outlets. Floor outlets
+shall be placed in the open space a minimum of 8 feet from any wall. All duplex outlets
+in office areas shall be 20A and spaced as needed to meet code.
+3. Provide a 2 port data outlet (phone and data) adjacent to each duplex electrical outle
+with a ¾” conduit and pull string run in the wall to above the suspended ceiling.
+1.10 – Final Testing
+Upon completion, the building and utility systems shall be tested in the presence of the
+COR to ensure all components and systems are functioning properly. Provide the COR
+with a 3 business day advanced notice. If installation of the utilities option is no
+Page | 26
+
+performed contractor shall perform utility testing with a generator for the power and shall
+pressurize the water system using potable water from a portable water tank. During the
+sewer system testing use only potable water and use only enough water to ensure the
+system is working correctly. The water from the sewer system test may run onto the
+ground.
+2 – Time for Completion
+All work (including final clean-up) shall be completed within 60 calendar days from the
+issuance of the Notice to Proceed.
+
+APPENDIX A: SAMPLE MODULAR / PRE-ENGINEERED PHOTOS
+
+Page | 27
+
+Page | 28
+
+Page | 29
+
+

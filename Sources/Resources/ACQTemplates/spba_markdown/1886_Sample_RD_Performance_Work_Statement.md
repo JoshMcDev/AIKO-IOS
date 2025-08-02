@@ -1,0 +1,543 @@
+# 1886_Sample_RD_Performance_Work_Statement
+
+_Converted from PDF using pdftotext_
+
+SAMPLE R&D PWS
+HELPFUL HINT: Please note that OFPP has issued guidance stating that the
+first several phases of R&D work are excluded from having to use a performance-based approach. However, this template provides some guidance on how
+an R&D performance work statement (PWS) could be written.
+SECTION C – PERFORMANCE WORK STATEMENT
+## BACKGROUND
+In this section, describe the nature of the project being investigated and the reason for the
+research effort. This should include a problem statement like the one illustrated below.
+Currently, transportation departments across the country are finding that the current mixture
+being used to create asphalt is breaking down more quickly than it should. This degradation is
+costing state highway agencies to replace road surfaces more frequently than planned and the
+cost of doing so has sky-rocketed. Development of new test procedures and mixture design
+methods is crucial to the effective implementation of new technologies to the state highway
+agencies (SHAs) and industry.
+The purpose of this contract is to obtain capable and knowledgeable staff to conduct a national
+effort including data collection, workshops, and technical assistance in order to evaluate,
+validate, showcase, and promote the use of existing as well as new technology as it relates to
+asphalt materials, mix and pavement design, and construction quality control. To perform these
+asks, [agency] maintains a stationary asphalt binder laboratory and a mobile asphalt mix tes
+laboratory. Central to this effort would be assisting the SHAs to evaluate new equipment and
+est procedures on active project sites.
+## CONTRACT OBJECTIVE
+The objective of this contract is to obtain technical assistance for the program discussed above.
+## SCOPE OF WORK
+The Contractor shall provide all personnel, supervision and other items and services necessary to
+provide non-personal technical assistance to the program office as defined in this PWS. The
+Contractor shall perform to the standards in this contract.
+## DELINEATION OF CONTRACTOR TASKS
+1.
+
+FIELD WORK
+The Contractor shall provide sufficient manpower to perform all asphalt related tests on
+active project sites as specified in the testing plan developed by the contractor and
+approved by the Contracting Officers Technical Representative (COTR).
+
+1.1
+
+Test Plan. The Contractor shall develop a test plan based on the testing needs of the
+COTR and the requesting agency where the field work is to be performed. The details of
+he testing plan will require the Contractor to visit the requesting agency’s place of
+business and discuss the specific testing needs over the telephone. Upon written approval
+of the test plan by the COTR, the Contractor shall ensure that all equipment required in
+he test plan is available in the labs and is in working order. The scheduled start of field
+work shall be mutually agreed upon by the COTR, requesting agency and Contractor. As
+a minimum each test plan should include the following routine asphalt tests:
+Asphalt Binder Tests
+a.
+b.
+c.
+d.
+
+e.
+
+Penetration of asphalt cement.
+Viscosity of asphalt, kinematic, and vacuum capillary.
+Asphalt Specific Gravity Test.
+SHRP Asphalt Binder Specification Test:
+Bending Beam Rheometer
+Dynamic Shear Rheometer
+Direct Tension Tes
+Pressure Aging of Asphalt Binder
+Asphalt Viscosity using the Rotational Programmable Viscometer
+Superpave Asphalt Binder and Mix Database.
+
+Asphalt Mixture Tests
+a.
+b.
+c.
+d.
+
+e.
+f.
+g.
+h.
+1.2
+
+Flow and stability.
+Maximum specific gravity of bituminous mixtures.
+Vacuum extraction of asphalt from bituminous paving mixes.
+Compaction of bituminous paving mixtures utilizing the Standard Marshall
+Hammer, Modified Marshall Hammer (with rotating base), Texas Gyratory
+Compactor, and the SHRP Gyratory Compactor.
+Bulk specific gravity of compacted bituminous mixtures.
+Aggregate gradations, specific gravities, and adsorption including equipment such
+as CoreLok and SSDetect among other methods.
+Asphalt stripping and water sensitivity tests of compacted bituminous paving
+mixtures (AASHTO T 283).
+SHRP procedure for aging test on bituminous paving mixtures.
+
+Project Coordination. The Contractor shall make all necessary arrangements, in a
+professional manner, with the requesting agency concerning schedule and MAMTL
+activities. The Contractor shall also maintain a log of all verbal and written
+communications with requesting agencies. The Contractor shall provide a detailed
+itinerary to the COTR 14 days prior to departure of the mobile asphalt mix testing
+laboratory (MAMTL) for a project. The Contractor shall be cognizant that other
+
+Contractors are engaged in similar work, requiring close cooperation. The Contractor
+for this contract shall cooperate with all other Contractors and adjust the MAMTL’s work
+schedule to avoid conflicts with the other Contractor’s performance and work schedules.
+1.3
+
+Transport of MAMTL to/from project. The Contractor shall prepare and transport the
+MAMTL using the tractor provided by FHWA to the agreed upon field projects. The
+Contractor shall adhere to all Federal and State regulations concerning the transport of
+he MAMTL, which includes as a minimum that all drivers have a valid Commercial
+Drivers License (CDL).
+
+1.4
+
+Field Testing. The Contractor shall coordinate their activities with all parties involved
+with the project and perform all testing included in the approved testing plan. The
+Contractor shall perform all asphalt tests in accordance with applicable American
+Association of State Highway Transportation Officials (AASHTO) or American Society
+for Testing and Materials (ASTM). Neither the Contractor nor his employees shall
+release information obtained during the testing without the express written permission of
+he COTR.
+The Contractor shall demonstrate and explain any testing conducted to the requesting
+agency on an as needed basis.
+The Contractor shall hold a close out meeting with the participating agency to review the
+results of the testing performed within 45 days of the MAMTL leaving the jobsite.
+
+1.5
+
+Field Reports. The Contractor shall submit a draft report to the COTR within 15 days
+after completion of Close-Out meeting. Each report shall contain as a minimum the
+following information:
+a.
+b.
+c.
+d.
+e.
+f.
+g.
+h.
+i.
+j.
+k.
+
+The agency and location where the field work was conducted.
+List of personnel and contact information from participating agency directly
+involved with field work.
+Overview of project.
+Time spent at the location and resources utilized.
+Problems encountered during the assignment and recommended solutions.
+Tests performed and results obtained.
+Evaluation of performance and aggregate test results.
+Recommendations to improve the equipment and/or test procedures.
+Graphical plots representing test results and discussion of data analysis.
+Conclusions.
+Appendix including raw test data and detailed calculations or computations.
+
+The COTR will review and provide written comments within 10 days after receipt of the
+draft report. The Contractor shall revise the document to reflect the COTR’s comments
+and submit the final field report within 7 days for acceptance by COTR.
+
+2.
+
+EQUIPMENT AND TEST LABORATORY (“lab”) MAINTENANCE
+
+2.1
+
+Equipment Inventory. The Contractor shall assume responsibility and maintain all
+equipment and material furnished by the Government. Equipment inventory lists turned
+over to the Contractor shall be updated semi-annually. The Contractor shall give an
+electronic copy as well as a hard copy of the updated inventory list to the COTR after
+every update. The Contractor shall also maintain a list of expendable supplies available,
+such as cylinder molds or neoprene pads, and provide a copy to the COTR on a monthly
+basis.
+The Contractor shall be responsible for requesting parts and materials needed in the
+performance of this contract. The Contractor shall provide part numbers, a description of
+he service or materials required and the estimated cost from at least three vendors.
+Supplies needed, shall be submitted in writing to the COTR a minimum of 45 days prior
+o their intended use so as not to delay scheduled work.
+
+2.2
+
+Preventive Maintenance. The Contractor shall be responsible for establishing and
+implementing a comprehensive preventive maintenance (PM) program covering the labs,
+all applicable equipment associated with the labs, the tractor used to transport the
+MAMTL, and the generator attached to the tractor. The PM program consists primarily
+of inspection, cleaning, lubrication, adjustment, calibration, and minor part and
+component replacement (e.g., filters, o-rings, belts, cables, fluids, oil, electrical
+connections, grease). The PM program is required to minimize malfunction, breakdown,
+and deterioration of equipment. The PM program shall also document in writing all
+repairs required to bring the equipment up to the manufacturer’s operating standards and
+provide a copy to the COTR.
+This program shall include at a minimum, equipment priority, frequency, description of
+he maintenance to be performed, and an annual PM schedule for all equipment included
+in the program. The PM performed shall be as recommended by the original equipmen
+manufacturer.
+The Contractor shall submit his proposed PM program to the COTR for approval within
+60 days of the contract start date, and annually thereafter. The Contractor shall be
+responsible for updating this program as necessary to reflect the addition, replacement or
+removal of equipment and furnishing a copy of the updates to the COTR.
+If the Contractor detects that any Government equipment or component being maintained
+under the contract is in need of reconditioning, repair, replacement (or disposal), details
+including cost shall be submitted in writing to the COTR. The Contractor shall no
+undertake or perform any reconditioning, repair or replacement of equipment withou
+prior authorization from the COTR. The Contractor shall solicit quotations from at leas
+hree vendors for reconditioning, repair, or replacement in excess of $2,500.
+All costs of maintenance of the tractor and laboratory trailer shall be borne by [agency]
+
+except where the need for maintenance is caused by the negligence of the Contractor's
+employees.
+2.3
+
+Labs, Tractor, and Generator Appearance. The labs, tractor, and generator shall be
+washed, as a minimum, on a quarterly basis and/or 24 hours prior to being on display a
+conferences, seminars or other public events. The interior of the labs shall be kept in a
+clean and safe working condition at all times.
+The interior of the labs shall also be cleaned 24 hours prior to being on display at public
+events. The entire floor surface, including corners, behind doors and under furniture shall
+be kept free of food, drinks, litter, dust and debris. Windows shall be cleaned monthly
+and kept free of film, dirt, smudges, hand prints, water or other foreign matter. The walls,
+counter tops and cabinets shall be cleaned weekly and kept free of film, food, drinks, dirt,
+smudges, hand prints, or other foreign matter. The laboratory should be kept free of food
+at all times during display at public events. The Contractor shall replace burned out or
+flickering fluorescent tubes with the same type, wattage and voltage as those removed.
+Fire extinguishers shall be fully charged at all times.
+
+Rust and Corrosion. Clean rusted and corroded areas on tractor, labs, and generator as required.
+Prime the cleaned surfaces and paint using a high quality primer and paint suitable for surface
+being painted. Paint colors shall be matched as closely as possible to original or previous colors,
+or as otherwise approved by the COTR. Equipment identification data shall not be obscured or
+covered up with paint.
+
+3.
+
+TECHNOLOGY TRANSFER
+
+3.1.
+
+Equipment Demonstrations and Requests for Information. The Contractor shall
+provide technical assistance to interested agencies. Technical assistance can take the form
+of answering questions from email and phone calls within or outside [agency]. Provide
+literature based on requests for information within the scope of the project. Ship
+equipment to requesting agency and provide hands-on training. The Contractor shall
+provide a brief written report for each site visit documenting the participating agency,
+contacts and phone numbers for personnel who worked with the equipment, and
+summary to the COTR within 7 days of the visit.
+Technical Presentations. The Contractor shall develop and make professional
+presentations at seminars, conferences, workshops and/or meetings on an as-needed
+basis. Within 7 days after each presentation, the Contractor shall forward to the COTR a
+brief written report of the visit. Each report shall include as a minimum the date and
+duration of the visit, the purpose, audience, and location of the presentation, and a brief
+summary of activities and any recommendations and/or observations.
+
+3.2
+
+3.3
+
+Technical Publications. The Contractor shall write technical, professional quality,
+articles suitable for publications, newsletters, briefing papers, brochures, and develop
+
+workshop modules on an as needed basis.
+It is anticipated that these article(s) will address the lab program activities, asphal
+durability and performance issues, implementation activities and other asphalt related
+activities. Prepare and conduct training classes and or workshops dealing with asphal
+materials, mix design procedures, construction, QA/QC testing requirements, and asphal
+portion (materials characterization) of mechanistic-empirical pavement design, use of
+nondestructive and innovative test procedures and equipment.
+4.0
+
+Additional Development Assignments. Some additional development assignments are
+envisioned to occur within the duration of the contract.
+The type of assignments that are envisioned fall into the following categories:
+•
+
+Evaluation of mechanistic-empirical pavement analysis as part of NCHRP 1-37A
+Design Guide (TEXT DELETED)
+
+•
+
+Superpave database (TEXT DELETED)
+
+•
+
+Support AASHTO and NCHRP (TEXT DELETED)
+
+PERSONNEL REQUIREMENTS [IN A TRUE PWS, AGENCIES SHOULD CONSIDER
+LISTING ONLY THOSE KEY PERSONNEL (OFFERORS SHOULD PROPOSE THOSE
+KEY PERSONNEL) THEY THINK ARE APPROPRIATE, LIKE THE PROJECT OR
+PROGRAM MANAGER. OTHERWISE, IT IS UP TO EACH OFFEROR TO PROPOSE
+THE SKILLS AND SKILL MIX TO DELIVER THE REQUIRED RESULTS. IF THERE
+ARE LICENSING OR CERTIFICATION REQUIREMENTS, LIST THEM IN THIS
+SECTION.]
+
+PERFORMANCE STANDARDS & QUALITY ASSURANCE PLAN
+The following table contains:
+1.
+
+The PWS requirements that the Government will inspect. The absence of any contract
+requirements from the following table shall not detract from its enforceability nor limi
+he rights or remedies of the Government under any other provisions of the contact,
+including the clause entitled, “Inspection of Services.”
+
+2.
+
+The performance standards for each listed requirement. The performance standard
+represents the minimum requirement that the Government requires the Contractor to
+achieve.
+
+3.
+
+The acceptable quality level that specifies an allowable deviation from the performance
+
+standard for that service to be found acceptable.
+4.
+
+The financial incentives and penalties of this performance-based acquisition. Contractor
+performance that meets the acceptable quality level for each standard will be deemed
+acceptable performance by the Government. To earn incentive, the Contractor mus
+exceed the quality level specified for a standard. Performance that fails to meet the
+acceptable standard will result in the assessment of a penalty.
+
+5.
+
+The surveillance methods (located under Section E of the contract) the Government will
+use to evaluate the Contractor’s performance for the listed requirements.
+
+PERFORMANCE REQUIREMENTS SUMMARY (PRS)
+1.
+
+List the PWS requirements that the government will inspect. The absence of any contract
+requirements from the PRS shall not detract from its enforceability nor limit the rights or
+remedies of the government under any other provisions of the contract, including the
+clause entitled “Inspection of Services.”
+
+2.
+
+Define the standard of performance for each listed service.
+
+3.
+
+Set forth the allowable deviation from the standard performance for that service to be
+found acceptable. Performance that exceeds the standard will be rewarded in accordance
+with Section H - Special Contract Requirements, Award Fee Evaluation Plan Procedures.
+
+4.
+
+Set forth the surveillance methods (located under Section E of the contract) the
+Government will use to evaluate the Contractor’s performance for the listed tasks.
+
+Definitions
+Accuracy:
+
+Data or facts presented can be verified with a minimal amount of errors.
+
+Completeness:
+
+All necessary information is included, minimum omissions,
+comprehensive.
+
+Professional:
+
+Conform to the technical or ethical standards of a profession. Display the
+conduct, appearance, and qualities that characterize or mark a profession.
+Possess skill, experience and competence in a profession. Deals
+effectively in group discussions with sensitive or controversial matters.
+
+Quality:
+
+Deliverables use clear, concise language, are well laid out and adequately
+describe with sufficient detail the requirements. High level of detail is
+maintained during all aspects of contract and are documented in writing as
+appropriate. High standard of work maintained at all times. Produce high
+quality, precise, well organized work with minimum rewrites and editorial
+reviews.
+
+Day:
+
+Where acceptable quality levels are defined in days, a day is defined as
+weekday (Monday through Friday), not including recognized governmen
+holidays.
+
+[Agency] will evaluate Contractor performance using the following performance measurement
+methods against the following performance standards. Contractor performance will be rewarded
+or penalized in accordance with the following incentives:
+
+PERFORMANCE REQUIREMENTS SUMMARY
+NOTE: The standards below apply to work performed under Tasks 1-3.
+
+PERFORMANCE
+## REQUIREMENTS
+
+PERFORMANCE STANDARD
+
+1. Develop test plan,
+coordinate schedule,
+ransport MAMTL to
+field project, provide
+asphalt testing suppor
+and document results.
+
+Timeliness & Accuracy: Develop appropriate test plan based
+on job requirements 30 days prior to scheduled start of field
+work as determined by COTR. Ensure equipment required in
+est plan is available and in working order 90% of the time.
+Coordinate schedule for field work with requesting agency 30
+days prior to departure as mutually agreed upon by Contractor
+and COTR. Maintain log of verbal and written communications
+with requesting agency. Provide COTR with detailed itinerary
+14 days prior to departure as determined by COTR. Pack
+MAMTL, ensure MAMTL and tractor are road worthy 3 days
+prior to departure, and transport MAMTL to specified location
+safely and in a professional manner within 24 hours of mutually
+agreed upon time. Coordinate with all parties involved with
+project, including holding kickoff meeting and conducting
+subsequent activities. Perform tests included in approved tes
+plan and hold a close out meeting with the participating agency
+o review the results of the testing performed within 45 days of
+he MAMTL leaving the jobsite. Perform analysis on data from
+Superpave performance tests within 10 days of completing
+esting and maintain Superpave and performance test database
+and update within 7 days of leaving project site. Provide COTR
+draft report within 15 days of the completion of Close-Ou
+meeting and provide final report within 7 days of receiving
+COTR’s comments.
+
+ACCEPTABLE
+## QUALITY LEVEL
+
+93%
+
+INCENTIVE/PENALTY
+
+SURVEILLANCE
+## METHOD
+
+Incentive or penalty equal
+o 4% of Contractor’s uni
+price for six month
+evaluation period.
+
+100% inspection
+
+2. Maintain
+Government furnished
+equipment and
+expendable supplies
+and establish and
+maintain an inventory.
+Develop a preventive
+maintenance program
+for equipment, MATL,
+ractor, and generator.
+Demonstrate upkeep of
+labs’ appearance.
+
+Completeness & Timeliness: Provide COTR an electronic copy
+of equipment inventory semi-annually & expendable supplies
+monthly, as well as written list of any parts or materials needed
+a minimum of 45 days prior to intended use. Provide COTR
+with proposed preventive maintenance program within 60 days
+of contract award and annually thereafter. Perform preventive
+maintenance inspections and/or repairs within 15 days of
+approved recommended schedule & maintain log of all
+preventive maintenance services performed. Wash exterior
+surfaces, clean windows, clean interior of tractor and labs
+(weekly), on a quarterly basis and/or 24 hours prior to
+exhibition. Clean, prime and paint exterior of MATL, truck,
+and generator as required.
+
+95%
+
+Incentive or penalty
+equal to 3% of
+Contractor’s unit price
+for six month
+evaluation period.
+
+100% inspection
+
+HELPFUL HINT: TIMELINESS AND ACCURACY ARE TWO THINGS THAT CAN BE MEASURED. HOWEVER, IF THE FOCUS IS ON
+RESULTS, THE STANDARDS SHOULD BE TIED TO ACHIEVING THOSE RESULTS. DID WE FIND A BETTER MIXTURE FOR THE
+ASPHALT, THAT IS COST-EFFECTIVE AND CAN BE UTILIZED BY THE SHA’s?
+
+3. Provide technical
+assistance to interested
+agencies through phone
+calls, literature, site
+visits, equipment loans,
+echnical presentations
+and technical
+publications.
+
+Timeliness & Accuracy: Loan available equipment to
+requesting agency within 14 days of request or equipmen
+availability. Maintain up to date record of all equipment on
+loan. Provide available literature to requesting agencies within
+7 days of receiving request. Develop professional presentations
+at least 14 days in advance of the presentation for the COTR to
+review and provide brief written report to COTR within 7 days
+after each presentation. Prepare and submit technical
+publications for a mutually agreed upon due date.
+
+90%
+
+Incentive or penalty
+equal to 3% of
+Contractor’s unit price
+for six month
+evaluation period.
+
+Random inspection
+
+The FHWA will evaluate the Contractor’s performance under Tasks 1-3 (CLIN 0001 and
+CLIN 0002) against the performance standards described above every six months and
+provide a detailed performance evaluation of the Contactor’s overall performance during
+hat period.
+Incentive/Penalty
+The Government’s evaluation of the Contractor’s performance for the 6 month period will
+include a determination of the incentive or penalty assessed for that period. If an incentive is
+earned, the Contractor may request payment of the incentive on its monthly invoice submission
+for the month immediately following notification of the evaluation. Any penalty assessed for the
+period shall be deducted from the unit price on the monthly invoice submission for the month
+immediately following notification of the evaluation.
+Contractor Supervision
+The Contractor shall provide total supervision of its staff. Government personnel are no
+authorized or permitted to supervise any Contractor personnel. The Contractor’s Program
+Manager, shall communicate with the COTR to determine the Government’s work requirements
+as set forth in the Statement of Work and shall assure that these requirements are fulfilled. In the
+event the designated Program Manager is incapacitated due to illness or injury or otherwise is
+removed by the Contractor during the contract performance, replacement of the incumben
+Program Manager shall be subject to the prior written approval of the Contracting Officer.
+Review and Approval of Contractor Performance
+The COTR will review the completeness, accuracy, and quality of all products completed by the
+Contractor. Before final acceptance will be made, the COTR will make an inspection of the
+product and see to it that tests and measurements were performed in accordance with accepted
+laboratory procedures. All computations, such as trend analysis and uncertainty calculation, shall
+be fully documented.
+## GENERAL INFORMATION
+Operations: [LOCATIONS AND HOURS OF OPERATION LISTED HERE.]
+Travel: All travel must be approved by the COTR and if approved for Governmen
+reimbursement will be paid for in accordance with Government Travel Regulations in effect a
+he time of travel. No travel or per diem will be paid when the employee is working within 50
+miles of his/her home.
+
+

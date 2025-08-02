@@ -60,6 +60,12 @@ public struct iOSAppView: View {
         .sheet(isPresented: $viewModel.showingAcquisitionChat) {
             AgentChatInterface(viewModel: viewModel)
         }
+        .sheet(isPresented: $viewModel.showingUserGuide) {
+            UserGuideSheet()
+        }
+        .sheet(isPresented: $viewModel.showingSearchTemplates) {
+            SearchDocumentTemplatesView()
+        }
         .sheet(isPresented: $viewModel.showingShareSheet) {
             ShareSheet(items: viewModel.shareItems)
         }
@@ -733,6 +739,443 @@ struct OnboardingView: View {
         .background(Color.black)
     }
 }
+
+struct UserGuideSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    Text("Getting Started")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .padding(.top)
+                    
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Welcome to AIKO - Adaptive Intelligence for Kontract Optimization")
+                            .font(.headline)
+                        
+                        Text("AIKO helps streamline government contracting processes with intelligent document generation and SAM.gov integration.")
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Divider()
+                    
+                    Text("Key Features")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    
+                    VStack(alignment: .leading, spacing: 16) {
+                        FeatureRow(
+                            icon: "doc.text",
+                            title: "Document Generation",
+                            description: "Generate professional acquisition documents with AI assistance"
+                        )
+                        
+                        FeatureRow(
+                            icon: "magnifyingglass",
+                            title: "SAM.gov Lookup",
+                            description: "Search and verify contractor information directly from SAM.gov"
+                        )
+                        
+                        FeatureRow(
+                            icon: "bubble.left.and.bubble.right",
+                            title: "Agent Chat",
+                            description: "Get intelligent assistance for complex acquisition scenarios"
+                        )
+                        
+                        FeatureRow(
+                            icon: "folder",
+                            title: "Acquisition Management",
+                            description: "Organize and track your acquisition projects"
+                        )
+                    }
+                    
+                    Divider()
+                    
+                    Text("Tips")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("• Use the SAM.gov lookup to verify contractor CAGE codes")
+                        Text("• Save frequently used requirements as templates")
+                        Text("• Use the Agent Chat for complex procurement questions")
+                        Text("• Review generated documents before finalizing")
+                    }
+                    .font(.body)
+                    .foregroundColor(.secondary)
+                    
+                    Spacer(minLength: 50)
+                }
+                .padding()
+            }
+            .navigationTitle("User Guide")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
+    }
+}
+
+struct FeatureRow: View {
+    let icon: String
+    let title: String
+    let description: String
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: icon)
+                .font(.title3)
+                .foregroundColor(.blue)
+                .frame(width: 24)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.headline)
+                Text(description)
+                    .font(.body)
+                    .foregroundColor(.secondary)
+            }
+        }
+    }
+}
+
+// MARK: - Supporting Models and Views
+
+struct TemplateFile: Identifiable {
+    let id = UUID()
+    let name: String
+    let title: String
+    let description: String
+    let category: AppCore.TemplateCategory
+    let filePath: String
+    let content: String
+    
+    var variableCount: Int {
+        // Count {{VARIABLE_NAME}} patterns in content
+        let regex = try? NSRegularExpression(pattern: "\\{\\{[^}]+\\}\\}", options: [])
+        let range = NSRange(location: 0, length: content.count)
+        return regex?.numberOfMatches(in: content, options: [], range: range) ?? 0
+    }
+}
+
+struct CategoryChipView: View {
+    let category: AppCore.TemplateCategory
+    let isSelected: Bool
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 4) {
+                Image(systemName: categoryIcon(for: category))
+                    .font(.caption)
+
+                Text(category.rawValue)
+                    .font(.caption)
+                    .fontWeight(isSelected ? .semibold : .regular)
+            }
+            .foregroundColor(isSelected ? .white : .secondary)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(isSelected ? Color.blue : Color.secondary.opacity(0.2))
+            )
+        }
+    }
+    
+    private func categoryIcon(for category: AppCore.TemplateCategory) -> String {
+        switch category {
+        case .all: return "square.grid.2x2"
+        case .technology: return "laptopcomputer"
+        case .services: return "briefcase"
+        case .logistics: return "truck.box"
+        case .security: return "shield"
+        case .construction: return "hammer"
+        case .research: return "flask"
+        }
+    }
+}
+
+struct TemplateCardView: View {
+    let template: TemplateFile
+    let onSelect: () -> Void
+
+    var body: some View {
+        Button(action: onSelect) {
+            VStack(alignment: .leading, spacing: 12) {
+                // Icon and status
+                HStack {
+                    Image(systemName: "doc.text.fill")
+                        .font(.title2)
+                        .foregroundColor(.blue)
+
+                    Spacer()
+
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.caption)
+                        .foregroundColor(.green)
+                }
+
+                // Title and description
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(template.title)
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+
+                    Text(template.description)
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.7))
+                        .lineLimit(3)
+                        .multilineTextAlignment(.leading)
+                }
+
+                Spacer()
+
+                // Template info
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Image(systemName: "textformat.size")
+                            .font(.caption2)
+                            .foregroundColor(.blue)
+                        Text("\(template.variableCount) variables")
+                            .font(.caption2)
+                            .foregroundColor(.blue)
+                    }
+
+                    HStack {
+                        Label("Template Ready", systemImage: "checkmark.shield")
+                            .font(.caption2)
+                            .foregroundColor(.green)
+
+                        Spacer()
+
+                        Text("v1.0")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+            .padding(16)
+            .frame(height: 180)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.secondary.opacity(0.2))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.blue.opacity(0.3), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+struct TemplateDetailSheet: View {
+    let template: TemplateFile
+    @Bindable var viewModel: AppViewModel
+    let onDismiss: () -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var customizedVariables: [String: String] = [:]
+    @State private var extractedVariables: [String] = []
+    @State private var isGenerating = false
+    
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 0) {
+                // Header
+                VStack(spacing: 16) {
+                    Image(systemName: "doc.text.fill")
+                        .font(.system(size: 48))
+                        .foregroundColor(.blue)
+                    
+                    Text(template.title)
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                    
+                    Text(template.description)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.vertical, 24)
+                
+                // Variable customization
+                if !extractedVariables.isEmpty {
+                    Form {
+                        Section("Customize Template Variables") {
+                            ForEach(extractedVariables, id: \.self) { variable in
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(variable.replacingOccurrences(of: "_", with: " ").capitalized)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                    
+                                    TextField("Enter \(variable.lowercased())", text: Binding(
+                                        get: { customizedVariables[variable] ?? "" },
+                                        set: { customizedVariables[variable] = $0 }
+                                    ))
+                                    .textFieldStyle(.roundedBorder)
+                                }
+                            }
+                        }
+                        
+                        Section {
+                            Button(action: generateDocument) {
+                                HStack {
+                                    if isGenerating {
+                                        ProgressView()
+                                            .progressViewStyle(.circular)
+                                        Text("Generating Document...")
+                                    } else {
+                                        Image(systemName: "doc.badge.plus")
+                                        Text("Generate Document")
+                                    }
+                                }
+                                .frame(maxWidth: .infinity)
+                            }
+                            .disabled(isGenerating)
+                        }
+                    }
+                } else {
+                    Spacer()
+                    
+                    Button(action: generateDocument) {
+                        HStack {
+                            if isGenerating {
+                                ProgressView()
+                                    .progressViewStyle(.circular)
+                                Text("Generating Document...")
+                            } else {
+                                Image(systemName: "doc.badge.plus")
+                                Text("Use This Template")
+                            }
+                        }
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(Color.blue)
+                        .cornerRadius(12)
+                    }
+                    .disabled(isGenerating)
+                    .padding()
+                    
+                    Spacer()
+                }
+            }
+            .background(Color.black)
+            .navigationTitle("Template Details")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") { 
+                        dismiss()
+                        onDismiss()
+                    }
+                }
+            }
+            .onAppear {
+                extractVariables()
+            }
+        }
+        .preferredColorScheme(.dark)
+    }
+    
+    private func extractVariables() {
+        let regex = try? NSRegularExpression(pattern: "\\{\\{([^}]+)\\}\\}", options: [])
+        let range = NSRange(location: 0, length: template.content.count)
+        var variables: Set<String> = []
+        
+        regex?.enumerateMatches(in: template.content, options: [], range: range) { match, _, _ in
+            if let match = match, let range = Range(match.range(at: 1), in: template.content) {
+                let variable = String(template.content[range])
+                variables.insert(variable)
+            }
+        }
+        
+        extractedVariables = Array(variables).sorted()
+    }
+    
+    private func generateDocument() {
+        isGenerating = true
+        
+        // Simulate document generation
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            var customizedContent = template.content
+            
+            // Replace variables with user input
+            for (variable, value) in customizedVariables {
+                if !value.isEmpty {
+                    customizedContent = customizedContent.replacingOccurrences(of: "{{\(variable)}}", with: value)
+                }
+            }
+            
+            // Here you would integrate with the actual document generation service
+            print("Generated document with customized content")
+            
+            isGenerating = false
+            dismiss()
+            onDismiss()
+        }
+    }
+}
+
+struct TemplateRowView: View {
+    let template: SearchTemplate
+    let onSelect: () -> Void
+    
+    var body: some View {
+        Button(action: onSelect) {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text(template.title)
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                    
+                    Spacer()
+                    
+                    Text(template.category.rawValue)
+                        .font(.caption)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 2)
+                        .background(Color.blue.opacity(0.2))
+                        .cornerRadius(8)
+                }
+                
+                Text(template.description)
+                    .font(.body)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.leading)
+                
+                if !template.keywords.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 6) {
+                            ForEach(template.keywords, id: \.self) { keyword in
+                                Text(keyword)
+                                    .font(.caption2)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(Color.secondary.opacity(0.1))
+                                    .cornerRadius(4)
+                            }
+                        }
+                    }
+                }
+            }
+            .padding(.vertical, 4)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
 
 struct ShareSheet: UIViewControllerRepresentable {
     let items: [Any]

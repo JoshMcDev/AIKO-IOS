@@ -1,5 +1,6 @@
 import AppCore
 import Foundation
+import SwiftUI
 
 /// Service for loading standard document templates
 public struct StandardTemplateService: Sendable {
@@ -192,5 +193,18 @@ public extension StandardTemplateService {
             withExtension: "md",
             subdirectory: "Templates"
         ) != nil
+    }
+}
+
+// MARK: - SwiftUI Environment Extension
+
+private struct StandardTemplateServiceEnvironmentKey: EnvironmentKey {
+    static let defaultValue = StandardTemplateService.liveValue
+}
+
+public extension EnvironmentValues {
+    var standardTemplateService: StandardTemplateService {
+        get { self[StandardTemplateServiceEnvironmentKey.self] }
+        set { self[StandardTemplateServiceEnvironmentKey.self] = newValue }
     }
 }

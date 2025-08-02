@@ -300,6 +300,23 @@ public final class AppViewModel {
             showingSettings = true
         }
     }
+    
+    public func selectTemplate(_ template: SearchTemplate) {
+        // Apply the selected template to the current requirements
+        requirements = template.content
+        
+        // Optionally create a new acquisition based on the template
+        let newAcquisition = AppCore.Acquisition(
+            title: template.title,
+            requirements: template.content
+        )
+        
+        loadedAcquisition = newAcquisition
+        loadedAcquisitionDisplayName = template.title
+        
+        // Close any open sheets
+        showingSearchTemplates = false
+    }
 
     public func startNewAcquisition() {
         loadedAcquisition = nil

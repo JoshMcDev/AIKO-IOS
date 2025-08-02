@@ -1,0 +1,45 @@
+Collection: SPBA
+Total Files: 140
+
+Document Types:
+  PWS: 53
+  Unknown: 29
+  SOW: 23
+  SOO: 9
+  Guide: 6
+  GSA: 5
+  QASP: 4
+  Template: 3
+  BPA: 3
+  RFI: 3
+  RFP: 2
+
+Agencies:
+  VA: 58
+  GSA: 34
+  Unknown: 30
+  DOD: 14
+  USPTO: 4
+
+Years:
+  Unknown: 69
+  2000: 11
+  2050: 10
+  2004: 7
+  2002: 6
+  2005: 6
+  2016: 5
+  2041: 4
+  2003: 3
+  2024: 3
+  2006: 2
+  2001: 2
+  2025: 2
+  2021: 2
+  2019: 2
+  2008: 1
+  2014: 1
+  2009: 1
+  2020: 1
+  2011: 1
+  2023: 1

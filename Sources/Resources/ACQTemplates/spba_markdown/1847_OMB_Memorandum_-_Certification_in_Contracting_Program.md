@@ -1,0 +1,698 @@
+# 1847_OMB_Memorandum_-_Certification_in_Contracting_Program
+
+_Converted from PDF using pdftotext_
+
+## EXECUTIVE OFFICE OF THE PRESIDENT
+## O F F I C E O F M AN AG E M E N T AN D B U D G E T
+W ASHINGTON, D.C. 20503
+
+DEPUTY DIRECTOR
+## FOR MAN AGEMENT
+
+January 20, 2006
+
+MEMORANDUM FOR CHIEF ACQUISITION OFFICERS
+## SENIOR PROCUREMENT EXECUTIVES
+FROM:
+
+Clay Johnson III
+Deputy Director for Managemen
+
+SUBJECT:
+
+The Federal Acquisition Certification in Contracting Program
+
+In April 2005, the Office of Federal Procurement Policy (OFPP) published Policy Letter
+05-01, Developing and Managing the Acquisition Workforce, which required the Federal
+Acquisition Institute (FAI) to develop, and the Chief Acquisition Officers Council (CAOC) to
+approve, a certification program for contracting professionals in civilian agencies that reflects
+common standards. The goal of the certification program is to standardize the education,
+raining, and experience requirements for contracting professionals, which will improve
+workforce competencies and increase career opportunities. The attached Federal Acquisition
+Certification in Contracting Program was approved by the CAOC in December 2005.
+The program mirrors, as closely as possible, the requirements that the Department of
+Defense established for its contracting workforce under the Defense Acquisition Workforce
+Improvement Act. The program will be administered by each civilian agency, and FAI will
+conduct periodic reviews to ensure that the program is being managed consistently. The
+certification shall be accepted by, at minimum, all civilian agencies as evidence that an employee
+meets the core education, training, and experience requirements to be a contracting professional
+(generally the GS-1102 series).
+A well-trained acquisition workforce is critical to ensuring that agencies accomplish their
+mission goals. Investment in the development of the federal acquisition workforce will improve
+our ability to meet mission needs and continue being effective stewards of taxpayer dollars. If
+you have questions regarding the implementation of the program, please call Lesley Field on the
+OFPP staff at (202) 395-7579.
+Attachmen
+cc: Chief Human Capital Officers
+
+Attachment
+
+The Federal Acquisition Certification in Contracting Program
+1. Purpose. The purpose of the Federal Acquisition Certification in Contracting (FAC-C)
+program is to establish core requirements for education, training, and experience for contracting
+professionals in civilian agencies.
+2. Authority. This certification program is issued pursuant to section 6(a) of the Office of
+Federal Procurement Policy (OFPP) Act, as amended (41 U.S.C. § 405(a)), 6(c)(5) of the OFPP
+Act, as amended (41 U.S.C. § 405(c)(5)), sections 37(b)(3) and (g) of the OFPP Act, as amended
+(41 U.S.C. § 433(b)(3) and (g)), and OFPP Policy Letter 05-01, paragraph 8(b).
+Based on these authorities, all executive agencies, except those subject to the Defense
+Acquisition Workforce Improvement Act (DAWIA), shall accept the FAC-C as evidence that an
+employee meets the applicable core education, training, and experience requirements for the
+general schedule (GS)-1102 series.
+3. Background. OFPP Policy Letter 05-01 established a requirement for federal acquisition
+certification programs. Section 8(b) of this Letter required the Federal Acquisition Institute
+(FAI) to develop, and the Chief Acquisition Officers Council (CAOC) to approve, a FAC-C
+program. The FAC-C program was approved by the CAOC in December 2005.
+4. Applicability. The FAC-C program applies to all executive agencies, except those subject to
+DAWIA (10 U.S.C. §§ 1701-64).
+The federal certification in contracting is not mandatory for all GS-1102s; however, members of
+he workforce issued new Contracting Officer (CO) warrants on or after January 1, 2007,
+regardless of GS series, must be certified at an appropriate level to support their warran
+obligations, pursuant to agency policy. New CO warrants are defined in Policy Letter 05-01 as
+warrants issued to employees for the first time at a department or agency. This requirement does
+not apply to:
+•
+•
+•
+
+senior level officials responsible for delegating procurement authority;
+non-1102s whose warrants are generally used to procure emergency goods and services;
+or
+non-1102s whose warrants are so limited as to be outside the scope of this program, as
+determined by the Chief Acquisition Officer (CAO).
+
+Agencies have discretion to make additional warranting requirements, and employees should
+review carefully agency warranting policy. CAOs shall establish agency-specific requirements
+for tying warrant levels to certification levels based on agency needs. However, agencies are
+encouraged to require a senior level certification for any employee issued an unlimited
+
+1
+
+Contracting Officer’s warrant on or after January 1, 2007. All agency warranting programs
+should be updated to reflect the need for a minimum of 80 continuous learning points every two
+years (see paragraph 6.e.).
+The SPE of a civilian agency may waive the requirement for obtaining a certification for
+warranting purposes in writing, on a case-by-case basis, if granting a waiver is in the best interes
+of the agency. This authority may not be delegated, and the use of this authority shall be
+adequately documented. This waiver is not transferable to another agency.
+The certification program is available to all members of the federal acquisition workforce and the
+volume of requests may be significant when the program begins. For agency planning purposes,
+priority for consideration will be as follows:
+•
+•
+•
+•
+
+all warranted COs in the GS-1102 contracting series and non-DOD uniformed personnel
+in comparable positions;
+all warranted COs regardless of general schedule series with authority to obligate funds
+above the micropurchase threshold;
+other GS-1102s;
+other eligible individuals.
+
+5. Certification Program Oversight and Administration. The FAI Board of Directors, in
+consultation with FAI, the Interagency Acquisition Career Management Council (IACMC), and
+other organizations as appropriate, shall provide general program oversight and shall recommend
+program changes to the Administrator for Federal Procurement Policy to ensure that the program
+reflects the needs of all civilian agencies. Changes to the program may be communicated
+formally through the CAOC or through other means, depending on the significance of the
+change. FAI shall maintain the most current version of the FAC-C program on its website,
+www.fai.gov.
+FAI shall administer the program through issuance of guidance, processes, and information
+dissemination, principally through its website. Additionally, FAI shall periodically review
+agencies’ implementation to ensure that the program remains rigorous and that the standards for
+certification for education, training, experience, and continuous learning are consistently applied
+by all civilian agencies.
+FAI shall conduct periodic agency audits to validate that the standards for the certification
+program are being met. Audit checks may include:
+•
+•
+•
+•
+
+verifying that the agency maintains FAC-C applications;
+auditing an individual’s records for documentation that they attended the training
+reported on the FAC-C application;
+verifying that a rigorous fulfillment process is being followed by the agency and tha
+his process is aligned with the Department of Defense (DOD) DAWIA fulfillmen
+process; and
+after January 1, 2007, verifying that new warrant holders are appropriately certified in
+accordance with agency-specific policy.
+
+2
+
+The certification process, including verification and assessment of applications, will be managed
+by each agency. Authority for overseeing the agency FAC-C program, resolving disputes, and
+granting certifications shall be at the Senior Procurement Executive (SPE) level. The SPE may
+delegate, in writing, certain functions to a level no lower than the Acquisition Career Manager
+(ACM), as needed, to ensure effective and efficient management of the program. The SPE may
+not delegate the waiver function as defined in the GS-1102 Qualification Standard.
+The ACM, appointed by the CAO under Policy Letter 05-01, or designee, is responsible for
+administering the agency certification program, including developing a communications strategy,
+in accordance with this and any subsequent guidance provided by OFPP or FAI. The ACM shall
+also serve on the Interagency Acquisition Career Management Committee (IACMC), which is
+run by FAI, to ensure that workforce development policies and opportunities meet the needs of
+he acquisition workforce.
+6. General Information on Core Competencies and the FAC-C Requirements for
+Education, Training, Experience, and Continuous Learning.
+a. Competencies - Although DOD and OFPP retain responsibility for managing their
+respective workforces, the establishment of core competencies will ensure that the acquisition
+community develops common skills. The objective of the FAC-C is to align the core
+competencies and training requirements across the acquisition workforce, and the curren
+competencies for the GS-1102 workforce shall be maintained on the FAI website, www.fai.gov.
+However, these core competencies will periodically be updated, expanded, or otherwise modified
+o meet the current and future acquisition workforce requirements, and specialized competencies
+may be developed to support emerging trends in the government’s acquisition practices. OFPP,
+Dodd, and OPM shall establish a competency management process to ensure that the core
+competencies remain relevant and current and are integrated into the curriculum, as appropriate.
+b. Education - This program does not change the education requirement in the Qualification
+Standard for Contract Specialist (GS-1102). The civilian (non-DOD) and DOD education
+requirements for the GS-1102 series differ at grades 5 through 12 (or equivalent). In accordance
+with the Qualification Standard, available on www.opm.gov, persons in civilian (non-DOD) GS1102 positions grades 5 through 12 are required to have, from an accredited institution, either 24semester hours of business related education OR a baccalaureate degree. Persons seeking
+positions subject to DAWIA must have both 24-semester hours of business related education
+AND a baccalaureate degree at all grade levels.
+Civilian agency employees in GS-1102 positions will be considered to have met the standard,
+including the education requirement, for positions they occupied on January 1, 2000. Appendix
+A provides guidance on the subject areas and types of classes that meet the education
+requirement, and agencies shall use this guidance to ensure consistent interpretation of the
+standard. FAI and the Defense Acquisition University (DAU) will make further guidance
+available on their respective websites, as needed.
+
+3
+
+Education waivers granted by an agency, in accordance with the Qualification Standard, are not
+ransferable to other agencies and do not satisfy the education requirement for a FAC-C. An
+employee must meet the appropriate education requirements to be certified.
+c. Training - In accordance with OFPP Policy Letter 05-01, civilian agencies shall follow the
+raining curriculum established by DOD (see paragraph 7). Core courses must be provided by
+DAU or be considered DAU-equivalent courses. Agencies may require agency-specific training
+as part of the elective requirements or continuous learning requirements, but additional agencyspecific training beyond the training specified under paragraph 7 is not required for certification.
+Business-related academic courses that are recognized by DAU as equivalent to core courses
+may be used to meet training requirements for this program.
+When DAU modifies its curriculum, it publishes a list of predecessor classes that allows an
+individual to associate past training with the new requirements. That list is provided in the DAU
+catalog (www.dau.mil/catalog), and will assist individuals in determining the DAU courses or
+DAU-equivalent courses that meet these requirements. FAI will make this information available
+on its website as well.
+As agreed to by the employee and supervisor, electives may be any training opportunity related
+o the employee’s job, those necessary for career development, or those used for cross training.
+Electives may include no-cost distance learning, assignment-specific courses, or other training
+opportunities. Employees are encouraged to take courses that add to their knowledge base or
+enhance existing skills; electives should generally be increasingly more complex throughout an
+employee’s career progression. There are no DAU equivalency requirements for electives.
+d. Experience - The requirements for experience are generally based on the Contrac
+Specialist (GS-1102) Qualification Standard. Experience may be time spent on the job in a
+contracting related job assignment, either in the private or public sector, that reflects the
+accumulation of knowledge, skills, and abilities during years of progressively more responsible
+work assignments.
+e. Continuous Learning – To maintain a FAC-C, acquisition professionals are required to
+earn 80 continuous learning points (CLPs) of skills currency training every two years beginning
+October 1, 2007. During the transition to the FAC-C program, agencies are encouraged to be
+flexible on how this requirement is met initially to ensure that employees are given credit for
+earlier continuous learning activities. ACMs, or designees, shall monitor the continuous learning
+requirements for employees holding FAC-Cs to ensure they meet this requirement. A FAC-C
+will expire if the 80 CLPs are not earned every two years, and the SPE, or other appropriate
+warranting authority, may choose to revoke or modify a warrant if this condition is not met. If
+he SPE revokes or modifies a warrant, he or she must notify the warrant holder in writing when
+he revocation or modification is to be effective, providing enough time and sufficient instruction
+o ensure that no unauthorized obligations are made.
+Civilian agencies shall generally follow the guidance provided by Dodd on how CLPs can be
+earned. DAU equivalency is not required for continuous learning. Agencies are encouraged to
+use continuous learning opportunities to assist individuals in obtaining core competencies,
+
+4
+
+maintaining critical acquisition skills, and acquiring agency-specific training. Continuous
+learning activities include, but are not limited to, the following:
+•
+•
+•
+•
+
+training activities, such as teaching, self-directed study, mentoring;
+courses completed to achieve certification at the next higher level;
+professional activities, such as attending/speaking/presenting at professional
+seminars/symposia/conferences, publishing, and attending workshops; or
+educational activities, such as formal training, and formal academic programs.
+
+Appendix B provides guidance on earning CLPs and assigning points to various developmental
+activities. FAI will provide additional guidance, as needed, on its website.
+7. FAC-C Requirements for Education, Training, Experience, and Continuous Learning.
+a. General - The FAC-C program is based on the DAWIA requirements for certification a
+he junior, intermediate, and senior levels to reflect the need for an individual to mee
+increasingly more rigorous standards for education, training, and experience throughout his or
+her career. Federal certification levels are not directly associated with warrant limits as
+certification requirements for warrants are determined by each agency. However, agencies are
+encouraged to require a senior level certification for any employee issued an unlimited CO’s
+warrant on or after January 1, 2007. Achievement of the FAC-C is based on three requirements:
+education, training, and experience and the requirements are cumulative, (i.e., a person mus
+meet the requirements of each previous certification level). Maintenance of a FAC-C is a
+function of continuous learning, which is addressed in paragraph 6.e.
+The requirements for the FAC-C are shown below. Agencies may determine that an assignmen
+requires additional training beyond the FAC-C requirements. Many civilian agencies are moving
+oward implementing new personnel systems that are not based on the general schedule system.
+However, the education requirements in the Qualification Standard are tied to grade level and are
+reflected in these requirements.
+b. Level I 1) Education (see also paragraph 6.b) – Baccalaureate degree OR at least 24
+semester hours among these disciplines: accounting, law, business, finance,
+contracts, purchasing, economics, industrial management, marketing, quantitative
+methods, and organization and management.
+
+5
+
+2) Training –
+• CON 100 Shaping Smart Business Arrangements*
+• CON 110 Mission Support Planning
+• CON 111 Mission Strategy Execution
+• CON 112 Mission Performance Assessmen
+• CON 120 Mission Focused Contracting
+• 1 Elective
+3) Experience – 1 year of contracting experience
+* CON 100 should be taken by those just entering the acquisition
+workforce or those new to the government. Employees who are beginning
+a level I certification program must take CON 100. Employees pursuing
+Level II or Level III certifications may consider taking CON 100 as an
+elective.
+c. Level II* 1) Education (see also paragraph 6.b) – Baccalaureate degree OR at leas
+24 semester hours among these disciplines: accounting, law, business,
+finance, contracts, purchasing, economics, industrial management,
+marketing, quantitative methods, and organization and management.
+2) Training –
+• CON 202 Intermediate Contracting
+• CON 204 Intermediate Contract Pricing
+• CON 210 Government Contract Law
+• 2 Electives
+3) Experience – 2 years of contracting experience
+* DAU is in the process of revising the level II curriculum for FY07.
+Employees are encouraged to complete CON 202, 204, and 210 training in
+FY06, if possible, to facilitate the transition to the new curriculum.
+d. Level III 1) Education (see also paragraph 6.b) - Baccalaureate degree AND at leas
+24 semester hours among these disciplines: accounting, law, business,
+finance, contracts, purchasing, economics, industrial management,
+marketing, quantitative methods, and organization and management.
+2) Training • CON 353 Advanced Business Solutions for Mission Suppor
+• 2 Electives
+
+6
+
+3) Experience - 4 years of contracting experience
+8. Ways to Meet the Requirements .
+a. Education and Experience – A candidate must meet the education and
+experience requirements established in the Contract Specialist (GS-1102) Qualification
+Standard. There are no exceptions to these requirements and candidates must provide
+evidence of this to the ACM. In accordance with the Qualification Standard, employees
+in GS-1102 positions will be considered to have met the standard, including the education
+requirement, for positions they occupied on January 1, 2000. Please see the Qualification
+Standard on www.opm.gov for specific requirements for the GS-5 through GS-12 level,
+and for GS-13 and above.
+b. Training – A candidate must meet the training requirements by taking DAU
+raining, DAU-equivalent courses, or through fulfillment.
+1) DAU training or DAU-equivalent courses - A full list of the currently
+required courses and their predecessor courses is available on
+www.dau.mil/catalog and www.fai.gov. Candidates must provide evidence of
+satisfactory completion of these courses.
+2) Fulfillment - The FAC-C fulfillment process will follow the fulfillmen
+process for DOD agencies so that the DAWIA certification and FAC-C
+programs are closely aligned. Details regarding and tools for using DOD’s
+fulfillment process will be maintained on the DAU and FAI websites, bu
+generally candidates must submit, and supervisors must review, evidence as to
+how the required competencies for a particular certification level were
+attained through alternative training, experience, education, certification by
+another recognized organization, or other developmental activities.
+•
+
+Alternative training: If an applicant obtained competencies through
+courses that were not DAU or DAU-equivalent courses, he or she mus
+provide for each competency the dates of training, course descriptions,
+provider names, grades (if applicable), and competencies achieved, to
+he maximum extent practicable. To facilitate this process, the
+IACMC will recommend and FAI will approve certain common
+acquisition training courses that members of the civilian agency
+workforce completed in the past to meet the requirements of their
+agency training program. The IACMC and FAI will review course
+information to determine if the necessary competencies were presented
+o fulfill all or part of a course requirement, and this information will
+be available on the FAI website. This process will facilitate
+fulfillment determinations by establishing common alternative training
+courses that were taken previously by current members of the
+acquisition workforce.
+
+7
+
+•
+•
+
+•
+
+Experience: If the applicant is using job experience, he or she must
+provide the agency name, dates, location, position title, and the duties
+performed that provided the relevant competencies.
+Education: If an applicant obtained competencies through academic
+courses provided at an accredited institution, he or she must provide
+he dates of each class, course descriptions, provider names, grades (if
+applicable), and competencies achieved.
+Certification by a recognized organization: Civilian agencies shall
+follow the determinations made by DOD as to which certifications by
+organizations outside the federal government are eligible for full or
+partial consideration under the DAWIA and FAC-C programs. These
+determinations are maintained by DAU as part of DOD’s fulfillmen
+program and shall be maintained on the DAU and FAI websites.
+
+c. DAWIA Certification – A valid, current DAWIA certification in contracting is
+equivalent to a FAC-C at the same certification level. The employee is responsible for
+providing the necessary documentation of the DAWIA certification and the appropriate
+continuous learning history to ensure validity and currency of the DAWIA certification.
+9. Application Processes. In consultation with the CAO and other agency stakeholders,
+he SPE shall establish the agency process for applying for a FAC-C, verifying
+information, granting the FAC-C, and maintaining currency. At a minimum, an
+individual meeting the FAC-C requirements shall request certification through their
+immediate supervisor. The individual is responsible for producing certificates,
+ranscripts, and records that provide evidence that he or she satisfies the requirements for
+he program. The supervisor should take this opportunity to assess the skills and
+competencies of the applicant and develop a plan for enhancing or adding to the
+employee’s competencies, if appropriate. FAI will develop checklists that agencies can
+use for the FAC-C application process and will make these available on the FAI website.
+The certification will be issued at the employing agency, but will represent the
+achievement of government-wide standards. This decentralized approach will allow for
+efficiency, especially during the first year of the FAC-C program. Authority to grant the
+FAC-C shall be at the SPE level and may be delegated no lower than the ACM (see
+paragraph 5 above). The ACM is responsible for ensuring that certification applications
+are available for audit purposes.
+10. Acquisition Career Management Information System (ACMIS). ACMIS will be
+he official system of records for the FAC-C program for all civilian agencies and will
+support the application process. However, agencies must maintain supplemental records
+for quality assurance (e.g., copies of course certificates, etc.). FAI is responsible for
+managing ACMIS and will issue guidance, as necessary, to support ACMIS
+implementation.
+
+8
+
+11. Information Contact. Questions regarding this program should be directed to
+Lesley A. Field, Office of Federal Procurement Policy (lfield@omb.eop.gov), or call
+(202) 395-7579.
+12. Effective Date. This program is effective January 20, 2006.
+
+9
+
+APPENDIX A
+Guidance on Meeting the Business Course Requirements for the
+Contract Specialist (GS-1102) Qualification Standard
+Below are types of courses that generally satisfy the Qualification Standard requiremen
+for 24-semester hours (or equivalent) of study from an accredited institution of higher
+education in any of the following disciplines: accounting, business, finance, law,
+contracts, purchasing, economics, industrial management, marketing, quantitative
+methods, or organization and management. Additional information about accreditation
+can be found on: ope.ed.gov/accreditation.
+The following is based on guidance provided by the Defense Acquisition University to
+he defense workforce and lists subject areas identified by the American Council on
+Education for each of the business disciplines listed above. Although not an exhaustive
+list, this guidance should be used by civilian agencies to determine if certain courses
+provide enough business instruction to count toward the 24-semester hour business
+requirement. ACMs should work with their human resources departments to ensure a
+consistent interpretation of which types of courses should count toward the requirement.
+BUSINESS/MANAGEMENT
+## DISCIPLINE
+Accounting
+
+AMERICAN COUNCIL ON
+## EDUCATION SUBJECT AREA
+Cost Accounting Standards
+
+Business Finance
+
+Business Communications
+Business and Personnel
+Business Statistics
+Cost Analysis
+Financial Cost Managemen
+Financial Planning and Analysis
+Inventory Managemen
+Resource Planning
+Risk Analysis
+
+Contracts
+
+Acquisition Contracting
+Acquisition Managemen
+Business Communications in Contracting
+Writing
+Business Contract Law
+Contract Administration
+Contract Law
+Contract Managemen
+Contract Pricing and Negotiation
+Contracting Managemen
+Cost & Price Analysis
+Government Contracting
+
+10
+
+BUSINESS/MANAGEMENT
+## DISCIPLINE
+
+AMERICAN COUNCIL ON
+## EDUCATION SUBJECT AREA
+Government Contract Law
+Procuremen
+Procurement and Contracting
+Procurement Managemen
+
+Economics
+
+Cost and Price Analysis
+Cost Analysis
+Economic Analysis
+Economic Principles and Decision Making
+Economics and Financial Managemen
+Economics
+
+Industrial Management
+
+Automated Systems in Logistics
+Managemen
+Civil Engineering Managemen
+Environmental Managemen
+Engineering and Analysis
+Logistics Managemen
+Logistics and Materiel Managemen
+Manufacturing Managemen
+Materiel Acquisition Process & Suppor
+Systems
+Property Disposal Managemen
+Supply Managemen
+Systems Engineering
+Technology
+Warehousing Operations
+
+Law
+
+Commercial or Business Contracts
+Contract Law
+
+Organization & Management
+
+Business Administration
+Advanced Management (Math)
+Business
+Business Managemen
+Business and Personnel Managemen
+Computer Programming
+Computer Programming & Systems
+Developmen
+Computer Sciences, Data Processing
+Data Entry and Automated Systems Inpu
+General Managemen
+Human Resource Developmen
+Leadership and Group Decision Process
+
+11
+
+BUSINESS/MANAGEMENT
+## DISCIPLINE
+
+AMERICAN COUNCIL ON
+## EDUCATION SUBJECT AREA
+Management Science
+Management & Leadership
+Managerial Analysis
+Manpower Managemen
+Materiel Managemen
+Methods of Adult Education
+Organizational Behavior
+Personnel Administration
+Principles of Managemen
+Quality and Reliability Assurance
+Research and Development Managemen
+Strategic Managemen
+Survey of Program Operations
+
+Purchasing
+
+Basic Purchasing
+
+Quantitative Methods
+
+Business Statistics
+Computer Science
+Decision Risk Analysis
+Operations Research
+Probability Statistics
+Quantitative Analysis
+Statistics
+
+12
+
+APPENDIX B
+Guidance on Meeting Continuous Learning Points Requirements
+These guidelines are generally based on DOD’s requirements for achieving continuous
+learning points (CLPs). Agencies have flexibility in assigning points and ACMs and/or
+supervisors, as appropriate, should work with employees to identify appropriate
+opportunities. Below is guidance on how training, professional activities, education, and
+experience can be used to meet the CLP requirements. All activities must be job-related.
+A. Training
+1) Completing awareness training. Periodically agencies conduct briefing sessions to
+acquaint the workforce with new or changed policy. Generally, no testing or assessmen
+of knowledge gained is required.
+2) Completing learning modules and training courses. These may be formal or informal
+offerings from a recognized training organization, including in-house training
+course/sessions, which include some form of testing/assessment for knowledge gained.
+3) Performing Self-Directed Study. An individual can keep current or enhance his or her
+capabilities through a self-directed study program agreed to by the supervisor.
+4) Teaching. Employees are encouraged to share their knowledge and insights with others
+hrough teaching of courses or learning modules. Teaching is also a part of the
+Professional Activities category.
+5) Mentoring. Helping others to learn and become more productive workers or managers
+benefits the agency and the individuals involved. Mentoring is also a part of the
+experience category.
+B. Professional Activities
+1) Participating in Organization Management. Membership alone in a professional
+organization will not be considered as fulfilling continuous learning requirements, bu
+participation in the organization leadership will. This includes holding elected/appointed
+positions, committee leadership roles, or running an activity for an organization that you
+are permitted to join under current ethics law and regulation. The employee must firs
+ensure that participating in the management of an organization is allowed by the agency.
+2) Attending/Speaking/Presenting at Professional Seminars/Symposia/Conferences.
+Employees can receive points for attending professional seminars or conferences that are
+job related. However, the supervisor needs to determine that the individual learned
+something meaningful from the experience. Because significant effort is involved in
+preparing and delivering presentations, credit should be given for each hour invested in
+he preparation and presentation.
+
+13
+
+3) Publishing. Writing articles related to acquisition for publication generally meets the
+criteria for continuous learning. Points will be awarded only in the year published.
+Compliance with agency publication policy is required.
+4) Participating in Workshops. Points should be awarded for workshops with planned
+learning outcomes.
+C. Education
+1) Formal training. ACMs and supervisors should use Continuing Education Units
+(CEUs) as a guide for assigning points for formal training programs that award CEUs.
+The CEUs can be converted to points at 10 CLP points per CEU.
+2) Formal academic programs. For formal academic programs offered by educational
+institutions, each semester hour is equal to one CEU. A three-hour credit course would be
+worth three CEUs and 30 CLP points, assuming that it is applicable to the acquisition
+function.
+## CREDITABLE ACTIVITIES
+Academic Courses:
+Quarter Hour
+Semester Hour
+Continuing Education Unit (CEU)
+Equivalency Exams
+Training Courses/Modules:
+DAU Courses/Modules
+• Awareness Briefing/Training—no
+esting/assessment associated
+• Continuous Learning Modules—
+esting/assessment associated
+Other Functional Training
+Leadership or Other Training
+Equivalency Exams
+Professional Activities:
+Professional Exam/License/Certificate
+Teaching/Lecturing
+Symposia/Conference Presentations
+Workshop Participation
+Symposia/Conference Attendance
+Publications
+
+POINT CREDIT (see note)
+
+10 per Quarter Hour
+10 per Semester Hour
+10 per CEU
+Same points as awarded for the course
+10 per CEU (see DAU catalog) or:
+• .5 point per hour of instruction
+• 1 point per hour of instruction
+1 point per hour of instruction
+1 point per hour of instruction
+Same points as awarded for the course
+10-30 points
+2 points per hour; maximum of 20 points
+per year
+2 points per hour; maximum of 20 points
+per year
+1 point per hour; maximum of 8 points per
+day and 20 points per year
+.5 point per hour; maximum of 4 points per
+day and 20 points per year
+10 to 40 points
+
+14
+
+Note - All activities may earn points only in the year accomplished, awarded or
+published.
+D. Experience
+Experience includes on-the-job experiential assignments, and intra/interorganizational
+rotational career broadening and developmental experiences. While agencies can use
+discretion in arriving at a reasonable point value to be awarded for rotational and
+developmental assignments, a sliding scale is recommended. Suggested points for such
+assignments are in the table below.
+The assumption is that longer assignments are more beneficial than shorter assignments.
+The supervisor may feel that an individual may deserve more or less than the values
+shown. In determining the points for a rotational/developmental assignment, the
+supervisor should consider both the long-term benefit to the agency, and the immediate
+benefit to the supervisor’s organization and the workforce member. For example, a
+second rotational assignment of the same sort would be less valuable than a different type
+of rotational assignment.
+When experience or other non-assessed activities are to be used to earn CLPs, certain
+principles should be followed. Supervisors and employees should pre-define, as closely
+as possible, the tasks to be accomplished, expected outcomes, and the learning
+opportunities. If it is an assignment, the individual should be mentored during the
+assignment. Accomplishment of a product, such as a briefing, a project design, a report,
+or other work product that shows the learning attained, is desirable. Sharing the
+knowledge and experience gained and the product with others in the organization is
+encouraged.
+## CREDITABLE ACTIVITIES
+Experience:
+On-the-Job Experiential Assignments
+Integrated Product Team (IPT)/
+Special Project Leader
+IPT/Special Project Member
+Mentor
+Assignment Length (Rotational
+Assignments or Training with Industry):
+12 Months
+9 Months
+6 Months
+3 Months
+2 Months
+1 Month
+
+POINT CREDIT
+Maximum of 20 points per year
+Maximum of 15 points per year
+Maximum of 10 points per years
+Maximum of 5 points per year
+Recommended Points:
+80
+60
+40
+15
+10
+5
+
+15
+
+
