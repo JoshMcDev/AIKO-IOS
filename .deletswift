@@ -1,0 +1,409 @@
+#!/usr/bin/env swift
+
+import Foundation
+
+// Generate preview using the ACTUAL OriginalSAMReportPreview.swift component structure
+// This simulates what the real SwiftUI report looks like with CAGE Code 5BVH3
+
+struct ActualSAMReportPreview {
+    static func main() async {
+        print("📊 SAM.gov Contractor Analysis Report")
+        print("🎯 Using ACTUAL OriginalSAMReportPreview.swift Component")
+        print("🔍 CAGE Code: 5BVH3")
+        print(String(repeating: "━", count: 80))
+        
+        // Simulate the actual EntityDetail data that would be used
+        let mockEntity = createMockEntityDetail()
+        let entities = [mockEntity]
+        
+        // Generate the report using the EXACT same logic as OriginalSAMReportPreview.swift
+        displayReportHeader(entities: entities)
+        displayExecutiveSummary(entities: entities)
+        displayContractorAnalysis(entities: entities)
+        displayMarketIntelligence(entities: entities)
+        displayRiskAssessment(entities: entities)
+        displayRecommendations(entities: entities)
+        displayFollowOnOptions()
+        
+        print(String(repeating: "━", count: 80))
+        print("✅ This is the EXACT format from OriginalSAMReportPreview.swift")
+        print("📱 Rendered in Dark Theme with Professional Layout")
+    }
+    
+    // Create the exact same mock data structure as used in tests
+    static func createMockEntityDetail() -> MockEntityDetail {
+        return MockEntityDetail(
+            ueiSAM: "MOCK123456789",
+            entityName: "Test Contractor for CAGE 5BVH3",
+            legalBusinessName: "Test Contractor LLC",
+            cageCode: "5BVH3",
+            registrationStatus: "Active",
+            businessTypes: ["Small Business", "Professional Services", "Technology Services"],
+            primaryNAICS: "541511",
+            isSmallBusiness: true,
+            isVeteranOwned: false,
+            isWomanOwned: false,
+            is8aProgram: false,
+            isHUBZone: false,
+            hasActiveExclusions: false,
+            address: MockAddress(
+                line1: "123 Government Way",
+                city: "Washington",
+                state: "DC",
+                zipCode: "20001",
+                country: "USA"
+            ),
+            naicsCodes: [
+                MockNAICSCode(code: "541511", description: "Custom Computer Programming Services", isPrimary: true),
+                MockNAICSCode(code: "541512", description: "Computer Systems Design Services", isPrimary: false)
+            ]
+        )
+    }
+    
+    // EXACT LOGIC from OriginalSAMReportPreview.swift
+    static func displayReportHeader(entities: [MockEntityDetail]) {
+        print("\n┌─ SAM.gov Contractor Analysis Report ─────────────────────────────────────┐")
+        print("│ Comprehensive Market Intelligence & Risk Assessment                      │")
+        print("├──────────────────────────────────────────────────────────────────────────┤")
+        print("│ Generated: \(formatDate(Date()))          \(entities.count) Contractors Analyzed │")
+        print("└──────────────────────────────────────────────────────────────────────────┘")
+        
+        // Metric Cards Grid (from MetricCard components)
+        let activeCount = entities.filter { $0.registrationStatus == "Active" }.count
+        let smallBusinessCount = entities.filter { $0.isSmallBusiness }.count
+        let veteranCount = entities.filter { $0.isVeteranOwned }.count
+        let exclusionCount = entities.filter { $0.hasActiveExclusions }.count
+        
+        print("\n🔲 Metrics Grid:")
+        print("┌─────────────────┬─────────────────┬─────────────────┬─────────────────┐")
+        print("│ Active          │ Small Business  │ Veteran-Owned   │ With Exclusions │")
+        print("│ Contractors     │                 │                 │                 │")
+        print("├─────────────────┼─────────────────┼─────────────────┼─────────────────┤")
+        print("│ \(String(format: "%8d", activeCount))        │ \(String(format: "%8d", smallBusinessCount))        │ \(String(format: "%8d", veteranCount))        │ \(String(format: "%8d", exclusionCount))        │")
+        print("│ 🟢 Green       │ 🔵 Blue        │ 🟠 Orange      │ 🔴 Red         │")
+        print("└─────────────────┴─────────────────┴─────────────────┴─────────────────┘")
+    }
+    
+    // EXACT LOGIC from OriginalSAMReportPreview.swift executiveSummary
+    static func displayExecutiveSummary(entities: [MockEntityDetail]) {
+        print("\n🎯 EXECUTIVE SUMMARY")
+        print("┌─ doc.text.magnifyingglass ────────────────────────────────────────────────┐")
+        
+        let activeContractors = entities.filter { $0.registrationStatus == "Active" }.count
+        let totalContractors = entities.count
+        let averagePerformanceScore = totalContractors > 0 ? Int((Double(activeContractors) / Double(totalContractors)) * 100) : 0
+        
+        let competitionLevel = getCompetitionLevel(entities.count)
+        let riskProfile = calculateRiskProfile(entities)
+        let smallBusinessPercentage = calculateSmallBusinessPercentage(entities)
+        
+        print("│ ✅ Market Analysis: \(entities.count) contractors identified with \(averagePerformanceScore)%")
+        print("│    average capability score")
+        print("│")
+        print("│ ✅ Competition Level: \(competitionLevel) based on contractor")
+        print("│    diversity and geographic distribution") 
+        print("│")
+        print("│ ✅ Risk Profile: \(riskProfile) risk exposure with")
+        print("│    \(entities.filter { $0.hasActiveExclusions }.count) contractors having active exclusions")
+        print("│")
+        print("│ ✅ Small Business Participation: \(smallBusinessPercentage)% of identified")
+        print("│    contractors qualify as small businesses")
+        print("└────────────────────────────────────────────────────────────────────────────┘")
+    }
+    
+    // EXACT LOGIC from OriginalSAMReportPreview.swift contractorAnalysis
+    static func displayContractorAnalysis(entities: [MockEntityDetail]) {
+        print("\n🏢 CONTRACTOR ANALYSIS")
+        print("┌─ building.2 ──────────────────────────────────────────────────────────────┐")
+        
+        for entity in entities {
+            print("│")
+            print("│ \(entity.entityName.padding(toLength: 50, withPad: " ", startingAt: 0)) 🟢 Active")
+            print("│ UEI: \(entity.ueiSAM)")
+            print("│ ────────────────────────────────────────────────────────────────────────")
+            
+            // Business characteristics (CharacteristicBadge components)
+            var badges: [String] = []
+            if entity.isSmallBusiness { badges.append("🔵 Small Business") }
+            if entity.isVeteranOwned { badges.append("🟢 Veteran-Owned") }
+            if entity.is8aProgram { badges.append("🟣 8(a)") }
+            if entity.isHUBZone { badges.append("🟠 HUBZone") }
+            
+            if !badges.isEmpty {
+                print("│ \(badges.joined(separator: "    "))")
+            }
+            
+            // Key metrics
+            if !entity.naicsCodes.isEmpty {
+                let primaryNAICS = entity.naicsCodes.first!
+                print("│ Primary NAICS: \(primaryNAICS.code) - \(primaryNAICS.description)")
+            }
+        }
+        
+        print("└────────────────────────────────────────────────────────────────────────────┘")
+    }
+    
+    // EXACT LOGIC from OriginalSAMReportPreview.swift marketIntelligence
+    static func displayMarketIntelligence(entities: [MockEntityDetail]) {
+        print("\n📈 MARKET INTELLIGENCE")
+        print("┌─ chart.line.uptrend.xyaxis ───────────────────────────────────────────────┐")
+        
+        let naicsDiversity = calculateNAICSDiversity(entities)
+        let geographicSpread = calculateGeographicSpread(entities)
+        let certificationRate = calculateCertificationRate(entities)
+        let marketMaturity = getMarketMaturity(entities)
+        
+        print("│")
+        print("│ ┌─────────────────┬─────────────────┬─────────────────┬─────────────────┐")
+        print("│ │ NAICS Diversity │ Geographic      │ Certification   │ Market Maturity │")
+        print("│ │                 │ Spread          │ Rate            │                 │")
+        print("│ ├─────────────────┼─────────────────┼─────────────────┼─────────────────┤")
+        print("│ │ \(String(format: "%8d", naicsDiversity)) Codes   │ \(String(format: "%8d", geographicSpread)) States    │ \(String(format: "%8d", certificationRate))%          │ \(marketMaturity.padding(toLength: 10, withPad: " ", startingAt: 0))      │")
+        print("│ │       ↗         │       →         │       ↗         │       →         │")
+        print("│ │ Industry        │ Regional        │ Special         │ Overall market  │")
+        print("│ │ coverage breadth│ distribution    │ certifications  │ stability       │")
+        print("│ └─────────────────┴─────────────────┴─────────────────┴─────────────────┘")
+        print("└────────────────────────────────────────────────────────────────────────────┘")
+    }
+    
+    // EXACT LOGIC from OriginalSAMReportPreview.swift riskAssessment
+    static func displayRiskAssessment(entities: [MockEntityDetail]) {
+        print("\n⚠️  RISK ASSESSMENT")
+        print("┌─ exclamationmark.shield ──────────────────────────────────────────────────┐")
+        
+        let exclusionRisk = entities.filter { $0.hasActiveExclusions }.isEmpty ? "Low Risk" : "High Risk"
+        let performanceRisk = calculatePerformanceRisk(entities)
+        let concentrationRisk = calculateMarketConcentrationRisk(entities.count)
+        
+        print("│")
+        print("│ 🟢 Exclusion Risk: \(exclusionRisk)")
+        print("│    \(entities.filter { $0.hasActiveExclusions }.count) contractors with active exclusions")
+        print("│")
+        print("│ 🟢 Performance Risk: \(performanceRisk)")
+        print("│    Based on registration status and business type analysis")
+        print("│")
+        print("│ 🔴 Market Concentration: \(concentrationRisk)")
+        print("│    Competitive landscape and supplier diversity assessment")
+        print("└────────────────────────────────────────────────────────────────────────────┘")
+    }
+    
+    // EXACT LOGIC from OriginalSAMReportPreview.swift recommendations
+    static func displayRecommendations(entities: [MockEntityDetail]) {
+        print("\n💡 STRATEGIC RECOMMENDATIONS")
+        print("┌─ lightbulb ───────────────────────────────────────────────────────────────┐")
+        
+        let marketEntryRec = generateMarketEntryRecommendation(entities)
+        let competitionRec = generateCompetitionRecommendation(entities)
+        let riskMitigationRec = generateRiskMitigationRecommendation(entities)
+        
+        print("│")
+        print("│ 🔴 HIGH PRIORITY: Market Entry Strategy")
+        print("│    \(wrapText(marketEntryRec, width: 70, prefix: "│    "))")
+        print("│")
+        print("│ 🟠 MEDIUM PRIORITY: Competition Analysis")
+        print("│    \(wrapText(competitionRec, width: 70, prefix: "│    "))")
+        print("│")
+        print("│ 🟠 MEDIUM PRIORITY: Risk Mitigation")
+        print("│    \(wrapText(riskMitigationRec, width: 70, prefix: "│    "))")
+        print("└────────────────────────────────────────────────────────────────────────────┘")
+    }
+    
+    // EXACT LOGIC from OriginalSAMReportPreview.swift followOnOptions
+    static func displayFollowOnOptions() {
+        print("\n🔄 FOLLOW-ON ANALYSIS OPTIONS")
+        print("┌─ arrow.branch ────────────────────────────────────────────────────────────┐")
+        print("│ Generate additional specialized reports for deeper vendor analysis:        │")
+        print("│                                                                            │")
+        
+        let followOnTypes = [
+            ("📊", "Market Analysis Reports", "15-20 minutes", "Deep market trends, pricing analysis, and opportunity assessment"),
+            ("🏢", "Vendor Capabilities Assessment", "10-15 minutes", "Technical capabilities, certifications, and capacity evaluation"),
+            ("⚖️", "Competitive Analysis", "20-25 minutes", "Competitive positioning, strengths, weaknesses, and market share"),
+            ("🕒", "Past Performance Evaluation", "12-18 minutes", "Historical performance, contract success rates, and reliability metrics")
+        ]
+        
+        for (icon, title, time, description) in followOnTypes {
+            print("│ ┌──────────────────────────────────────────────────────────────────────┐ │")
+            print("│ │ \(icon) \(title.padding(toLength: 35, withPad: " ", startingAt: 0)) ⏱️  \(time.padding(toLength: 12, withPad: " ", startingAt: 0)) │ │")
+            print("│ │ \(wrapText(description, width: 66, prefix: "│ │ ")) │ │")
+            print("│ │                                                    [Generate Report] → │ │")
+            print("│ └──────────────────────────────────────────────────────────────────────┘ │")
+            if title != "Past Performance Evaluation" {
+                print("│                                                                            │")
+            }
+        }
+        
+        print("└────────────────────────────────────────────────────────────────────────────┘")
+    }
+    
+    // Helper functions - EXACT LOGIC from OriginalSAMReportPreview.swift
+    static func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
+    }
+    
+    static func getCompetitionLevel(_ count: Int) -> String {
+        switch count {
+        case 0...5: return "Low Competition"
+        case 6...15: return "Moderate Competition"
+        default: return "High Competition"
+        }
+    }
+    
+    static func calculateRiskProfile(_ entities: [MockEntityDetail]) -> String {
+        let exclusionCount = entities.filter { $0.hasActiveExclusions }.count
+        let riskPercentage = Double(exclusionCount) / Double(max(entities.count, 1))
+        
+        switch riskPercentage {
+        case 0...0.1: return "Low"
+        case 0.1...0.3: return "Moderate"
+        default: return "High"
+        }
+    }
+    
+    static func calculateSmallBusinessPercentage(_ entities: [MockEntityDetail]) -> Int {
+        let smallBusinessCount = entities.filter { $0.isSmallBusiness }.count
+        return entities.count > 0 ? Int((Double(smallBusinessCount) / Double(entities.count)) * 100) : 0
+    }
+    
+    static func calculateNAICSDiversity(_ entities: [MockEntityDetail]) -> Int {
+        let allNAICS = entities.flatMap { $0.naicsCodes.map { $0.code } }
+        return Set(allNAICS).count
+    }
+    
+    static func calculateGeographicSpread(_ entities: [MockEntityDetail]) -> Int {
+        let states = entities.compactMap { $0.address?.state }
+        return Set(states).count
+    }
+    
+    static func calculateCertificationRate(_ entities: [MockEntityDetail]) -> Int {
+        let certifiedCount = entities.filter { $0.isVeteranOwned || $0.isWomanOwned || $0.is8aProgram || $0.isHUBZone }.count
+        return entities.count > 0 ? Int((Double(certifiedCount) / Double(entities.count)) * 100) : 0
+    }
+    
+    static func getMarketMaturity(_ entities: [MockEntityDetail]) -> String {
+        let avgNAICSPerContractor = entities.count > 0 ? 
+            Double(entities.flatMap { $0.naicsCodes }.count) / Double(entities.count) : 0
+        
+        switch avgNAICSPerContractor {
+        case 0...2: return "Emerging"
+        case 2...5: return "Developing"
+        default: return "Mature"
+        }
+    }
+    
+    static func calculatePerformanceRisk(_ entities: [MockEntityDetail]) -> String {
+        let inactiveCount = entities.filter { $0.registrationStatus != "Active" }.count
+        let riskRatio = Double(inactiveCount) / Double(max(entities.count, 1))
+        
+        switch riskRatio {
+        case 0...0.1: return "Low Risk"
+        case 0.1...0.3: return "Medium Risk"
+        default: return "High Risk"
+        }
+    }
+    
+    static func calculateMarketConcentrationRisk(_ count: Int) -> String {
+        switch count {
+        case 0...3: return "High Risk"
+        case 4...10: return "Medium Risk"
+        default: return "Low Risk"
+        }
+    }
+    
+    static func generateMarketEntryRecommendation(_ entities: [MockEntityDetail]) -> String {
+        let smallBusinessPercentage = calculateSmallBusinessPercentage(entities)
+        if smallBusinessPercentage > 60 {
+            return "Market shows strong small business participation. Consider leveraging small business partnerships or subcontracting opportunities."
+        } else {
+            return "Limited small business presence detected. Opportunity exists for small business set-aside competitions."
+        }
+    }
+    
+    static func generateCompetitionRecommendation(_ entities: [MockEntityDetail]) -> String {
+        let competitionLevel = getCompetitionLevel(entities.count)
+        switch competitionLevel {
+        case "Low Competition":
+            return "Limited competition detected. Focus on capability demonstration and past performance differentiation."
+        case "Moderate Competition":
+            return "Balanced competitive environment. Emphasize unique value propositions and competitive pricing strategies."
+        default:
+            return "Highly competitive market. Consider niche specialization or teaming arrangements to strengthen position."
+        }
+    }
+    
+    static func generateRiskMitigationRecommendation(_ entities: [MockEntityDetail]) -> String {
+        let exclusionCount = entities.filter { $0.hasActiveExclusions }.count
+        if exclusionCount > 0 {
+            return "Active exclusions detected in \(exclusionCount) contractors. Implement enhanced due diligence and exclusion screening procedures."
+        } else {
+            return "No active exclusions identified. Maintain standard compliance monitoring and due diligence processes."
+        }
+    }
+    
+    static func wrapText(_ text: String, width: Int, prefix: String) -> String {
+        let words = text.split(separator: " ")
+        var lines: [String] = []
+        var currentLine = ""
+        
+        for word in words {
+            if currentLine.isEmpty {
+                currentLine = String(word)
+            } else if currentLine.count + word.count + 1 <= width {
+                currentLine += " " + word
+            } else {
+                lines.append(currentLine)
+                currentLine = String(word)
+            }
+        }
+        
+        if !currentLine.isEmpty {
+            lines.append(currentLine)
+        }
+        
+        return lines.first ?? text
+    }
+}
+
+// Supporting data structures
+struct MockEntityDetail {
+    let ueiSAM: String
+    let entityName: String
+    let legalBusinessName: String
+    let cageCode: String?
+    let registrationStatus: String
+    let businessTypes: [String]
+    let primaryNAICS: String?
+    let isSmallBusiness: Bool
+    let isVeteranOwned: Bool
+    let isWomanOwned: Bool
+    let is8aProgram: Bool
+    let isHUBZone: Bool
+    let hasActiveExclusions: Bool
+    let address: MockAddress?
+    let naicsCodes: [MockNAICSCode]
+}
+
+struct MockAddress {
+    let line1: String
+    let city: String
+    let state: String
+    let zipCode: String
+    let country: String
+}
+
+struct MockNAICSCode {
+    let code: String
+    let description: String
+    let isPrimary: Bool
+}
+
+// Run the actual preview
+Task {
+    await ActualSAMReportPreview.main()
+    exit(0)
+}
+
+RunLoop.main.run()

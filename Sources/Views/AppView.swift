@@ -55,7 +55,7 @@ public struct iOSAppView: View {
             AcquisitionsSheet(viewModel: viewModel.acquisitionsListViewModel)
         }
         .sheet(isPresented: $viewModel.showingSAMGovLookup) {
-            EnhancedSAMGovInterface(viewModel: viewModel)
+            OriginalSAMGovInterface(viewModel: viewModel)
         }
         .sheet(isPresented: $viewModel.showingAcquisitionChat) {
             AgentChatInterface(viewModel: viewModel)
