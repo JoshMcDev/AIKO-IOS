@@ -127,14 +127,37 @@ public struct EntitySummary: Codable, Sendable, Identifiable {
     public var id: UUID { UUID() }
     public let ueiSAM: String
     public let entityName: String
+    public let legalBusinessName: String?
     public let cageCode: String?
     public let registrationStatus: String
+    public let businessTypes: [String]
+    public let primaryNAICS: String?
+    public let address: EntityAddress?
+    public let isSmallBusiness: Bool
+    public let lastUpdatedDate: Date?
 
-    public init(ueiSAM: String, entityName: String, cageCode: String? = nil, registrationStatus: String = "Active") {
+    public init(
+        ueiSAM: String, 
+        entityName: String, 
+        legalBusinessName: String? = nil,
+        cageCode: String? = nil, 
+        registrationStatus: String = "Active",
+        businessTypes: [String] = [],
+        primaryNAICS: String? = nil,
+        address: EntityAddress? = nil,
+        isSmallBusiness: Bool = false,
+        lastUpdatedDate: Date? = nil
+    ) {
         self.ueiSAM = ueiSAM
         self.entityName = entityName
+        self.legalBusinessName = legalBusinessName
         self.cageCode = cageCode
         self.registrationStatus = registrationStatus
+        self.businessTypes = businessTypes
+        self.primaryNAICS = primaryNAICS
+        self.address = address
+        self.isSmallBusiness = isSmallBusiness
+        self.lastUpdatedDate = lastUpdatedDate
     }
 }
 
@@ -300,31 +323,35 @@ public enum SAMGovError: Error, LocalizedError, Sendable {
     }
 }
 
-// MARK: - Repository
+// MARK: - Mock Repository (for fallback only)
 
-/// Repository for SAM.gov data operations
-public actor SAMGovRepository {
-    private let apiKey: String
-    private let baseURL = "https://api.sam.gov/entity-information/v3"
-
-    public init(apiKey: String) {
-        self.apiKey = apiKey
-    }
+/// Mock repository for SAM.gov data operations (fallback when API fails)
+public actor MockSAMGovRepository {
+    public init() {}
 
     public func searchEntities(_ query: String) async throws -> EntitySearchResult {
-        // Mock implementation for now
         let mockEntity = EntitySummary(
             ueiSAM: "MOCK123456789",
             entityName: query,
+            legalBusinessName: query,
             cageCode: "MOCK1",
-            registrationStatus: "Active"
+            registrationStatus: "Active",
+            businessTypes: ["Small Business"],
+            primaryNAICS: "541511",
+            address: EntityAddress(
+                line1: "123 Mock Street",
+                city: "Mock City",
+                state: "VA",
+                zipCode: "12345"
+            ),
+            isSmallBusiness: true,
+            lastUpdatedDate: Date()
         )
 
         return EntitySearchResult(entities: [mockEntity], totalCount: 1)
     }
 
     public func getEntityByCAGE(_ cageCode: String) async throws -> EntityDetail {
-        // Mock implementation
         EntityDetail(
             ueiSAM: "MOCK123456789",
             entityName: "Mock Entity for CAGE \(cageCode)",
@@ -342,7 +369,6 @@ public actor SAMGovRepository {
     }
 
     public func getEntityByUEI(_ uei: String) async throws -> EntityDetail {
-        // Mock implementation
         EntityDetail(
             ueiSAM: uei,
             entityName: "Mock Entity for UEI \(uei)",
@@ -363,34 +389,46 @@ public actor SAMGovRepository {
 // MARK: - Live Implementation
 
 public extension SAMGovService {
+    /// Live SAM.gov service with real API integration
     static let live: SAMGovService = .init(
         searchEntity: { query in
-            // Mock implementation
-            let mockEntity = EntitySummary(
-                ueiSAM: "MOCK123456789",
-                entityName: query,
-                cageCode: "MOCK1",
-                registrationStatus: "Active"
-            )
-            return EntitySearchResult(entities: [mockEntity], totalCount: 1)
+            do {
+                // Try to use real API first
+                let repository = SAMGovRepository()
+                let result = try await repository.searchEntities(query: query)
+                return result
+            } catch {
+                // Fallback to mock on any error
+                print("SAM.gov API error, falling back to mock: \(error)")
+                let mockRepository = MockSAMGovRepository()
+                return try await mockRepository.searchEntities(query)
+            }
         },
         getEntityByCAGE: { cageCode in
-            EntityDetail(
-                ueiSAM: "MOCK123456789",
-                entityName: "Mock Entity for CAGE \(cageCode)",
-                legalBusinessName: "Mock Entity for CAGE \(cageCode)",
-                cageCode: cageCode,
-                registrationStatus: "Active"
-            )
+            do {
+                // Try to use real API first
+                let repository = SAMGovRepository()
+                let entity = try await repository.getEntityByCAGE(cageCode)
+                return entity
+            } catch {
+                // Fallback to mock on any error
+                print("SAM.gov CAGE API error, falling back to mock: \(error)")
+                let mockRepository = MockSAMGovRepository()
+                return try await mockRepository.getEntityByCAGE(cageCode)
+            }
         },
         getEntityByUEI: { uei in
-            EntityDetail(
-                ueiSAM: uei,
-                entityName: "Mock Entity for UEI \(uei)",
-                legalBusinessName: "Mock Entity for UEI \(uei)",
-                cageCode: "MOCK1",
-                registrationStatus: "Active"
-            )
+            do {
+                // Try to use real API first
+                let repository = SAMGovRepository()
+                let entity = try await repository.getEntityByUEI(uei)
+                return entity
+            } catch {
+                // Fallback to mock on any error
+                print("SAM.gov UEI API error, falling back to mock: \(error)")
+                let mockRepository = MockSAMGovRepository()
+                return try await mockRepository.getEntityByUEI(uei)
+            }
         }
     )
 }

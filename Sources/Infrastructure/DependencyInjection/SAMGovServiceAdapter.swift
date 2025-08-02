@@ -3,12 +3,12 @@ import Foundation
 /// Adapter that bridges the TCA SAMGovService dependency with the new SAMGovRepository
 public extension SAMGovService {
     /// Creates a SAMGovService backed by the object-oriented SAMGovRepository
-    static func repositoryBased(apiKey: String) -> SAMGovService {
-        let repository = SAMGovRepository(apiKey: apiKey)
+    static func repositoryBased(apiKey: String = "") -> SAMGovService {
+        let repository = SAMGovRepository()
 
         return SAMGovService(
             searchEntity: { query in
-                try await repository.searchEntities(query)
+                try await repository.searchEntities(query: query)
             },
 
             getEntityByCAGE: { cageCode in
