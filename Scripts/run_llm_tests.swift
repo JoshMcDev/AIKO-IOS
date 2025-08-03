@@ -10,7 +10,7 @@ print(String(repeating: "=", count: 50))
 
 let testFiles = [
     "Tests/LLMProviderSettingsProtocolTests.swift",
-    "Tests/Security_LLMProviderBiometricTests.swift", 
+    "Tests/Security_LLMProviderBiometricTests.swift",
     "Tests/Migration_TCAToSwiftUIValidationTests.swift"
 ]
 
@@ -20,7 +20,7 @@ for testFile in testFiles {
     let fileURL = URL(fileURLWithPath: testFile)
     if FileManager.default.fileExists(atPath: fileURL.path) {
         print("✓ \(testFile) exists")
-        
+
         // Check if file contains test methods
         do {
             let content = try String(contentsOf: fileURL, encoding: .utf8)
@@ -39,7 +39,7 @@ for testFile in testFiles {
 
 print("\n📊 RED Phase Test Implementation Summary:")
 print("- Protocol-based testing architecture: ✓")
-print("- Biometric authentication security tests: ✓") 
+print("- Biometric authentication security tests: ✓")
 print("- TCA to SwiftUI migration validation: ✓")
 print("- Comprehensive failing test suite: ✓")
 

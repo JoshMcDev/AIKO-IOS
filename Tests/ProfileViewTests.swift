@@ -15,45 +15,45 @@ import SwiftUI
 /// Tests view initialization, state management, and user interactions
 @MainActor
 final class ProfileViewTests: XCTestCase {
-    
+
     // MARK: - View Initialization Tests
-    
+
     func testProfileView_CanBeInitialized() {
         // Arrange & Act
         let sut = ProfileView()
-        
+
         // Assert
         XCTAssertNotNil(sut)
     }
-    
+
     func testProfileView_CreatesViewModel() {
         // Arrange & Act
         let sut = ProfileView()
         let mirror = Mirror(reflecting: sut)
-        
+
         // Assert
         let viewModelProperty = mirror.children.first { $0.label == "_viewModel" }
         XCTAssertNotNil(viewModelProperty)
     }
-    
+
     // MARK: - View Structure Tests
-    
+
     func testProfileView_HasCorrectViewStructure() {
         // This test verifies the view compiles with expected structure
         // In production, we'd use snapshot testing or UI testing
-        
+
         // Arrange
         let sut = ProfileView()
-        
+
         // Act
         let hostingController = UIHostingController(rootView: sut)
-        
+
         // Assert
         XCTAssertNotNil(hostingController.view)
     }
-    
+
     // MARK: - ViewModel Integration Tests
-    
+
     func testProfileViewModel_LoadProfile_UpdatesState() async {
         // Arrange
         let mockService = MockProfileService()
@@ -62,116 +62,116 @@ final class ProfileViewTests: XCTestCase {
             email: "test@example.com"
         )
         mockService.loadProfileResult = .success(testProfile)
-        
+
         let viewModel = AppCore.ProfileViewModel(service: mockService)
-        
+
         // Act
         await viewModel.loadProfile()
-        
+
         // Assert
         XCTAssertEqual(viewModel.profile.fullName, "Test User")
         XCTAssertEqual(viewModel.profile.email, "test@example.com")
         XCTAssertEqual(viewModel.uiState, .loaded)
     }
-    
+
     func testProfileViewModel_EditMode_TogglesProperly() {
         // Arrange
-        let viewModel = ProfileViewModel()
+        let viewModel = AppCore.ProfileViewModel()
         XCTAssertFalse(viewModel.isEditing)
-        
+
         // Act
         viewModel.toggleEditMode()
-        
+
         // Assert
         XCTAssertTrue(viewModel.isEditing)
-        
+
         // Act again
         viewModel.toggleEditMode()
-        
+
         // Assert
         XCTAssertFalse(viewModel.isEditing)
     }
-    
+
     func testProfileViewModel_CopyAddress_WorksCorrectly() {
         // Arrange
-        let viewModel = ProfileViewModel()
+        let viewModel = AppCore.ProfileViewModel()
         viewModel.profile.mailingAddress = Address(
             street1: "123 Main St",
             city: "Anytown",
             state: "CA",
             zipCode: "12345"
         )
-        
+
         // Act
         viewModel.copyMailingToBillingAddress()
-        
+
         // Assert
         XCTAssertEqual(viewModel.profile.billingAddress, viewModel.profile.mailingAddress)
     }
-    
+
     // MARK: - Validation Integration Tests
-    
+
     func testProfileViewModel_SaveWithInvalidData_ShowsErrors() async {
         // Arrange
-        let viewModel = ProfileViewModel()
+        let viewModel = AppCore.ProfileViewModel()
         viewModel.profile.fullName = "" // Required field
         viewModel.profile.email = "invalid-email" // Invalid format
-        
+
         // Act
         await viewModel.saveProfile()
-        
+
         // Assert
         XCTAssertFalse(viewModel.validationErrors.isEmpty)
         XCTAssertNotNil(viewModel.validationErrors["fullName"])
         XCTAssertNotNil(viewModel.validationErrors["email"])
     }
-    
+
     func testProfileViewModel_SaveWithValidData_Succeeds() async {
         // Arrange
         let mockService = MockProfileService()
         mockService.saveProfileResult = .success(())
-        
+
         let viewModel = ProfileViewModel(service: mockService)
         viewModel.profile.fullName = "Test User"
         viewModel.profile.email = "test@example.com"
-        
+
         // Act
         await viewModel.saveProfile()
-        
+
         // Assert
         XCTAssertTrue(viewModel.validationErrors.isEmpty)
         XCTAssertTrue(mockService.saveProfileCalled)
         XCTAssertEqual(viewModel.uiState, .loaded)
     }
-    
+
     // MARK: - Auto-Save Tests
-    
+
     func testProfileViewModel_AutoSave_EnabledInEditMode() async throws {
         // Arrange
         let mockService = MockProfileService()
         mockService.saveProfileResult = .success(())
-        
+
         let viewModel = ProfileViewModel(service: mockService)
         viewModel.enableAutoSave = true
         viewModel.profile.fullName = "Test User"
-        
+
         // Act
         viewModel.toggleEditMode() // Enter edit mode
         viewModel.profile.fullName = "Updated Name"
-        
+
         // Wait for auto-save debounce
         try await Task.sleep(nanoseconds: 3_000_000_000) // 3 seconds
-        
+
         // Assert
         XCTAssertTrue(mockService.saveProfileCalled)
         XCTAssertEqual(mockService.savedProfile?.fullName, "Updated Name")
     }
-    
+
     // MARK: - Profile Completion Tests
-    
+
     func testProfileCompletion_WithAllFields_Returns100Percent() {
         // Arrange
-        let viewModel = ProfileViewModel()
+        let viewModel = AppCore.ProfileViewModel()
         viewModel.profile = UserProfile(
             fullName: "John Doe",
             title: "Developer",
@@ -179,25 +179,25 @@ final class ProfileViewTests: XCTestCase {
             phoneNumber: "555-1234",
             organizationName: "AIKO Corp"
         )
-        
+
         // Act
         let completion = viewModel.profileCompletionPercentage
-        
+
         // Assert
         XCTAssertEqual(completion, 1.0)
     }
-    
+
     func testProfileCompletion_WithPartialFields_ReturnsPartialPercentage() {
         // Arrange
-        let viewModel = ProfileViewModel()
+        let viewModel = AppCore.ProfileViewModel()
         viewModel.profile = UserProfile(
             fullName: "John Doe",
             email: "john@example.com"
         )
-        
+
         // Act
         let completion = viewModel.profileCompletionPercentage
-        
+
         // Assert
         XCTAssertLessThan(completion, 1.0)
         XCTAssertGreaterThan(completion, 0.0)
@@ -209,12 +209,12 @@ final class ProfileViewTests: XCTestCase {
 private final class MockProfileService: ProfileServiceProtocol, @unchecked Sendable {
     var loadProfileResult: Result<UserProfile, Error> = .success(UserProfile())
     var saveProfileResult: Result<Void, Error> = .success(())
-    
+
     var loadProfileCalled = false
     var saveProfileCalled = false
     var saveProfileCallCount = 0
     var savedProfile: UserProfile?
-    
+
     func loadProfile() async throws -> UserProfile {
         loadProfileCalled = true
         switch loadProfileResult {
@@ -224,7 +224,7 @@ private final class MockProfileService: ProfileServiceProtocol, @unchecked Senda
             throw error
         }
     }
-    
+
     func saveProfile(_ profile: UserProfile) async throws {
         saveProfileCalled = true
         saveProfileCallCount += 1

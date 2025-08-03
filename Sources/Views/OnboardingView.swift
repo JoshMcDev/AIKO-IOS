@@ -3,16 +3,16 @@ import SwiftUI
 public struct OnboardingView: View {
     @Bindable public var viewModel: OnboardingViewModel
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    
+
     // MARK: - Keyboard Navigation State
     #if os(macOS)
     @FocusState private var focusedField: OnboardingFocusField?
     #endif
-    
+
     public init(viewModel: OnboardingViewModel) {
         self.viewModel = viewModel
     }
-    
+
     public var body: some View {
         NavigationStack(path: $viewModel.navigationPath) {
             GeometryReader { geometry in
@@ -22,13 +22,13 @@ public struct OnboardingView: View {
                         currentStep: viewModel.currentStep,
                         progress: viewModel.currentStep.progress
                     )
-                    
+
                     // Step Content
                     stepContentView
                         .animation(.easeInOut(duration: 0.3), value: viewModel.currentStep)
-                    
+
                     Spacer()
-                    
+
                     // Navigation Buttons
                     navigationButtonsView
                 }
@@ -53,15 +53,15 @@ public struct OnboardingView: View {
             return .handled
         }
         .onKeyPress(keys: [.downArrow]) { _ in
-            // Focus next element  
+            // Focus next element
             focusNextField()
             return .handled
         }
         #endif
     }
-    
+
     // MARK: - Platform-Specific Layout Properties
-    
+
     private var platformSpacing: CGFloat {
         #if os(macOS)
         return 32 // More generous spacing for larger screens
@@ -69,7 +69,7 @@ public struct OnboardingView: View {
         return 24 // Compact spacing for mobile
         #endif
     }
-    
+
     private func horizontalPadding(for size: CGSize) -> CGFloat {
         #if os(macOS)
         return max(40, size.width * 0.1) // Responsive padding, minimum 40pt
@@ -77,7 +77,7 @@ public struct OnboardingView: View {
         return 24 // Standard mobile padding
         #endif
     }
-    
+
     private var verticalPadding: CGFloat {
         #if os(macOS)
         return 48 // More generous top/bottom padding
@@ -85,7 +85,7 @@ public struct OnboardingView: View {
         return 32 // Standard mobile padding
         #endif
     }
-    
+
     private var maxContentWidth: CGFloat {
         #if os(macOS)
         return 600 // Constrain content width on large screens
@@ -93,7 +93,7 @@ public struct OnboardingView: View {
         return .infinity // Use full width on mobile
         #endif
     }
-    
+
     // MARK: - Keyboard Navigation Methods
     #if os(macOS)
     private func focusPreviousField() {
@@ -118,7 +118,7 @@ public struct OnboardingView: View {
             break
         }
     }
-    
+
     private func focusNextField() {
         switch focusedField {
         case .apiKey:
@@ -144,7 +144,7 @@ public struct OnboardingView: View {
         }
     }
     #endif
-    
+
     @ViewBuilder
     private var stepContentView: some View {
         switch viewModel.currentStep {
@@ -158,7 +158,7 @@ public struct OnboardingView: View {
             CompletionStepView()
         }
     }
-    
+
     @ViewBuilder
     private var navigationButtonsView: some View {
         HStack(spacing: 16) {
@@ -174,9 +174,9 @@ public struct OnboardingView: View {
                 .keyboardShortcut(.leftArrow, modifiers: .command)
                 #endif
             }
-            
+
             Spacer()
-            
+
             // Skip Button (only for API setup)
             if viewModel.currentStep == .apiSetup {
                 Button("Skip") {
@@ -189,7 +189,7 @@ public struct OnboardingView: View {
                 .keyboardShortcut("s", modifiers: .command)
                 #endif
             }
-            
+
             // Next/Complete Button
             Button(nextButtonTitle) {
                 Task {
@@ -209,7 +209,7 @@ public struct OnboardingView: View {
             #endif
         }
     }
-    
+
     private var nextButtonTitle: String {
         switch viewModel.currentStep {
         case .welcome, .apiSetup, .permissions:
@@ -228,11 +228,11 @@ private struct WelcomeStepView: View {
             Image(systemName: "sparkles")
                 .font(.system(size: 64))
                 .foregroundStyle(.blue.gradient)
-            
+
             Text("Welcome to AIKO")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-            
+
             Text("Let's get started with a quick introduction to set up your AI assistant.")
                 .font(.body)
                 .multilineTextAlignment(.center)
@@ -246,26 +246,26 @@ private struct APISetupStepView: View {
     #if os(macOS)
     @FocusState private var isAPIKeyFocused: Bool
     #endif
-    
+
     var body: some View {
         VStack(spacing: 24) {
             Image(systemName: "key.fill")
                 .font(.system(size: 48))
                 .foregroundStyle(.orange.gradient)
-            
+
             Text("API Configuration")
                 .font(.title)
                 .fontWeight(.semibold)
-            
+
             Text("Configure your API keys to connect with AI services for enhanced functionality.")
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
-            
+
             VStack(alignment: .leading, spacing: 8) {
                 Text("API Key")
                     .font(.headline)
-                
+
                 SecureField("Enter your API key", text: $viewModel.apiKey)
                     .textFieldStyle(.roundedBorder)
                     #if os(macOS)
@@ -276,20 +276,20 @@ private struct APISetupStepView: View {
                             await viewModel.validateAPIKey()
                         }
                     }
-                
+
                 if let validationError = viewModel.validationError {
                     Text(validationError)
                         .font(.caption)
                         .foregroundStyle(.red)
                 }
-                
+
                 if viewModel.isAPIKeyValidated {
                     Label("API key validated", systemImage: "checkmark.circle.fill")
                         .font(.caption)
                         .foregroundStyle(.green)
                 }
             }
-            
+
             if viewModel.isLoading {
                 ProgressView("Validating...")
                     .font(.caption)
@@ -310,7 +310,7 @@ private struct PermissionsStepView: View {
     #if os(macOS)
     @FocusState private var isToggleFocused: Bool
     #endif
-    
+
     private var biometricAuthenticationTitle: String {
         #if os(macOS)
         return "Touch ID"
@@ -318,22 +318,22 @@ private struct PermissionsStepView: View {
         return "Face ID / Touch ID"
         #endif
     }
-    
+
     var body: some View {
         VStack(spacing: 24) {
             Image(systemName: "shield.checkered")
                 .font(.system(size: 48))
                 .foregroundStyle(.green.gradient)
-            
+
             Text("Permissions")
                 .font(.title)
                 .fontWeight(.semibold)
-            
+
             Text("Grant necessary permissions for optimal security and user experience.")
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
-            
+
             VStack(spacing: 16) {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
@@ -343,9 +343,9 @@ private struct PermissionsStepView: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
-                    
+
                     Spacer()
-                    
+
                     Toggle("", isOn: $viewModel.faceIDEnabled)
                         #if os(macOS)
                         .focused($isToggleFocused)
@@ -361,7 +361,7 @@ private struct PermissionsStepView: View {
                 .padding(.vertical, 12)
                 .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
             }
-            
+
             if viewModel.isLoading {
                 ProgressView("Configuring...")
                     .font(.caption)
@@ -376,16 +376,16 @@ private struct CompletionStepView: View {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 64))
                 .foregroundStyle(.green.gradient)
-            
+
             Text("Setup Complete")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-            
+
             Text("Your setup is now complete! You're ready to start using AIKO.")
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
-            
+
             VStack(spacing: 12) {
                 Label("API Configuration", systemImage: "checkmark.circle.fill")
                     .foregroundStyle(.green)
@@ -404,17 +404,17 @@ private struct CompletionStepView: View {
 private struct OnboardingProgressBar: View {
     let currentStep: OnboardingStep
     let progress: Double
-    
+
     var body: some View {
         VStack(spacing: 8) {
             Text("Step \(currentStep.rawValue + 1) of \(OnboardingStep.allCases.count)")
                 .font(.caption)
                 .foregroundStyle(.secondary)
-            
+
             ProgressView(value: progress)
                 .progressViewStyle(.linear)
                 .tint(.blue)
-            
+
             Text(currentStep.title)
                 .font(.headline)
         }

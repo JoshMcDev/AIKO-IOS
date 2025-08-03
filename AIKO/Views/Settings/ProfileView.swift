@@ -19,28 +19,28 @@ struct ProfileView: View {
     @State private var showingImagePicker = false
     @State private var showingAlert = false
     @State private var alertMessage = ""
-    
+
     var body: some View {
         NavigationStack {
             Form {
                 // Profile Image Section
                 profileImageSection
-                
+
                 // Personal Information Section
                 personalInformationSection
-                
+
                 // Contact Information Section
                 contactInformationSection
-                
+
                 // Organization Information Section
                 organizationInformationSection
-                
+
                 // Address Sections
                 addressSections
-                
+
                 // Social & Professional Section
                 socialProfessionalSection
-                
+
                 // Actions Section
                 if viewModel.isEditing {
                     actionsSection
@@ -70,9 +70,9 @@ struct ProfileView: View {
             }
         }
     }
-    
+
     // MARK: - View Components
-    
+
     private var profileImageSection: some View {
         Section {
             HStack {
@@ -93,7 +93,7 @@ struct ProfileView: View {
                             .frame(width: 120, height: 120)
                             .foregroundColor(.gray)
                     }
-                    
+
                     if viewModel.isEditing {
                         PhotosPicker(
                             selection: $selectedPhoto,
@@ -112,13 +112,13 @@ struct ProfileView: View {
             .padding(.vertical, 8)
         }
     }
-    
+
     private var personalInformationSection: some View {
         Section(header: Text("Personal Information")) {
             profileField("Full Name", text: $viewModel.profile.fullName, isRequired: true)
             profileField("Title", text: $viewModel.profile.title)
             profileField("Position", text: $viewModel.profile.position)
-            
+
             // Bio with multi-line support
             VStack(alignment: .leading, spacing: 4) {
                 Text("Bio")
@@ -130,7 +130,7 @@ struct ProfileView: View {
             }
         }
     }
-    
+
     private var contactInformationSection: some View {
         Section(header: Text("Contact Information")) {
             profileField("Email", text: $viewModel.profile.email, isRequired: true, keyboardType: .emailAddress)
@@ -143,7 +143,7 @@ struct ProfileView: View {
                 .textContentType(.telephoneNumber)
         }
     }
-    
+
     private var organizationInformationSection: some View {
         Section(header: Text("Organization")) {
             profileField("Organization Name", text: $viewModel.profile.organizationName)
@@ -151,7 +151,7 @@ struct ProfileView: View {
             profileField("Agency/Department/Service", text: $viewModel.profile.agencyDepartmentService)
         }
     }
-    
+
     private var addressSections: some View {
         Group {
             // Mailing Address
@@ -159,7 +159,7 @@ struct ProfileView: View {
                 title: "Mailing Address",
                 address: $viewModel.profile.mailingAddress
             )
-            
+
             // Billing Address
             addressSection(
                 title: "Billing Address",
@@ -169,19 +169,19 @@ struct ProfileView: View {
                     viewModel.copyMailingToBillingAddress()
                 }
             )
-            
+
             // Administered By Address
             addressSection(
                 title: "Administered By Address",
                 address: $viewModel.profile.defaultAdministeredByAddress
             )
-            
+
             // Payment Address
             addressSection(
                 title: "Payment Address",
                 address: $viewModel.profile.defaultPaymentAddress
             )
-            
+
             // Delivery Address
             addressSection(
                 title: "Delivery Address",
@@ -189,14 +189,14 @@ struct ProfileView: View {
             )
         }
     }
-    
+
     private var socialProfessionalSection: some View {
         Section(header: Text("Social & Professional")) {
             profileField("Website", text: $viewModel.profile.website, keyboardType: .URL)
                 .textContentType(.URL)
             profileField("LinkedIn", text: $viewModel.profile.linkedIn)
             profileField("Twitter", text: $viewModel.profile.twitter)
-            
+
             // Language & Time Zone
             HStack {
                 Text("Preferred Language")
@@ -204,7 +204,7 @@ struct ProfileView: View {
                 Text(viewModel.profile.preferredLanguage)
                     .foregroundColor(.secondary)
             }
-            
+
             HStack {
                 Text("Time Zone")
                 Spacer()
@@ -213,12 +213,12 @@ struct ProfileView: View {
             }
         }
     }
-    
+
     private var actionsSection: some View {
         Section {
             // Auto-save toggle
             Toggle("Enable Auto-Save", isOn: $viewModel.enableAutoSave)
-            
+
             // Save button
             Button(action: {
                 Task {
@@ -238,7 +238,7 @@ struct ProfileView: View {
                 }
             }
             .disabled(viewModel.isSaving || !viewModel.validationErrors.isEmpty)
-            
+
             // Cancel button
             Button(action: {
                 viewModel.cancelEditing()
@@ -252,7 +252,7 @@ struct ProfileView: View {
             }
         }
     }
-    
+
     private var editButton: some View {
         Button(viewModel.isEditing ? "Done" : "Edit") {
             if viewModel.isEditing {
@@ -264,9 +264,9 @@ struct ProfileView: View {
             }
         }
     }
-    
+
     // MARK: - Helper Views
-    
+
     private func profileField(
         _ label: String,
         text: Binding<String>,
@@ -284,11 +284,11 @@ struct ProfileView: View {
                         .font(.caption)
                 }
             }
-            
+
             TextField(label, text: text)
                 .keyboardType(keyboardType)
                 .disabled(!viewModel.isEditing)
-            
+
             if let error = viewModel.validationErrors[label.lowercased().replacingOccurrences(of: " ", with: "")] {
                 Text(error)
                     .font(.caption)
@@ -296,7 +296,7 @@ struct ProfileView: View {
             }
         }
     }
-    
+
     private func addressSection(
         title: String,
         address: Binding<Address>,
@@ -324,12 +324,12 @@ struct ProfileView: View {
             profileField("Country", text: address.country)
         }
     }
-    
+
     // MARK: - Actions
-    
+
     private func saveProfile() async {
         await viewModel.saveProfile()
-        
+
         if viewModel.error != nil {
             alertMessage = "Failed to save profile. Please try again."
             showingAlert = true

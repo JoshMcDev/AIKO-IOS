@@ -34,7 +34,7 @@ final class AIKOiOSTests: XCTestCase {
     }
 
     func testHapticManagerClient() throws {
-        // Test iOS haptic manager client implementation  
+        // Test iOS haptic manager client implementation
         // TODO: Add specific iOS haptic tests when implementation is complete
         XCTAssertTrue(true, "Haptic manager client placeholder test")
     }

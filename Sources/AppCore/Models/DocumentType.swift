@@ -227,7 +227,7 @@ public enum DocumentCategoryType: Equatable, Hashable, Codable, Sendable {
 
 // GeneratedDocument - Platform-agnostic version for AppCore
 // Platform-specific RTF formatting is handled in platform implementations
-public struct GeneratedDocument: Identifiable, Equatable, Codable, Sendable {
+public struct GeneratedDocument: Identifiable, Equatable, Codable, Sendable, Hashable {
     public let id: UUID
     public let title: String
     public let documentCategory: DocumentCategoryType

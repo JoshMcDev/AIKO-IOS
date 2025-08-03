@@ -16,7 +16,7 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
     }
 
     // MARK: - Private Methods
-    
+
     private func ensureTemplatesInitialized() {
         guard templates.isEmpty else { return }
         setupBuiltInTemplates()
@@ -31,10 +31,10 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
             assetIds: [],
             startTime: Date()
         )
-        
+
         // Store workflow for reference
         workflows[workflow.id] = workflow
-        
+
         // Create execution state
         let executionState = WorkflowExecutionState(
             handle: handle,
@@ -46,12 +46,12 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
             errors: []
         )
         executions[handle.id] = executionState
-        
+
         // Start execution asynchronously
         Task {
             await performWorkflowExecution(handle: handle)
         }
-        
+
         return handle
     }
 
@@ -72,7 +72,7 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
         guard let templateWorkflow = templates[template.name] else {
             throw MediaError.processingFailed("Template '\(template.name)' not found")
         }
-        
+
         // Create new workflow with unique ID from template
         let newWorkflow = MediaWorkflow(
             id: UUID(),
@@ -80,7 +80,7 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
             description: templateWorkflow.description,
             steps: templateWorkflow.steps
         )
-        
+
         workflows[newWorkflow.id] = newWorkflow
         return newWorkflow
     }
@@ -96,7 +96,7 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
         guard let execution = executions[handle.id] else {
             throw MediaError.processingFailed("Execution not found")
         }
-        
+
         return WorkflowExecutionResult(
             executionHandle: handle,
             status: execution.status,
@@ -137,23 +137,21 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
     public func validateWorkflow(_ definition: WorkflowDefinition) async -> WorkflowValidationResult {
         var errors: [String] = []
         let warnings: [String] = []
-        
+
         // Basic validation
         if definition.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             errors.append("Workflow name cannot be empty")
         }
-        
+
         if definition.requiredSteps.isEmpty {
             errors.append("Workflow must have at least one step")
         }
-        
+
         // Step validation
-        for (index, stepType) in definition.requiredSteps.enumerated() {
-            if stepType.displayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                errors.append("Step \(index + 1) must have a name")
-            }
+        for (index, stepType) in definition.requiredSteps.enumerated() where stepType.displayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            errors.append("Step \(index + 1) must have a name")
         }
-        
+
         return WorkflowValidationResult(
             isValid: errors.isEmpty,
             errors: errors,
@@ -168,7 +166,7 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
         if !validationResult.isValid {
             throw MediaError.processingFailed("Invalid workflow definition: \(validationResult.errors.joined(separator: ", "))")
         }
-        
+
         let workflow = MediaWorkflow(
             id: definition.id,
             name: definition.name,
@@ -181,7 +179,7 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
                 )
             }
         )
-        
+
         workflows[workflow.id] = workflow
         return workflow
     }
@@ -193,10 +191,10 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
             assetIds: assets.map { $0.id },
             startTime: Date()
         )
-        
+
         // Store workflow for reference
         workflows[workflow.id] = workflow
-        
+
         // Create execution state with assets
         let executionState = WorkflowExecutionState(
             handle: handle,
@@ -208,19 +206,19 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
             errors: []
         )
         executions[handle.id] = executionState
-        
+
         // Start execution asynchronously
         Task {
             await performWorkflowExecution(handle: handle)
         }
-        
+
         return handle
     }
 
     public func monitorExecution(_ handle: WorkflowExecutionHandle) -> AsyncStream<WorkflowExecutionUpdate> {
         return AsyncStream { continuation in
             progressContinuations[handle.id] = continuation
-            
+
             // Send initial status
             if let execution = executions[handle.id] {
                 let update = WorkflowExecutionUpdate(
@@ -233,7 +231,7 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
                 )
                 continuation.yield(update)
             }
-            
+
             continuation.onTermination = { _ in
                 Task { await self.removeProgressContinuation(for: handle.id) }
             }
@@ -244,14 +242,14 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
         guard var execution = executions[handle.id] else {
             throw MediaError.processingFailed("Execution not found")
         }
-        
+
         guard execution.status == .running else {
             throw MediaError.processingFailed("Cannot pause execution in status: \(execution.status)")
         }
-        
+
         execution.status = .paused
         executions[handle.id] = execution
-        
+
         await notifyProgressUpdate(handle: handle, message: "Execution paused")
     }
 
@@ -259,16 +257,16 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
         guard var execution = executions[handle.id] else {
             throw MediaError.processingFailed("Execution not found")
         }
-        
+
         guard execution.status == .paused else {
             throw MediaError.processingFailed("Cannot resume execution in status: \(execution.status)")
         }
-        
+
         execution.status = .running
         executions[handle.id] = execution
-        
+
         await notifyProgressUpdate(handle: handle, message: "Execution resumed")
-        
+
         // Continue execution
         Task {
             await continueWorkflowExecution(handle: handle)
@@ -279,10 +277,10 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
         guard var execution = executions[handle.id] else {
             throw MediaError.processingFailed("Execution not found")
         }
-        
+
         execution.status = .cancelled
         executions[handle.id] = execution
-        
+
         await notifyProgressUpdate(handle: handle, message: "Execution cancelled")
         await finishExecution(handle: handle)
     }
@@ -291,14 +289,14 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
         guard !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             throw MediaError.invalidInput("Template name cannot be empty")
         }
-        
+
         let templateWorkflow = MediaWorkflow(
             id: UUID(),
             name: workflow.name,
             description: workflow.description,
             steps: workflow.steps
         )
-        
+
         templates[name] = templateWorkflow
     }
 
@@ -306,7 +304,7 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
         guard let template = templates[name] else {
             throw MediaError.processingFailed("Template '\(name)' not found")
         }
-        
+
         // Return a copy with new ID
         return MediaWorkflow(
             id: UUID(),
@@ -324,49 +322,49 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
         guard templates[name] != nil else {
             throw MediaError.processingFailed("Template '\(name)' not found")
         }
-        
+
         templates.removeValue(forKey: name)
     }
-    
+
     // MARK: - Private Execution Methods
-    
+
     private func performWorkflowExecution(handle: WorkflowExecutionHandle) async {
         guard var execution = executions[handle.id] else { return }
-        
+
         execution.status = .running
         executions[handle.id] = execution
-        
+
         await notifyProgressUpdate(handle: handle, message: "Starting workflow execution")
-        
+
         await continueWorkflowExecution(handle: handle)
     }
-    
+
     private func continueWorkflowExecution(handle: WorkflowExecutionHandle) async {
         guard var execution = executions[handle.id] else { return }
-        
+
         while execution.currentStepIndex < execution.workflow.steps.count && execution.status == .running {
             let step = execution.workflow.steps[execution.currentStepIndex]
-            
+
             await notifyProgressUpdate(
                 handle: handle,
                 message: "Executing step: \(step.name)"
             )
-            
+
             do {
                 // Execute current step
                 let stepResults = try await executeWorkflowStep(step, with: execution.assets)
                 execution.results.append(contentsOf: stepResults)
-                
+
                 execution.currentStepIndex += 1
                 executions[handle.id] = execution
-                
+
                 // Brief pause between steps to allow for cancellation/pausing
                 try await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
-                
+
                 // Refresh execution state to check for status changes
                 guard let updatedExecution = executions[handle.id] else { return }
                 execution = updatedExecution
-                
+
             } catch {
                 let workflowError = WorkflowError(
                     message: error.localizedDescription,
@@ -379,19 +377,19 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
                 break
             }
         }
-        
+
         // Determine final status
         if execution.status == .running {
             execution.status = .completed
             executions[handle.id] = execution
         }
-        
+
         await finishExecution(handle: handle)
     }
-    
+
     private func executeWorkflowStep(_ step: MediaWorkflowStep, with assets: [MediaAsset]) async throws -> [ProcessedAsset] {
         var results: [ProcessedAsset] = []
-        
+
         // Basic step execution - in a real implementation, this would handle different step types
         for asset in assets {
             let processedAsset = ProcessedAsset(
@@ -401,13 +399,13 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
             )
             results.append(processedAsset)
         }
-        
+
         return results
     }
-    
+
     private func finishExecution(handle: WorkflowExecutionHandle) async {
         guard let execution = executions[handle.id] else { return }
-        
+
         // Create final result and add to history
         let finalResult = WorkflowExecutionResult(
             executionHandle: handle,
@@ -417,26 +415,26 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
             errors: execution.errors.map { $0.message },
             duration: Date().timeIntervalSince(handle.startTime)
         )
-        
+
         executionHistory.append(finalResult)
-        
+
         // Send final notification
         await notifyProgressUpdate(
             handle: handle,
             message: "Workflow \(execution.status.rawValue)"
         )
-        
+
         // Clean up
         if let continuation = progressContinuations[handle.id] {
             continuation.finish()
             progressContinuations.removeValue(forKey: handle.id)
         }
     }
-    
+
     private func notifyProgressUpdate(handle: WorkflowExecutionHandle, message: String) async {
         guard let execution = executions[handle.id],
               let continuation = progressContinuations[handle.id] else { return }
-        
+
         let update = WorkflowExecutionUpdate(
             executionId: handle.id,
             status: execution.status,
@@ -445,14 +443,14 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
             processedAssets: execution.results.count,
             message: message
         )
-        
+
         continuation.yield(update)
     }
-    
+
     private func removeProgressContinuation(for id: UUID) async {
         progressContinuations.removeValue(forKey: id)
     }
-    
+
     private func setupBuiltInTemplates() {
         // Image processing template
         let imageResizeTemplate = MediaWorkflow(
@@ -473,7 +471,7 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
             ]
         )
         templates["image_resize"] = imageResizeTemplate
-        
+
         // Document processing template
         let documentOCRTemplate = MediaWorkflow(
             id: UUID(),

@@ -56,7 +56,11 @@ final class SAMGovLookupViewModelTests {
         let searchResult = EntitySearchResult.mockSearchResult()
         let expectedEntity = EntityDetail.mockCompanyEntity()
         await mockService.setSearchEntity("Test Defense Contractor", result: .success(searchResult))
-        await mockService.setEntityByUEI(searchResult.entities.first!.ueiSAM, result: .success(expectedEntity))
+        guard let firstEntity = searchResult.entities.first else {
+            XCTFail("Expected at least one entity in search results")
+            return
+        }
+        await mockService.setEntityByUEI(firstEntity.ueiSAM, result: .success(expectedEntity))
         let viewModel = SAMGovLookupViewModel(samGovService: mockService)
 
         // ACT

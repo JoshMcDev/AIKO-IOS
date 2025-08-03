@@ -8,19 +8,19 @@ import Combine
 public protocol ServiceClientProtocol: Sendable {
     /// Base URL for the service
     var baseURL: URL { get }
-    
+
     /// URLSession for network requests
     var session: URLSession { get }
-    
+
     /// JSON decoder with consistent configuration
     var decoder: JSONDecoder { get }
-    
-    /// JSON encoder with consistent configuration  
+
+    /// JSON encoder with consistent configuration
     var encoder: JSONEncoder { get }
-    
+
     /// Default headers to include with all requests
     var defaultHeaders: [String: String] { get }
-    
+
     /// Service-specific error transformer
     func transformError(_ error: Error) -> AIKOError
 }
@@ -28,21 +28,21 @@ public protocol ServiceClientProtocol: Sendable {
 // MARK: - Default Implementation
 
 public extension ServiceClientProtocol {
-    
+
     /// Default JSON decoder with ISO8601 date strategy
     var decoder: JSONDecoder {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         return decoder
     }
-    
+
     /// Default JSON encoder with ISO8601 date strategy
     var encoder: JSONEncoder {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
         return encoder
     }
-    
+
     /// Default headers for JSON API requests
     var defaultHeaders: [String: String] {
         [
@@ -51,13 +51,13 @@ public extension ServiceClientProtocol {
             "User-Agent": "AIKO/1.0"
         ]
     }
-    
+
     /// Default error transformation - can be overridden by services
     func transformError(_ error: Error) -> AIKOError {
         if let aikoError = error as? AIKOError {
             return aikoError
         }
-        
+
         if let urlError = error as? URLError {
             switch urlError.code {
             case .notConnectedToInternet, .networkConnectionLost:
@@ -70,7 +70,7 @@ public extension ServiceClientProtocol {
                 return .networkError(urlError.localizedDescription, underlying: urlError)
             }
         }
-        
+
         return .unknownError(error.localizedDescription, underlying: error)
     }
 }
@@ -78,7 +78,7 @@ public extension ServiceClientProtocol {
 // MARK: - HTTP Request Building
 
 public extension ServiceClientProtocol {
-    
+
     /// Build URLRequest with consistent configuration
     /// - Parameters:
     ///   - path: API endpoint path (relative to baseURL)
@@ -97,35 +97,35 @@ public extension ServiceClientProtocol {
         guard var urlComponents = URLComponents(url: baseURL.appendingPathComponent(path), resolvingAgainstBaseURL: true) else {
             throw AIKOError.invalidRequest("Cannot build URL from path: \(path)")
         }
-        
+
         // Add query parameters
         if let queryItems = queryItems {
             urlComponents.queryItems = queryItems
         }
-        
+
         guard let url = urlComponents.url else {
             throw AIKOError.invalidRequest("Cannot create URL from components")
         }
-        
+
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue
         request.httpBody = body
-        
+
         // Apply default headers first
         for (key, value) in defaultHeaders {
             request.setValue(value, forHTTPHeaderField: key)
         }
-        
+
         // Apply custom headers (can override defaults)
         if let headers = headers {
             for (key, value) in headers {
                 request.setValue(value, forHTTPHeaderField: key)
             }
         }
-        
+
         return request
     }
-    
+
     /// Execute URLRequest with consistent error handling and retry logic
     /// - Parameters:
     ///   - request: URLRequest to execute
@@ -138,15 +138,15 @@ public extension ServiceClientProtocol {
         retryDelay: TimeInterval = 1.0
     ) async throws -> (Data, HTTPURLResponse) {
         var lastError: Error?
-        
+
         for attempt in 1...retryCount {
             do {
                 let (data, response) = try await session.data(for: request)
-                
+
                 guard let httpResponse = response as? HTTPURLResponse else {
                     throw AIKOError.invalidResponse("Non-HTTP response received")
                 }
-                
+
                 // Check for HTTP errors
                 if !httpResponse.isSuccessful {
                     let errorData = String(data: data, encoding: .utf8) ?? "No error data"
@@ -156,19 +156,19 @@ public extension ServiceClientProtocol {
                         responseData: errorData
                     )
                 }
-                
+
                 return (data, httpResponse)
-                
+
             } catch {
                 lastError = error
-                
+
                 // Don't retry client errors (4xx) or specific error types
                 if let aikoError = error as? AIKOError,
                    case .httpError(let statusCode, _, _) = aikoError,
                    (400..<500).contains(statusCode) {
                     throw transformError(error)
                 }
-                
+
                 // Retry with exponential backoff
                 if attempt < retryCount {
                     let delay = retryDelay * pow(2.0, Double(attempt - 1))
@@ -176,7 +176,7 @@ public extension ServiceClientProtocol {
                 }
             }
         }
-        
+
         throw transformError(lastError ?? AIKOError.unknownError("Request failed after \(retryCount) attempts"))
     }
 }
@@ -184,7 +184,7 @@ public extension ServiceClientProtocol {
 // MARK: - Convenience Methods
 
 public extension ServiceClientProtocol {
-    
+
     /// GET request returning decoded JSON
     func get<T: Decodable>(
         path: String,
@@ -198,16 +198,16 @@ public extension ServiceClientProtocol {
             headers: headers,
             queryItems: queryItems
         )
-        
+
         let (data, _) = try await executeRequest(request)
-        
+
         do {
             return try decoder.decode(responseType, from: data)
         } catch {
             throw AIKOError.decodingError("Failed to decode \(responseType)", underlying: error)
         }
     }
-    
+
     /// POST request with encoded body returning decoded JSON
     func post<T: Decodable, U: Encodable>(
         path: String,
@@ -222,7 +222,7 @@ public extension ServiceClientProtocol {
         } catch {
             throw AIKOError.encodingError("Failed to encode request body", underlying: error)
         }
-        
+
         let request = try buildRequest(
             path: path,
             method: .post,
@@ -230,16 +230,16 @@ public extension ServiceClientProtocol {
             body: bodyData,
             queryItems: queryItems
         )
-        
+
         let (data, _) = try await executeRequest(request)
-        
+
         do {
             return try decoder.decode(responseType, from: data)
         } catch {
             throw AIKOError.decodingError("Failed to decode \(responseType)", underlying: error)
         }
     }
-    
+
     /// PUT request with encoded body returning decoded JSON
     func put<T: Decodable, U: Encodable>(
         path: String,
@@ -254,7 +254,7 @@ public extension ServiceClientProtocol {
         } catch {
             throw AIKOError.encodingError("Failed to encode request body", underlying: error)
         }
-        
+
         let request = try buildRequest(
             path: path,
             method: .put,
@@ -262,16 +262,16 @@ public extension ServiceClientProtocol {
             body: bodyData,
             queryItems: queryItems
         )
-        
+
         let (data, _) = try await executeRequest(request)
-        
+
         do {
             return try decoder.decode(responseType, from: data)
         } catch {
             throw AIKOError.decodingError("Failed to decode \(responseType)", underlying: error)
         }
     }
-    
+
     /// DELETE request
     func delete(
         path: String,
@@ -284,10 +284,10 @@ public extension ServiceClientProtocol {
             headers: headers,
             queryItems: queryItems
         )
-        
+
         _ = try await executeRequest(request)
     }
-    
+
     /// Generic request for custom HTTP methods
     func request<T: Decodable>(
         path: String,
@@ -304,16 +304,16 @@ public extension ServiceClientProtocol {
             body: body,
             queryItems: queryItems
         )
-        
+
         let (data, _) = try await executeRequest(request)
-        
+
         do {
             return try decoder.decode(responseType, from: data)
         } catch {
             throw AIKOError.decodingError("Failed to decode \(responseType)", underlying: error)
         }
     }
-    
+
     /// Download raw data
     func downloadData(
         path: String,
@@ -326,7 +326,7 @@ public extension ServiceClientProtocol {
             headers: headers,
             queryItems: queryItems
         )
-        
+
         let (data, _) = try await executeRequest(request)
         return data
     }
@@ -351,12 +351,12 @@ extension HTTPURLResponse {
     var isSuccessful: Bool {
         (200..<300).contains(statusCode)
     }
-    
+
     /// Check if status code indicates client error (400-499)
     var isClientError: Bool {
         (400..<500).contains(statusCode)
     }
-    
+
     /// Check if status code indicates server error (500-599)
     var isServerError: Bool {
         (500..<600).contains(statusCode)
@@ -369,14 +369,14 @@ extension HTTPURLResponse {
 open class BaseServiceClient: @unchecked Sendable, ServiceClientProtocol {
     public let baseURL: URL
     public let session: URLSession
-    
+
     /// Initialize with base URL and optional custom session
     /// - Parameters:
     ///   - baseURL: Base URL for all requests
     ///   - session: Custom URLSession (uses default if not provided)
     public init(baseURL: URL, session: URLSession? = nil) {
         self.baseURL = baseURL
-        
+
         if let session = session {
             self.session = session
         } else {
@@ -386,7 +386,7 @@ open class BaseServiceClient: @unchecked Sendable, ServiceClientProtocol {
             config.timeoutIntervalForResource = 300
             config.waitsForConnectivity = true
             config.requestCachePolicy = .reloadIgnoringLocalCacheData
-            
+
             self.session = URLSession(configuration: config)
         }
     }

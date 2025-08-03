@@ -49,7 +49,6 @@ public struct SettingsManager: Sendable {
 
 // SettingsData and related structs moved to AppCore/Models/SettingsData.swift
 
-
 // Using AppCore.APISettingsData
 
 // Using AppCore.APIKeyEntryData

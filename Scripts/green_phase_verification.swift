@@ -8,14 +8,14 @@ import Foundation
 
 @MainActor
 class GreenPhaseVerifier {
-    
+
     func verifyGreenPhase() async {
         print("🟢 GREEN Phase Verification Starting...")
         print("=" * 50)
-        
+
         var passedTests = 0
         var totalTests = 0
-        
+
         // Test 1: DocumentScannerViewModel Initialization
         totalTests += 1
         do {
@@ -26,13 +26,13 @@ class GreenPhaseVerifier {
         } catch {
             print("❌ DocumentScannerViewModel initialization - FAIL: \(error)")
         }
-        
+
         print("\n" + "=" * 50)
         print("🟢 GREEN Phase Verification Results:")
         print("Total Tests: \(totalTests)")
         print("Passed: \(passedTests)")
         print("Failed: \(totalTests - passedTests)")
-        
+
         if passedTests == totalTests {
             print("🎉 ALL TESTS PASSED - GREEN PHASE COMPLETE!")
             exit(0)

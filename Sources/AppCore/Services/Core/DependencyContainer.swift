@@ -6,27 +6,27 @@ import Combine
 /// Unified dependency injection container that eliminates iOS/macOS service duplication
 /// Provides platform-agnostic registration and resolution of services
 public final class DependencyContainer: @unchecked Sendable {
-    
+
     // MARK: - Singleton Access
-    
+
     /// Shared container instance
     public static let shared = DependencyContainer()
-    
+
     // MARK: - Properties
-    
+
     private var services: [String: Any] = [:]
     private var factories: [String: () -> Any] = [:]
     private var singletons: [String: Any] = [:]
     private let lock = NSRecursiveLock()
-    
+
     // MARK: - Initialization
-    
+
     private init() {
         registerPlatformServices()
     }
-    
+
     // MARK: - Service Registration
-    
+
     /// Register a singleton service instance
     /// - Parameters:
     ///   - type: Service protocol type
@@ -37,7 +37,7 @@ public final class DependencyContainer: @unchecked Sendable {
             singletons[key] = instance
         }
     }
-    
+
     /// Register a service factory for lazy instantiation
     /// - Parameters:
     ///   - type: Service protocol type
@@ -48,7 +48,7 @@ public final class DependencyContainer: @unchecked Sendable {
             factories[key] = factory
         }
     }
-    
+
     /// Register a service factory with dependency injection
     /// - Parameters:
     ///   - type: Service protocol type
@@ -64,9 +64,9 @@ public final class DependencyContainer: @unchecked Sendable {
             }
         }
     }
-    
+
     // MARK: - Service Resolution
-    
+
     /// Resolve a service instance
     /// - Parameter type: Service protocol type to resolve
     /// - Returns: Service implementation instance
@@ -74,40 +74,40 @@ public final class DependencyContainer: @unchecked Sendable {
     public func resolve<T>(_ type: T.Type) throws -> T {
         try lock.withLock {
             let key = String(describing: type)
-            
+
             // Check singletons first
             if let singleton = singletons[key] as? T {
                 return singleton
             }
-            
+
             // Check cached services
             if let service = services[key] as? T {
                 return service
             }
-            
+
             // Create from factory
             if let factory = factories[key] {
                 let instance = factory()
                 guard let typedInstance = instance as? T else {
                     throw DependencyError.typeMismatch(expected: String(describing: type), actual: String(describing: Swift.type(of: instance)))
                 }
-                
+
                 // Cache the instance
                 services[key] = typedInstance
                 return typedInstance
             }
-            
+
             throw DependencyError.serviceNotRegistered(String(describing: type))
         }
     }
-    
+
     /// Resolve an optional service instance
     /// - Parameter type: Service protocol type to resolve
     /// - Returns: Service implementation instance or nil if not registered
     public func resolveOptional<T>(_ type: T.Type) -> T? {
         return try? resolve(type)
     }
-    
+
     /// Check if a service is registered
     /// - Parameter type: Service protocol type to check
     /// - Returns: True if service is registered
@@ -117,9 +117,9 @@ public final class DependencyContainer: @unchecked Sendable {
             return singletons[key] != nil || services[key] != nil || factories[key] != nil
         }
     }
-    
+
     // MARK: - Container Management
-    
+
     /// Clear all registered services and factories
     public func clear() {
         lock.withLock {
@@ -128,7 +128,7 @@ public final class DependencyContainer: @unchecked Sendable {
             singletons.removeAll()
         }
     }
-    
+
     /// Remove a specific service registration
     /// - Parameter type: Service protocol type to remove
     public func remove<T>(_ type: T.Type) {
@@ -139,7 +139,7 @@ public final class DependencyContainer: @unchecked Sendable {
             singletons.removeValue(forKey: key)
         }
     }
-    
+
     /// Get all registered service types
     /// - Returns: Array of registered service type names
     public func registeredServices() -> [String] {
@@ -153,7 +153,7 @@ public final class DependencyContainer: @unchecked Sendable {
 // MARK: - Platform Service Registration
 
 private extension DependencyContainer {
-    
+
     /// Register platform-specific service implementations
     func registerPlatformServices() {
         // TODO: Register clipboard service with platform-specific implementation
@@ -166,7 +166,7 @@ private extension DependencyContainer {
         //     MacOSClipboardService()
         // }
         // #endif
-        
+
         // TODO: Register document manager with platform-specific implementation
         // #if os(iOS)
         // register(DocumentManagerProtocol.self) { container in
@@ -181,13 +181,13 @@ private extension DependencyContainer {
         //     )
         // }
         // #endif
-        
+
         // TODO: Register network service singleton
         // register(NetworkServiceProtocol.self, instance: NetworkService.shared)
-        
+
         // TODO: Register SAM.gov service
         // register(SAMGovServiceProtocol.self, instance: SAMGovService.live)
-        
+
         // Register feature flags service singleton
         register(FeatureFlagsServiceProtocol.self) { _ in
             FeatureFlags.shared
@@ -198,13 +198,13 @@ private extension DependencyContainer {
 // MARK: - Convenience Extensions
 
 public extension DependencyContainer {
-    
+
     /// Property wrapper for automatic dependency injection
     @propertyWrapper
     struct Injected<T> {
         private let keyPath: KeyPath<DependencyContainer, T>?
         private let type: T.Type
-        
+
         public var wrappedValue: T {
             do {
                 return try DependencyContainer.shared.resolve(type)
@@ -212,22 +212,22 @@ public extension DependencyContainer {
                 fatalError("Failed to resolve dependency \(type): \(error)")
             }
         }
-        
+
         public init(_ type: T.Type) {
             self.type = type
             self.keyPath = nil
         }
     }
-    
+
     /// Property wrapper for optional dependency injection
     @propertyWrapper
     struct OptionalInjected<T> {
         private let type: T.Type
-        
+
         public var wrappedValue: T? {
             return DependencyContainer.shared.resolveOptional(type)
         }
-        
+
         public init(_ type: T.Type) {
             self.type = type
         }
@@ -273,7 +273,7 @@ public enum DependencyError: Error, LocalizedError, Sendable {
     case typeMismatch(expected: String, actual: String)
     case circularDependency(String)
     case containerNotInitialized
-    
+
     public var errorDescription: String? {
         switch self {
         case .serviceNotRegistered(let service):
@@ -306,7 +306,7 @@ extension NSRecursiveLock {
 // TODO: NetworkService conformance to protocol for dependency injection
 // extension NetworkService: NetworkServiceProtocol {}
 
-// TODO: SAMGovService conformance to protocol for dependency injection  
+// TODO: SAMGovService conformance to protocol for dependency injection
 // extension SAMGovService: SAMGovServiceProtocol {}
 
 /// FeatureFlags conformance to protocol for dependency injection

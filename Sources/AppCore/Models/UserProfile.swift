@@ -1,6 +1,6 @@
 import Foundation
 
-public struct UserProfile: Equatable, Codable, Sendable {
+public struct UserProfile: Equatable, Codable, Sendable, Hashable {
     public var id: UUID
     public var fullName: String
     public var title: String
@@ -17,7 +17,7 @@ public struct UserProfile: Equatable, Codable, Sendable {
     public var defaultDeliveryAddress: Address
     public var profileImageData: Data?
     public var organizationLogoData: Data?
-    
+
     // Additional fields for 20+ field requirement
     public var website: String
     public var linkedIn: String
@@ -28,8 +28,26 @@ public struct UserProfile: Equatable, Codable, Sendable {
     public var preferredLanguage: String
     public var timeZone: String
     public var mailingAddress: Address  // For ProfileView compatibility
+
+    // Template variable support for document generation
+    public func asTemplateVariables() -> [String: String] {
+        return [
+            "fullName": fullName,
+            "title": title,
+            "position": position,
+            "email": email,
+            "phoneNumber": phoneNumber,
+            "organizationName": organizationName,
+            "organizationalDODAAC": organizationalDODAAC,
+            "agencyDepartmentService": agencyDepartmentService,
+            "website": website,
+            "bio": bio,
+            "preferredLanguage": preferredLanguage,
+            "timeZone": timeZone
+        ]
+    }
     public var billingAddress: Address  // For ProfileView compatibility
-    
+
     public var createdAt: Date
     public var updatedAt: Date
 
@@ -94,7 +112,7 @@ public struct UserProfile: Equatable, Codable, Sendable {
     }
 }
 
-public struct Address: Equatable, Codable, Sendable {
+public struct Address: Equatable, Codable, Sendable, Hashable {
     public var freeText: String
     public var street1: String
     public var street2: String
@@ -167,13 +185,9 @@ public struct Address: Equatable, Codable, Sendable {
 }
 
 // MARK: - Profile Validation
+// Extension provides compatibility with existing UI components
 
 public extension UserProfile {
-    var isComplete: Bool {
-        // Only full name and email are required
-        !fullName.isEmpty && !email.isEmpty
-    }
-
     var completionPercentage: Double {
         var completedFields = 0
         let totalFields = 24  // Updated for 20+ fields
@@ -204,6 +218,11 @@ public extension UserProfile {
         if !preferredLanguage.isEmpty { completedFields += 1 }
 
         return Double(completedFields) / Double(totalFields)
+    }
+
+    var isComplete: Bool {
+        // Only full name and email are required
+        !fullName.isEmpty && !email.isEmpty
     }
 }
 

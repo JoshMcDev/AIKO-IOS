@@ -51,7 +51,7 @@ let package = Package(
                 "AppCore",
             ],
             path: "Sources/AIKOiOS",
-            exclude: ["README.md", "Service-Concurrency-Guide.md"],
+            exclude: ["README.md", "Service-Concurrency-Guide.md", "Services/DocumentImageProcessor.swift.backup"],
             swiftSettings: [
                 .unsafeFlags(["-strict-concurrency=complete"]),
             ]
@@ -95,7 +95,7 @@ let package = Package(
             path: "Sources",
             exclude: [
                 "AppCore",
-                "AIKOiOS", 
+                "AIKOiOS",
                 "AIKOmacOS",
                 "AikoCompat",
                 "GraphRAG",

@@ -314,12 +314,12 @@ final class UserWorkflowTrackerTests: XCTestCase {
         // Simple heuristic: encrypted data should have high entropy and no recognizable patterns
         // Check for lack of common plaintext patterns
         let dataString = String(data: data, encoding: .utf8) ?? ""
-        
+
         // If it can be converted to readable UTF-8, it's likely not encrypted
         if !dataString.isEmpty && dataString.contains(where: { $0.isLetter }) {
             return false
         }
-        
+
         // Check entropy - encrypted data should have high entropy
         let entropy = calculateDataEntropy(data)
         return entropy > 0.9 // High entropy indicates encryption
@@ -329,7 +329,7 @@ final class UserWorkflowTrackerTests: XCTestCase {
         guard let dataString = String(data: data, encoding: .utf8) else {
             return false // Can't decode as text, so no plaintext sensitive data
         }
-        
+
         // Check for common sensitive data patterns in plaintext
         let sensitivePatterns = [
             "SECRET-",
@@ -339,7 +339,7 @@ final class UserWorkflowTrackerTests: XCTestCase {
             "personalData",
             "Sensitive information"
         ]
-        
+
         let lowercaseData = dataString.lowercased()
         return sensitivePatterns.contains { pattern in
             lowercaseData.contains(pattern.lowercased())
@@ -350,25 +350,25 @@ final class UserWorkflowTrackerTests: XCTestCase {
         guard let dataString = String(data: data, encoding: .utf8) else {
             return false
         }
-        
+
         // Check if the data contains the target user ID
         return dataString.contains(targetUserId)
     }
 
     private func calculateDataEntropy(_ data: Data) -> Float {
         guard !data.isEmpty else { return 0.0 }
-        
+
         // Calculate Shannon entropy
         var frequency: [UInt8: Int] = [:]
-        
+
         // Count frequency of each byte
         for byte in data {
             frequency[byte, default: 0] += 1
         }
-        
+
         let length = Float(data.count)
         var entropy: Float = 0.0
-        
+
         // Calculate entropy using Shannon's formula
         for count in frequency.values {
             let probability = Float(count) / length
@@ -376,36 +376,36 @@ final class UserWorkflowTrackerTests: XCTestCase {
                 entropy -= probability * log2(probability)
             }
         }
-        
+
         // Normalize to 0-1 range (maximum entropy for 8-bit data is 8)
         return entropy / 8.0
     }
 
     private func createDiverseWorkflowSequences(count: Int) -> [WorkflowSequence] {
         var sequences: [WorkflowSequence] = []
-        
+
         let documentTypes = ["Contract", "Invoice", "Report", "Proposal", "Amendment"]
         let patterns = ["Linear", "Branching", "Cyclical", "Hierarchical", "Random"]
-        
+
         for i in 0..<count {
             let documentType = documentTypes[i % documentTypes.count]
             let pattern = patterns[i % patterns.count]
-            
+
             let steps = createWorkflowStepsForSequence(
                 sequenceIndex: i,
                 documentType: documentType,
                 stepCount: 3 + (i % 5) // 3-7 steps per sequence
             )
-            
+
             let sequence = WorkflowSequence(
                 sequenceId: "seq-\(i)",
                 steps: steps,
                 expectedPattern: pattern
             )
-            
+
             sequences.append(sequence)
         }
-        
+
         return sequences
     }
 
@@ -413,7 +413,7 @@ final class UserWorkflowTrackerTests: XCTestCase {
         var steps: [WorkflowStep] = []
         let actionTypes = ["form_fill", "submit", "review", "approve", "edit", "save"]
         let targets = ["contract_form", "invoice_form", "report_form", "submission_portal"]
-        
+
         for i in 0..<count {
             let step = WorkflowStep(
                 stepId: "rt-step-\(i)",
@@ -434,13 +434,13 @@ final class UserWorkflowTrackerTests: XCTestCase {
             )
             steps.append(step)
         }
-        
+
         return steps
     }
-    
+
     private func createWorkflowStepsForSequence(sequenceIndex: Int, documentType: String, stepCount: Int) -> [WorkflowStep] {
         var steps: [WorkflowStep] = []
-        
+
         for stepIndex in 0..<stepCount {
             let step = WorkflowStep(
                 stepId: "seq\(sequenceIndex)-step\(stepIndex)",
@@ -462,7 +462,7 @@ final class UserWorkflowTrackerTests: XCTestCase {
             )
             steps.append(step)
         }
-        
+
         return steps
     }
 }

@@ -7,11 +7,11 @@ import SwiftUI
 public struct LLMProviderSettingsView<ViewModel: LLMProviderSettingsViewModelProtocol>: View {
     @ObservedObject private var viewModel: ViewModel
     @Environment(\.dismiss) private var dismiss
-    
+
     public init(viewModel: ViewModel) {
         self.viewModel = viewModel
     }
-    
+
     public var body: some View {
         NavigationStack {
             List {
@@ -51,9 +51,9 @@ public struct LLMProviderSettingsView<ViewModel: LLMProviderSettingsViewModelPro
             }
         }
     }
-    
+
     // MARK: - View Sections
-    
+
     private var activeProviderSection: some View {
         Section("Active Provider") {
             if let activeProvider = viewModel.activeProvider {
@@ -81,7 +81,7 @@ public struct LLMProviderSettingsView<ViewModel: LLMProviderSettingsViewModelPro
             }
         }
     }
-    
+
     private var availableProvidersSection: some View {
         Section(
             header: Text("Available Providers"),
@@ -98,7 +98,7 @@ public struct LLMProviderSettingsView<ViewModel: LLMProviderSettingsViewModelPro
             }
         }
     }
-    
+
     private var providerPrioritySection: some View {
         Section("Provider Settings") {
             NavigationLink(destination: ProviderPrioritySheet(viewModel: viewModel)) {
@@ -112,7 +112,7 @@ public struct LLMProviderSettingsView<ViewModel: LLMProviderSettingsViewModelPro
             }
         }
     }
-    
+
     private var securitySection: some View {
         Section(
             header: Text("Security"),
@@ -130,9 +130,9 @@ public struct LLMProviderSettingsView<ViewModel: LLMProviderSettingsViewModelPro
             }
         }
     }
-    
+
     // MARK: - Alert Actions
-    
+
     @ViewBuilder
     private func alertActions(for alert: ViewModel.AlertType) -> some View {
         // Implementation will be completed in GREEN phase
@@ -196,14 +196,14 @@ struct ProviderConfigurationSheet<ViewModel: LLMProviderSettingsViewModelProtoco
     @ObservedObject private var viewModel: ViewModel
     let provider: LLMProvider
     @Environment(\.dismiss) private var dismiss
-    
+
     @State private var showAPIKey: Bool = false
-    
+
     init(viewModel: ViewModel, provider: LLMProvider) {
         self.viewModel = viewModel
         self.provider = provider
     }
-    
+
     var body: some View {
         NavigationStack {
             Form {
@@ -224,7 +224,7 @@ struct ProviderConfigurationSheet<ViewModel: LLMProviderSettingsViewModelProtoco
             }
         }
     }
-    
+
     private var providerInfoSection: some View {
         Section {
             HStack {
@@ -244,7 +244,7 @@ struct ProviderConfigurationSheet<ViewModel: LLMProviderSettingsViewModelProtoco
             .padding(.vertical, 8)
         }
     }
-    
+
     private var apiKeySection: some View {
         Section(
             header: Text("API Key"),
@@ -282,7 +282,7 @@ struct ProviderConfigurationSheet<ViewModel: LLMProviderSettingsViewModelProtoco
             }
         }
     }
-    
+
     private var modelSelectionSection: some View {
         Section("Model Selection") {
             if let configState = viewModel.providerConfigState {
@@ -301,7 +301,7 @@ struct ProviderConfigurationSheet<ViewModel: LLMProviderSettingsViewModelProtoco
             }
         }
     }
-    
+
     private var advancedSettingsSection: some View {
         Section("Advanced Settings") {
             if let configState = viewModel.providerConfigState {
@@ -329,7 +329,7 @@ struct ProviderConfigurationSheet<ViewModel: LLMProviderSettingsViewModelProtoco
             }
         }
     }
-    
+
     private var actionsSection: some View {
         Section {
             Button(action: {
@@ -343,7 +343,7 @@ struct ProviderConfigurationSheet<ViewModel: LLMProviderSettingsViewModelProtoco
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle())
                     } else {
-                        Text(viewModel.providerConfigState?.hasExistingKey == true ? 
+                        Text(viewModel.providerConfigState?.hasExistingKey == true ?
                              "Update Configuration" : "Save Configuration")
                     }
                     Spacer()
@@ -367,7 +367,7 @@ struct ProviderConfigurationSheet<ViewModel: LLMProviderSettingsViewModelProtoco
             }
         }
     }
-    
+
     private func getAPIKeyHelperText() -> String {
         switch provider {
         case .claude:
@@ -386,11 +386,11 @@ struct ProviderConfigurationSheet<ViewModel: LLMProviderSettingsViewModelProtoco
 
 struct ProviderPrioritySheet<ViewModel: LLMProviderSettingsViewModelProtocol>: View {
     @ObservedObject private var viewModel: ViewModel
-    
+
     init(viewModel: ViewModel) {
         self.viewModel = viewModel
     }
-    
+
     var body: some View {
         Form {
             Section(
@@ -442,7 +442,7 @@ extension LLMProviderSettingsViewModel.AlertType {
             return "Success"
         }
     }
-    
+
     var message: String {
         switch self {
         case .clearConfirmation:
@@ -468,7 +468,7 @@ extension LLMProviderSettingsViewModel.ProviderPriority.FallbackBehavior {
             "Performance"
         }
     }
-    
+
     var description: String {
         switch self {
         case .sequential:

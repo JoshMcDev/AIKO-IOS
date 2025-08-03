@@ -64,7 +64,14 @@ public struct DocumentScannerView<ViewModel: DocumentScannerViewModelProtocol>: 
 
                         Button("Save Document") {
                             Task {
-                                await viewModel.saveDocument()
+                                // Export pages instead of saveDocument
+                                do {
+                                    _ = try await viewModel.exportPages()
+                                    isPresented = false
+                                } catch {
+                                    // Handle error if needed
+                                    print("Failed to export document: \(error)")
+                                }
                             }
                         }
                         .buttonStyle(.borderedProminent)
@@ -122,9 +129,10 @@ public struct VisionKitBridge<ViewModel: DocumentScannerViewModelProtocol>: UIVi
     }
 
     public func makeCoordinator() -> Coordinator {
-        return Coordinator(viewModel: viewModel, isPresented: isPresented)
+        return Coordinator(viewModel: viewModel, isPresented: $isPresented)
     }
 
+    @MainActor
     public class Coordinator: NSObject, VNDocumentCameraViewControllerDelegate {
         private let viewModel: ViewModel
         private let isPresented: Binding<Bool>
@@ -134,22 +142,32 @@ public struct VisionKitBridge<ViewModel: DocumentScannerViewModelProtocol>: UIVi
             self.isPresented = isPresented
         }
 
-        public func documentCameraViewController(
+        nonisolated public func documentCameraViewController(
             _: VNDocumentCameraViewController,
             didFinishWith scan: VNDocumentCameraScan
         ) {
+            // Extract all data from scan before entering @MainActor context
+            let pageCount = scan.pageCount
+            var scannedPages: [ScannedPage] = []
+
+            // Process all pages outside of @MainActor context
+            for pageIndex in 0 ..< pageCount {
+                let image = scan.imageOfPage(at: pageIndex)
+                let imageData = image.jpegData(compressionQuality: 0.8) ?? Data()
+
+                let scannedPage = ScannedPage(
+                    imageData: imageData,
+                    pageNumber: pageIndex + 1,
+                    processingState: .completed
+                )
+
+                scannedPages.append(scannedPage)
+            }
+
+            // Now send the extracted data to @MainActor
             Task { @MainActor in
-                // Process scanned pages
-                for pageIndex in 0 ..< scan.pageCount {
-                    let image = scan.imageOfPage(at: pageIndex)
-                    let imageData = image.jpegData(compressionQuality: 0.8) ?? Data()
-
-                    let scannedPage = ScannedPage(
-                        imageData: imageData,
-                        pageNumber: pageIndex + 1,
-                        processingState: .completed
-                    )
-
+                // Add all processed pages
+                for scannedPage in scannedPages {
                     viewModel.addPage(scannedPage)
                 }
 
@@ -157,13 +175,15 @@ public struct VisionKitBridge<ViewModel: DocumentScannerViewModelProtocol>: UIVi
             }
         }
 
-        public func documentCameraViewControllerDidCancel(
+        nonisolated public func documentCameraViewControllerDidCancel(
             _: VNDocumentCameraViewController
         ) {
-            isPresented.wrappedValue = false
+            Task { @MainActor in
+                isPresented.wrappedValue = false
+            }
         }
 
-        public func documentCameraViewController(
+        nonisolated public func documentCameraViewController(
             _: VNDocumentCameraViewController,
             didFailWithError _: Error
         ) {

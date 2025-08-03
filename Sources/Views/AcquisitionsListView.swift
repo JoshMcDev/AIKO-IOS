@@ -9,20 +9,20 @@ import AppKit
 /// Displays federal acquisitions with status tracking and workflow management
 public struct AcquisitionsListView: View {
     @State private var viewModel = AcquisitionsListViewModel()
-    
+
     public init() {}
-    
+
     public var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
                 // Search Bar
                 searchSection
-                
+
                 // Filters Section
                 if viewModel.hasFiltersApplied {
                     filtersSection
                 }
-                
+
                 // Content
                 contentView
             }
@@ -45,9 +45,9 @@ public struct AcquisitionsListView: View {
             }
         }
     }
-    
+
     // MARK: - View Components
-    
+
     private var searchSection: some View {
         VStack(spacing: 12) {
             // Search Field
@@ -59,7 +59,7 @@ public struct AcquisitionsListView: View {
                     .onChange(of: viewModel.searchText) { _, newValue in
                         viewModel.updateSearchText(newValue)
                     }
-                
+
                 if !viewModel.searchText.isEmpty {
                     Button("Clear") {
                         viewModel.updateSearchText("")
@@ -67,7 +67,7 @@ public struct AcquisitionsListView: View {
                     .foregroundColor(.blue)
                 }
             }
-            
+
             // Filter and Sort Controls
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
@@ -75,18 +75,18 @@ public struct AcquisitionsListView: View {
                     ForEach(AcquisitionStatus.allCases, id: \.self) { status in
                         filterChip(for: status)
                     }
-                    
+
                     Divider()
                         .frame(height: 20)
-                    
+
                     // Phase Filters
                     ForEach(AcquisitionStatus.Phase.allCases, id: \.self) { phase in
                         phaseChip(for: phase)
                     }
-                    
+
                     Divider()
                         .frame(height: 20)
-                    
+
                     // Sort Options
                     sortMenu
                 }
@@ -96,15 +96,15 @@ public struct AcquisitionsListView: View {
         .padding()
         .background(PlatformColors.searchSectionBackground)
     }
-    
+
     private var filtersSection: some View {
         HStack {
             Text("Filters Applied")
                 .font(.caption)
                 .foregroundColor(.secondary)
-            
+
             Spacer()
-            
+
             Button("Clear All") {
                 viewModel.clearAllFilters()
             }
@@ -115,7 +115,7 @@ public struct AcquisitionsListView: View {
         .padding(.vertical, 8)
         .background(PlatformColors.filtersSectionBackground)
     }
-    
+
     @ViewBuilder
     private var contentView: some View {
         if viewModel.isLoading {
@@ -126,15 +126,15 @@ public struct AcquisitionsListView: View {
                 Image(systemName: "exclamationmark.triangle")
                     .font(.largeTitle)
                     .foregroundColor(.orange)
-                
+
                 Text("Error Loading Acquisitions")
                     .font(.headline)
-                
+
                 Text(errorMessage)
                     .font(.body)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
-                
+
                 Button("Retry") {
                     Task {
                         await viewModel.loadAcquisitions()
@@ -150,21 +150,21 @@ public struct AcquisitionsListView: View {
             acquisitionsListView
         }
     }
-    
+
     private var emptyStateView: some View {
         VStack(spacing: 16) {
             Image(systemName: "doc.text.magnifyingglass")
                 .font(.system(size: 48))
                 .foregroundColor(.secondary)
-            
+
             Text("No Acquisitions Found")
                 .font(.headline)
-            
+
             if viewModel.hasFiltersApplied {
                 Text("Try adjusting your search or filters")
                     .font(.body)
                     .foregroundColor(.secondary)
-                
+
                 Button("Clear Filters") {
                     viewModel.clearAllFilters()
                 }
@@ -173,7 +173,7 @@ public struct AcquisitionsListView: View {
                 Text("Create your first acquisition to get started")
                     .font(.body)
                     .foregroundColor(.secondary)
-                
+
                 Button("Create Acquisition") {
                     viewModel.createNewAcquisition()
                 }
@@ -183,7 +183,7 @@ public struct AcquisitionsListView: View {
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-    
+
     private var acquisitionsListView: some View {
         List(viewModel.filteredAcquisitions) { acquisition in
             AcquisitionRowView(acquisition: acquisition) {
@@ -192,7 +192,7 @@ public struct AcquisitionsListView: View {
         }
         .listStyle(.plain)
     }
-    
+
     private var toolbarContent: some View {
         HStack {
             // Active count badge
@@ -205,18 +205,18 @@ public struct AcquisitionsListView: View {
                     .foregroundColor(.white)
                     .clipShape(Capsule())
             }
-            
+
             Button("New", systemImage: "plus") {
                 viewModel.createNewAcquisition()
             }
         }
     }
-    
+
     // MARK: - Filter Components
-    
+
     private func filterChip(for status: AcquisitionStatus) -> some View {
         let isSelected = viewModel.selectedFilters.statuses.contains(status)
-        
+
         return Button {
             viewModel.toggleStatusFilter(status)
         } label: {
@@ -233,10 +233,10 @@ public struct AcquisitionsListView: View {
             .clipShape(Capsule())
         }
     }
-    
+
     private func phaseChip(for phase: AcquisitionStatus.Phase) -> some View {
         let isSelected = viewModel.selectedFilters.phase == phase
-        
+
         return Button {
             viewModel.filterByPhase(phase)
         } label: {
@@ -253,7 +253,7 @@ public struct AcquisitionsListView: View {
             .clipShape(Capsule())
         }
     }
-    
+
     private var sortMenu: some View {
         Menu {
             ForEach(Array(AcquisitionSort.Field.allCases), id: \.self) { field in
@@ -283,9 +283,9 @@ public struct AcquisitionsListView: View {
             .clipShape(Capsule())
         }
     }
-    
+
     // MARK: - Platform-Specific Colors
-    
+
     private enum PlatformColors {
         static var sortMenuBackground: Color {
             #if os(iOS)
@@ -294,7 +294,7 @@ public struct AcquisitionsListView: View {
             Color(NSColor.controlBackgroundColor)
             #endif
         }
-        
+
         static var searchSectionBackground: Color {
             #if os(iOS)
             Color(.systemGroupedBackground)
@@ -302,7 +302,7 @@ public struct AcquisitionsListView: View {
             Color(NSColor.controlBackgroundColor)
             #endif
         }
-        
+
         static var filtersSectionBackground: Color {
             #if os(iOS)
             Color(.systemGray6)
@@ -310,7 +310,7 @@ public struct AcquisitionsListView: View {
             Color(NSColor.separatorColor)
             #endif
         }
-        
+
         static var filterChipBackground: Color {
             #if os(iOS)
             Color(.systemGray5)
@@ -319,9 +319,9 @@ public struct AcquisitionsListView: View {
             #endif
         }
     }
-    
+
     // MARK: - Platform-Specific Toolbar Placement
-    
+
     private var toolbarPlacement: ToolbarItemPlacement {
         #if os(iOS)
         return .navigationBarTrailing
@@ -337,7 +337,7 @@ public struct AcquisitionsListView: View {
 private struct AcquisitionRowView: View {
     let acquisition: AppCore.Acquisition
     let onTap: () -> Void
-    
+
     private var rowBackgroundColor: Color {
         #if os(iOS)
         return Color(.systemBackground)
@@ -345,7 +345,7 @@ private struct AcquisitionRowView: View {
         return Color(NSColor.controlBackgroundColor)
         #endif
     }
-    
+
     var body: some View {
         Button(action: onTap) {
             VStack(alignment: .leading, spacing: 8) {
@@ -356,16 +356,16 @@ private struct AcquisitionRowView: View {
                             .font(.headline)
                             .foregroundColor(.primary)
                             .lineLimit(1)
-                        
+
                         if let projectNumber = acquisition.projectNumber {
                             Text(projectNumber)
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
                     }
-                    
+
                     Spacer()
-                    
+
                     // Status Badge
                     HStack(spacing: 4) {
                         Image(systemName: acquisition.status.icon)
@@ -380,13 +380,13 @@ private struct AcquisitionRowView: View {
                     .foregroundColor(.white)
                     .clipShape(Capsule())
                 }
-                
+
                 // Requirements Preview
                 Text(acquisition.requirements)
                     .font(.body)
                     .foregroundColor(.secondary)
                     .lineLimit(2)
-                
+
                 // Footer Row
                 HStack {
                     HStack(spacing: 4) {
@@ -396,9 +396,9 @@ private struct AcquisitionRowView: View {
                             .font(.caption)
                     }
                     .foregroundColor(.secondary)
-                    
+
                     Spacer()
-                    
+
                     if !acquisition.uploadedFiles.isEmpty || !acquisition.generatedFiles.isEmpty {
                         HStack(spacing: 4) {
                             Image(systemName: "paperclip")
@@ -423,7 +423,7 @@ private struct AcquisitionRowView: View {
 
 private struct AcquisitionDetailView: View {
     let acquisition: AppCore.Acquisition
-    
+
     var body: some View {
         NavigationStack {
             VStack {

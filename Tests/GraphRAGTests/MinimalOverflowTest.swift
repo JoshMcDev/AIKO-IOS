@@ -3,7 +3,7 @@ import XCTest
 
 /// Minimal test to isolate the integer overflow issue
 final class MinimalOverflowTest: XCTestCase {
-    
+
     func testBasicStringHash() throws {
         // Test the djb2hash function directly
         let testString = "hello world"
@@ -11,7 +11,7 @@ final class MinimalOverflowTest: XCTestCase {
         print("Hash value: \(hash)")
         XCTAssertGreaterThan(hash, 0)
     }
-    
+
     func testTokenGeneration() throws {
         // Test token ID generation
         let service = LFM2Service.shared
@@ -19,7 +19,7 @@ final class MinimalOverflowTest: XCTestCase {
         print("Token IDs: \(tokenIds)")
         XCTAssertFalse(tokenIds.isEmpty)
     }
-    
+
     func testSimpleEmbedding() async throws {
         // Test the simplest possible embedding generation
         let service = LFM2Service.shared

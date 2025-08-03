@@ -695,7 +695,6 @@ struct SAMGovLookupSheet: View {
     }
 }
 
-
 struct UserGuideSheet: View {
     @Environment(\.dismiss) private var dismiss
 

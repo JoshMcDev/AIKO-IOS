@@ -11,7 +11,7 @@
     // Note: Use explicit CoreGraphics.CGRect/CGSize where needed to resolve ambiguity
 
     // MARK: - Supporting Types
-    
+
     /// Processing errors specific to iOS implementation
     private enum ProcessingError: LocalizedError {
         case invalidImageData
@@ -19,7 +19,7 @@
         case ocrNotAvailable
         case textDetectionFailed
         case ocrFailed(String)
-        
+
         var errorDescription: String? {
             switch self {
             case .invalidImageData:
@@ -35,7 +35,7 @@
             }
         }
     }
-    
+
     /// Processing steps for progress tracking
     private enum ProcessingStep: String, CaseIterable, Sendable {
         case preprocessing = "Preprocessing"
@@ -51,8 +51,23 @@
         case languageDetection = "Language Detection"
         case postprocessing = "Post-processing"
         case structureAnalysis = "Structure Analysis"
+
+        // Convert to AppCore.ProcessingStep
+        var toAppCoreStep: AppCore.ProcessingStep {
+            switch self {
+            case .preprocessing: return .preprocessing
+            case .edgeDetection: return .edgeDetection
+            case .perspectiveCorrection: return .perspectiveCorrection
+            case .enhancement: return .enhancement
+            case .denoising: return .denoising
+            case .sharpening: return .sharpening
+            case .optimization: return .optimization
+            case .qualityAnalysis: return .qualityAnalysis
+            default: return .preprocessing // Default fallback for OCR-specific steps
+            }
+        }
     }
-    
+
     /// Progress information for processing operations
     private struct ProcessingProgress: Sendable {
         let currentStep: ProcessingStep
@@ -60,7 +75,7 @@
         let overallProgress: Double
         let estimatedTimeRemaining: TimeInterval?
     }
-    
+
     /// Progress information for OCR operations
     private struct OCRProgress: Sendable {
         let currentStep: ProcessingStep
@@ -68,7 +83,7 @@
         let overallProgress: Double
         let estimatedTimeRemaining: TimeInterval
         let recognizedTextCount: Int?
-        
+
         init(
             currentStep: ProcessingStep,
             stepProgress: Double,
@@ -83,24 +98,24 @@
             self.recognizedTextCount = recognizedTextCount
         }
     }
-    
+
     /// Simple document processing pipeline for iOS
-    private final class DocumentProcessingPipeline: Sendable {
+    private final class SimpleDocumentProcessor: Sendable {
         struct ProcessingResult: Sendable {
             let processedImage: CIImage
             let qualityMetrics: DocumentImageProcessor.QualityMetrics
         }
-        
+
         func processDocument(_ image: CIImage, options: DocumentImageProcessor.ProcessingOptions) async throws -> ProcessingResult {
             // Simplified document processing - in a real implementation this would include
             // sophisticated edge detection and perspective correction
             var processedImage = image
-            
+
             // Basic edge enhancement
             let edgeFilter = CIFilter.edges()
             edgeFilter.inputImage = processedImage
             edgeFilter.intensity = 2.0
-            
+
             if let edgeOutput = edgeFilter.outputImage {
                 // Blend with original for subtle enhancement
                 let blendFilter = CIFilter.sourceOverCompositing()
@@ -110,7 +125,7 @@
                     processedImage = blended
                 }
             }
-            
+
             // Create mock quality metrics
             let qualityMetrics = DocumentImageProcessor.QualityMetrics(
                 overallConfidence: 0.85,
@@ -120,7 +135,7 @@
                 textClarity: 0.85,
                 recommendedForOCR: true
             )
-            
+
             return ProcessingResult(
                 processedImage: processedImage,
                 qualityMetrics: qualityMetrics
@@ -131,23 +146,22 @@
     // MARK: - iOS Document Image Processor Implementation
 
     /// iOS-specific implementation of DocumentImageProcessor
-    public final class iOSDocumentImageProcessor: DocumentImageProcessor {
+    public final class IOSDocumentImageProcessor: Sendable {
         private let context: CIContext
-        private let documentProcessingPipeline: DocumentProcessingPipeline
-        
-        public override init() {
+        private let documentProcessingPipeline: SimpleDocumentProcessor
+
+        public init() {
             // Create optimized CIContext for metal rendering if available
             if let metalDevice = MTLCreateSystemDefaultDevice() {
                 context = CIContext(mtlDevice: metalDevice)
             } else {
                 context = CIContext()
             }
-            
-            documentProcessingPipeline = DocumentProcessingPipeline()
-            super.init()
+
+            documentProcessingPipeline = SimpleDocumentProcessor()
         }
-        
-        public static let shared = iOSDocumentImageProcessor()
+
+        public static let shared = IOSDocumentImageProcessor()
     }
 
     // MARK: - Progress Tracker
@@ -179,8 +193,8 @@
                 let overallProgress = (Double(currentIndex) + stepProgress) / Double(totalSteps)
                 let remainingTime = estimateRemainingTime(progress: overallProgress)
 
-                options.progressCallback?(ProcessingProgress(
-                    currentStep: step,
+                options.progressCallback?(AppCore.ProcessingProgress(
+                    currentStep: step.toAppCoreStep,
                     stepProgress: stepProgress,
                     overallProgress: overallProgress,
                     estimatedTimeRemaining: remainingTime
@@ -201,7 +215,7 @@
 
     private final class LiveDocumentImageProcessor: Sendable {
         private let context: CIContext
-        private let documentProcessingPipeline: DocumentProcessingPipeline
+        private let documentProcessingPipeline: SimpleDocumentProcessor
 
         init() {
             // Create optimized CIContext for metal rendering if available
@@ -210,7 +224,7 @@
             } else {
                 context = CIContext()
             }
-            documentProcessingPipeline = DocumentProcessingPipeline()
+            documentProcessingPipeline = SimpleDocumentProcessor()
         }
 
         func processImage(
@@ -759,7 +773,7 @@
             let imageSize = AppCore.CGSize(width: Double(cgImageSize.width), height: Double(cgImageSize.height))
 
             // Update progress: Starting OCR preprocessing
-            options.progressCallback?(OCRProgress(
+            options.progressCallback?(AppCore.OCRProgress(
                 currentStep: .preprocessing,
                 stepProgress: 0.0,
                 overallProgress: 0.0,
@@ -783,7 +797,7 @@
             }
 
             // Update progress: Starting text detection
-            options.progressCallback?(OCRProgress(
+            options.progressCallback?(AppCore.OCRProgress(
                 currentStep: .textDetection,
                 stepProgress: 0.0,
                 overallProgress: 0.2,
@@ -803,7 +817,7 @@
                     }
 
                     // Update progress: Processing recognition results
-                    options.progressCallback?(OCRProgress(
+                    options.progressCallback?(AppCore.OCRProgress(
                         currentStep: .textRecognition,
                         stepProgress: 0.5,
                         overallProgress: 0.7,
@@ -815,7 +829,7 @@
                     let extractedTextElements = processVisionResults(results, imageSize: cgImageSize)
 
                     // Update progress: Language detection
-                    options.progressCallback?(OCRProgress(
+                    options.progressCallback?(AppCore.OCRProgress(
                         currentStep: .languageDetection,
                         stepProgress: 0.0,
                         overallProgress: 0.8,
@@ -826,7 +840,7 @@
                     let detectedLanguages = detectLanguages(from: extractedTextElements)
 
                     // Update progress: Post-processing
-                    options.progressCallback?(OCRProgress(
+                    options.progressCallback?(AppCore.OCRProgress(
                         currentStep: .postprocessing,
                         stepProgress: 0.0,
                         overallProgress: 0.9,
@@ -843,7 +857,7 @@
                     let processingTime = CFAbsoluteTimeGetCurrent() - startTime
 
                     // Final progress update
-                    options.progressCallback?(OCRProgress(
+                    options.progressCallback?(AppCore.OCRProgress(
                         currentStep: .postprocessing,
                         stepProgress: 1.0,
                         overallProgress: 1.0,
@@ -877,7 +891,7 @@
             let ocrResult = try await extractText(imageData, options: options)
 
             // Update progress: Structure analysis
-            options.progressCallback?(OCRProgress(
+            options.progressCallback?(AppCore.OCRProgress(
                 currentStep: .structureAnalysis,
                 stepProgress: 0.0,
                 overallProgress: 0.9,

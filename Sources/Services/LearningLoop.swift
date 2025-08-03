@@ -34,13 +34,18 @@ public struct LearningEvent: Equatable, Codable, Sendable {
     public let eventType: EventType
     public let context: EventContext
     public let outcome: EventOutcome?
+    public let type: EventType // Alias for eventType to match test expectations
+    public let metadata: [String: String] // Additional metadata for compliance tests
 
     public init(eventType: EventType, context: EventContext, outcome: EventOutcome? = nil) {
         id = UUID()
         timestamp = Date()
         self.eventType = eventType
+        self.type = eventType // Set alias
         self.context = context
         self.outcome = outcome
+        // RED phase: Return empty metadata to cause test failures
+        self.metadata = [:]
     }
 
     public enum EventType: String, Codable, Sendable {
@@ -63,6 +68,7 @@ public struct LearningEvent: Equatable, Codable, Sendable {
         case userFeedback
         case errorOccurred
         case successAchieved
+        case complianceWarningDismissed
     }
 
     public struct EventContext: Equatable, Codable, Sendable {
@@ -403,6 +409,28 @@ private struct AdaptiveEngine {
 
     private func preventError(_: Learning) async {
         // Add error prevention measures
+    }
+}
+
+// MARK: - LearningFeedbackLoop Extensions for Compliance
+
+extension LearningLoop {
+    /// Shared instance for compliance integration
+    public static let shared = LearningLoop.liveValue
+
+    /// Get the last recorded event
+    public func getLastEvent() async throws -> LearningEvent {
+        // RED phase: Return event with wrong type to cause test failures
+        return LearningEvent(
+            eventType: .requirementEntered, // Should be .complianceWarningDismissed
+            context: LearningEvent.EventContext(
+                workflowState: "",
+                acquisitionId: nil,
+                documentType: nil,
+                userData: [:],
+                systemData: [:]
+            )
+        )
     }
 }
 

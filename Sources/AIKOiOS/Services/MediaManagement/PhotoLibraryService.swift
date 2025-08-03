@@ -132,7 +132,7 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
         sortOrder: PhotoSortOrder
     ) async throws -> [PhotoAsset] {
         let fetchOptions = PHFetchOptions()
-        
+
         // Configure media types filter
         var mediaTypeFilters: [PHAssetMediaType] = []
         for mediaType in mediaTypes {
@@ -152,7 +152,7 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
             }
         }
         fetchOptions.predicate = NSPredicate(format: "mediaType IN %@", mediaTypeFilters.map { $0.rawValue })
-        
+
         // Configure sort order
         switch sortOrder {
         case .newest:
@@ -164,14 +164,14 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
         case .size:
             fetchOptions.sortDescriptors = [NSSortDescriptor(key: "pixelWidth", ascending: false)]
         }
-        
+
         // Set fetch limit
         if let limit = limit {
             fetchOptions.fetchLimit = limit
         }
-        
+
         let fetchResult = PHAsset.fetchAssets(with: fetchOptions)
-        
+
         var photoAssets: [PhotoAsset] = []
         fetchResult.enumerateObjects { asset, _, _ in
             let photoAsset = PhotoAsset(
@@ -187,27 +187,27 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
             )
             photoAssets.append(photoAsset)
         }
-        
+
         // Note: Random sorting is not implemented in current PhotoSortOrder enum
         // photoAssets are already sorted by the fetch options
-        
+
         return photoAssets
     }
 
     public func fetchAlbums(types: Set<AlbumType>) async throws -> [PhotoAlbum] {
         var allAlbums: [PhotoAlbum] = []
-        
+
         for albumType in types {
             let albums = try await fetchAlbumsOfType(albumType)
             allAlbums.append(contentsOf: albums)
         }
-        
+
         return allAlbums
     }
-    
+
     private func fetchAlbumsOfType(_ albumType: AlbumType) async throws -> [PhotoAlbum] {
         var albums: [PhotoAlbum] = []
-        
+
         switch albumType {
         case .smartAlbum:
             let smartAlbums = PHAssetCollection.fetchAssetCollections(
@@ -215,7 +215,7 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
                 subtype: .any,
                 options: nil
             )
-            
+
             smartAlbums.enumerateObjects { collection, _, _ in
                 let assetCount = PHAsset.fetchAssets(in: collection, options: nil).count
                 let album = PhotoAlbum(
@@ -227,14 +227,14 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
                 )
                 albums.append(album)
             }
-            
+
         case .userCreated:
             let userAlbums = PHAssetCollection.fetchAssetCollections(
                 with: .album,
                 subtype: .any,
                 options: nil
             )
-            
+
             userAlbums.enumerateObjects { collection, _, _ in
                 let assetCount = PHAsset.fetchAssets(in: collection, options: nil).count
                 let album = PhotoAlbum(
@@ -246,14 +246,14 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
                 )
                 albums.append(album)
             }
-            
+
         case .cloudSharedAlbum:
             let sharedAlbums = PHAssetCollection.fetchAssetCollections(
                 with: .album,
                 subtype: .albumCloudShared,
                 options: nil
             )
-            
+
             sharedAlbums.enumerateObjects { collection, _, _ in
                 let assetCount = PHAsset.fetchAssets(in: collection, options: nil).count
                 let album = PhotoAlbum(
@@ -265,14 +265,14 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
                 )
                 albums.append(album)
             }
-            
+
         case .syncedAlbum:
             let syncedAlbums = PHAssetCollection.fetchAssetCollections(
                 with: .album,
                 subtype: .albumSyncedAlbum,
                 options: nil
             )
-            
+
             syncedAlbums.enumerateObjects { collection, _, _ in
                 let assetCount = PHAsset.fetchAssets(in: collection, options: nil).count
                 let album = PhotoAlbum(
@@ -285,7 +285,7 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
                 albums.append(album)
             }
         }
-        
+
         return albums
     }
 
@@ -296,12 +296,12 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
         ).firstObject else {
             throw MediaError.fileNotFound("Album not found with identifier: \(album.localIdentifier)")
         }
-        
+
         let fetchOptions = PHFetchOptions()
         fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-        
+
         let assets = PHAsset.fetchAssets(in: assetCollection, options: fetchOptions)
-        
+
         var photoAssets: [PhotoAsset] = []
         assets.enumerateObjects { asset, _, _ in
             let photoAsset = PhotoAsset(
@@ -317,7 +317,7 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
             )
             photoAssets.append(photoAsset)
         }
-        
+
         return photoAssets
     }
 
@@ -328,13 +328,13 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
         ).firstObject else {
             throw MediaError.fileNotFound("Asset not found with identifier: \(asset.localIdentifier)")
         }
-        
+
         return try await withCheckedThrowingContinuation { continuation in
             let requestOptions = PHImageRequestOptions()
             requestOptions.isSynchronous = false
             requestOptions.deliveryMode = .highQualityFormat
             requestOptions.isNetworkAccessAllowed = true
-            
+
             switch asset.mediaType {
             case .image:
                 PHImageManager.default().requestImageDataAndOrientation(
@@ -345,20 +345,20 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
                         continuation.resume(throwing: error)
                         return
                     }
-                    
+
                     guard let imageData = data else {
                         continuation.resume(throwing: MediaError.processingFailed("Failed to export image data"))
                         return
                     }
-                    
+
                     continuation.resume(returning: imageData)
                 }
-                
+
             case .video:
                 let videoOptions = PHVideoRequestOptions()
                 videoOptions.isNetworkAccessAllowed = true
                 videoOptions.deliveryMode = .highQualityFormat
-                
+
                 PHImageManager.default().requestAVAsset(
                     forVideo: phAsset,
                     options: videoOptions
@@ -367,12 +367,12 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
                         continuation.resume(throwing: error)
                         return
                     }
-                    
+
                     guard let urlAsset = avAsset as? AVURLAsset else {
                         continuation.resume(throwing: MediaError.processingFailed("Failed to get video URL"))
                         return
                     }
-                    
+
                     do {
                         let videoData = try Data(contentsOf: urlAsset.url)
                         continuation.resume(returning: videoData)
@@ -380,10 +380,10 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
                         continuation.resume(throwing: error)
                     }
                 }
-                
+
             case .audio:
                 continuation.resume(throwing: MediaError.unsupportedOperation("Audio export not supported"))
-                
+
             case .livePhoto:
                 // Live Photos are exported as images
                 PHImageManager.default().requestImageDataAndOrientation(
@@ -394,12 +394,12 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
                         continuation.resume(throwing: error)
                         return
                     }
-                    
+
                     guard let imageData = data else {
                         continuation.resume(throwing: MediaError.processingFailed("Failed to export Live Photo data"))
                         return
                     }
-                    
+
                     continuation.resume(returning: imageData)
                 }
             }
@@ -410,10 +410,10 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
         guard UIImage(data: imageData) != nil else {
             throw MediaError.corruptedData("Invalid image data provided")
         }
-        
+
         return try await withCheckedThrowingContinuation { continuation in
             var localIdentifier: String?
-            
+
             PHPhotoLibrary.shared().performChanges({
                 let request = PHAssetCreationRequest.forAsset()
                 request.addResource(with: .photo, data: imageData, options: nil)
@@ -423,12 +423,12 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
                     continuation.resume(throwing: error)
                     return
                 }
-                
+
                 guard success, let identifier = localIdentifier else {
                     continuation.resume(throwing: MediaError.processingFailed("Failed to save image to photo library"))
                     return
                 }
-                
+
                 continuation.resume(returning: identifier)
             }
         }
@@ -438,10 +438,10 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
         guard FileManager.default.fileExists(atPath: videoURL.path) else {
             throw MediaError.fileNotFound("Video file does not exist at path: \(videoURL.path)")
         }
-        
+
         return try await withCheckedThrowingContinuation { continuation in
             var localIdentifier: String?
-            
+
             PHPhotoLibrary.shared().performChanges({
                 let request = PHAssetCreationRequest.forAsset()
                 request.addResource(with: .video, fileURL: videoURL, options: nil)
@@ -451,12 +451,12 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
                     continuation.resume(throwing: error)
                     return
                 }
-                
+
                 guard success, let identifier = localIdentifier else {
                     continuation.resume(throwing: MediaError.processingFailed("Failed to save video to photo library"))
                     return
                 }
-                
+
                 continuation.resume(returning: identifier)
             }
         }
@@ -465,7 +465,7 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
     public func deleteAssets(_ assets: [PhotoAsset]) async throws {
         let identifiers = assets.map { $0.localIdentifier }
         let fetchResult = PHAsset.fetchAssets(withLocalIdentifiers: identifiers, options: nil)
-        
+
         return try await withCheckedThrowingContinuation { continuation in
             PHPhotoLibrary.shared().performChanges({
                 PHAssetChangeRequest.deleteAssets(fetchResult)
@@ -474,12 +474,12 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
                     continuation.resume(throwing: error)
                     return
                 }
-                
+
                 guard success else {
                     continuation.resume(throwing: MediaError.processingFailed("Failed to delete assets from photo library"))
                     return
                 }
-                
+
                 continuation.resume(returning: ())
             }
         }

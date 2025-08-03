@@ -136,7 +136,7 @@ public final class AcquisitionServiceImpl: BaseService, @unchecked Sendable {
             for: statusString,
             amount: Decimal(0) // Default amount since Acquisition doesn't have estimatedValue
         )
-        
+
         // Store required documents in acquisition metadata
         var metadata: [String: Any] = [:]
         metadata["requiredDocuments"] = requiredDocuments.map { $0.rawValue }
@@ -174,7 +174,7 @@ public final class AcquisitionServiceImpl: BaseService, @unchecked Sendable {
                 for: acquisition.status.rawValue,
                 amount: Decimal(0) // Default amount since Acquisition doesn't have estimatedValue
             )
-            
+
             // Get applicable regulations for this acquisition
             let regulations = try await regulationEngine.applicableRegulations(for: acquisition)
 

@@ -131,7 +131,7 @@ public extension AIDocumentGenerator {
     static func createPrompt(for documentType: DocumentType, requirements: String) -> String {
         return createPrompt(for: documentType, requirements: requirements, profile: nil)
     }
-    
+
     static func createPrompt(for documentType: DocumentType, requirements: String, profile: UserProfile?) -> String {
         // Build the requirements with user profile if available
         var fullRequirements = requirements
@@ -654,7 +654,7 @@ public extension AIDocumentGenerator {
     static func createDFPrompt(for dfDocumentType: DFDocumentType, requirements: String) -> String {
         return createDFPrompt(for: dfDocumentType, requirements: requirements, template: "", quickReference: "", profile: nil)
     }
-    
+
     static func createDFPrompt(
         for dfDocumentType: DFDocumentType,
         requirements: String,

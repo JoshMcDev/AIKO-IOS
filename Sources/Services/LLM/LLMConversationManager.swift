@@ -348,7 +348,7 @@ public struct LLMUserProfile: Codable, Equatable, Sendable {
     }
 }
 
-public struct OrganizationalContext: Codable, Equatable, Sendable {
+public struct OrganizationalContext: Codable, Equatable, Sendable, Hashable {
     public let fiscalYear: String
     public let department: String
     public let location: String
@@ -364,6 +364,13 @@ public struct OrganizationalContext: Codable, Equatable, Sendable {
         self.department = department
         self.location = location
         self.contractingOffice = contractingOffice
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(fiscalYear)
+        hasher.combine(department)
+        hasher.combine(location)
+        hasher.combine(contractingOffice)
     }
 }
 

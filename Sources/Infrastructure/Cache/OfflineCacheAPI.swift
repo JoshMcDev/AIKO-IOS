@@ -312,7 +312,7 @@ extension OfflineCacheManager {
             accessCount: 0,
             expiresAt: nil
         )
-        
+
         // Priority information stored in metadata (priority parameter currently unused)
 
         // Store with priority consideration

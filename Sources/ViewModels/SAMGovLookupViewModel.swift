@@ -217,6 +217,8 @@ public final class SAMGovLookupViewModel: @unchecked Sendable {
         switch samGovError {
         case .rateLimitExceeded:
             return "API rate limit exceeded. Please wait a moment before trying again."
+        case .rateLimited:
+            return "Request was rate limited. Please wait before trying again."
         case .invalidResponse:
             return "Invalid response format from SAM.gov API."
         case .invalidAPIKey:

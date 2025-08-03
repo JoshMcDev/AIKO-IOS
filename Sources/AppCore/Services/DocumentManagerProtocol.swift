@@ -6,9 +6,9 @@ import Combine
 /// Protocol defining document management operations across platforms
 /// Provides unified interface for document download, storage, and management
 public protocol DocumentManagerProtocol: Sendable {
-    
+
     // MARK: - Document Download Operations
-    
+
     /// Download multiple documents with progress tracking
     /// - Parameters:
     ///   - documents: Array of documents to download
@@ -19,7 +19,7 @@ public protocol DocumentManagerProtocol: Sendable {
         _ documents: [GeneratedDocument],
         progressHandler: @escaping @Sendable (Double) -> Void
     ) async throws -> [DocumentDownloadResult]
-    
+
     /// Download a single document
     /// - Parameters:
     ///   - document: Document to download
@@ -30,9 +30,9 @@ public protocol DocumentManagerProtocol: Sendable {
         _ document: GeneratedDocument,
         progressHandler: @escaping @Sendable (Double) -> Void
     ) async throws -> DocumentDownloadResult
-    
+
     // MARK: - Document Storage Operations
-    
+
     /// Save document data to platform-appropriate location
     /// - Parameters:
     ///   - data: Document data to save
@@ -45,29 +45,29 @@ public protocol DocumentManagerProtocol: Sendable {
         filename: String,
         documentType: DocumentType
     ) async throws -> URL
-    
+
     /// Get local storage URL for document type
     /// - Parameter documentType: Type of document
     /// - Returns: Directory URL for document storage
     func getStorageURL(for documentType: DocumentType) -> URL
-    
+
     // MARK: - Document Management Operations
-    
+
     /// Check if document exists locally
     /// - Parameter documentId: Unique document identifier
     /// - Returns: True if document exists locally
     func documentExists(documentId: UUID) -> Bool
-    
+
     /// Get local file URL for document
     /// - Parameter documentId: Unique document identifier
     /// - Returns: Local file URL if document exists
     func getLocalDocumentURL(documentId: UUID) -> URL?
-    
+
     /// Delete local document
     /// - Parameter documentId: Unique document identifier
     /// - Throws: DocumentManagerError if deletion fails
     func deleteLocalDocument(documentId: UUID) async throws
-    
+
     /// Get available storage space
     /// - Returns: Available bytes for document storage
     func getAvailableStorageSpace() -> Int64
@@ -84,7 +84,7 @@ public struct DocumentDownloadResult: Sendable {
     public let downloadDate: Date
     public let success: Bool
     public let error: DocumentManagerError?
-    
+
     public init(
         documentId: UUID,
         localURL: URL,
@@ -116,7 +116,7 @@ public enum DocumentManagerError: Error, LocalizedError, Sendable {
     case documentNotFound(UUID)
     case unsupportedDocumentType(String)
     case corruptedData
-    
+
     public var errorDescription: String? {
         switch self {
         case let .networkError(message):
@@ -141,7 +141,7 @@ public enum DocumentManagerError: Error, LocalizedError, Sendable {
             return "Document data is corrupted and cannot be processed."
         }
     }
-    
+
     public var recoverySuggestion: String? {
         switch self {
         case .networkError:
@@ -170,7 +170,7 @@ public struct DocumentOperationProgress: Sendable {
     public let totalBytes: Int64
     public let progress: Double
     public let estimatedTimeRemaining: TimeInterval?
-    
+
     public init(
         documentId: UUID,
         fileName: String,

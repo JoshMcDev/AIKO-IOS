@@ -24,7 +24,7 @@ public struct CustomTemplateDetailView: View {
     public var body: some View {
         SwiftUI.NavigationView {
             VStack(spacing: 0) {
-                // Template Info Header  
+                // Template Info Header
                 VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                     HStack {
                         Image(systemName: "doc.badge.plus")

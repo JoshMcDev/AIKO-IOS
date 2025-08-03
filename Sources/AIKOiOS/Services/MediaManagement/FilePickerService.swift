@@ -10,16 +10,16 @@ import UniformTypeIdentifiers
 @MainActor
 final class DocumentPickerCoordinator: NSObject, UIDocumentPickerDelegate {
     private let completion: ([URL], Error?) -> Void
-    
+
     init(completion: @escaping ([URL], Error?) -> Void) {
         self.completion = completion
         super.init()
     }
-    
+
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         completion(urls, nil)
     }
-    
+
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
         completion([], nil)
     }
@@ -62,19 +62,19 @@ public actor FilePickerService: FilePickerServiceProtocol {
 
     public func presentFilePicker(options: FilePickerOptions) async throws -> FilePickerResult {
         let utTypes = options.allowedTypes.isEmpty ? [UniformTypeIdentifiers.UTType.data] : options.allowedTypes.map { convertToIOSUTType($0) }
-        
+
         return try await withCheckedThrowingContinuation { continuation in
             Task { @MainActor in
                 let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: utTypes)
                 documentPicker.allowsMultipleSelection = options.allowsMultipleSelection
                 documentPicker.shouldShowFileExtensions = true
-                
+
                 let coordinator = DocumentPickerCoordinator { urls, error in
                     if let error = error {
                         continuation.resume(throwing: error)
                         return
                     }
-                    
+
                     // Filter by file size if specified
                     var validUrls = urls
                     if let maxSize = options.maxFileSize {
@@ -87,12 +87,12 @@ public actor FilePickerService: FilePickerServiceProtocol {
                             }
                         }
                     }
-                    
+
                     // Update recently picked files
                     Task {
                         await self.updateRecentlyPicked(urls: validUrls)
                     }
-                    
+
                     // Convert URLs to SelectedFiles for FilePickerResult
                     let selectedFiles = validUrls.compactMap { url -> SelectedFile? in
                         do {
@@ -110,16 +110,16 @@ public actor FilePickerService: FilePickerServiceProtocol {
                             return nil
                         }
                     }
-                    
+
                     let result = FilePickerResult(
                         selectedFiles: selectedFiles,
                         cancelled: selectedFiles.isEmpty && !urls.isEmpty
                     )
                     continuation.resume(returning: result)
                 }
-                
+
                 documentPicker.delegate = coordinator
-                
+
                 guard let presentingViewController = UIApplication.shared.connectedScenes
                     .compactMap({ $0 as? UIWindowScene })
                     .first?.windows
@@ -127,7 +127,7 @@ public actor FilePickerService: FilePickerServiceProtocol {
                     continuation.resume(throwing: MediaError.processingFailed("No presenting view controller found"))
                     return
                 }
-                
+
                 presentingViewController.present(documentPicker, animated: true)
             }
         }
@@ -189,13 +189,13 @@ public actor FilePickerService: FilePickerServiceProtocol {
                 return AppCore.UTType.image
             }
         }
-        
+
         let options = FilePickerOptions(
             allowedTypes: utTypes,
             allowsMultipleSelection: allowsMultiple,
             maxFileSize: maxFileSize
         )
-        
+
         let result = try await presentFilePicker(options: options)
         return result.selectedFiles.map { $0.url }
     }
@@ -206,23 +206,23 @@ public actor FilePickerService: FilePickerServiceProtocol {
                 let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.folder])
                 documentPicker.allowsMultipleSelection = false
                 documentPicker.shouldShowFileExtensions = true
-                
+
                 let coordinator = DocumentPickerCoordinator { urls, error in
                     if let error = error {
                         continuation.resume(throwing: error)
                         return
                     }
-                    
+
                     guard let folderUrl = urls.first else {
                         continuation.resume(throwing: MediaError.processingFailed("No folder selected"))
                         return
                     }
-                    
+
                     continuation.resume(returning: folderUrl)
                 }
-                
+
                 documentPicker.delegate = coordinator
-                
+
                 guard let presentingViewController = UIApplication.shared.connectedScenes
                     .compactMap({ $0 as? UIWindowScene })
                     .first?.windows
@@ -230,7 +230,7 @@ public actor FilePickerService: FilePickerServiceProtocol {
                     continuation.resume(throwing: MediaError.processingFailed("No presenting view controller found"))
                     return
                 }
-                
+
                 presentingViewController.present(documentPicker, animated: true)
             }
         }
@@ -242,27 +242,27 @@ public actor FilePickerService: FilePickerServiceProtocol {
         allowedTypes: [MediaType]
     ) async throws -> URL {
         // Note: UTTypes parameter is not used in UIDocumentPickerViewController for exporting
-        
+
         return try await withCheckedThrowingContinuation { continuation in
             Task { @MainActor in
                 let documentPicker = UIDocumentPickerViewController(forExporting: [sourceURL])
-                
+
                 let coordinator = DocumentPickerCoordinator { urls, error in
                     if let error = error {
                         continuation.resume(throwing: error)
                         return
                     }
-                    
+
                     guard let savedUrl = urls.first else {
                         continuation.resume(throwing: MediaError.processingFailed("File save operation cancelled"))
                         return
                     }
-                    
+
                     continuation.resume(returning: savedUrl)
                 }
-                
+
                 documentPicker.delegate = coordinator
-                
+
                 guard let presentingViewController = UIApplication.shared.connectedScenes
                     .compactMap({ $0 as? UIWindowScene })
                     .first?.windows
@@ -270,7 +270,7 @@ public actor FilePickerService: FilePickerServiceProtocol {
                     continuation.resume(throwing: MediaError.processingFailed("No presenting view controller found"))
                     return
                 }
-                
+
                 presentingViewController.present(documentPicker, animated: true)
             }
         }
@@ -287,9 +287,9 @@ public actor FilePickerService: FilePickerServiceProtocol {
     public func clearRecentlyPicked() async {
         recentlyPicked.removeAll()
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func updateRecentlyPicked(urls: [URL]) {
         // Add new URLs to the front, remove duplicates, and limit to 10
         let newUrls = urls.filter { !recentlyPicked.contains($0) }

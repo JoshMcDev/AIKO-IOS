@@ -671,11 +671,11 @@ public actor OneTapWorkflowEngine {
         if let progressSession = progressSessions[workflowId] {
             let phase: ProgressPhase = determineProgressPhase(from: progress)
             let operation = determineCurrentOperation(from: progress)
-            
+
             await progressSession.transitionToPhase(phase, operation: operation)
         }
     }
-    
+
     /// Determine progress phase based on workflow progress
     private func determineProgressPhase(from progress: Double) -> ProgressPhase {
         switch progress {
@@ -691,7 +691,7 @@ public actor OneTapWorkflowEngine {
             return .completed
         }
     }
-    
+
     /// Determine current operation description based on progress
     private func determineCurrentOperation(from progress: Double) -> String {
         switch progress {

@@ -24,8 +24,7 @@ actor UnifiedSearchService {
                 text: query,
                 domain: .regulations
             )
-            
-            
+
             let regulationResults = try await semanticIndex.findSimilarRegulations(
                 queryEmbedding: regulationQueryEmbedding,
                 limit: limit,
@@ -59,8 +58,7 @@ actor UnifiedSearchService {
                 text: query,
                 domain: .userRecords
             )
-            
-            
+
             let userResults = try await semanticIndex.findSimilarUserWorkflow(
                 queryEmbedding: userQueryEmbedding,
                 limit: limit,
@@ -124,7 +122,7 @@ actor UnifiedSearchService {
         let bothDomainsSignificant = regulationScore >= minSignificantScore && workflowScore >= minSignificantScore
         let ambiguousQueries = ["procurement requirements", "compliance", "requirements"] // Known multi-domain queries
         let isAmbiguous = ambiguousQueries.contains { queryLower.contains($0) }
-        
+
         if bothDomainsSignificant || isAmbiguous || regulationScore == workflowScore {
             // Search both domains for comprehensive results
             recommendedDomains = [.regulations, .userHistory]
@@ -197,7 +195,7 @@ actor UnifiedSearchService {
     ) -> Float {
         // Calculate semantic similarity
         let semanticScore = cosineSimilarity(queryEmbedding, embedding)
-        
+
         // Handle NaN case for semantic score
         let validSemanticScore = semanticScore.isNaN ? 0.0 : semanticScore
 
@@ -209,7 +207,7 @@ actor UnifiedSearchService {
 
         // Combine scores (70% semantic, 30% lexical)
         let combinedScore = (validSemanticScore * 0.7) + (lexicalScore * 0.3)
-        
+
         // Ensure we return a valid float (not NaN or infinity)
         return combinedScore.isFinite ? combinedScore : 0.0
     }

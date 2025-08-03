@@ -155,13 +155,13 @@ extension BuildConfiguration {
  - "false"     : Standard logging only
 
  Usage Examples:
- 
+
  # Development with mock models only (fastest, Xcode-friendly)
  AIKO_LFM2_STRATEGY=mock xcodebuild -scheme AIKO build
- 
+
  # Development with hybrid models (test real model loading)
  AIKO_LFM2_STRATEGY=hybrid xcodebuild -scheme AIKO build
- 
+
  # CI/CD with verbose logging
  AIKO_VERBOSE_LOGGING=true xcodebuild -scheme AIKO test
 */

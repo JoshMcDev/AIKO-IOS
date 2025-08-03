@@ -1,7 +1,7 @@
 import Foundation
 
 /// Value object representing the status of an acquisition
-public enum AcquisitionStatus: String, CaseIterable, Codable, Sendable {
+public enum AcquisitionStatus: String, CaseIterable, Codable, Sendable, Hashable {
     case draft
     case inProgress = "in_progress"
     case underReview = "under_review"

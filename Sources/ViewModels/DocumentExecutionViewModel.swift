@@ -2,14 +2,14 @@ import Foundation
 import AppCore
 
 /// DocumentExecutionViewModel - Federal Document Generation & Execution
-/// 
+///
 /// This ViewModel implements the @Observable pattern for managing federal document generation workflows.
 /// It handles document type selection based on acquisition status, document generation progress tracking,
 /// and document lifecycle management including validation and preview functionality.
 ///
 /// Key Responsibilities:
 /// - Document type management based on acquisition status
-/// - Document generation workflow coordination  
+/// - Document generation workflow coordination
 /// - Progress tracking and status reporting
 /// - Error handling and user feedback
 /// - Document validation and preview

@@ -163,7 +163,7 @@ public enum ComplexityLevel: String, Codable, CaseIterable, Sendable {
 }
 
 /// Acquisition phases
-public enum AcquisitionPhase: String, Codable, CaseIterable, Sendable {
+public enum AcquisitionPhase: String, Codable, CaseIterable, Sendable, Hashable {
     case planning = "Planning"
     case marketResearch = "Market Research"
     case requirementsDevelopment = "Requirements Development"

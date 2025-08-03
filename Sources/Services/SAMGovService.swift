@@ -303,6 +303,7 @@ public enum SAMGovError: Error, LocalizedError, Sendable {
     case networkError(String)
     case invalidResponse
     case rateLimitExceeded
+    case rateLimited
     case apiKeyRequired
     case authenticationFailed
     case invalidFormat
@@ -319,6 +320,8 @@ public enum SAMGovError: Error, LocalizedError, Sendable {
             "Invalid response from SAM.gov API"
         case .rateLimitExceeded:
             "API rate limit exceeded"
+        case .rateLimited:
+            "Request was rate limited"
         case .apiKeyRequired:
             "SAM.gov API key is required"
         case .authenticationFailed:

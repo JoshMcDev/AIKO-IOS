@@ -1,6 +1,6 @@
 import Foundation
 
-public struct UploadedDocument: Equatable, Identifiable, Sendable, Codable {
+public struct UploadedDocument: Equatable, Identifiable, Sendable, Codable, Hashable {
     public let id: UUID
     public let fileName: String
     public let data: Data

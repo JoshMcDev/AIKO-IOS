@@ -24,7 +24,7 @@ private enum LFM2TestError: Error, LocalizedError {
     }
 }
 
-/// LFM2Service Test Suite - TDD RED Phase  
+/// LFM2Service Test Suite - TDD RED Phase
 /// Tests designed to FAIL initially, implementing the consensus-validated TDD rubric
 /// Hash function overflow issue RESOLVED - ready for TDD RED → GREEN → REFACTOR cycle
 @available(iOS 16.0, *)
@@ -100,14 +100,14 @@ final class LFM2ServiceTests: XCTestCase {
 
         // MoE Validation: Memory cleanup effectiveness >80%
         try await Task.sleep(nanoseconds: 2_000_000_000) // 2s cleanup time
-        
+
         // Trigger delayed cleanup simulation and measure cleanup effectiveness
         await lfm2Service.triggerDelayedCleanup()
         let cleanupMemory = await lfm2Service.getSimulatedMemoryUsage()
         let memoryCleanupRatio = Double(peakMemory - cleanupMemory) / Double(peakMemory - initialMemory)
-        
+
         XCTAssertGreaterThan(memoryCleanupRatio, 0.8, "MoE: Memory cleanup insufficient - expected >80% cleanup")
-        
+
         // Reset memory simulation after test
         await lfm2Service.resetMemorySimulation()
     }
@@ -290,7 +290,7 @@ final class LFM2ServiceTests: XCTestCase {
 
         // Reset memory simulation to ensure clean baseline measurement
         await lfm2Service.resetMemorySimulation()
-        
+
         let testText = createRegulationTestText(tokenCount: 256)
         let startTime = CFAbsoluteTimeGetCurrent()
 
@@ -302,7 +302,7 @@ final class LFM2ServiceTests: XCTestCase {
         }
 
         let duration = CFAbsoluteTimeGetCurrent() - startTime
-        
+
         // Add 15% buffer to account for batch processing context switching overhead
         return duration * 1.15
     }

@@ -375,18 +375,18 @@ public struct AutomationSuggestion: Equatable {
     public let automationSteps: [String]
 }
 
-public struct UserFeedback: Equatable {
+public struct UserFeedback: Equatable, Codable, Sendable {
     public let id: UUID
     public let type: FeedbackType
     public let severity: Severity
     public let context: String
     public let suggestion: String?
 
-    public enum FeedbackType: String {
+    public enum FeedbackType: String, Codable, Sendable {
         case incorrect, missing, unnecessary, confusing
     }
 
-    public enum Severity: String {
+    public enum Severity: String, Codable, Sendable {
         case low, medium, high, critical
     }
 }

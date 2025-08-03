@@ -7,10 +7,10 @@ import AppCore
 @MainActor
 @Observable
 public final class AcquisitionsListViewModel: @unchecked Sendable {
-    
+
     // MARK: - Dependencies
     private let acquisitionService: AcquisitionService
-    
+
     // MARK: - Published State
     public var acquisitions: [AppCore.Acquisition] = []
     public var filteredAcquisitions: [AppCore.Acquisition] = []
@@ -22,34 +22,34 @@ public final class AcquisitionsListViewModel: @unchecked Sendable {
     public var selectedAcquisition: AppCore.Acquisition?
     public var showingAcquisitionDetails: Bool = false
     public var showingCreateAcquisition: Bool = false
-    
+
     // MARK: - Computed Properties
-    
+
     /// Count of acquisitions with active status (draft, inProgress, underReview, approved, onHold)
     public var activeAcquisitionsCount: Int {
         acquisitions.filter { $0.status.isActive }.count
     }
-    
+
     /// Whether any filters or search are currently applied
     public var hasFiltersApplied: Bool {
-        !selectedFilters.statuses.isEmpty || 
-        selectedFilters.phase != nil || 
+        !selectedFilters.statuses.isEmpty ||
+        selectedFilters.phase != nil ||
         !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
-    
+
     // MARK: - Initialization
-    
+
     public init(acquisitionService: AcquisitionService = .liveValue) {
         self.acquisitionService = acquisitionService
     }
-    
+
     // MARK: - Data Loading
-    
+
     /// Load all acquisitions from the service
     public func loadAcquisitions() async {
         isLoading = true
         errorMessage = nil
-        
+
         do {
             acquisitions = try await acquisitionService.fetchAcquisitions()
             applyFiltersAndSort()
@@ -58,12 +58,12 @@ public final class AcquisitionsListViewModel: @unchecked Sendable {
             acquisitions = []
             filteredAcquisitions = []
         }
-        
+
         isLoading = false
     }
-    
+
     // MARK: - Filtering
-    
+
     /// Toggle status filter on/off
     public func toggleStatusFilter(_ status: AcquisitionStatus) {
         if selectedFilters.statuses.contains(status) {
@@ -73,65 +73,65 @@ public final class AcquisitionsListViewModel: @unchecked Sendable {
         }
         applyFiltersAndSort()
     }
-    
+
     /// Filter by acquisition lifecycle phase
     public func filterByPhase(_ phase: AcquisitionStatus.Phase) {
         selectedFilters.phase = phase
         applyFiltersAndSort()
     }
-    
+
     /// Clear all filters and search
     public func clearAllFilters() {
         selectedFilters = .init()
         searchText = ""
         applyFiltersAndSort()
     }
-    
+
     // MARK: - Search
-    
+
     /// Update search text and reapply filters
     public func updateSearchText(_ text: String) {
         searchText = text
         applyFiltersAndSort()
     }
-    
+
     // MARK: - Sorting
-    
+
     /// Sort acquisitions by specified field and direction
     public func sortBy(_ field: AcquisitionSort.Field, ascending: Bool) {
         currentSort = AcquisitionSort(field: field, ascending: ascending)
         applyFiltersAndSort()
     }
-    
+
     // MARK: - Navigation
-    
+
     /// Select an acquisition to view details
     public func selectAcquisition(_ acquisition: AppCore.Acquisition) {
         selectedAcquisition = acquisition
         showingAcquisitionDetails = true
     }
-    
+
     /// Show create new acquisition sheet
     public func createNewAcquisition() {
         showingCreateAcquisition = true
     }
-    
+
     // MARK: - Private Helper Methods
-    
+
     private func applyFiltersAndSort() {
         // Start with all acquisitions
         var filtered = acquisitions
-        
+
         // Apply status filters
         if !selectedFilters.statuses.isEmpty {
             filtered = filtered.filter { selectedFilters.statuses.contains($0.status) }
         }
-        
+
         // Apply phase filter
         if let phase = selectedFilters.phase {
             filtered = filtered.filter { $0.status.phase == phase }
         }
-        
+
         // Apply search text
         let trimmedSearch = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         if !trimmedSearch.isEmpty {
@@ -141,7 +141,7 @@ public final class AcquisitionsListViewModel: @unchecked Sendable {
                 (acquisition.projectNumber?.localizedCaseInsensitiveContains(trimmedSearch) ?? false)
             }
         }
-        
+
         // Apply sorting
         filtered.sort(by: { lhs, rhs in
             switch currentSort.field {
@@ -155,7 +155,7 @@ public final class AcquisitionsListViewModel: @unchecked Sendable {
                 return currentSort.ascending ? lhs.status.rawValue < rhs.status.rawValue : lhs.status.rawValue > rhs.status.rawValue
             }
         })
-        
+
         filteredAcquisitions = filtered
     }
 }
@@ -166,11 +166,11 @@ public final class AcquisitionsListViewModel: @unchecked Sendable {
 public struct AcquisitionFilters: Sendable {
     public var statuses: Set<AcquisitionStatus> = []
     public var phase: AcquisitionStatus.Phase?
-    
+
     public init() {}
 }
 
-/// Sort configuration for acquisitions list  
+/// Sort configuration for acquisitions list
 public struct AcquisitionSort: Sendable {
     public enum Field: String, CaseIterable, Sendable {
         case title = "Title"
@@ -178,10 +178,10 @@ public struct AcquisitionSort: Sendable {
         case lastModifiedDate = "Last Modified"
         case status = "Status"
     }
-    
+
     public var field: Field = .lastModifiedDate
     public var ascending: Bool = false // Default: newest first
-    
+
     public init(field: Field = .lastModifiedDate, ascending: Bool = false) {
         self.field = field
         self.ascending = ascending

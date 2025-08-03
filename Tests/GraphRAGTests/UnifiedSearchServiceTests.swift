@@ -36,7 +36,7 @@ final class UnifiedSearchServiceTests: XCTestCase {
         searchService = UnifiedSearchService()
         testQuery = "procurement compliance requirements"
     }
-    
+
     override func tearDownWithError() throws {
         // Clear semantic index data between tests to prevent interference
         Task {
@@ -198,7 +198,7 @@ final class UnifiedSearchServiceTests: XCTestCase {
 
         // Test single search first to verify it works
         let testSearchResult = try await searchService.performUnifiedSearch(
-            query: "Test query about procurement and compliance", 
+            query: "Test query about procurement and compliance",
             domains: [.regulations, .userHistory],
             limit: 10
         )
@@ -252,13 +252,13 @@ final class UnifiedSearchServiceTests: XCTestCase {
 
         for i in 0..<count {
             let testContent = "FAR 52.227-\(i + 1) Test regulation content for item \(i + 1). This regulation covers important procurement requirements and compliance standards."
-            
+
             // Use LFM2Service to generate realistic embeddings for compatibility
             let testEmbedding = try await lfm2Service.generateEmbedding(
                 text: testContent,
                 domain: .regulations
             )
-            
+
             let testMetadata = RegulationMetadata(
                 regulationNumber: "FAR 52.227-\(i + 1)",
                 title: "Test Regulation \(i + 1)",
@@ -281,13 +281,13 @@ final class UnifiedSearchServiceTests: XCTestCase {
 
         for i in 0..<count {
             let testContent = "User workflow \(i + 1): Document processing and compliance workflow for user item \(i + 1)."
-            
+
             // Use LFM2Service to generate realistic embeddings for compatibility
             let testEmbedding = try await lfm2Service.generateEmbedding(
                 text: testContent,
                 domain: .userRecords
             )
-            
+
             let testMetadata = UserWorkflowMetadata(documentType: "Test Document \(i + 1)")
 
             try await semanticIndex.storeUserWorkflowEmbedding(

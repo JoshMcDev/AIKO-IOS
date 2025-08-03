@@ -18,10 +18,10 @@ actor LFM2Service {
 
     private var isInitialized = false
     private let logger = Logger(subsystem: "com.aiko.graphrag", category: "LFM2Service")
-    
+
     // Performance tracking
     private var performanceTracker = PerformanceTracker()
-    
+
     // Memory simulation for testing
     private var simulatedMemoryUsage: Int64 = 0
     private var peakSimulatedMemory: Int64 = 0
@@ -31,7 +31,7 @@ actor LFM2Service {
     // Model specifications for LFM2-700M-Unsloth-XL
     private let modelName = "LFM2-700M-Unsloth-XL-GraphRAG"
     private let embeddingDimensions = 768
-    
+
     // Memory management constants
     private struct MemoryConstants {
         static let limitMB: Int64 = 800 * 1024 * 1024 // 800MB
@@ -41,7 +41,7 @@ actor LFM2Service {
         static let cleanupThreshold = 50 // Cleanup every 50 embeddings
         static let cleanupPercentage = 85 // Clean up 85% of accumulated memory
     }
-    
+
     // Performance constants
     private struct PerformanceConstants {
         static let batchSize = 50
@@ -163,101 +163,101 @@ actor LFM2Service {
 
     private func loadGGUFModel() async throws {
         logger.info("🔄 Loading GGUF model with Core ML conversion")
-        
+
         // Check for GGUF file in Resources
         let possibleGGUFNames = [
             "LFM2-700M-Q6_K",
-            "LFM2-700M-Unsloth-XL-Q6_K", 
+            "LFM2-700M-Unsloth-XL-Q6_K",
             "LFM2-700M-Q8_0"
         ]
-        
+
         for ggufName in possibleGGUFNames {
             if let ggufURL = Bundle.main.url(forResource: ggufName, withExtension: "gguf") {
                 logger.info("📄 Found GGUF model: \(ggufName).gguf")
-                
+
                 do {
                     // Attempt to convert GGUF to Core ML format on-the-fly
                     let coreMLModel = try await convertGGUFToCoreML(ggufURL: ggufURL, modelName: ggufName)
-                    
+
                     #if canImport(CoreML)
                     self.model = coreMLModel
                     self.isModelLoaded = true
                     #endif
-                    
+
                     logger.info("✅ GGUF model converted and loaded: \(ggufName)")
                     return
-                    
+
                 } catch {
                     logger.error("❌ Failed to convert GGUF model \(ggufName): \(error.localizedDescription)")
                     continue
                 }
             }
         }
-        
+
         // If no GGUF file found or conversion failed, fall back to runtime Core ML generation
         logger.info("⚠️ No GGUF files found, attempting runtime Core ML model generation")
         try await generateRuntimeCoreMLModel()
     }
-    
+
     /// Convert GGUF model to Core ML format for inference
     private func convertGGUFToCoreML(ggufURL: URL, modelName: String) async throws -> MLModel {
         logger.info("🔄 Converting GGUF to Core ML: \(modelName)")
-        
+
         // Create a temporary directory for conversion
         let tempDir = FileManager.default.temporaryDirectory.appendingPathComponent("gguf_conversion_\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
-        
+
         defer {
             // Clean up temporary directory
             try? FileManager.default.removeItem(at: tempDir)
         }
-        
+
         // For production, this would integrate with conversion tools like:
         // 1. llama.cpp with Core ML export
-        // 2. ONNX conversion pipeline  
+        // 2. ONNX conversion pipeline
         // 3. Custom GGUF -> MLModel converter
-        
+
         // For now, create a placeholder Core ML model that matches the expected interface
         let coreMLModelURL = tempDir.appendingPathComponent("\(modelName).mlmodel")
         try await createPlaceholderCoreMLModel(at: coreMLModelURL, modelName: modelName)
-        
+
         // Load the generated Core ML model
         return try MLModel(contentsOf: coreMLModelURL)
     }
-    
+
     /// Generate a runtime Core ML model when no model files are available
     private func generateRuntimeCoreMLModel() async throws {
         logger.info("🔄 Generating runtime Core ML model for embedding inference")
-        
+
         let tempDir = FileManager.default.temporaryDirectory.appendingPathComponent("runtime_model_\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
-        
+
         defer {
             try? FileManager.default.removeItem(at: tempDir)
         }
-        
+
         let modelURL = tempDir.appendingPathComponent("LFM2-Runtime.mlmodel")
         try await createPlaceholderCoreMLModel(at: modelURL, modelName: "LFM2-Runtime")
-        
+
         #if canImport(CoreML)
         self.model = try MLModel(contentsOf: modelURL)
         self.isModelLoaded = true
         #endif
-        
+
         logger.info("✅ Runtime Core ML model generated and loaded")
     }
-    
+
     /// Create a placeholder Core ML model that provides the expected embedding interface
     private func createPlaceholderCoreMLModel(at url: URL, modelName: String) async throws {
         // In production, this would create a proper Core ML model programmatically
         // For now, this ensures the interface is available for development
         logger.info("🔧 Creating placeholder Core ML model: \(modelName)")
-        
+
         // This is a development placeholder - in production you would:
         // 1. Use Core ML model compilation APIs
         // 2. Convert from ONNX/TensorFlow/PyTorch
         // 3. Use MLModelBuilder or similar tools
-        
+
         throw LFM2Error.ggufNotSupported // Temporary until full implementation
     }
 
@@ -292,49 +292,49 @@ actor LFM2Service {
     private func generateRealEmbedding(text: String, domain: EmbeddingDomain, model: MLModel) async throws -> [Float] {
         let startTime = CFAbsoluteTimeGetCurrent()
         logger.debug("🔄 Running optimized Core ML inference for \(domain.rawValue) text")
-        
+
         do {
             // 1. Fast preprocessing with optimized tokenization
             let preprocessedInput = try preprocessTextWithOptimization(text)
-            
+
             // 2. Run Core ML model prediction with performance monitoring
             let predictionStartTime = CFAbsoluteTimeGetCurrent()
             let prediction = try await model.prediction(from: preprocessedInput)
             let predictionDuration = CFAbsoluteTimeGetCurrent() - predictionStartTime
-            
+
             // Monitor inference time to ensure <target time
             if predictionDuration > (PerformanceConstants.performanceTargetSeconds - 0.2) {
                 logger.warning("⚠️ Core ML inference approaching timeout: \(String(format: "%.2f", predictionDuration))s")
             }
-            
+
             // 3. Fast embedding extraction with caching
             let embedding = try extractEmbeddingOptimized(from: prediction)
-            
+
             // 4. Validate embedding dimensions match expected LFM2 output
             guard embedding.count == self.embeddingDimensions else {
                 logger.error("❌ Core ML model returned invalid embedding dimensions: \(embedding.count), expected: \(self.embeddingDimensions)")
                 throw LFM2Error.invalidEmbeddingDimensions(expected: self.embeddingDimensions, actual: embedding.count)
             }
-            
+
             // 5. Apply domain-specific post-processing with optimization
             let processedEmbedding = applyDomainOptimization(embedding: embedding, domain: domain)
-            
+
             let totalDuration = CFAbsoluteTimeGetCurrent() - startTime
             logger.debug("✅ Optimized Core ML inference completed in \(String(format: "%.3f", totalDuration))s")
-            
+
             // Performance validation for TDD GREEN phase
             if totalDuration >= PerformanceConstants.performanceTargetSeconds {
                 logger.error("❌ Performance target missed: \(String(format: "%.3f", totalDuration))s >= \(String(format: "%.1f", PerformanceConstants.performanceTargetSeconds))s")
                 throw LFM2Error.performanceTargetMissed(duration: totalDuration)
             }
-            
+
             return processedEmbedding
-            
+
         } catch let error as LFM2Error {
             // Re-throw LFM2 specific errors
             logger.error("❌ LFM2 Core ML inference failed: \(error.localizedDescription)")
             throw error
-            
+
         } catch {
             // Wrap other errors in LFM2Error
             logger.error("❌ Core ML model inference failed: \(error.localizedDescription)")
@@ -384,14 +384,14 @@ actor LFM2Service {
         logger.debug("🔄 Generating embedding for \(domain.rawValue) text (length: \(text.count))")
 
         let startTime = CFAbsoluteTimeGetCurrent()
-        
+
         // Initialize memory simulation if not already enabled (for single embedding tests)
         if !isMemorySimulationEnabled && ProcessInfo.processInfo.environment["XCTEST_SESSION_ID"] != nil {
             isMemorySimulationEnabled = true
             simulatedMemoryUsage = 50 * 1024 * 1024 // 50MB baseline for single embedding
             peakSimulatedMemory = simulatedMemoryUsage
         }
-        
+
         let embedding: [Float]
 
         switch deploymentMode {
@@ -468,30 +468,30 @@ actor LFM2Service {
         let memoryLimit = MemoryConstants.limitMB // 800MB limit
         var embeddings: [[Float]] = []
         embeddings.reserveCapacity(texts.count) // Pre-allocate for performance
-        
+
         // Enable memory simulation for testing with consistent baseline matching real memory
         initializeMemorySimulation()
-        
+
         let startTime = CFAbsoluteTimeGetCurrent()
         let initialMemory = getCurrentMemoryUsage()
 
         for batchStart in stride(from: 0, to: texts.count, by: batchSize) {
             let batchEnd = min(batchStart + batchSize, texts.count)
             let batch = Array(texts[batchStart..<batchEnd])
-            
-            logger.debug("🔄 Processing batch \(batchStart/batchSize + 1)/\(Int(ceil(Double(texts.count) / Double(batchSize))))")
-            
+
+            logger.debug("🔄 Processing batch \(batchStart / batchSize + 1)/\(Int(ceil(Double(texts.count) / Double(batchSize))))")
+
             // Check memory before processing batch
             try validateMemoryLimit(memoryLimit)
 
             // Process batch sequentially with memory monitoring
             for (localIndex, text) in batch.enumerated() {
                 let globalIndex = batchStart + localIndex
-                
+
                 do {
                     let embedding = try await generateEmbedding(text: text, domain: domain)
                     embeddings.append(embedding)
-                    
+
                     // Simulate memory usage and cleanup for testing
                     try updateMemorySimulation(for: globalIndex, totalTexts: texts.count, memoryLimit: memoryLimit)
 
@@ -507,18 +507,18 @@ actor LFM2Service {
                     throw error
                 }
             }
-            
+
             // Memory cleanup between batches
             if batchEnd < texts.count {
                 // Force garbage collection between batches
                 await Task.yield()
-                
+
                 // Simulate memory cleanup for testing - more aggressive cleanup between batches
                 if isMemorySimulationEnabled {
                     let cleanupAmount: Int64 = min(simulatedMemoryUsage / 3, 50 * 1024 * 1024) // Clean up 1/3 or max 50MB
                     simulatedMemoryUsage = max(simulatedMemoryUsage - cleanupAmount, MemoryConstants.baselineMB)
                 }
-                
+
                 // Check if we're approaching memory limit
                 let postBatchMemory = getCurrentMemoryUsage()
                 let memoryIncrease = postBatchMemory - initialMemory
@@ -536,11 +536,11 @@ actor LFM2Service {
         let averageTime = duration / Double(texts.count)
         let finalMemory = getCurrentMemoryUsage()
         let peakMemoryMB = Double(isMemorySimulationEnabled ? peakSimulatedMemory : finalMemory) / 1024 / 1024
-        
+
         logger.info("✅ Batch processing complete: \(texts.count) embeddings in \(String(format: "%.1f", duration))s")
         logger.info("📊 Average time per embedding: \(String(format: "%.3f", averageTime))s")
         logger.info("📊 Peak memory usage: \(String(format: "%.1f", peakMemoryMB))MB")
-        
+
         // Validate that peak memory during processing was reasonable, but allow some overhead for testing
         let peakMemoryToCheck = isMemorySimulationEnabled ? peakSimulatedMemory : finalMemory
         let testingMemoryLimit = memoryLimit + (50 * 1024 * 1024) // Allow 50MB overhead for testing patterns
@@ -553,45 +553,45 @@ actor LFM2Service {
 
         return embeddings
     }
-    
+
     /// Get current memory usage for monitoring (with testing simulation support)
     private func getCurrentMemoryUsage() -> Int64 {
         // Return simulated memory usage during testing
         if isMemorySimulationEnabled {
             return simulatedMemoryUsage
         }
-        
+
         // Return actual system memory usage
         var info = mach_task_basic_info()
         var count = mach_msg_type_number_t(MemoryLayout<mach_task_basic_info>.size) / 4
-        
+
         let result = withUnsafeMutablePointer(to: &info) {
             $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
                 task_info(mach_task_self_, task_flavor_t(MACH_TASK_BASIC_INFO), $0, &count)
             }
         }
-        
+
         return result == KERN_SUCCESS ? Int64(info.resident_size) : 0
     }
-    
+
     /// Trigger delayed memory cleanup for testing (simulates garbage collection and memory management)
     func triggerDelayedCleanup() async {
         guard isMemorySimulationEnabled else { return }
-        
+
         logger.debug("🔄 Triggering delayed memory cleanup for testing")
-        
+
         // Calculate accumulated memory above the original baseline
         let accumulatedMemory = max(0, simulatedMemoryUsage - memorySimulationBaseline)
-        
+
         // Clean up specified percentage of accumulated memory (exceeds 80% requirement)
         let cleanupAmount = accumulatedMemory * Int64(MemoryConstants.cleanupPercentage) / 100
-        
+
         simulatedMemoryUsage = max(simulatedMemoryUsage - cleanupAmount, memorySimulationBaseline)
-        
+
         let memoryMB = Double(simulatedMemoryUsage) / 1024 / 1024
         logger.debug("✅ Memory cleanup complete: \(String(format: "%.1f", memoryMB))MB remaining")
     }
-    
+
     /// Reset memory simulation (for use after tests complete)
     func resetMemorySimulation() {
         isMemorySimulationEnabled = false
@@ -599,19 +599,19 @@ actor LFM2Service {
         peakSimulatedMemory = 0
         memorySimulationBaseline = 0
     }
-    
+
     /// Get current simulated memory usage for testing
     func getSimulatedMemoryUsage() -> Int64 {
         return simulatedMemoryUsage
     }
-    
+
     /// Get peak simulated memory usage for testing
     func getPeakSimulatedMemoryUsage() -> Int64 {
         return peakSimulatedMemory
     }
-    
+
     // MARK: - Memory Management Helpers
-    
+
     /// Initialize memory simulation for batch processing
     private func initializeMemorySimulation() {
         isMemorySimulationEnabled = true
@@ -620,7 +620,7 @@ actor LFM2Service {
         simulatedMemoryUsage = initialSystemMemory // Start with current system memory as baseline
         peakSimulatedMemory = simulatedMemoryUsage
     }
-    
+
     /// Validate memory usage against limit
     private func validateMemoryLimit(_ memoryLimit: Int64) throws {
         let currentMemory = getCurrentMemoryUsage()
@@ -630,24 +630,24 @@ actor LFM2Service {
             throw error
         }
     }
-    
+
     /// Update memory simulation during batch processing
     private func updateMemorySimulation(for globalIndex: Int, totalTexts: Int, memoryLimit: Int64) throws {
         guard isMemorySimulationEnabled else { return }
-        
+
         // For large batches (>500), use much smaller memory footprint per embedding
         let embeddingMemoryCost: Int64 = totalTexts > 500 ? MemoryConstants.embeddingCostLarge : MemoryConstants.embeddingCostSmall
         simulatedMemoryUsage += embeddingMemoryCost
-        
+
         // Trigger aggressive cleanup every N embeddings for large batches
         if (globalIndex + 1) % MemoryConstants.cleanupThreshold == 0 && totalTexts > 500 {
             let aggressiveCleanup: Int64 = simulatedMemoryUsage / 2 // Clean up half the accumulated memory
             simulatedMemoryUsage = max(simulatedMemoryUsage - aggressiveCleanup, MemoryConstants.baselineMB)
         }
-        
+
         // Update peak memory only after cleanup opportunities
         peakSimulatedMemory = max(peakSimulatedMemory, simulatedMemoryUsage)
-        
+
         // Ensure we don't exceed memory limit during processing
         if simulatedMemoryUsage > memoryLimit {
             throw LFM2Error.memoryLimitExceeded(usage: simulatedMemoryUsage, limit: memoryLimit)
@@ -778,11 +778,11 @@ actor LFM2Service {
 
         return embedding
     }
-    
+
     /// Apply domain-specific optimization to embeddings for better GraphRAG performance
     private func applyDomainOptimization(embedding: [Float], domain: EmbeddingDomain) -> [Float] {
         var optimizedEmbedding = embedding
-        
+
         switch domain {
         case .regulations:
             // Apply optimization for government regulation texts
@@ -791,7 +791,7 @@ actor LFM2Service {
             for index in regulatoryIndices where index < optimizedEmbedding.count {
                 optimizedEmbedding[index] *= 1.05 // 5% boost for regulatory features
             }
-            
+
         case .userRecords:
             // Apply optimization for user acquisition workflow data
             // Boost dimensions that capture temporal and workflow patterns
@@ -800,13 +800,13 @@ actor LFM2Service {
                 optimizedEmbedding[index] *= 1.05 // 5% boost for workflow features
             }
         }
-        
+
         // Re-normalize after optimization to maintain unit vector properties
         let magnitude = sqrt(optimizedEmbedding.map { $0 * $0 }.reduce(0, +))
         if magnitude > 0 {
             optimizedEmbedding = optimizedEmbedding.map { $0 / magnitude }
         }
-        
+
         return optimizedEmbedding
     }
 
@@ -842,57 +842,57 @@ actor LFM2Service {
     /// Optimized text preprocessing for <2s performance target
     private func preprocessTextWithOptimization(_ text: String) throws -> MLFeatureProvider {
         let startTime = CFAbsoluteTimeGetCurrent()
-        
+
         // Fast text cleaning (minimal operations)
         let cleanText = text.trimmingCharacters(in: .whitespacesAndNewlines)
         let truncatedText = String(cleanText.prefix(min(cleanText.count, maxTokenLength * 3)))
-        
+
         // Fast tokenization using cached approach
         let tokenIds = createOptimizedTokenIds(from: truncatedText)
-        
+
         // Pre-allocated MLMultiArray for better performance
         let inputArray = try MLMultiArray(
             shape: [NSNumber(value: 1), NSNumber(value: maxTokenLength)],
             dataType: .int32
         )
-        
+
         // Vectorized token filling
         let tokenCount = min(tokenIds.count, maxTokenLength)
         for i in 0..<tokenCount {
             inputArray[i] = NSNumber(value: tokenIds[i])
         }
-        
+
         // Zero-pad remaining positions in bulk
         for i in tokenCount..<maxTokenLength {
             inputArray[i] = NSNumber(value: 0)
         }
-        
+
         let duration = CFAbsoluteTimeGetCurrent() - startTime
         if duration > 0.1 {
             logger.warning("⚠️ Preprocessing took \(String(format: "%.3f", duration))s")
         }
-        
+
         // Create feature provider with optimized dictionary
         let inputFeatures: [String: Any] = ["input_ids": inputArray]
         return try MLDictionaryFeatureProvider(dictionary: inputFeatures)
     }
-    
+
     /// Optimized tokenization for performance-critical path
     private func createOptimizedTokenIds(from text: String) -> [Int32] {
         // Pre-allocate array for better performance
         var tokenIds: [Int32] = []
         tokenIds.reserveCapacity(maxTokenLength)
-        
+
         // Fast split using CharacterSet (more efficient than string operations)
         let words = text.components(separatedBy: .whitespacesAndNewlines)
             .filter { !$0.isEmpty }
-        
+
         // Process only up to max length to avoid unnecessary work
         let wordCount = min(words.count, maxTokenLength - 2) // Reserve space for special tokens
-        
+
         // Add BOS token
         tokenIds.append(1)
-        
+
         // Fast hash-based tokenization with safer conversions
         for i in 0..<wordCount {
             let word = words[i]
@@ -902,12 +902,12 @@ actor LFM2Service {
             let tokenId = Int32(hashMod) + 2 // Range: 2-49999, avoiding 0 and 1
             tokenIds.append(tokenId)
         }
-        
+
         // Add EOS token if space available
         if tokenIds.count < maxTokenLength {
             tokenIds.append(2)
         }
-        
+
         return tokenIds
     }
 
@@ -924,27 +924,27 @@ actor LFM2Service {
 
         throw LFM2Error.invalidModelOutput
     }
-    
+
     /// Optimized embedding extraction for performance-critical path
     private func extractEmbeddingOptimized(from prediction: MLFeatureProvider) throws -> [Float] {
         let startTime = CFAbsoluteTimeGetCurrent()
-        
+
         // Priority-ordered keys for faster lookup
         let priorityKeys = ["embeddings", "last_hidden_state", "output", "embedding_output"]
-        
+
         for key in priorityKeys {
             if let output = prediction.featureValue(for: key)?.multiArrayValue {
                 let embedding = try convertMultiArrayToFloatArrayOptimized(output)
-                
+
                 let duration = CFAbsoluteTimeGetCurrent() - startTime
                 if duration > 0.05 {
                     logger.warning("⚠️ Embedding extraction took \(String(format: "%.3f", duration))s")
                 }
-                
+
                 return embedding
             }
         }
-        
+
         throw LFM2Error.invalidModelOutput
     }
 
@@ -957,29 +957,29 @@ actor LFM2Service {
         let pointer = multiArray.dataPointer.bindMemory(to: Float.self, capacity: count)
         return Array(UnsafeBufferPointer(start: pointer, count: count))
     }
-    
+
     /// Optimized multi-array conversion for performance-critical path
     private func convertMultiArrayToFloatArrayOptimized(_ multiArray: MLMultiArray) throws -> [Float] {
         guard multiArray.dataType == .float32 else {
             throw LFM2Error.invalidModelOutput
         }
-        
+
         let count = multiArray.count
-        
+
         // Validate expected embedding dimensions early
         guard count == embeddingDimensions else {
             throw LFM2Error.invalidEmbeddingDimensions(expected: embeddingDimensions, actual: count)
         }
-        
+
         // Direct memory access for optimal performance
         let pointer = multiArray.dataPointer.bindMemory(to: Float.self, capacity: count)
         var result = [Float](repeating: 0.0, count: count)
-        
+
         // Bulk copy for better performance than Array(UnsafeBufferPointer)
         result.withUnsafeMutableBufferPointer { buffer in
             buffer.baseAddress?.update(from: pointer, count: count)
         }
-        
+
         return result
     }
 }
@@ -1141,7 +1141,7 @@ extension LFM2Service {
     func getPerformanceMetrics() async -> PerformanceMetrics {
         let tracker = performanceTracker
         let modelLoadDuration = modelLoadTime.map { Date().timeIntervalSince($0) } ?? 0.0
-        
+
         return PerformanceMetrics(
             averageEmbeddingTime: await tracker.averageEmbeddingTime,
             totalEmbeddingsGenerated: await tracker.totalEmbeddingsGenerated,
@@ -1159,37 +1159,37 @@ private actor PerformanceTracker {
     private var _totalEmbeddingsGenerated = 0
     private var _peakMemoryUsage: Int64 = 0
     private let maxStoredTimes = 100 // Keep last 100 timing samples
-    
+
     /// Record an embedding generation time
     func recordEmbeddingTime(_ duration: TimeInterval) {
         embeddingTimes.append(duration)
         _totalEmbeddingsGenerated += 1
-        
+
         // Keep only recent samples for memory efficiency
         if embeddingTimes.count > maxStoredTimes {
             embeddingTimes.removeFirst()
         }
-        
+
         // Update memory usage
         updateMemoryUsage()
     }
-    
+
     /// Get average embedding generation time
     var averageEmbeddingTime: TimeInterval {
         guard !embeddingTimes.isEmpty else { return 0.0 }
         return embeddingTimes.reduce(0, +) / Double(embeddingTimes.count)
     }
-    
+
     /// Get total embeddings generated
     var totalEmbeddingsGenerated: Int {
         return _totalEmbeddingsGenerated
     }
-    
+
     /// Get peak memory usage
     var peakMemoryUsage: Int64 {
         return _peakMemoryUsage
     }
-    
+
     /// Update memory usage tracking
     private func updateMemoryUsage() {
         let currentMemory = getCurrentMemoryUsage()
@@ -1197,18 +1197,18 @@ private actor PerformanceTracker {
             _peakMemoryUsage = currentMemory
         }
     }
-    
+
     /// Get current memory usage in bytes
     private func getCurrentMemoryUsage() -> Int64 {
         var info = mach_task_basic_info()
         var count = mach_msg_type_number_t(MemoryLayout<mach_task_basic_info>.size) / 4
-        
+
         let result = withUnsafeMutablePointer(to: &info) {
             $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
                 task_info(mach_task_self_, task_flavor_t(MACH_TASK_BASIC_INFO), $0, &count)
             }
         }
-        
+
         return result == KERN_SUCCESS ? Int64(info.resident_size) : 0
     }
 }

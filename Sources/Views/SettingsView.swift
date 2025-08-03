@@ -10,11 +10,11 @@ enum SettingsSection: String, CaseIterable {
     case notifications = "Notifications"
     case privacy = "Privacy"
     case advanced = "Advanced"
-    
+
     var title: String {
         return rawValue
     }
-    
+
     var icon: String {
         switch self {
         case .app: return "gearshape"
@@ -25,7 +25,7 @@ enum SettingsSection: String, CaseIterable {
         case .advanced: return "wrench.and.screwdriver"
         }
     }
-    
+
     var iconColor: Color {
         switch self {
         case .app: return .blue
@@ -46,16 +46,16 @@ public struct SettingsView: View {
     @State private var showingExportSheet = false
     @State private var showingValidationError = false
     @State private var exportURL: URL?
-    
+
     // MARK: - macOS Navigation State
     #if os(macOS)
     @State private var selectedSection: SettingsSection = .app
     #endif
-    
+
     public init(viewModel: SettingsViewModel) {
         self.viewModel = viewModel
     }
-    
+
     public var body: some View {
         #if os(macOS)
         macOSSettingsView
@@ -63,9 +63,9 @@ public struct SettingsView: View {
         iOSSettingsView
         #endif
     }
-    
+
     // MARK: - Platform-Specific Views
-    
+
     #if os(macOS)
     @ViewBuilder
     private var macOSSettingsView: some View {
@@ -98,21 +98,21 @@ public struct SettingsView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .primaryAction) {
                     HStack(spacing: 8) {
                         Button("Reset") {
                             showingResetAlert = true
                         }
                         .keyboardShortcut("r", modifiers: .command)
-                        
+
                         Button("Save") {
                             Task {
                                 await viewModel.saveSettings()
                             }
                         }
                         .keyboardShortcut("s", modifiers: .command)
-                        
+
                         saveStatusView
                     }
                 }
@@ -134,7 +134,7 @@ public struct SettingsView: View {
             exportSheet
         }
     }
-    
+
     @ViewBuilder
     private var selectedSectionView: some View {
         switch selectedSection {
@@ -153,26 +153,26 @@ public struct SettingsView: View {
         }
     }
     #endif
-    
+
     @ViewBuilder
     private var iOSSettingsView: some View {
         NavigationStack {
             Form {
                 // App Settings Section
                 appSettingsSection
-                
+
                 // API Settings Section
                 apiSettingsSection
-                
+
                 // Document Settings Section
                 documentSettingsSection
-                
+
                 // Notification Settings Section
                 notificationSettingsSection
-                
+
                 // Privacy Settings Section
                 privacySettingsSection
-                
+
                 // Advanced Settings Section
                 advancedSettingsSection
             }
@@ -187,7 +187,7 @@ public struct SettingsView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     saveStatusView
                 }
@@ -197,7 +197,7 @@ public struct SettingsView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .primaryAction) {
                     saveStatusView
                 }
@@ -219,9 +219,9 @@ public struct SettingsView: View {
             }
         }
     }
-    
+
     // MARK: - App Settings Section
-    
+
     @ViewBuilder
     private var appSettingsSection: some View {
         Section("App Settings") {
@@ -237,7 +237,7 @@ public struct SettingsView: View {
                 Text("Light").tag("light")
                 Text("Dark").tag("dark")
             }
-            
+
             Picker("Accent Color", selection: Binding(
                 get: { viewModel.settingsData.appSettings.accentColor },
                 set: { newValue in
@@ -252,7 +252,7 @@ public struct SettingsView: View {
                 Text("Orange").tag("orange")
                 Text("Purple").tag("purple")
             }
-            
+
             Picker("Font Size", selection: Binding(
                 get: { viewModel.settingsData.appSettings.fontSize },
                 set: { newValue in
@@ -265,7 +265,7 @@ public struct SettingsView: View {
                 Text("Medium").tag("medium")
                 Text("Large").tag("large")
             }
-            
+
             Toggle("Auto Save", isOn: Binding(
                 get: { viewModel.settingsData.appSettings.autoSaveEnabled },
                 set: { newValue in
@@ -274,7 +274,7 @@ public struct SettingsView: View {
                     }
                 }
             ))
-            
+
             if viewModel.settingsData.appSettings.autoSaveEnabled {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
@@ -283,7 +283,7 @@ public struct SettingsView: View {
                         Text("\(viewModel.settingsData.appSettings.autoSaveInterval)s")
                             .foregroundStyle(.secondary)
                     }
-                    
+
                     Slider(
                         value: Binding(
                             get: { Double(viewModel.settingsData.appSettings.autoSaveInterval) },
@@ -296,7 +296,7 @@ public struct SettingsView: View {
                         in: 10...300,
                         step: 10
                     )
-                    
+
                     HStack {
                         Text("10s")
                             .font(.caption)
@@ -310,9 +310,9 @@ public struct SettingsView: View {
             }
         }
     }
-    
+
     // MARK: - API Settings Section
-    
+
     @ViewBuilder
     private var apiSettingsSection: some View {
         Section("API Settings") {
@@ -330,11 +330,11 @@ public struct SettingsView: View {
                 Text("GPT-4").tag("GPT-4")
                 Text("GPT-3.5").tag("GPT-3.5")
             }
-            
+
             NavigationLink("Manage API Keys (\(viewModel.settingsData.apiSettings.apiKeys.count))") {
                 apiKeyManagementView
             }
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Text("Max Retries")
@@ -342,7 +342,7 @@ public struct SettingsView: View {
                     Text("\(viewModel.settingsData.apiSettings.maxRetries)")
                         .foregroundStyle(.secondary)
                 }
-                
+
                 Slider(
                     value: Binding(
                         get: { Double(viewModel.settingsData.apiSettings.maxRetries) },
@@ -356,7 +356,7 @@ public struct SettingsView: View {
                     step: 1
                 )
             }
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Text("Timeout")
@@ -364,7 +364,7 @@ public struct SettingsView: View {
                     Text("\(Int(viewModel.settingsData.apiSettings.timeoutInterval))s")
                         .foregroundStyle(.secondary)
                 }
-                
+
                 Slider(
                     value: Binding(
                         get: { viewModel.settingsData.apiSettings.timeoutInterval },
@@ -380,9 +380,9 @@ public struct SettingsView: View {
             }
         }
     }
-    
+
     // MARK: - Document Settings Section
-    
+
     @ViewBuilder
     private var documentSettingsSection: some View {
         Section("Document Settings") {
@@ -394,7 +394,7 @@ public struct SettingsView: View {
                     }
                 }
             ))
-            
+
             Toggle("Include Version History", isOn: Binding(
                 get: { viewModel.settingsData.documentSettings.includeVersionHistory },
                 set: { newValue in
@@ -403,7 +403,7 @@ public struct SettingsView: View {
                     }
                 }
             ))
-            
+
             Toggle("Auto Generate Table of Contents", isOn: Binding(
                 get: { viewModel.settingsData.documentSettings.autoGenerateTableOfContents },
                 set: { newValue in
@@ -412,7 +412,7 @@ public struct SettingsView: View {
                     }
                 }
             ))
-            
+
             Toggle("Page Numbering", isOn: Binding(
                 get: { viewModel.settingsData.documentSettings.pageNumbering },
                 set: { newValue in
@@ -423,9 +423,9 @@ public struct SettingsView: View {
             ))
         }
     }
-    
+
     // MARK: - Notification Settings Section
-    
+
     @ViewBuilder
     private var notificationSettingsSection: some View {
         Section("Notifications") {
@@ -437,7 +437,7 @@ public struct SettingsView: View {
                     }
                 }
             ))
-            
+
             if viewModel.settingsData.notificationSettings.enableNotifications {
                 Toggle("Document Generation Complete", isOn: Binding(
                     get: { viewModel.settingsData.notificationSettings.documentGenerationComplete },
@@ -447,7 +447,7 @@ public struct SettingsView: View {
                         }
                     }
                 ))
-                
+
                 Toggle("Acquisition Reminders", isOn: Binding(
                     get: { viewModel.settingsData.notificationSettings.acquisitionReminders },
                     set: { newValue in
@@ -456,7 +456,7 @@ public struct SettingsView: View {
                         }
                     }
                 ))
-                
+
                 Toggle("Update Available", isOn: Binding(
                     get: { viewModel.settingsData.notificationSettings.updateAvailable },
                     set: { newValue in
@@ -465,7 +465,7 @@ public struct SettingsView: View {
                         }
                     }
                 ))
-                
+
                 Toggle("Sound Enabled", isOn: Binding(
                     get: { viewModel.settingsData.notificationSettings.soundEnabled },
                     set: { newValue in
@@ -477,9 +477,9 @@ public struct SettingsView: View {
             }
         }
     }
-    
+
     // MARK: - Privacy Settings Section
-    
+
     @ViewBuilder
     private var privacySettingsSection: some View {
         Section("Privacy & Data") {
@@ -491,7 +491,7 @@ public struct SettingsView: View {
                     }
                 }
             ))
-            
+
             Toggle("Crash Reporting", isOn: Binding(
                 get: { viewModel.settingsData.dataPrivacySettings.crashReportingEnabled },
                 set: { newValue in
@@ -500,7 +500,7 @@ public struct SettingsView: View {
                     }
                 }
             ))
-            
+
             Toggle("Encrypt Local Data", isOn: Binding(
                 get: { viewModel.settingsData.dataPrivacySettings.encryptLocalData },
                 set: { newValue in
@@ -509,7 +509,7 @@ public struct SettingsView: View {
                     }
                 }
             ))
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Text("Data Retention")
@@ -517,7 +517,7 @@ public struct SettingsView: View {
                     Text("\(viewModel.settingsData.dataPrivacySettings.dataRetentionDays) days")
                         .foregroundStyle(.secondary)
                 }
-                
+
                 Slider(
                     value: Binding(
                         get: { Double(viewModel.settingsData.dataPrivacySettings.dataRetentionDays) },
@@ -530,7 +530,7 @@ public struct SettingsView: View {
                     in: 1...365,
                     step: 1
                 )
-                
+
                 HStack {
                     Text("1 day")
                         .font(.caption)
@@ -543,9 +543,9 @@ public struct SettingsView: View {
             }
         }
     }
-    
+
     // MARK: - Advanced Settings Section
-    
+
     @ViewBuilder
     private var advancedSettingsSection: some View {
         Section("Advanced") {
@@ -557,7 +557,7 @@ public struct SettingsView: View {
                     }
                 }
             ))
-            
+
             Toggle("Show Detailed Errors", isOn: Binding(
                 get: { viewModel.settingsData.advancedSettings.showDetailedErrors },
                 set: { newValue in
@@ -566,7 +566,7 @@ public struct SettingsView: View {
                     }
                 }
             ))
-            
+
             Toggle("Enable Beta Features", isOn: Binding(
                 get: { viewModel.settingsData.advancedSettings.enableBetaFeatures },
                 set: { newValue in
@@ -575,7 +575,7 @@ public struct SettingsView: View {
                     }
                 }
             ))
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Text("Cache Size")
@@ -583,7 +583,7 @@ public struct SettingsView: View {
                     Text("\(viewModel.settingsData.advancedSettings.cacheSizeMB) MB")
                         .foregroundStyle(.secondary)
                 }
-                
+
                 Slider(
                     value: Binding(
                         get: { Double(viewModel.settingsData.advancedSettings.cacheSizeMB) },
@@ -596,7 +596,7 @@ public struct SettingsView: View {
                     in: 50...2000,
                     step: 50
                 )
-                
+
                 HStack {
                     Text("50 MB")
                         .font(.caption)
@@ -607,7 +607,7 @@ public struct SettingsView: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Text("Max Concurrent Generations")
@@ -615,7 +615,7 @@ public struct SettingsView: View {
                     Text("\(viewModel.settingsData.advancedSettings.maxConcurrentGenerations)")
                         .foregroundStyle(.secondary)
                 }
-                
+
                 Slider(
                     value: Binding(
                         get: { Double(viewModel.settingsData.advancedSettings.maxConcurrentGenerations) },
@@ -629,7 +629,7 @@ public struct SettingsView: View {
                     step: 1
                 )
             }
-            
+
             Button("Export Settings") {
                 Task {
                     let exportData = await viewModel.exportSettings()
@@ -637,16 +637,16 @@ public struct SettingsView: View {
                     showingExportSheet = true
                 }
             }
-            
+
             Button("Reset to Defaults") {
                 showingResetAlert = true
             }
             .foregroundStyle(.red)
         }
     }
-    
+
     // MARK: - Save Status View
-    
+
     @ViewBuilder
     private var saveStatusView: some View {
         switch viewModel.saveStatus {
@@ -663,9 +663,9 @@ public struct SettingsView: View {
                 .foregroundStyle(.red)
         }
     }
-    
+
     // MARK: - API Key Management View
-    
+
     @ViewBuilder
     private var apiKeyManagementView: some View {
         NavigationStack {
@@ -681,7 +681,7 @@ public struct SettingsView: View {
                                     .foregroundStyle(.green)
                             }
                         }
-                        
+
                         Text("\(apiKey.key.prefix(10))...")
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -707,9 +707,9 @@ public struct SettingsView: View {
             #endif
         }
     }
-    
+
     // MARK: - Export Sheet
-    
+
     @ViewBuilder
     private var exportSheet: some View {
         NavigationStack {
@@ -717,15 +717,15 @@ public struct SettingsView: View {
                 Image(systemName: "square.and.arrow.up")
                     .font(.system(size: 60))
                     .foregroundStyle(.blue)
-                
+
                 Text("Settings Exported")
                     .font(.title2)
                     .fontWeight(.semibold)
-                
+
                 Text("Your settings have been exported successfully. You can share this file or import it on another device.")
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.secondary)
-                
+
                 if let url = exportURL {
                     ShareLink(item: url) {
                         Label("Share Settings File", systemImage: "square.and.arrow.up")
@@ -747,15 +747,15 @@ public struct SettingsView: View {
             }
         }
     }
-    
+
     // MARK: - Helper Methods
-    
+
     private func saveExportData(_ data: Data) -> URL? {
         let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
         let exportURL = documentsPath?.appendingPathComponent("AIKO_Settings_\(Date().timeIntervalSince1970).json")
-        
+
         guard let url = exportURL else { return nil }
-        
+
         do {
             try data.write(to: url)
             return url
@@ -769,4 +769,3 @@ public struct SettingsView: View {
 #Preview {
     SettingsView(viewModel: SettingsViewModel())
 }
-

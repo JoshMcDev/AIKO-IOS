@@ -1,7 +1,7 @@
 import Foundation
 
 /// Platform-agnostic Acquisition model for use in AppCore
-public struct Acquisition: Identifiable, Equatable, Sendable, Codable {
+public struct Acquisition: Identifiable, Equatable, Sendable, Codable, Hashable {
     public let id: UUID
     public var title: String
     public var requirements: String

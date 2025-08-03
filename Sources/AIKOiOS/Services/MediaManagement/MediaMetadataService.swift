@@ -37,14 +37,14 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
         guard let cgImage = createCGImage(from: data) else {
             throw MediaError.invalidInput("Could not create CGImage from data")
         }
-        
+
         return try await withCheckedThrowingContinuation { continuation in
             let request = VNRecognizeTextRequest { request, error in
                 if let error = error {
                     continuation.resume(throwing: error)
                     return
                 }
-                
+
                 var extractedTexts: [ExtractedText] = []
                 for observation in request.results as? [VNRecognizedTextObservation] ?? [] {
                     if let topCandidate = observation.topCandidates(1).first {
@@ -63,7 +63,7 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
                 }
                 continuation.resume(returning: extractedTexts)
             }
-            
+
             request.recognitionLevel = .accurate
             let handler = VNImageRequestHandler(cgImage: cgImage)
             try? handler.perform([request])
@@ -74,14 +74,14 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
         guard let cgImage = createCGImage(from: data) else {
             throw MediaError.invalidInput("Could not create CGImage from data")
         }
-        
+
         return try await withCheckedThrowingContinuation { continuation in
             let request = VNDetectFaceRectanglesRequest { request, error in
                 if let error = error {
                     continuation.resume(throwing: error)
                     return
                 }
-                
+
                 var detectedFaces: [DetectedFace] = []
                 for observation in request.results as? [VNFaceObservation] ?? [] {
                     let bounds = observation.boundingBox
@@ -97,7 +97,7 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
                 }
                 continuation.resume(returning: detectedFaces)
             }
-            
+
             let handler = VNImageRequestHandler(cgImage: cgImage)
             try? handler.perform([request])
         }
@@ -107,21 +107,19 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
         guard let cgImage = createCGImage(from: data) else {
             throw MediaError.invalidInput("Could not create CGImage from data")
         }
-        
+
         return try await withCheckedThrowingContinuation { continuation in
             let request = VNClassifyImageRequest { request, error in
                 if let error = error {
                     continuation.resume(throwing: error)
                     return
                 }
-                
+
                 var labels: [String] = []
-                for observation in request.results?.prefix(5) as? [VNClassificationObservation] ?? [] {
-                    if observation.confidence > 0.1 {
-                        labels.append(observation.identifier)
-                    }
+                for observation in request.results?.prefix(5) as? [VNClassificationObservation] ?? [] where observation.confidence > 0.1 {
+                    labels.append(observation.identifier)
                 }
-                
+
                 let analysis = ImageAnalysis(
                     sceneClassification: labels.map { SceneLabel(label: $0, confidence: 0.8) },
                     dominantColors: [], // Would require additional processing
@@ -134,7 +132,7 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
                 )
                 continuation.resume(returning: analysis)
             }
-            
+
             let handler = VNImageRequestHandler(cgImage: cgImage)
             try? handler.perform([request])
         }
@@ -143,7 +141,7 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
     public func validateMetadata(_ fields: [MetadataField]) async -> MediaValidationResult {
         var errors: [String] = []
         var warnings: [String] = []
-        
+
         for field in fields {
             // Validate field values based on type
             switch field.name {
@@ -166,7 +164,7 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
                 }
             }
         }
-        
+
         return MediaValidationResult(
             isValid: errors.isEmpty,
             errors: errors.map { MediaValidationError(message: $0) },
@@ -179,7 +177,7 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
     public func extractMetadata(from url: URL) async throws -> MediaMetadata {
         let data = try Data(contentsOf: url)
         let pathExtension = url.pathExtension.lowercased()
-        
+
         let mediaType: MediaType
         switch pathExtension {
         case "jpg", "jpeg", "png", "gif", "bmp", "tiff", "heic":
@@ -191,14 +189,14 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
         default:
             mediaType = .document
         }
-        
+
         let fields = try await extractMetadata(from: data, type: mediaType) as [MetadataField]
         // Convert MetadataField array back to MediaMetadata structure
         var width: Int?
         var height: Int?
         var fileSize: Int64?
         let fileName = url.lastPathComponent
-        
+
         for field in fields {
             switch field.name {
             case "width":
@@ -211,7 +209,7 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
                 break
             }
         }
-        
+
         return MediaMetadata(
             fileName: fileName,
             fileSize: fileSize ?? 0,
@@ -228,7 +226,7 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
         var width: Int?
         var height: Int?
         var fileSize: Int64?
-        
+
         for field in fields {
             switch field.name {
             case "width":
@@ -241,7 +239,7 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
                 break
             }
         }
-        
+
         return MediaMetadata(
             fileName: "unknown",
             fileSize: fileSize ?? Int64(data.count),
@@ -258,20 +256,20 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
         guard url.pathExtension.lowercased() == "jpg" || url.pathExtension.lowercased() == "jpeg" else {
             throw MediaError.unsupportedOperation("Metadata writing only supported for JPEG files")
         }
-        
+
         // Basic implementation for JPEG metadata writing
         // In production, would use ImageIO framework for comprehensive metadata writing
         let data = try Data(contentsOf: url)
         guard let cgImage = createCGImage(from: data) else {
             throw MediaError.invalidInput("Could not create CGImage from file")
         }
-        
+
         // Create new image data with metadata
         let mutableData = NSMutableData()
         guard let destination = CGImageDestinationCreateWithData(mutableData, "public.jpeg" as CFString, 1, nil) else {
             throw MediaError.processingFailed("Could not create image destination")
         }
-        
+
         var properties: [String: Any] = [:]
         // Extract basic metadata properties
         if let fileName = metadata.fileName {
@@ -283,13 +281,13 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
         if let mimeType = metadata.mimeType {
             properties["MIMEType"] = mimeType
         }
-        
+
         CGImageDestinationAddImage(destination, cgImage, properties as CFDictionary)
-        
+
         guard CGImageDestinationFinalize(destination) else {
             throw MediaError.processingFailed("Could not finalize image destination")
         }
-        
+
         try mutableData.write(to: url)
     }
 
@@ -298,15 +296,15 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
         guard let cgImage = createCGImage(from: data) else {
             throw MediaError.invalidInput("Could not create CGImage from file")
         }
-        
+
         // Create clean image without metadata
         let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + "." + url.pathExtension)
-        
+
         let mutableData = NSMutableData()
         guard let destination = CGImageDestinationCreateWithData(mutableData, "public.jpeg" as CFString, 1, nil) else {
             throw MediaError.processingFailed("Could not create image destination")
         }
-        
+
         // Add image without metadata or with filtered metadata
         var properties: [String: Any] = [:]
         if fields != nil {
@@ -314,13 +312,13 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
             // This is a simplified implementation
             properties = [:] // Remove all for simplicity
         }
-        
+
         CGImageDestinationAddImage(destination, cgImage, properties as CFDictionary)
-        
+
         guard CGImageDestinationFinalize(destination) else {
             throw MediaError.processingFailed("Could not finalize image destination")
         }
-        
+
         try mutableData.write(to: tempURL)
         return tempURL
     }
@@ -331,7 +329,7 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
         time: TimeInterval?
     ) async throws -> Data {
         let pathExtension = url.pathExtension.lowercased()
-        
+
         if ["mp4", "mov", "avi", "mkv"].contains(pathExtension) {
             // Video thumbnail
             return try await generateVideoThumbnail(from: url, size: size, time: time ?? 0)
@@ -345,7 +343,7 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
         let extractedTexts = try await extractText(from: data) as [ExtractedText]
         let combinedText = extractedTexts.map { $0.text }.joined(separator: " ")
         let averageConfidence = extractedTexts.isEmpty ? 0 : extractedTexts.map { $0.confidence }.reduce(0, +) / Double(extractedTexts.count)
-        
+
         return ExtractedText(
             text: combinedText,
             confidence: Double(averageConfidence),
@@ -361,32 +359,32 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
         let audioFile = try AVAudioFile(forReading: url)
         let format = audioFile.processingFormat
         let frameCount = UInt32(audioFile.length)
-        
+
         guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frameCount) else {
             throw MediaError.processingFailed("Could not create audio buffer")
         }
-        
+
         try audioFile.read(into: buffer)
-        
+
         guard let channelData = buffer.floatChannelData?[0] else {
             throw MediaError.processingFailed("Could not access audio channel data")
         }
-        
+
         // Downsample to requested number of samples
         let stride = Int(frameCount) / samples
         var waveform: [Float] = []
-        
+
         for i in 0..<samples {
             let startIndex = i * stride
             let endIndex = min(startIndex + stride, Int(frameCount))
-            
+
             var sum: Float = 0
             for j in startIndex..<endIndex {
                 sum += abs(channelData[j])
             }
             waveform.append(sum / Float(endIndex - startIndex))
         }
-        
+
         return waveform
     }
 
@@ -394,34 +392,34 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
         let asset = AVAsset(url: url)
         let imageGenerator = AVAssetImageGenerator(asset: asset)
         imageGenerator.appliesPreferredTrackTransform = true
-        
+
         let cmTime = CMTime(seconds: time, preferredTimescale: 600)
-        
+
         return try await withCheckedThrowingContinuation { continuation in
-            imageGenerator.generateCGImagesAsynchronously(forTimes: [NSValue(time: cmTime)]) { _, cgImage, _, result, error in
+            imageGenerator.generateCGImagesAsynchronously(forTimes: [NSValue(time: cmTime)]) { _, cgImage, _, _, error in
                 if let error = error {
                     continuation.resume(throwing: error)
                     return
                 }
-                
+
                 guard let cgImage = cgImage else {
                     continuation.resume(throwing: MediaError.processingFailed("Could not generate frame"))
                     return
                 }
-                
+
                 let mutableData = NSMutableData()
                 guard let destination = CGImageDestinationCreateWithData(mutableData, "public.jpeg" as CFString, 1, nil) else {
                     continuation.resume(throwing: MediaError.processingFailed("Could not create image destination"))
                     return
                 }
-                
+
                 CGImageDestinationAddImage(destination, cgImage, nil)
-                
+
                 guard CGImageDestinationFinalize(destination) else {
                     continuation.resume(throwing: MediaError.processingFailed("Could not finalize image destination"))
                     return
                 }
-                
+
                 continuation.resume(returning: mutableData as Data)
             }
         }
@@ -430,7 +428,7 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
     public func getAllMetadata(from url: URL) async throws -> [String: Any] {
         let metadata = try await extractMetadata(from: url)
         var result: [String: Any] = [:]
-        
+
         // Extract metadata properties into dictionary
         if let fileName = metadata.fileName {
             result["fileName"] = fileName
@@ -447,17 +445,17 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
         if let height = metadata.height {
             result["height"] = height
         }
-        
+
         // Add EXIF data
         for (key, value) in metadata.exifData {
             result[key] = value
         }
-        
+
         return result
     }
-    
+
     // MARK: - Helper Methods
-    
+
     private func createCGImage(from data: Data) -> CGImage? {
         guard let imageSource = CGImageSourceCreateWithData(data as CFData, nil),
               let cgImage = CGImageSourceCreateImageAtIndex(imageSource, 0, nil) else {
@@ -465,14 +463,14 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
         }
         return cgImage
     }
-    
+
     private func extractImageMetadata(from data: Data) async throws -> [MetadataField] {
         guard let imageSource = CGImageSourceCreateWithData(data as CFData, nil) else {
             throw MediaError.invalidInput("Could not create image source")
         }
-        
+
         var fields: [MetadataField] = []
-        
+
         if let properties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as? [String: Any] {
             // Extract basic image properties
             if let width = properties[kCGImagePropertyPixelWidth as String] as? Int {
@@ -484,7 +482,7 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
             if let colorModel = properties[kCGImagePropertyColorModel as String] as? String {
                 fields.append(MetadataField(name: "colorModel", type: .text, value: colorModel, source: .exif))
             }
-            
+
             // Extract EXIF data if available
             if let exifDict = properties[kCGImagePropertyExifDictionary as String] as? [String: Any] {
                 for (key, value) in exifDict {
@@ -492,33 +490,33 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
                 }
             }
         }
-        
+
         // Add file size
         fields.append(MetadataField(name: "fileSize", type: .number, value: String(data.count), source: .system))
-        
+
         return fields
     }
-    
+
     private func extractVideoMetadata(from data: Data) async throws -> [MetadataField] {
         // Create temporary file for AVAsset (AVAsset requires file URL)
         let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".mp4")
         try data.write(to: tempURL)
-        
+
         defer {
             try? FileManager.default.removeItem(at: tempURL)
         }
-        
+
         let asset = AVAsset(url: tempURL)
         var fields: [MetadataField] = []
-        
+
         // Extract duration
         let duration = try await asset.load(.duration)
         fields.append(MetadataField(name: "duration", type: .duration, value: String(CMTimeGetSeconds(duration)), source: .system))
-        
+
         // Extract tracks info
         let tracks = try await asset.load(.tracks)
         fields.append(MetadataField(name: "trackCount", type: .number, value: String(tracks.count), source: .system))
-        
+
         // Extract video tracks info
         for track in tracks {
             let mediaType = track.mediaType
@@ -528,59 +526,59 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
                 fields.append(MetadataField(name: "videoHeight", type: .dimension, value: String(Int(naturalSize.height)), source: .system))
             }
         }
-        
+
         fields.append(MetadataField(name: "fileSize", type: .number, value: String(data.count), source: .system))
-        
+
         return fields
     }
-    
+
     private func extractAudioMetadata(from data: Data) async throws -> [MetadataField] {
         // Create temporary file for AVAudioFile
         let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".m4a")
         try data.write(to: tempURL)
-        
+
         defer {
             try? FileManager.default.removeItem(at: tempURL)
         }
-        
+
         let audioFile = try AVAudioFile(forReading: tempURL)
         var fields: [MetadataField] = []
-        
+
         fields.append(MetadataField(name: "duration", type: .duration, value: String(TimeInterval(audioFile.length) / audioFile.fileFormat.sampleRate), source: .system))
         fields.append(MetadataField(name: "sampleRate", type: .number, value: String(audioFile.fileFormat.sampleRate), source: .system))
         fields.append(MetadataField(name: "channelCount", type: .number, value: String(audioFile.fileFormat.channelCount), source: .system))
         fields.append(MetadataField(name: "fileSize", type: .number, value: String(data.count), source: .system))
-        
+
         return fields
     }
-    
+
     private func extractDocumentMetadata(from data: Data) async throws -> [MetadataField] {
         var fields: [MetadataField] = []
-        
+
         // Basic document metadata
         fields.append(MetadataField(name: "fileSize", type: .number, value: String(data.count), source: .system))
         fields.append(MetadataField(name: "type", type: .text, value: "document", source: .system))
-        
+
         // Try to detect if it's a PDF or other structured document
         if data.starts(with: Data([0x25, 0x50, 0x44, 0x46])) { // PDF signature
             fields.append(MetadataField(name: "format", type: .text, value: "PDF", source: .system))
         }
-        
+
         return fields
     }
-    
+
     private func generateImageThumbnail(from url: URL, size: AppCore.CGSize) async throws -> Data {
         let data = try Data(contentsOf: url)
         guard let cgImage = createCGImage(from: data) else {
             throw MediaError.invalidInput("Could not create CGImage from file")
         }
-        
+
         // Calculate aspect-fit size
         let originalSize = CoreGraphics.CGSize(width: cgImage.width, height: cgImage.height)
         let targetSize = CoreGraphics.CGSize(width: size.width, height: size.height)
         let aspectRatio = min(targetSize.width / originalSize.width, targetSize.height / originalSize.height)
         let scaledSize = CoreGraphics.CGSize(width: originalSize.width * aspectRatio, height: originalSize.height * aspectRatio)
-        
+
         // Create scaled image
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         guard let context = CGContext(data: nil, width: Int(scaledSize.width), height: Int(scaledSize.height),
@@ -588,61 +586,61 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
                                     bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else {
             throw MediaError.processingFailed("Could not create graphics context")
         }
-        
+
         context.draw(cgImage, in: CGRect(origin: .zero, size: scaledSize))
-        
+
         guard let scaledImage = context.makeImage() else {
             throw MediaError.processingFailed("Could not create scaled image")
         }
-        
+
         // Convert to JPEG data
         let mutableData = NSMutableData()
         guard let destination = CGImageDestinationCreateWithData(mutableData, "public.jpeg" as CFString, 1, nil) else {
             throw MediaError.processingFailed("Could not create image destination")
         }
-        
+
         CGImageDestinationAddImage(destination, scaledImage, nil)
-        
+
         guard CGImageDestinationFinalize(destination) else {
             throw MediaError.processingFailed("Could not finalize image destination")
         }
-        
+
         return mutableData as Data
     }
-    
+
     private func generateVideoThumbnail(from url: URL, size: AppCore.CGSize, time: TimeInterval) async throws -> Data {
         let asset = AVAsset(url: url)
         let imageGenerator = AVAssetImageGenerator(asset: asset)
         imageGenerator.appliesPreferredTrackTransform = true
         imageGenerator.maximumSize = CoreGraphics.CGSize(width: size.width, height: size.height)
-        
+
         let cmTime = CMTime(seconds: time, preferredTimescale: 600)
-        
+
         return try await withCheckedThrowingContinuation { continuation in
-            imageGenerator.generateCGImagesAsynchronously(forTimes: [NSValue(time: cmTime)]) { _, cgImage, _, result, error in
+            imageGenerator.generateCGImagesAsynchronously(forTimes: [NSValue(time: cmTime)]) { _, cgImage, _, _, error in
                 if let error = error {
                     continuation.resume(throwing: error)
                     return
                 }
-                
+
                 guard let cgImage = cgImage else {
                     continuation.resume(throwing: MediaError.processingFailed("Could not generate video thumbnail"))
                     return
                 }
-                
+
                 let mutableData = NSMutableData()
                 guard let destination = CGImageDestinationCreateWithData(mutableData, "public.jpeg" as CFString, 1, nil) else {
                     continuation.resume(throwing: MediaError.processingFailed("Could not create image destination"))
                     return
                 }
-                
+
                 CGImageDestinationAddImage(destination, cgImage, nil)
-                
+
                 guard CGImageDestinationFinalize(destination) else {
                     continuation.resume(throwing: MediaError.processingFailed("Could not finalize image destination"))
                     return
                 }
-                
+
                 continuation.resume(returning: mutableData as Data)
             }
         }

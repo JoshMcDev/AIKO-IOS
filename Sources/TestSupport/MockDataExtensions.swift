@@ -15,7 +15,7 @@ extension EntityDetail {
             hasActiveExclusions: false
         )
     }
-    
+
     public static func mockUEIEntity() -> EntityDetail {
         EntityDetail(
             ueiSAM: "XYZ789UVW012",
@@ -27,7 +27,7 @@ extension EntityDetail {
             hasActiveExclusions: false
         )
     }
-    
+
     public static func mockCompanyEntity() -> EntityDetail {
         EntityDetail(
             ueiSAM: "COMP123ENTITY",
@@ -39,7 +39,7 @@ extension EntityDetail {
             hasActiveExclusions: false
         )
     }
-    
+
     public static func mockExcludedEntity() -> EntityDetail {
         EntityDetail(
             ueiSAM: "EXCL789ENTITY",
@@ -66,7 +66,7 @@ extension EntitySearchResult {
             totalCount: 1
         )
     }
-    
+
     public var totalRecords: Int {
         return totalCount
     }
