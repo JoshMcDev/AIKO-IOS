@@ -184,7 +184,6 @@ let package = Package(
                 "GraphRAGTests",
                 "Templates",
                 "Shared",
-                "AIServices",
             ]
         ),
     ]

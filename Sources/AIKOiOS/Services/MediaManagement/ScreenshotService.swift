@@ -2,6 +2,7 @@ import AppCore
 import Foundation
 import ReplayKit
 @preconcurrency import SwiftUI
+@preconcurrency import UIKit
 
 /// iOS implementation of screenshot service
 @available(iOS 16.0, *)
@@ -92,9 +93,16 @@ public actor ScreenshotService: ScreenshotServiceProtocol {
     }
 
     public func captureView(_ view: AnyView) async throws -> ScreenshotResult {
+        // Use a wrapper to work around the Sendable requirement
+        struct ViewHolder: @unchecked Sendable {
+            let view: AnyView
+        }
+        
+        let holder = ViewHolder(view: view)
+        
         return try await MainActor.run {
             // Create a hosting controller for the SwiftUI view
-            let hostingController = UIHostingController(rootView: view)
+            let hostingController = UIHostingController(rootView: holder.view)
             
             // Size the hosting controller
             let targetSize = CGSize(width: 320, height: 568) // Default iPhone size
