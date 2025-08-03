@@ -2,6 +2,7 @@
 import Foundation
 import AppCore
 import AppKit
+import UniformTypeIdentifiers
 
 // MARK: - macOS Document Manager Implementation
 
@@ -297,8 +298,9 @@ extension macOSDocumentManager {
     public func getFileTypeDescription(for documentURL: URL) -> String {
         do {
             let resourceValues = try documentURL.resourceValues(forKeys: [.typeIdentifierKey])
-            if let typeIdentifier = resourceValues.typeIdentifier {
-                return NSWorkspace.shared.localizedDescription(forType: typeIdentifier) ?? documentURL.pathExtension.uppercased()
+            if let typeIdentifier = resourceValues.typeIdentifier,
+               let utType = UTType(typeIdentifier) {
+                return utType.localizedDescription ?? documentURL.pathExtension.uppercased()
             }
         } catch {
             // Fallback to extension

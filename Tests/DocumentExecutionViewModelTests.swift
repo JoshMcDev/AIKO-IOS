@@ -116,7 +116,7 @@ final class DocumentExecutionViewModelTests {
             validateDocument: { _ in
                 ValidationResult(
                     isValid: false,
-                    errors: [DocumentValidationError(code: "TEST_ERROR", message: "Mock validation error")],
+                    errors: [DocumentValidationError(code: "TEST_ERROR", message: "Mock validation error", fix: nil)],
                     warnings: []
                 )
             }

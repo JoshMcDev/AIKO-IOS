@@ -304,6 +304,8 @@ public enum SAMGovError: Error, LocalizedError, Sendable {
     case invalidResponse
     case rateLimitExceeded
     case apiKeyRequired
+    case authenticationFailed
+    case invalidFormat
 
     public var errorDescription: String? {
         switch self {
@@ -319,6 +321,10 @@ public enum SAMGovError: Error, LocalizedError, Sendable {
             "API rate limit exceeded"
         case .apiKeyRequired:
             "SAM.gov API key is required"
+        case .authenticationFailed:
+            "Authentication failed with SAM.gov API"
+        case .invalidFormat:
+            "Invalid format for search parameter"
         }
     }
 }

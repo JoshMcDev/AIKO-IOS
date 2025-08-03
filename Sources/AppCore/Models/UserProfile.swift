@@ -17,6 +17,19 @@ public struct UserProfile: Equatable, Codable, Sendable {
     public var defaultDeliveryAddress: Address
     public var profileImageData: Data?
     public var organizationLogoData: Data?
+    
+    // Additional fields for 20+ field requirement
+    public var website: String
+    public var linkedIn: String
+    public var twitter: String
+    public var bio: String
+    public var certifications: [String]
+    public var specializations: [String]
+    public var preferredLanguage: String
+    public var timeZone: String
+    public var mailingAddress: Address  // For ProfileView compatibility
+    public var billingAddress: Address  // For ProfileView compatibility
+    
     public var createdAt: Date
     public var updatedAt: Date
 
@@ -37,6 +50,16 @@ public struct UserProfile: Equatable, Codable, Sendable {
         defaultDeliveryAddress: Address = Address(),
         profileImageData: Data? = nil,
         organizationLogoData: Data? = nil,
+        website: String = "",
+        linkedIn: String = "",
+        twitter: String = "",
+        bio: String = "",
+        certifications: [String] = [],
+        specializations: [String] = [],
+        preferredLanguage: String = "en",
+        timeZone: String = TimeZone.current.identifier,
+        mailingAddress: Address = Address(),
+        billingAddress: Address = Address(),
         createdAt: Date = Date(),
         updatedAt: Date = Date()
     ) {
@@ -56,6 +79,16 @@ public struct UserProfile: Equatable, Codable, Sendable {
         self.defaultDeliveryAddress = defaultDeliveryAddress
         self.profileImageData = profileImageData
         self.organizationLogoData = organizationLogoData
+        self.website = website
+        self.linkedIn = linkedIn
+        self.twitter = twitter
+        self.bio = bio
+        self.certifications = certifications
+        self.specializations = specializations
+        self.preferredLanguage = preferredLanguage
+        self.timeZone = timeZone
+        self.mailingAddress = mailingAddress
+        self.billingAddress = billingAddress
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
@@ -143,7 +176,7 @@ public extension UserProfile {
 
     var completionPercentage: Double {
         var completedFields = 0
-        let totalFields = 15
+        let totalFields = 24  // Updated for 20+ fields
 
         if !fullName.isEmpty { completedFields += 1 }
         if !title.isEmpty { completedFields += 1 }
@@ -154,12 +187,21 @@ public extension UserProfile {
         if !alternatePhoneNumber.isEmpty { completedFields += 1 }
         if !organizationName.isEmpty { completedFields += 1 }
         if !organizationalDODAAC.isEmpty { completedFields += 1 }
+        if !agencyDepartmentService.isEmpty { completedFields += 1 }
         if defaultAdministeredByAddress.isComplete { completedFields += 1 }
         if defaultPaymentAddress.isComplete { completedFields += 1 }
         if defaultDeliveryAddress.isComplete { completedFields += 1 }
+        if mailingAddress.isComplete { completedFields += 1 }
+        if billingAddress.isComplete { completedFields += 1 }
         if profileImageData != nil { completedFields += 1 }
         if organizationLogoData != nil { completedFields += 1 }
-        if !position.isEmpty { completedFields += 1 }
+        if !website.isEmpty { completedFields += 1 }
+        if !linkedIn.isEmpty { completedFields += 1 }
+        if !twitter.isEmpty { completedFields += 1 }
+        if !bio.isEmpty { completedFields += 1 }
+        if !certifications.isEmpty { completedFields += 1 }
+        if !specializations.isEmpty { completedFields += 1 }
+        if !preferredLanguage.isEmpty { completedFields += 1 }
 
         return Double(completedFields) / Double(totalFields)
     }

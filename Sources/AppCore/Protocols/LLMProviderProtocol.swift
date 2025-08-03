@@ -452,6 +452,7 @@ public enum LLMError: LocalizedError {
 public enum LLMProviderError: LocalizedError {
     case notConfigured
     case invalidCredentials
+    case authenticationFailed
     case rateLimitExceeded
     case contextLengthExceeded
     case modelNotSupported(String)
@@ -469,6 +470,8 @@ public enum LLMProviderError: LocalizedError {
             "LLM provider is not configured"
         case .invalidCredentials:
             "Invalid API credentials"
+        case .authenticationFailed:
+            "Authentication failed"
         case .rateLimitExceeded:
             "Rate limit exceeded"
         case .contextLengthExceeded:

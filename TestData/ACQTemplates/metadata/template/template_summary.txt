@@ -1,0 +1,43 @@
+Collection: TEMPLATE
+Total Files: 131
+
+Document Types:
+  PWS: 50
+  SOW: 41
+  RFI: 10
+  RFQ: 8
+  BPA: 6
+  GSA: 6
+  SOO: 5
+  Unknown: 3
+  Guide: 1
+  Template: 1
+
+Agencies:
+  GSA: 105
+  VA: 11
+  DOD: 9
+  Unknown: 5
+  DHS: 1
+
+Years:
+  Unknown: 30
+  2020: 29
+  2021: 11
+  2022: 10
+  2019: 9
+  2025: 7
+  2018: 6
+  2023: 5
+  2024: 5
+  2017: 4
+  2015: 2
+  2000: 2
+  2016: 2
+  2050: 2
+  2009: 2
+  2005: 1
+  2014: 1
+  2010: 1
+  2013: 1
+  2001: 1

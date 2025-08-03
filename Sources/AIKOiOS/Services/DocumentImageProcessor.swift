@@ -1,0 +1,310 @@
+import Foundation
+import UIKit
+import CoreGraphics
+import Vision
+import AppCore
+
+/// Service for processing and enhancing scanned document images
+public class DocumentImageProcessor {
+    
+    // MARK: - Configuration Types
+    
+    public enum ProcessingMode {
+        case fast
+        case balanced
+        case highQuality
+        case professional
+    }
+    
+    public struct ProcessingOptions {
+        public let enhanceContrast: Bool
+        public let reduceNoise: Bool
+        public let correctPerspective: Bool
+        public let optimizeForOCR: Bool
+        
+        public init(
+            enhanceContrast: Bool = true,
+            reduceNoise: Bool = true,
+            correctPerspective: Bool = true,
+            optimizeForOCR: Bool = true
+        ) {
+            self.enhanceContrast = enhanceContrast
+            self.reduceNoise = reduceNoise
+            self.correctPerspective = correctPerspective
+            self.optimizeForOCR = optimizeForOCR
+        }
+    }
+    
+    // MARK: - Result Types
+    
+    public struct ProcessingResult {
+        public let processedImageData: Data
+        public let qualityMetrics: QualityMetrics
+        public let processingTime: TimeInterval
+        public let appliedFilters: [String]
+        
+        public init(
+            processedImageData: Data,
+            qualityMetrics: QualityMetrics,
+            processingTime: TimeInterval,
+            appliedFilters: [String]
+        ) {
+            self.processedImageData = processedImageData
+            self.qualityMetrics = qualityMetrics
+            self.processingTime = processingTime
+            self.appliedFilters = appliedFilters
+        }
+    }
+    
+    public struct QualityMetrics: Sendable {
+        public let overallConfidence: Double
+        public let sharpnessScore: Double
+        public let contrastScore: Double
+        public let noiseLevel: Double
+        public let textClarity: Double
+        public let recommendedForOCR: Bool
+        
+        public init(
+            overallConfidence: Double,
+            sharpnessScore: Double,
+            contrastScore: Double,
+            noiseLevel: Double,
+            textClarity: Double,
+            recommendedForOCR: Bool
+        ) {
+            self.overallConfidence = overallConfidence
+            self.sharpnessScore = sharpnessScore
+            self.contrastScore = contrastScore
+            self.noiseLevel = noiseLevel
+            self.textClarity = textClarity
+            self.recommendedForOCR = recommendedForOCR
+        }
+    }
+    
+    // MARK: - OCR Types
+    
+    public struct OCROptions: Sendable {
+        public let language: String
+        public let recognitionLevel: VNRequestTextRecognitionLevel
+        public let usesLanguageCorrection: Bool
+        
+        public init(
+            language: String = "en-US",
+            recognitionLevel: VNRequestTextRecognitionLevel = .accurate,
+            usesLanguageCorrection: Bool = true
+        ) {
+            self.language = language
+            self.recognitionLevel = recognitionLevel
+            self.usesLanguageCorrection = usesLanguageCorrection
+        }
+    }
+    
+    public struct OCRResult: Sendable {
+        public let fullText: String
+        public let confidence: Double
+        public let extractedText: [ExtractedText]
+        public let processingTime: TimeInterval
+        
+        public init(
+            fullText: String,
+            confidence: Double,
+            extractedText: [ExtractedText],
+            processingTime: TimeInterval
+        ) {
+            self.fullText = fullText
+            self.confidence = confidence
+            self.extractedText = extractedText
+            self.processingTime = processingTime
+        }
+    }
+    
+    public struct ExtractedText: Sendable {
+        public let text: String
+        public let confidence: Double
+        public let boundingBox: CoreGraphics.CGRect
+        
+        public init(
+            text: String,
+            confidence: Double,
+            boundingBox: CoreGraphics.CGRect
+        ) {
+            self.text = text
+            self.confidence = confidence
+            self.boundingBox = boundingBox
+        }
+    }
+    
+    public enum DocumentType: String, CaseIterable, Sendable {
+        case invoice
+        case receipt
+        case businessCard
+        case form
+        case idDocument
+        case contract
+        case other
+    }
+    
+    public struct StructuredOCRResult: Sendable {
+        public let ocrResult: OCRResult
+        public let extractedFields: [String: StructuredFieldValue]
+        public let documentType: DocumentType
+        public let confidence: Double
+        
+        public init(
+            ocrResult: OCRResult,
+            extractedFields: [String: StructuredFieldValue],
+            documentType: DocumentType,
+            confidence: Double
+        ) {
+            self.ocrResult = ocrResult
+            self.extractedFields = extractedFields
+            self.documentType = documentType
+            self.confidence = confidence
+        }
+    }
+    
+    public struct StructuredFieldValue: Sendable {
+        public let value: String
+        public let confidence: Double
+        public let fieldType: FieldType
+        
+        public init(
+            value: String,
+            confidence: Double,
+            fieldType: FieldType = .text
+        ) {
+            self.value = value
+            self.confidence = confidence
+            self.fieldType = fieldType
+        }
+        
+        public enum FieldType: String, CaseIterable, Sendable {
+            case text
+            case number
+            case date
+            case currency
+            case email
+            case phone
+        }
+    }
+    
+    public enum OCRLanguage: String, CaseIterable, Sendable {
+        case english = "en-US"
+        case spanish = "es-ES"
+        case french = "fr-FR"
+        case german = "de-DE"
+        case italian = "it-IT"
+        case portuguese = "pt-BR"
+        case russian = "ru-RU"
+        case chinese = "zh-Hans"
+        case japanese = "ja-JP"
+        case korean = "ko-KR"
+    }
+    
+    // MARK: - Public Methods
+    
+    public init() {
+        // Minimal initialization - will be implemented in GREEN phase
+    }
+    
+    public func processImage(
+        _ imageData: Data,
+        mode: ProcessingMode,
+        options: ProcessingOptions
+    ) async throws -> ProcessingResult {
+        fatalError("DocumentImageProcessor processImage not implemented - this should fail in RED phase")
+    }
+    
+    public func enhanceImage(_ imageData: Data) async throws -> Data {
+        fatalError("DocumentImageProcessor enhanceImage not implemented - this should fail in RED phase")
+    }
+    
+    public func analyzeQuality(_ imageData: Data) async throws -> QualityMetrics {
+        fatalError("DocumentImageProcessor analyzeQuality not implemented - this should fail in RED phase")
+    }
+    
+    public func generateThumbnail(
+        _ imageData: Data,
+        size: CoreGraphics.CGSize
+    ) async throws -> Data {
+        fatalError("DocumentImageProcessor generateThumbnail not implemented - this should fail in RED phase")
+    }
+    
+    // MARK: - Private Methods
+    
+    private func applyContrastEnhancement(_ image: UIImage) -> UIImage {
+        fatalError("DocumentImageProcessor applyContrastEnhancement not implemented - this should fail in RED phase")
+    }
+    
+    private func reduceImageNoise(_ image: UIImage) -> UIImage {
+        fatalError("DocumentImageProcessor reduceImageNoise not implemented - this should fail in RED phase")
+    }
+    
+    private func correctPerspective(_ image: UIImage) -> UIImage {
+        fatalError("DocumentImageProcessor correctPerspective not implemented - this should fail in RED phase")
+    }
+}
+
+// MARK: - Mock Implementation for Testing
+
+public class MockDocumentImageProcessor: DocumentImageProcessor {
+    public var shouldSimulateError = false
+    public var simulatedError: Error?
+    public var simulatedProcessingResult: ProcessingResult?
+    
+    public override func processImage(
+        _ imageData: Data,
+        mode: ProcessingMode,
+        options: ProcessingOptions
+    ) async throws -> ProcessingResult {
+        if shouldSimulateError {
+            throw simulatedError ?? DocumentScannerError.unknownError("Mock processing error")
+        }
+        
+        return simulatedProcessingResult ?? ProcessingResult(
+            processedImageData: imageData,
+            qualityMetrics: QualityMetrics(
+                overallConfidence: 0.85,
+                sharpnessScore: 0.8,
+                contrastScore: 0.9,
+                noiseLevel: 0.2,
+                textClarity: 0.85,
+                recommendedForOCR: true
+            ),
+            processingTime: 0.1,
+            appliedFilters: ["mock"]
+        )
+    }
+    
+    public override func enhanceImage(_ imageData: Data) async throws -> Data {
+        if shouldSimulateError {
+            throw simulatedError ?? DocumentScannerError.unknownError("Mock enhancement error")
+        }
+        return imageData
+    }
+    
+    public override func analyzeQuality(_ imageData: Data) async throws -> QualityMetrics {
+        if shouldSimulateError {
+            throw simulatedError ?? DocumentScannerError.unknownError("Mock analysis error")
+        }
+        
+        return QualityMetrics(
+            overallConfidence: 0.85,
+            sharpnessScore: 0.8,
+            contrastScore: 0.9,
+            noiseLevel: 0.2,
+            textClarity: 0.85,
+            recommendedForOCR: true
+        )
+    }
+    
+    public override func generateThumbnail(
+        _ imageData: Data,
+        size: CoreGraphics.CGSize
+    ) async throws -> Data {
+        if shouldSimulateError {
+            throw simulatedError ?? DocumentScannerError.unknownError("Mock thumbnail error")
+        }
+        return imageData
+    }
+}

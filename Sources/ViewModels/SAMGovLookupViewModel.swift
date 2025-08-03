@@ -227,6 +227,10 @@ public final class SAMGovLookupViewModel: @unchecked Sendable {
             return "Network error: \(message)"
         case .apiKeyRequired:
             return "API key required for SAM.gov access."
+        case .authenticationFailed:
+            return "Authentication failed with SAM.gov API. Please check your credentials."
+        case .invalidFormat:
+            return "Invalid format for search parameter. Please check your input."
         }
     }
 }

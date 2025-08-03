@@ -1,0 +1,3151 @@
+# 1930_Quality_Assurance_Plan_QASP_for_Charge_Card_Database_Management_System
+
+_Converted from PDF using pdftotext_
+
+RFP #
+5.1
+
+5.1.1
+
+5.1.2
+
+5.1.3
+
+5.1.4
+
+5.1.5
+
+5.1.6
+
+Requirement
+
+Lot
+
+Quality Standard
+
+AQL
+
+Timeliness
+Standard
+
+AQL
+
+Maximum
+
+Budget and
+Financial Suppor
+
+D
+## O
+
+Provide Assistance
+In The Budge
+Process
+
+# Of assists
+performed per
+month
+
+Assist In The
+Preparation Of
+Grants, Contracts,
+And Cooperative
+Agreements
+
+# Of assists
+performed per
+month
+
+Type, Route And
+Gain Approval For
+Acquisitions
+
+# Of
+acquisitions
+accomplished
+per week
+
+Process Invoices
+
+# Of invoices
+processed per
+week
+
+Analyze Budget /
+Finance Problems
+And Resolve
+Discrepancies
+Research And
+Produce Paymen
+Voucher History For
+Paymen
+
+Surveillance Method
+
+# Of problems
+/
+discrepancies
+resolved per
+month
+# Of vouchers
+processed per
+week
+
+All assists performed
+were accurate,
+complete, and met the
+requirements of the
+person needing
+assistance.
+All assists performed
+were accurate,
+complete, and met the
+requirements of the
+person needing
+assistance.
+All acquisitions were
+accomplished
+accurately, complete,
+and met the needs of
+he requester.
+All invoices processed
+were accurate and
+complete; reconciled,
+entered into data
+base, and coordinated
+as needed.
+All problems /
+discrepancies were
+resolved satisfactorily.
+
+3%
+
+All vouchers were
+processed accurately
+and complete for
+payment.
+
+1%
+
+3%
+
+2%
+
+1%
+
+5%
+
+Assists were
+complete within 2
+hours of initiation
+
+10%
+
+Assists were
+complete within 2
+hours of initiation
+
+10%
+
+Acquisitions were
+completed within
+2 days of a
+reques
+
+5%
+
+Invoices were
+processed within
+1 day of receip
+
+2%
+
+Problems /
+discrepancies
+were resolved
+within 5 days of
+discovery
+Vouchers
+processed within
+1 day of receip
+
+7%
+
+2%
+
+MIS
+
+PI
+
+US
+
+VU
+## CC
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+100
+%
+
+PS
+
+RS
+
+COB
+
+COB
+## X
+
+5 days
+
+2 days
+## X
+
+5 days
+
+COB
+## X
+
+1
+
+X
+
+RFP #
+5.1
+
+5.1.7
+
+5.1.8
+
+5.1.9
+
+5.1.10
+
+Requirement
+
+Lot
+
+Quality Standard
+
+AQL
+
+Timeliness
+Standard
+
+AQL
+
+Maximum
+
+Budget and
+Financial Suppor
+
+Surveillance Method
+## D
+## O
+
+Maintain Charge
+Card Corporate
+Accoun
+
+# Of corporate
+card entries
+per day
+
+Work With Data
+Tracking System
+And EAGLS
+Tracking System
+
+# Of
+statements
+per week
+
+Complete Cost
+Codes On
+Statements
+
+# Of
+statements
+per day
+
+Process Permit /
+License Fees For
+Deposi
+
+# Of permits /
+licenses per
+week
+
+All corporate charge
+card entries were
+reconciled for
+accuracy and
+completeness
+All EAGLS
+statements, TMC
+printouts and budgets
+checked for accuracy
+and corrections made
+as needed
+All statements have
+accurate cost codes
+
+All permits / licenses
+processed accurately
+and correctly and fees
+deposited
+
+1%
+
+5%
+
+1%
+
+5%
+
+Corporate
+Charge Card
+maintained daily
+
+2%
+
+Reviews and
+corrections made
+by the end of the
+week received
+
+10%
+
+Statements
+reviewed for
+accuracy within 1
+working day of
+receipt COB
+Permits /
+licenses
+processed and
+fees deposited
+by the end of the
+week received.
+
+2%
+
+10%
+
+MIS
+
+PI
+
+US
+
+VU
+## CC
+
+X
+
+100
+%
+
+PS
+
+RS
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+5 days
+
+By the end of
+each month
+
+Statements
+reviewed for
+accuracy within
+2 working days
+of receipt COB
+By the end of
+he month
+received.
+
+X
+
+X
+
+2
+
+RFP #
+5.2
+
+5.2.1
+
+RFP #
+5.3
+
+5.3.1
+
+5.3.2
+
+5.3.3
+
+5.3.4
+
+Requirement
+
+Lot
+
+Quality Standard
+
+AQL
+
+Timeliness
+Standard
+
+AQL
+
+Maximum
+
+Federal Finance
+System (FFS)
+Manage User
+Accounts
+
+Requirement
+
+D
+## O
+# Of accounts
+managed per
+month
+
+Accounts managed
+accurately and IAW
+FFS procedures and
+requirements
+
+5%
+
+Lot
+
+Quality Standard
+
+AQL
+
+Accounts were
+managed and
+maintained within
+1 working day
+
+Timeliness
+Standard
+
+5%
+
+AQL
+
+Maximum
+
+Prepare
+Endangered
+Species Listing
+
+Prepare Federal
+Register Documents
+
+Prepare And
+Finalize, In Standard
+Format News
+Releases, And
+Advisories For The
+Media
+
+All final and draft
+correspondence has
+been reviewed for
+format, grammar, and
+spelling
+Endangered Species
+Listing reviewed for
+format, grammar, and
+spelling
+
+1%
+
+Federal Register
+documents prepared
+in proper format, with
+correct grammar and
+spelling
+News releases and
+advisories are
+prepared and finalized
+accurately, complete
+with proper format,
+grammar, and spelling
+
+1%
+
+1%
+
+1%
+
+All
+correspondence
+submitted within
+1 working day of
+assignmen
+Listing is
+prepared and
+completed within
+5 working days of
+initiation
+
+3%
+
+Within 1 working
+day of initiation
+
+3%
+
+Within 1 working
+day of initiation
+
+5%
+
+3%
+
+All
+correspondence
+submitted within
+2 working days
+of assignmen
+Listing is
+prepared and
+completed
+within 10
+working days of
+initiation
+Within 2 working
+days of initiation
+
+PI
+
+US
+
+VU
+## CC
+
+X
+
+X
+
+X
+
+100
+%
+
+PS
+
+RS
+
+PS
+
+RS
+
+Surveillance Method
+## D
+## O
+
+# Of draft and
+final
+corresponden
+ce prepared
+per month
+# Of
+Endangered
+Species
+listings
+prepared per
+month
+# Of Federal
+Register
+documents
+prepared per
+month
+# 0f news
+releases and
+advisories per
+month
+
+MIS
+
+Accounts were
+managed and
+maintained
+within 2 working
+days
+
+Correspondence
+
+Prepare Draft And
+Final
+Correspondence
+
+Surveillance Method
+
+MIS
+
+PI
+
+US
+
+VU
+## CC
+
+100
+%
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+Within 2 working
+days of initiation
+
+3
+
+RFP #
+5.3
+
+5.3.5
+
+5.3.6
+
+5.3.7
+
+5.3.8
+
+Requirement
+
+Lot
+
+Quality Standard
+
+AQL
+
+Timeliness
+Standard
+
+AQL
+
+Maximum
+
+Correspondence
+
+Surveillance Method
+## D
+## O
+
+Create And Maintain
+Lists For Distribution
+And Contac
+Purposes.
+
+# 0f lists
+created
+/maintained
+per year
+
+Lists created
+/maintained that are
+accurate, complete,
+and IAW requirements
+
+2%
+
+Respond Via Email,
+Telephone, And
+Ground Mail To
+Inquiries For
+Information
+Assemble
+Information Supplied
+By External Affairs
+Staff And Other
+Programs Into A
+Weekly Report For
+Washington
+External Affairs
+Office
+Create And Update
+Logs For The Native
+American Gran
+Program
+
+# Of inquiries
+per week
+
+Responses to
+inquiries were
+accurate/correct and
+met the needs of the
+requester.
+All Weekly Reports
+prepared accurately,
+complete, with proper
+format, grammar, and
+spelling
+
+1%
+
+Logs are created and
+maintained accurately
+and correctly
+
+1%
+
+# Of weekly
+reports per
+year
+
+# of grant
+requests per
+year
+
+1%
+
+Within 2 days of
+knowledge tha
+he list needs
+creation /
+maintenance
+Inquiries
+responded to
+within 5 working
+days for all
+others
+Within 1 working
+day of receiving
+information
+
+Within 2 working
+days of receipt of
+grant reques
+
+5%
+
+3%
+
+2%
+
+3%
+
+MIS
+
+PI
+
+US
+
+VU
+## CC
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+100
+%
+
+PS
+
+Within 5 working
+days
+
+Within 10
+working days
+
+Within 3 working
+days, no later
+han due date
+
+Within 3 working
+days
+
+4
+
+RS
+
+RFP #
+5.4
+
+5.4.1
+
+5.4.2
+
+RFP #
+5.5
+
+5.5.1
+
+5.5.2
+
+Requirement
+
+Lot
+
+Quality Standard
+
+AQL
+
+Timeliness
+Standard
+
+AQL
+
+Maximum
+
+Customer Service
+
+D
+## O
+
+Greet Visitors,
+Refer Inquiries, And
+Answer General
+Questions
+
+# Greetings /
+Contacts
+Made Per
+Month
+
+Greetings were
+courteous, with a
+smile, and pleasan
+voice
+
+5%
+
+Coordinates
+Scientist In The
+School Program
+Activities
+
+# Program
+activities
+scheduled per
+month
+
+Program activities are
+scheduled accurately
+and correctly
+
+5%
+
+Lot
+
+Quality Standard
+
+AQL
+
+Requirement
+
+Customer /
+Visitor was
+greeted within 1
+o 2 minutes of
+arrival
+Program
+activities were
+scheduled within
+5 working days of
+a reques
+
+Timeliness
+Standard
+
+5%
+
+10%
+
+AQL
+
+Produce and/or
+format Specific
+Reports for
+Distribution
+
+Databases managed
+and maintained
+accurately and
+correctly in a logical
+and orderly manner
+Database reports
+were produced and
+distributed IAW with
+current guidance
+
+5%
+
+2%
+
+Databases
+managed and
+maintained IAW
+established
+schedules
+Database repor
+compiled and
+distributed within
+2 working days
+
+5%
+
+2%
+
+PI
+
+US
+
+VU
+## CC
+
+X
+
+X
+
+X
+
+X
+
+100
+%
+
+PS
+
+RS
+
+PS
+
+RS
+
+Within 10
+working days
+
+Maximum
+
+Surveillance Method
+## D
+## O
+
+# Of
+databases
+managed and
+maintained
+per month
+# Of database
+reports
+produced and
+distributed
+monthly
+
+MIS
+
+Within 5
+minutes
+
+Data Management
+
+Manage Databases
+
+Surveillance Method
+
+Within 1 day of
+established
+schedule
+
+US
+
+VU
+## CC
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+MIS
+
+PI
+
+100
+%
+
+Within 3 working
+days
+
+5
+
+RFP #
+5.6
+
+5.6.1
+
+5.6.2
+
+RFP #
+5.7
+
+5.7.1
+
+5.7.2
+
+Requirement
+
+Lot
+
+Quality Standard
+
+AQL
+
+Timeliness
+Standard
+
+AQL
+
+Maximum
+
+Executive Support
+
+D
+## O
+
+Provide Support To
+The Executive Level
+Staff (ARD And
+Higher)
+
+# Of Executive
+Level Suppor
+Activities
+Provided
+
+Support Was Provided
+In A Courteous And
+Professional Manner
+
+1%
+
+Provide Secretarial
+Support to Senior
+Staff
+
+# of support
+activities
+provided
+
+Support Was Provided
+in a Courteous and
+Professional Manner
+
+5%
+
+Requirement
+
+Lot
+
+Quality Standard
+
+AQL
+
+Support was
+provided within 2
+hours of reques
+
+3%
+
+Support was
+provided within 2
+hours of reques
+
+5%
+
+Timeliness
+Standard
+
+AQL
+
+Conduct Record
+Search And
+Consolidate
+Collected Records
+In To Applicable
+Forma
+
+# Of searches
+/
+consolidations
+in applicable
+format made
+per month
+
+Reviews were IAW
+Service FOIA policy
+and Regional
+guidance from
+Regional FOIA Officer
+Document(s) were
+IAW Service FOIA
+policy and Regional
+guidance from
+Regional FOIA Officer
+
+3%
+
+3%
+
+Reviews were
+processed within
+2 working days
+
+5%
+
+Formatted
+documents were
+processed within
+5 working days
+
+5%
+
+PI
+
+US
+
+VU
+## CC
+
+X
+
+X
+
+X
+
+X
+
+100
+%
+
+PS
+
+RS
+
+PS
+
+RS
+
+COB
+
+Maximum
+
+Surveillance Method
+## D
+## O
+
+# Of reviews
+made per
+month
+
+MIS
+
+COB
+
+Freedom of
+Information Ac
+(FOIA)
+Review And Analyze
+Reques
+
+Surveillance Method
+
+MIS
+
+PI
+
+US
+
+VU
+## CC
+
+X
+
+X
+
+X
+
+X
+
+100
+%
+
+Within 5 working
+days
+
+Within 10
+working days
+
+6
+
+RFP #
+5.7
+
+5.7.3
+
+5.7.4
+
+RFP #
+5.8
+
+5.8.1
+
+5.8.2
+
+Requirement
+
+Lot
+
+Quality Standard
+
+AQL
+
+Timeliness
+Standard
+
+AQL
+
+Maximum
+
+Freedom of
+Information Ac
+(FOIA)
+
+Surveillance Method
+## D
+## O
+
+Coordinate For
+Review Of Produc
+By Regional FOIA
+Officer And/Or
+Solicitor’s Office
+Conduct Final
+Review Of
+Documents / Index
+For Accuracy
+
+# of reviews
+coordinated
+per month
+
+Requirement
+
+Lot
+
+# Of reviews
+made per
+month
+
+Reviews were IAW
+Service FOIA policy
+and Regional
+guidance from
+Regional FOIA Officer
+Final review
+completed / indexed
+and submitted for
+signature
+
+3%
+
+Quality Standard
+
+AQL
+
+3%
+
+Reviews
+submitted within
+2 working days
+
+5%
+
+Final reviews
+submitted within
+2 working days
+
+5%
+
+Timeliness
+Standard
+
+AQL
+
+Consolidate All
+Collected Records
+Into Applicable
+Forma
+
+# Of records
+consolidated
+in appropriate
+forma
+
+Reviews were made
+with accurate analysis
+IAW assigned
+attorney
+Consolidation of
+records were make
+IAW attorney
+instructions and
+appropriate forma
+
+5%
+
+5%
+
+Reviews were
+made within 1-3
+working days of
+receip
+Consolidations
+completed within
+1-3 working days
+
+10%
+
+10%
+
+US
+
+VU
+## CC
+
+X
+
+X
+
+X
+
+X
+
+100
+%
+
+PS
+
+RS
+
+PS
+
+RS
+
+Within 4 working
+days
+
+Maximum
+
+Surveillance Method
+## D
+## O
+
+# Of reviews
+made per
+month
+
+PI
+
+Within 4 working
+days
+
+Litigation
+
+Review And Analyze
+Initial Filing
+
+MIS
+
+Reviews were
+made within 4-6
+working days of
+receip
+Consolidations
+were completed
+within 4-6
+working days
+
+MIS
+
+PI
+
+US
+
+VU
+## CC
+
+X
+
+X
+
+X
+
+X
+
+100
+%
+
+7
+
+RFP #
+5.8
+
+5.8.3
+
+RFP #
+5.9
+
+5.9.1
+
+5.9.2
+
+5.9.3
+
+5.9.4
+
+Requirement
+
+Lot
+
+Quality Standard
+
+AQL
+
+Timeliness
+Standard
+
+AQL
+
+Maximum
+
+Litigation
+
+Conduct Final
+Review Of
+Documents/Index
+For Accuracy
+
+Requirement
+
+D
+## O
+# Of final
+reviews
+completed per
+month
+
+Final review for
+accuracy IAW
+attorney instructions
+and appropriate
+forma
+
+5%
+
+Lot
+
+Quality Standard
+
+AQL
+
+Final reviews
+completed within
+1-2 working days
+
+Timeliness
+Standard
+
+10%
+
+AQL
+
+Maximum
+
+Conduct PreMeeting Activities
+
+Provide Assistance
+And Support For
+Meeting
+
+Conduct PostMeeting Activities
+
+Meetings were
+organized and
+conducted in a logical
+and orderly manner
+
+5%
+
+Activities conducted
+accurately, completely
+IAW meeting
+requirements
+
+5%
+
+Assistance and
+support was provided
+IAW established
+meeting requirements
+
+5%
+
+# Of postmeeting
+activities per
+month
+
+All post-meeting
+activities completed
+IAW direction from
+requestor
+
+5%
+
+Meetings were
+conducted within
+1 working day of
+reques
+
+5%
+
+Activities were
+completed within
+10 working days
+prior to meeting
+
+5%
+
+Assistance and
+support was
+provided during
+meeting, within
+30 minutes of
+reques
+Activities
+completed within
+1 work work of
+meeting
+conclusion
+
+2%
+
+2%
+
+PI
+
+US
+
+VU
+## CC
+
+X
+
+X
+
+100
+%
+
+PS
+
+RS
+
+PS
+
+RS
+
+Surveillance Method
+## D
+## O
+
+# Of preplanning
+meetings
+conducted per
+month
+# Of premeeting
+activities
+conducted per
+month
+# Of meetings
+held/conducte
+d per month
+
+MIS
+
+Final reviews
+completed
+within 3-4
+working days
+
+Meetings/Workshops/Outreach/
+Training Suppor
+Conduct PrePlanning Meeting
+
+Surveillance Method
+
+MIS
+
+PI
+
+US
+
+VU
+## CC
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+100
+%
+
+Within 2 working
+days of reques
+
+Within 1 working
+day prior to
+meeting
+
+Within 1 hour of
+reques
+
+Within 2 work
+weeks
+
+8
+
+RFP #
+5.10
+
+5.10.1
+
+5.10.2
+
+Requirement
+
+Lot
+
+Quality Standard
+
+AQL
+
+Timeliness
+Standard
+
+AQL
+
+Maximum
+
+Office
+Managemen
+5.10.1 Perform
+Office Managemen
+And Suppor
+Activities
+
+5.10.2 Conduct Mail
+And Related
+Activities
+
+Surveillance Method
+## D
+## O
+
+# Of management and
+suppor
+activities
+performed per
+week
+# Of pieces of
+mail or related
+activities
+conducted per
+week
+
+Management and
+support activities
+performed accurately
+and completely
+
+2%
+
+All mail and related
+activities are
+conducted accurately
+and completely
+
+2%
+
+Activities are
+performed within
+2 working days of
+reques
+
+5%
+
+Mail and related
+activities were
+performed the
+same day
+requested
+
+4%
+
+Activities are
+performed
+within 5 working
+days of reques
+
+By COB the
+next working
+day following
+he reques
+
+MIS
+
+PI
+
+US
+
+VU
+## CC
+
+X
+
+X
+
+X
+
+X
+
+100
+%
+
+PS
+
+RS
+
+X
+
+9
+
+RFP #
+5.11
+
+5.11.1
+
+5.11.2
+
+RFP #
+5.12
+
+5.12.1
+
+5.12.2
+
+5.12.3
+
+Requirement
+
+Lot
+
+Quality Standard
+
+AQL
+
+Timeliness
+Standard
+
+AQL
+
+Maximum
+
+Permits
+
+Initiate Permit
+Issuance
+
+D
+## O
+# Of permi
+applications
+received per
+month
+
+All applications have
+been reviewed for
+accuracy and
+completeness
+
+5%
+
+Collect And
+Transmit Permi
+Fees, And File
+Permits And Related
+Documents
+
+# Of permits
+issued per
+month
+
+All permits issued
+were accurate and
+complete and fees
+ransmitted correctly
+
+3%
+
+Requirement
+
+Lot
+
+Quality Standard
+
+AQL
+
+All applications
+were reviewed
+within one
+working day of
+receip
+Permits were
+issued within 2
+working days and
+fees transmitted
+within the same
+ime frame
+
+Timeliness
+Standard
+
+5%
+
+5%
+
+AQL
+
+# Of actions
+processed per
+month
+
+Track And Forward
+Personnel Actions
+
+#Of actions
+racked /
+forwarded per
+month
+# Of actions
+handled per
+month
+
+Inputs into the
+database are
+accurate, complete,
+and appropriate
+Logs and routes
+personnel actions as
+appropriate
+
+1%
+
+Actions prepared /
+distributed / filed /
+indexed / as
+appropriate
+
+1%
+
+1%
+
+Inputs were
+made within 2
+working days
+
+5%
+
+Action completed
+within 4 working
+days
+
+5%
+
+Actions
+completed within
+4 working days
+
+5%
+
+PI
+
+US
+
+VU
+## CC
+
+X
+
+X
+
+X
+
+X
+
+100
+%
+
+PS
+
+RS
+
+X
+
+Within 5 working
+days
+
+Maximum
+
+Inputs were
+made within 4
+working days
+Actions
+completed
+within 5 working
+days
+Actions
+completed
+within 5 working
+days
+
+X
+
+Surveillance Method
+## D
+## O
+
+Process Individual
+Personnel Actions
+
+MIS
+
+Within 2 working
+day
+
+Personnel
+
+Prepare/Distribute
+Final Action Copy
+To Employee, Index
+And File Completed
+Action
+
+Surveillance Method
+
+MIS
+
+PI
+
+US
+
+VU
+## CC
+
+100
+%
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+PS
+
+10
+
+RS
+
+RFP #
+5.12
+
+5.12.4
+
+RFP #
+5.13
+
+5.13.1
+
+Requirement
+
+Lot
+
+Quality Standard
+
+AQL
+
+Timeliness
+Standard
+
+AQL
+
+Maximum
+
+Personnel
+
+D
+## O
+
+Advises Staff And
+Performs Quality
+Reviews Of
+Performance Plans,
+Appraisals,
+Evaluations, And
+Awards
+
+# Of
+advisories /
+reviews
+handled per
+month
+
+Requirement
+
+Lot
+
+Advise and reviews
+are completed IAW
+applicable Service
+policies and
+supervisory
+requirements
+
+Quality Standard
+
+3%
+
+AQL
+
+Actions / reviews
+completed within
+5 working days
+
+Timeliness
+Standard
+
+5%
+
+AQL
+
+Maximum
+
+Property custodian
+duties are completed
+accurately and
+completely
+
+10%
+
+Duties/actions
+completed within
+2 work days of
+assignment,
+request, or
+required
+schedule
+
+5%
+
+PI
+
+Duties/actions
+completed
+within 5 work of
+assignment,
+request, or
+required
+schedule
+
+US
+
+VU
+## CC
+
+X
+
+X
+
+100
+%
+
+PS
+
+RS
+
+PS
+
+RS
+
+Surveillance Method
+## D
+## O
+
+# Of Property
+Custodial
+duties
+conducted per
+month
+
+MIS
+
+Actions /
+reviews
+completed
+within 10
+working days
+
+Property
+Managemen
+Conduct Property
+Custodian Duties
+IAW Delegation Of
+Authority
+
+Surveillance Method
+
+MIS
+
+PI
+
+US
+
+VU
+## CC
+
+X
+
+X
+
+X
+
+100
+%
+
+X
+
+11
+
+RFP #
+5.14
+
+5.14.1
+
+5.14.2
+
+5.14.3
+
+5.14.4
+
+Requirement
+
+Lot
+
+Quality Standard
+
+AQL
+
+Timeliness
+Standard
+
+AQL
+
+Maximum
+
+Records
+Managemen
+Develop And
+Maintain Record
+Management Plan
+
+Develop And
+Maintain Electronic
+Filing System
+
+Review Retention
+Schedules And
+Prepare Records
+For Transfer
+Other Records
+Managemen
+Support Functions
+
+Surveillance Method
+## D
+## O
+
+# Of record
+managemen
+plans
+developed
+and
+maintained
+per month
+# Of electronic
+filing systems
+developed
+and
+maintained
+per month
+# Of reviews
+and record
+ransfers per
+month
+# Of other
+functions
+completed per
+month
+
+Record management
+plans developed and
+maintained accurately
+and completely
+
+5%
+
+Electronic filing
+systems developed
+and maintained
+accurately and
+completely
+
+5%
+
+Review and Record
+Transfer completed In
+Accordance With
+Current Guidance
+All Record Functions
+Completed In
+Accordance With
+Current Guidance
+
+5%
+
+5%
+
+Record
+managemen
+plans developed
+/ maintained
+weekly
+
+3%
+
+System
+developed /
+maintained
+weekly
+
+3%
+
+Transfer Was
+Completed
+Within 2 working
+days of review
+Record
+Functions
+Completed
+Within 2 working
+days
+
+3%
+
+3%
+
+Record
+managemen
+plans developed
+/ maintained bi weekly
+
+System
+developed /
+maintained biweekly
+
+Within 5 working
+days
+
+MIS
+
+PI
+
+US
+
+VU
+## CC
+
+100
+%
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+PS
+
+RS
+
+Within 5 working
+days
+
+12
+
+RFP #
+5.15
+
+5.15.1
+
+5.15.2
+
+RFP #
+5.16
+
+5.16.1
+
+Requirement
+
+Lot
+
+Quality Standard
+
+AQL
+
+Timeliness
+Standard
+
+AQL
+
+Maximum
+
+Reports
+
+Identify Report
+Suppor
+Requirements
+
+Report
+Reproduction/Copyi
+ng In Various
+Formats
+
+Requirement
+
+D
+## O
+# Of repor
+suppor
+requirements
+performed per
+month
+# Of
+reproduction /
+copying
+assignments
+per month
+
+Report support
+requirements are
+performed accurately
+and completely
+
+1%
+
+Reproduction /
+copying assignments
+were completed
+accurately and
+completely
+
+2%
+
+Lot
+
+Quality Standard
+
+AQL
+
+Requirements
+were completed
+within 2 working
+days of reques
+
+5%
+
+Assignments
+completed within
+1 working week
+
+5%
+
+Timeliness
+Standard
+
+AQL
+
+Library inventory and
+services provided
+accurately, completely
+and in a timely
+manner
+
+2%
+
+Services
+provided with 2
+working days of
+requirement or
+reques
+
+5%
+
+PI
+
+Assignments
+completed
+within 2 working
+weeks
+
+Maximum
+
+Services
+provided with 5
+working days of
+requirement or
+reques
+
+US
+
+VU
+## CC
+
+100
+%
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+PS
+
+RS
+
+Surveillance Method
+## D
+## O
+
+# Of Library,
+inventory and
+services
+provided per
+month
+
+MIS
+
+Requirements
+were completed
+within 4 working
+days of reques
+
+Technical Library
+Activities and
+Services
+Create, Update, And
+Maintain Library
+Inventory And
+Services
+
+Surveillance Method
+
+MIS
+
+PI
+
+US
+
+VU
+## CC
+
+X
+
+X
+
+100
+%
+
+PS
+
+RS
+
+X
+
+13
+
+RFP #
+5.17
+
+5.17.1
+
+RFP #
+5.18
+
+5.18.1
+
+Requirement
+
+Lot
+
+Quality Standard
+
+AQL
+
+Timeliness
+Standard
+
+AQL
+
+Maximum
+
+Time and
+Attendance
+
+D
+## O
+
+Process Time And
+Attendance Reports
+And Records
+
+# Of time and
+attendance
+records
+processed
+every two
+weeks
+
+All time and
+attendance reports
+and records are
+processed accurately
+and completely , IAW
+pertinent guidance
+
+1%
+
+Requirement
+
+Lot
+
+Quality Standard
+
+AQL
+
+All reports are
+processed by the
+end of the pay
+period involved
+
+Timeliness
+Standard
+
+2%
+
+AQL
+
+By the Monday
+following the
+end of the
+involved pay
+period
+
+Logs are tracked and
+maintained accurately
+and completely IAW
+established
+procedures
+
+2%
+
+Logs tracked /
+maintained on a
+daily basis
+
+5%
+
+Logs tracked /
+maintained
+within 2 working
+days
+
+PI
+
+X
+
+US
+
+VU
+## CC
+
+X
+
+X
+
+100
+%
+
+PS
+
+RS
+
+X
+
+Surveillance Method
+## D
+## O
+
+# Of Tracking
+logs managed
+and
+maintained
+
+MIS
+
+Maximum
+
+Tracking Logs
+
+Track and Maintain
+Logs
+
+Surveillance Method
+
+MIS
+
+PI
+
+US
+
+VU
+## CC
+
+X
+
+X
+
+X
+
+100
+%
+
+PS
+
+14
+
+RS
+
+RFP #
+5.19
+
+5.19.1
+
+5.19.2
+
+5.19.3
+
+5.19.4
+
+Requirement
+
+Lot
+
+Quality Standard
+
+AQL
+
+Timeliness
+Standard
+
+AQL
+
+Maximum
+
+Training
+
+Conduct Training
+
+Attend Training
+
+Research and
+Analyze Availability
+of Training from
+Multiple Sources for
+Suitability, Cos
+Effectiveness, and
+Best Value
+Prepare Training
+Registration/Acquisi
+ion Forms
+
+Surveillance Method
+## D
+## O
+
+# of courses
+conducted per
+month
+
+# of training
+courses
+attended per
+year
+# of training
+opportunities
+analyzed per
+month
+
+# of forms
+prepared per
+month
+
+Training was
+informative and
+fulfilled the
+requirements of the
+## FWS
+All training was
+successfully
+completed and had
+been included in the
+appropriate IDP
+All training
+opportunities analyzed
+are accurate and
+complete
+
+1%
+
+All training registration
+/ acquisition forms are
+completed accurately
+and completely
+
+1%
+
+1%
+
+2%
+
+Training
+performed on
+date scheduled
+
+5%
+
+Training was
+completed on the
+exact date and
+ime as
+scheduled
+Analysis was
+performed within
+one week of
+reques
+
+3%
+
+Forms are
+completed within
+2 working days of
+a reques
+
+3%
+
+4%
+
+Training
+performed IAW
+approved rescheduled date
+The nex
+available date
+and time as
+scheduled
+
+X
+
+MIS
+
+PI
+
+US
+
+VU
+## CC
+
+100
+%
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+PS
+
+RS
+
+Within two
+weeks
+
+Within 4 working
+days
+
+15
+
+RFP #
+5.20
+
+5.20.1
+
+5.20.2
+
+5.20.3
+
+5.20.4
+
+Requirement
+
+Lot
+
+Quality Standard
+
+AQL
+
+Timeliness
+Standard
+
+AQL
+
+Maximum
+
+Travel
+
+Plan And Reserve
+Travel/Lodging/
+Transportation For
+Federal And NonFederal Employees
+/Official Volunteers
+(Foreign And
+Domestic Travel)
+Process Travel
+Vouchers
+
+Surveillance Method
+## D
+## O
+
+# Of Travel
+arrangements
+made per
+months
+
+Travel reservations
+were accurate,
+complete, and IAW
+requestor’s
+requirements
+
+1%
+
+# of travel
+vouchers
+processed per
+month
+
+Travel vouchers were
+processed accurately
+and complete
+
+2%
+
+Advise Employees
+On Changes In
+Travel Regulations
+
+# of changes
+per month
+
+Changes in travel
+regulations are shared
+with employees
+
+2%
+
+Receive, Process,
+And Distribute Gov’
+Checks/Cash To
+Non-Federal
+Employees/Official
+Volunteers
+
+# of checks /
+cash
+distributed per
+month
+
+Travel checks / cash
+were distributed
+correctly
+
+1%
+
+Reservations
+were complete
+within 2 working
+days of the
+reques
+
+5%
+
+Travel vouchers
+were processed
+within 5 working
+days of
+completed travel
+Regulations are
+shared within
+one week of
+becoming aware
+of changes
+Within 2 working
+days of receip
+
+5%
+
+5%
+
+2%
+
+MIS
+
+PI
+
+US
+
+VU
+## CC
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+100
+%
+
+PS
+
+RS
+
+5 working days
+
+5 working days
+## X
+
+2 weeks
+
+By end of week
+received
+## X
+
+X
+
+16
+
+
