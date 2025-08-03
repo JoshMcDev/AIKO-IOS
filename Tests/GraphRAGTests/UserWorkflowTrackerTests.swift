@@ -258,43 +258,212 @@ final class UserWorkflowTrackerTests: XCTestCase {
     // MARK: - Test Helper Methods (WILL FAIL until implemented)
 
     private func createSensitiveWorkflowData() -> WorkflowStep {
-        // This will fail until sensitive workflow data creation is implemented
-        fatalError("createSensitiveWorkflowData not implemented")
+        return WorkflowStep(
+            stepId: UUID().uuidString,
+            timestamp: Date(),
+            documentType: "Classified Contract",
+            formFields: [
+                "contractNumber": "SECRET-2024-001",
+                "vendor": "Secure Defense Corp",
+                "clearanceLevel": "SECRET",
+                "ssn": "123-45-6789",
+                "personalData": "Sensitive information here"
+            ],
+            userActions: [
+                UserAction(
+                    actionType: "access_sensitive",
+                    target: "classified_form",
+                    timestamp: Date()
+                ),
+                UserAction(
+                    actionType: "encrypt_submit",
+                    target: "secure_submission",
+                    timestamp: Date()
+                )
+            ]
+        )
     }
 
     private func createTestWorkflowData() -> WorkflowStep {
-        // This will fail until test workflow data creation is implemented
-        fatalError("createTestWorkflowData not implemented")
+        return WorkflowStep(
+            stepId: UUID().uuidString,
+            timestamp: Date(),
+            documentType: "Contract Submission",
+            formFields: [
+                "contractNumber": "FAR-2024-001",
+                "vendor": "Test Vendor Inc",
+                "amount": "100000",
+                "status": "pending"
+            ],
+            userActions: [
+                UserAction(
+                    actionType: "form_fill",
+                    target: "contract_form",
+                    timestamp: Date()
+                ),
+                UserAction(
+                    actionType: "submit",
+                    target: "contract_submission",
+                    timestamp: Date()
+                )
+            ]
+        )
     }
 
-    private func isDataEncrypted(_: Data) -> Bool {
-        // This will fail until encryption detection is implemented
-        fatalError("isDataEncrypted not implemented")
+    private func isDataEncrypted(_ data: Data) -> Bool {
+        // Simple heuristic: encrypted data should have high entropy and no recognizable patterns
+        // Check for lack of common plaintext patterns
+        let dataString = String(data: data, encoding: .utf8) ?? ""
+        
+        // If it can be converted to readable UTF-8, it's likely not encrypted
+        if !dataString.isEmpty && dataString.contains(where: { $0.isLetter }) {
+            return false
+        }
+        
+        // Check entropy - encrypted data should have high entropy
+        let entropy = calculateDataEntropy(data)
+        return entropy > 0.9 // High entropy indicates encryption
     }
 
-    private func containsPlaintextSensitiveData(_: Data) -> Bool {
-        // This will fail until plaintext detection is implemented
-        fatalError("containsPlaintextSensitiveData not implemented")
+    private func containsPlaintextSensitiveData(_ data: Data) -> Bool {
+        guard let dataString = String(data: data, encoding: .utf8) else {
+            return false // Can't decode as text, so no plaintext sensitive data
+        }
+        
+        // Check for common sensitive data patterns in plaintext
+        let sensitivePatterns = [
+            "SECRET-",
+            "ssn",
+            "123-45-6789",
+            "clearanceLevel",
+            "personalData",
+            "Sensitive information"
+        ]
+        
+        let lowercaseData = dataString.lowercased()
+        return sensitivePatterns.contains { pattern in
+            lowercaseData.contains(pattern.lowercased())
+        }
     }
 
-    private func dataContainsUserInfo(_: Data, targetUserId _: String) -> Bool {
-        // This will fail until user info detection is implemented
-        fatalError("dataContainsUserInfo not implemented")
+    private func dataContainsUserInfo(_ data: Data, targetUserId: String) -> Bool {
+        guard let dataString = String(data: data, encoding: .utf8) else {
+            return false
+        }
+        
+        // Check if the data contains the target user ID
+        return dataString.contains(targetUserId)
     }
 
-    private func calculateDataEntropy(_: Data) -> Float {
-        // This will fail until data entropy calculation is implemented
-        fatalError("calculateDataEntropy not implemented")
+    private func calculateDataEntropy(_ data: Data) -> Float {
+        guard !data.isEmpty else { return 0.0 }
+        
+        // Calculate Shannon entropy
+        var frequency: [UInt8: Int] = [:]
+        
+        // Count frequency of each byte
+        for byte in data {
+            frequency[byte, default: 0] += 1
+        }
+        
+        let length = Float(data.count)
+        var entropy: Float = 0.0
+        
+        // Calculate entropy using Shannon's formula
+        for count in frequency.values {
+            let probability = Float(count) / length
+            if probability > 0 {
+                entropy -= probability * log2(probability)
+            }
+        }
+        
+        // Normalize to 0-1 range (maximum entropy for 8-bit data is 8)
+        return entropy / 8.0
     }
 
-    private func createDiverseWorkflowSequences(count _: Int) -> [WorkflowSequence] {
-        // This will fail until diverse workflow sequence creation is implemented
-        fatalError("createDiverseWorkflowSequences not implemented")
+    private func createDiverseWorkflowSequences(count: Int) -> [WorkflowSequence] {
+        var sequences: [WorkflowSequence] = []
+        
+        let documentTypes = ["Contract", "Invoice", "Report", "Proposal", "Amendment"]
+        let patterns = ["Linear", "Branching", "Cyclical", "Hierarchical", "Random"]
+        
+        for i in 0..<count {
+            let documentType = documentTypes[i % documentTypes.count]
+            let pattern = patterns[i % patterns.count]
+            
+            let steps = createWorkflowStepsForSequence(
+                sequenceIndex: i,
+                documentType: documentType,
+                stepCount: 3 + (i % 5) // 3-7 steps per sequence
+            )
+            
+            let sequence = WorkflowSequence(
+                sequenceId: "seq-\(i)",
+                steps: steps,
+                expectedPattern: pattern
+            )
+            
+            sequences.append(sequence)
+        }
+        
+        return sequences
     }
 
-    private func createRealTimeWorkflowSteps(count _: Int) -> [WorkflowStep] {
-        // This will fail until real-time workflow step creation is implemented
-        fatalError("createRealTimeWorkflowSteps not implemented")
+    private func createRealTimeWorkflowSteps(count: Int) -> [WorkflowStep] {
+        var steps: [WorkflowStep] = []
+        let actionTypes = ["form_fill", "submit", "review", "approve", "edit", "save"]
+        let targets = ["contract_form", "invoice_form", "report_form", "submission_portal"]
+        
+        for i in 0..<count {
+            let step = WorkflowStep(
+                stepId: "rt-step-\(i)",
+                timestamp: Date().addingTimeInterval(TimeInterval(i)),
+                documentType: "RealTime Document \(i)",
+                formFields: [
+                    "fieldA": "value\(i)",
+                    "fieldB": "data\(i % 10)",
+                    "timestamp": "\(Date().timeIntervalSince1970)"
+                ],
+                userActions: [
+                    UserAction(
+                        actionType: actionTypes[i % actionTypes.count],
+                        target: targets[i % targets.count],
+                        timestamp: Date()
+                    )
+                ]
+            )
+            steps.append(step)
+        }
+        
+        return steps
+    }
+    
+    private func createWorkflowStepsForSequence(sequenceIndex: Int, documentType: String, stepCount: Int) -> [WorkflowStep] {
+        var steps: [WorkflowStep] = []
+        
+        for stepIndex in 0..<stepCount {
+            let step = WorkflowStep(
+                stepId: "seq\(sequenceIndex)-step\(stepIndex)",
+                timestamp: Date().addingTimeInterval(TimeInterval(stepIndex * 60)), // 1 minute apart
+                documentType: documentType,
+                formFields: [
+                    "sequenceId": "\(sequenceIndex)",
+                    "stepIndex": "\(stepIndex)",
+                    "documentNumber": "\(documentType)-\(sequenceIndex)",
+                    "status": stepIndex == stepCount - 1 ? "complete" : "in_progress"
+                ],
+                userActions: [
+                    UserAction(
+                        actionType: stepIndex == 0 ? "create" : (stepIndex == stepCount - 1 ? "finalize" : "process"),
+                        target: "\(documentType.lowercased())_step\(stepIndex)",
+                        timestamp: Date()
+                    )
+                ]
+            )
+            steps.append(step)
+        }
+        
+        return steps
     }
 }
 

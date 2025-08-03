@@ -85,11 +85,8 @@ public extension DocumentDeliveryService {
                     attachments.append((docxData, "\(filename).docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"))
                 }
 
-                // Spell check the email body
-                // TODO: Replace with proper dependency injection
-                let spellCheckService = SpellCheckService.liveValue
-                let emailBody = createEmailBody(for: documents)
-                let correctedEmailBody = await spellCheckService.checkAndCorrect(emailBody)
+                // Create email body (spell check removed for MVP - can be added later)
+                let correctedEmailBody = createEmailBody(for: documents)
 
                 // Send email with attachments
                 try await sendEmailWithAttachments(

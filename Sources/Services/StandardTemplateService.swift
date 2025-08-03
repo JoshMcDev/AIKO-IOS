@@ -44,8 +44,7 @@ public extension StandardTemplateService {
                 let templateFileName
 
                     // Map document type to template file name
-                    = switch documentType
-                {
+                    = switch documentType {
                 case .sow:
                     "SOW"
                 case .pws:

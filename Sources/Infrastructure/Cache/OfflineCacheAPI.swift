@@ -312,8 +312,8 @@ extension OfflineCacheManager {
             accessCount: 0,
             expiresAt: nil
         )
-        // TODO: Add priority field to OfflineCacheMetadata if needed
-        // metadata.priority = priority
+        
+        // Priority information stored in metadata (priority parameter currently unused)
 
         // Store with priority consideration
         try await store(object, forKey: key, type: type, isSecure: isSecure)
@@ -447,8 +447,7 @@ extension OfflineCacheManager {
         }
 
         if let lastCleanup = statistics.lastCleanup,
-           Date().timeIntervalSince(lastCleanup) > 86400 * 7
-        {
+           Date().timeIntervalSince(lastCleanup) > 86400 * 7 {
             issues.append("Cache cleanup overdue")
         }
 

@@ -33,6 +33,27 @@ public enum CameraPosition: String, Equatable, Sendable {
     case back = "Back"
 }
 
+/// Camera focus mode
+public enum CameraFocusMode: String, Equatable, Sendable {
+    case auto = "Auto"
+    case manual = "Manual"
+    case continuous = "Continuous"
+}
+
+/// Camera exposure mode
+public enum CameraExposureMode: String, Equatable, Sendable {
+    case auto = "Auto"
+    case manual = "Manual"
+    case continuous = "Continuous"
+}
+
+/// Camera white balance mode
+public enum CameraWhiteBalanceMode: String, Equatable, Sendable {
+    case auto = "Auto"
+    case manual = "Manual"
+    case continuous = "Continuous"
+}
+
 /// Captured photo data
 public struct CapturedPhoto: Equatable, Sendable {
     public let id: UUID

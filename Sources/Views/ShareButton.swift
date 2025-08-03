@@ -2,7 +2,7 @@ import SwiftUI
 
 #if os(iOS)
 import AIKOiOS
-#elseif os(macOS)  
+#elseif os(macOS)
 import AIKOmacOS
 #endif
 
@@ -11,13 +11,13 @@ public struct ShareButton: View {
     let content: String
     let fileName: String
     let buttonStyle: ShareButtonStyle
-    
+
     public enum ShareButtonStyle {
         case icon
         case text
         case iconAndText
     }
-    
+
     public init(
         content: String,
         fileName: String,
@@ -27,7 +27,7 @@ public struct ShareButton: View {
         self.fileName = fileName
         self.buttonStyle = buttonStyle
     }
-    
+
     public var body: some View {
         #if os(iOS)
         IOSShareButton(
@@ -52,7 +52,7 @@ public struct ShareButton: View {
         }
         #endif
     }
-    
+
     private var buttonTitle: String {
         switch buttonStyle {
         case .icon:
@@ -74,15 +74,15 @@ struct ShareButton_Previews: PreviewProvider {
                 fileName: "sample.txt",
                 buttonStyle: .icon
             )
-            
+
             ShareButton(
                 content: "Sample content to share",
                 fileName: "sample.txt",
                 buttonStyle: .text
             )
-            
+
             ShareButton(
-                content: "Sample content to share", 
+                content: "Sample content to share",
                 fileName: "sample.txt",
                 buttonStyle: .iconAndText
             )

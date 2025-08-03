@@ -8,33 +8,54 @@ public struct DownloadOptionsSheet: View {
     @Environment(\.dismiss) var dismiss
     @State private var selectedDocuments: Set<UUID> = []
     @State private var isDownloading = false
-    @State private var downloadError: String?
-
-    // TODO: GeneratedFile is a Core Data model in the main module
-    // This needs to be refactored to use a protocol or DTO
-    var generatedFiles: [Any] {
-        [] // Placeholder - needs Core Data models
-    }
-
-    public init(acquisition: Acquisition, onDismiss: @escaping () -> Void) {
+    @State private var downloadProgress: Double = 0.0
+    @State private var downloadError: DocumentManagerError?
+    @State private var downloadResults: [DocumentDownloadResult] = []
+    @State private var generatedDocuments: [GeneratedDocument] = []
+    @State private var isLoadingDocuments = true
+    
+    // Inject document manager based on platform
+    private let documentManager: DocumentManagerProtocol?
+    
+    public init(
+        acquisition: Acquisition, 
+        onDismiss: @escaping () -> Void,
+        documentManager: DocumentManagerProtocol? = nil
+    ) {
         self.acquisition = acquisition
         self.onDismiss = onDismiss
+        
+        // Use provided document manager or nil (will be properly injected via dependency container)
+        self.documentManager = documentManager
     }
 
     @ViewBuilder
     private var documentList: some View {
         SwiftUI.List {
             Section {
-                // TODO: Restore when GeneratedFile is available
-                EmptyView()
+                if generatedDocuments.isEmpty {
+                    EmptyView()
+                } else {
+                    ForEach(generatedDocuments) { document in
+                        DocumentDownloadRow(
+                            document: document,
+                            isSelected: selectedDocuments.contains(document.id),
+                            onToggle: {
+                                toggleDocumentSelection(document.id)
+                            }
+                        )
+                    }
+                }
             } header: {
                 HStack {
                     Text("Available Documents")
                     Spacer()
-                    Button("Select All") {
-                        // TODO: Implement selection logic
+                    if !generatedDocuments.isEmpty {
+                        Button(selectedDocuments.count == generatedDocuments.count ? "Deselect All" : "Select All") {
+                            toggleAllSelection()
+                        }
+                        .font(.caption)
                     }
-                    .font(.caption)
                 }
             }
         }
@@ -43,7 +64,10 @@ public struct DownloadOptionsSheet: View {
     public var body: some View {
         SwiftUI.NavigationView {
             VStack(spacing: 0) {
-                if generatedFiles.isEmpty {
+                if isLoadingDocuments {
+                    ProgressView("Loading documents...")
+                        .frame(maxHeight: .infinity)
+                } else if generatedDocuments.isEmpty {
                     DocumentsEmptyStateView()
                 } else {
                     VStack(spacing: 0) {
@@ -68,6 +92,7 @@ public struct DownloadOptionsSheet: View {
                                     .foregroundColor(.white)
                                     .cornerRadius(Theme.CornerRadius.medium)
                                 }
+                                .disabled(isDownloading)
                             }
 
                             Button(action: downloadAll) {
@@ -78,6 +103,7 @@ public struct DownloadOptionsSheet: View {
                                     .foregroundColor(.white)
                                     .cornerRadius(Theme.CornerRadius.medium)
                             }
+                            .disabled(isDownloading)
                         }
                         .padding()
                     }
@@ -90,65 +116,255 @@ public struct DownloadOptionsSheet: View {
                 .toolbar {
                     ToolbarItem(placement: .automatic) {
                         Button("Done") {
-                            dismiss()
+                            if !isDownloading {
+                                dismiss()
+                            }
                         }
+                        .disabled(isDownloading)
                     }
                 }
                 .alert("Download Error", isPresented: .init(
                     get: { downloadError != nil },
                     set: { _ in downloadError = nil }
                 )) {
-                    Button("OK") {}
+                    Button("OK") {
+                        downloadError = nil
+                    }
                 } message: {
                     if let error = downloadError {
-                        Text(error)
+                        Text(error.localizedDescription)
                     }
+                }
+                .alert("Download Complete", isPresented: .init(
+                    get: { !downloadResults.isEmpty && !isDownloading },
+                    set: { _ in downloadResults = [] }
+                )) {
+                    Button("OK") {
+                        downloadResults = []
+                        onDismiss()
+                    }
+                } message: {
+                    Text("Successfully downloaded \(downloadResults.filter(\.success).count) of \(downloadResults.count) documents.")
                 }
                 .overlay {
                     if isDownloading {
                         Color.black.opacity(0.5)
                             .ignoresSafeArea()
                             .overlay {
-                                ProgressView("Downloading...")
-                                    .padding()
-                                    .background(Color.black)
-                                    .cornerRadius(Theme.CornerRadius.medium)
+                                VStack(spacing: 16) {
+                                    ProgressView(value: downloadProgress, total: 1.0)
+                                        .progressViewStyle(LinearProgressViewStyle())
+                                    
+                                    Text("Downloading... \(Int(downloadProgress * 100))%")
+                                        .foregroundColor(.white)
+                                }
+                                .padding()
+                                .background(Color.black.opacity(0.8))
+                                .cornerRadius(Theme.CornerRadius.medium)
                             }
                     }
                 }
         }
+        .task {
+            await loadDocuments()
+        }
     }
 
+    // MARK: - Document Loading
+    
+    private func loadDocuments() async {
+        isLoadingDocuments = true
+        
+        // Generate sample documents for the acquisition
+        // In a real implementation, this would fetch from Core Data or API
+        let sampleDocuments = generateSampleDocuments(for: acquisition)
+        
+        await MainActor.run {
+            generatedDocuments = sampleDocuments
+            isLoadingDocuments = false
+        }
+    }
+    
+    private func generateSampleDocuments(for acquisition: Acquisition) -> [GeneratedDocument] {
+        // Create sample documents based on acquisition data
+        var documents: [GeneratedDocument] = []
+        
+        // Add standard acquisition documents
+        documents.append(GeneratedDocument(
+            title: "\(acquisition.title)_Summary.pdf",
+            documentType: .acquisitionPlan,
+            content: "Acquisition summary document"
+        ))
+        
+        documents.append(GeneratedDocument(
+            title: "\(acquisition.title)_Details.docx",
+            documentType: .rrd,
+            content: "Detailed acquisition information"
+        ))
+        
+        // Add requirements document if available
+        if !acquisition.requirements.isEmpty {
+            documents.append(GeneratedDocument(
+                title: "\(acquisition.title)_Requirements.txt",
+                documentType: .rrd,
+                content: acquisition.requirements
+            ))
+        }
+        
+        return documents
+    }
+    
+    private func generatePDFContent(title: String, content: String) -> Data {
+        // Simplified PDF-like content generation
+        let pdfContent = """
+        %PDF-1.4
+        1 0 obj
+        <<
+        /Type /Catalog
+        /Pages 2 0 R
+        >>
+        endobj
+        
+        2 0 obj
+        <<
+        /Type /Pages
+        /Kids [3 0 R]
+        /Count 1
+        >>
+        endobj
+        
+        3 0 obj
+        <<
+        /Type /Page
+        /Parent 2 0 R
+        /MediaBox [0 0 612 792]
+        /Contents 4 0 R
+        >>
+        endobj
+        
+        4 0 obj
+        <<
+        /Length 44
+        >>
+        stream
+        BT
+        /F1 12 Tf
+        100 700 Td
+        (\(title)) Tj
+        0 -20 Td
+        (\(content)) Tj
+        ET
+        endstream
+        endobj
+        
+        xref
+        0 5
+        0000000000 65535 f 
+        0000000010 00000 n 
+        0000000079 00000 n 
+        0000000173 00000 n 
+        0000000301 00000 n 
+        trailer
+        <<
+        /Size 5
+        /Root 1 0 R
+        >>
+        startxref
+        380
+        %%EOF
+        """
+        return Data(pdfContent.utf8)
+    }
+    
+    private func generateWordContent(title: String, content: String) -> Data {
+        // Simplified Word-like content (actually plain text with .docx extension)
+        let wordContent = """
+        \(title)
+        
+        \(content)
+        
+        Generated by AIKO Document System
+        Date: \(Date().formatted())
+        """
+        return Data(wordContent.utf8)
+    }
+    
+    // MARK: - Document Selection
+    
+    private func toggleDocumentSelection(_ documentId: UUID) {
+        if selectedDocuments.contains(documentId) {
+            selectedDocuments.remove(documentId)
+        } else {
+            selectedDocuments.insert(documentId)
+        }
+    }
+    
+    private func toggleAllSelection() {
+        if selectedDocuments.count == generatedDocuments.count {
+            selectedDocuments.removeAll()
+        } else {
+            selectedDocuments = Set(generatedDocuments.map(\.id))
+        }
+    }
+    
+    // MARK: - Download Operations
+    
     private func downloadSelected() {
-        // TODO: Implement when GeneratedFile is available
-        // let filesToDownload = generatedFiles.filter { file in
-        //     selectedDocuments.contains(file.id!)
-        // }
-        // downloadDocuments(filesToDownload)
-        downloadDocuments([])
+        let documentsToDownload = generatedDocuments.filter { selectedDocuments.contains($0.id) }
+        Task {
+            await downloadDocuments(documentsToDownload)
+        }
     }
 
     private func downloadAll() {
-        downloadDocuments(generatedFiles)
+        Task {
+            await downloadDocuments(generatedDocuments)
+        }
     }
 
-    private func downloadDocuments(_: [Any]) {
-        isDownloading = true
-
-        #if os(iOS)
-            // iOS implementation - handled by platform-specific code
-            downloadError = "Download functionality should be implemented in platform-specific code"
-            isDownloading = false
-        #else
-            // macOS implementation - handled by platform-specific code
-            downloadError = "Download functionality should be implemented in platform-specific code"
-            isDownloading = false
-        #endif
+    private func downloadDocuments(_ documents: [GeneratedDocument]) async {
+        guard !documents.isEmpty else { return }
+        
+        await MainActor.run {
+            isDownloading = true
+            downloadProgress = 0.0
+            downloadError = nil
+            downloadResults = []
+        }
+        
+        do {
+            guard let documentManager = documentManager else {
+                throw DocumentManagerError.downloadFailed("Document manager not available")
+            }
+            
+            let results = try await documentManager.downloadDocuments(documents) { progress in
+                Task { @MainActor in
+                    downloadProgress = progress
+                }
+            }
+            
+            await MainActor.run {
+                downloadResults = results
+                isDownloading = false
+                
+                // Show error if some downloads failed
+                let failedDownloads = results.filter { !$0.success }
+                if !failedDownloads.isEmpty {
+                    downloadError = .downloadFailed("Failed to download \(failedDownloads.count) documents")
+                }
+            }
+            
+        } catch {
+            await MainActor.run {
+                isDownloading = false
+                downloadError = error as? DocumentManagerError ?? .downloadFailed(error.localizedDescription)
+            }
+        }
     }
 }
 
 struct DocumentDownloadRow: View {
-    let file: Any // TODO: Should be GeneratedFile from Core Data
+    let document: GeneratedDocument
     let isSelected: Bool
     let onToggle: () -> Void
 
@@ -162,27 +378,30 @@ struct DocumentDownloadRow: View {
                 }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text("Untitled Document") // TODO: Use file.fileName
+                Text(document.title.isEmpty ? "Untitled Document" : document.title)
                     .font(.subheadline)
                     .foregroundColor(.primary)
 
                 HStack {
-                    Text("Unknown Type") // TODO: Use file.fileType
+                    Text(document.fileType.uppercased())
                         .font(.caption)
                         .foregroundColor(.secondary)
 
                     Spacer()
 
-                    // TODO: Use file.content?.count
-                    // if let size = file.content?.count {
-                    //     Text(formatFileSize(size))
-                    //         .font(.caption)
-                    //         .foregroundColor(.secondary)
-                    // }
+                    // Show estimated file size based on content length
+                    Text(formatFileSize(document.content.count))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
             }
 
             Spacer()
+            
+            // File type icon
+            Image(systemName: getFileTypeIcon(for: document.fileType))
+                .font(.title2)
+                .foregroundColor(getFileTypeColor(for: document.fileType))
         }
         .contentShape(Rectangle())
         .onTapGesture {
@@ -194,6 +413,18 @@ struct DocumentDownloadRow: View {
         let formatter = ByteCountFormatter()
         formatter.countStyle = .file
         return formatter.string(fromByteCount: Int64(bytes))
+    }
+    
+    private func getFileTypeIcon(for fileType: String) -> String {
+        // Use generic document icon for all types
+        return "doc.richtext"
+    }
+    
+    private func getFileTypeColor(for fileType: String) -> Color {
+        // Use hash-based color assignment for consistent colors
+        let hash = abs(fileType.hashValue)
+        let colors: [Color] = [.red, .blue, .green, .orange, .purple, .yellow, .cyan, .mint]
+        return colors[hash % colors.count]
     }
 }
 
@@ -230,9 +461,8 @@ public struct DocumentSelectionSheet: View {
     let onConfirm: () -> Void
     let onCancel: () -> Void
 
-    // TODO: acquisitionService needs to be injected from the main module
-    // Environment(\.acquisitionService) var acquisitionService
     @State private var acquisition: Acquisition?
+    @State private var generatedDocuments: [GeneratedDocument] = []
     @State private var isLoading = true
 
     public init(
@@ -271,7 +501,7 @@ public struct DocumentSelectionSheet: View {
                             .padding(.bottom)
 
                         // Document list
-                        if true { // TODO: Check acquisition.documentsArray.isEmpty
+                        if generatedDocuments.isEmpty {
                             VStack(spacing: 20) {
                                 Image(systemName: "doc.text")
                                     .font(.system(size: 60))
@@ -284,18 +514,15 @@ public struct DocumentSelectionSheet: View {
                         } else {
                             ScrollView {
                                 VStack(spacing: 12) {
-                                    // TODO: Restore when AcquisitionDocument is available
-                                    // ForEach(acquisition.documentsArray, id: \.id) { document in
-                                    //     DocumentSelectionRow(
-                                    //         document: document,
-                                    //         isSelected: selectedDocuments.contains(document.id ?? UUID()),
-                                    //         onToggle: {
-                                    //             if let docId = document.id {
-                                    //                 onToggleDocument(docId)
-                                    //             }
-                                    //         }
-                                    //     )
-                                    // }
+                                    ForEach(generatedDocuments) { document in
+                                        DocumentSelectionRow(
+                                            document: document,
+                                            isSelected: selectedDocuments.contains(document.id),
+                                            onToggle: {
+                                                onToggleDocument(document.id)
+                                            }
+                                        )
+                                    }
                                 }
                                 .padding()
                             }
@@ -339,25 +566,53 @@ public struct DocumentSelectionSheet: View {
     }
 
     private func loadAcquisition() async {
-        guard acquisitionId != nil else {
-            isLoading = false
+        guard let acquisitionId = acquisitionId else {
+            await MainActor.run {
+                isLoading = false
+            }
             return
         }
 
-        // TODO: Implement when acquisitionService is available
-        // do {
-        //     acquisition = try await acquisitionService.fetchAcquisition(acquisitionId)
-        //     isLoading = false
-        // } catch {
-        //     print("Failed to load acquisition: \(error)")
-        //     isLoading = false
-        // }
-        isLoading = false
+        // Create sample acquisition for demonstration
+        // In real implementation, this would fetch from Core Data or API
+        let sampleAcquisition = Acquisition(
+            id: acquisitionId,
+            title: "Sample Acquisition",
+            requirements: "Sample acquisition for document selection",
+            projectNumber: "SAMPLE-001",
+            status: .inProgress
+        )
+        
+        let sampleDocuments = generateSampleDocuments(for: sampleAcquisition)
+        
+        await MainActor.run {
+            acquisition = sampleAcquisition
+            generatedDocuments = sampleDocuments
+            isLoading = false
+        }
+    }
+    
+    private func generateSampleDocuments(for acquisition: Acquisition) -> [GeneratedDocument] {
+        var documents: [GeneratedDocument] = []
+        
+        documents.append(GeneratedDocument(
+            title: "\(acquisition.title)_Contract.pdf",
+            documentType: .contractScaffold,
+            content: "Sample contract document"
+        ))
+        
+        documents.append(GeneratedDocument(
+            title: "\(acquisition.title)_SOW.docx",
+            documentType: .sow,
+            content: "Statement of Work document"
+        ))
+        
+        return documents
     }
 }
 
 struct DocumentSelectionRow: View {
-    let document: Any // TODO: Should be AcquisitionDocument from Core Data
+    let document: GeneratedDocument
     let isSelected: Bool
     let onToggle: () -> Void
 
@@ -369,23 +624,20 @@ struct DocumentSelectionRow: View {
                     .foregroundColor(isSelected ? Theme.Colors.aikoPrimary : .gray)
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Untitled Document") // TODO: Use document.documentType
+                    Text(document.title.isEmpty ? "Untitled Document" : document.title)
                         .font(.headline)
                         .foregroundColor(.white)
 
                     HStack {
-                        Text("Unknown Type") // TODO: Use document.documentType
+                        Text(document.fileType.uppercased())
                             .font(.caption)
                             .foregroundColor(.secondary)
 
-                        // TODO: Use document.createdDate
-                        // if let date = document.createdDate {
-                        //     Text("•")
-                        //         .foregroundColor(.secondary)
-                        //     Text(date, style: .date)
-                        //         .font(.caption)
-                        //         .foregroundColor(.secondary)
-                        // }
+                        Text("•")
+                            .foregroundColor(.secondary)
+                        Text(document.createdAt, style: .date)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     }
                 }
 

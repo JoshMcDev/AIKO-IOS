@@ -168,6 +168,20 @@ public enum DocumentType: String, CaseIterable, Identifiable, Codable, Sendable 
         case .farUpdates: "FAR 1.101, 1.102, 52.101"
         }
     }
+
+    /// File extension for document export
+    public var fileExtension: String {
+        switch self {
+        case .sow, .soo, .pws, .qasp, .costEstimate, .marketResearch, .acquisitionPlan,
+             .evaluationPlan, .fiscalLawReview, .opsecReview, .industryRFI, .sourcesSought,
+             .justificationApproval, .codes, .competitionAnalysis, .procurementSourcing,
+             .rrd, .requestForQuoteSimplified, .requestForQuote, .requestForProposal,
+             .contractScaffold, .corAppointment, .otherTransactionAgreement, .farUpdates:
+            return "rtf"  // Rich Text Format for formatted documents
+        case .analytics:
+            return "pdf"  // PDF for analytics reports
+        }
+    }
 }
 
 public enum DocumentCategoryType: Equatable, Hashable, Codable, Sendable {

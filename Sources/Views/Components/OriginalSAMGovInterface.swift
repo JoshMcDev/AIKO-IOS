@@ -57,7 +57,7 @@ struct OriginalSAMGovInterface: View {
                 // Dark background
                 Color.black
                     .ignoresSafeArea()
-                
+
                 VStack(spacing: 0) {
                     // Header with SAM icon
                     VStack(spacing: 12) {
@@ -147,7 +147,7 @@ struct OriginalSAMGovInterface: View {
                         if !searchResults.isEmpty {
                             Divider()
                                 .background(Color.gray.opacity(0.3))
-                            
+
                             Text("Search Results")
                                 .font(.headline)
                                 .foregroundColor(.white)
@@ -158,7 +158,7 @@ struct OriginalSAMGovInterface: View {
                                 EntityDetailView(entity: result)
                                     .padding()
                             }
-                            
+
                             // Generate Report Button
                             Button(action: {
                                 showingReportPreview = true
@@ -176,7 +176,7 @@ struct OriginalSAMGovInterface: View {
                             }
                             .padding(.horizontal)
                             .padding(.bottom)
-                            
+
                         } else if let error = errorMessage {
                             SAMGovErrorView(message: error)
                                 .padding()
@@ -515,11 +515,11 @@ struct InfoRow: View {
                 .font(.caption)
                 .foregroundColor(.gray)
                 .frame(width: 80, alignment: .leading)
-            
+
             Text(value)
                 .font(.caption)
                 .foregroundColor(.white)
-            
+
             Spacer()
         }
     }

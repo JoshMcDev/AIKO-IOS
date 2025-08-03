@@ -19,7 +19,7 @@ struct SAMReportViewPreview_Previews: PreviewProvider {
             // Default preview
             SAMReportViewPreview()
                 .previewDisplayName("SAM Report - Default")
-            
+
             // With expired CAGE code
             NavigationView {
                 SAMReportView(
@@ -29,7 +29,7 @@ struct SAMReportViewPreview_Previews: PreviewProvider {
             }
             .preferredColorScheme(.dark)
             .previewDisplayName("SAM Report - Expired CAGE")
-            
+
             // Large acquisition value
             NavigationView {
                 SAMReportView(
@@ -39,7 +39,7 @@ struct SAMReportViewPreview_Previews: PreviewProvider {
             }
             .preferredColorScheme(.dark)
             .previewDisplayName("SAM Report - Large Value")
-            
+
             // Expiring soon (within 30 days)
             NavigationView {
                 SAMReportView(
@@ -51,9 +51,9 @@ struct SAMReportViewPreview_Previews: PreviewProvider {
             .previewDisplayName("SAM Report - Expiring Soon")
         }
     }
-    
+
     // MARK: - Sample Data Helpers
-    
+
     private static func createSampleEntity() -> EntityDetail {
         EntityDetail(
             ueiSAM: "R7TBP9D4VNJ3",
@@ -86,7 +86,7 @@ struct SAMReportViewPreview_Previews: PreviewProvider {
             isServiceDisabledVeteranOwned: true
         )
     }
-    
+
     private static func createExpiringSoonEntity() -> EntityDetail {
         EntityDetail(
             ueiSAM: "EXPIRING123456",
@@ -116,7 +116,7 @@ struct SAMReportViewPreview_Previews: PreviewProvider {
             isSmallBusiness: true
         )
     }
-    
+
     private static func createExpiredEntity() -> EntityDetail {
         EntityDetail(
             ueiSAM: "EXPIRED123456",

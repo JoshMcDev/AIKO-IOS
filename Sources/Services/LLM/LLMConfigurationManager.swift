@@ -236,23 +236,20 @@ final class LLMConfigurationManager: ObservableObject, @unchecked Sendable {
     private func loadConfigurations() {
         // Load provider configurations
         if let data = UserDefaults.standard.data(forKey: UserDefaultsKeys.providerConfigs),
-           let configs = try? JSONDecoder().decode([LLMProvider: LLMProviderConfig].self, from: data)
-        {
+           let configs = try? JSONDecoder().decode([LLMProvider: LLMProviderConfig].self, from: data) {
             configuredProviders = configs
         }
 
         // Load active provider
         if let activeProviderString = UserDefaults.standard.string(forKey: UserDefaultsKeys.activeProvider),
            let activeProvider = LLMProvider(rawValue: activeProviderString),
-           let config = configuredProviders[activeProvider]
-        {
+           let config = configuredProviders[activeProvider] {
             activeProviderConfig = config
         }
 
         // Load provider priority
         if let data = UserDefaults.standard.data(forKey: UserDefaultsKeys.providerPriority),
-           let priority = try? JSONDecoder().decode(LLMProviderPriority.self, from: data)
-        {
+           let priority = try? JSONDecoder().decode(LLMProviderPriority.self, from: data) {
             providerPriority = priority
         }
     }

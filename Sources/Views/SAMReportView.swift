@@ -11,48 +11,48 @@ struct SAMReportView: View {
     // MARK: - State
     @State private var showShareSheet = false
     @State private var showingSATBotAlert = false
-    
+
     // MARK: - Sample Data
     let entity: EntityDetail
     let acquisitionValue: Double
-    
+
     // MARK: - Initializer
     init(entity: EntityDetail? = nil, acquisitionValue: Double = 150_000) {
         self.entity = entity ?? Self.createSampleEntity()
         self.acquisitionValue = acquisitionValue
     }
-    
+
     // MARK: - Body
     var body: some View {
         ZStack {
             // Dark background
             Color.black
                 .ignoresSafeArea()
-            
+
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     // Header with share button
                     headerView
-                    
+
                     VStack(alignment: .leading, spacing: 16) {
                         // CAGE Code Expiration Status - FIRST ITEM
                         cageExpirationCard
-                        
+
                         // SAT Bot Section
                         satBotSection
-                        
+
                         // Company Information
                         companyInformationSection
-                        
+
                         // Compliance Status
                         complianceStatusSection
-                        
+
                         // Business Certifications
                         businessCertificationsSection
-                        
+
                         // NAICS Codes with Small Business Sizes
                         naicsCodesSection
-                        
+
                         // PSC Codes
                         pscCodesSection
                     }
@@ -73,7 +73,7 @@ struct SAMReportView: View {
             Text(satBotMessage)
         }
     }
-    
+
     // MARK: - Header View
     private var headerView: some View {
         HStack {
@@ -81,14 +81,14 @@ struct SAMReportView: View {
             ZStack {
                 Color.clear
                     .frame(width: 50, height: 50)
-                
+
                 Image(systemName: "building.2")
                     .font(.title2)
                     .foregroundColor(.blue)
             }
-            
+
             Spacer()
-            
+
             // Centered SAM.gov text with patriotic gradient
             Text("SAM.gov")
                 .font(.title)
@@ -104,14 +104,14 @@ struct SAMReportView: View {
                         endPoint: .trailing
                     )
                 )
-            
+
             Spacer()
-            
+
             // Share button
             ZStack {
                 Color.clear
                     .frame(width: 50, height: 50)
-                
+
                 Button(action: { showShareSheet = true }) {
                     Image(systemName: "square.and.arrow.up")
                         .font(.title2)
@@ -121,13 +121,13 @@ struct SAMReportView: View {
         }
         .padding(.horizontal)
     }
-    
+
     // MARK: - CAGE Expiration Card (First Item)
     private var cageExpirationCard: some View {
         let isExpired = isEntityExpired
         let isExpiringSoon = isEntityExpiringSoon
         let expirationDate = entity.expirationDate ?? Date().addingTimeInterval(365 * 24 * 60 * 60)
-        
+
         // Determine status and colors
         let (statusText, statusColor, backgroundColor) = {
             if isExpired {
@@ -138,7 +138,7 @@ struct SAMReportView: View {
                 return ("Active", Color.green, Color.green.opacity(0.2))
             }
         }()
-        
+
         let iconName = {
             if isExpired {
                 return "exclamationmark.circle"
@@ -148,18 +148,18 @@ struct SAMReportView: View {
                 return "checkmark.circle"
             }
         }()
-        
+
         return HStack {
             Image(systemName: iconName)
                 .foregroundColor(statusColor)
                 .font(.title2)
-            
+
             Text(statusText)
                 .font(.headline)
                 .foregroundColor(statusColor)
-            
+
             Spacer()
-            
+
             Text("Expires: \(DateFormatter.medium.string(from: expirationDate))")
                 .font(.caption)
                 .foregroundColor(.gray)
@@ -168,24 +168,24 @@ struct SAMReportView: View {
         .background(backgroundColor)
         .cornerRadius(12)
     }
-    
+
     // MARK: - SAT Bot Section
     private var satBotSection: some View {
         HStack {
             Image(systemName: "envelope")
                 .foregroundColor(.blue)
                 .font(.title2)
-            
+
             Text("SAT Bot")
                 .font(.headline)
                 .foregroundColor(.white)
-            
+
             Text("Auto send")
                 .font(.caption)
                 .foregroundColor(.gray)
-            
+
             Spacer()
-            
+
             Text(acquisitionValue <= 250_000 ? "UnderSATBot" : "OverSATBot")
                 .font(.caption)
                 .foregroundColor(.gray)
@@ -198,7 +198,7 @@ struct SAMReportView: View {
             showingSATBotAlert = true
         }
     }
-    
+
     // MARK: - Company Information
     private var companyInformationSection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -206,17 +206,17 @@ struct SAMReportView: View {
                 .font(.headline)
                 .foregroundColor(.white)
                 .padding(.bottom, 4)
-            
+
             VStack(alignment: .leading, spacing: 8) {
                 SAMInfoRow(label: "Legal Name", value: entity.legalBusinessName)
                 SAMInfoRow(label: "UEI", value: entity.ueiSAM)
                 SAMInfoRow(label: "CAGE", value: entity.cageCode ?? "N/A")
                 SAMInfoRow(label: "Status", value: "\(entity.registrationStatus) (expires \(DateFormatter.medium.string(from: entity.expirationDate ?? Date())))")
-                
+
                 if let address = entity.address {
                     SAMInfoRow(label: "Location", value: "\(address.line1), \(address.city), \(address.state) \(address.zipCode)")
                 }
-                
+
                 // Contact Information
                 if let contact = entity.pointOfContact {
                     SAMInfoRow(label: "Contact", value: "\(contact.firstName) \(contact.lastName)")
@@ -236,7 +236,7 @@ struct SAMReportView: View {
         .background(Color.gray.opacity(0.2))
         .cornerRadius(12)
     }
-    
+
     // MARK: - Compliance Status
     private var complianceStatusSection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -244,35 +244,35 @@ struct SAMReportView: View {
                 .font(.headline)
                 .foregroundColor(.white)
                 .padding(.bottom, 4)
-            
+
             SAMComplianceRow(
                 icon: "xmark.circle",
                 iconColor: .red,
                 title: "Section 889",
                 status: "Data not found in API response"
             )
-            
+
             SAMComplianceRow(
                 icon: "checkmark.circle",
                 iconColor: .green,
                 title: "Foreign Government Interests",
                 status: "No foreign government interests reported"
             )
-            
+
             SAMComplianceRow(
                 icon: "checkmark.circle",
                 iconColor: .green,
                 title: "Exclusions",
                 status: entity.hasActiveExclusions ? "Active Exclusions Found" : "NO Active Exclusions"
             )
-            
+
             SAMComplianceRow(
                 icon: "checkmark.circle",
                 iconColor: .green,
                 title: "Financial Responsibility",
                 status: "No data returned"
             )
-            
+
             SAMComplianceRow(
                 icon: "checkmark.circle",
                 iconColor: .green,
@@ -284,7 +284,7 @@ struct SAMReportView: View {
         .background(Color.gray.opacity(0.2))
         .cornerRadius(12)
     }
-    
+
     // MARK: - Business Certifications
     private var businessCertificationsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -292,20 +292,20 @@ struct SAMReportView: View {
                 .font(.headline)
                 .foregroundColor(.white)
                 .padding(.bottom, 4)
-            
+
             VStack(alignment: .leading, spacing: 8) {
                 ForEach(entity.businessTypes, id: \.self) { businessType in
                     SAMCertificationRow(text: businessType)
                 }
-                
+
                 if entity.isVeteranOwned {
                     SAMCertificationRow(text: "Veteran-Owned Business")
                 }
-                
+
                 if entity.isServiceDisabledVeteranOwned {
                     SAMCertificationRow(text: "Service-Disabled Veteran-Owned Business")
                 }
-                
+
                 if entity.isSmallBusiness {
                     SAMCertificationRow(text: "Small Business (for all NAICS codes)")
                 }
@@ -315,7 +315,7 @@ struct SAMReportView: View {
         .background(Color.gray.opacity(0.2))
         .cornerRadius(12)
     }
-    
+
     // MARK: - NAICS Codes with Small Business Sizes
     private var naicsCodesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -323,7 +323,7 @@ struct SAMReportView: View {
                 .font(.headline)
                 .foregroundColor(.white)
                 .padding(.bottom, 4)
-            
+
             // Column headers
             HStack(alignment: .top) {
                 Text("SB")
@@ -331,22 +331,22 @@ struct SAMReportView: View {
                     .fontWeight(.semibold)
                     .foregroundColor(.gray)
                     .frame(width: 25, alignment: .center)
-                
+
                 Text("Code")
                     .font(.caption2)
                     .fontWeight(.semibold)
                     .foregroundColor(.gray)
                     .frame(width: 60, alignment: .leading)
-                
+
                 Text("Description")
                     .font(.caption2)
                     .fontWeight(.semibold)
                     .foregroundColor(.gray)
-                
+
                 Spacer()
             }
             .padding(.bottom, 4)
-            
+
             VStack(alignment: .leading, spacing: 8) {
                 ForEach(naicsCodesWithSizes, id: \.code) { naics in
                     SAMNAICSRow(
@@ -363,7 +363,7 @@ struct SAMReportView: View {
         .background(Color.gray.opacity(0.2))
         .cornerRadius(12)
     }
-    
+
     // MARK: - PSC Codes
     private var pscCodesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -371,7 +371,7 @@ struct SAMReportView: View {
                 .font(.headline)
                 .foregroundColor(.white)
                 .padding(.bottom, 4)
-            
+
             VStack(alignment: .leading, spacing: 8) {
                 ForEach(samplePSCCodes, id: \.code) { psc in
                     SAMPSCRow(code: psc.code, description: psc.description)
@@ -382,19 +382,19 @@ struct SAMReportView: View {
         .background(Color.gray.opacity(0.2))
         .cornerRadius(12)
     }
-    
+
     // MARK: - Share View
     private var shareView: some View {
         VStack(spacing: 20) {
             Text("Share SAM Report")
                 .font(.headline)
-            
+
             Text(generateShareContent())
                 .font(.system(.body, design: .monospaced))
                 .padding()
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(8)
-            
+
             HStack {
                 Button("Copy") {
                     #if os(iOS)
@@ -406,7 +406,7 @@ struct SAMReportView: View {
                     showShareSheet = false
                 }
                 .buttonStyle(.bordered)
-                
+
                 Button("Close") {
                     showShareSheet = false
                 }
@@ -422,7 +422,7 @@ struct SAMReportView: View {
 struct SAMInfoRow: View {
     let label: String
     let value: String
-    
+
     var body: some View {
         HStack(alignment: .top) {
             Text(label + ":")
@@ -443,14 +443,14 @@ struct SAMComplianceRow: View {
     let iconColor: Color
     let title: String
     let status: String
-    
+
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon)
                 .foregroundColor(iconColor)
                 .font(.system(size: 20))
                 .frame(width: 24)
-            
+
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.subheadline)
@@ -460,7 +460,7 @@ struct SAMComplianceRow: View {
                     .font(.caption)
                     .foregroundColor(.gray)
             }
-            
+
             Spacer()
         }
         .padding(.vertical, 4)
@@ -469,7 +469,7 @@ struct SAMComplianceRow: View {
 
 struct SAMCertificationRow: View {
     let text: String
-    
+
     var body: some View {
         HStack {
             Image(systemName: "checkmark")
@@ -489,7 +489,7 @@ struct SAMNAICSRow: View {
     let isPrimary: Bool
     let smallBusinessSize: String
     let isSmallBusiness: Bool
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(alignment: .top) {
@@ -499,13 +499,13 @@ struct SAMNAICSRow: View {
                     .fontWeight(.semibold)
                     .foregroundColor(isSmallBusiness ? .green : .gray)
                     .frame(width: 25, alignment: .center)
-                
+
                 Text(code)
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundColor(.white)
                     .frame(width: 60, alignment: .leading)
-                
+
                 VStack(alignment: .leading, spacing: 2) {
                     HStack {
                         Text(description)
@@ -526,7 +526,7 @@ struct SAMNAICSRow: View {
                         .font(.caption2)
                         .foregroundColor(.gray)
                 }
-                
+
                 Spacer()
             }
         }
@@ -536,7 +536,7 @@ struct SAMNAICSRow: View {
 struct SAMPSCRow: View {
     let code: String
     let description: String
-    
+
     var body: some View {
         HStack(alignment: .top) {
             Text(code)
@@ -544,11 +544,11 @@ struct SAMPSCRow: View {
                 .fontWeight(.semibold)
                 .foregroundColor(.white)
                 .frame(width: 50, alignment: .leading)
-            
+
             Text(description)
                 .font(.caption)
                 .foregroundColor(.white)
-            
+
             Spacer()
         }
     }
@@ -557,19 +557,19 @@ struct SAMPSCRow: View {
 // MARK: - Extensions and Sample Data
 
 extension SAMReportView {
-    
+
     // MARK: - Computed Properties
     private var isEntityExpired: Bool {
         guard let expirationDate = entity.expirationDate else { return false }
         return expirationDate < Date()
     }
-    
+
     private var isEntityExpiringSoon: Bool {
         guard let expirationDate = entity.expirationDate else { return false }
         let thirtyDaysFromNow = Calendar.current.date(byAdding: .day, value: 30, to: Date()) ?? Date()
         return expirationDate <= thirtyDaysFromNow && expirationDate >= Date()
     }
-    
+
     private var satBotMessage: String {
         """
         Email queued for \(acquisitionValue <= 250_000 ? "UnderSATBot" : "OverSATBot")
@@ -577,7 +577,7 @@ extension SAMReportView {
         Value: $\(String(format: "%.0f", acquisitionValue))
         """
     }
-    
+
     // MARK: - Sample Data
     private static func createSampleEntity() -> EntityDetail {
         EntityDetail(
@@ -610,7 +610,7 @@ extension SAMReportView {
             isServiceDisabledVeteranOwned: true
         )
     }
-    
+
     private var naicsCodesWithSizes: [NAICSWithSize] {
         [
             NAICSWithSize(
@@ -636,7 +636,7 @@ extension SAMReportView {
             )
         ]
     }
-    
+
     private var samplePSCCodes: [PSCCode] {
         [
             PSCCode(code: "V1A1", description: "Air Charter for Things"),
@@ -645,7 +645,7 @@ extension SAMReportView {
             PSCCode(code: "J019", description: "Maintenance and Repair of Aircraft")
         ]
     }
-    
+
     private func generateShareContent() -> String {
         let formatter = DateFormatter.medium
         let expirationDate = entity.expirationDate ?? Date()
@@ -656,26 +656,26 @@ extension SAMReportView {
             \(contact.phone.map { "• Phone: \($0)" } ?? "")
             """
         } ?? ""
-        
+
         return """
         SAM.gov Report
         Generated: \(formatter.string(from: Date()))
-        
+
         COMPANY INFORMATION:
         • Legal Name: \(entity.legalBusinessName)
         • UEI: \(entity.ueiSAM)
         • CAGE: \(entity.cageCode ?? "N/A")
         • Status: \(entity.registrationStatus) (expires \(formatter.string(from: expirationDate)))
         \(contactInfo.isEmpty ? "" : "\n\(contactInfo)")
-        
+
         COMPLIANCE STATUS:
         • Exclusions: \(entity.hasActiveExclusions ? "Active Exclusions Found" : "NO Active Exclusions")
         • Foreign Government Interests: No interests reported
         • Integrity Records: Clean
-        
+
         NAICS CODES:
         \(naicsCodesWithSizes.map { "• \($0.code): \($0.description) [SB: \($0.isSmallBusiness ? "Y" : "N")] - Size: \($0.smallBusinessSize)" }.joined(separator: "\n"))
-        
+
         PSC CODES:
         \(samplePSCCodes.map { "• \($0.code): \($0.description)" }.joined(separator: "\n"))
         """

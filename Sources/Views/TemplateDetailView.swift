@@ -1,6 +1,12 @@
 import AppCore
 import SwiftUI
 
+#if os(iOS)
+import AIKOiOS
+#elseif os(macOS)
+import AIKOmacOS
+#endif
+
 public struct TemplateDetailView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.standardTemplateService) var templateService

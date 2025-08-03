@@ -233,13 +233,11 @@ public actor CoreDataActor {
                             for (key, attribute) in entity.attributesByName {
                                 if let value = objectData[key] {
                                     if attribute.attributeType == .dateAttributeType,
-                                       let timestamp = value as? TimeInterval
-                                    {
+                                       let timestamp = value as? TimeInterval {
                                         object.setValue(Date(timeIntervalSince1970: timestamp), forKey: key)
                                     } else if attribute.attributeType == .binaryDataAttributeType,
                                               let base64String = value as? String,
-                                              let data = Data(base64Encoded: base64String)
-                                    {
+                                              let data = Data(base64Encoded: base64String) {
                                         object.setValue(data, forKey: key)
                                     } else {
                                         object.setValue(value, forKey: key)

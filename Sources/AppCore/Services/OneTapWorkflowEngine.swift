@@ -214,6 +214,8 @@ public actor OneTapWorkflowEngine {
     private var activeWorkflows: [UUID: OneTapConfiguration] = [:]
     private var workflowProgress: [UUID: Double] = [:]
     private var workflowStartTimes: [UUID: Date] = [:]
+    private let progressBridge: ProgressBridge = .liveValue
+    private var progressSessions: [UUID: ProgressSession] = [:]
 
     // MARK: - Initialization
 
@@ -240,27 +242,27 @@ public actor OneTapWorkflowEngine {
 
         do {
             // Minimal implementation - always fails for RED phase
-            updateProgress(for: workflowId, progress: 0.1)
+            await updateProgress(for: workflowId, progress: 0.1)
 
             // Step 1: Document scanning (not implemented)
             let scannedDocument = try await performDocumentScan(configuration: configuration, workflowId: workflowId)
-            updateProgress(for: workflowId, progress: 0.3)
+            await updateProgress(for: workflowId, progress: 0.3)
 
             // Step 2: Professional image processing (not implemented)
             let processedDocument = try await performImageProcessing(document: scannedDocument, configuration: configuration, workflowId: workflowId)
-            updateProgress(for: workflowId, progress: 0.5)
+            await updateProgress(for: workflowId, progress: 0.5)
 
             // Step 3: OCR text extraction (not implemented)
             let ocrResult = try await performOCRExtraction(document: processedDocument, configuration: configuration, workflowId: workflowId)
-            updateProgress(for: workflowId, progress: 0.7)
+            await updateProgress(for: workflowId, progress: 0.7)
 
             // Step 4: Form field extraction (not implemented)
             let extractedFields = try await extractFormFields(ocrResult: ocrResult, workflow: configuration.workflow, workflowId: workflowId)
-            updateProgress(for: workflowId, progress: 0.8)
+            await updateProgress(for: workflowId, progress: 0.8)
 
             // Step 5: Form auto-population (not implemented)
             let populationResult = try await populateForm(fields: extractedFields, workflow: configuration.workflow, workflowId: workflowId)
-            updateProgress(for: workflowId, progress: 0.9)
+            await updateProgress(for: workflowId, progress: 0.9)
 
             // Step 6: Quality validation (not implemented)
             let qualityScore = try await validateWorkflowQuality(
@@ -270,7 +272,7 @@ public actor OneTapWorkflowEngine {
                 configuration: configuration,
                 workflowId: workflowId
             )
-            updateProgress(for: workflowId, progress: 1.0)
+            await updateProgress(for: workflowId, progress: 1.0)
 
             let processingTime = Date().timeIntervalSince(startTime)
 
@@ -662,11 +664,48 @@ public actor OneTapWorkflowEngine {
 
     // MARK: - Progress Management
 
-    private func updateProgress(for workflowId: UUID, progress: Double) {
+    private func updateProgress(for workflowId: UUID, progress: Double) async {
         workflowProgress[workflowId] = progress
 
-        // TODO: Integrate with ProgressBridge for UI updates
-        // This would send progress updates to the UI layer
+        // Integrate with ProgressBridge for UI updates
+        if let progressSession = progressSessions[workflowId] {
+            let phase: ProgressPhase = determineProgressPhase(from: progress)
+            let operation = determineCurrentOperation(from: progress)
+            
+            await progressSession.transitionToPhase(phase, operation: operation)
+        }
+    }
+    
+    /// Determine progress phase based on workflow progress
+    private func determineProgressPhase(from progress: Double) -> ProgressPhase {
+        switch progress {
+        case 0.0..<0.2:
+            return .scanning
+        case 0.2..<0.6:
+            return .processing
+        case 0.6..<0.8:
+            return .ocr
+        case 0.8..<1.0:
+            return .formPopulation
+        default:
+            return .completed
+        }
+    }
+    
+    /// Determine current operation description based on progress
+    private func determineCurrentOperation(from progress: Double) -> String {
+        switch progress {
+        case 0.0..<0.2:
+            return "Scanning document..."
+        case 0.2..<0.6:
+            return "Processing and enhancing image..."
+        case 0.6..<0.8:
+            return "Extracting text with OCR..."
+        case 0.8..<1.0:
+            return "Auto-filling form fields..."
+        default:
+            return "Workflow completed"
+        }
     }
 
     private func cleanupWorkflow(_ workflowId: UUID) {

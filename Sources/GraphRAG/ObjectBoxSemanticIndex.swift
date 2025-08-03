@@ -40,9 +40,11 @@ actor ObjectBoxSemanticIndex {
         threshold: Float = 0.7
     ) async throws -> [RegulationSearchResult] {
         var similarities: [(StoredRegulation, Float)] = []
+        var maxSimilarity: Float = 0.0
 
         for regulation in regulationStore.values {
             let similarity = cosineSimilarity(queryEmbedding, regulation.embedding)
+            maxSimilarity = max(maxSimilarity, similarity)
             if similarity >= threshold {
                 similarities.append((regulation, similarity))
             }
@@ -86,9 +88,11 @@ actor ObjectBoxSemanticIndex {
         threshold: Float = 0.7
     ) async throws -> [RegulationSearchResult] {
         var similarities: [(StoredUserWorkflow, Float)] = []
+        var maxSimilarity: Float = 0.0
 
         for workflow in userWorkflowStore.values {
             let similarity = cosineSimilarity(queryEmbedding, workflow.embedding)
+            maxSimilarity = max(maxSimilarity, similarity)
             if similarity >= threshold {
                 similarities.append((workflow, similarity))
             }

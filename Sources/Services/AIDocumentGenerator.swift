@@ -19,86 +19,26 @@ public extension AIDocumentGenerator {
     static var liveValue: AIDocumentGenerator {
         AIDocumentGenerator(
             generateDocuments: { requirements, documentTypes in
-                // TODO: Replace with proper dependency injection
-                let templateService = StandardTemplateService.liveValue
-                let userProfileService = UserProfileService.liveValue
-                let cache = DocumentGenerationCacheKey.liveValue
-                let spellCheckService = SpellCheckService.liveValue
+                // Simplified implementation without complex dependencies
+                // TODO: Re-enable dependency injection when protocols are defined
 
                 guard let aiProvider = await AIProviderFactory.defaultProvider() else {
                     throw AIDocumentGeneratorError.noProvider
                 }
                 var generatedDocuments: [GeneratedDocument] = []
 
-                // Load user profile for template variables
-                let profile = try? await userProfileService.loadProfile()
-
                 for documentType in documentTypes {
-                    // Check cache first
-                    if let cachedContent = await cache.getCachedDocument(
-                        for: documentType,
-                        requirements: requirements,
-                        profile: profile
-                    ) {
-                        let dateString = Date().formatted(date: .abbreviated, time: .omitted)
-                        let title = "\(documentType.shortName) - \(dateString)"
-                        let document = GeneratedDocument(
-                            title: title,
-                            documentType: documentType,
-                            content: cachedContent
-                        )
-                        generatedDocuments.append(document)
-                        continue
-                    }
+                    // Simplified template usage - no cache or profile service for now
 
-                    // Try to load template from cache or service
-                    let template: String?
-                    if let cachedTemplate = await cache.getCachedTemplate(for: documentType) {
-                        template = cachedTemplate
-                    } else if let loadedTemplate = try? await templateService.loadTemplate(documentType) {
-                        await cache.cacheTemplate(loadedTemplate, for: documentType)
-                        template = loadedTemplate
-                    } else {
-                        template = nil
-                    }
-
-                    let prompt: String
-                    if let template {
-                        // Replace profile variables in template
-                        var processedTemplate = template
-                        if let profile {
-                            for (key, value) in profile.templateVariables {
-                                processedTemplate = processedTemplate.replacingOccurrences(
-                                    of: "{{\(key)}}",
-                                    with: value
-                                )
-                            }
-                        }
-
-                        // Use template-based prompt
-                        prompt = createTemplateBasedPrompt(
-                            for: documentType,
-                            requirements: requirements,
-                            template: processedTemplate,
-                            profile: profile
-                        )
-                    } else {
-                        // Fall back to original prompt
-                        prompt = createPrompt(for: documentType, requirements: requirements, profile: profile)
-                    }
+                    // Simplified prompt creation without template or profile service
+                    let prompt = createPrompt(for: documentType, requirements: requirements)
 
                     let messages = [
                         AIMessage.user(prompt),
                     ]
 
-                    // Get system prompt (with caching)
-                    let systemPrompt: String
-                    if let cachedPrompt = await cache.getCachedSystemPrompt(for: documentType) {
-                        systemPrompt = cachedPrompt
-                    } else {
-                        systemPrompt = getSystemPrompt(for: documentType)
-                        await cache.cacheSystemPrompt(systemPrompt, for: documentType)
-                    }
+                    // Simplified system prompt without caching
+                    let systemPrompt = getSystemPrompt(for: documentType)
 
                     let request = AICompletionRequest(
                         messages: messages,
@@ -108,18 +48,7 @@ public extension AIDocumentGenerator {
                     )
 
                     let result = try await aiProvider.complete(request)
-                    let content = result.content
-
-                    // Spell check and correct the content
-                    let correctedContent = await spellCheckService.checkAndCorrect(content)
-
-                    // Cache the generated document
-                    await cache.cacheDocument(
-                        correctedContent,
-                        for: documentType,
-                        requirements: requirements,
-                        profile: profile
-                    )
+                    let correctedContent = result.content
 
                     let document = GeneratedDocument(
                         title: "\(documentType.shortName) - \(Date().formatted(date: .abbreviated, time: .omitted))",
@@ -133,67 +62,24 @@ public extension AIDocumentGenerator {
                 return generatedDocuments
             },
             generateDFDocuments: { requirements, dfDocumentTypes in
-                // TODO: Replace with proper dependency injection
-                let dfTemplateService = DFTemplateService.liveValue
-                let userProfileService = UserProfileService.liveValue
-                let cache = DocumentGenerationCacheKey.liveValue
-                let spellCheckService = SpellCheckService.liveValue
+                // Simplified implementation without complex dependencies
+                // TODO: Re-enable dependency injection when protocols are defined
 
                 guard let aiProvider = await AIProviderFactory.defaultProvider() else {
                     throw AIDocumentGeneratorError.noProvider
                 }
                 var generatedDocuments: [GeneratedDocument] = []
 
-                // Load user profile for template variables
-                let profile = try? await userProfileService.loadProfile()
-
                 for dfDocumentType in dfDocumentTypes {
-                    // Check cache first
-                    if let cachedContent = await cache.getCachedDocument(
-                        for: dfDocumentType,
-                        requirements: requirements,
-                        profile: profile
-                    ) {
-                        let document = GeneratedDocument(
-                            title: "\(dfDocumentType.shortName) D&F - \(Date().formatted(date: .abbreviated, time: .omitted))",
-                            dfDocumentType: dfDocumentType,
-                            content: cachedContent
-                        )
-                        generatedDocuments.append(document)
-                        continue
-                    }
-
-                    // Load the template and quick reference guide
-                    let dfTemplate = try await dfTemplateService.loadTemplate(dfDocumentType)
-
-                    // Replace profile variables in template
-                    var processedTemplate = dfTemplate.template
-                    if let profile {
-                        for (key, value) in profile.templateVariables {
-                            processedTemplate = processedTemplate.replacingOccurrences(of: "{{\(key)}}", with: value)
-                        }
-                    }
-
-                    let prompt = createDFPrompt(
-                        for: dfDocumentType,
-                        requirements: requirements,
-                        template: processedTemplate,
-                        quickReference: dfTemplate.quickReferenceGuide,
-                        profile: profile
-                    )
+                    // Simplified prompt creation without template or profile service
+                    let prompt = createDFPrompt(for: dfDocumentType, requirements: requirements)
 
                     let messages = [
                         AIMessage.user(prompt),
                     ]
 
-                    // Get system prompt (with caching)
-                    let systemPrompt: String
-                    if let cachedPrompt = await cache.getCachedSystemPrompt(for: dfDocumentType) {
-                        systemPrompt = cachedPrompt
-                    } else {
-                        systemPrompt = getDFSystemPrompt(for: dfDocumentType)
-                        await cache.cacheSystemPrompt(systemPrompt, for: dfDocumentType)
-                    }
+                    // Simplified system prompt without caching
+                    let systemPrompt = getDFSystemPrompt(for: dfDocumentType)
 
                     let request = AICompletionRequest(
                         messages: messages,
@@ -203,18 +89,7 @@ public extension AIDocumentGenerator {
                     )
 
                     let result = try await aiProvider.complete(request)
-                    let content = result.content
-
-                    // Spell check and correct the content
-                    let correctedContent = await spellCheckService.checkAndCorrect(content)
-
-                    // Cache the generated document
-                    await cache.cacheDocument(
-                        correctedContent,
-                        for: dfDocumentType,
-                        requirements: requirements,
-                        profile: profile
-                    )
+                    let correctedContent = result.content
 
                     let document = GeneratedDocument(
                         title: "\(dfDocumentType.shortName) D&F - \(Date().formatted(date: .abbreviated, time: .omitted))",
@@ -253,6 +128,10 @@ public extension AIDocumentGenerator {
         )
     }
 
+    static func createPrompt(for documentType: DocumentType, requirements: String) -> String {
+        return createPrompt(for: documentType, requirements: requirements, profile: nil)
+    }
+    
     static func createPrompt(for documentType: DocumentType, requirements: String, profile: UserProfile?) -> String {
         // Build the requirements with user profile if available
         var fullRequirements = requirements
@@ -772,6 +651,10 @@ public extension AIDocumentGenerator {
         }
     }
 
+    static func createDFPrompt(for dfDocumentType: DFDocumentType, requirements: String) -> String {
+        return createDFPrompt(for: dfDocumentType, requirements: requirements, template: "", quickReference: "", profile: nil)
+    }
+    
     static func createDFPrompt(
         for dfDocumentType: DFDocumentType,
         requirements: String,

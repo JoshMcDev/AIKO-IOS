@@ -1,20 +1,26 @@
 import AppCore
 import SwiftUI
 
+#if os(iOS)
+import AIKOiOS
+#elseif os(macOS)
+import AIKOmacOS
+#endif
+
 public struct CustomTemplateDetailView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.templateStorageService) var storageService
-    
+
     let template: CustomTemplate
     @State private var isEditing = false
     @State private var editedContent: String
     @State private var showingSaveConfirmation = false
-    
+
     public init(template: CustomTemplate) {
         self.template = template
         self._editedContent = State(initialValue: template.content)
     }
-    
+
     public var body: some View {
         SwiftUI.NavigationView {
             VStack(spacing: 0) {
@@ -24,36 +30,36 @@ public struct CustomTemplateDetailView: View {
                         Image(systemName: "doc.badge.plus")
                             .font(.title)
                             .foregroundColor(.purple)
-                        
+
                         VStack(alignment: .leading, spacing: 4) {
                             Text(template.name)
                                 .font(.title2)
                                 .fontWeight(.bold)
                                 .foregroundColor(.white)
-                            
+
                             Text(template.description)
                                 .font(.subheadline)
                                 .foregroundColor(.white.opacity(0.8))
                         }
-                        
+
                         Spacer()
-                        
+
                         // Template status
                         VStack(alignment: .trailing, spacing: 4) {
                             Label("Custom Template", systemImage: "person.circle.fill")
                                 .font(.caption)
                                 .foregroundColor(.purple)
-                            
+
                             Text(template.category)
                                 .font(.caption2)
                                 .foregroundColor(.secondary)
-                            
+
                             Text("Created: \(template.createdAt.formatted(date: .abbreviated, time: .omitted))")
                                 .font(.caption2)
                                 .foregroundColor(.secondary)
                         }
                     }
-                    
+
                     // Action buttons
                     HStack(spacing: Theme.Spacing.medium) {
                         // Share button
@@ -61,13 +67,13 @@ public struct CustomTemplateDetailView: View {
                             ShareButton(
                                 content: generateTemplateShareContent(),
                                 fileName: DocumentShareHelper.generateFileName(for: .template),
-                                buttonStyle: .icon  
+                                buttonStyle: .icon
                             )
                             .padding(.horizontal, Theme.Spacing.small)
                         }
-                        
+
                         Spacer()
-                        
+
                         Button(action: {
                             if isEditing {
                                 saveChanges()
@@ -86,7 +92,7 @@ public struct CustomTemplateDetailView: View {
                                         .fill(isEditing ? Color.green.opacity(0.2) : Theme.Colors.aikoSecondary)
                                 )
                         }
-                        
+
                         if isEditing {
                             Button(action: cancelEditing) {
                                 Label("Cancel", systemImage: "xmark.circle")
@@ -104,9 +110,9 @@ public struct CustomTemplateDetailView: View {
                 }
                 .padding(Theme.Spacing.large)
                 .background(Color.black)
-                
+
                 Divider()
-                
+
                 // Template Content
                 ScrollView {
                     if isEditing {
@@ -170,12 +176,12 @@ public struct CustomTemplateDetailView: View {
                 : nil
         )
     }
-    
+
     private func startEditing() {
         editedContent = template.content
         isEditing = true
     }
-    
+
     private func saveChanges() {
         Task {
             do {
@@ -192,7 +198,7 @@ public struct CustomTemplateDetailView: View {
                 await MainActor.run {
                     isEditing = false
                     showingSaveConfirmation = true
-                    
+
                     // Hide confirmation after 2 seconds
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                         showingSaveConfirmation = false
@@ -204,21 +210,21 @@ public struct CustomTemplateDetailView: View {
             }
         }
     }
-    
+
     private func cancelEditing() {
         editedContent = template.content
         isEditing = false
     }
-    
+
     private func generateTemplateShareContent() -> String {
         """
         Custom Template: \(template.name)
         Category: \(template.category)
         Generated: \(Date().formatted())
-        
+
         DESCRIPTION:
         \(template.description)
-        
+
         CONTENT:
         \(template.content)
         """

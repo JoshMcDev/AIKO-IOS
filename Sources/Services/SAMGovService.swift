@@ -137,10 +137,10 @@ public struct EntitySummary: Codable, Sendable, Identifiable {
     public let lastUpdatedDate: Date?
 
     public init(
-        ueiSAM: String, 
-        entityName: String, 
+        ueiSAM: String,
+        entityName: String,
         legalBusinessName: String? = nil,
-        cageCode: String? = nil, 
+        cageCode: String? = nil,
         registrationStatus: String = "Active",
         businessTypes: [String] = [],
         primaryNAICS: String? = nil,

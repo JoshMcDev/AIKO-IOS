@@ -241,12 +241,10 @@ public final class ClaudeProvider: LLMProviderProtocol, @unchecked Sendable {
 
                         if let data = jsonString.data(using: .utf8),
                            let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                           let type = json["type"] as? String
-                        {
+                           let type = json["type"] as? String {
                             if type == "content_block_delta",
                                let delta = json["delta"] as? [String: Any],
-                               let text = delta["text"] as? String
-                            {
+                               let text = delta["text"] as? String {
                                 continuation.yield(LLMStreamChunk(delta: text))
                             } else if type == "message_stop" {
                                 continuation.yield(LLMStreamChunk(delta: "", finishReason: .stop))

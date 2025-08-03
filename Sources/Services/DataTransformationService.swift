@@ -115,8 +115,7 @@ final class DataTransformationService: @unchecked Sendable {
         if let quantityStr = data["quantity"],
            let unitPriceStr = data["unitPrice"],
            let quantity = Double(quantityStr),
-           let unitPrice = Double(unitPriceStr)
-        {
+           let unitPrice = Double(unitPriceStr) {
             result["extendedPrice"] = String(quantity * unitPrice)
         }
 
@@ -196,8 +195,7 @@ final class DataTransformationService: @unchecked Sendable {
 
         // Validate micro-purchase threshold
         if let totalStr = data["totalAmount"],
-           let total = Double(totalStr)
-        {
+           let total = Double(totalStr) {
             if total > 10000 {
                 throw DataTransformationError.thresholdExceeded(
                     "SF 44 cannot be used for purchases over $10,000"
@@ -232,8 +230,7 @@ final class DataTransformationService: @unchecked Sendable {
                 let parts = item.components(separatedBy: ":")
                 if parts.count >= 3,
                    let quantity = Double(parts[1]),
-                   let unitPrice = Double(parts[2])
-                {
+                   let unitPrice = Double(parts[2]) {
                     totalAmount += quantity * unitPrice
                 }
             }
@@ -243,8 +240,7 @@ final class DataTransformationService: @unchecked Sendable {
         // Calculate dates
         if let startDateStr = data["startDate"],
            let performanceDaysStr = data["performanceDays"],
-           let performanceDays = Int(performanceDaysStr)
-        {
+           let performanceDays = Int(performanceDaysStr) {
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd"
             if let startDate = formatter.date(from: startDateStr) {
@@ -287,8 +283,7 @@ final class DataTransformationService: @unchecked Sendable {
         // Format currency values
         for (key, value) in result {
             if key.contains("Amount") || key.contains("Price") || key.contains("Value"),
-               let number = Double(value)
-            {
+               let number = Double(value) {
                 result[key] = currencyFormatter.string(from: NSNumber(value: number)) ?? "$0.00"
             }
         }

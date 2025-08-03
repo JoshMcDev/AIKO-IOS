@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 
 /// Adapter that bridges the TCA SAMGovService dependency with the new SAMGovRepository
 public extension SAMGovService {
@@ -21,11 +22,11 @@ public extension SAMGovService {
         )
     }
 
-    /// Creates a SAMGovService with API key from settings
+    /// Creates a SAMGovService with API key from settings using dependency injection
     static var repositoryBased: SAMGovService {
         get async throws {
-            // TODO: Replace with proper dependency injection
-            let settingsManager = SettingsManager.liveValue
+            let container = DependencyContainer.shared
+            let settingsManager = try container.resolve(SettingsManagerProtocol.self)
             let settings = try await settingsManager.loadSettings()
             let apiKey = settings.apiSettings.samGovAPIKey
 

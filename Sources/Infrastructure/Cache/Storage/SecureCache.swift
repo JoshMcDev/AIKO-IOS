@@ -26,6 +26,10 @@ public actor SecureCache: OfflineCacheProtocol {
     /// Metadata tracking (stored separately from secure data)
     private var metadata: [String: SecureCacheMetadata] = [:]
 
+    /// Cache statistics for health monitoring
+    private var cacheHits: Int = 0
+    private var cacheMisses: Int = 0
+
     /// Encryption key
     private let encryptionKey: SymmetricKey
 
@@ -111,6 +115,7 @@ public actor SecureCache: OfflineCacheProtocol {
         // Check metadata
         guard var meta = metadata[key] else {
             logger.debug("No metadata for key: \(key)")
+            cacheMisses += 1
             return nil
         }
 
@@ -118,6 +123,7 @@ public actor SecureCache: OfflineCacheProtocol {
         if meta.isExpired {
             logger.debug("Entry expired for key: \(key)")
             try await remove(forKey: key)
+            cacheMisses += 1
             return nil
         }
 
@@ -147,15 +153,20 @@ public actor SecureCache: OfflineCacheProtocol {
             metadata[key] = meta
             await saveMetadata()
 
+            // Track cache hit
+            cacheHits += 1
+
             logger.debug("Retrieved secure data for key: \(key)")
             return decryptedData
         } else if status == errSecItemNotFound {
             // Remove stale metadata
             metadata.removeValue(forKey: key)
             await saveMetadata()
+            cacheMisses += 1
             return nil
         } else {
             logger.error("Keychain retrieval error: \(status)")
+            cacheMisses += 1
             throw OfflineCacheError.retrievalFailure("Keychain error: \(status)")
         }
     }
@@ -262,6 +273,13 @@ public actor SecureCache: OfflineCacheProtocol {
         )
     }
 
+    /// Calculate cache hit rate
+    private func calculateHitRate() -> Double {
+        let totalAccesses = cacheHits + cacheMisses
+        guard totalAccesses > 0 else { return 0.0 }
+        return Double(cacheHits) / Double(totalAccesses)
+    }
+
     /// Check cache health
     func checkHealth() async -> CacheHealthStatus {
         let totalEntries = metadata.count
@@ -273,7 +291,7 @@ public actor SecureCache: OfflineCacheProtocol {
             totalSize: totalSize,
             maxSize: configuration.maxSize,
             entryCount: totalEntries,
-            hitRate: 0.0, // TODO: Track actual hit rate
+            hitRate: calculateHitRate(),
             lastCleanup: Date(),
             issues: []
         )

@@ -5,24 +5,24 @@ import AppCore
 
 /// Production SAM.gov API repository with live API integration
 public actor SAMGovRepository {
-    
+
     // MARK: - Configuration
-    
+
     private let apiKey = "zBy0Oy4TmGnzgqEWeKoRiifzDm9jotNwAitkOp89"
     private let baseURL = "https://api.sam.gov/entity-information/v3"
     private let session: URLSession
-    
+
     // MARK: - Initialization
-    
+
     public init() {
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 30
         config.timeoutIntervalForResource = 60
         self.session = URLSession(configuration: config)
     }
-    
+
     // MARK: - Public API Methods
-    
+
     /// Search entities by name, keywords, or general query
     public func searchEntities(
         query: String,
@@ -30,8 +30,10 @@ public actor SAMGovRepository {
         size: Int = 10
     ) async throws -> EntitySearchResult {
         let endpoint = "/entities"
-        var components = URLComponents(string: baseURL + endpoint)!
-        
+        guard var components = URLComponents(string: baseURL + endpoint) else {
+            throw SAMGovError.invalidResponse
+        }
+
         components.queryItems = [
             URLQueryItem(name: "api_key", value: apiKey),
             URLQueryItem(name: "entityName", value: query),
@@ -39,31 +41,31 @@ public actor SAMGovRepository {
             URLQueryItem(name: "size", value: String(size)),
             URLQueryItem(name: "format", value: "JSON")
         ]
-        
+
         guard let url = components.url else {
             throw SAMGovError.invalidResponse
         }
-        
+
         do {
             let (data, response) = try await session.data(from: url)
-            
+
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw SAMGovError.invalidResponse
             }
-            
+
             guard 200...299 ~= httpResponse.statusCode else {
                 throw SAMGovError.invalidResponse
             }
-            
+
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .iso8601
-            
+
             let apiResponse = try decoder.decode(SAMGovAPIResponse.self, from: data)
             return EntitySearchResult(
                 entities: apiResponse.entityData?.map { convertToEntitySummary($0) } ?? [],
                 totalCount: apiResponse.totalRecords ?? 0
             )
-            
+
         } catch {
             if error is SAMGovError {
                 throw error
@@ -72,44 +74,46 @@ public actor SAMGovRepository {
             }
         }
     }
-    
+
     /// Get entity details by CAGE code
     public func getEntityByCAGE(_ cageCode: String) async throws -> EntityDetail {
         let endpoint = "/entities"
-        var components = URLComponents(string: baseURL + endpoint)!
-        
+        guard var components = URLComponents(string: baseURL + endpoint) else {
+            throw SAMGovError.invalidResponse
+        }
+
         components.queryItems = [
             URLQueryItem(name: "api_key", value: apiKey),
             URLQueryItem(name: "cageCode", value: cageCode),
             URLQueryItem(name: "format", value: "JSON")
         ]
-        
+
         guard let url = components.url else {
             throw SAMGovError.invalidResponse
         }
-        
+
         do {
             let (data, response) = try await session.data(from: url)
-            
+
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw SAMGovError.invalidResponse
             }
-            
+
             guard 200...299 ~= httpResponse.statusCode else {
                 throw SAMGovError.invalidResponse
             }
-            
+
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .iso8601
-            
+
             let apiResponse = try decoder.decode(SAMGovAPIResponse.self, from: data)
-            
+
             guard let entityData = apiResponse.entityData?.first else {
                 throw SAMGovError.entityNotFound
             }
-            
+
             return convertToEntityDetail(entityData)
-            
+
         } catch {
             if error is SAMGovError {
                 throw error
@@ -118,44 +122,46 @@ public actor SAMGovRepository {
             }
         }
     }
-    
+
     /// Get entity details by UEI (Unique Entity Identifier)
     public func getEntityByUEI(_ uei: String) async throws -> EntityDetail {
         let endpoint = "/entities"
-        var components = URLComponents(string: baseURL + endpoint)!
-        
+        guard var components = URLComponents(string: baseURL + endpoint) else {
+            throw SAMGovError.invalidResponse
+        }
+
         components.queryItems = [
             URLQueryItem(name: "api_key", value: apiKey),
             URLQueryItem(name: "ueiSAM", value: uei),
             URLQueryItem(name: "format", value: "JSON")
         ]
-        
+
         guard let url = components.url else {
             throw SAMGovError.invalidResponse
         }
-        
+
         do {
             let (data, response) = try await session.data(from: url)
-            
+
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw SAMGovError.invalidResponse
             }
-            
+
             guard 200...299 ~= httpResponse.statusCode else {
                 throw SAMGovError.invalidResponse
             }
-            
+
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .iso8601
-            
+
             let apiResponse = try decoder.decode(SAMGovAPIResponse.self, from: data)
-            
+
             guard let entityData = apiResponse.entityData?.first else {
                 throw SAMGovError.entityNotFound
             }
-            
+
             return convertToEntityDetail(entityData)
-            
+
         } catch {
             if error is SAMGovError {
                 throw error
@@ -387,11 +393,11 @@ struct SAMGovLinks: Codable {
 // MARK: - Data Conversion Helpers
 
 extension SAMGovRepository {
-    
+
     private func convertToEntitySummary(_ data: SAMGovEntityData) -> EntitySummary {
         let registration = data.entityRegistration
         let coreData = data.coreData
-        
+
         return EntitySummary(
             ueiSAM: registration?.ueiSAM ?? "",
             entityName: coreData?.entityInformation?.entityDivisionName ?? registration?.legalBusinessName ?? "Unknown Entity",
@@ -405,12 +411,12 @@ extension SAMGovRepository {
             lastUpdatedDate: parseDate(registration?.lastUpdateDate)
         )
     }
-    
+
     private func convertToEntityDetail(_ data: SAMGovEntityData) -> EntityDetail {
         let registration = data.entityRegistration
         let coreData = data.coreData
         let assertions = data.assertions
-        
+
         return EntityDetail(
             ueiSAM: registration?.ueiSAM ?? "",
             entityName: coreData?.entityInformation?.entityDivisionName ?? registration?.legalBusinessName ?? "Unknown Entity",
@@ -436,19 +442,19 @@ extension SAMGovRepository {
             isHUBZone: checkBusinessType(coreData?.businessTypes, code: "XS")
         )
     }
-    
+
     private func extractBusinessTypes(from businessTypes: BusinessTypes?) -> [String] {
         return businessTypes?.businessTypeList?.compactMap { $0.businessTypeDesc } ?? []
     }
-    
+
     private func extractPrimaryNAICS(from naicsCodes: [NAICSCodeData]?) -> String? {
         return naicsCodes?.first { $0.isPrimary == "Y" }?.naicsCode ??
                naicsCodes?.first?.naicsCode
     }
-    
+
     private func convertToEntityAddress(_ addressData: PhysicalAddressData?) -> EntityAddress? {
         guard let addressData = addressData else { return nil }
-        
+
         return EntityAddress(
             line1: addressData.addressLine1 ?? "",
             line2: addressData.addressLine2,
@@ -458,10 +464,10 @@ extension SAMGovRepository {
             country: addressData.countryCode ?? "USA"
         )
     }
-    
+
     private func convertToPointOfContact(_ pocData: PointOfContactData?) -> PointOfContact? {
         guard let pocData = pocData else { return nil }
-        
+
         return PointOfContact(
             firstName: pocData.firstName ?? "",
             lastName: pocData.lastName ?? "",
@@ -470,7 +476,7 @@ extension SAMGovRepository {
             phone: pocData.telephoneNumber
         )
     }
-    
+
     private func convertToNAICSCodes(_ naicsData: [NAICSCodeData]?) -> [NAICSCode] {
         return naicsData?.map { data in
             NAICSCode(
@@ -480,26 +486,26 @@ extension SAMGovRepository {
             )
         } ?? []
     }
-    
+
     private func checkSmallBusinessStatus(from naicsCodes: [NAICSCodeData]?) -> Bool {
         return naicsCodes?.contains { $0.isSmallBusiness == "Y" } ?? false
     }
-    
+
     private func checkBusinessType(_ businessTypes: BusinessTypes?, code: String) -> Bool {
         return businessTypes?.businessTypeList?.contains { $0.businessTypeCode == code } ?? false
     }
-    
+
     private func parseExclusionStatus(_ exclusionFlag: String?) -> Bool {
         return exclusionFlag?.lowercased() == "y" || exclusionFlag?.lowercased() == "yes"
     }
-    
+
     private func parseDate(_ dateString: String?) -> Date? {
         guard let dateString = dateString else { return nil }
-        
+
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        
-        return formatter.date(from: dateString) ?? 
+
+        return formatter.date(from: dateString) ??
                ISO8601DateFormatter().date(from: dateString)
     }
 }
@@ -507,7 +513,7 @@ extension SAMGovRepository {
 // MARK: - Factory Method
 
 extension SAMGovRepository {
-    
+
     /// Create a live SAMGovService using this repository
     public func createService() -> SAMGovService {
         return SAMGovService(

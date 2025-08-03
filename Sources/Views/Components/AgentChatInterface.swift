@@ -13,20 +13,20 @@ public struct AgentChatInterface: View {
     @State private var isGeneratingResponse: Bool = false
     @State private var currentWorkflowStep: AgentWorkflowStep = .initial
     @FocusState private var isTextFieldFocused: Bool
-    
+
     public init(viewModel: AppViewModel) {
         self.viewModel = viewModel
     }
-    
+
     public var body: some View {
         NavigationView {
             VStack(spacing: 0) {
                 // Header with workflow progress
                 agentHeaderView
-                
+
                 // Chat messages
                 chatMessagesView
-                
+
                 // Input area
                 agentInputView
             }
@@ -54,9 +54,9 @@ public struct AgentChatInterface: View {
         }
         .preferredColorScheme(.dark)
     }
-    
+
     // MARK: - Agent Header View
-    
+
     private var agentHeaderView: some View {
         VStack(spacing: 12) {
             // AIKO Agent Identity
@@ -69,41 +69,41 @@ public struct AgentChatInterface: View {
                             endPoint: .bottomTrailing
                         ))
                         .frame(width: 50, height: 50)
-                    
+
                     Image(systemName: "brain.head.profile")
                         .foregroundColor(.white)
                         .font(.title2)
                 }
-                
+
                 VStack(alignment: .leading, spacing: 2) {
                     Text("AIKO Intelligence Agent")
                         .font(.headline)
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
-                    
+
                     Text("Government Contracting Specialist")
                         .font(.caption)
                         .foregroundColor(.gray)
                 }
-                
+
                 Spacer()
-                
+
                 // Workflow Progress Indicator
                 WorkflowProgressView(currentStep: currentWorkflowStep)
             }
             .padding(.horizontal)
-            
+
             // Current Focus Area
             if currentWorkflowStep != .initial {
                 HStack {
                     Image(systemName: "target")
                         .foregroundColor(.blue)
                         .font(.caption)
-                    
+
                     Text("Focus: \(currentWorkflowStep.description)")
                         .font(.caption)
                         .foregroundColor(.blue)
-                    
+
                     Spacer()
                 }
                 .padding(.horizontal)
@@ -118,9 +118,9 @@ public struct AgentChatInterface: View {
             alignment: .bottom
         )
     }
-    
+
     // MARK: - Chat Messages View
-    
+
     private var chatMessagesView: some View {
         ScrollViewReader { proxy in
             ScrollView {
@@ -129,7 +129,7 @@ public struct AgentChatInterface: View {
                         AgentChatBubble(message: message, onActionTapped: handleMessageAction)
                             .id(message.id)
                     }
-                    
+
                     if isGeneratingResponse {
                         AgentTypingIndicator()
                     }
@@ -145,14 +145,14 @@ public struct AgentChatInterface: View {
             }
         }
     }
-    
+
     // MARK: - Agent Input View
-    
+
     private var agentInputView: some View {
         VStack(spacing: 0) {
             Divider()
                 .background(Color.gray.opacity(0.3))
-            
+
             // Quick Action Buttons (contextual based on workflow step)
             if !currentWorkflowStep.quickActions.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -167,7 +167,7 @@ public struct AgentChatInterface: View {
                 }
                 .padding(.vertical, 8)
             }
-            
+
             // Text Input
             HStack(spacing: 12) {
                 TextField("Ask me about your acquisition needs...", text: $currentMessage, axis: .vertical)
@@ -181,13 +181,13 @@ public struct AgentChatInterface: View {
                     .onSubmit {
                         sendMessage()
                     }
-                
+
                 Button(action: sendMessage) {
                     ZStack {
                         Circle()
                             .fill(currentMessage.isEmpty ? Color.gray.opacity(0.3) : Color.blue)
                             .frame(width: 36, height: 36)
-                        
+
                         if isGeneratingResponse {
                             ProgressView()
                                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
@@ -206,9 +206,9 @@ public struct AgentChatInterface: View {
         }
         .background(Color.black.opacity(0.95))
     }
-    
+
     // MARK: - Actions
-    
+
     private func initializeAgentChat() {
         let welcomeMessage = AgentChatMessage(
             content: "Hello! I'm your AIKO intelligence agent, specialized in government contracting and acquisition planning. I can see you're working on document generation.\n\nI'm here to help you:",
@@ -221,47 +221,47 @@ public struct AgentChatInterface: View {
                 AgentAction(title: "Check Compliance", systemImage: "checkmark.shield", actionType: .checkCompliance)
             ]
         )
-        
+
         messages.append(welcomeMessage)
         determineWorkflowStep()
     }
-    
+
     private func sendMessage() {
         guard !currentMessage.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
-        
+
         let userMessage = AgentChatMessage(
             content: currentMessage.trimmingCharacters(in: .whitespacesAndNewlines),
             isUser: true
         )
-        
+
         messages.append(userMessage)
         let messageContent = currentMessage
         currentMessage = ""
         isTextFieldFocused = false
-        
+
         Task {
             await generateAgentResponse(for: messageContent)
         }
     }
-    
+
     private func generateAgentResponse(for userMessage: String) async {
         isGeneratingResponse = true
         defer { isGeneratingResponse = false }
-        
+
         // Simulate intelligent analysis
         try? await Task.sleep(nanoseconds: 2_000_000_000)
-        
+
         let response = await analyzeUserNeedsAndRespond(userMessage)
-        
+
         await MainActor.run {
             messages.append(response)
             updateWorkflowStep(based: response)
         }
     }
-    
+
     private func analyzeUserNeedsAndRespond(_ userMessage: String) async -> AgentChatMessage {
         let lowerMessage = userMessage.lowercased()
-        
+
         // Intelligent analysis based on current context
         if lowerMessage.contains("budget") || lowerMessage.contains("cost") {
             return createBudgetGuidanceMessage()
@@ -277,7 +277,7 @@ public struct AgentChatInterface: View {
             return createContextualGuidanceMessage(userMessage)
         }
     }
-    
+
     private func createBudgetGuidanceMessage() -> AgentChatMessage {
         return AgentChatMessage(
             content: "I can help you establish a comprehensive budget framework. Based on government contracting best practices, here's what we should consider:\n\n• **Estimated Contract Value**: Determines procurement thresholds\n• **Competition Requirements**: Affects timeline and documentation\n• **Contract Type**: Influences risk and payment structure\n\nWhat's your preliminary cost estimate?",
@@ -290,7 +290,7 @@ public struct AgentChatInterface: View {
             ]
         )
     }
-    
+
     private func createRequirementGuidanceMessage() -> AgentChatMessage {
         return AgentChatMessage(
             content: "Excellent! Clear requirements are the foundation of successful acquisitions. I'll help you develop comprehensive performance-based requirements.\n\n**Current Analysis**: Based on your document selections, I see potential gaps in:\n• Performance metrics definition\n• Acceptance criteria\n• Quality assurance standards\n\nShould we start with defining your core performance objectives?",
@@ -303,7 +303,7 @@ public struct AgentChatInterface: View {
             ]
         )
     }
-    
+
     private func createVendorGuidanceMessage() -> AgentChatMessage {
         return AgentChatMessage(
             content: "I can help you develop a robust vendor research and evaluation strategy. This includes:\n\n• **Market Research**: Identifying capable contractors\n• **Competitive Analysis**: Understanding pricing trends\n• **Past Performance**: Evaluating contractor history\n• **Capability Assessment**: Matching skills to requirements\n\nWould you like me to start with SAM.gov research or do you have specific vendors in mind?",
@@ -316,7 +316,7 @@ public struct AgentChatInterface: View {
             ]
         )
     }
-    
+
     private func createComplianceGuidanceMessage() -> AgentChatMessage {
         return AgentChatMessage(
             content: "Compliance is critical for government contracting success. I'll help ensure your acquisition meets all requirements:\n\n• **FAR/DFARS Compliance**: Core regulations\n• **Agency-specific requirements**: Your organization's policies\n• **Security requirements**: CMMC, FedRAMP, etc.\n• **Socioeconomic programs**: Small business, veteran-owned, etc.\n\nWhat type of acquisition are you planning?",
@@ -330,7 +330,7 @@ public struct AgentChatInterface: View {
             ]
         )
     }
-    
+
     private func createTimelineGuidanceMessage() -> AgentChatMessage {
         return AgentChatMessage(
             content: "Timeline planning is crucial for acquisition success. I'll help you develop a realistic schedule considering:\n\n• **Acquisition planning**: 30-60 days\n• **Market research**: 15-30 days\n• **Solicitation development**: 45-90 days\n• **Procurement process**: 60-120 days\n• **Contract award**: 30-60 days\n\nWhat's your target award date?",
@@ -343,7 +343,7 @@ public struct AgentChatInterface: View {
             ]
         )
     }
-    
+
     private func createContextualGuidanceMessage(_ userMessage: String) -> AgentChatMessage {
         return AgentChatMessage(
             content: "I understand you're looking for guidance on '\(userMessage)'. Let me provide some targeted assistance based on your current acquisition planning needs.\n\nI can help you navigate the complexities of government contracting while ensuring compliance and efficiency. What specific aspect would you like to explore first?",
@@ -356,12 +356,12 @@ public struct AgentChatInterface: View {
             ]
         )
     }
-    
+
     private func handleQuickAction(_ action: AgentAction) {
         currentMessage = "I'd like help with: \(action.title)"
         sendMessage()
     }
-    
+
     private func handleMessageAction(_ action: AgentAction) {
         switch action.actionType {
         case .refineRequirements:
@@ -369,21 +369,21 @@ public struct AgentChatInterface: View {
             currentWorkflowStep = .requirementsGathering
             viewModel.showingAcquisitionChat = false
             // Could open requirements refinement dialog here
-            
+
         case .searchSAM:
             viewModel.showSAMGovLookup(true)
-            
+
         case .setBudgetRange, .setTimeline:
             // Handle specific parameter setting
             currentMessage = "Set \(action.title.lowercased())"
             sendMessage()
-            
+
         default:
             currentMessage = "Help me with: \(action.title)"
             sendMessage()
         }
     }
-    
+
     private func determineWorkflowStep() {
         // Analyze current state to determine workflow step
         if viewModel.hasSelectedDocuments && !viewModel.hasAcquisition {
@@ -394,14 +394,12 @@ public struct AgentChatInterface: View {
             currentWorkflowStep = .initial
         }
     }
-    
+
     private func updateWorkflowStep(based message: AgentChatMessage) {
         // Update workflow step based on conversation context
         switch message.messageType {
         case .guidance:
-            if message.content.contains("budget") { currentWorkflowStep = .budgetPlanning }
-            else if message.content.contains("requirement") { currentWorkflowStep = .requirementsGathering }
-            else if message.content.contains("vendor") { currentWorkflowStep = .vendorResearch }
+            if message.content.contains("budget") { currentWorkflowStep = .budgetPlanning } else if message.content.contains("requirement") { currentWorkflowStep = .requirementsGathering } else if message.content.contains("vendor") { currentWorkflowStep = .vendorResearch }
         case .analysis:
             currentWorkflowStep = .requirementsAnalysis
         case .compliance:
@@ -418,7 +416,7 @@ public struct AgentChatInterface: View {
 
 struct WorkflowProgressView: View {
     let currentStep: AgentWorkflowStep
-    
+
     var body: some View {
         VStack(alignment: .trailing, spacing: 2) {
             HStack(spacing: 4) {
@@ -428,7 +426,7 @@ struct WorkflowProgressView: View {
                         .frame(width: 6, height: 6)
                 }
             }
-            
+
             Text("Step \(currentStep.rawValue + 1) of \(AgentWorkflowStep.allSteps.count)")
                 .font(.caption2)
                 .foregroundColor(.gray)
@@ -439,7 +437,7 @@ struct WorkflowProgressView: View {
 struct AgentChatBubble: View {
     let message: AgentChatMessage
     let onActionTapped: (AgentAction) -> Void
-    
+
     var body: some View {
         HStack {
             if message.isUser {
@@ -451,7 +449,7 @@ struct AgentChatBubble: View {
             }
         }
     }
-    
+
     private var userMessageView: some View {
         VStack(alignment: .trailing, spacing: 4) {
             Text(message.content)
@@ -461,13 +459,13 @@ struct AgentChatBubble: View {
                 .padding(.vertical, 10)
                 .background(Color.blue)
                 .cornerRadius(18)
-            
+
             Text(formatTime(message.timestamp))
                 .font(.caption2)
                 .foregroundColor(.gray)
         }
     }
-    
+
     private var agentMessageView: some View {
         HStack(alignment: .top, spacing: 12) {
             // Agent Avatar
@@ -479,12 +477,12 @@ struct AgentChatBubble: View {
                         endPoint: .bottomTrailing
                     ))
                     .frame(width: 32, height: 32)
-                
+
                 Image(systemName: "brain.head.profile")
                     .foregroundColor(.white)
                     .font(.caption)
             }
-            
+
             VStack(alignment: .leading, spacing: 8) {
                 // Message content
                 Text(message.content)
@@ -494,7 +492,7 @@ struct AgentChatBubble: View {
                     .padding(.vertical, 12)
                     .background(Color.gray.opacity(0.2))
                     .cornerRadius(18)
-                
+
                 // Suggested actions
                 if !message.suggestedActions.isEmpty {
                     VStack(spacing: 8) {
@@ -504,13 +502,13 @@ struct AgentChatBubble: View {
                                     Image(systemName: action.systemImage)
                                         .foregroundColor(.blue)
                                         .frame(width: 16)
-                                    
+
                                     Text(action.title)
                                         .font(.subheadline)
                                         .foregroundColor(.blue)
-                                    
+
                                     Spacer()
-                                    
+
                                     Image(systemName: "chevron.right")
                                         .foregroundColor(.blue.opacity(0.6))
                                         .font(.caption)
@@ -527,22 +525,22 @@ struct AgentChatBubble: View {
                         }
                     }
                 }
-                
+
                 HStack {
                     Text("AIKO")
                         .font(.caption2)
                         .foregroundColor(.blue)
-                    
+
                     Text(formatTime(message.timestamp))
                         .font(.caption2)
                         .foregroundColor(.gray)
-                    
+
                     Spacer()
                 }
             }
         }
     }
-    
+
     private func formatTime(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.timeStyle = .short
@@ -552,7 +550,7 @@ struct AgentChatBubble: View {
 
 struct AgentTypingIndicator: View {
     @State private var animationPhase = 0
-    
+
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             ZStack {
@@ -563,12 +561,12 @@ struct AgentTypingIndicator: View {
                         endPoint: .bottomTrailing
                     ))
                     .frame(width: 32, height: 32)
-                
+
                 Image(systemName: "brain.head.profile")
                     .foregroundColor(.white)
                     .font(.caption)
             }
-            
+
             HStack(spacing: 4) {
                 ForEach(0..<3) { index in
                     Circle()
@@ -585,11 +583,11 @@ struct AgentTypingIndicator: View {
             .onAppear {
                 startTypingAnimation()
             }
-            
+
             Spacer()
         }
     }
-    
+
     private func startTypingAnimation() {
         Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
             Task { @MainActor in
@@ -604,14 +602,14 @@ struct AgentTypingIndicator: View {
 struct QuickActionButton: View {
     let action: AgentAction
     let onTap: () -> Void
-    
+
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 8) {
                 Image(systemName: action.systemImage)
                     .foregroundColor(.blue)
                     .font(.caption)
-                
+
                 Text(action.title)
                     .font(.caption)
                     .foregroundColor(.blue)
@@ -637,11 +635,11 @@ public struct AgentChatMessage: Identifiable, Sendable {
     public let timestamp: Date
     public let messageType: MessageType
     public let suggestedActions: [AgentAction]
-    
+
     public enum MessageType: Sendable {
         case user, guidance, analysis, compliance, planning, warning, success
     }
-    
+
     public init(
         content: String,
         isUser: Bool,
@@ -661,14 +659,14 @@ public struct AgentAction: Sendable {
     public let title: String
     public let systemImage: String
     public let actionType: ActionType
-    
+
     public enum ActionType: Sendable {
         case refineRequirements, analyzeBudget, researchVendors, checkCompliance
         case searchSAM, evaluateVendors, marketAnalysis
         case setBudgetRange, setTimeline, defineObjectives, setStandards, specifyDeliverables
         case planDocuments, processGuidance
     }
-    
+
     public init(title: String, systemImage: String, actionType: ActionType) {
         self.title = title
         self.systemImage = systemImage
@@ -686,7 +684,7 @@ public enum AgentWorkflowStep: Int, CaseIterable, Sendable {
     case complianceReview = 6
     case timelinePlanning = 7
     case finalReview = 8
-    
+
     public var description: String {
         switch self {
         case .initial: return "Getting Started"
@@ -700,7 +698,7 @@ public enum AgentWorkflowStep: Int, CaseIterable, Sendable {
         case .finalReview: return "Final Review"
         }
     }
-    
+
     public var quickActions: [AgentAction] {
         switch self {
         case .initial:
@@ -729,6 +727,6 @@ public enum AgentWorkflowStep: Int, CaseIterable, Sendable {
             return []
         }
     }
-    
+
     public static let allSteps: [AgentWorkflowStep] = AgentWorkflowStep.allCases
 }

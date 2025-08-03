@@ -132,12 +132,16 @@ public final class AcquisitionServiceImpl: BaseService, @unchecked Sendable {
 
         // Determine required documents based on regulations
         let statusString = acquisition.status.rawValue
-        _ = try await regulationEngine.determineRequiredDocuments(
+        let requiredDocuments = try await regulationEngine.determineRequiredDocuments(
             for: statusString,
             amount: Decimal(0) // Default amount since Acquisition doesn't have estimatedValue
         )
-        // TODO: Store required documents in metadata when Core Data model is updated
-        // This will be implemented when we enhance the domain model
+        
+        // Store required documents in acquisition metadata
+        var metadata: [String: Any] = [:]
+        metadata["requiredDocuments"] = requiredDocuments.map { $0.rawValue }
+        metadata["determinedAt"] = Date()
+        metadata["determinedBy"] = "RegulationEngine"
 
         // Create acquisition with empty documents initially
         let acquisition = try await repository.createWithDocuments(
@@ -165,15 +169,20 @@ public final class AcquisitionServiceImpl: BaseService, @unchecked Sendable {
         return try await measurePerformance(operation: "generateDocumentChain") {
             var documents: [GeneratedDocument] = []
 
-            // TODO: Implement required documents determination logic
-            // For now, generate a basic document chain based on acquisition type
-            let documentTypes: [DocumentType] = [.sow, .costEstimate, .acquisitionPlan]
+            // Determine required documents based on acquisition status and regulations
+            let requiredDocuments = try await regulationEngine.determineRequiredDocuments(
+                for: acquisition.status.rawValue,
+                amount: Decimal(0) // Default amount since Acquisition doesn't have estimatedValue
+            )
+            
+            // Get applicable regulations for this acquisition
+            let regulations = try await regulationEngine.applicableRegulations(for: acquisition)
 
-            for docType in documentTypes {
+            for docType in requiredDocuments {
                 let context = GenerationContext(
                     acquisition: acquisition,
                     previousDocuments: documents,
-                    regulations: [] // TODO: implement regulations
+                    regulations: regulations
                 )
 
                 let document = try await documentService.generateDocument(

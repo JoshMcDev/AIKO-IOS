@@ -159,8 +159,7 @@ public extension UserPatternTracker {
 
                 if let topSequence = relevantSequences.first,
                    let currentIndex = topSequence.documents.firstIndex(of: currentDoc),
-                   currentIndex < topSequence.documents.count - 1
-                {
+                   currentIndex < topSequence.documents.count - 1 {
                     let nextDoc = topSequence.documents[currentIndex + 1]
                     suggestions.append(IntelligentSuggestion(
                         type: .nextDocument,
@@ -258,8 +257,7 @@ private actor PatternStorage {
 
         for i in 0 ..< documentActions.count - 1 {
             if let doc1 = documentActions[i].context.documentType,
-               let doc2 = documentActions[i + 1].context.documentType
-            {
+               let doc2 = documentActions[i + 1].context.documentType {
                 let sequence = "\(doc1)->\(doc2)"
                 sequenceCount[sequence, default: 0] += 1
 

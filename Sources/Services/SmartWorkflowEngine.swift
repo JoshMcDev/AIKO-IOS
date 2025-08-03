@@ -9,24 +9,24 @@ import SwiftUI
 @Observable
 public final class SmartWorkflowEngine {
     public static let shared = SmartWorkflowEngine()
-    
+
     // MARK: - Properties
-    
+
     public var shouldTriggerAgentChat: Bool = false
     public var workflowGuidanceMessage: String = ""
     public var missingRequirements: [RequirementGap] = []
     public var confidenceScore: Double = 0.0
     public var lastAnalysisTimestamp: Date?
-    
+
     private var documentSelectionHistory: [DocumentSelectionEvent] = []
     private var userInteractionPatterns: [UserInteractionPattern] = []
-    
+
     // MARK: - Initialization
-    
+
     private init() {}
-    
+
     // MARK: - Public Methods
-    
+
     /// Analyze current state and determine if agent chat should be triggered
     public func analyzeWorkflowState(
         selectedTypes: Set<AppCore.DocumentType>,
@@ -35,7 +35,7 @@ public final class SmartWorkflowEngine {
         loadedAcquisition: AppCore.Acquisition?,
         documentStatus: [AppCore.DocumentType: DocumentStatus]
     ) -> WorkflowAnalysis {
-        
+
         let analysis = performIntelligentAnalysis(
             selectedTypes: selectedTypes,
             selectedDFTypes: selectedDFTypes,
@@ -43,31 +43,31 @@ public final class SmartWorkflowEngine {
             loadedAcquisition: loadedAcquisition,
             documentStatus: documentStatus
         )
-        
+
         // Update internal state
         confidenceScore = analysis.confidenceScore
         missingRequirements = analysis.missingRequirements
         shouldTriggerAgentChat = analysis.shouldTriggerAgentChat
         workflowGuidanceMessage = analysis.guidanceMessage
         lastAnalysisTimestamp = Date()
-        
+
         // Record user interaction pattern
         recordInteractionPattern(analysis)
-        
+
         return analysis
     }
-    
+
     /// Check if document execution should proceed or if more info is needed
     public func shouldProceedWithExecution(
         selectedTypes: Set<AppCore.DocumentType>,
         loadedAcquisition: AppCore.Acquisition?
     ) -> ExecutionDecision {
-        
+
         let criticalInfo = analyzeCriticalInformation(
             selectedTypes: selectedTypes,
             acquisition: loadedAcquisition
         )
-        
+
         if criticalInfo.missingCriticalInfo.isEmpty {
             return ExecutionDecision(
                 shouldProceed: true,
@@ -86,7 +86,7 @@ public final class SmartWorkflowEngine {
             )
         }
     }
-    
+
     /// Record document selection event for pattern analysis
     public func recordDocumentSelection(
         documentType: AppCore.DocumentType,
@@ -98,31 +98,31 @@ public final class SmartWorkflowEngine {
             isSelected: isSelected,
             timestamp: timestamp
         )
-        
+
         documentSelectionHistory.append(event)
-        
+
         // Keep only recent history (last 100 events)
         if documentSelectionHistory.count > 100 {
             documentSelectionHistory.removeFirst()
         }
-        
+
         // Analyze patterns after each selection
         analyzeSelectionPatterns()
     }
-    
+
     /// Get personalized document recommendations based on user patterns
     public func getPersonalizedRecommendations(
         currentSelection: Set<AppCore.DocumentType>
     ) -> [SmartDocumentRecommendation] {
-        
+
         var recommendations: [SmartDocumentRecommendation] = []
-        
+
         // Analyze frequently selected document combinations
         let frequentCombinations = analyzeFrequentCombinations()
-        
+
         for combination in frequentCombinations {
             let missingFromCombination = combination.subtracting(currentSelection)
-            
+
             for docType in missingFromCombination {
                 let recommendation = SmartDocumentRecommendation(
                     documentType: docType,
@@ -133,16 +133,16 @@ public final class SmartWorkflowEngine {
                 recommendations.append(recommendation)
             }
         }
-        
+
         // Add complementary document recommendations
         recommendations.append(contentsOf: getComplementaryRecommendations(currentSelection))
-        
+
         // Sort by confidence score
         return recommendations.sorted { $0.confidenceScore > $1.confidenceScore }
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func performIntelligentAnalysis(
         selectedTypes: Set<AppCore.DocumentType>,
         selectedDFTypes: Set<AppCore.DFDocumentType>,
@@ -150,12 +150,12 @@ public final class SmartWorkflowEngine {
         loadedAcquisition: AppCore.Acquisition?,
         documentStatus: [AppCore.DocumentType: DocumentStatus]
     ) -> WorkflowAnalysis {
-        
+
         var gaps: [RequirementGap] = []
         var confidence: Double = 1.0
         var shouldTrigger = false
         var message = ""
-        
+
         // Analyze acquisition status
         if !hasAcquisition || loadedAcquisition == nil {
             gaps.append(RequirementGap(
@@ -176,7 +176,7 @@ public final class SmartWorkflowEngine {
                 ))
                 confidence -= 0.1
             }
-            
+
             if acquisition.requirements.count < 100 { // Basic requirement length check
                 gaps.append(RequirementGap(
                     category: .requirements,
@@ -187,11 +187,11 @@ public final class SmartWorkflowEngine {
                 confidence -= 0.3
             }
         }
-        
+
         // Analyze document selection coherence
         let selectionCoherence = analyzeDocumentSelectionCoherence(selectedTypes)
         confidence *= selectionCoherence.coherenceScore
-        
+
         if !selectionCoherence.isCoherent {
             gaps.append(RequirementGap(
                 category: .documentSelection,
@@ -200,15 +200,15 @@ public final class SmartWorkflowEngine {
                 suggestedAction: selectionCoherence.suggestion
             ))
         }
-        
+
         // Analyze document readiness
         let readyCount = selectedTypes.count { documentStatus[$0] == .ready }
         let totalSelected = selectedTypes.count
-        
+
         if totalSelected > 0 {
             let readinessRatio = Double(readyCount) / Double(totalSelected)
             confidence *= readinessRatio
-            
+
             if readinessRatio < 0.5 {
                 gaps.append(RequirementGap(
                     category: .documentation,
@@ -218,15 +218,15 @@ public final class SmartWorkflowEngine {
                 ))
             }
         }
-        
+
         // Determine if agent chat should be triggered
         shouldTrigger = confidence < 0.6 || gaps.contains { $0.severity == .critical }
-        
+
         // Generate guidance message
         if shouldTrigger {
             message = generateGuidanceMessage(gaps: gaps, confidence: confidence)
         }
-        
+
         return WorkflowAnalysis(
             confidenceScore: max(0.0, min(1.0, confidence)),
             missingRequirements: gaps,
@@ -235,7 +235,7 @@ public final class SmartWorkflowEngine {
             recommendedActions: generateRecommendedActions(gaps)
         )
     }
-    
+
     private func analyzeDocumentSelectionCoherence(_ selectedTypes: Set<AppCore.DocumentType>) -> SelectionCoherence {
         // Check for logical document combinations
         let hasSOW = selectedTypes.contains(.sow)
@@ -243,7 +243,7 @@ public final class SmartWorkflowEngine {
         let hasRFP = selectedTypes.contains(.requestForProposal)
         let hasRFQ = selectedTypes.contains(.requestForQuote)
         let hasContract = selectedTypes.contains(.contractScaffold)
-        
+
         // Check for conflicting selections
         if hasSOW && hasPWS {
             return SelectionCoherence(
@@ -253,7 +253,7 @@ public final class SmartWorkflowEngine {
                 suggestion: "Typically, you would use either SOW or PWS, not both. Choose based on whether you want performance-based (PWS) or task-based (SOW) approach."
             )
         }
-        
+
         if hasRFP && hasRFQ {
             return SelectionCoherence(
                 isCoherent: false,
@@ -262,7 +262,7 @@ public final class SmartWorkflowEngine {
                 suggestion: "RFP is for complex procurements requiring proposals, while RFQ is for simple price quotes. Choose the appropriate method for your acquisition."
             )
         }
-        
+
         // Check for missing essential documents
         if hasContract && !hasSOW && !hasPWS {
             return SelectionCoherence(
@@ -272,7 +272,7 @@ public final class SmartWorkflowEngine {
                 suggestion: "Consider adding either a Statement of Work (SOW) or Performance Work Statement (PWS) to define the work requirements."
             )
         }
-        
+
         return SelectionCoherence(
             isCoherent: true,
             coherenceScore: 1.0,
@@ -280,22 +280,22 @@ public final class SmartWorkflowEngine {
             suggestion: ""
         )
     }
-    
+
     private func analyzeCriticalInformation(
         selectedTypes: Set<AppCore.DocumentType>,
         acquisition: AppCore.Acquisition?
     ) -> CriticalInfoAnalysis {
-        
+
         var missingInfo: [String] = []
         var templates: [String] = []
-        
+
         guard let acquisition = acquisition else {
             return CriticalInfoAnalysis(
                 missingCriticalInfo: ["No acquisition loaded"],
                 suggestedTemplates: ["Basic Acquisition Template"]
             )
         }
-        
+
         // Check for budget information
         if !acquisition.requirements.localizedCaseInsensitiveContains("budget") &&
            !acquisition.requirements.localizedCaseInsensitiveContains("cost") &&
@@ -303,7 +303,7 @@ public final class SmartWorkflowEngine {
             missingInfo.append("Budget/cost information")
             templates.append("Budget Planning Template")
         }
-        
+
         // Check for timeline information
         if !acquisition.requirements.localizedCaseInsensitiveContains("timeline") &&
            !acquisition.requirements.localizedCaseInsensitiveContains("schedule") &&
@@ -311,7 +311,7 @@ public final class SmartWorkflowEngine {
             missingInfo.append("Timeline/schedule information")
             templates.append("Project Timeline Template")
         }
-        
+
         // Check for performance criteria
         if selectedTypes.contains(.pws) || selectedTypes.contains(.qasp) {
             if !acquisition.requirements.localizedCaseInsensitiveContains("performance") &&
@@ -321,29 +321,29 @@ public final class SmartWorkflowEngine {
                 templates.append("Performance Metrics Template")
             }
         }
-        
+
         // Check for compliance requirements
         if selectedTypes.contains(.requestForProposal) || selectedTypes.contains(.contractScaffold) {
             let hasComplianceInfo = acquisition.requirements.localizedCaseInsensitiveContains("compliance") ||
                                   acquisition.requirements.localizedCaseInsensitiveContains("regulation") ||
                                   acquisition.requirements.localizedCaseInsensitiveContains("standard")
-            
+
             if !hasComplianceInfo {
                 missingInfo.append("Compliance and regulatory requirements")
                 templates.append("Compliance Checklist Template")
             }
         }
-        
+
         return CriticalInfoAnalysis(
             missingCriticalInfo: missingInfo,
             suggestedTemplates: templates
         )
     }
-    
+
     private func generateGuidanceMessage(gaps: [RequirementGap], confidence: Double) -> String {
         let criticalGaps = gaps.filter { $0.severity == .critical }
         let highGaps = gaps.filter { $0.severity == .high }
-        
+
         if !criticalGaps.isEmpty {
             return "Critical information is missing for successful document generation. I strongly recommend addressing these issues before proceeding: \(criticalGaps.map(\.description).joined(separator: ", "))"
         } else if !highGaps.isEmpty {
@@ -352,7 +352,7 @@ public final class SmartWorkflowEngine {
             return "Your acquisition setup looks good, but I can help optimize your document selection and requirements for even better results."
         }
     }
-    
+
     private func generateRecommendedActions(_ gaps: [RequirementGap]) -> [RecommendedAction] {
         return gaps.map { gap in
             RecommendedAction(
@@ -362,7 +362,7 @@ public final class SmartWorkflowEngine {
             )
         }
     }
-    
+
     private func recordInteractionPattern(_ analysis: WorkflowAnalysis) {
         let pattern = UserInteractionPattern(
             timestamp: Date(),
@@ -370,20 +370,20 @@ public final class SmartWorkflowEngine {
             gapCount: analysis.missingRequirements.count,
             triggeredAgentChat: analysis.shouldTriggerAgentChat
         )
-        
+
         userInteractionPatterns.append(pattern)
-        
+
         // Keep only recent patterns (last 50)
         if userInteractionPatterns.count > 50 {
             userInteractionPatterns.removeFirst()
         }
     }
-    
+
     private func analyzeSelectionPatterns() {
         // This would analyze user selection patterns for future recommendations
         // Implementation would include clustering, frequency analysis, etc.
     }
-    
+
     private func analyzeFrequentCombinations() -> [Set<AppCore.DocumentType>] {
         // Analyze historical selections to find frequent combinations
         // This is a simplified implementation
@@ -393,10 +393,10 @@ public final class SmartWorkflowEngine {
             [.marketResearch, .acquisitionPlan, .requestForProposal]
         ]
     }
-    
+
     private func getComplementaryRecommendations(_ currentSelection: Set<AppCore.DocumentType>) -> [SmartDocumentRecommendation] {
         var recommendations: [SmartDocumentRecommendation] = []
-        
+
         // If they have SOW, suggest evaluation plan
         if currentSelection.contains(.sow) && !currentSelection.contains(.evaluationPlan) {
             recommendations.append(SmartDocumentRecommendation(
@@ -406,7 +406,7 @@ public final class SmartWorkflowEngine {
                 priority: .high
             ))
         }
-        
+
         // If they have PWS, suggest QASP
         if currentSelection.contains(.pws) && !currentSelection.contains(.qasp) {
             recommendations.append(SmartDocumentRecommendation(
@@ -416,10 +416,10 @@ public final class SmartWorkflowEngine {
                 priority: .high
             ))
         }
-        
+
         return recommendations
     }
-    
+
     private func calculateRecommendationConfidence(_ docType: AppCore.DocumentType, _ currentSelection: Set<AppCore.DocumentType>) -> Double {
         // Simplified confidence calculation
         // In practice, this would use machine learning or statistical models
@@ -442,14 +442,14 @@ public struct RequirementGap {
     public let description: String
     public let severity: GapSeverity
     public let suggestedAction: String
-    
+
     public enum GapCategory {
         case acquisition, requirements, documentation, documentSelection, budget, timeline, compliance
     }
-    
+
     public enum GapSeverity {
         case low, medium, high, critical
-        
+
         var priority: RecommendedAction.Priority {
             switch self {
             case .low: return .low
@@ -465,7 +465,7 @@ public struct ExecutionDecision {
     public let shouldProceed: Bool
     public let reason: String
     public let suggestedActions: [SuggestedAction]
-    
+
     public enum SuggestedAction {
         case triggerAgentChat(String)
         case openRequirementsGathering
@@ -478,7 +478,7 @@ public struct SmartDocumentRecommendation {
     public let reason: String
     public let confidenceScore: Double
     public let priority: Priority
-    
+
     public enum Priority {
         case low, medium, high, critical
     }
@@ -488,7 +488,7 @@ public struct RecommendedAction {
     public let title: String
     public let category: RequirementGap.GapCategory
     public let priority: Priority
-    
+
     public enum Priority {
         case low, medium, high, critical
     }

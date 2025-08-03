@@ -8,47 +8,47 @@ struct OriginalSAMReportPreview: View {
     @State private var isExporting = false
     @State private var selectedFollowOnOption: FollowOnReportType?
     @State private var showingFollowOnSheet = false
-    
+
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     // Report Header - Clean and Professional
                     reportHeader
-                    
+
                     Divider()
                         .background(Color.gray.opacity(0.3))
-                    
+
                     // Executive Summary
                     executiveSummary
-                    
+
                     Divider()
                         .background(Color.gray.opacity(0.3))
-                    
+
                     // Contractor Analysis - The Original Clean Format
                     contractorAnalysis
-                    
+
                     Divider()
                         .background(Color.gray.opacity(0.3))
-                    
+
                     // Market Intelligence
                     marketIntelligence
-                    
+
                     Divider()
                         .background(Color.gray.opacity(0.3))
-                    
+
                     // Risk Assessment
                     riskAssessment
-                    
+
                     Divider()
                         .background(Color.gray.opacity(0.3))
-                    
+
                     // Recommendations
                     recommendations
-                    
+
                     Divider()
                         .background(Color.gray.opacity(0.3))
-                    
+
                     // Follow-on Options
                     followOnOptions
                 }
@@ -67,7 +67,7 @@ struct OriginalSAMReportPreview: View {
                     }
                     .foregroundColor(.blue)
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") {
                         dismiss()
@@ -81,7 +81,7 @@ struct OriginalSAMReportPreview: View {
                     }
                     .foregroundColor(.blue)
                 }
-                
+
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Done") {
                         dismiss()
@@ -93,9 +93,9 @@ struct OriginalSAMReportPreview: View {
         }
         .preferredColorScheme(.dark)
     }
-    
+
     // MARK: - Report Header
-    
+
     private var reportHeader: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
@@ -104,26 +104,26 @@ struct OriginalSAMReportPreview: View {
                         .font(.title)
                         .fontWeight(.bold)
                         .foregroundColor(.white)
-                    
+
                     Text("Comprehensive Market Intelligence & Risk Assessment")
                         .font(.subheadline)
                         .foregroundColor(.gray)
                 }
-                
+
                 Spacer()
-                
+
                 VStack(alignment: .trailing, spacing: 4) {
                     Text(formatDate(Date()))
                         .font(.caption)
                         .foregroundColor(.gray)
-                    
+
                     Text("\(entities.count) Contractors Analyzed")
                         .font(.caption)
                         .foregroundColor(.blue)
                         .fontWeight(.medium)
                 }
             }
-            
+
             // Report Metadata Grid - Original Clean Design
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 16) {
                 MetricCard(title: "Active Contractors", value: "\(entities.filter { $0.registrationStatus == "Active" }.count)", color: .green)
@@ -133,51 +133,51 @@ struct OriginalSAMReportPreview: View {
             }
         }
     }
-    
+
     // MARK: - Executive Summary
-    
+
     private var executiveSummary: some View {
         VStack(alignment: .leading, spacing: 12) {
             SectionHeader(title: "Executive Summary", icon: "doc.text.magnifyingglass")
-            
+
             VStack(alignment: .leading, spacing: 8) {
                 SummaryPoint(
                     text: "Market Analysis: \(entities.count) contractors identified with \(calculateAveragePerformanceScore())% average capability score"
                 )
-                
+
                 SummaryPoint(
                     text: "Competition Level: \(getCompetitionLevel()) based on contractor diversity and geographic distribution"
                 )
-                
+
                 SummaryPoint(
                     text: "Risk Profile: \(calculateRiskProfile()) risk exposure with \(entities.filter { $0.hasActiveExclusions }.count) contractors having active exclusions"
                 )
-                
+
                 SummaryPoint(
                     text: "Small Business Participation: \(calculateSmallBusinessPercentage())% of identified contractors qualify as small businesses"
                 )
             }
         }
     }
-    
+
     // MARK: - Contractor Analysis - Original Clean Format
-    
+
     private var contractorAnalysis: some View {
         VStack(alignment: .leading, spacing: 16) {
             SectionHeader(title: "Contractor Analysis", icon: "building.2")
-            
+
             ForEach(entities, id: \.ueiSAM) { entity in
                 ContractorCard(entity: entity)
             }
         }
     }
-    
+
     // MARK: - Market Intelligence
-    
+
     private var marketIntelligence: some View {
         VStack(alignment: .leading, spacing: 12) {
             SectionHeader(title: "Market Intelligence", icon: "chart.line.uptrend.xyaxis")
-            
+
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 12) {
                 IntelligenceCard(
                     title: "NAICS Diversity",
@@ -185,21 +185,21 @@ struct OriginalSAMReportPreview: View {
                     trend: "↗",
                     description: "Industry coverage breadth"
                 )
-                
+
                 IntelligenceCard(
                     title: "Geographic Spread",
                     value: "\(calculateGeographicSpread()) States",
                     trend: "→",
                     description: "Regional distribution"
                 )
-                
+
                 IntelligenceCard(
                     title: "Certification Rate",
                     value: "\(calculateCertificationRate())%",
                     trend: "↗",
                     description: "Special certifications held"
                 )
-                
+
                 IntelligenceCard(
                     title: "Market Maturity",
                     value: getMarketMaturity(),
@@ -209,26 +209,26 @@ struct OriginalSAMReportPreview: View {
             }
         }
     }
-    
+
     // MARK: - Risk Assessment
-    
+
     private var riskAssessment: some View {
         VStack(alignment: .leading, spacing: 12) {
             SectionHeader(title: "Risk Assessment", icon: "exclamationmark.shield")
-            
+
             VStack(alignment: .leading, spacing: 8) {
                 RiskIndicator(
                     level: entities.filter { $0.hasActiveExclusions }.isEmpty ? .low : .high,
                     title: "Exclusion Risk",
                     description: "\(entities.filter { $0.hasActiveExclusions }.count) contractors with active exclusions"
                 )
-                
+
                 RiskIndicator(
                     level: calculatePerformanceRisk(),
                     title: "Performance Risk",
                     description: "Based on registration status and business type analysis"
                 )
-                
+
                 RiskIndicator(
                     level: calculateMarketConcentrationRisk(),
                     title: "Market Concentration",
@@ -237,26 +237,26 @@ struct OriginalSAMReportPreview: View {
             }
         }
     }
-    
+
     // MARK: - Recommendations
-    
+
     private var recommendations: some View {
         VStack(alignment: .leading, spacing: 12) {
             SectionHeader(title: "Strategic Recommendations", icon: "lightbulb")
-            
+
             VStack(alignment: .leading, spacing: 12) {
                 RecommendationCard(
                     priority: .high,
                     title: "Market Entry Strategy",
                     recommendation: generateMarketEntryRecommendation()
                 )
-                
+
                 RecommendationCard(
                     priority: .medium,
                     title: "Competition Analysis",
                     recommendation: generateCompetitionRecommendation()
                 )
-                
+
                 RecommendationCard(
                     priority: .medium,
                     title: "Risk Mitigation",
@@ -265,18 +265,18 @@ struct OriginalSAMReportPreview: View {
             }
         }
     }
-    
+
     // MARK: - Follow-on Options
-    
+
     private var followOnOptions: some View {
         VStack(alignment: .leading, spacing: 16) {
             SectionHeader(title: "Follow-on Analysis Options", icon: "arrow.branch")
-            
+
             Text("Generate additional specialized reports for deeper vendor analysis:")
                 .font(.subheadline)
                 .foregroundColor(.gray)
                 .padding(.bottom, 8)
-            
+
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 12) {
                 ForEach(FollowOnReportType.allCases, id: \.self) { reportType in
                     FollowOnOptionCard(
@@ -295,9 +295,9 @@ struct OriginalSAMReportPreview: View {
             }
         }
     }
-    
+
     // MARK: - Helper Functions
-    
+
     private func exportToPDF() {
         isExporting = true
         // Simulate PDF generation
@@ -305,20 +305,20 @@ struct OriginalSAMReportPreview: View {
             isExporting = false
         }
     }
-    
+
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .short
         return formatter.string(from: date)
     }
-    
+
     private func calculateAveragePerformanceScore() -> Int {
         let activeContractors = entities.filter { $0.registrationStatus == "Active" }.count
         let totalContractors = entities.count
         return totalContractors > 0 ? Int((Double(activeContractors) / Double(totalContractors)) * 100) : 0
     }
-    
+
     private func getCompetitionLevel() -> String {
         let count = entities.count
         switch count {
@@ -327,62 +327,62 @@ struct OriginalSAMReportPreview: View {
         default: return "High Competition"
         }
     }
-    
+
     private func calculateRiskProfile() -> String {
         let exclusionCount = entities.filter { $0.hasActiveExclusions }.count
         let riskPercentage = Double(exclusionCount) / Double(max(entities.count, 1))
-        
+
         switch riskPercentage {
         case 0...0.1: return "Low"
         case 0.1...0.3: return "Moderate"
         default: return "High"
         }
     }
-    
+
     private func calculateSmallBusinessPercentage() -> Int {
         let smallBusinessCount = entities.filter { $0.isSmallBusiness }.count
-        return entities.count > 0 ? Int((Double(smallBusinessCount) / Double(entities.count)) * 100) : 0
+        return !entities.isEmpty ? Int((Double(smallBusinessCount) / Double(entities.count)) * 100) : 0
     }
-    
+
     private func calculateNAICSDiversity() -> Int {
         let allNAICS = entities.flatMap { $0.naicsCodes.map { $0.code } }
         return Set(allNAICS).count
     }
-    
+
     private func calculateGeographicSpread() -> Int {
         let states = entities.compactMap { $0.address?.state }
         return Set(states).count
     }
-    
+
     private func calculateCertificationRate() -> Int {
         let certifiedCount = entities.filter { entity in
             entity.isVeteranOwned || entity.isWomanOwned || entity.is8aProgram || entity.isHUBZone
         }.count
-        return entities.count > 0 ? Int((Double(certifiedCount) / Double(entities.count)) * 100) : 0
+        return !entities.isEmpty ? Int((Double(certifiedCount) / Double(entities.count)) * 100) : 0
     }
-    
+
     private func getMarketMaturity() -> String {
-        let avgNAICSPerContractor = entities.count > 0 ? 
+        let avgNAICSPerContractor = !entities.isEmpty ?
             Double(entities.flatMap { $0.naicsCodes }.count) / Double(entities.count) : 0
-        
+
         switch avgNAICSPerContractor {
         case 0...2: return "Emerging"
         case 2...5: return "Developing"
         default: return "Mature"
         }
     }
-    
+
     private func calculatePerformanceRisk() -> RiskLevel {
         let inactiveCount = entities.filter { $0.registrationStatus != "Active" }.count
         let riskRatio = Double(inactiveCount) / Double(max(entities.count, 1))
-        
+
         switch riskRatio {
         case 0...0.1: return .low
         case 0.1...0.3: return .medium
         default: return .high
         }
     }
-    
+
     private func calculateMarketConcentrationRisk() -> RiskLevel {
         let count = entities.count
         switch count {
@@ -391,7 +391,7 @@ struct OriginalSAMReportPreview: View {
         default: return .low
         }
     }
-    
+
     private func generateMarketEntryRecommendation() -> String {
         let smallBusinessPercentage = calculateSmallBusinessPercentage()
         if smallBusinessPercentage > 60 {
@@ -400,7 +400,7 @@ struct OriginalSAMReportPreview: View {
             return "Limited small business presence detected. Opportunity exists for small business set-aside competitions."
         }
     }
-    
+
     private func generateCompetitionRecommendation() -> String {
         let competitionLevel = getCompetitionLevel()
         switch competitionLevel {
@@ -412,7 +412,7 @@ struct OriginalSAMReportPreview: View {
             return "Highly competitive market. Consider niche specialization or teaming arrangements to strengthen position."
         }
     }
-    
+
     private func generateRiskMitigationRecommendation() -> String {
         let exclusionCount = entities.filter { $0.hasActiveExclusions }.count
         if exclusionCount > 0 {
@@ -428,18 +428,18 @@ struct OriginalSAMReportPreview: View {
 struct SectionHeader: View {
     let title: String
     let icon: String
-    
+
     var body: some View {
         HStack {
             Image(systemName: icon)
                 .foregroundColor(.blue)
                 .font(.title2)
-            
+
             Text(title)
                 .font(.title2)
                 .fontWeight(.semibold)
                 .foregroundColor(.white)
-            
+
             Spacer()
         }
         .padding(.bottom, 4)
@@ -450,14 +450,14 @@ struct MetricCard: View {
     let title: String
     let value: String
     let color: Color
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(value)
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundColor(color)
-            
+
             Text(title)
                 .font(.caption)
                 .foregroundColor(.gray)
@@ -471,14 +471,14 @@ struct MetricCard: View {
 
 struct SummaryPoint: View {
     let text: String
-    
+
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
             Image(systemName: "checkmark.circle.fill")
                 .foregroundColor(.green)
                 .font(.caption)
                 .padding(.top, 2)
-            
+
             Text(text)
                 .font(.subheadline)
                 .foregroundColor(.white)
@@ -489,7 +489,7 @@ struct SummaryPoint: View {
 
 struct ContractorCard: View {
     let entity: EntityDetail
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             // Header with status indicator
@@ -499,17 +499,17 @@ struct ContractorCard: View {
                         .font(.headline)
                         .foregroundColor(.white)
                         .lineLimit(2)
-                    
+
                     Text("UEI: \(entity.ueiSAM)")
                         .font(.caption)
                         .foregroundColor(.gray)
                 }
-                
+
                 Spacer()
-                
+
                 StatusBadge(status: entity.registrationStatus, hasExclusions: entity.hasActiveExclusions)
             }
-            
+
             // Business characteristics
             HStack {
                 if entity.isSmallBusiness {
@@ -526,7 +526,7 @@ struct ContractorCard: View {
                 }
                 Spacer()
             }
-            
+
             // Key metrics
             if !entity.naicsCodes.isEmpty {
                 Text("Primary NAICS: \(entity.naicsCodes.first?.code ?? "N/A") - \(entity.naicsCodes.first?.description ?? "N/A")")
@@ -548,13 +548,13 @@ struct ContractorCard: View {
 struct StatusBadge: View {
     let status: String
     let hasExclusions: Bool
-    
+
     var body: some View {
         HStack(spacing: 4) {
             Image(systemName: statusIcon)
                 .foregroundColor(statusColor)
                 .font(.caption)
-            
+
             Text(status)
                 .font(.caption)
                 .fontWeight(.medium)
@@ -565,7 +565,7 @@ struct StatusBadge: View {
         .background(statusColor.opacity(0.1))
         .cornerRadius(6)
     }
-    
+
     private var statusIcon: String {
         if hasExclusions {
             return "exclamationmark.triangle.fill"
@@ -575,7 +575,7 @@ struct StatusBadge: View {
             return "exclamationmark.circle.fill"
         }
     }
-    
+
     private var statusColor: Color {
         if hasExclusions {
             return .red
@@ -590,7 +590,7 @@ struct StatusBadge: View {
 struct CharacteristicBadge: View {
     let text: String
     let color: Color
-    
+
     var body: some View {
         Text(text)
             .font(.caption2)
@@ -607,26 +607,26 @@ struct IntelligenceCard: View {
     let value: String
     let trend: String
     let description: String
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
                 Text(title)
                     .font(.caption)
                     .foregroundColor(.gray)
-                
+
                 Spacer()
-                
+
                 Text(trend)
                     .font(.caption)
                     .foregroundColor(.blue)
             }
-            
+
             Text(value)
                 .font(.title3)
                 .fontWeight(.semibold)
                 .foregroundColor(.white)
-            
+
             Text(description)
                 .font(.caption2)
                 .foregroundColor(.gray)
@@ -642,7 +642,7 @@ struct RiskIndicator: View {
     let level: RiskLevel
     let title: String
     let description: String
-    
+
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
@@ -650,14 +650,14 @@ struct RiskIndicator: View {
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(.white)
-                
+
                 Text(description)
                     .font(.caption)
                     .foregroundColor(.gray)
             }
-            
+
             Spacer()
-            
+
             RiskLevelBadge(level: level)
         }
         .padding()
@@ -668,7 +668,7 @@ struct RiskIndicator: View {
 
 struct RiskLevelBadge: View {
     let level: RiskLevel
-    
+
     var body: some View {
         Text(level.displayName)
             .font(.caption)
@@ -685,7 +685,7 @@ struct RecommendationCard: View {
     let priority: RecommendationPriority
     let title: String
     let recommendation: String
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -693,12 +693,12 @@ struct RecommendationCard: View {
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(.white)
-                
+
                 Spacer()
-                
+
                 PriorityBadge(priority: priority)
             }
-            
+
             Text(recommendation)
                 .font(.caption)
                 .foregroundColor(.gray)
@@ -716,7 +716,7 @@ struct RecommendationCard: View {
 
 struct PriorityBadge: View {
     let priority: RecommendationPriority
-    
+
     var body: some View {
         Text(priority.displayName)
             .font(.caption2)
@@ -733,7 +733,7 @@ struct PriorityBadge: View {
 
 enum RiskLevel {
     case low, medium, high
-    
+
     var displayName: String {
         switch self {
         case .low: return "Low Risk"
@@ -741,7 +741,7 @@ enum RiskLevel {
         case .high: return "High Risk"
         }
     }
-    
+
     var color: Color {
         switch self {
         case .low: return .green
@@ -753,7 +753,7 @@ enum RiskLevel {
 
 enum RecommendationPriority {
     case low, medium, high
-    
+
     var displayName: String {
         switch self {
         case .low: return "Low Priority"
@@ -761,7 +761,7 @@ enum RecommendationPriority {
         case .high: return "High Priority"
         }
     }
-    
+
     var color: Color {
         switch self {
         case .low: return .gray
@@ -776,9 +776,9 @@ enum FollowOnReportType: String, CaseIterable {
     case vendorCapabilities = "Vendor Capabilities Assessment"
     case competitiveAnalysis = "Competitive Analysis"
     case pastPerformance = "Past Performance Evaluation"
-    
+
     var displayName: String { rawValue }
-    
+
     var icon: String {
         switch self {
         case .marketAnalysis: return "chart.line.uptrend.xyaxis"
@@ -787,7 +787,7 @@ enum FollowOnReportType: String, CaseIterable {
         case .pastPerformance: return "clock.arrow.circlepath"
         }
     }
-    
+
     var description: String {
         switch self {
         case .marketAnalysis:
@@ -800,7 +800,7 @@ enum FollowOnReportType: String, CaseIterable {
             return "Historical performance, contract success rates, and reliability metrics"
         }
     }
-    
+
     var estimatedTime: String {
         switch self {
         case .marketAnalysis: return "15-20 minutes"
@@ -817,7 +817,7 @@ struct FollowOnOptionCard: View {
     let reportType: FollowOnReportType
     let entities: [EntityDetail]
     let onTap: () -> Void
-    
+
     var body: some View {
         Button(action: onTap) {
             VStack(alignment: .leading, spacing: 12) {
@@ -826,9 +826,9 @@ struct FollowOnOptionCard: View {
                     Image(systemName: reportType.icon)
                         .foregroundColor(.blue)
                         .font(.title2)
-                    
+
                     Spacer()
-                    
+
                     Text(reportType.estimatedTime)
                         .font(.caption2)
                         .foregroundColor(.gray)
@@ -837,30 +837,30 @@ struct FollowOnOptionCard: View {
                         .background(Color.gray.opacity(0.2))
                         .cornerRadius(4)
                 }
-                
+
                 Text(reportType.displayName)
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(.white)
                     .multilineTextAlignment(.leading)
-                
+
                 Text(reportType.description)
                     .font(.caption)
                     .foregroundColor(.gray)
                     .lineLimit(3)
                     .fixedSize(horizontal: false, vertical: true)
-                
+
                 Spacer()
-                
+
                 // Action indicator
                 HStack {
                     Text("Generate Report")
                         .font(.caption)
                         .fontWeight(.medium)
                         .foregroundColor(.blue)
-                    
+
                     Spacer()
-                    
+
                     Image(systemName: "arrow.right.circle.fill")
                         .foregroundColor(.blue)
                         .font(.caption)
@@ -887,7 +887,7 @@ struct FollowOnReportView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var isGenerating = false
     @State private var reportGenerated = false
-    
+
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
@@ -897,22 +897,22 @@ struct FollowOnReportView: View {
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .blue))
                             .scaleEffect(1.5)
-                        
+
                         Text("Generating \(reportType.displayName)")
                             .font(.headline)
                             .foregroundColor(.white)
-                        
+
                         Text("Analyzing \(entities.count) contractor(s) for comprehensive insights...")
                             .font(.subheadline)
                             .foregroundColor(.gray)
                             .multilineTextAlignment(.center)
-                        
+
                         Text("Estimated completion: \(reportType.estimatedTime)")
                             .font(.caption)
                             .foregroundColor(.blue)
                     }
                     .padding()
-                    
+
                 } else if reportGenerated {
                     // Report preview
                     ScrollView {
@@ -921,11 +921,11 @@ struct FollowOnReportView: View {
                                 .font(.title2)
                                 .fontWeight(.bold)
                                 .foregroundColor(.white)
-                            
+
                             Text("Your specialized report has been generated successfully.")
                                 .font(.body)
                                 .foregroundColor(.gray)
-                            
+
                             // Mock report content
                             VStack(alignment: .leading, spacing: 12) {
                                 ReportSection(title: "Executive Summary", content: generateMockContent(for: reportType))
@@ -935,25 +935,25 @@ struct FollowOnReportView: View {
                         }
                         .padding()
                     }
-                    
+
                 } else {
                     // Initial state
                     VStack(spacing: 16) {
                         Image(systemName: reportType.icon)
                             .font(.system(size: 48))
                             .foregroundColor(.blue)
-                        
+
                         Text(reportType.displayName)
                             .font(.title2)
                             .fontWeight(.semibold)
                             .foregroundColor(.white)
-                        
+
                         Text(reportType.description)
                             .font(.body)
                             .foregroundColor(.gray)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
-                        
+
                         Button("Generate Report") {
                             startReportGeneration()
                         }
@@ -966,7 +966,7 @@ struct FollowOnReportView: View {
                         .padding(.horizontal)
                     }
                 }
-                
+
                 Spacer()
             }
             .background(Color.black)
@@ -990,10 +990,10 @@ struct FollowOnReportView: View {
         }
         .preferredColorScheme(.dark)
     }
-    
+
     private func startReportGeneration() {
         isGenerating = true
-        
+
         // Simulate report generation time
         let delay = Double.random(in: 2.0...5.0)
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
@@ -1001,7 +1001,7 @@ struct FollowOnReportView: View {
             reportGenerated = true
         }
     }
-    
+
     private func generateMockContent(for reportType: FollowOnReportType) -> String {
         switch reportType {
         case .marketAnalysis:
@@ -1019,13 +1019,13 @@ struct FollowOnReportView: View {
 struct ReportSection: View {
     let title: String
     let content: String
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
                 .font(.headline)
                 .foregroundColor(.white)
-            
+
             Text(content)
                 .font(.body)
                 .foregroundColor(.gray)

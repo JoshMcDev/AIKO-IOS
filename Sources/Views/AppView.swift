@@ -6,14 +6,14 @@ import Foundation
 /// This replaces the TCA-based AppView implementation
 public struct AppView: View {
     @State private var appViewModel = AppViewModel()
-    
+
     public init() {}
-    
+
     public var body: some View {
         #if os(iOS)
-        iOSAppView(viewModel: appViewModel)
+        IOSAppView(viewModel: appViewModel)
         #elseif os(macOS)
-        macOSAppView(viewModel: appViewModel)
+        MacOSAppView(viewModel: appViewModel)
         #endif
     }
 }
@@ -25,13 +25,13 @@ import UIKit
 import UniformTypeIdentifiers
 import VisionKit
 
-public struct iOSAppView: View {
+public struct IOSAppView: View {
     @Bindable var viewModel: AppViewModel
-    
+
     public init(viewModel: AppViewModel) {
         self.viewModel = viewModel
     }
-    
+
     public var body: some View {
         NavigationStack {
             mainContent
@@ -87,7 +87,7 @@ public struct iOSAppView: View {
             Text(viewModel.error?.localizedDescription ?? "Unknown error")
         }
     }
-    
+
     @ViewBuilder
     private var mainContent: some View {
         if !viewModel.isOnboardingCompleted {
@@ -110,13 +110,13 @@ public struct iOSAppView: View {
 
 struct MainContentView: View {
     @Bindable var viewModel: AppViewModel
-    
+
     var body: some View {
         ZStack(alignment: .trailing) {
             // Background
             Color.black
                 .ignoresSafeArea()
-            
+
             VStack(spacing: 0) {
                 // Header
                 HeaderView(
@@ -129,10 +129,10 @@ struct MainContentView: View {
                     onSAMGovLookup: { viewModel.showSAMGovLookup(true) },
                     onExecuteAll: { viewModel.executeAllDocuments() }
                 )
-                
+
                 // Main Content
                 DocumentTypesCardView(viewModel: viewModel)
-                
+
                 // Original Input Area at bottom with integrated icons
                 InputArea(
                     requirements: viewModel.requirements,
@@ -150,7 +150,7 @@ struct MainContentView: View {
                     onRemoveDocument: { viewModel.removeDocument($0) }
                 )
             }
-            
+
             // Side Menu
             if viewModel.showingMenu {
                 SideMenuView(
@@ -336,14 +336,14 @@ struct AppIconView: View {
                 .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
         #endif
     }
-    
+
     private func loadAppIcon() -> Image? {
         #if os(iOS)
             // Try to load from bundle resources first
             if let image = UIImage(named: "AppIcon", in: Bundle.main, compatibleWith: nil) {
                 return Image(uiImage: image)
             }
-            
+
             // Fallback to direct file loading for development
             if let data = try? Data(contentsOf: URL(fileURLWithPath: "/Users/J/aiko/Sources/Resources/AppIcon.png")),
                let uiImage = UIImage(data: data) {
@@ -354,14 +354,14 @@ struct AppIconView: View {
             if let image = NSImage(named: "AppIcon") {
                 return Image(nsImage: image)
             }
-            
+
             // Fallback to direct file loading for development
             if let data = try? Data(contentsOf: URL(fileURLWithPath: "/Users/J/aiko/Sources/Resources/AppIcon.png")),
                let nsImage = NSImage(data: data) {
                 return Image(nsImage: nsImage)
             }
         #endif
-        
+
         return nil
     }
 }
@@ -371,11 +371,11 @@ struct AppIconView: View {
 struct SideMenuView: View {
     @Bindable var viewModel: AppViewModel
     @Binding var isShowing: Bool
-    
+
     var body: some View {
         HStack {
             Spacer()
-            
+
             VStack(alignment: .leading, spacing: 20) {
                 // Menu Header
                 HStack {
@@ -383,9 +383,9 @@ struct SideMenuView: View {
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundColor(.white)
-                    
+
                     Spacer()
-                    
+
                     Button(action: { isShowing = false }) {
                         Image(systemName: "xmark.circle")
                             .font(.title2)
@@ -393,7 +393,7 @@ struct SideMenuView: View {
                     }
                 }
                 .padding(.bottom)
-                
+
                 // Menu Items
                 ForEach(MenuItem.allCases) { item in
                     MenuItemView(
@@ -404,7 +404,7 @@ struct SideMenuView: View {
                         }
                     )
                 }
-                
+
                 Spacer()
             }
             .padding()
@@ -423,17 +423,17 @@ struct MenuItemView: View {
     let item: MenuItem
     let isSelected: Bool
     let onTap: () -> Void
-    
+
     var body: some View {
         Button(action: onTap) {
             HStack {
                 Image(systemName: item.systemImage)
                     .frame(width: 24)
                     .foregroundColor(isSelected ? .blue : .white)
-                
+
                 Text(item.rawValue)
                     .foregroundColor(isSelected ? .blue : .white)
-                
+
                 Spacer()
             }
             .padding(.vertical, 12)
@@ -450,7 +450,7 @@ struct AuthenticationView: View {
     let isAuthenticating: Bool
     let error: String?
     let onRetry: () -> Void
-    
+
     var body: some View {
         VStack(spacing: 30) {
             // App Icon
@@ -460,23 +460,23 @@ struct AuthenticationView: View {
                     .frame(width: 100, height: 100)
                     .cornerRadius(20)
             }
-            
+
             VStack(spacing: 16) {
                 Text("Welcome to AIKO")
                     .font(.title)
                     .fontWeight(.bold)
                     .foregroundColor(.white)
-                
+
                 Text("Please authenticate to continue")
                     .font(.body)
                     .foregroundColor(.gray)
             }
-            
+
             if isAuthenticating {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
                     .scaleEffect(1.5)
-                
+
                 Text("Authenticating...")
                     .font(.body)
                     .foregroundColor(.gray)
@@ -493,7 +493,7 @@ struct AuthenticationView: View {
                     .background(Color.blue)
                     .cornerRadius(12)
                 }
-                
+
                 if let error = error {
                     Text(error)
                         .font(.caption)
@@ -506,7 +506,7 @@ struct AuthenticationView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black)
     }
-    
+
     private func loadAppIcon() -> Image? {
         #if os(iOS)
         if let uiImage = UIImage(named: "AppIcon") {
@@ -521,7 +521,7 @@ struct AuthenticationView: View {
 
 struct DocumentTypesCardView: View {
     @Bindable var viewModel: AppViewModel
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -548,13 +548,13 @@ struct DocumentTypesCardView: View {
 struct DocumentScannerSheet: View {
     @Bindable var viewModel: DocumentScannerViewModel
     @Environment(\.dismiss) private var dismiss
-    
+
     var body: some View {
         NavigationView {
             VStack {
                 Text("Document Scanner")
                     .font(.title)
-                
+
                 if viewModel.isScanning {
                     ProgressView("Scanning...")
                         .progressViewStyle(CircularProgressViewStyle())
@@ -565,7 +565,7 @@ struct DocumentScannerSheet: View {
                         }
                     }
                 }
-                
+
                 Spacer()
             }
             .navigationTitle("Scanner")
@@ -582,19 +582,19 @@ struct DocumentScannerSheet: View {
 struct ProfileSheet: View {
     @Bindable var viewModel: ProfileViewModel
     @Environment(\.dismiss) private var dismiss
-    
+
     var body: some View {
         NavigationView {
             VStack {
                 Text("Profile")
                     .font(.title)
-                
+
                 Form {
                     TextField("Name", text: $viewModel.profile.fullName)
                     TextField("Email", text: $viewModel.profile.email)
                     TextField("Organization", text: $viewModel.profile.organizationName)
                 }
-                
+
                 Spacer()
             }
             .navigationTitle("Profile")
@@ -611,16 +611,20 @@ struct ProfileSheet: View {
 struct SettingsSheet: View {
     @Bindable var viewModel: SettingsViewModel
     @Environment(\.dismiss) private var dismiss
-    
+
     var body: some View {
         NavigationView {
             Form {
                 Section("Appearance") {
-                    Toggle("Dark Mode", isOn: $viewModel.isDarkMode)
+                    Picker("Theme", selection: $viewModel.settingsData.appSettings.theme) {
+                        Text("System").tag("system")
+                        Text("Light").tag("light")
+                        Text("Dark").tag("dark")
+                    }
                 }
-                
+
                 Section("Notifications") {
-                    Toggle("Enable Notifications", isOn: $viewModel.enableNotifications)
+                    Toggle("Enable Notifications", isOn: $viewModel.settingsData.notificationSettings.enableNotifications)
                 }
             }
             .navigationTitle("Settings")
@@ -637,7 +641,7 @@ struct SettingsSheet: View {
 struct AcquisitionsSheet: View {
     @Bindable var viewModel: AcquisitionsListViewModel
     @Environment(\.dismiss) private var dismiss
-    
+
     var body: some View {
         NavigationView {
             List {
@@ -645,7 +649,7 @@ struct AcquisitionsSheet: View {
                     VStack(alignment: .leading) {
                         Text(acquisition.title.isEmpty ? "Untitled" : acquisition.title)
                             .font(.headline)
-                        
+
                         if !acquisition.requirements.isEmpty {
                             Text(acquisition.requirements)
                                 .font(.caption)
@@ -668,16 +672,16 @@ struct AcquisitionsSheet: View {
 
 struct SAMGovLookupSheet: View {
     @Environment(\.dismiss) private var dismiss
-    
+
     var body: some View {
         NavigationView {
             VStack {
                 Text("SAM.gov Lookup")
                     .font(.title)
-                
+
                 Text("Feature coming soon...")
                     .foregroundColor(.gray)
-                
+
                 Spacer()
             }
             .navigationTitle("SAM.gov")
@@ -691,58 +695,10 @@ struct SAMGovLookupSheet: View {
     }
 }
 
-struct OnboardingView: View {
-    @Bindable var viewModel: OnboardingViewModel
-    
-    var body: some View {
-        VStack(spacing: 30) {
-            Text("Welcome to AIKO")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .foregroundColor(.white)
-            
-            Text("Step \(viewModel.currentStep + 1) of \(viewModel.totalSteps)")
-                .font(.caption)
-                .foregroundColor(.gray)
-            
-            ProgressView(value: Double(viewModel.currentStep) / Double(viewModel.totalSteps - 1))
-                .progressViewStyle(LinearProgressViewStyle(tint: .blue))
-                .padding(.horizontal)
-            
-            Spacer()
-            
-            Text("Onboarding Step \(viewModel.currentStep + 1)")
-                .font(.title2)
-                .foregroundColor(.white)
-            
-            Spacer()
-            
-            HStack {
-                if viewModel.currentStep > 0 {
-                    Button("Previous") {
-                        viewModel.previousStep()
-                    }
-                    .foregroundColor(.blue)
-                }
-                
-                Spacer()
-                
-                Button(viewModel.currentStep == viewModel.totalSteps - 1 ? "Complete" : "Next") {
-                    viewModel.nextStep()
-                }
-                .foregroundColor(.blue)
-                .fontWeight(.medium)
-            }
-            .padding()
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black)
-    }
-}
 
 struct UserGuideSheet: View {
     @Environment(\.dismiss) private var dismiss
-    
+
     var body: some View {
         NavigationView {
             ScrollView {
@@ -751,54 +707,54 @@ struct UserGuideSheet: View {
                         .font(.title2)
                         .fontWeight(.bold)
                         .padding(.top)
-                    
+
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Welcome to AIKO - Adaptive Intelligence for Kontract Optimization")
                             .font(.headline)
-                        
+
                         Text("AIKO helps streamline government contracting processes with intelligent document generation and SAM.gov integration.")
                             .font(.body)
                             .foregroundColor(.secondary)
                     }
-                    
+
                     Divider()
-                    
+
                     Text("Key Features")
                         .font(.title2)
                         .fontWeight(.bold)
-                    
+
                     VStack(alignment: .leading, spacing: 16) {
                         FeatureRow(
                             icon: "doc.text",
                             title: "Document Generation",
                             description: "Generate professional acquisition documents with AI assistance"
                         )
-                        
+
                         FeatureRow(
                             icon: "magnifyingglass",
                             title: "SAM.gov Lookup",
                             description: "Search and verify contractor information directly from SAM.gov"
                         )
-                        
+
                         FeatureRow(
                             icon: "bubble.left.and.bubble.right",
                             title: "Agent Chat",
                             description: "Get intelligent assistance for complex acquisition scenarios"
                         )
-                        
+
                         FeatureRow(
                             icon: "folder",
                             title: "Acquisition Management",
                             description: "Organize and track your acquisition projects"
                         )
                     }
-                    
+
                     Divider()
-                    
+
                     Text("Tips")
                         .font(.title2)
                         .fontWeight(.bold)
-                    
+
                     VStack(alignment: .leading, spacing: 12) {
                         Text("• Use the SAM.gov lookup to verify contractor CAGE codes")
                         Text("• Save frequently used requirements as templates")
@@ -807,7 +763,7 @@ struct UserGuideSheet: View {
                     }
                     .font(.body)
                     .foregroundColor(.secondary)
-                    
+
                     Spacer(minLength: 50)
                 }
                 .padding()
@@ -827,14 +783,14 @@ struct FeatureRow: View {
     let icon: String
     let title: String
     let description: String
-    
+
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon)
                 .font(.title3)
                 .foregroundColor(.blue)
                 .frame(width: 24)
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.headline)
@@ -856,7 +812,7 @@ struct TemplateFile: Identifiable {
     let category: AppCore.TemplateCategory
     let filePath: String
     let content: String
-    
+
     var variableCount: Int {
         // Count {{VARIABLE_NAME}} patterns in content
         let regex = try? NSRegularExpression(pattern: "\\{\\{[^}]+\\}\\}", options: [])
@@ -889,7 +845,7 @@ struct CategoryChipView: View {
             )
         }
     }
-    
+
     private func categoryIcon(for category: AppCore.TemplateCategory) -> String {
         switch category {
         case .all: return "square.grid.2x2"
@@ -987,7 +943,7 @@ struct TemplateDetailSheet: View {
     @State private var customizedVariables: [String: String] = [:]
     @State private var extractedVariables: [String] = []
     @State private var isGenerating = false
-    
+
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -996,19 +952,19 @@ struct TemplateDetailSheet: View {
                     Image(systemName: "doc.text.fill")
                         .font(.system(size: 48))
                         .foregroundColor(.blue)
-                    
+
                     Text(template.title)
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundColor(.white)
-                    
+
                     Text(template.description)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
                 }
                 .padding(.vertical, 24)
-                
+
                 // Variable customization
                 if !extractedVariables.isEmpty {
                     Form {
@@ -1018,7 +974,7 @@ struct TemplateDetailSheet: View {
                                     Text(variable.replacingOccurrences(of: "_", with: " ").capitalized)
                                         .font(.caption)
                                         .foregroundColor(.secondary)
-                                    
+
                                     TextField("Enter \(variable.lowercased())", text: Binding(
                                         get: { customizedVariables[variable] ?? "" },
                                         set: { customizedVariables[variable] = $0 }
@@ -1027,7 +983,7 @@ struct TemplateDetailSheet: View {
                                 }
                             }
                         }
-                        
+
                         Section {
                             Button(action: generateDocument) {
                                 HStack {
@@ -1047,7 +1003,7 @@ struct TemplateDetailSheet: View {
                     }
                 } else {
                     Spacer()
-                    
+
                     Button(action: generateDocument) {
                         HStack {
                             if isGenerating {
@@ -1067,7 +1023,7 @@ struct TemplateDetailSheet: View {
                     }
                     .disabled(isGenerating)
                     .padding()
-                    
+
                     Spacer()
                 }
             }
@@ -1076,7 +1032,7 @@ struct TemplateDetailSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") { 
+                    Button("Done") {
                         dismiss()
                         onDismiss()
                     }
@@ -1088,39 +1044,37 @@ struct TemplateDetailSheet: View {
         }
         .preferredColorScheme(.dark)
     }
-    
+
     private func extractVariables() {
         let regex = try? NSRegularExpression(pattern: "\\{\\{([^}]+)\\}\\}", options: [])
         let range = NSRange(location: 0, length: template.content.count)
         var variables: Set<String> = []
-        
+
         regex?.enumerateMatches(in: template.content, options: [], range: range) { match, _, _ in
             if let match = match, let range = Range(match.range(at: 1), in: template.content) {
                 let variable = String(template.content[range])
                 variables.insert(variable)
             }
         }
-        
+
         extractedVariables = Array(variables).sorted()
     }
-    
+
     private func generateDocument() {
         isGenerating = true
-        
+
         // Simulate document generation
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             var customizedContent = template.content
-            
+
             // Replace variables with user input
-            for (variable, value) in customizedVariables {
-                if !value.isEmpty {
-                    customizedContent = customizedContent.replacingOccurrences(of: "{{\(variable)}}", with: value)
-                }
+            for (variable, value) in customizedVariables where !value.isEmpty {
+                customizedContent = customizedContent.replacingOccurrences(of: "{{\(variable)}}", with: value)
             }
-            
+
             // Here you would integrate with the actual document generation service
             print("Generated document with customized content")
-            
+
             isGenerating = false
             dismiss()
             onDismiss()
@@ -1131,7 +1085,7 @@ struct TemplateDetailSheet: View {
 struct TemplateRowView: View {
     let template: SearchTemplate
     let onSelect: () -> Void
-    
+
     var body: some View {
         Button(action: onSelect) {
             VStack(alignment: .leading, spacing: 8) {
@@ -1139,9 +1093,9 @@ struct TemplateRowView: View {
                     Text(template.title)
                         .font(.headline)
                         .foregroundColor(.primary)
-                    
+
                     Spacer()
-                    
+
                     Text(template.category.rawValue)
                         .font(.caption)
                         .padding(.horizontal, 8)
@@ -1149,12 +1103,12 @@ struct TemplateRowView: View {
                         .background(Color.blue.opacity(0.2))
                         .cornerRadius(8)
                 }
-                
+
                 Text(template.description)
                     .font(.body)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.leading)
-                
+
                 if !template.keywords.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 6) {
@@ -1176,14 +1130,13 @@ struct TemplateRowView: View {
     }
 }
 
-
 struct ShareSheet: UIViewControllerRepresentable {
     let items: [Any]
-    
+
     func makeUIViewController(context: Context) -> UIActivityViewController {
         UIActivityViewController(activityItems: items, applicationActivities: nil)
     }
-    
+
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
@@ -1192,13 +1145,13 @@ struct ShareSheet: UIViewControllerRepresentable {
 // MARK: - macOS Implementation
 
 #if os(macOS)
-public struct macOSAppView: View {
+public struct MacOSAppView: View {
     @Bindable var viewModel: AppViewModel
-    
+
     public init(viewModel: AppViewModel) {
         self.viewModel = viewModel
     }
-    
+
     public var body: some View {
         NavigationView {
             // Sidebar
@@ -1214,14 +1167,18 @@ public struct macOSAppView: View {
             }
             .listStyle(SidebarListStyle())
             .frame(minWidth: 200)
-            
+
             // Main Content
             if !viewModel.isOnboardingCompleted {
                 VStack {
                     Text("Onboarding")
                     Button("Complete Onboarding") {
-                        viewModel.onboardingViewModel.completeOnboarding()
-                        viewModel.isOnboardingCompleted = true
+                        Task {
+                            await viewModel.onboardingViewModel.completeOnboarding()
+                            await MainActor.run {
+                                viewModel.isOnboardingCompleted = true
+                            }
+                        }
                     }
                 }
             } else if !viewModel.isAuthenticated {

@@ -305,8 +305,7 @@ public final class AzureOpenAIProvider: LLMProviderProtocol, @unchecked Sendable
                            let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                            let choices = json["choices"] as? [[String: Any]],
                            let firstChoice = choices.first,
-                           let delta = firstChoice["delta"] as? [String: Any]
-                        {
+                           let delta = firstChoice["delta"] as? [String: Any] {
                             if let content = delta["content"] as? String {
                                 continuation.yield(LLMStreamChunk(delta: content))
                             }

@@ -201,8 +201,7 @@ public actor MediaValidationService: MediaValidationServiceProtocol {
             let actualDimensions = extractDimensions(from: data, mediaType: .image)
             if let actualDimensions = actualDimensions,
                providedDimensions.width != actualDimensions.width ||
-               providedDimensions.height != actualDimensions.height
-            {
+               providedDimensions.height != actualDimensions.height {
                 issues.append("Dimension mismatch: metadata claims \(providedDimensions.width)x\(providedDimensions.height), actual is \(actualDimensions.width)x\(actualDimensions.height)")
             }
         }
@@ -341,7 +340,7 @@ public actor MediaValidationService: MediaValidationServiceProtocol {
 
         // Integrity check if requested
         if specification.checkIntegrity {
-            let checksum = data.sha256Hash
+            let checksum = data.sha256HashString
             integrityResult = ComprehensiveValidationResult.IntegrityResult(
                 isIntact: true,
                 checksum: checksum,
@@ -763,7 +762,7 @@ private extension MediaValidationService {
 // MARK: - Data Extension for SHA256
 
 private extension Data {
-    var sha256Hash: String {
+    var sha256HashString: String {
         let digest = SHA256.hash(data: self)
         return digest.compactMap { String(format: "%02x", $0) }.joined()
     }

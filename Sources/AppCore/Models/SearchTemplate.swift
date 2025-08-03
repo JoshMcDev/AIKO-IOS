@@ -9,7 +9,7 @@ public struct SearchTemplate: Identifiable, Sendable {
     public let category: TemplateCategory
     public let keywords: [String]
     public let content: String
-    
+
     public init(title: String, description: String, category: TemplateCategory, keywords: [String], content: String) {
         self.title = title
         self.description = description
@@ -17,7 +17,7 @@ public struct SearchTemplate: Identifiable, Sendable {
         self.keywords = keywords
         self.content = content
     }
-    
+
     public static let sampleTemplates: [SearchTemplate] = [
         SearchTemplate(
             title: "Software Development RFP",
