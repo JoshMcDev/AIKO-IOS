@@ -280,7 +280,7 @@ public struct Regulation {
 }
 
 // Missing types
-public struct ValidationResult {
+public struct ValidationResult: Sendable {
     let isValid: Bool
     let errors: [DocumentValidationError]
     let warnings: [DocumentValidationWarning]
@@ -292,7 +292,7 @@ public struct DocumentValidationError: Sendable {
     let fix: DocumentValidationFix?
 }
 
-public struct DocumentValidationWarning {
+public struct DocumentValidationWarning: Sendable {
     let code: String
     let message: String
 }

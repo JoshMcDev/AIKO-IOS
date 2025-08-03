@@ -116,7 +116,7 @@ public enum AcquisitionStatus: String, CaseIterable, Codable, Sendable {
 
 public extension AcquisitionStatus {
     /// Groups statuses by lifecycle phase
-    enum Phase: String, CaseIterable {
+    enum Phase: String, CaseIterable, Sendable {
         case planning = "Planning"
         case execution = "Execution"
         case completion = "Completion"
@@ -132,7 +132,7 @@ public extension AcquisitionStatus {
             }
         }
 
-        var icon: String {
+        public var icon: String {
             switch self {
             case .planning: "lightbulb"
             case .execution: "gearshape"

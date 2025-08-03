@@ -215,16 +215,18 @@ public final class SAMGovLookupViewModel: @unchecked Sendable {
 
     private func mapSAMGovErrorToMessage(_ samGovError: SAMGovError) -> String {
         switch samGovError {
-        case .rateLimited:
+        case .rateLimitExceeded:
             return "API rate limit exceeded. Please wait a moment before trying again."
-        case .invalidFormat:
-            return "Invalid UEI format - must be 12 characters."
-        case .authenticationFailed:
+        case .invalidResponse:
+            return "Invalid response format from SAM.gov API."
+        case .invalidAPIKey:
             return "Authentication failed - check API credentials."
         case .entityNotFound:
             return "Entity not found in SAM.gov database."
-        default:
-            return samGovError.localizedDescription
+        case .networkError(let message):
+            return "Network error: \(message)"
+        case .apiKeyRequired:
+            return "API key required for SAM.gov access."
         }
     }
 }
