@@ -184,6 +184,11 @@ let package = Package(
                 "GraphRAGTests",
                 "Templates",
                 "Shared",
+                "RED_Phase_Verification.swift.disabled",
+                "UI/UI_DocumentScannerViewTests.swift.disabled",
+                "Services/AgenticOrchestratorTests.swift.disabled",
+                "test_red_phase.swift",
+                "verify_compliance_guardian.swift",
             ]
         ),
     ]

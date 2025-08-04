@@ -313,7 +313,7 @@ public class MockMLFeatureProvider: MLFeatureProvider {
     }
 
     public func featureValue(for featureName: String) -> MLFeatureValue? {
-        return try? MLFeatureValue(double: 0.5)
+        return MLFeatureValue(double: 0.5)
     }
 }
 

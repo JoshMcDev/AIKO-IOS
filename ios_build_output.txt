@@ -1,0 +1,3 @@
+error: Unknown option '--platform'
+Usage: swift build <options>
+  See 'build -help' for more information.
