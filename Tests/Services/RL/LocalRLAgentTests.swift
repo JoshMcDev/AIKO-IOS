@@ -35,19 +35,37 @@ final class LocalRLAgentTests: XCTestCase {
         ])
 
         // Create standard actions for testing
+        let sampleFarClause = AgenticFARClause(
+            section: "52.215-1",
+            title: "Instructions to Offerors—Competitive Acquisition",
+            description: "Test FAR clause for compliance testing"
+        )
+        let sampleComplianceCheck = ComplianceCheck(
+            farClause: sampleFarClause,
+            requirement: "Test compliance requirement",
+            severity: .major,
+            automated: true
+        )
+        let sampleDocumentTemplate = AgenticDocumentTemplate(
+            name: "Purchase Request Template",
+            templateType: .requestForProposal,
+            requiredFields: ["vendor", "amount", "description"],
+            complianceRequirements: [sampleComplianceCheck]
+        )
+
         standardActions = [
             WorkflowAction(
                 actionType: .generateDocument,
-                documentTemplates: [DocumentTemplate.purchaseRequest],
-                automationLevel: .fullyAutomated,
-                complianceChecks: [ComplianceCheck.farCompliance],
+                documentTemplates: [sampleDocumentTemplate],
+                automationLevel: .automated,
+                complianceChecks: [sampleComplianceCheck],
                 estimatedDuration: 300.0
             ),
             WorkflowAction(
                 actionType: .requestApproval,
                 documentTemplates: [],
-                automationLevel: .semiAutomated,
-                complianceChecks: [ComplianceCheck.farCompliance],
+                automationLevel: .assisted,
+                complianceChecks: [sampleComplianceCheck],
                 estimatedDuration: 600.0
             )
         ]
@@ -162,7 +180,7 @@ final class LocalRLAgentTests: XCTestCase {
         var rewards: [Double] = []
 
         // Simulate optimal bandit scenario
-        for trial in 0..<trials {
+        for _ in 0..<trials {
             let recommendation = try await rlAgent.selectAction(
                 context: testContext,
                 actions: standardActions
@@ -375,7 +393,7 @@ final class LocalRLAgentTests: XCTestCase {
             "complexity_score": 0.9
         ])
 
-        let certainContext = testContext
+        let certainContext = testContext!
 
         // Provide extensive training for certain context
         for _ in 0..<100 {
@@ -426,12 +444,14 @@ final class LocalRLAgentTests: XCTestCase {
         }
 
         // When: Multiple concurrent action selections
+        let rlAgentLocal = self.rlAgent!
+        let standardActionsLocal = self.standardActions!
         let recommendations = try await withThrowingTaskGroup(of: ActionRecommendation.self) { group in
             for context in contexts {
                 group.addTask {
-                    try await self.rlAgent.selectAction(
+                    try await rlAgentLocal.selectAction(
                         context: context,
-                        actions: self.standardActions
+                        actions: standardActionsLocal
                     )
                 }
             }
@@ -517,7 +537,7 @@ struct StatisticalTestFramework {
         var cumulativeRegret: Double = 0
         var optimalSelections = 0
 
-        for (index, action) in selectedActions.enumerated() {
+        for (_, action) in selectedActions.enumerated() {
             if action.id == optimalAction.id {
                 optimalSelections += 1
             } else {
@@ -552,11 +572,11 @@ extension AcquisitionContext {
             acquisitionId: UUID(),
             documentType: .purchaseRequest,
             acquisitionValue: 50000.0,
-            complexity: ComplexityLevel(score: 0.5, factors: ["test"]),
-            timeConstraints: TimeConstraints(daysRemaining: 30, isUrgent: false, expectedDuration: 3600.0),
-            regulatoryRequirements: Set([FARClause(clauseNumber: "52.215-1", isCritical: true)]),
+            complexity: TestComplexityLevel(score: 0.5, factors: ["test"]),
+            timeConstraints: TestTimeConstraints(daysRemaining: 30, isUrgent: false, expectedDuration: 3600.0),
+            regulatoryRequirements: Set([TestFARClause(clauseNumber: "52.215-1", isCritical: true)]),
             historicalSuccess: 0.8,
-            userProfile: UserProfile(experienceLevel: 0.7),
+            userProfile: TestUserProfile(experienceLevel: 0.7),
             workflowProgress: 0.0,
             completedDocuments: []
         )

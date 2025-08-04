@@ -438,6 +438,9 @@ public enum TestDocumentType: String, Codable, Sendable, CaseIterable {
     case purchaseRequest
     case contract
     case amendment
+    case simplePurchase
+    case majorConstruction
+    case other
 }
 
 public struct TestComplexityLevel: Sendable, Codable {

@@ -449,7 +449,7 @@ extension SAMGovRepository {
 
     private func extractPrimaryNAICS(from naicsCodes: [NAICSCodeData]?) -> String? {
         return naicsCodes?.first { $0.isPrimary == "Y" }?.naicsCode ??
-               naicsCodes?.first?.naicsCode
+            naicsCodes?.first?.naicsCode
     }
 
     private func convertToEntityAddress(_ addressData: PhysicalAddressData?) -> EntityAddress? {
@@ -506,7 +506,7 @@ extension SAMGovRepository {
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
 
         return formatter.date(from: dateString) ??
-               ISO8601DateFormatter().date(from: dateString)
+            ISO8601DateFormatter().date(from: dateString)
     }
 }
 

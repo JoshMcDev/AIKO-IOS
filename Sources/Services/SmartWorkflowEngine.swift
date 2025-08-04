@@ -298,16 +298,16 @@ public final class SmartWorkflowEngine {
 
         // Check for budget information
         if !acquisition.requirements.localizedCaseInsensitiveContains("budget") &&
-           !acquisition.requirements.localizedCaseInsensitiveContains("cost") &&
-           !acquisition.requirements.localizedCaseInsensitiveContains("price") {
+            !acquisition.requirements.localizedCaseInsensitiveContains("cost") &&
+            !acquisition.requirements.localizedCaseInsensitiveContains("price") {
             missingInfo.append("Budget/cost information")
             templates.append("Budget Planning Template")
         }
 
         // Check for timeline information
         if !acquisition.requirements.localizedCaseInsensitiveContains("timeline") &&
-           !acquisition.requirements.localizedCaseInsensitiveContains("schedule") &&
-           !acquisition.requirements.localizedCaseInsensitiveContains("deadline") {
+            !acquisition.requirements.localizedCaseInsensitiveContains("schedule") &&
+            !acquisition.requirements.localizedCaseInsensitiveContains("deadline") {
             missingInfo.append("Timeline/schedule information")
             templates.append("Project Timeline Template")
         }
@@ -315,8 +315,8 @@ public final class SmartWorkflowEngine {
         // Check for performance criteria
         if selectedTypes.contains(.pws) || selectedTypes.contains(.qasp) {
             if !acquisition.requirements.localizedCaseInsensitiveContains("performance") &&
-               !acquisition.requirements.localizedCaseInsensitiveContains("metrics") &&
-               !acquisition.requirements.localizedCaseInsensitiveContains("criteria") {
+                !acquisition.requirements.localizedCaseInsensitiveContains("metrics") &&
+                !acquisition.requirements.localizedCaseInsensitiveContains("criteria") {
                 missingInfo.append("Performance metrics and success criteria")
                 templates.append("Performance Metrics Template")
             }
@@ -325,8 +325,8 @@ public final class SmartWorkflowEngine {
         // Check for compliance requirements
         if selectedTypes.contains(.requestForProposal) || selectedTypes.contains(.contractScaffold) {
             let hasComplianceInfo = acquisition.requirements.localizedCaseInsensitiveContains("compliance") ||
-                                  acquisition.requirements.localizedCaseInsensitiveContains("regulation") ||
-                                  acquisition.requirements.localizedCaseInsensitiveContains("standard")
+                acquisition.requirements.localizedCaseInsensitiveContains("regulation") ||
+                acquisition.requirements.localizedCaseInsensitiveContains("standard")
 
             if !hasComplianceInfo {
                 missingInfo.append("Compliance and regulatory requirements")

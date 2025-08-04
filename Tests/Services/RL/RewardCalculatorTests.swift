@@ -42,12 +42,44 @@ final class RewardCalculatorTests: XCTestCase {
 
         standardAction = WorkflowAction(
             actionType: .generateDocument,
-            documentTemplates: [DocumentTemplate.purchaseRequest],
-            automationLevel: .fullyAutomated,
+            documentTemplates: [AgenticDocumentTemplate(
+                name: "Purchase Request Template",
+                templateType: .requestForProposal,
+                requiredFields: ["description", "amount", "justification"],
+                complianceRequirements: []
+            )],
+            automationLevel: .automated,
             complianceChecks: [
-                ComplianceCheck(farClause: TestFARClause(clauseNumber: "52.215-1", isCritical: true)),
-                ComplianceCheck(farClause: TestFARClause(clauseNumber: "52.209-5", isCritical: false)),
-                ComplianceCheck(farClause: TestFARClause(clauseNumber: "52.233-1", isCritical: true))
+                ComplianceCheck(
+                    farClause: AgenticFARClause(
+                        section: "52.215-1",
+                        title: "Instructions to Offerors",
+                        description: "Standard clause for competitive acquisition"
+                    ),
+                    requirement: "Competitive acquisition compliance",
+                    severity: .critical,
+                    automated: true
+                ),
+                ComplianceCheck(
+                    farClause: AgenticFARClause(
+                        section: "52.209-5",
+                        title: "Certification Regarding Responsibility Matters",
+                        description: "Contractor responsibility certification"
+                    ),
+                    requirement: "Responsibility certification",
+                    severity: .major,
+                    automated: true
+                ),
+                ComplianceCheck(
+                    farClause: AgenticFARClause(
+                        section: "52.233-1",
+                        title: "Disputes",
+                        description: "Contract disputes clause"
+                    ),
+                    requirement: "Dispute resolution compliance",
+                    severity: .critical,
+                    automated: true
+                )
             ],
             estimatedDuration: 1800.0
         )
@@ -76,7 +108,7 @@ final class RewardCalculatorTests: XCTestCase {
         // Testing immediate reward calculation for accepted outcomes
 
         // Given: User feedback with accepted outcome
-        let acceptedFeedback = UserFeedback(
+        let acceptedFeedback = RLUserFeedback(
             outcome: .accepted,
             satisfactionScore: 0.9,
             workflowCompleted: true,
@@ -103,7 +135,7 @@ final class RewardCalculatorTests: XCTestCase {
         // Testing immediate reward calculation for rejected outcomes
 
         // Given: User feedback with rejected outcome
-        let rejectedFeedback = UserFeedback(
+        let rejectedFeedback = RLUserFeedback(
             outcome: .rejected,
             satisfactionScore: 0.2,
             workflowCompleted: false,
@@ -130,7 +162,7 @@ final class RewardCalculatorTests: XCTestCase {
         // Testing immediate reward for partially accepted outcomes
 
         // Given: User feedback with modifications
-        let modifiedFeedback = UserFeedback(
+        let modifiedFeedback = RLUserFeedback(
             outcome: .acceptedWithModifications,
             satisfactionScore: 0.7,
             workflowCompleted: true,
@@ -156,7 +188,7 @@ final class RewardCalculatorTests: XCTestCase {
         // Testing immediate reward for deferred outcomes
 
         // Given: User feedback with deferred outcome
-        let deferredFeedback = UserFeedback(
+        let deferredFeedback = RLUserFeedback(
             outcome: .deferred,
             satisfactionScore: 0.5,
             workflowCompleted: false,
@@ -183,7 +215,7 @@ final class RewardCalculatorTests: XCTestCase {
         // Testing delayed reward based on user satisfaction
 
         // Given: High satisfaction feedback
-        let highSatisfactionFeedback = UserFeedback(
+        let highSatisfactionFeedback = RLUserFeedback(
             outcome: .accepted,
             satisfactionScore: 0.9,
             workflowCompleted: true,
@@ -200,7 +232,7 @@ final class RewardCalculatorTests: XCTestCase {
         )
 
         // Given: Low satisfaction feedback
-        let lowSatisfactionFeedback = UserFeedback(
+        let lowSatisfactionFeedback = RLUserFeedback(
             outcome: .accepted,
             satisfactionScore: 0.3,
             workflowCompleted: true,
@@ -226,7 +258,7 @@ final class RewardCalculatorTests: XCTestCase {
         // Testing workflow completion bonus in delayed reward
 
         // Given: Completed workflow feedback
-        let completedFeedback = UserFeedback(
+        let completedFeedback = RLUserFeedback(
             outcome: .accepted,
             satisfactionScore: 0.7,
             workflowCompleted: true,
@@ -236,7 +268,7 @@ final class RewardCalculatorTests: XCTestCase {
         )
 
         // Given: Incomplete workflow feedback
-        let incompleteFeedback = UserFeedback(
+        let incompleteFeedback = RLUserFeedback(
             outcome: .accepted,
             satisfactionScore: 0.7,
             workflowCompleted: false,
@@ -271,7 +303,7 @@ final class RewardCalculatorTests: XCTestCase {
         // Testing quality metrics impact on delayed reward
 
         // Given: High quality metrics
-        let highQualityFeedback = UserFeedback(
+        let highQualityFeedback = RLUserFeedback(
             outcome: .accepted,
             satisfactionScore: 0.8,
             workflowCompleted: true,
@@ -281,7 +313,7 @@ final class RewardCalculatorTests: XCTestCase {
         )
 
         // Given: Low quality metrics
-        let lowQualityFeedback = UserFeedback(
+        let lowQualityFeedback = RLUserFeedback(
             outcome: .accepted,
             satisfactionScore: 0.8,
             workflowCompleted: true,
@@ -322,13 +354,40 @@ final class RewardCalculatorTests: XCTestCase {
 
         // Given: Decision with full compliance coverage
         let fullComplianceAction = WorkflowAction(
-            actionType: .performCompliance,
+            actionType: .reviewCompliance,
             documentTemplates: [],
-            automationLevel: .semiAutomated,
+            automationLevel: .assisted,
             complianceChecks: [
-                ComplianceCheck(farClause: TestFARClause(clauseNumber: "52.215-1", isCritical: true)),
-                ComplianceCheck(farClause: TestFARClause(clauseNumber: "52.209-5", isCritical: false)),
-                ComplianceCheck(farClause: TestFARClause(clauseNumber: "52.233-1", isCritical: true))
+                ComplianceCheck(
+                    farClause: AgenticFARClause(
+                        section: "52.215-1",
+                        title: "Instructions to Offerors",
+                        description: "Standard clause for competitive acquisition"
+                    ),
+                    requirement: "Competitive acquisition compliance",
+                    severity: .critical,
+                    automated: true
+                ),
+                ComplianceCheck(
+                    farClause: AgenticFARClause(
+                        section: "52.209-5",
+                        title: "Certification Regarding Responsibility Matters",
+                        description: "Contractor responsibility certification"
+                    ),
+                    requirement: "Responsibility certification",
+                    severity: .major,
+                    automated: true
+                ),
+                ComplianceCheck(
+                    farClause: AgenticFARClause(
+                        section: "52.233-1",
+                        title: "Disputes",
+                        description: "Contract disputes clause"
+                    ),
+                    requirement: "Dispute resolution compliance",
+                    severity: .critical,
+                    automated: true
+                )
             ],
             estimatedDuration: 1800.0
         )
@@ -343,7 +402,7 @@ final class RewardCalculatorTests: XCTestCase {
             timestamp: Date()
         )
 
-        let feedback = UserFeedback(
+        let feedback = RLUserFeedback(
             outcome: .accepted,
             satisfactionScore: 0.8,
             workflowCompleted: true,
@@ -370,11 +429,34 @@ final class RewardCalculatorTests: XCTestCase {
         // Given: Decision with partial compliance coverage (missing one requirement)
         let partialComplianceAction = WorkflowAction(
             actionType: .generateDocument,
-            documentTemplates: [DocumentTemplate.purchaseRequest],
-            automationLevel: .fullyAutomated,
+            documentTemplates: [AgenticDocumentTemplate(
+                name: "Purchase Request Template",
+                templateType: .requestForProposal,
+                requiredFields: ["description", "amount", "justification"],
+                complianceRequirements: []
+            )],
+            automationLevel: .automated,
             complianceChecks: [
-                ComplianceCheck(farClause: FARClause(clauseNumber: "52.215-1", isCritical: true)),
-                ComplianceCheck(farClause: FARClause(clauseNumber: "52.209-5", isCritical: false))
+                ComplianceCheck(
+                    farClause: AgenticFARClause(
+                        section: "52.215-1",
+                        title: "Instructions to Offerors",
+                        description: "Standard clause for competitive acquisition"
+                    ),
+                    requirement: "Competitive acquisition compliance",
+                    severity: .critical,
+                    automated: true
+                ),
+                ComplianceCheck(
+                    farClause: AgenticFARClause(
+                        section: "52.209-5",
+                        title: "Certification Regarding Responsibility Matters",
+                        description: "Contractor responsibility certification"
+                    ),
+                    requirement: "Responsibility certification",
+                    severity: .major,
+                    automated: true
+                )
                 // Missing 52.233-1 (critical)
             ],
             estimatedDuration: 1500.0
@@ -390,7 +472,7 @@ final class RewardCalculatorTests: XCTestCase {
             timestamp: Date()
         )
 
-        let feedback = UserFeedback(
+        let feedback = RLUserFeedback(
             outcome: .acceptedWithModifications,
             satisfactionScore: 0.6,
             workflowCompleted: true,
@@ -419,10 +501,24 @@ final class RewardCalculatorTests: XCTestCase {
         // Given: Decision missing critical clauses
         let nonCompliantAction = WorkflowAction(
             actionType: .generateDocument,
-            documentTemplates: [DocumentTemplate.purchaseRequest],
-            automationLevel: .fullyAutomated,
+            documentTemplates: [AgenticDocumentTemplate(
+                name: "Purchase Request Template",
+                templateType: .requestForProposal,
+                requiredFields: ["description", "amount", "justification"],
+                complianceRequirements: []
+            )],
+            automationLevel: .automated,
             complianceChecks: [
-                ComplianceCheck(farClause: FARClause(clauseNumber: "52.209-5", isCritical: false))
+                ComplianceCheck(
+                    farClause: AgenticFARClause(
+                        section: "52.209-5",
+                        title: "Certification Regarding Responsibility Matters",
+                        description: "Contractor responsibility certification"
+                    ),
+                    requirement: "Responsibility certification",
+                    severity: .major,
+                    automated: true
+                )
                 // Missing both critical clauses: 52.215-1 and 52.233-1
             ],
             estimatedDuration: 1200.0
@@ -438,7 +534,7 @@ final class RewardCalculatorTests: XCTestCase {
             timestamp: Date()
         )
 
-        let feedback = UserFeedback(
+        let feedback = RLUserFeedback(
             outcome: .rejected,
             satisfactionScore: 0.3,
             workflowCompleted: false,
@@ -469,7 +565,7 @@ final class RewardCalculatorTests: XCTestCase {
         // Testing efficiency reward based on time performance
 
         // Given: Fast completion feedback
-        let fastFeedback = UserFeedback(
+        let fastFeedback = RLUserFeedback(
             outcome: .accepted,
             satisfactionScore: 0.8,
             workflowCompleted: true,
@@ -479,7 +575,7 @@ final class RewardCalculatorTests: XCTestCase {
         )
 
         // Given: Slow completion feedback
-        let slowFeedback = UserFeedback(
+        let slowFeedback = RLUserFeedback(
             outcome: .accepted,
             satisfactionScore: 0.8,
             workflowCompleted: true,
@@ -512,7 +608,7 @@ final class RewardCalculatorTests: XCTestCase {
         // Testing efficiency reward when time taken is not provided
 
         // Given: Feedback without time taken
-        let noTimeFeedback = UserFeedback(
+        let noTimeFeedback = RLUserFeedback(
             outcome: .accepted,
             satisfactionScore: 0.8,
             workflowCompleted: true,
@@ -539,7 +635,7 @@ final class RewardCalculatorTests: XCTestCase {
         // Testing total reward calculation as weighted sum of components
 
         // Given: Known reward components
-        let feedback = UserFeedback(
+        let feedback = RLUserFeedback(
             outcome: .accepted,
             satisfactionScore: 0.8,
             workflowCompleted: true,
@@ -557,9 +653,9 @@ final class RewardCalculatorTests: XCTestCase {
 
         // Then: Total reward should be weighted sum of components
         let expectedTotal = rewardSignal.immediateReward * 0.4 +
-                           rewardSignal.delayedReward * 0.3 +
-                           rewardSignal.complianceReward * 0.2 +
-                           rewardSignal.efficiencyReward * 0.1
+            rewardSignal.delayedReward * 0.3 +
+            rewardSignal.complianceReward * 0.2 +
+            rewardSignal.efficiencyReward * 0.1
 
         XCTAssertEqual(rewardSignal.totalReward, expectedTotal, accuracy: 0.001, "Total reward should be correct weighted sum")
         XCTAssertLessThanOrEqual(rewardSignal.totalReward, 1.0, "Total reward should not exceed 1.0")
@@ -571,10 +667,10 @@ final class RewardCalculatorTests: XCTestCase {
         // Testing that all reward components are in valid ranges
 
         let feedbackVariations = [
-            UserFeedback(outcome: .accepted, satisfactionScore: 1.0, workflowCompleted: true, qualityMetrics: QualityMetrics(accuracy: 1.0, completeness: 1.0, compliance: 1.0), timeTaken: 900.0, comments: nil),
-            UserFeedback(outcome: .rejected, satisfactionScore: 0.0, workflowCompleted: false, qualityMetrics: QualityMetrics(accuracy: 0.0, completeness: 0.0, compliance: 0.0), timeTaken: 7200.0, comments: nil),
-            UserFeedback(outcome: .acceptedWithModifications, satisfactionScore: 0.5, workflowCompleted: true, qualityMetrics: QualityMetrics(accuracy: 0.5, completeness: 0.5, compliance: 0.5), timeTaken: 3600.0, comments: nil),
-            UserFeedback(outcome: .deferred, satisfactionScore: nil, workflowCompleted: false, qualityMetrics: QualityMetrics(accuracy: 0.3, completeness: 0.4, compliance: 0.8), timeTaken: nil, comments: nil)
+            RLUserFeedback(outcome: .accepted, satisfactionScore: 1.0, workflowCompleted: true, qualityMetrics: QualityMetrics(accuracy: 1.0, completeness: 1.0, compliance: 1.0), timeTaken: 900.0, comments: nil),
+            RLUserFeedback(outcome: .rejected, satisfactionScore: 0.0, workflowCompleted: false, qualityMetrics: QualityMetrics(accuracy: 0.0, completeness: 0.0, compliance: 0.0), timeTaken: 7200.0, comments: nil),
+            RLUserFeedback(outcome: .acceptedWithModifications, satisfactionScore: 0.5, workflowCompleted: true, qualityMetrics: QualityMetrics(accuracy: 0.5, completeness: 0.5, compliance: 0.5), timeTaken: 3600.0, comments: nil),
+            RLUserFeedback(outcome: .deferred, satisfactionScore: nil, workflowCompleted: false, qualityMetrics: QualityMetrics(accuracy: 0.3, completeness: 0.4, compliance: 0.8), timeTaken: nil, comments: nil)
         ]
 
         // When: Rewards are calculated for various feedback scenarios
@@ -600,7 +696,7 @@ final class RewardCalculatorTests: XCTestCase {
         // RED PHASE: This test should FAIL initially
         // Testing reward calculation performance requirements
 
-        let feedback = UserFeedback(
+        let feedback = RLUserFeedback(
             outcome: .accepted,
             satisfactionScore: 0.8,
             workflowCompleted: true,
@@ -635,7 +731,7 @@ final class RewardCalculatorTests: XCTestCase {
         // RED PHASE: This test should FAIL initially
         // Testing consistency of reward calculations
 
-        let feedback = UserFeedback(
+        let feedback = RLUserFeedback(
             outcome: .accepted,
             satisfactionScore: 0.75,
             workflowCompleted: true,
@@ -674,7 +770,7 @@ final class RewardCalculatorTests: XCTestCase {
         // Testing reward calculation with extreme input values
 
         // Given: Extreme satisfaction scores
-        let extremeHighFeedback = UserFeedback(
+        let extremeHighFeedback = RLUserFeedback(
             outcome: .accepted,
             satisfactionScore: 1.0,
             workflowCompleted: true,
@@ -683,7 +779,7 @@ final class RewardCalculatorTests: XCTestCase {
             comments: "Perfect"
         )
 
-        let extremeLowFeedback = UserFeedback(
+        let extremeLowFeedback = RLUserFeedback(
             outcome: .rejected,
             satisfactionScore: 0.0,
             workflowCompleted: false,

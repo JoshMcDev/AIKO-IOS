@@ -17,7 +17,6 @@ final class UIDocumentScannerViewTests: XCTestCase {
     private var documentScannerView: DocumentScannerView!
 
     override func setUp() async throws {
-        try await super.setUp()
         viewModel = UITestDocumentScannerViewModel()
         documentScannerView = DocumentScannerView(viewModel: viewModel)
     }
@@ -25,7 +24,6 @@ final class UIDocumentScannerViewTests: XCTestCase {
     override func tearDown() async throws {
         viewModel = nil
         documentScannerView = nil
-        try await super.tearDown()
     }
 
     // MARK: - View Rendering Tests

@@ -42,10 +42,10 @@ struct LLMProviderSettingsFeature: Reducer {
 
         // Effects
         case loadConfigurationsResponse(
-            activeProvider: LLMProviderConfig?,
-            configuredProviders: [LLMProvider],
-            priority: LLMProviderPriority
-        )
+                activeProvider: LLMProviderConfig?,
+                configuredProviders: [LLMProvider],
+                priority: LLMProviderPriority
+             )
         case clearAllResponse(Result<Void, Error>)
         case providerPriorityUpdated
     }

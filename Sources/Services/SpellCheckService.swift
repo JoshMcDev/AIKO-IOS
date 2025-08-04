@@ -1,9 +1,9 @@
 import Foundation
 import NaturalLanguage
 #if os(macOS)
-    import AppKit
+import AppKit
 #else
-    import UIKit
+import UIKit
 #endif
 
 /// Service for spell checking and grammar validation of generated documents
@@ -97,79 +97,79 @@ public extension SpellCheckService {
 
                     // Platform-specific spell checking
                     #if os(macOS)
-                        let checker = NSSpellChecker.shared
-                        let misspelledRange = checker.checkSpelling(
-                            of: word,
-                            startingAt: 0,
+                    let checker = NSSpellChecker.shared
+                    let misspelledRange = checker.checkSpelling(
+                        of: word,
+                        startingAt: 0,
+                        language: language.rawValue,
+                        wrap: false,
+                        inSpellDocumentWithTag: 0,
+                        wordCount: nil
+                    )
+
+                    if misspelledRange.location != NSNotFound {
+                        misspelledCount += 1
+
+                        // Get suggestions
+                        let suggestions = checker.guesses(
+                            forWordRange: NSRange(location: 0, length: word.count),
+                            in: word,
                             language: language.rawValue,
+                            inSpellDocumentWithTag: 0
+                        ) ?? []
+
+                        if let firstSuggestion = suggestions.first {
+                            corrections.append(
+                                SpellCheckResult.Correction(
+                                    range: nsRange,
+                                    original: word,
+                                    suggestion: firstSuggestion,
+                                    type: .spelling,
+                                    confidence: 0.8
+                                )
+                            )
+                        }
+                    }
+                    #else
+                    // iOS implementation using UITextChecker
+                    // Wrap UITextChecker calls in async context for Swift 6 compatibility
+                    let (misspelledRange, suggestions) = await Task { @MainActor in
+                        let textChecker = UITextChecker()
+                        let misspelledRange = textChecker.rangeOfMisspelledWord(
+                            in: word,
+                            range: NSRange(location: 0, length: word.count),
+                            startingAt: 0,
                             wrap: false,
-                            inSpellDocumentWithTag: 0,
-                            wordCount: nil
+                            language: language.rawValue
                         )
 
+                        var suggestions: [String] = []
                         if misspelledRange.location != NSNotFound {
-                            misspelledCount += 1
-
-                            // Get suggestions
-                            let suggestions = checker.guesses(
+                            suggestions = textChecker.guesses(
                                 forWordRange: NSRange(location: 0, length: word.count),
                                 in: word,
-                                language: language.rawValue,
-                                inSpellDocumentWithTag: 0
-                            ) ?? []
-
-                            if let firstSuggestion = suggestions.first {
-                                corrections.append(
-                                    SpellCheckResult.Correction(
-                                        range: nsRange,
-                                        original: word,
-                                        suggestion: firstSuggestion,
-                                        type: .spelling,
-                                        confidence: 0.8
-                                    )
-                                )
-                            }
-                        }
-                    #else
-                        // iOS implementation using UITextChecker
-                        // Wrap UITextChecker calls in async context for Swift 6 compatibility
-                        let (misspelledRange, suggestions) = await Task { @MainActor in
-                            let textChecker = UITextChecker()
-                            let misspelledRange = textChecker.rangeOfMisspelledWord(
-                                in: word,
-                                range: NSRange(location: 0, length: word.count),
-                                startingAt: 0,
-                                wrap: false,
                                 language: language.rawValue
-                            )
-
-                            var suggestions: [String] = []
-                            if misspelledRange.location != NSNotFound {
-                                suggestions = textChecker.guesses(
-                                    forWordRange: NSRange(location: 0, length: word.count),
-                                    in: word,
-                                    language: language.rawValue
-                                ) ?? []
-                            }
-
-                            return (misspelledRange, suggestions)
-                        }.value
-
-                        if misspelledRange.location != NSNotFound {
-                            misspelledCount += 1
-
-                            if let firstSuggestion = suggestions.first {
-                                corrections.append(
-                                    SpellCheckResult.Correction(
-                                        range: nsRange,
-                                        original: word,
-                                        suggestion: firstSuggestion,
-                                        type: .spelling,
-                                        confidence: 0.8
-                                    )
-                                )
-                            }
+                            ) ?? []
                         }
+
+                        return (misspelledRange, suggestions)
+                    }.value
+
+                    if misspelledRange.location != NSNotFound {
+                        misspelledCount += 1
+
+                        if let firstSuggestion = suggestions.first {
+                            corrections.append(
+                                SpellCheckResult.Correction(
+                                    range: nsRange,
+                                    original: word,
+                                    suggestion: firstSuggestion,
+                                    type: .spelling,
+                                    confidence: 0.8
+                                )
+                            )
+                        }
+                    }
                     #endif
                 }
 
@@ -208,29 +208,29 @@ public extension SpellCheckService {
             },
             getSuggestions: { text, range in
                 #if os(macOS)
-                    let checker = NSSpellChecker.shared
-                    if let wordRange = Range(range, in: text) {
-                        let word = String(text[wordRange])
-                        return checker.guesses(
+                let checker = NSSpellChecker.shared
+                if let wordRange = Range(range, in: text) {
+                    let word = String(text[wordRange])
+                    return checker.guesses(
+                        forWordRange: NSRange(location: 0, length: word.count),
+                        in: word,
+                        language: "en",
+                        inSpellDocumentWithTag: 0
+                    ) ?? []
+                }
+                #else
+                if let wordRange = Range(range, in: text) {
+                    let word = String(text[wordRange])
+                    // Wrap UITextChecker calls in async context for Swift 6 compatibility
+                    return await Task { @MainActor in
+                        let textChecker = UITextChecker()
+                        return textChecker.guesses(
                             forWordRange: NSRange(location: 0, length: word.count),
                             in: word,
-                            language: "en",
-                            inSpellDocumentWithTag: 0
+                            language: "en"
                         ) ?? []
-                    }
-                #else
-                    if let wordRange = Range(range, in: text) {
-                        let word = String(text[wordRange])
-                        // Wrap UITextChecker calls in async context for Swift 6 compatibility
-                        return await Task { @MainActor in
-                            let textChecker = UITextChecker()
-                            return textChecker.guesses(
-                                forWordRange: NSRange(location: 0, length: word.count),
-                                in: word,
-                                language: "en"
-                            ) ?? []
-                        }.value
-                    }
+                    }.value
+                }
                 #endif
                 return []
             },

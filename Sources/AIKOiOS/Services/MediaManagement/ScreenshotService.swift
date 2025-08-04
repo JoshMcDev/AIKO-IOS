@@ -23,8 +23,8 @@ public actor ScreenshotService: ScreenshotServiceProtocol {
         return try await withCheckedThrowingContinuation { continuation in
             Task { @MainActor in
                 guard let windowScene = UIApplication.shared.connectedScenes
-                    .compactMap({ $0 as? UIWindowScene })
-                    .first else {
+                        .compactMap({ $0 as? UIWindowScene })
+                        .first else {
                     continuation.resume(throwing: MediaError.processingFailed("No active window scene found"))
                     return
                 }

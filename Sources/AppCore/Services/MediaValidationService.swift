@@ -201,7 +201,7 @@ public actor MediaValidationService: MediaValidationServiceProtocol {
             let actualDimensions = extractDimensions(from: data, mediaType: .image)
             if let actualDimensions = actualDimensions,
                providedDimensions.width != actualDimensions.width ||
-               providedDimensions.height != actualDimensions.height {
+                providedDimensions.height != actualDimensions.height {
                 issues.append("Dimension mismatch: metadata claims \(providedDimensions.width)x\(providedDimensions.height), actual is \(actualDimensions.width)x\(actualDimensions.height)")
             }
         }
@@ -585,7 +585,7 @@ private extension MediaValidationService {
         if data.count >= 4 && data.prefix(4) == Data([0x7F, 0x45, 0x4C, 0x46]) { return true }
         // Check for Mach-O (macOS) executable
         if data.count >= 4 && (data.prefix(4) == Data([0xFE, 0xED, 0xFA, 0xCE]) ||
-            data.prefix(4) == Data([0xFE, 0xED, 0xFA, 0xCF])) { return true }
+                                data.prefix(4) == Data([0xFE, 0xED, 0xFA, 0xCF])) { return true }
 
         return false
     }

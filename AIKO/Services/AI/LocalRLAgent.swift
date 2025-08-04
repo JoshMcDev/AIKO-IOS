@@ -296,7 +296,7 @@ actor LocalRLAgent {
         var reasoning = "Selected action: \(action.type.rawValue) "
         reasoning += "with \(Int(confidence * 100))% confidence. "
 
-        if context.patterns.patterns.count > 0 {
+        if !context.patterns.patterns.isEmpty {
             reasoning += "Based on \(context.patterns.patterns.count) learned patterns. "
         }
 
@@ -330,7 +330,7 @@ actor LocalRLAgent {
         // Sort by confidence and return top 3
         alternatives.sort {
             await banditAlgorithm.getActionConfidence(action: $0, features: features) >
-            await banditAlgorithm.getActionConfidence(action: $1, features: features)
+                await banditAlgorithm.getActionConfidence(action: $1, features: features)
         }
 
         return Array(alternatives.prefix(3))

@@ -9,7 +9,7 @@ public struct RewardCalculator: Sendable {
 
     public static func calculate(
         decision: DecisionResponse,
-        feedback: UserFeedback,
+        feedback: RLUserFeedback,
         context: AcquisitionContext
     ) -> RewardSignal {
         // RED PHASE: Minimal implementation that will fail reward calculation tests
@@ -23,13 +23,13 @@ public struct RewardCalculator: Sendable {
         )
     }
 
-    private static func calculateImmediateReward(_ feedback: UserFeedback) -> Double {
+    private static func calculateImmediateReward(_ feedback: RLUserFeedback) -> Double {
         // RED PHASE: Fixed return to fail immediate reward tests
         return 0.1
     }
 
     private static func calculateDelayedReward(
-        _ feedback: UserFeedback,
+        _ feedback: RLUserFeedback,
         context: AcquisitionContext
     ) -> Double {
         // RED PHASE: Fixed return to fail delayed reward tests
@@ -45,7 +45,7 @@ public struct RewardCalculator: Sendable {
     }
 
     private static func calculateEfficiencyReward(
-        _ feedback: UserFeedback,
+        _ feedback: RLUserFeedback,
         context: AcquisitionContext
     ) -> Double {
         // RED PHASE: Fixed return to fail efficiency reward tests
@@ -55,7 +55,31 @@ public struct RewardCalculator: Sendable {
 
 // MARK: - Supporting Types
 
-// UserFeedback is imported from existing AIKO models
+// RL-specific UserFeedback structure for reward calculation
+public struct RLUserFeedback: Codable, Sendable {
+    public let outcome: FeedbackOutcome
+    public let satisfactionScore: Double?
+    public let workflowCompleted: Bool
+    public let qualityMetrics: QualityMetrics
+    public let timeTaken: TimeInterval?
+    public let comments: String?
+
+    public init(
+        outcome: FeedbackOutcome,
+        satisfactionScore: Double?,
+        workflowCompleted: Bool,
+        qualityMetrics: QualityMetrics,
+        timeTaken: TimeInterval?,
+        comments: String?
+    ) {
+        self.outcome = outcome
+        self.satisfactionScore = satisfactionScore
+        self.workflowCompleted = workflowCompleted
+        self.qualityMetrics = qualityMetrics
+        self.timeTaken = timeTaken
+        self.comments = comments
+    }
+}
 
 public enum FeedbackOutcome: String, Codable, Sendable {
     case accepted
@@ -85,9 +109,9 @@ public struct InteractionHistory: Codable, Sendable {
     public let action: WorkflowAction
     public let outcome: InteractionOutcome
     public let context: AcquisitionContext
-    public let userFeedback: UserFeedback?
+    public let userFeedback: RLUserFeedback?
 
-    public init(timestamp: Date, action: WorkflowAction, outcome: InteractionOutcome, context: AcquisitionContext, userFeedback: UserFeedback?) {
+    public init(timestamp: Date, action: WorkflowAction, outcome: InteractionOutcome, context: AcquisitionContext, userFeedback: RLUserFeedback?) {
         self.timestamp = timestamp
         self.action = action
         self.outcome = outcome

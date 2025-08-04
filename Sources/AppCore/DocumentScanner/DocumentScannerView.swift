@@ -18,11 +18,11 @@ public extension DocumentScannerError {
 }
 
 @MainActor
-public final class DocumentScannerViewModel: ObservableObject, Sendable {
+public final class DocumentScannerViewModel: ObservableObject {
     @Published public private(set) var isScanning = false
     @Published public var error: DocumentScannerError?
     @Published public private(set) var pages: [ScannedPage] = []
-    
+
     // Alias for compatibility with tests
     public var scannedPages: [ScannedPage] { pages }
 
@@ -37,12 +37,12 @@ public final class DocumentScannerViewModel: ObservableObject, Sendable {
         isScanning = true
         error = nil
     }
-    
+
     public func startScanning() {
         isScanning = true
         error = nil
     }
-    
+
     public func stopScanning() {
         isScanning = false
     }
@@ -55,43 +55,43 @@ public final class DocumentScannerViewModel: ObservableObject, Sendable {
         error = nil
         isScanning = false
     }
-    
+
     public func clearSession() {
         pages.removeAll()
         isScanning = false
         error = nil
     }
-    
+
     public func checkCameraPermissions() async -> Bool {
         // RED phase stub - will be implemented in GREEN phase
         fatalError("checkCameraPermissions not implemented - RED phase")
     }
-    
+
     public func requestCameraPermissions() async -> Bool {
         // RED phase stub - will be implemented in GREEN phase
         fatalError("requestCameraPermissions not implemented - RED phase")
     }
-    
+
     public func processPage(_ page: ScannedPage) async throws -> ScannedPage {
         // RED phase stub - will be implemented in GREEN phase
         fatalError("processPage not implemented - RED phase")
     }
-    
+
     public func enhanceAllPages() async {
         // RED phase stub - will be implemented in GREEN phase
         fatalError("enhanceAllPages not implemented - RED phase")
     }
-    
+
     public func exportPages() async throws -> Data {
         // RED phase stub - will be implemented in GREEN phase
         fatalError("exportPages not implemented - RED phase")
     }
-    
+
     public func saveDocument() async {
         // RED phase stub - will be implemented in GREEN phase
         fatalError("saveDocument not implemented - RED phase")
     }
-    
+
     public func reorderPages(from: IndexSet, to: Int) {
         // RED phase stub - will be implemented in GREEN phase
         fatalError("reorderPages not implemented - RED phase")
@@ -181,7 +181,7 @@ public struct DocumentScannerView: View {
             Text("\(viewModel.pages.count) page\(viewModel.pages.count > 1 ? "s" : "")")
             Text("Page 1 of \(viewModel.pages.count)")
 
-            ForEach(viewModel.pages.indices, id: \.self) { index in
+            ForEach(viewModel.pages.indices, id: \.self) { _ in
                 Image(systemName: "doc.text") // Placeholder for scanned page image
                     .resizable()
                     .scaledToFit()

@@ -83,12 +83,12 @@ public struct InputArea: View {
                             get: { requirements },
                             set: { @Sendable (value: String) in onRequirementsChanged(value) }
                         ), prompt: Text("...").foregroundColor(.gray), axis: .vertical)
-                            .textFieldStyle(PlainTextFieldStyle())
-                            .foregroundColor(.white)
-                            .padding(.leading, Theme.Spacing.large)
-                            .padding(.vertical, Theme.Spacing.medium)
-                            .padding(.trailing, Theme.Spacing.small)
-                            .lineLimit(1 ... 4)
+                        .textFieldStyle(PlainTextFieldStyle())
+                        .foregroundColor(.white)
+                        .padding(.leading, Theme.Spacing.large)
+                        .padding(.vertical, Theme.Spacing.medium)
+                        .padding(.trailing, Theme.Spacing.small)
+                        .lineLimit(1 ... 4)
                     }
 
                     // Action buttons
@@ -120,9 +120,9 @@ public struct InputArea: View {
                                 onShowDocumentPicker()
                             }
                             #if os(iOS)
-                                Button("📷 Scan Document") {
-                                    onShowImagePicker()
-                                }
+                            Button("📷 Scan Document") {
+                                onShowImagePicker()
+                            }
                             #endif
                             Button("Cancel", role: .cancel) {}
                         }

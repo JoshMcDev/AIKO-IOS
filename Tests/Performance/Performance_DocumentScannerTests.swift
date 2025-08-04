@@ -20,7 +20,6 @@ final class PerformanceDocumentScannerTests: XCTestCase {
     private var documentImageProcessor: MockDocumentImageProcessor!
 
     override func setUp() async throws {
-        try await super.setUp()
         viewModel = PerfTestDocumentScannerViewModel()
         visionKitAdapter = MockVisionKitAdapter()
         documentImageProcessor = MockDocumentImageProcessor()
@@ -30,7 +29,6 @@ final class PerformanceDocumentScannerTests: XCTestCase {
         viewModel = nil
         visionKitAdapter = nil
         documentImageProcessor = nil
-        try await super.tearDown()
     }
 
     // MARK: - Scan Initiation Performance Tests
@@ -253,12 +251,14 @@ final class PerformanceDocumentScannerTests: XCTestCase {
         // Perform scan with multiple pages
         await viewModel.startScanning()
         for i in 1...5 {
+            #if canImport(UIKit)
+            let imageData = createHighResolutionImage().pngData() ?? Data()
+            #else
+            let imageData = Data("MOCK_HIGH_RES_IMAGE_\(i)".utf8)
+            #endif
+
             let page = AppCore.ScannedPage(
-                #if canImport(UIKit)
-                imageData: createHighResolutionImage().pngData() ?? Data(),
-                #else
-                imageData: Data("MOCK_HIGH_RES_IMAGE_\(i)".utf8),
-                #endif
+                imageData: imageData,
                 ocrText: "Page \(i)",
                 pageNumber: i,
                 processingState: .completed
@@ -279,7 +279,8 @@ final class PerformanceDocumentScannerTests: XCTestCase {
 
         // Should recover at least 80% of memory used
         let memoryUsed = peakMemory - initialMemory
-        XCTAssertGreaterThan(memoryRecovered, memoryUsed * 0.8, "Should recover most memory after scan completion")
+        let expectedRecovery = UInt64(Double(memoryUsed) * 0.8)
+        XCTAssertGreaterThan(memoryRecovered, expectedRecovery, "Should recover most memory after scan completion")
 
         XCTFail("Memory cleanup not implemented - this test should fail in RED phase")
     }
@@ -312,7 +313,11 @@ final class PerformanceDocumentScannerTests: XCTestCase {
     func test_largeImageProcessing_memorySafety() async {
         // This test will fail in RED phase - large image processing not implemented
 
+        #if canImport(UIKit)
         let veryLargeImage = createVeryLargeImage() // Simulate 50MP image
+        #else
+        let veryLargeImage = Data("MOCK_VERY_LARGE_IMAGE".utf8) // Mock for non-UIKit platforms
+        #endif
 
         let initialMemory = getMemoryUsage()
 
@@ -421,12 +426,14 @@ final class PerformanceDocumentScannerTests: XCTestCase {
         // This test will fail in RED phase - concurrent processing not implemented
 
         let pages = (1...5).map { i in
-            AppCore.ScannedPage(
-                #if canImport(UIKit)
-                imageData: createHighResolutionImage().pngData() ?? Data(),
-                #else
-                imageData: Data("MOCK_HIGH_RES_IMAGE".utf8),
-                #endif
+            #if canImport(UIKit)
+            let imageData = createHighResolutionImage().pngData() ?? Data()
+            #else
+            let imageData = Data("MOCK_HIGH_RES_IMAGE".utf8)
+            #endif
+
+            return AppCore.ScannedPage(
+                imageData: imageData,
                 pageNumber: i
             )
         }
@@ -474,7 +481,9 @@ final class PerformanceDocumentScannerTests: XCTestCase {
 
     private func simulateMemoryPressure() {
         // Mock implementation - will be replaced in GREEN phase
+        #if canImport(UIKit)
         NotificationCenter.default.post(name: UIApplication.didReceiveMemoryWarningNotification, object: nil)
+        #endif
     }
 }
 

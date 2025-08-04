@@ -104,7 +104,7 @@ final class UIVisionKitBridgeTests: XCTestCase {
     private var testResult: Binding<VisionKitAdapter.ScanResult?>!
 
     override func setUp() async throws {
-        try await super.setUp()
+        super.setUp()
         mockCoordinator = MockVisionKitCoordinator()
 
         var isPresented = false
@@ -133,7 +133,7 @@ final class UIVisionKitBridgeTests: XCTestCase {
         mockCoordinator = nil
         testBinding = nil
         testResult = nil
-        try await super.tearDown()
+        super.tearDown()
     }
 
     // MARK: - Lifecycle Management Tests

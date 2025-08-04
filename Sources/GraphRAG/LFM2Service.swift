@@ -1,7 +1,7 @@
 import Foundation
 import os.log
 #if canImport(CoreML)
-    @preconcurrency import CoreML
+@preconcurrency import CoreML
 #endif
 import AppCore
 
@@ -58,8 +58,8 @@ actor LFM2Service {
     private var unloadTimer: Timer?
 
     #if canImport(CoreML)
-        private var model: MLModel?
-        private var isModelLoaded = false
+    private var model: MLModel?
+    private var isModelLoaded = false
     #endif
 
     // MARK: - Initialization
@@ -114,14 +114,14 @@ actor LFM2Service {
 
         // First try to load Core ML model
         #if canImport(CoreML)
-            if let coreMLModel = try? await loadCoreMLModel() {
-                model = coreMLModel
-                logger.info("✅ Core ML model loaded successfully")
-            } else {
-                // Fallback to GGUF model handling
-                logger.info("⚠️ Core ML model not found, using GGUF fallback")
-                try await loadGGUFModel()
-            }
+        if let coreMLModel = try? await loadCoreMLModel() {
+            model = coreMLModel
+            logger.info("✅ Core ML model loaded successfully")
+        } else {
+            // Fallback to GGUF model handling
+            logger.info("⚠️ Core ML model not found, using GGUF fallback")
+            try await loadGGUFModel()
+        }
         #endif
 
         isInitialized = true
@@ -131,32 +131,32 @@ actor LFM2Service {
     // MARK: - Core ML Model Loading
 
     #if canImport(CoreML)
-        private func loadCoreMLModel() async throws -> MLModel? {
-            // Try different possible model names
-            let possibleNames = [
-                "LFM2-700M-Unsloth-XL-GraphRAG",
-                "LFM2-700M-Q6K",
-                "LFM2-700M-Q6K-Placeholder",
-                "LFM2-700M",
-            ]
+    private func loadCoreMLModel() async throws -> MLModel? {
+        // Try different possible model names
+        let possibleNames = [
+            "LFM2-700M-Unsloth-XL-GraphRAG",
+            "LFM2-700M-Q6K",
+            "LFM2-700M-Q6K-Placeholder",
+            "LFM2-700M",
+        ]
 
-            for modelName in possibleNames {
-                if let modelURL = Bundle.main.url(forResource: modelName, withExtension: "mlmodel") {
-                    logger.info("📄 Found Core ML model: \(modelName).mlmodel")
+        for modelName in possibleNames {
+            if let modelURL = Bundle.main.url(forResource: modelName, withExtension: "mlmodel") {
+                logger.info("📄 Found Core ML model: \(modelName).mlmodel")
 
-                    do {
-                        let model = try MLModel(contentsOf: modelURL)
-                        logger.info("✅ Core ML model loaded: \(modelName)")
-                        return model
-                    } catch {
-                        logger.error("❌ Failed to load Core ML model \(modelName): \(error.localizedDescription)")
-                        continue
-                    }
+                do {
+                    let model = try MLModel(contentsOf: modelURL)
+                    logger.info("✅ Core ML model loaded: \(modelName)")
+                    return model
+                } catch {
+                    logger.error("❌ Failed to load Core ML model \(modelName): \(error.localizedDescription)")
+                    continue
                 }
             }
-
-            return nil
         }
+
+        return nil
+    }
     #endif
 
     // MARK: - GGUF Model Loading Implementation
@@ -266,25 +266,25 @@ actor LFM2Service {
     /// Lazy load the Core ML model on first use
     private func lazyLoadModel() async throws {
         #if canImport(CoreML)
-            guard model == nil else {
-                logger.info("✅ Model already loaded")
-                return
-            }
+        guard model == nil else {
+            logger.info("✅ Model already loaded")
+            return
+        }
 
-            logger.info("🔄 Lazy loading LFM2 Core ML model...")
-            modelLoadTime = Date()
+        logger.info("🔄 Lazy loading LFM2 Core ML model...")
+        modelLoadTime = Date()
 
-            // Try to load Core ML model
-            if let coreMLModel = try? await loadCoreMLModel() {
-                model = coreMLModel
-                isModelLoaded = true
-                logger.info("✅ LFM2 model lazy loaded successfully")
-            } else {
-                logger.warning("⚠️ Failed to lazy load Core ML model, will use mock fallback")
-                throw LFM2Error.modelNotFound
-            }
-        #else
+        // Try to load Core ML model
+        if let coreMLModel = try? await loadCoreMLModel() {
+            model = coreMLModel
+            isModelLoaded = true
+            logger.info("✅ LFM2 model lazy loaded successfully")
+        } else {
+            logger.warning("⚠️ Failed to lazy load Core ML model, will use mock fallback")
             throw LFM2Error.modelNotFound
+        }
+        #else
+        throw LFM2Error.modelNotFound
         #endif
     }
 
@@ -345,30 +345,30 @@ actor LFM2Service {
     /// Schedule automatic model unload for memory management
     private func scheduleModelUnload() {
         #if canImport(CoreML)
-            guard deploymentMode == .hybridLazy, model != nil else { return }
+        guard deploymentMode == .hybridLazy, model != nil else { return }
 
-            // Cancel existing timer
-            unloadTimer?.invalidate()
+        // Cancel existing timer
+        unloadTimer?.invalidate()
 
-            // Schedule new unload timer
-            unloadTimer = Timer.scheduledTimer(withTimeInterval: modelUnloadDelay, repeats: false) { [weak self] _ in
-                Task { [weak self] in
-                    await self?.unloadModel()
-                }
+        // Schedule new unload timer
+        unloadTimer = Timer.scheduledTimer(withTimeInterval: modelUnloadDelay, repeats: false) { [weak self] _ in
+            Task { [weak self] in
+                await self?.unloadModel()
             }
+        }
         #endif
     }
 
     /// Unload model to free memory when not in use
     private func unloadModel() async {
         #if canImport(CoreML)
-            guard model != nil else { return }
+        guard model != nil else { return }
 
-            logger.info("🔄 Unloading LFM2 model to free memory")
-            model = nil
-            isModelLoaded = false
-            modelLoadTime = nil
-            logger.info("✅ LFM2 model unloaded")
+        logger.info("🔄 Unloading LFM2 model to free memory")
+        model = nil
+        isModelLoaded = false
+        modelLoadTime = nil
+        logger.info("✅ LFM2 model unloaded")
         #endif
     }
 
@@ -403,42 +403,42 @@ actor LFM2Service {
         case .hybridLazy:
             // Try to use real model with lazy loading, fallback to mock
             #if canImport(CoreML)
-                do {
-                    if model == nil && !isModelLoaded {
-                        // Lazy load the model on first use
-                        logger.info("🔄 Lazy loading LFM2 model on first use...")
-                        try await lazyLoadModel()
-                    }
+            do {
+                if model == nil && !isModelLoaded {
+                    // Lazy load the model on first use
+                    logger.info("🔄 Lazy loading LFM2 model on first use...")
+                    try await lazyLoadModel()
+                }
 
-                    if let coreMLModel = model {
-                        // Use real Core ML model with full inference implementation
-                        logger.debug("📝 Using Core ML model (hybrid-lazy mode)")
-                        embedding = try await generateRealEmbedding(text: text, domain: domain, model: coreMLModel)
-                    } else {
-                        // Fallback to mock
-                        logger.info("⚠️ Falling back to mock embedding (model unavailable)")
-                        embedding = generateMockEmbedding(text: text, domain: domain)
-                    }
-                } catch {
-                    logger.error("❌ Core ML model failed, using mock fallback: \(error.localizedDescription)")
+                if let coreMLModel = model {
+                    // Use real Core ML model with full inference implementation
+                    logger.debug("📝 Using Core ML model (hybrid-lazy mode)")
+                    embedding = try await generateRealEmbedding(text: text, domain: domain, model: coreMLModel)
+                } else {
+                    // Fallback to mock
+                    logger.info("⚠️ Falling back to mock embedding (model unavailable)")
                     embedding = generateMockEmbedding(text: text, domain: domain)
                 }
-            #else
-                // CoreML not available, use mock
-                logger.info("📝 CoreML not available, using mock embedding")
+            } catch {
+                logger.error("❌ Core ML model failed, using mock fallback: \(error.localizedDescription)")
                 embedding = generateMockEmbedding(text: text, domain: domain)
+            }
+            #else
+            // CoreML not available, use mock
+            logger.info("📝 CoreML not available, using mock embedding")
+            embedding = generateMockEmbedding(text: text, domain: domain)
             #endif
 
         case .realOnly:
             // Always use real model (future implementation)
             #if canImport(CoreML)
-                guard let coreMLModel = model else {
-                    throw LFM2Error.modelNotInitialized
-                }
-                logger.debug("📝 Using Core ML model (real-only mode)")
-                embedding = try await generateRealEmbedding(text: text, domain: domain, model: coreMLModel)
+            guard let coreMLModel = model else {
+                throw LFM2Error.modelNotInitialized
+            }
+            logger.debug("📝 Using Core ML model (real-only mode)")
+            embedding = try await generateRealEmbedding(text: text, domain: domain, model: coreMLModel)
             #else
-                throw LFM2Error.modelNotFound
+            throw LFM2Error.modelNotFound
             #endif
         }
 

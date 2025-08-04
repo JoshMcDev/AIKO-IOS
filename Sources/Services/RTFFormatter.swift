@@ -1,8 +1,8 @@
 import Foundation
 #if os(iOS)
-    import UIKit
+import UIKit
 #else
-    import AppKit
+import AppKit
 #endif
 
 public enum RTFFormatter {
@@ -29,17 +29,17 @@ public enum RTFFormatter {
         let attributedString = NSMutableAttributedString()
 
         #if os(iOS)
-            let regularFont = UIFont.systemFont(ofSize: 12)
-            let boldFont = UIFont.boldSystemFont(ofSize: 12)
-            let italicFont = UIFont.italicSystemFont(ofSize: 12)
-            let headingFont = UIFont.boldSystemFont(ofSize: 16)
-            let subheadingFont = UIFont.boldSystemFont(ofSize: 14)
+        let regularFont = UIFont.systemFont(ofSize: 12)
+        let boldFont = UIFont.boldSystemFont(ofSize: 12)
+        let italicFont = UIFont.italicSystemFont(ofSize: 12)
+        let headingFont = UIFont.boldSystemFont(ofSize: 16)
+        let subheadingFont = UIFont.boldSystemFont(ofSize: 14)
         #else
-            let regularFont = NSFont.systemFont(ofSize: 12)
-            let boldFont = NSFont.boldSystemFont(ofSize: 12)
-            let italicFont = NSFontManager.shared.convert(regularFont, toHaveTrait: .italicFontMask)
-            let headingFont = NSFont.boldSystemFont(ofSize: 16)
-            let subheadingFont = NSFont.boldSystemFont(ofSize: 14)
+        let regularFont = NSFont.systemFont(ofSize: 12)
+        let boldFont = NSFont.boldSystemFont(ofSize: 12)
+        let italicFont = NSFontManager.shared.convert(regularFont, toHaveTrait: .italicFontMask)
+        let headingFont = NSFont.boldSystemFont(ofSize: 16)
+        let subheadingFont = NSFont.boldSystemFont(ofSize: 14)
         #endif
 
         let paragraphStyle = NSMutableParagraphStyle()

@@ -26,7 +26,6 @@ final class SecurityDocumentScannerTests: XCTestCase {
     private var mockSecureStorage: MockSecureStorage!
 
     override func setUp() async throws {
-        try await super.setUp()
         viewModel = AppCore.DocumentScannerViewModel()
         mockBiometricService = MockBiometricService()
         mockSecureStorage = MockSecureStorage()
@@ -36,7 +35,6 @@ final class SecurityDocumentScannerTests: XCTestCase {
         viewModel = nil
         mockBiometricService = nil
         mockSecureStorage = nil
-        try await super.tearDown()
     }
 
     // MARK: - Privacy Compliance Tests
@@ -532,7 +530,7 @@ enum SecurityAlert {
 
 // MARK: - Security Utility Extensions (Stubs)
 
-extension DocumentScannerViewModel {
+extension AppCore.DocumentScannerViewModel {
     func setSensitivityLevel(_ level: SensitivityLevel) {
         // This will fail in RED phase - sensitivity levels not implemented
         fatalError("Sensitivity levels not implemented - this should fail in RED phase")

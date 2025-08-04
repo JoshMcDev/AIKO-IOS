@@ -368,7 +368,7 @@ public struct AgentChatInterface: View {
             // Transition to requirements refinement mode
             currentWorkflowStep = .requirementsGathering
             viewModel.showingAcquisitionChat = false
-            // Could open requirements refinement dialog here
+        // Could open requirements refinement dialog here
 
         case .searchSAM:
             viewModel.showSAMGovLookup(true)

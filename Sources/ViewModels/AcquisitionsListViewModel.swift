@@ -33,8 +33,8 @@ public final class AcquisitionsListViewModel: @unchecked Sendable {
     /// Whether any filters or search are currently applied
     public var hasFiltersApplied: Bool {
         !selectedFilters.statuses.isEmpty ||
-        selectedFilters.phase != nil ||
-        !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            selectedFilters.phase != nil ||
+            !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     // MARK: - Initialization
@@ -137,8 +137,8 @@ public final class AcquisitionsListViewModel: @unchecked Sendable {
         if !trimmedSearch.isEmpty {
             filtered = filtered.filter { acquisition in
                 acquisition.title.localizedCaseInsensitiveContains(trimmedSearch) ||
-                acquisition.requirements.localizedCaseInsensitiveContains(trimmedSearch) ||
-                (acquisition.projectNumber?.localizedCaseInsensitiveContains(trimmedSearch) ?? false)
+                    acquisition.requirements.localizedCaseInsensitiveContains(trimmedSearch) ||
+                    (acquisition.projectNumber?.localizedCaseInsensitiveContains(trimmedSearch) ?? false)
             }
         }
 

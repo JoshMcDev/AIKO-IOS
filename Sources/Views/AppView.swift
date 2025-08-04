@@ -188,13 +188,13 @@ struct HeaderView: View {
         }
 
         #if os(iOS)
-            if let uiImage = UIImage(data: data) {
-                return Image(uiImage: uiImage)
-            }
+        if let uiImage = UIImage(data: data) {
+            return Image(uiImage: uiImage)
+        }
         #elseif os(macOS)
-            if let nsImage = NSImage(data: data) {
-                return Image(nsImage: nsImage)
-            }
+        if let nsImage = NSImage(data: data) {
+            return Image(nsImage: nsImage)
+        }
         #endif
 
         return nil
@@ -288,78 +288,78 @@ struct HeaderView: View {
 struct AppIconView: View {
     var body: some View {
         #if os(iOS)
-            if let appIcon = loadAppIcon() {
-                appIcon
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .clipShape(RoundedRectangle(cornerRadius: 11))
-                    .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
-            } else {
-                // Show the actual design if PNG not found
-                ZStack {
-                    RoundedRectangle(cornerRadius: 11)
-                        .fill(
-                            LinearGradient(
-                                gradient: Gradient(colors: [
-                                    Color(red: 1.0, green: 0.5, blue: 0.2),
-                                    Color(red: 0.2, green: 0.4, blue: 0.8),
-                                ]),
-                                startPoint: .bottomLeading,
-                                endPoint: .topTrailing
-                            )
+        if let appIcon = loadAppIcon() {
+            appIcon
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .clipShape(RoundedRectangle(cornerRadius: 11))
+                .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+        } else {
+            // Show the actual design if PNG not found
+            ZStack {
+                RoundedRectangle(cornerRadius: 11)
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Color(red: 1.0, green: 0.5, blue: 0.2),
+                                Color(red: 0.2, green: 0.4, blue: 0.8),
+                            ]),
+                            startPoint: .bottomLeading,
+                            endPoint: .topTrailing
                         )
+                    )
 
-                    // Scroll and quill design
-                    ZStack {
-                        Image(systemName: "scroll")
-                            .font(.system(size: 20, weight: .medium))
-                            .foregroundColor(.cyan)
-
-                        Image(systemName: "pencil")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(.cyan)
-                            .rotationEffect(.degrees(-45))
-                            .offset(x: 8, y: -8)
-                    }
-                }
-                .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
-            }
-        #else
-            // macOS version
-            RoundedRectangle(cornerRadius: 11)
-                .fill(Color.blue)
-                .overlay(
+                // Scroll and quill design
+                ZStack {
                     Image(systemName: "scroll")
-                        .font(.system(size: 20))
-                        .foregroundColor(.white)
-                )
-                .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(.cyan)
+
+                    Image(systemName: "pencil")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.cyan)
+                        .rotationEffect(.degrees(-45))
+                        .offset(x: 8, y: -8)
+                }
+            }
+            .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+        }
+        #else
+        // macOS version
+        RoundedRectangle(cornerRadius: 11)
+            .fill(Color.blue)
+            .overlay(
+                Image(systemName: "scroll")
+                    .font(.system(size: 20))
+                    .foregroundColor(.white)
+            )
+            .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
         #endif
     }
 
     private func loadAppIcon() -> Image? {
         #if os(iOS)
-            // Try to load from bundle resources first
-            if let image = UIImage(named: "AppIcon", in: Bundle.main, compatibleWith: nil) {
-                return Image(uiImage: image)
-            }
+        // Try to load from bundle resources first
+        if let image = UIImage(named: "AppIcon", in: Bundle.main, compatibleWith: nil) {
+            return Image(uiImage: image)
+        }
 
-            // Fallback to direct file loading for development
-            if let data = try? Data(contentsOf: URL(fileURLWithPath: "/Users/J/aiko/Sources/Resources/AppIcon.png")),
-               let uiImage = UIImage(data: data) {
-                return Image(uiImage: uiImage)
-            }
+        // Fallback to direct file loading for development
+        if let data = try? Data(contentsOf: URL(fileURLWithPath: "/Users/J/aiko/Sources/Resources/AppIcon.png")),
+           let uiImage = UIImage(data: data) {
+            return Image(uiImage: uiImage)
+        }
         #elseif os(macOS)
-            // Try to load from bundle resources first
-            if let image = NSImage(named: "AppIcon") {
-                return Image(nsImage: image)
-            }
+        // Try to load from bundle resources first
+        if let image = NSImage(named: "AppIcon") {
+            return Image(nsImage: image)
+        }
 
-            // Fallback to direct file loading for development
-            if let data = try? Data(contentsOf: URL(fileURLWithPath: "/Users/J/aiko/Sources/Resources/AppIcon.png")),
-               let nsImage = NSImage(data: data) {
-                return Image(nsImage: nsImage)
-            }
+        // Fallback to direct file loading for development
+        if let data = try? Data(contentsOf: URL(fileURLWithPath: "/Users/J/aiko/Sources/Resources/AppIcon.png")),
+           let nsImage = NSImage(data: data) {
+            return Image(nsImage: nsImage)
+        }
         #endif
 
         return nil

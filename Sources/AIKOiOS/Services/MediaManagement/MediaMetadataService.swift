@@ -582,8 +582,8 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
         // Create scaled image
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         guard let context = CGContext(data: nil, width: Int(scaledSize.width), height: Int(scaledSize.height),
-                                    bitsPerComponent: 8, bytesPerRow: 0, space: colorSpace,
-                                    bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else {
+                                      bitsPerComponent: 8, bytesPerRow: 0, space: colorSpace,
+                                      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else {
             throw MediaError.processingFailed("Could not create graphics context")
         }
 

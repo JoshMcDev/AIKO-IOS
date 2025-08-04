@@ -344,7 +344,7 @@ struct ProviderConfigurationSheet<ViewModel: LLMProviderSettingsViewModelProtoco
                             .progressViewStyle(CircularProgressViewStyle())
                     } else {
                         Text(viewModel.providerConfigState?.hasExistingKey == true ?
-                             "Update Configuration" : "Save Configuration")
+                                "Update Configuration" : "Save Configuration")
                     }
                     Spacer()
                 }

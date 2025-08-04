@@ -32,8 +32,8 @@ public final class MacOSDocumentManager: DocumentManagerProtocol, @unchecked Sen
 
         // Get macOS Documents directory - prefer Downloads folder for user access
         self.documentsDirectory = fileManager.urls(for: .downloadsDirectory, in: .userDomainMask).first ??
-                                 fileManager.urls(for: .documentDirectory, in: .userDomainMask).first ??
-                                 fileManager.temporaryDirectory
+            fileManager.urls(for: .documentDirectory, in: .userDomainMask).first ??
+            fileManager.temporaryDirectory
 
         // Create AIKO subdirectory in Downloads/Documents
         let aikoDirectory = documentsDirectory.appendingPathComponent("AIKO Documents")

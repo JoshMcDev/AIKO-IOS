@@ -72,8 +72,8 @@ public struct DownloadOptionsSheet: View {
                 } else {
                     VStack(spacing: 0) {
                         documentList
-                        #if os(iOS)
-                        .listStyle(InsetGroupedListStyle())
+                            #if os(iOS)
+                            .listStyle(InsetGroupedListStyle())
                         #else
                         .listStyle(PlainListStyle())
                         #endif
@@ -111,59 +111,59 @@ public struct DownloadOptionsSheet: View {
             }
             .navigationTitle("Download Documents")
             #if os(iOS)
-                .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.inline)
             #endif
-                .toolbar {
-                    ToolbarItem(placement: .automatic) {
-                        Button("Done") {
-                            if !isDownloading {
-                                dismiss()
-                            }
+            .toolbar {
+                ToolbarItem(placement: .automatic) {
+                    Button("Done") {
+                        if !isDownloading {
+                            dismiss()
                         }
-                        .disabled(isDownloading)
                     }
+                    .disabled(isDownloading)
                 }
-                .alert("Download Error", isPresented: .init(
-                    get: { downloadError != nil },
-                    set: { _ in downloadError = nil }
-                )) {
-                    Button("OK") {
-                        downloadError = nil
-                    }
-                } message: {
-                    if let error = downloadError {
-                        Text(error.localizedDescription)
-                    }
+            }
+            .alert("Download Error", isPresented: .init(
+                get: { downloadError != nil },
+                set: { _ in downloadError = nil }
+            )) {
+                Button("OK") {
+                    downloadError = nil
                 }
-                .alert("Download Complete", isPresented: .init(
-                    get: { !downloadResults.isEmpty && !isDownloading },
-                    set: { _ in downloadResults = [] }
-                )) {
-                    Button("OK") {
-                        downloadResults = []
-                        onDismiss()
-                    }
-                } message: {
-                    Text("Successfully downloaded \(downloadResults.filter(\.success).count) of \(downloadResults.count) documents.")
+            } message: {
+                if let error = downloadError {
+                    Text(error.localizedDescription)
                 }
-                .overlay {
-                    if isDownloading {
-                        Color.black.opacity(0.5)
-                            .ignoresSafeArea()
-                            .overlay {
-                                VStack(spacing: 16) {
-                                    ProgressView(value: downloadProgress, total: 1.0)
-                                        .progressViewStyle(LinearProgressViewStyle())
+            }
+            .alert("Download Complete", isPresented: .init(
+                get: { !downloadResults.isEmpty && !isDownloading },
+                set: { _ in downloadResults = [] }
+            )) {
+                Button("OK") {
+                    downloadResults = []
+                    onDismiss()
+                }
+            } message: {
+                Text("Successfully downloaded \(downloadResults.filter(\.success).count) of \(downloadResults.count) documents.")
+            }
+            .overlay {
+                if isDownloading {
+                    Color.black.opacity(0.5)
+                        .ignoresSafeArea()
+                        .overlay {
+                            VStack(spacing: 16) {
+                                ProgressView(value: downloadProgress, total: 1.0)
+                                    .progressViewStyle(LinearProgressViewStyle())
 
-                                    Text("Downloading... \(Int(downloadProgress * 100))%")
-                                        .foregroundColor(.white)
-                                }
-                                .padding()
-                                .background(Color.black.opacity(0.8))
-                                .cornerRadius(Theme.CornerRadius.medium)
+                                Text("Downloading... \(Int(downloadProgress * 100))%")
+                                    .foregroundColor(.white)
                             }
-                    }
+                            .padding()
+                            .background(Color.black.opacity(0.8))
+                            .cornerRadius(Theme.CornerRadius.medium)
+                        }
                 }
+            }
         }
         .task {
             await loadDocuments()

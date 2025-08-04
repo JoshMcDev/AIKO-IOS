@@ -162,7 +162,7 @@ public extension TemplateStorageService {
                     let data = try Data(contentsOf: url)
                     return try decoder.decode(OfficeTemplate.self, from: data)
                 }.filter { $0.documentType == documentType }
-                    .sorted { $0.createdAt > $1.createdAt }
+                .sorted { $0.createdAt > $1.createdAt }
             }
         )
     }

@@ -163,7 +163,6 @@ actor AgenticOrchestrator {
         logger.info("Reset agentic learning state")
     }
 
-
     // MARK: - Private Methods
 
     private func updateWorkflowState(from request: DecisionRequest) async {
@@ -566,8 +565,8 @@ struct AgenticPerformanceMetrics {
 extension DecisionContextAnalysis {
     var combinedConfidence: Double {
         return (context.patterns.confidence * 0.4) +
-               (historicalPatterns.confidence * 0.3) +
-               ((1.0 - complexityScore) * 0.2) +
-               ((1.0 - riskLevel.rawValue) * 0.1)
+            (historicalPatterns.confidence * 0.3) +
+            ((1.0 - complexityScore) * 0.2) +
+            ((1.0 - riskLevel.rawValue) * 0.1)
     }
 }

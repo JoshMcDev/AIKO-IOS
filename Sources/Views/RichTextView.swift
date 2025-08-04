@@ -1,55 +1,55 @@
 import SwiftUI
 
 #if os(iOS)
-    import UIKit
+import UIKit
 
-    struct RichTextView: UIViewRepresentable {
-        let attributedText: NSAttributedString
+struct RichTextView: UIViewRepresentable {
+    let attributedText: NSAttributedString
 
-        func makeUIView(context _: Context) -> UITextView {
-            let textView = UITextView()
-            textView.isEditable = false
-            textView.isSelectable = true
-            textView.backgroundColor = .clear
-            textView.textContainerInset = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
-            return textView
-        }
-
-        func updateUIView(_ uiView: UITextView, context _: Context) {
-            uiView.attributedText = attributedText
-        }
+    func makeUIView(context _: Context) -> UITextView {
+        let textView = UITextView()
+        textView.isEditable = false
+        textView.isSelectable = true
+        textView.backgroundColor = .clear
+        textView.textContainerInset = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        return textView
     }
+
+    func updateUIView(_ uiView: UITextView, context _: Context) {
+        uiView.attributedText = attributedText
+    }
+}
 
 #else
-    import AppKit
+import AppKit
 
-    struct RichTextView: NSViewRepresentable {
-        let attributedText: NSAttributedString
+struct RichTextView: NSViewRepresentable {
+    let attributedText: NSAttributedString
 
-        func makeNSView(context _: Context) -> NSScrollView {
-            let scrollView = NSScrollView()
-            let textView = NSTextView()
+    func makeNSView(context _: Context) -> NSScrollView {
+        let scrollView = NSScrollView()
+        let textView = NSTextView()
 
-            textView.isEditable = false
-            textView.isSelectable = true
-            textView.backgroundColor = .clear
-            textView.textContainerInset = NSSize(width: 8, height: 8)
+        textView.isEditable = false
+        textView.isSelectable = true
+        textView.backgroundColor = .clear
+        textView.textContainerInset = NSSize(width: 8, height: 8)
 
-            scrollView.documentView = textView
-            scrollView.hasVerticalScroller = true
-            scrollView.hasHorizontalScroller = false
-            scrollView.autohidesScrollers = true
-            scrollView.backgroundColor = .clear
+        scrollView.documentView = textView
+        scrollView.hasVerticalScroller = true
+        scrollView.hasHorizontalScroller = false
+        scrollView.autohidesScrollers = true
+        scrollView.backgroundColor = .clear
 
-            return scrollView
-        }
+        return scrollView
+    }
 
-        func updateNSView(_ nsView: NSScrollView, context _: Context) {
-            if let textView = nsView.documentView as? NSTextView {
-                textView.textStorage?.setAttributedString(attributedText)
-            }
+    func updateNSView(_ nsView: NSScrollView, context _: Context) {
+        if let textView = nsView.documentView as? NSTextView {
+            textView.textStorage?.setAttributedString(attributedText)
         }
     }
+}
 #endif
 
 // SwiftUI wrapper for consistent usage

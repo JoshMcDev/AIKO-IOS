@@ -2,10 +2,10 @@ import AppCore
 import Foundation
 import SwiftUI
 #if os(iOS)
-    import UIKit
-    import AVFoundation
+import UIKit
+import AVFoundation
 #else
-    import AppKit
+import AppKit
 #endif
 
 // MARK: - Document Generation Error
@@ -833,11 +833,11 @@ public final class AcquisitionChatViewModel {
         //         temperature: 0.7
         //     )
         // } else {
-            // Fallback to rule-based response generation
-            responseContent = generateRuleBasedResponse(
-                userMessage: messageToSend,
-                acquisitionContext: acquisitionContext
-            )
+        // Fallback to rule-based response generation
+        responseContent = generateRuleBasedResponse(
+            userMessage: messageToSend,
+            acquisitionContext: acquisitionContext
+        )
         // }
 
         let aiResponse = ChatMessage(content: responseContent, isUser: false)

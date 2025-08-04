@@ -18,7 +18,6 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
 
     override func tearDown() async throws {
         navigationState = nil
-        try await super.tearDown()
     }
 
     // MARK: - Enum-Driven Navigation Tests
@@ -175,8 +174,8 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
         // This will FAIL in Red phase - history management not implemented
         XCTAssertLessThanOrEqual(navigationState.navigationHistory.count, 50, "Navigation history should be limited to 50 entries")
         XCTAssertEqual(navigationState.navigationHistory.last,
-                      NavigationState.NavigationDestination.acquisition(AcquisitionID("ACQ-60")),
-                      "Last navigation should be preserved")
+                       NavigationState.NavigationDestination.acquisition(AcquisitionID("ACQ-60")),
+                       "Last navigation should be preserved")
     }
 
     func testNavigationPerformanceTracking() async {
@@ -530,7 +529,7 @@ extension NavigationStateTests {
             XCTFail("Could not get method list")
             return
         }
-        
+
         var testMethods: [String] = []
         for i in 0..<methodCount {
             let selector = method_getName(methods[Int(i)])

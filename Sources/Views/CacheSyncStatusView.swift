@@ -7,7 +7,7 @@
 
 import SwiftUI
 #if canImport(UIKit)
-    import UIKit
+import UIKit
 #endif
 
 /// View displaying cache sync status and controls

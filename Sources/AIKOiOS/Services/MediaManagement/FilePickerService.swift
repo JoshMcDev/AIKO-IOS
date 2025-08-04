@@ -121,9 +121,9 @@ public actor FilePickerService: FilePickerServiceProtocol {
                 documentPicker.delegate = coordinator
 
                 guard let presentingViewController = UIApplication.shared.connectedScenes
-                    .compactMap({ $0 as? UIWindowScene })
-                    .first?.windows
-                    .first(where: { $0.isKeyWindow })?.rootViewController else {
+                        .compactMap({ $0 as? UIWindowScene })
+                        .first?.windows
+                        .first(where: { $0.isKeyWindow })?.rootViewController else {
                     continuation.resume(throwing: MediaError.processingFailed("No presenting view controller found"))
                     return
                 }
@@ -156,9 +156,9 @@ public actor FilePickerService: FilePickerServiceProtocol {
     public func isTypeSupported(_ type: AppCore.UTType) async -> Bool {
         let supportedTypes = await getSupportedTypes()
         return supportedTypes.contains { $0.identifier == type.identifier } ||
-               convertToUTType(MediaType.document) != nil ||
-               convertToUTType(MediaType.image) != nil ||
-               convertToUTType(MediaType.video) != nil
+            convertToUTType(MediaType.document) != nil ||
+            convertToUTType(MediaType.image) != nil ||
+            convertToUTType(MediaType.video) != nil
     }
 
     public func setDefaultOptions(_ options: FilePickerOptions) async {
@@ -224,9 +224,9 @@ public actor FilePickerService: FilePickerServiceProtocol {
                 documentPicker.delegate = coordinator
 
                 guard let presentingViewController = UIApplication.shared.connectedScenes
-                    .compactMap({ $0 as? UIWindowScene })
-                    .first?.windows
-                    .first(where: { $0.isKeyWindow })?.rootViewController else {
+                        .compactMap({ $0 as? UIWindowScene })
+                        .first?.windows
+                        .first(where: { $0.isKeyWindow })?.rootViewController else {
                     continuation.resume(throwing: MediaError.processingFailed("No presenting view controller found"))
                     return
                 }
@@ -264,9 +264,9 @@ public actor FilePickerService: FilePickerServiceProtocol {
                 documentPicker.delegate = coordinator
 
                 guard let presentingViewController = UIApplication.shared.connectedScenes
-                    .compactMap({ $0 as? UIWindowScene })
-                    .first?.windows
-                    .first(where: { $0.isKeyWindow })?.rootViewController else {
+                        .compactMap({ $0 as? UIWindowScene })
+                        .first?.windows
+                        .first(where: { $0.isKeyWindow })?.rootViewController else {
                     continuation.resume(throwing: MediaError.processingFailed("No presenting view controller found"))
                     return
                 }

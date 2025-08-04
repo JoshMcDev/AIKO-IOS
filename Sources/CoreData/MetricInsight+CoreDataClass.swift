@@ -18,7 +18,7 @@ public class MetricInsightEntity: NSManagedObject {
         }
 
         let affectedMetrics = (affectedMetricsData
-            .flatMap { try? JSONDecoder().decode([String].self, from: $0) }) ?? []
+                                .flatMap { try? JSONDecoder().decode([String].self, from: $0) }) ?? []
 
         return MetricInsight(
             id: id,

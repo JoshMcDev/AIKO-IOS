@@ -2,8 +2,8 @@ import Foundation
 import os.log
 
 #if canImport(VisionKit) && canImport(UIKit)
-    import UIKit
-    import VisionKit
+import UIKit
+import VisionKit
 #endif
 
 // MARK: - Document Scanner Service Implementation
@@ -57,46 +57,46 @@ public final class DocumentScannerServiceImpl: ObservableObject {
         logger.info("Starting document scan")
 
         #if canImport(VisionKit) && canImport(UIKit)
-            guard VNDocumentCameraViewController.isSupported else {
-                logger.error("Document scanning not supported on this device")
+        guard VNDocumentCameraViewController.isSupported else {
+            logger.error("Document scanning not supported on this device")
+            throw DocumentScannerError.scanningNotAvailable
+        }
+
+        isScanning = true
+        defer { isScanning = false }
+
+        let startTime = Date()
+
+        do {
+            // Use the existing scannerClient for actual scanning
+            guard let scannerClient = scannerClient else {
                 throw DocumentScannerError.scanningNotAvailable
             }
+            let document = try await scannerClient.scan()
 
-            isScanning = true
-            defer { isScanning = false }
-
-            let startTime = Date()
-
-            do {
-                // Use the existing scannerClient for actual scanning
-                guard let scannerClient = scannerClient else {
-                    throw DocumentScannerError.scanningNotAvailable
-                }
-                let document = try await scannerClient.scan()
-
-                // Record metrics
-                let scanDuration = Date().timeIntervalSince(startTime)
-                await recordScanningMetrics(
-                    ScanningMetrics(
-                        scanDuration: scanDuration,
-                        pagesScanned: document.pages.count,
-                        averagePageSize: calculateAveragePageSize(document.pages),
-                        qualityScores: document.pages.compactMap { $0.qualityScore },
-                        deviceModel: getDeviceModel(),
-                        osVersion: getOSVersion()
-                    )
+            // Record metrics
+            let scanDuration = Date().timeIntervalSince(startTime)
+            await recordScanningMetrics(
+                ScanningMetrics(
+                    scanDuration: scanDuration,
+                    pagesScanned: document.pages.count,
+                    averagePageSize: calculateAveragePageSize(document.pages),
+                    qualityScores: document.pages.compactMap { $0.qualityScore },
+                    deviceModel: getDeviceModel(),
+                    osVersion: getOSVersion()
                 )
+            )
 
-                logger.info("Document scan completed successfully with \(document.pages.count) pages")
-                return document
+            logger.info("Document scan completed successfully with \(document.pages.count) pages")
+            return document
 
-            } catch {
-                logger.error("Document scan failed: \(error.localizedDescription)")
-                throw error
-            }
+        } catch {
+            logger.error("Document scan failed: \(error.localizedDescription)")
+            throw error
+        }
         #else
-            logger.error("VisionKit not available on this platform")
-            throw DocumentScannerError.scanningNotAvailable
+        logger.error("VisionKit not available on this platform")
+        throw DocumentScannerError.scanningNotAvailable
         #endif
     }
 
@@ -105,23 +105,23 @@ public final class DocumentScannerServiceImpl: ObservableObject {
         logger.info("Starting multi-page session")
 
         #if canImport(VisionKit) && canImport(UIKit)
-            guard VNDocumentCameraViewController.isSupported else {
-                throw DocumentScannerError.scanningNotAvailable
-            }
-
-            let session = MultiPageSession(
-                id: uuidGenerator(),
-                title: "Document Session \(Date().formatted(date: .abbreviated, time: .shortened))"
-            )
-
-            sessionStates[session.id] = session
-            activeSessions.append(session)
-            currentSession = session
-
-            logger.info("Started multi-page session: \(session.id)")
-            return session
-        #else
+        guard VNDocumentCameraViewController.isSupported else {
             throw DocumentScannerError.scanningNotAvailable
+        }
+
+        let session = MultiPageSession(
+            id: uuidGenerator(),
+            title: "Document Session \(Date().formatted(date: .abbreviated, time: .shortened))"
+        )
+
+        sessionStates[session.id] = session
+        activeSessions.append(session)
+        currentSession = session
+
+        logger.info("Started multi-page session: \(session.id)")
+        return session
+        #else
+        throw DocumentScannerError.scanningNotAvailable
         #endif
     }
 
@@ -214,9 +214,9 @@ public final class DocumentScannerServiceImpl: ObservableObject {
 
     public func isDocumentScanningAvailable() -> Bool {
         #if canImport(VisionKit) && canImport(UIKit)
-            return VNDocumentCameraViewController.isSupported
+        return VNDocumentCameraViewController.isSupported
         #else
-            return false
+        return false
         #endif
     }
 
@@ -224,9 +224,9 @@ public final class DocumentScannerServiceImpl: ObservableObject {
         switch feature {
         case .documentScanning:
             #if canImport(VisionKit) && canImport(UIKit)
-                return VNDocumentCameraViewController.isSupported
+            return VNDocumentCameraViewController.isSupported
             #else
-                return false
+            return false
             #endif
         case .textRecognition:
             return true // Available on iOS 13+
@@ -234,9 +234,9 @@ public final class DocumentScannerServiceImpl: ObservableObject {
             return true // Available on iOS 13+
         case .multiPageCapture:
             #if canImport(VisionKit) && canImport(UIKit)
-                return VNDocumentCameraViewController.isSupported
+            return VNDocumentCameraViewController.isSupported
             #else
-                return false
+            return false
             #endif
         case .liveTextInteraction:
             if #available(iOS 15.0, *) {
@@ -526,10 +526,10 @@ public final class DocumentScannerServiceImpl: ObservableObject {
         await withCheckedContinuation { continuation in
             Task { @MainActor in
                 #if canImport(UIKit)
-                    let model = UIDevice.current.model
-                    continuation.resume(returning: model)
+                let model = UIDevice.current.model
+                continuation.resume(returning: model)
                 #else
-                    continuation.resume(returning: "Unknown")
+                continuation.resume(returning: "Unknown")
                 #endif
             }
         }
@@ -539,10 +539,10 @@ public final class DocumentScannerServiceImpl: ObservableObject {
         await withCheckedContinuation { continuation in
             Task { @MainActor in
                 #if canImport(UIKit)
-                    let version = UIDevice.current.systemVersion
-                    continuation.resume(returning: version)
+                let version = UIDevice.current.systemVersion
+                continuation.resume(returning: version)
                 #else
-                    continuation.resume(returning: "Unknown")
+                continuation.resume(returning: "Unknown")
                 #endif
             }
         }

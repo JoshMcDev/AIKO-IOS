@@ -28,7 +28,12 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
         try await super.setUp()
         mockConfigService = MockLLMConfigurationService()
         mockKeychainService = MockLLMKeychainService()
-        mockService = MockLLMProviderSettingsService()
+        let mockBiometricService = MockBiometricService()
+        mockService = MockLLMProviderSettingsService(
+            biometricService: mockBiometricService,
+            keychainService: mockKeychainService,
+            configurationService: mockConfigService
+        )
 
         viewModel = LLMProviderSettingsViewModel(
             configurationService: mockConfigService,
@@ -281,16 +286,8 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
         }
 
         // State should be consistent (will fail in RED phase)
-        XCTAssertTrue([.loaded, .error(""), .loading].contains { state in
-            switch (state, viewModel.uiState) {
-            case (.loaded, .loaded), (.loading, .loading):
-                return true
-            case (.error, .error):
-                return true
-            default:
-                return false
-            }
-        })
+        // Note: This test is designed to fail as concurrent state management is not implemented
+        XCTAssertFalse(viewModel.uiState == .loading, "Should not be stuck in loading state after concurrent operations")
     }
 
     func test_stateRollback_onOperationFailure() async {
@@ -309,10 +306,11 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
         viewModel.selectedProvider = .claude
         viewModel.providerConfigState = TestFixtures.testProviderConfigState
 
-        // Start multiple operations
-        async let load = viewModel.loadConfigurations()
-        async let save = viewModel.saveProviderConfiguration()
-        async let clear = viewModel.clearAllConfigurations()
+        // Start multiple operations - capture viewModel to avoid concurrent access issues
+        let localViewModel = viewModel!
+        async let load = localViewModel.loadConfigurations()
+        async let save = localViewModel.saveProviderConfiguration()
+        async let clear = localViewModel.clearAllConfigurations()
 
         await load
         await save

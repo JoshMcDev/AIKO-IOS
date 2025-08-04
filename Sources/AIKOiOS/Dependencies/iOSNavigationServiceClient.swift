@@ -1,29 +1,29 @@
 #if os(iOS)
-    import AppCore
-    import Foundation
+import AppCore
+import Foundation
 
-    public extension NavigationServiceClient {
-        static let iOS = Self(
-            supportsNavigationStack: {
-                // iOS 16+ supports NavigationStack
-                if #available(iOS 16.0, *) {
-                    true
-                } else {
-                    false
-                }
-            },
-            defaultNavigationStyle: {
-                // Use stack navigation for iOS
-                .stack
-            },
-            supportsNavigationBarDisplayMode: {
-                // iOS supports navigation bar display modes
+public extension NavigationServiceClient {
+    static let iOS = Self(
+        supportsNavigationStack: {
+            // iOS 16+ supports NavigationStack
+            if #available(iOS 16.0, *) {
                 true
+            } else {
+                false
             }
-        )
-    }
+        },
+        defaultNavigationStyle: {
+            // Use stack navigation for iOS
+            .stack
+        },
+        supportsNavigationBarDisplayMode: {
+            // iOS supports navigation bar display modes
+            true
+        }
+    )
+}
 
-    public enum IOSNavigationServiceClient {
-        public static let live = NavigationServiceClient.iOS
-    }
+public enum IOSNavigationServiceClient {
+    public static let live = NavigationServiceClient.iOS
+}
 #endif

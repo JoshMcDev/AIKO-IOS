@@ -245,34 +245,34 @@ struct AccessibleLoadingView: View {
 // MARK: - Accessibility Testing Helpers
 
 #if DEBUG
-    struct AccessibilityInspector: ViewModifier {
-        @State private var showingAccessibilityInfo = false
+struct AccessibilityInspector: ViewModifier {
+    @State private var showingAccessibilityInfo = false
 
-        func body(content: Content) -> some View {
-            content
-                .overlay(alignment: .topTrailing) {
-                    if showingAccessibilityInfo {
-                        VStack {
-                            Text("Accessibility Mode")
-                                .font(.caption)
-                                .padding(4)
-                                .background(Color.yellow)
-                                .cornerRadius(4)
-                        }
-                        .padding()
+    func body(content: Content) -> some View {
+        content
+            .overlay(alignment: .topTrailing) {
+                if showingAccessibilityInfo {
+                    VStack {
+                        Text("Accessibility Mode")
+                            .font(.caption)
+                            .padding(4)
+                            .background(Color.yellow)
+                            .cornerRadius(4)
                     }
+                    .padding()
                 }
-                .onAppear {
-                    #if DEBUG
-                        showingAccessibilityInfo = ProcessInfo.processInfo.arguments.contains("-UIAccessibilityTesting")
-                    #endif
-                }
-        }
+            }
+            .onAppear {
+                #if DEBUG
+                showingAccessibilityInfo = ProcessInfo.processInfo.arguments.contains("-UIAccessibilityTesting")
+                #endif
+            }
     }
+}
 
-    extension View {
-        func accessibilityInspector() -> some View {
-            modifier(AccessibilityInspector())
-        }
+extension View {
+    func accessibilityInspector() -> some View {
+        modifier(AccessibilityInspector())
     }
+}
 #endif

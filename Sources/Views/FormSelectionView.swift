@@ -88,30 +88,30 @@ public struct FormSelectionView: View {
             }
             .navigationTitle("Output Format")
             #if os(iOS)
-                .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.inline)
             #endif
-                .toolbar {
-                    ToolbarItem(placement: .automatic) {
-                        Button("Cancel") {
-                            dismiss()
-                        }
+            .toolbar {
+                ToolbarItem(placement: .automatic) {
+                    Button("Cancel") {
+                        dismiss()
                     }
                 }
-                .sheet(isPresented: $showingFormPreview) {
-                    if let formType = previewFormType {
-                        FormPreviewView(formType: formType)
-                    }
+            }
+            .sheet(isPresented: $showingFormPreview) {
+                if let formType = previewFormType {
+                    FormPreviewView(formType: formType)
                 }
-                .alert("Download Error", isPresented: .constant(downloadError != nil)) {
-                    Button("OK") {
-                        downloadError = nil
-                    }
-                } message: {
-                    Text(downloadError ?? "")
+            }
+            .alert("Download Error", isPresented: .constant(downloadError != nil)) {
+                Button("OK") {
+                    downloadError = nil
                 }
-                .task {
-                    await loadAvailableForms()
-                }
+            } message: {
+                Text(downloadError ?? "")
+            }
+            .task {
+                await loadAvailableForms()
+            }
         }
     }
 
@@ -428,15 +428,15 @@ struct FormPreviewView: View {
             }
             .navigationTitle("Form Preview")
             #if os(iOS)
-                .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.inline)
             #endif
-                .toolbar {
-                    ToolbarItem(placement: .automatic) {
-                        Button("Done") {
-                            dismiss()
-                        }
+            .toolbar {
+                ToolbarItem(placement: .automatic) {
+                    Button("Done") {
+                        dismiss()
                     }
                 }
+            }
         }
         .task {
             previewURL = await FormMappingService.shared.getFormPreviewURL(formType)

@@ -1,7 +1,7 @@
 import Foundation
 
 #if canImport(VisionKit)
-    import VisionKit
+import VisionKit
 #endif
 
 // MARK: - Document Scanner Service Protocol

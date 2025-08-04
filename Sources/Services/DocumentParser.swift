@@ -41,13 +41,13 @@ public struct DocumentParser: DocumentParserProtocol {
 
     public func parseImage(_ imageData: Data) async throws -> String {
         #if os(iOS)
-            guard let image = UIImage(data: imageData) else {
-                throw DocumentParserError.invalidImageData
-            }
+        guard let image = UIImage(data: imageData) else {
+            throw DocumentParserError.invalidImageData
+        }
         #else
-            guard let image = NSImage(data: imageData) else {
-                throw DocumentParserError.invalidImageData
-            }
+        guard let image = NSImage(data: imageData) else {
+            throw DocumentParserError.invalidImageData
+        }
         #endif
 
         return try await withCheckedThrowingContinuation { continuation in
@@ -73,16 +73,16 @@ public struct DocumentParser: DocumentParserProtocol {
             request.recognitionLanguages = ["en-US"]
 
             #if os(iOS)
-                guard let cgImage = image.cgImage else {
-                    continuation.resume(throwing: DocumentParserError.invalidImageData)
-                    return
-                }
+            guard let cgImage = image.cgImage else {
+                continuation.resume(throwing: DocumentParserError.invalidImageData)
+                return
+            }
             #else
-                var rect = NSRect.zero
-                guard let cgImage = image.cgImage(forProposedRect: &rect, context: nil, hints: nil) else {
-                    continuation.resume(throwing: DocumentParserError.invalidImageData)
-                    return
-                }
+            var rect = NSRect.zero
+            guard let cgImage = image.cgImage(forProposedRect: &rect, context: nil, hints: nil) else {
+                continuation.resume(throwing: DocumentParserError.invalidImageData)
+                return
+            }
             #endif
 
             let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
@@ -166,7 +166,7 @@ public enum DocumentParserError: Error, LocalizedError {
 }
 
 #if os(iOS)
-    import UIKit
+import UIKit
 #else
-    import AppKit
+import AppKit
 #endif

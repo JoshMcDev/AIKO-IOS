@@ -513,4 +513,3 @@ public struct ComplianceMockNetworkProvider: NetworkProvider {
 
 // RED PHASE MARKER: This implementation is designed to fail tests appropriately
 // All methods return values that will cause specific test assertions to fail
-

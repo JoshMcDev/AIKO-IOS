@@ -1,21 +1,21 @@
 #if os(macOS)
-    import AppCore
-    import Foundation
+import AppCore
+import Foundation
 
-    extension TextFieldServiceClient {
-        private static let textFieldService = MacOSTextFieldService()
+extension TextFieldServiceClient {
+    private static let textFieldService = MacOSTextFieldService()
 
-        public static let macOSLive = Self(
-            supportsAutocapitalization: {
-                textFieldService.supportsAutocapitalization
-            },
-            supportsKeyboardTypes: {
-                textFieldService.supportsKeyboardTypes
-            }
-        )
-    }
+    public static let macOSLive = Self(
+        supportsAutocapitalization: {
+            textFieldService.supportsAutocapitalization
+        },
+        supportsKeyboardTypes: {
+            textFieldService.supportsKeyboardTypes
+        }
+    )
+}
 
-    // Convenience static accessor
-    public enum MacOSTextFieldServiceClient {
-        public static let live = TextFieldServiceClient.macOSLive
-    }#endif
+// Convenience static accessor
+public enum MacOSTextFieldServiceClient {
+    public static let live = TextFieldServiceClient.macOSLive
+}#endif

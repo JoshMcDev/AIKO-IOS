@@ -45,57 +45,57 @@ public extension StandardTemplateService {
 
                     // Map document type to template file name
                     = switch documentType {
-                case .sow:
-                    "SOW"
-                case .pws:
-                    "PWS"
-                case .soo:
-                    "SOO"
-                case .qasp:
-                    "QASP"
-                case .costEstimate:
-                    "IGCE"
-                case .marketResearch:
-                    "MarketResearchReport"
-                case .acquisitionPlan:
-                    "AcquisitionPlan"
-                case .evaluationPlan:
-                    "EvaluationPlan"
-                case .fiscalLawReview:
-                    "FiscalLawReview"
-                case .opsecReview:
-                    "OPSECReview"
-                case .industryRFI:
-                    "IndustryRFI"
-                case .sourcesSought:
-                    "SourcesSought"
-                case .justificationApproval:
-                    "JustificationApproval"
-                case .codes:
-                    "Codes"
-                case .competitionAnalysis:
-                    "CompetitionAnalysis"
-                case .procurementSourcing:
-                    "ProcurementSourcing"
-                case .rrd:
-                    "RRD"
-                case .requestForQuoteSimplified:
-                    "RFQSimplified"
-                case .requestForQuote:
-                    "RFQ"
-                case .requestForProposal:
-                    "RFP"
-                case .contractScaffold:
-                    "Contract"
-                case .corAppointment:
-                    "CORAppointment"
-                case .analytics:
-                    "Analytics"
-                case .otherTransactionAgreement:
-                    "OTAgreement"
-                case .farUpdates:
-                    "FARUpdates"
-                }
+                    case .sow:
+                        "SOW"
+                    case .pws:
+                        "PWS"
+                    case .soo:
+                        "SOO"
+                    case .qasp:
+                        "QASP"
+                    case .costEstimate:
+                        "IGCE"
+                    case .marketResearch:
+                        "MarketResearchReport"
+                    case .acquisitionPlan:
+                        "AcquisitionPlan"
+                    case .evaluationPlan:
+                        "EvaluationPlan"
+                    case .fiscalLawReview:
+                        "FiscalLawReview"
+                    case .opsecReview:
+                        "OPSECReview"
+                    case .industryRFI:
+                        "IndustryRFI"
+                    case .sourcesSought:
+                        "SourcesSought"
+                    case .justificationApproval:
+                        "JustificationApproval"
+                    case .codes:
+                        "Codes"
+                    case .competitionAnalysis:
+                        "CompetitionAnalysis"
+                    case .procurementSourcing:
+                        "ProcurementSourcing"
+                    case .rrd:
+                        "RRD"
+                    case .requestForQuoteSimplified:
+                        "RFQSimplified"
+                    case .requestForQuote:
+                        "RFQ"
+                    case .requestForProposal:
+                        "RFP"
+                    case .contractScaffold:
+                        "Contract"
+                    case .corAppointment:
+                        "CORAppointment"
+                    case .analytics:
+                        "Analytics"
+                    case .otherTransactionAgreement:
+                        "OTAgreement"
+                    case .farUpdates:
+                        "FARUpdates"
+                    }
 
                 // Load template from bundle
                 let bundle = Bundle.module

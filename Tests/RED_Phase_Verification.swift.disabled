@@ -8,13 +8,13 @@ final class RedPhaseVerification: XCTestCase {
     private var viewModel: AppCore.DocumentScannerViewModel!
 
     override func setUp() async throws {
-        try await super.setUp()
+        super.setUp()
         viewModel = AppCore.DocumentScannerViewModel()
     }
 
     override func tearDown() async throws {
         viewModel = nil
-        try await super.tearDown()
+        super.tearDown()
     }
 
     /// This test should FAIL with fatalError to demonstrate RED phase behavior

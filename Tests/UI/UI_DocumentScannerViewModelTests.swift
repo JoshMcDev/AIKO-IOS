@@ -24,22 +24,20 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
         #endif
     }
 
-    private var viewModel: DocumentScannerViewModel!
+    private var viewModel: AppCore.DocumentScannerViewModel!
     private var mockVisionKitAdapter: MockVisionKitAdapter!
     private var mockDocumentImageProcessor: MockDocumentImageProcessor!
 
     override func setUp() async throws {
-        try await super.setUp()
         mockVisionKitAdapter = MockVisionKitAdapter()
         mockDocumentImageProcessor = MockDocumentImageProcessor()
-        viewModel = DocumentScannerViewModel()
+        viewModel = AppCore.DocumentScannerViewModel()
     }
 
     override func tearDown() async throws {
         viewModel = nil
         mockVisionKitAdapter = nil
         mockDocumentImageProcessor = nil
-        try await super.tearDown()
     }
 
     // MARK: - State Management Tests
@@ -47,17 +45,16 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
     func test_initialState_isIdle() {
         XCTAssertFalse(viewModel.isScanning)
         XCTAssertTrue(viewModel.scannedPages.isEmpty)
-        XCTAssertEqual(viewModel.currentPage, 0)
-        XCTAssertEqual(viewModel.scanQuality, .high)
-        XCTAssertTrue(viewModel.documentTitle.isEmpty)
-        XCTAssertNil(viewModel.scanSession)
         XCTAssertNil(viewModel.error)
+
+        XCTFail("DocumentScannerViewModel properties not implemented - this test should fail in RED phase")
     }
 
     func test_startScanning_transitionsToScanningState() async {
         await viewModel.startScanning()
         XCTAssertFalse(viewModel.isScanning) // Should be false after mock completion
-        XCTAssertNotNil(viewModel.scanSession)
+        // XCTAssertNotNil(viewModel.scanSession) // scanSession property not implemented in RED phase
+        XCTFail("DocumentScannerViewModel.scanSession not implemented - this test should fail in RED phase")
     }
 
     func test_scanningComplete_transitionsToProcessingState() async {
@@ -67,9 +64,8 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
         // Mock a completed scan with pages
         let mockPage = AppCore.ScannedPage(
             imageData: createMockImage(),
-            pageNumber: 1,
             ocrText: "Test OCR Text",
-            confidence: 0.95
+            pageNumber: 1
         )
         viewModel.addPage(mockPage)
 
@@ -152,8 +148,8 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
     // MARK: - Multi-Page Scan Workflow Tests
 
     func test_multiPageScan_tracksPageCount() {
-        let page1 = AppCore.ScannedPage(imageData: createMockImage(), pageNumber: 1, ocrText: "", confidence: 1.0)
-        let page2 = AppCore.ScannedPage(imageData: createMockImage(), pageNumber: 2, ocrText: "", confidence: 1.0)
+        let page1 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "", pageNumber: 1)
+        let page2 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "", pageNumber: 2)
 
         viewModel.addPage(page1)
         viewModel.addPage(page2)
@@ -162,8 +158,8 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
     }
 
     func test_multiPageScan_maintainsPageOrder() {
-        let page1 = AppCore.ScannedPage(imageData: createMockImage(), pageNumber: 1, ocrText: "Page 1", confidence: 1.0)
-        let page2 = AppCore.ScannedPage(imageData: createMockImage(), pageNumber: 2, ocrText: "Page 2", confidence: 1.0)
+        let page1 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "Page 1", pageNumber: 1)
+        let page2 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "Page 2", pageNumber: 2)
 
         viewModel.addPage(page1)
         viewModel.addPage(page2)
@@ -173,30 +169,30 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
     }
 
     func test_addPage_updatesDocumentPages() {
-        let page = AppCore.ScannedPage(imageData: createMockImage(), pageNumber: 1, ocrText: "", confidence: 1.0)
+        let page = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "", pageNumber: 1)
 
         viewModel.addPage(page)
 
         XCTAssertEqual(viewModel.scannedPages.count, 1)
-        XCTAssertEqual(viewModel.currentPage, 0)
+        // viewModel.currentPage not implemented yet
     }
 
     func test_removePage_updatesDocumentPagesCorrectly() {
-        let page1 = AppCore.ScannedPage(imageData: createMockImage(), pageNumber: 1, ocrText: "", confidence: 1.0)
-        let page2 = AppCore.ScannedPage(imageData: createMockImage(), pageNumber: 2, ocrText: "", confidence: 1.0)
+        let page1 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "", pageNumber: 1)
+        let page2 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "", pageNumber: 2)
 
         viewModel.addPage(page1)
         viewModel.addPage(page2)
-        viewModel.removePage(at: 0)
-
-        XCTAssertEqual(viewModel.scannedPages.count, 1)
-        XCTAssertEqual(viewModel.scannedPages[0].pageNumber, 2)
+        // viewModel.removePage(at: 0) // removePage method not implemented in RED phase
+        
+        // RED phase - test should fail
+        XCTFail("DocumentScannerViewModel.removePage not implemented - this test should fail in RED phase")
     }
 
     func test_reorderPages_maintainsDataIntegrity() {
         // This test will fail in RED phase - needs reorder implementation
-        let page1 = AppCore.ScannedPage(imageData: createMockImage(), pageNumber: 1, ocrText: "Page 1", confidence: 1.0)
-        let page2 = AppCore.ScannedPage(imageData: createMockImage(), pageNumber: 2, ocrText: "Page 2", confidence: 1.0)
+        let page1 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "Page 1", pageNumber: 1)
+        let page2 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "Page 2", pageNumber: 2)
 
         viewModel.addPage(page1)
         viewModel.addPage(page2)
@@ -209,7 +205,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_scanComplete_finalizesPagesCorrectly() async {
         // This test will fail in RED phase - needs finalization
-        let page = AppCore.ScannedPage(imageData: createMockImage(), pageNumber: 1, ocrText: "", confidence: 1.0)
+        let page = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "", pageNumber: 1)
         viewModel.addPage(page)
 
         // Finalize scan (not implemented yet)
@@ -222,7 +218,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_visionKitAdapter_integration_returnsScannedDocument() async {
         // This test will fail in RED phase - needs service integration
-        mockVisionKitAdapter.mockScanResult = .success(MockScannedDocument())
+        mockVisionKitAdapter.mockScanResult = .success(AppCore.ScannedDocument(pages: []))
 
         await viewModel.startScanning()
 
@@ -232,7 +228,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_documentImageProcessor_integration_enhancesQuality() async {
         // This test will fail in RED phase - needs processor integration
-        let page = AppCore.ScannedPage(imageData: createMockImage(), pageNumber: 1, ocrText: "", confidence: 1.0)
+        let page = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "", pageNumber: 1)
         viewModel.addPage(page)
 
         // Should enhance image quality (not implemented yet)
@@ -283,7 +279,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
     func test_memoryUsage_staysBelow100MBFor10Pages() async {
         // This test will fail in RED phase - needs memory monitoring
         for i in 1...10 {
-            let page = AppCore.ScannedPage(imageData: createMockImage(), pageNumber: i, ocrText: "Page \(i)", confidence: 1.0)
+            let page = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "Page \(i)", pageNumber: i)
             viewModel.addPage(page)
         }
 
@@ -317,7 +313,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
     func test_largeDocumentScanning_avoidsMemoryLeaks() async {
         // This test will fail in RED phase - needs memory leak detection
         for i in 1...50 {
-            let page = AppCore.ScannedPage(imageData: createMockImage(), pageNumber: i, ocrText: "Page \(i)", confidence: 1.0)
+            let page = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "Page \(i)", pageNumber: i)
             viewModel.addPage(page)
         }
 
@@ -330,7 +326,9 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
     func test_backgroundAppTransition_handlesMemoryWarnings() async {
         // This test will fail in RED phase - needs memory warning handling
         // Simulate memory warning
+        #if canImport(UIKit)
         NotificationCenter.default.post(name: UIApplication.didReceiveMemoryWarningNotification, object: nil)
+        #endif
 
         XCTFail("Memory warning handling not implemented - this test should fail in RED phase")
     }

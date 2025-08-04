@@ -138,15 +138,15 @@ public struct CustomTemplateDetailView: View {
             }
             .navigationTitle("Custom Template")
             #if os(iOS)
-                .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.inline)
             #endif
-                .toolbar {
-                    ToolbarItem(placement: .automatic) {
-                        Button("Done") {
-                            dismiss()
-                        }
+            .toolbar {
+                ToolbarItem(placement: .automatic) {
+                    Button("Done") {
+                        dismiss()
                     }
                 }
+            }
         }
         .preferredColorScheme(.dark)
         .overlay(
@@ -234,17 +234,17 @@ public struct CustomTemplateDetailView: View {
 // MARK: - Preview
 
 #if DEBUG
-    struct CustomTemplateDetailView_Previews: PreviewProvider {
-        static var previews: some View {
-            CustomTemplateDetailView(
-                template: CustomTemplate(
-                    name: "Sample Template",
-                    category: "Requirements",
-                    description: "A sample custom template for testing",
-                    content: "This is sample template content..."
-                )
+struct CustomTemplateDetailView_Previews: PreviewProvider {
+    static var previews: some View {
+        CustomTemplateDetailView(
+            template: CustomTemplate(
+                name: "Sample Template",
+                category: "Requirements",
+                description: "A sample custom template for testing",
+                content: "This is sample template content..."
             )
-            .preferredColorScheme(.dark)
-        }
+        )
+        .preferredColorScheme(.dark)
     }
+}
 #endif

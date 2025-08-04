@@ -6,7 +6,6 @@ final class BatchProcessingEngineTests: XCTestCase {
     private var batchEngine: BatchProcessingEngine?
 
     override func setUp() async throws {
-        try await super.setUp()
         batchEngine = BatchProcessingEngine()
     }
 
@@ -15,7 +14,6 @@ final class BatchProcessingEngineTests: XCTestCase {
             await engine.clearCompletedOperations()
         }
         batchEngine = nil
-        try await super.tearDown()
     }
 
     // MARK: - Basic Operation Tests

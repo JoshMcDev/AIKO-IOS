@@ -18,20 +18,20 @@ public struct NavigationModifier: ViewModifier {
 
     public func body(content: Content) -> some View {
         #if os(iOS)
-            if supportsNavigationBarDisplayMode {
-                switch displayMode {
-                case .automatic:
-                    content.navigationBarTitleDisplayMode(.automatic)
-                case .inline:
-                    content.navigationBarTitleDisplayMode(.inline)
-                case .large:
-                    content.navigationBarTitleDisplayMode(.large)
-                }
-            } else {
-                content
+        if supportsNavigationBarDisplayMode {
+            switch displayMode {
+            case .automatic:
+                content.navigationBarTitleDisplayMode(.automatic)
+            case .inline:
+                content.navigationBarTitleDisplayMode(.inline)
+            case .large:
+                content.navigationBarTitleDisplayMode(.large)
             }
-        #else
+        } else {
             content
+        }
+        #else
+        content
         #endif
     }
 }

@@ -133,29 +133,51 @@ public struct SearchDocumentTemplatesView: View {
             }
             .navigationTitle("Document Templates")
             #if os(iOS)
-                .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.large)
             #endif
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Done") {
-                            dismiss()
-                        }
-                    }
-
-                    ToolbarItem(placement: .primaryAction) {
-                        Button(action: {
-                            selectedTemplateType = nil
-                            showingCreateTemplate = true
-                        }) {
-                            Image(systemName: "plus.circle.fill")
-                                .font(.title3)
-                                .foregroundColor(.blue)
-                        }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") {
+                        dismiss()
                     }
                 }
-                .sheet(isPresented: $showingUploadOptions) {
-                    UploadTemplateView(onComplete: { template in
-                        // Handle uploaded template
+
+                ToolbarItem(placement: .primaryAction) {
+                    Button(action: {
+                        selectedTemplateType = nil
+                        showingCreateTemplate = true
+                    }) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.title3)
+                            .foregroundColor(.blue)
+                    }
+                }
+            }
+            .sheet(isPresented: $showingUploadOptions) {
+                UploadTemplateView(onComplete: { template in
+                    // Handle uploaded template
+                    Task {
+                        do {
+                            let customTemplate = CustomTemplate(
+                                name: template.name,
+                                category: template.category,
+                                description: template.description,
+                                content: String(data: template.data ?? Data(), encoding: .utf8) ?? ""
+                            )
+                            try await storageService.saveTemplate(customTemplate)
+                            loadCustomTemplates()
+                            showingUploadOptions = false
+                        } catch {
+                            print("Failed to save template: \(error)")
+                        }
+                    }
+                })
+            }
+            .sheet(isPresented: $showingCreateTemplate) {
+                CreateTemplateView(
+                    documentType: selectedTemplateType,
+                    onComplete: { template in
+                        // Handle created template
                         Task {
                             do {
                                 let customTemplate = CustomTemplate(
@@ -166,50 +188,28 @@ public struct SearchDocumentTemplatesView: View {
                                 )
                                 try await storageService.saveTemplate(customTemplate)
                                 loadCustomTemplates()
-                                showingUploadOptions = false
+                                showingCreateTemplate = false
                             } catch {
                                 print("Failed to save template: \(error)")
                             }
                         }
-                    })
-                }
-                .sheet(isPresented: $showingCreateTemplate) {
-                    CreateTemplateView(
-                        documentType: selectedTemplateType,
-                        onComplete: { template in
-                            // Handle created template
-                            Task {
-                                do {
-                                    let customTemplate = CustomTemplate(
-                                        name: template.name,
-                                        category: template.category,
-                                        description: template.description,
-                                        content: String(data: template.data ?? Data(), encoding: .utf8) ?? ""
-                                    )
-                                    try await storageService.saveTemplate(customTemplate)
-                                    loadCustomTemplates()
-                                    showingCreateTemplate = false
-                                } catch {
-                                    print("Failed to save template: \(error)")
-                                }
-                            }
-                        }
-                    )
-                }
-                .sheet(isPresented: $showingTemplateDetail) {
-                    if let templateType = detailTemplateType {
-                        TemplateDetailView(documentType: templateType)
                     }
+                )
+            }
+            .sheet(isPresented: $showingTemplateDetail) {
+                if let templateType = detailTemplateType {
+                    TemplateDetailView(documentType: templateType)
                 }
-                .sheet(isPresented: $showingCustomTemplateDetail) {
-                    if let template = selectedCustomTemplate {
-                        CustomTemplateDetailView(template: template)
-                    }
+            }
+            .sheet(isPresented: $showingCustomTemplateDetail) {
+                if let template = selectedCustomTemplate {
+                    CustomTemplateDetailView(template: template)
                 }
-                .onAppear {
-                    loadCustomTemplates()
-                    loadOfficeTemplates()
-                }
+            }
+            .onAppear {
+                loadCustomTemplates()
+                loadOfficeTemplates()
+            }
         }
         .preferredColorScheme(.dark)
     }
@@ -596,29 +596,29 @@ struct UploadTemplateView: View {
             }
             .navigationTitle("Upload Template")
             #if os(iOS)
-                .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.inline)
             #endif
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancel") {
-                            dismiss()
-                        }
-                    }
-
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("Save") {
-                            // Create and save template
-                            let template = SimpleCustomTemplate(
-                                name: templateName,
-                                category: templateCategory.rawValue,
-                                description: templateDescription,
-                                data: uploadedDocument
-                            )
-                            onComplete(template)
-                        }
-                        .disabled(templateName.isEmpty || uploadedDocument == nil)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
                     }
                 }
+
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        // Create and save template
+                        let template = SimpleCustomTemplate(
+                            name: templateName,
+                            category: templateCategory.rawValue,
+                            description: templateDescription,
+                            data: uploadedDocument
+                        )
+                        onComplete(template)
+                    }
+                    .disabled(templateName.isEmpty || uploadedDocument == nil)
+                }
+            }
         }
     }
 }
@@ -694,29 +694,29 @@ struct CreateTemplateView: View {
             }
             .navigationTitle("Create Template")
             #if os(iOS)
-                .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.inline)
             #endif
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancel") {
-                            dismiss()
-                        }
-                    }
-
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("Save") {
-                            // Create and save template
-                            let template = SimpleCustomTemplate(
-                                name: templateName,
-                                category: templateCategory.rawValue,
-                                description: templateDescription,
-                                data: templateContent.data(using: .utf8)
-                            )
-                            onComplete(template)
-                        }
-                        .disabled(templateName.isEmpty || templateContent.isEmpty)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
                     }
                 }
+
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        // Create and save template
+                        let template = SimpleCustomTemplate(
+                            name: templateName,
+                            category: templateCategory.rawValue,
+                            description: templateDescription,
+                            data: templateContent.data(using: .utf8)
+                        )
+                        onComplete(template)
+                    }
+                    .disabled(templateName.isEmpty || templateContent.isEmpty)
+                }
+            }
         }
     }
 
@@ -753,10 +753,10 @@ struct SimpleCustomTemplate {
 // MARK: - Preview
 
 #if DEBUG
-    struct SearchDocumentTemplatesView_Previews: PreviewProvider {
-        static var previews: some View {
-            SearchDocumentTemplatesView()
-                .preferredColorScheme(.dark)
-        }
+struct SearchDocumentTemplatesView_Previews: PreviewProvider {
+    static var previews: some View {
+        SearchDocumentTemplatesView()
+            .preferredColorScheme(.dark)
     }
+}
 #endif

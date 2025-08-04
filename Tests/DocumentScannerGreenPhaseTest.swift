@@ -3,7 +3,7 @@ import SwiftUI
 @testable import AIKO
 @testable import AppCore
 
-// Use specific import to resolve ambiguity - Green phase tests specific  
+// Use specific import to resolve ambiguity - Green phase tests specific
 typealias GreenPhaseTestDocumentScannerViewModel = AppCore.DocumentScannerViewModel
 
 /// Isolated GREEN phase test that verifies core implementations without UIKit dependencies

@@ -19,9 +19,9 @@ public class MetricRecommendationEntity: NSManagedObject {
 
         // Decode arrays
         let requiredActions = (requiredActionsData
-            .flatMap { try? JSONDecoder().decode([String].self, from: $0) }) ?? []
+                                .flatMap { try? JSONDecoder().decode([String].self, from: $0) }) ?? []
         let relatedMetrics = (relatedMetricsData
-            .flatMap { try? JSONDecoder().decode([String].self, from: $0) }) ?? []
+                                .flatMap { try? JSONDecoder().decode([String].self, from: $0) }) ?? []
 
         // Decode expected impact
         var metricImprovements: [String: Double] = [:]

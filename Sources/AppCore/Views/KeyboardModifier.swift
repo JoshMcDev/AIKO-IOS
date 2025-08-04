@@ -12,40 +12,40 @@ public struct KeyboardModifier: ViewModifier {
 
     public func body(content: Content) -> some View {
         #if os(iOS)
-            if supportsKeyboardTypes {
-                content
-                    .keyboardType(iOSKeyboardType(from: keyboardType))
-                    .autocapitalization(keyboardType == .email ? .none : .sentences)
-                    .disableAutocorrection(keyboardType == .email)
-            } else {
-                content
-            }
-        #else
+        if supportsKeyboardTypes {
             content
+                .keyboardType(iOSKeyboardType(from: keyboardType))
+                .autocapitalization(keyboardType == .email ? .none : .sentences)
+                .disableAutocorrection(keyboardType == .email)
+        } else {
+            content
+        }
+        #else
+        content
         #endif
     }
 
     #if os(iOS)
-        private func iOSKeyboardType(from platformType: PlatformKeyboardType) -> UIKeyboardType {
-            switch platformType {
-            case .default:
-                .default
-            case .email:
-                .emailAddress
-            case .emailAddress:
-                .emailAddress
-            case .number:
-                .numberPad
-            case .numberPad:
-                .numberPad
-            case .phone:
-                .phonePad
-            case .url:
-                .URL
-            case .decimal:
-                .decimalPad
-            }
+    private func iOSKeyboardType(from platformType: PlatformKeyboardType) -> UIKeyboardType {
+        switch platformType {
+        case .default:
+            .default
+        case .email:
+            .emailAddress
+        case .emailAddress:
+            .emailAddress
+        case .number:
+            .numberPad
+        case .numberPad:
+            .numberPad
+        case .phone:
+            .phonePad
+        case .url:
+            .URL
+        case .decimal:
+            .decimalPad
         }
+    }
     #endif
 }
 

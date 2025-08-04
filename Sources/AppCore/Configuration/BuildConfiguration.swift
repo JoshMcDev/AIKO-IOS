@@ -18,27 +18,27 @@ public enum BuildConfiguration {
     /// Current LFM2 model strategy based on build configuration
     public static var lfm2ModelStrategy: LFM2ModelStrategy {
         #if DEBUG
-            // Development builds: Check environment variable for override
-            if let strategyOverride = ProcessInfo.processInfo.environment["AIKO_LFM2_STRATEGY"] {
-                switch strategyOverride.lowercased() {
-                case "disabled":
-                    return .disabled
-                case "mock":
-                    return .developmentMock
-                case "hybrid":
-                    return .productionHybrid
-                case "full":
-                    return .fullProduction
-                default:
-                    break
-                }
+        // Development builds: Check environment variable for override
+        if let strategyOverride = ProcessInfo.processInfo.environment["AIKO_LFM2_STRATEGY"] {
+            switch strategyOverride.lowercased() {
+            case "disabled":
+                return .disabled
+            case "mock":
+                return .developmentMock
+            case "hybrid":
+                return .productionHybrid
+            case "full":
+                return .fullProduction
+            default:
+                break
             }
+        }
 
-            // Default for debug builds: mock only to prevent indexing issues
-            return .developmentMock
+        // Default for debug builds: mock only to prevent indexing issues
+        return .developmentMock
         #else
-            // Release builds: hybrid mode (Core ML with mock fallback)
-            return .productionHybrid
+        // Release builds: hybrid mode (Core ML with mock fallback)
+        return .productionHybrid
         #endif
     }
 
@@ -53,8 +53,8 @@ public enum BuildConfiguration {
     /// Detect if this is a CI/CD build
     public static var isContinuousIntegration: Bool {
         return ProcessInfo.processInfo.environment["CI"] == "true" ||
-               ProcessInfo.processInfo.environment["GITHUB_ACTIONS"] == "true" ||
-               ProcessInfo.processInfo.environment["XCODE_CLOUD"] == "1"
+            ProcessInfo.processInfo.environment["GITHUB_ACTIONS"] == "true" ||
+            ProcessInfo.processInfo.environment["XCODE_CLOUD"] == "1"
     }
 
     /// Check if large model files should be excluded from build
@@ -85,9 +85,9 @@ public enum BuildConfiguration {
     /// Enable verbose logging for model loading
     public static var enableModelLoadingLogging: Bool {
         #if DEBUG
-            return true
+        return true
         #else
-            return ProcessInfo.processInfo.environment["AIKO_VERBOSE_LOGGING"] == "true"
+        return ProcessInfo.processInfo.environment["AIKO_VERBOSE_LOGGING"] == "true"
         #endif
     }
 
@@ -164,4 +164,4 @@ extension BuildConfiguration {
 
  # CI/CD with verbose logging
  AIKO_VERBOSE_LOGGING=true xcodebuild -scheme AIKO test
-*/
+ */

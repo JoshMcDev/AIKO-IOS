@@ -450,9 +450,9 @@ actor FARComplianceStorage {
         let minorCount = violations.count(where: { $0.severity == .minor })
 
         let deduction = (Double(criticalCount) * criticalWeight +
-            Double(majorCount) * majorWeight +
-            Double(minorCount) * minorWeight +
-            Double(warnings.count) * warningWeight) / Double(totalClauses)
+                            Double(majorCount) * majorWeight +
+                            Double(minorCount) * minorWeight +
+                            Double(warnings.count) * warningWeight) / Double(totalClauses)
 
         return max(0, 1.0 - deduction)
     }

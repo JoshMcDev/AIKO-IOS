@@ -397,7 +397,7 @@ extension OnboardingWorkflowIntegrationTests {
             let currentStep = steps[i]
 
             XCTAssertLessThan(previousStep.progress, currentStep.progress,
-                            "Progress should increase: \(previousStep) -> \(currentStep)")
+                              "Progress should increase: \(previousStep) -> \(currentStep)")
         }
     }
 }

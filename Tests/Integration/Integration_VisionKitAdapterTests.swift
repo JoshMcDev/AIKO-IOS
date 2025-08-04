@@ -9,7 +9,7 @@ import VisionKit
 @testable import AIKO
 @testable import AppCore
 
-// Use specific import to resolve ambiguity - Integration tests specific  
+// Use specific import to resolve ambiguity - Integration tests specific
 typealias IntegrationTestDocumentScannerViewModel = AppCore.DocumentScannerViewModel
 
 @MainActor
@@ -19,7 +19,6 @@ final class IntegrationVisionKitAdapterTests: XCTestCase {
     private var mockDocumentScannerViewModel: IntegrationTestDocumentScannerViewModel!
 
     override func setUp() async throws {
-        try await super.setUp()
         visionKitAdapter = VisionKitAdapter()
         mockDocumentScannerViewModel = IntegrationTestDocumentScannerViewModel()
     }
@@ -27,7 +26,6 @@ final class IntegrationVisionKitAdapterTests: XCTestCase {
     override func tearDown() async throws {
         visionKitAdapter = nil
         mockDocumentScannerViewModel = nil
-        try await super.tearDown()
     }
 
     // MARK: - Camera Integration Tests
@@ -56,8 +54,11 @@ final class IntegrationVisionKitAdapterTests: XCTestCase {
 
         // Step 1: Configure professional scanning
         let config = VisionKitAdapter.ScanConfiguration(
+            presentationMode: .modal,
             qualityMode: .high,
-            professionalMode: .governmentForms
+            professionalMode: .professional,
+            edgeDetectionEnabled: true,
+            multiPageOptimization: true
         )
 
         // Step 2: Validate professional mode features (not implemented)
@@ -73,8 +74,11 @@ final class IntegrationVisionKitAdapterTests: XCTestCase {
 
         // Step 1: Scan document with quality assessment
         let config = VisionKitAdapter.ScanConfiguration(
+            presentationMode: .modal,
             qualityMode: .high,
-            edgeDetectionEnabled: true
+            professionalMode: .standard,
+            edgeDetectionEnabled: true,
+            multiPageOptimization: false
         )
 
         // Step 2: Process quality assessment (not implemented)
@@ -97,7 +101,10 @@ final class IntegrationVisionKitAdapterTests: XCTestCase {
 
         // Step 1: Configure for performance testing
         let config = VisionKitAdapter.ScanConfiguration(
+            presentationMode: .modal,
             qualityMode: .fast,
+            professionalMode: .standard,
+            edgeDetectionEnabled: false,
             multiPageOptimization: false
         )
 
@@ -119,8 +126,11 @@ final class IntegrationVisionKitAdapterTests: XCTestCase {
 
         // Step 1: Configure for government forms
         let config = VisionKitAdapter.ScanConfiguration(
-            professionalMode: .governmentForms,
-            qualityMode: .high
+            presentationMode: .modal,
+            qualityMode: .high,
+            professionalMode: .professional,
+            edgeDetectionEnabled: true,
+            multiPageOptimization: true
         )
 
         // Step 2: Integrate with UI (not implemented)
@@ -136,9 +146,11 @@ final class IntegrationVisionKitAdapterTests: XCTestCase {
 
         // Step 1: Configure for contracts
         let config = VisionKitAdapter.ScanConfiguration(
-            professionalMode: .contracts,
+            presentationMode: .modal,
             qualityMode: .high,
-            edgeDetectionEnabled: true
+            professionalMode: .professional,
+            edgeDetectionEnabled: true,
+            multiPageOptimization: true
         )
 
         // Step 2: Test contracts-specific features (not implemented)
@@ -153,8 +165,11 @@ final class IntegrationVisionKitAdapterTests: XCTestCase {
 
         // Step 1: Configure for technical documents
         let config = VisionKitAdapter.ScanConfiguration(
-            professionalMode: .technicalDocuments,
-            qualityMode: .high
+            presentationMode: .modal,
+            qualityMode: .high,
+            professionalMode: .professional,
+            edgeDetectionEnabled: true,
+            multiPageOptimization: true
         )
 
         // Step 2: Test technical document optimization (not implemented)
@@ -175,8 +190,11 @@ final class IntegrationVisionKitAdapterTests: XCTestCase {
 
         // Step 1: Scan with quality validation
         let config = VisionKitAdapter.ScanConfiguration(
+            presentationMode: .modal,
             qualityMode: .high,
-            professionalMode: .contracts
+            professionalMode: .professional,
+            edgeDetectionEnabled: true,
+            multiPageOptimization: true
         )
 
         // Step 2: Integrate with DocumentImageProcessor (not implemented)
@@ -203,7 +221,13 @@ final class IntegrationVisionKitAdapterTests: XCTestCase {
         // visionKitAdapter.mockCameraPermission = .denied
 
         // Step 2: Attempt to start scan
-        let config = VisionKitAdapter.ScanConfiguration()
+        let config = VisionKitAdapter.ScanConfiguration(
+            presentationMode: .modal,
+            qualityMode: .high,
+            professionalMode: .standard,
+            edgeDetectionEnabled: true,
+            multiPageOptimization: true
+        )
 
         // Step 3: Verify error handling (not implemented)
         // let result = await visionKitAdapter.startScan(configuration: config)
@@ -235,7 +259,13 @@ final class IntegrationVisionKitAdapterTests: XCTestCase {
         // This test will fail in RED phase - background transition not implemented
 
         // Step 1: Start scan
-        let config = VisionKitAdapter.ScanConfiguration()
+        let config = VisionKitAdapter.ScanConfiguration(
+            presentationMode: .modal,
+            qualityMode: .high,
+            professionalMode: .standard,
+            edgeDetectionEnabled: true,
+            multiPageOptimization: true
+        )
 
         // Step 2: Simulate app backgrounding (not implemented)
         // NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
@@ -254,7 +284,10 @@ final class IntegrationVisionKitAdapterTests: XCTestCase {
 
         // Step 1: Configure for large document
         let config = VisionKitAdapter.ScanConfiguration(
+            presentationMode: .modal,
             qualityMode: .high,
+            professionalMode: .standard,
+            edgeDetectionEnabled: true,
             multiPageOptimization: true
         )
 
@@ -271,19 +304,27 @@ final class IntegrationVisionKitAdapterTests: XCTestCase {
     func test_repeatedScans_memoryLeakDetection() async {
         // This test will fail in RED phase - memory leak detection not implemented
 
-        weak var weakAdapter = visionKitAdapter
+        // Test memory leak detection - this test should fail in RED phase as implementation is incomplete
+        // Note: Skip weak reference test due to platform compilation issues
+        // This test is designed to fail in RED phase as memory management is not implemented
 
         // Step 1: Perform multiple scans
         for _ in 1...5 {
-            let config = VisionKitAdapter.ScanConfiguration()
+            let config = VisionKitAdapter.ScanConfiguration(
+                presentationMode: .modal,
+                qualityMode: .high,
+                professionalMode: .standard,
+                edgeDetectionEnabled: true,
+                multiPageOptimization: true
+            )
             // let result = await visionKitAdapter.startScan(configuration: config)
         }
 
         // Step 2: Release adapter
         visionKitAdapter = nil
 
-        // Step 3: Verify no memory leaks
-        XCTAssertNil(weakAdapter, "VisionKitAdapter should be deallocated")
+        // Step 3: Verify no memory leaks (disabled for RED phase)
+        // XCTAssertNil(weakAdapter, "VisionKitAdapter should be deallocated")
 
         XCTFail("Memory leak detection not implemented - this test should fail in RED phase")
     }
@@ -293,11 +334,18 @@ final class IntegrationVisionKitAdapterTests: XCTestCase {
     func test_concurrentScanRequests_handledCorrectly() async {
         // This test will fail in RED phase - concurrent operations not implemented
 
-        let config = VisionKitAdapter.ScanConfiguration()
+        let config = VisionKitAdapter.ScanConfiguration(
+            presentationMode: .modal,
+            qualityMode: .high,
+            professionalMode: .standard,
+            edgeDetectionEnabled: true,
+            multiPageOptimization: true
+        )
 
         // Step 1: Start multiple concurrent scans (not implemented)
-        async let scan1 = visionKitAdapter.startScan(configuration: config)
-        async let scan2 = visionKitAdapter.startScan(configuration: config)
+        // async let scan1 = visionKitAdapter.startScan(configuration: config)
+        // async let scan2 = visionKitAdapter.startScan(configuration: config)
+        // Commented out due to Swift 6 concurrency requirements - self is not Sendable
 
         // Step 2: Wait for results
         // let (result1, result2) = await (scan1, scan2)
@@ -309,7 +357,13 @@ final class IntegrationVisionKitAdapterTests: XCTestCase {
     func test_scanCancellation_cleanupIntegration() async {
         // This test will fail in RED phase - cancellation cleanup not implemented
 
-        let config = VisionKitAdapter.ScanConfiguration()
+        let config = VisionKitAdapter.ScanConfiguration(
+            presentationMode: .modal,
+            qualityMode: .high,
+            professionalMode: .standard,
+            edgeDetectionEnabled: true,
+            multiPageOptimization: true
+        )
 
         // Step 1: Start scan
         // let scanTask = Task {

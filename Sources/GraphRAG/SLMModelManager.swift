@@ -2,7 +2,7 @@
 import Foundation
 import OSLog
 #if canImport(UIKit)
-    import UIKit
+import UIKit
 #endif
 
 /// Dynamic Small Language Model manager for AIKO GraphRAG system

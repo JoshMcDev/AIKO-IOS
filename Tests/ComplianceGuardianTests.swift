@@ -23,7 +23,6 @@ final class ComplianceGuardianTests: XCTestCase {
     var complianceGuardian: ComplianceGuardian?
 
     override func setUp() async throws {
-        try await super.setUp()
 
         // Initialize mock dependencies
         mockDocumentAnalyzer = MockDocumentAnalyzer()
@@ -51,7 +50,6 @@ final class ComplianceGuardianTests: XCTestCase {
         mockLearningFeedbackLoop = nil
         mockCompliancePolicyEngine = nil
         performanceMetrics = nil
-        try await super.tearDown()
     }
 }
 
@@ -77,7 +75,7 @@ extension ComplianceGuardianTests {
 
         // THEN: Response time is under 200ms
         XCTAssertLessThan(responseTime, latencyThreshold,
-                         "Compliance analysis exceeded 200ms threshold: \(responseTime * 1000)ms")
+                          "Compliance analysis exceeded 200ms threshold: \(responseTime * 1000)ms")
         XCTAssertNotNil(result.complianceStatus)
         XCTAssertNotNil(result.explanation)
     }
@@ -115,7 +113,7 @@ extension ComplianceGuardianTests {
         let percentile95Time = sortedTimes[percentile95Index]
 
         XCTAssertLessThan(percentile95Time, 0.200,
-                         "95th percentile response time exceeded 200ms: \(percentile95Time * 1000)ms")
+                          "95th percentile response time exceeded 200ms: \(percentile95Time * 1000)ms")
     }
 
     /// Test 1.1.3: Incremental Processing Efficiency
@@ -134,9 +132,9 @@ extension ComplianceGuardianTests {
 
         // THEN: Incremental processing is significantly faster
         XCTAssertLessThan(incrementalTime, baselineTime * 0.3,
-                         "Incremental processing should be <30% of full analysis time")
+                          "Incremental processing should be <30% of full analysis time")
         XCTAssertLessThan(incrementalTime, 0.100, // 100ms for incremental updates
-                         "Incremental analysis exceeded 100ms threshold")
+                          "Incremental analysis exceeded 100ms threshold")
     }
 }
 
@@ -164,7 +162,7 @@ extension ComplianceGuardianTests {
         // THEN: Accuracy is >95%
         let accuracy = Double(correctPredictions) / Double(totalPredictions)
         XCTAssertGreaterThan(accuracy, 0.95,
-                            "Compliance detection accuracy below 95%: \(accuracy * 100)%")
+                             "Compliance detection accuracy below 95%: \(accuracy * 100)%")
     }
 
     /// Test 1.2.2: False Positive Rate Control
@@ -186,7 +184,7 @@ extension ComplianceGuardianTests {
         // THEN: False positive rate is <10%
         let falsePositiveRate = Double(falsePositives) / Double(compliantDocuments.count)
         XCTAssertLessThan(falsePositiveRate, 0.10,
-                         "False positive rate exceeded 10%: \(falsePositiveRate * 100)%")
+                          "False positive rate exceeded 10%: \(falsePositiveRate * 100)%")
     }
 
     /// Test 1.2.3: SHAP Explanation Generation
@@ -228,7 +226,7 @@ extension ComplianceGuardianTests {
 
         // THEN: Inference time is <50ms
         XCTAssertLessThan(inferenceTime, 0.050,
-                         "Core ML inference exceeded 50ms: \(inferenceTime * 1000)ms")
+                          "Core ML inference exceeded 50ms: \(inferenceTime * 1000)ms")
         XCTAssertNotNil(prediction.complianceScore)
         XCTAssertNotNil(prediction.violationType)
     }
@@ -250,7 +248,7 @@ extension ComplianceGuardianTests {
             guardian: complianceGuardian!
         )
 
-        integrationCoordinator.onComplianceResult = { (result: GuardianComplianceResult) in
+        integrationCoordinator.onComplianceResult = { (_: GuardianComplianceResult) in
             // Use actor-isolated variable to avoid concurrency issues
             expectation.fulfill()
         }
@@ -502,7 +500,7 @@ extension ComplianceGuardianTests {
 
         // THEN: Memory usage remains within acceptable bounds
         XCTAssertLessThan(memoryIncrease, 200 * 1024 * 1024, // 200MB limit
-                         "Memory usage exceeded 200MB limit: \(memoryIncrease / 1024 / 1024)MB")
+                          "Memory usage exceeded 200MB limit: \(memoryIncrease / 1024 / 1024)MB")
 
         // Cleanup and verify memory is released
         monitors.removeAll()
@@ -511,7 +509,7 @@ extension ComplianceGuardianTests {
         let finalMemory = performanceMetrics!.getCurrentMemoryUsage()
         let memoryLeak = finalMemory - initialMemory
         XCTAssertLessThan(memoryLeak, 10 * 1024 * 1024, // 10MB leak tolerance
-                         "Potential memory leak detected: \(memoryLeak / 1024 / 1024)MB")
+                          "Potential memory leak detected: \(memoryLeak / 1024 / 1024)MB")
     }
 
     /// Test 4.1.2: Large Document Processing
@@ -528,7 +526,7 @@ extension ComplianceGuardianTests {
         // THEN: Memory usage remains reasonable
         let memoryIncrease = memoryPeak - memoryBefore
         XCTAssertLessThan(memoryIncrease, 100 * 1024 * 1024, // 100MB limit
-                         "Large document processing exceeded memory limit")
+                          "Large document processing exceeded memory limit")
         XCTAssertNotNil(result)
         XCTAssertLessThan(result.processingTime, 2.0, "Large document took too long")
     }
@@ -637,7 +635,7 @@ extension ComplianceGuardianTests {
     private func createTestDocument() -> TestDocument {
         return generateTestDocument()
     }
-    
+
     private static func createTestDocumentWithId(_ id: Int) -> TestDocument {
         return TestDocument(
             content: "Sample FAR document content with ID \(id)",

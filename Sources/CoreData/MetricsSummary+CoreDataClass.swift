@@ -17,12 +17,12 @@ public class MetricsSummaryEntity: NSManagedObject {
         // Decode MOP scores
         let mopScores: [MeasureOfPerformance: Double] =
             (mopScoresData.flatMap { try? JSONDecoder().decode([String: Double].self, from: $0) } ?? [:])
-                .compactMapKeys { MeasureOfPerformance(rawValue: $0) }
+            .compactMapKeys { MeasureOfPerformance(rawValue: $0) }
 
         // Decode MOE scores
         let moeScores: [MeasureOfEffectiveness: Double] =
             (moeScoresData.flatMap { try? JSONDecoder().decode([String: Double].self, from: $0) } ?? [:])
-                .compactMapKeys { MeasureOfEffectiveness(rawValue: $0) }
+            .compactMapKeys { MeasureOfEffectiveness(rawValue: $0) }
 
         // Convert insights
         let insights = (insights?.allObjects as? [MetricInsightEntity] ?? [])

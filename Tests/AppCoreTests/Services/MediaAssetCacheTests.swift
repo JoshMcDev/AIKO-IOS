@@ -5,14 +5,12 @@ final class MediaAssetCacheTests: XCTestCase {
     private var cache: MediaAssetCache?
 
     override func setUp() async throws {
-        try await super.setUp()
         cache = MediaAssetCache()
     }
 
     override func tearDown() async throws {
         await cache?.clearCache()
         cache = nil
-        try await super.tearDown()
     }
 
     // MARK: - Basic Caching Tests

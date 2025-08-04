@@ -1,9 +1,9 @@
 import AppCore
 import SwiftUI
 #if os(iOS)
-    import UIKit
+import UIKit
 #else
-    import AppKit
+import AppKit
 #endif
 
 // MARK: - Profile Text Field
@@ -15,9 +15,9 @@ struct ProfileTextField: View {
     var isRequired: Bool = false
     var placeholder: String = ""
     #if os(iOS)
-        var keyboardType: UIKeyboardType = .default
+    var keyboardType: UIKeyboardType = .default
     #else
-        var keyboardType: String = "default"
+    var keyboardType: String = "default"
     #endif
     var error: String?
     var helpText: String?
@@ -51,7 +51,7 @@ struct ProfileTextField: View {
                                     .stroke(error != nil ? Color.red : Color.clear, lineWidth: 1)
                             )
                     )
-                #if os(iOS)
+                    #if os(iOS)
                     .keyboardType(keyboardType)
                     .autocapitalization(.none)
                     .disableAutocorrection(keyboardType == .emailAddress)
@@ -271,33 +271,33 @@ struct AddressSectionView: View {
             )
 
             #if os(iOS)
-                AddressFieldView(
-                    title: "Email Address",
-                    text: .init(
-                        get: { localAddress.email },
-                        set: {
-                            localAddress.email = $0
-                            onUpdate(localAddress)
-                        }
-                    ),
-                    isEditing: isEditing,
-                    isRequired: false,
-                    keyboardType: .emailAddress
-                )
+            AddressFieldView(
+                title: "Email Address",
+                text: .init(
+                    get: { localAddress.email },
+                    set: {
+                        localAddress.email = $0
+                        onUpdate(localAddress)
+                    }
+                ),
+                isEditing: isEditing,
+                isRequired: false,
+                keyboardType: .emailAddress
+            )
             #else
-                AddressFieldView(
-                    title: "Email Address",
-                    text: .init(
-                        get: { localAddress.email },
-                        set: {
-                            localAddress.email = $0
-                            onUpdate(localAddress)
-                        }
-                    ),
-                    isEditing: isEditing,
-                    isRequired: false,
-                    keyboardType: "emailAddress"
-                )
+            AddressFieldView(
+                title: "Email Address",
+                text: .init(
+                    get: { localAddress.email },
+                    set: {
+                        localAddress.email = $0
+                        onUpdate(localAddress)
+                    }
+                ),
+                isEditing: isEditing,
+                isRequired: false,
+                keyboardType: "emailAddress"
+            )
             #endif
 
             if !isEditing, address.isComplete {
@@ -332,9 +332,9 @@ struct AddressFieldView: View {
     let isEditing: Bool
     var isRequired: Bool = false
     #if os(iOS)
-        var keyboardType: UIKeyboardType = .default
+    var keyboardType: UIKeyboardType = .default
     #else
-        var keyboardType: String = "default"
+    var keyboardType: String = "default"
     #endif
 
     var body: some View {
@@ -366,21 +366,21 @@ struct OrganizationLogoView: View {
                 Button(action: isEditing ? onTap : {}) {
                     if let logoData {
                         #if os(iOS)
-                            if let uiImage = UIImage(data: logoData) {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(height: 60)
-                                    .cornerRadius(Theme.CornerRadius.small)
-                            }
+                        if let uiImage = UIImage(data: logoData) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 60)
+                                .cornerRadius(Theme.CornerRadius.small)
+                        }
                         #else
-                            if let nsImage = NSImage(data: logoData) {
-                                Image(nsImage: nsImage)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(height: 60)
-                                    .cornerRadius(Theme.CornerRadius.small)
-                            }
+                        if let nsImage = NSImage(data: logoData) {
+                            Image(nsImage: nsImage)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 60)
+                                .cornerRadius(Theme.CornerRadius.small)
+                        }
                         #endif
                     } else {
                         RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
@@ -491,109 +491,109 @@ struct ProfileCompletionView: View {
 // MARK: - Profile Image Picker
 
 #if os(iOS)
-    struct ProfileImagePicker: View {
-        let onImageSelected: (Data) -> Void
-        @State private var showingImagePicker = false
-        @State private var showingSourceDialog = false
-        @State private var imageSourceType: UIImagePickerController.SourceType = .photoLibrary
-        @Environment(\.dismiss) var dismiss
+struct ProfileImagePicker: View {
+    let onImageSelected: (Data) -> Void
+    @State private var showingImagePicker = false
+    @State private var showingSourceDialog = false
+    @State private var imageSourceType: UIImagePickerController.SourceType = .photoLibrary
+    @Environment(\.dismiss) var dismiss
 
-        var body: some View {
-            VStack {
-                Spacer()
+    var body: some View {
+        VStack {
+            Spacer()
 
-                VStack(spacing: Theme.Spacing.large) {
-                    Text("Choose Image Source")
-                        .font(.headline)
-                        .foregroundColor(.white)
+            VStack(spacing: Theme.Spacing.large) {
+                Text("Choose Image Source")
+                    .font(.headline)
+                    .foregroundColor(.white)
 
-                    VStack(spacing: Theme.Spacing.medium) {
-                        Button(action: {
-                            imageSourceType = .camera
-                            showingImagePicker = true
-                        }, label: {
-                            Label("Take Photo", systemImage: "camera.fill")
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Theme.Colors.aikoPrimary)
-                                .foregroundColor(.white)
-                                .cornerRadius(Theme.CornerRadius.small)
-                        })
+                VStack(spacing: Theme.Spacing.medium) {
+                    Button(action: {
+                        imageSourceType = .camera
+                        showingImagePicker = true
+                    }, label: {
+                        Label("Take Photo", systemImage: "camera.fill")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Theme.Colors.aikoPrimary)
+                            .foregroundColor(.white)
+                            .cornerRadius(Theme.CornerRadius.small)
+                    })
 
-                        Button(action: {
-                            imageSourceType = .photoLibrary
-                            showingImagePicker = true
-                        }, label: {
-                            Label("Choose from Library", systemImage: "photo.fill")
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Theme.Colors.aikoSecondary)
-                                .foregroundColor(.white)
-                                .cornerRadius(Theme.CornerRadius.small)
-                        })
+                    Button(action: {
+                        imageSourceType = .photoLibrary
+                        showingImagePicker = true
+                    }, label: {
+                        Label("Choose from Library", systemImage: "photo.fill")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Theme.Colors.aikoSecondary)
+                            .foregroundColor(.white)
+                            .cornerRadius(Theme.CornerRadius.small)
+                    })
 
-                        Button("Cancel", role: .cancel) {
-                            dismiss()
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .foregroundColor(.white)
-                    }
-                }
-                .padding(Theme.Spacing.extraLarge)
-
-                Spacer()
-            }
-            .background(Theme.Colors.aikoBackground)
-            .sheet(isPresented: $showingImagePicker) {
-                ImagePickerRepresentable(sourceType: imageSourceType) { image in
-                    if let imageData = image.jpegData(compressionQuality: 0.8) {
-                        onImageSelected(imageData)
+                    Button("Cancel", role: .cancel) {
                         dismiss()
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .foregroundColor(.white)
+                }
+            }
+            .padding(Theme.Spacing.extraLarge)
+
+            Spacer()
+        }
+        .background(Theme.Colors.aikoBackground)
+        .sheet(isPresented: $showingImagePicker) {
+            ImagePickerRepresentable(sourceType: imageSourceType) { image in
+                if let imageData = image.jpegData(compressionQuality: 0.8) {
+                    onImageSelected(imageData)
+                    dismiss()
                 }
             }
         }
     }
+}
 
-    struct ImagePickerRepresentable: UIViewControllerRepresentable {
-        let sourceType: UIImagePickerController.SourceType
-        let onImagePicked: (UIImage) -> Void
-        @Environment(\.dismiss) var dismiss
+struct ImagePickerRepresentable: UIViewControllerRepresentable {
+    let sourceType: UIImagePickerController.SourceType
+    let onImagePicked: (UIImage) -> Void
+    @Environment(\.dismiss) var dismiss
 
-        func makeUIViewController(context: Context) -> UIImagePickerController {
-            let picker = UIImagePickerController()
-            picker.delegate = context.coordinator
-            picker.sourceType = sourceType
-            picker.allowsEditing = true
-            return picker
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.delegate = context.coordinator
+        picker.sourceType = sourceType
+        picker.allowsEditing = true
+        return picker
+    }
+
+    func updateUIViewController(_: UIImagePickerController, context _: Context) {}
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+
+    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+        let parent: ImagePickerRepresentable
+
+        init(_ parent: ImagePickerRepresentable) {
+            self.parent = parent
         }
 
-        func updateUIViewController(_: UIImagePickerController, context _: Context) {}
-
-        func makeCoordinator() -> Coordinator {
-            Coordinator(self)
+        func imagePickerController(_: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+            if let editedImage = info[.editedImage] as? UIImage {
+                parent.onImagePicked(editedImage)
+            } else if let originalImage = info[.originalImage] as? UIImage {
+                parent.onImagePicked(originalImage)
+            }
+            parent.dismiss()
         }
 
-        class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-            let parent: ImagePickerRepresentable
-
-            init(_ parent: ImagePickerRepresentable) {
-                self.parent = parent
-            }
-
-            func imagePickerController(_: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-                if let editedImage = info[.editedImage] as? UIImage {
-                    parent.onImagePicked(editedImage)
-                } else if let originalImage = info[.originalImage] as? UIImage {
-                    parent.onImagePicked(originalImage)
-                }
-                parent.dismiss()
-            }
-
-            func imagePickerControllerDidCancel(_: UIImagePickerController) {
-                parent.dismiss()
-            }
+        func imagePickerControllerDidCancel(_: UIImagePickerController) {
+            parent.dismiss()
         }
     }
+}
 #endif

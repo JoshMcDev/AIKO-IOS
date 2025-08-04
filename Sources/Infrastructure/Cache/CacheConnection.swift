@@ -349,44 +349,44 @@ public enum CacheConnectionError: Error {
 // MARK: - Mock Implementation for Testing
 
 #if DEBUG
-    public actor MockCacheConnection {
-        private var storage: [String: Data] = [:]
-        private let endpoint: String
+public actor MockCacheConnection {
+    private var storage: [String: Data] = [:]
+    private let endpoint: String
 
-        public init(endpoint: String) {
-            self.endpoint = endpoint
-        }
+    public init(endpoint: String) {
+        self.endpoint = endpoint
+    }
 
-        public func get(key: String) async throws -> Data? {
-            storage[key]
-        }
+    public func get(key: String) async throws -> Data? {
+        storage[key]
+    }
 
-        public func set(key: String, data: Data, ttl _: TimeInterval?) async throws {
+    public func set(key: String, data: Data, ttl _: TimeInterval?) async throws {
+        storage[key] = data
+    }
+
+    public func remove(key: String) async throws {
+        storage.removeValue(forKey: key)
+    }
+
+    public func setMultiple(_ values: [String: some Codable], ttl _: TimeInterval?) async throws {
+        for (key, value) in values {
+            let data = try JSONEncoder().encode(value)
             storage[key] = data
         }
-
-        public func remove(key: String) async throws {
-            storage.removeValue(forKey: key)
-        }
-
-        public func setMultiple(_ values: [String: some Codable], ttl _: TimeInterval?) async throws {
-            for (key, value) in values {
-                let data = try JSONEncoder().encode(value)
-                storage[key] = data
-            }
-        }
-
-        public func sendHeartbeat(from _: String, keyCount _: Int, load _: Double) async throws {
-            // Mock implementation
-        }
-
-        public func exchangeNodeInfo(nodeId _: String, endpoint _: String) async throws -> [String: CacheConnection.NodeInfo] {
-            // Mock implementation
-            [:]
-        }
-
-        public func close() {
-            // Mock implementation
-        }
     }
+
+    public func sendHeartbeat(from _: String, keyCount _: Int, load _: Double) async throws {
+        // Mock implementation
+    }
+
+    public func exchangeNodeInfo(nodeId _: String, endpoint _: String) async throws -> [String: CacheConnection.NodeInfo] {
+        // Mock implementation
+        [:]
+    }
+
+    public func close() {
+        // Mock implementation
+    }
+}
 #endif

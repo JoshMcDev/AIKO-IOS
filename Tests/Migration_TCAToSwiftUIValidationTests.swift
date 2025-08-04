@@ -29,7 +29,12 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
         try await super.setUp()
         mockConfigService = MockLLMConfigurationService()
         mockKeychainService = MockLLMKeychainService()
-        mockService = MockLLMProviderSettingsService()
+        let mockBiometricService = MockBiometricService()
+        mockService = MockLLMProviderSettingsService(
+            biometricService: mockBiometricService,
+            keychainService: mockKeychainService,
+            configurationService: mockConfigService
+        )
 
         modernViewModel = LLMProviderSettingsViewModel(
             configurationService: mockConfigService,
@@ -67,7 +72,7 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
         // Test provider selection
         modernViewModel.selectProvider(.claude)
         if modernViewModel.selectedProvider == .claude &&
-           modernViewModel.isProviderConfigSheetPresented {
+            modernViewModel.isProviderConfigSheetPresented {
             implementedFeatures.append("Provider selection and configuration")
         }
 
@@ -112,7 +117,7 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
 
         // Should have all features implemented (will fail in RED phase)
         XCTAssertEqual(implementedFeatures.count, originalFeatures.count,
-                      "Missing features: \(Set(originalFeatures).subtracting(Set(implementedFeatures)))")
+                       "Missing features: \(Set(originalFeatures).subtracting(Set(implementedFeatures)))")
     }
 
     func test_migrationParity_identicalUserExperience() {
@@ -177,7 +182,7 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
 
         // Should have all interactions working (will fail in RED phase)
         XCTAssertEqual(workingInteractions.count, userInteractions.count,
-                      "Non-working interactions: \(Set(userInteractions).subtracting(Set(workingInteractions)))")
+                       "Non-working interactions: \(Set(userInteractions).subtracting(Set(workingInteractions)))")
     }
 
     func test_migrationParity_stateManagementEquivalent() async {
@@ -260,7 +265,7 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
             await modernViewModel.moveProvider(from: IndexSet([0]), to: 1)
         }
         mappedActions.append(contentsOf: ["saveConfiguration", "removeConfiguration",
-                                         "fallbackBehaviorChanged", "moveProvider"])
+                                          "fallbackBehaviorChanged", "moveProvider"])
 
         // Model and config updates
         modernViewModel.providerConfigState = TestFixtures.testProviderConfigState
@@ -428,6 +433,7 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
 // MARK: - Extended Test Fixtures
 
 extension TestFixtures {
+    @MainActor
     static let legacyTCAState: [String: Any] = [
         "isProviderConfigSheetPresented": false,
         "selectedProvider": "claude",
@@ -456,7 +462,7 @@ extension MockLLMKeychainService {
     var hasStoredKeys: Bool {
         return false
     }
-    
+
     var usesEncryption: Bool {
         return false
     }

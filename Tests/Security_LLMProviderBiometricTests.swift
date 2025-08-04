@@ -26,7 +26,6 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
     // MARK: - Setup
 
     override func setUp() async throws {
-        try await super.setUp()
         biometricService = BiometricAuthenticationService()
         mockKeychainService = MockSecureLLMKeychainService()
         mockConfigService = MockLLMConfigurationService()
@@ -43,7 +42,6 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
         settingsService = nil
         mockKeychainService = nil
         mockConfigService = nil
-        try await super.tearDown()
     }
 
     // MARK: - Biometric Authentication Flow Tests (8 methods)

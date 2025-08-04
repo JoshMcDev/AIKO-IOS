@@ -21,39 +21,39 @@ public struct TextFieldModifier: ViewModifier {
 
     public func body(content: Content) -> some View {
         #if os(iOS)
-            if supportsAutocapitalization || supportsKeyboardTypes {
-                content
-                    .autocapitalization(disableAutocapitalization ? .none : .sentences)
-                    .keyboardType(keyboardType.map(iOSKeyboardType) ?? .default)
-            } else {
-                content
-            }
-        #else
+        if supportsAutocapitalization || supportsKeyboardTypes {
             content
+                .autocapitalization(disableAutocapitalization ? .none : .sentences)
+                .keyboardType(keyboardType.map(iOSKeyboardType) ?? .default)
+        } else {
+            content
+        }
+        #else
+        content
         #endif
     }
 
     #if os(iOS)
-        private func iOSKeyboardType(from platformType: PlatformKeyboardType) -> UIKeyboardType {
-            switch platformType {
-            case .default:
-                .default
-            case .email:
-                .emailAddress
-            case .emailAddress:
-                .emailAddress
-            case .number:
-                .numberPad
-            case .numberPad:
-                .numberPad
-            case .phone:
-                .phonePad
-            case .url:
-                .URL
-            case .decimal:
-                .decimalPad
-            }
+    private func iOSKeyboardType(from platformType: PlatformKeyboardType) -> UIKeyboardType {
+        switch platformType {
+        case .default:
+            .default
+        case .email:
+            .emailAddress
+        case .emailAddress:
+            .emailAddress
+        case .number:
+            .numberPad
+        case .numberPad:
+            .numberPad
+        case .phone:
+            .phonePad
+        case .url:
+            .URL
+        case .decimal:
+            .decimalPad
         }
+    }
     #endif
 }
 

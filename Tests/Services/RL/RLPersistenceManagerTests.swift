@@ -16,12 +16,12 @@ final class RLPersistenceManagerTests: XCTestCase {
     // MARK: - Test Properties
 
     var persistenceManager: RLPersistenceManager!
-    var mockCoreDataStack: MockCoreDataStack!
-    var testBandits: [ActionIdentifier: ContextualBandit]!
+    var mockCoreDataStack: AIKO.MockCoreDataStack!
+    private var testBandits: [AIKO.ActionIdentifier: AIKO.ContextualBandit]!
     var testFeatureVector: FeatureVector!
 
     override func setUp() async throws {
-        mockCoreDataStack = MockCoreDataStack()
+        mockCoreDataStack = AIKO.MockCoreDataStack()
         persistenceManager = RLPersistenceManager(coreDataStack: mockCoreDataStack)
 
         // Create test feature vector
@@ -33,16 +33,16 @@ final class RLPersistenceManagerTests: XCTestCase {
             "is_urgent": 0.0
         ])
 
-        // Create test bandits
+        // Create test bandits using AIKO types
         testBandits = [
-            ActionIdentifier(actionId: "action-1", contextHash: testFeatureVector.hash): ContextualBandit(
+            AIKO.ActionIdentifier(actionId: "action-1", contextHash: testFeatureVector.hash): AIKO.ContextualBandit(
                 contextFeatures: testFeatureVector,
                 successCount: 3.0,
                 failureCount: 2.0,
                 lastUpdate: Date(),
                 totalSamples: 5
             ),
-            ActionIdentifier(actionId: "action-2", contextHash: testFeatureVector.hash): ContextualBandit(
+            AIKO.ActionIdentifier(actionId: "action-2", contextHash: testFeatureVector.hash): AIKO.ContextualBandit(
                 contextFeatures: testFeatureVector,
                 successCount: 5.0,
                 failureCount: 1.0,
@@ -377,6 +377,7 @@ final class RLPersistenceManagerTests: XCTestCase {
         let concurrentOperations = 20
 
         // When: Multiple concurrent save operations
+        let persistenceManagerLocal = self.persistenceManager!
         try await withThrowingTaskGroup(of: Void.self) { group in
             for i in 0..<concurrentOperations {
                 group.addTask {
@@ -395,7 +396,7 @@ final class RLPersistenceManagerTests: XCTestCase {
                         )
                     ]
 
-                    try await self.persistenceManager.saveBandits(bandits)
+                    try await persistenceManagerLocal.saveBandits(bandits)
                 }
             }
 
@@ -415,29 +416,7 @@ final class RLPersistenceManagerTests: XCTestCase {
     }
 
     // MARK: - Helper Types
-
-    private struct ActionIdentifier: Hashable, Codable {
-        let actionId: String
-        let contextHash: Int
-    }
-
-    private struct ContextualBandit: Codable {
-        let contextFeatures: FeatureVector
-        var successCount: Double
-        var failureCount: Double
-        var lastUpdate: Date
-        var totalSamples: Int
-
-        mutating func updatePosterior(reward: Double) {
-            if reward > 0 {
-                successCount += reward
-            } else {
-                failureCount += 1.0 - reward
-            }
-            totalSamples += 1
-            lastUpdate = Date()
-        }
-    }
+    // Using AIKO module types instead of private definitions
 }
 
 // MARK: - Mock Core Data Stack

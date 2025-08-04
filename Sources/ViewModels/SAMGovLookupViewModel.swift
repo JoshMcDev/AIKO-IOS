@@ -127,9 +127,9 @@ public final class SAMGovLookupViewModel: @unchecked Sendable {
 
     private func canRemoveSearchEntry(at index: Int) -> Bool {
         return index > 0 &&
-               index < searchEntries.count &&
-               searchEntries.count > 1 &&
-               !searchEntries[index].isSearching
+            index < searchEntries.count &&
+            searchEntries.count > 1 &&
+            !searchEntries[index].isSearching
     }
 
     @MainActor

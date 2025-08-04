@@ -30,98 +30,98 @@ public struct UserGuideView: View {
 
     public var body: some View {
         #if os(iOS)
-            SwiftUI.NavigationView {
-                contentView
-                    .navigationTitle("User Guide")
-                    .navigationBarTitleDisplayMode(.large)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button("Done") {
-                                dismiss()
-                            }
-                        }
-                    }
-            }
-        #else
+        SwiftUI.NavigationView {
             contentView
-                .frame(minWidth: 800, minHeight: 600)
+                .navigationTitle("User Guide")
+                .navigationBarTitleDisplayMode(.large)
                 .toolbar {
-                    ToolbarItem(placement: .automatic) {
+                    ToolbarItem(placement: .navigationBarTrailing) {
                         Button("Done") {
                             dismiss()
                         }
                     }
                 }
+        }
+        #else
+        contentView
+            .frame(minWidth: 800, minHeight: 600)
+            .toolbar {
+                ToolbarItem(placement: .automatic) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
         #endif
     }
 
     private var contentView: some View {
         #if os(iOS)
-            Group {
-                if UIDevice.current.userInterfaceIdiom == .pad {
-                    // iPad layout with sidebar
-                    HStack(spacing: 0) {
-                        // Sidebar
-                        sidebarView
-                            .frame(width: 280)
+        Group {
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                // iPad layout with sidebar
+                HStack(spacing: 0) {
+                    // Sidebar
+                    sidebarView
+                        .frame(width: 280)
 
-                        // Content
-                        ScrollView {
-                            contentForSection(selectedSection)
-                                .padding(Theme.Spacing.extraLarge)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .background(Theme.Colors.aikoBackground)
+                    // Content
+                    ScrollView {
+                        contentForSection(selectedSection)
+                            .padding(Theme.Spacing.extraLarge)
                     }
-                } else {
-                    // iPhone layout with tab view
-                    VStack(spacing: 0) {
-                        // Section selector
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: Theme.Spacing.small) {
-                                ForEach(GuideSection.allCases, id: \.self) { section in
-                                    Button(action: { selectedSection = section }) {
-                                        Text(section.rawValue)
-                                            .font(.subheadline)
-                                            .fontWeight(selectedSection == section ? .semibold : .regular)
-                                            .foregroundColor(selectedSection == section ? .white : .secondary)
-                                            .padding(.horizontal, Theme.Spacing.medium)
-                                            .padding(.vertical, Theme.Spacing.small)
-                                            .background(
-                                                RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
-                                                    .fill(selectedSection == section ? Theme.Colors.aikoAccent : Theme.Colors.aikoSecondary)
-                                            )
-                                    }
+                    .frame(maxWidth: .infinity)
+                    .background(Theme.Colors.aikoBackground)
+                }
+            } else {
+                // iPhone layout with tab view
+                VStack(spacing: 0) {
+                    // Section selector
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: Theme.Spacing.small) {
+                            ForEach(GuideSection.allCases, id: \.self) { section in
+                                Button(action: { selectedSection = section }) {
+                                    Text(section.rawValue)
+                                        .font(.subheadline)
+                                        .fontWeight(selectedSection == section ? .semibold : .regular)
+                                        .foregroundColor(selectedSection == section ? .white : .secondary)
+                                        .padding(.horizontal, Theme.Spacing.medium)
+                                        .padding(.vertical, Theme.Spacing.small)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
+                                                .fill(selectedSection == section ? Theme.Colors.aikoAccent : Theme.Colors.aikoSecondary)
+                                        )
                                 }
                             }
-                            .padding(Theme.Spacing.medium)
                         }
-                        .background(Color.black)
-
-                        // Content
-                        ScrollView {
-                            contentForSection(selectedSection)
-                                .padding(Theme.Spacing.extraLarge)
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(Theme.Colors.aikoBackground)
+                        .padding(Theme.Spacing.medium)
                     }
-                }
-            }
-        #else
-            HSplitView {
-                // Sidebar
-                sidebarView
-                    .frame(minWidth: 250, idealWidth: 280)
+                    .background(Color.black)
 
-                // Content
-                ScrollView {
-                    contentForSection(selectedSection)
-                        .padding(Theme.Spacing.extraLarge)
+                    // Content
+                    ScrollView {
+                        contentForSection(selectedSection)
+                            .padding(Theme.Spacing.extraLarge)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Theme.Colors.aikoBackground)
                 }
-                .frame(maxWidth: .infinity)
-                .background(Theme.Colors.aikoBackground)
             }
+        }
+        #else
+        HSplitView {
+            // Sidebar
+            sidebarView
+                .frame(minWidth: 250, idealWidth: 280)
+
+            // Content
+            ScrollView {
+                contentForSection(selectedSection)
+                    .padding(Theme.Spacing.extraLarge)
+            }
+            .frame(maxWidth: .infinity)
+            .background(Theme.Colors.aikoBackground)
+        }
         #endif
     }
 
@@ -715,36 +715,36 @@ struct FAQItem: View {
 // MARK: - Platform Specific
 
 #if os(macOS)
-    struct HSplitView<Content: View>: View {
-        let content: Content
+struct HSplitView<Content: View>: View {
+    let content: Content
 
-        init(@ViewBuilder content: () -> Content) {
-            self.content = content()
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+
+    var body: some View {
+        HStack(spacing: 0) {
+            content
         }
+    }
+}
+#else
+struct HSplitView<Content: View>: View {
+    let content: Content
 
-        var body: some View {
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+
+    var body: some View {
+        if UIDevice.current.userInterfaceIdiom == .pad {
             HStack(spacing: 0) {
                 content
             }
+        } else {
+            // On iPhone, show as navigation
+            content
         }
     }
-#else
-    struct HSplitView<Content: View>: View {
-        let content: Content
-
-        init(@ViewBuilder content: () -> Content) {
-            self.content = content()
-        }
-
-        var body: some View {
-            if UIDevice.current.userInterfaceIdiom == .pad {
-                HStack(spacing: 0) {
-                    content
-                }
-            } else {
-                // On iPhone, show as navigation
-                content
-            }
-        }
-    }
+}
 #endif

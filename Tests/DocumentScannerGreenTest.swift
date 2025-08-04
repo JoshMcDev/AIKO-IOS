@@ -3,7 +3,7 @@ import SwiftUI
 @testable import AIKO
 @testable import AppCore
 
-// Use specific import to resolve ambiguity - Green tests specific  
+// Use specific import to resolve ambiguity - Green tests specific
 typealias GreenTestDocumentScannerViewModel = AppCore.DocumentScannerViewModel
 
 /// Focused test for DocumentScannerViewModel GREEN phase verification
@@ -14,13 +14,11 @@ final class DocumentScannerGreenTest: XCTestCase {
     private var viewModel: GreenTestDocumentScannerViewModel!
 
     override func setUp() async throws {
-        try await super.setUp()
         viewModel = GreenTestDocumentScannerViewModel()
     }
 
     override func tearDown() async throws {
         viewModel = nil
-        try await super.tearDown()
     }
 
     // MARK: - Basic Functionality Tests

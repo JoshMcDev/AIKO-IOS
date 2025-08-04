@@ -9,8 +9,6 @@ final class UIDocumentScannerFlowTests: XCTestCase {
     private var app: XCUIApplication!
 
     override func setUp() async throws {
-        try await super.setUp()
-
         continueAfterFailure = false
         app = XCUIApplication()
 
@@ -23,7 +21,6 @@ final class UIDocumentScannerFlowTests: XCTestCase {
     override func tearDown() async throws {
         app.terminate()
         app = nil
-        try await super.tearDown()
     }
 
     // MARK: - Complete User Journeys

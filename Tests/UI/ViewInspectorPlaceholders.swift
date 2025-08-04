@@ -49,4 +49,4 @@ extension View {
 }
 
 // Implement inspectable for views
-extension DocumentScannerView: Inspectable {}
+// extension DocumentScannerView: Inspectable {} // Already declared in UI_DocumentScannerViewTests.swift

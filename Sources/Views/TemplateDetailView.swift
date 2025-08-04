@@ -195,39 +195,39 @@ public struct TemplateDetailView: View {
             }
             .navigationTitle("Template Details")
             #if os(iOS)
-                .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.inline)
             #endif
-                .toolbar {
-                    ToolbarItem(placement: .automatic) {
-                        Button("Done") {
-                            dismiss()
-                        }
+            .toolbar {
+                ToolbarItem(placement: .automatic) {
+                    Button("Done") {
+                        dismiss()
                     }
                 }
-                .onAppear {
-                    loadTemplateContent()
-                }
-                .sheet(isPresented: $showingUploadOfficeTemplate) {
-                    UploadOfficeTemplateView(
-                        documentType: documentType,
-                        storageService: storageService,
-                        onComplete: { officeTemplate in
-                            // Handle office template upload
-                            Task {
-                                do {
-                                    try await storageService.saveOfficeTemplate(officeTemplate)
-                                    await MainActor.run {
-                                        officeTemplates.append(officeTemplate)
-                                        showingUploadOfficeTemplate = false
-                                    }
-                                } catch {
-                                    // Handle error
-                                    print("Failed to save office template: \(error)")
+            }
+            .onAppear {
+                loadTemplateContent()
+            }
+            .sheet(isPresented: $showingUploadOfficeTemplate) {
+                UploadOfficeTemplateView(
+                    documentType: documentType,
+                    storageService: storageService,
+                    onComplete: { officeTemplate in
+                        // Handle office template upload
+                        Task {
+                            do {
+                                try await storageService.saveOfficeTemplate(officeTemplate)
+                                await MainActor.run {
+                                    officeTemplates.append(officeTemplate)
+                                    showingUploadOfficeTemplate = false
                                 }
+                            } catch {
+                                // Handle error
+                                print("Failed to save office template: \(error)")
                             }
                         }
-                    )
-                }
+                    }
+                )
+            }
         }
         .preferredColorScheme(.dark)
         .overlay(
@@ -468,31 +468,31 @@ struct UploadOfficeTemplateView: View {
             }
             .navigationTitle("Upload Office Template")
             #if os(iOS)
-                .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.inline)
             #endif
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancel") {
-                            dismiss()
-                        }
-                    }
-
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("Save") {
-                            if let data = uploadedDocument {
-                                let content = String(data: data, encoding: .utf8) ?? ""
-                                let template = OfficeTemplate(
-                                    documentType: documentType,
-                                    officeName: officeName,
-                                    description: templateDescription,
-                                    content: content
-                                )
-                                onComplete(template)
-                            }
-                        }
-                        .disabled(officeName.isEmpty || uploadedDocument == nil)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
                     }
                 }
+
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        if let data = uploadedDocument {
+                            let content = String(data: data, encoding: .utf8) ?? ""
+                            let template = OfficeTemplate(
+                                documentType: documentType,
+                                officeName: officeName,
+                                description: templateDescription,
+                                content: content
+                            )
+                            onComplete(template)
+                        }
+                    }
+                    .disabled(officeName.isEmpty || uploadedDocument == nil)
+                }
+            }
         }
     }
 }
@@ -500,12 +500,12 @@ struct UploadOfficeTemplateView: View {
 // MARK: - Preview
 
 #if DEBUG
-    struct TemplateDetailView_Previews: PreviewProvider {
-        static var previews: some View {
-            SwiftUI.NavigationView {
-                TemplateDetailView(documentType: .sow)
-            }
-            .preferredColorScheme(.dark)
+struct TemplateDetailView_Previews: PreviewProvider {
+    static var previews: some View {
+        SwiftUI.NavigationView {
+            TemplateDetailView(documentType: .sow)
         }
+        .preferredColorScheme(.dark)
     }
+}
 #endif

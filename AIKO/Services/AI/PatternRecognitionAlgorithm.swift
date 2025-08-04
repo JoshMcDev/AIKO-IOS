@@ -194,307 +194,307 @@ actor PatternRecognitionAlgorithm {
         let groupedByType = Dictionary(grouping: similarTimeInteractions) { $0.type }
 
         for (interactionType, interactions) in groupedByType where interactions.count >= 5 { // Minimum threshold
-                let pattern = UserPattern(
-                    id: UUID(),
-                    type: .timeOfDay,
-                    value: interactionType,
-                    context: PatternContext(
-                        formType: nil,
-                        documentType: nil,
-                        workflowPhase: nil,
-                        timeOfDay: timeOfDay
-                    ),
-                    occurrences: interactions.count,
-                    confidence: temporalAnalyzer.calculateTemporalConfidence(
-                        interactions: interactions,
-                        currentTime: interaction.timestamp,
-                        timeWindow: timeWindowSize,
-                        totalHistory: history.count
-                    ),
-                    lastOccurrence: Date(),
-                    metadata: ["timeOfDay": timeOfDay.rawValue]
-                )
-                patterns.append(pattern)
-            }
-        }
-
-        return patterns
-    }
-
-    // MARK: - Field Value Pattern Analysis
-
-    private func analyzeFieldValuePatterns(
-        _ interaction: UserInteraction,
-        _ history: [UserInteraction]
-    ) -> [UserPattern] {
-        guard interaction.type == "field_input",
-              let fieldName = interaction.metadata["fieldName"] as? String,
-              let fieldValue = interaction.metadata["value"] as? String
-        else {
-            return []
-        }
-
-        var patterns: [UserPattern] = []
-
-        // Find similar field inputs
-        let similarFields = history.filter {
-            $0.type == "field_input" &&
-                $0.metadata["fieldName"] as? String == fieldName
-        }
-
-        // Cluster field values
-        let values = similarFields.compactMap { $0.metadata["value"] as? String }
-        let clusters = valueClusterer.cluster(values: values, similarity: similarityThreshold)
-
-        for cluster in clusters where cluster.members.count >= 3 {
             let pattern = UserPattern(
                 id: UUID(),
-                type: .fieldValues,
-                value: cluster.centroid,
+                type: .timeOfDay,
+                value: interactionType,
                 context: PatternContext(
-                    formType: interaction.metadata["formType"] as? String,
+                    formType: nil,
+                    documentType: nil,
+                    workflowPhase: nil,
+                    timeOfDay: timeOfDay
+                ),
+                occurrences: interactions.count,
+                confidence: temporalAnalyzer.calculateTemporalConfidence(
+                    interactions: interactions,
+                    currentTime: interaction.timestamp,
+                    timeWindow: timeWindowSize,
+                    totalHistory: history.count
+                ),
+                lastOccurrence: Date(),
+                metadata: ["timeOfDay": timeOfDay.rawValue]
+            )
+            patterns.append(pattern)
+        }
+    }
+
+    return patterns
+}
+
+// MARK: - Field Value Pattern Analysis
+
+private func analyzeFieldValuePatterns(
+    _ interaction: UserInteraction,
+    _ history: [UserInteraction]
+) -> [UserPattern] {
+    guard interaction.type == "field_input",
+          let fieldName = interaction.metadata["fieldName"] as? String,
+          let fieldValue = interaction.metadata["value"] as? String
+    else {
+        return []
+    }
+
+    var patterns: [UserPattern] = []
+
+    // Find similar field inputs
+    let similarFields = history.filter {
+        $0.type == "field_input" &&
+            $0.metadata["fieldName"] as? String == fieldName
+    }
+
+    // Cluster field values
+    let values = similarFields.compactMap { $0.metadata["value"] as? String }
+    let clusters = valueClusterer.cluster(values: values, similarity: similarityThreshold)
+
+    for cluster in clusters where cluster.members.count >= 3 {
+        let pattern = UserPattern(
+            id: UUID(),
+            type: .fieldValues,
+            value: cluster.centroid,
+            context: PatternContext(
+                formType: interaction.metadata["formType"] as? String,
+                documentType: nil,
+                workflowPhase: nil,
+                timeOfDay: nil
+            ),
+            occurrences: cluster.members.count,
+            confidence: cluster.cohesion,
+            lastOccurrence: Date(),
+            metadata: [
+                "fieldName": fieldName,
+                "formType": interaction.metadata["formType"] as? String ?? "",
+            ]
+        )
+        patterns.append(pattern)
+    }
+
+    return patterns
+}
+
+// MARK: - Session Analysis
+
+private func extractNavigationPattern(from session: LearningSession) -> UserPattern? {
+    let navigationSteps = session.interactions
+        .filter { $0.type == "navigation" }
+        .compactMap { $0.metadata["destination"] as? String }
+
+    guard navigationSteps.count >= 3 else { return nil }
+
+    // Check if this is a repeated navigation path
+    let pathHash = navigationSteps.joined(separator: "->")
+
+    return UserPattern(
+        id: UUID(),
+        type: .navigationPath,
+        value: navigationSteps,
+        context: PatternContext(
+            formType: nil,
+            documentType: nil,
+            workflowPhase: session.contextType,
+            timeOfDay: TimeOfDay(from: session.startTime)
+        ),
+        occurrences: 1,
+        confidence: 0.5, // Initial confidence
+        lastOccurrence: Date(),
+        metadata: ["pathLength": navigationSteps.count]
+    )
+}
+
+private func extractWorkflowPattern(from session: LearningSession) -> UserPattern? {
+    let workflowSteps = session.interactions
+        .filter { $0.type == "workflow_step" }
+        .compactMap { interaction -> (String, TimeInterval)? in
+            guard let stepName = interaction.metadata["stepName"] as? String else { return nil }
+            return (stepName, interaction.timestamp.timeIntervalSince(session.startTime))
+        }
+
+    guard workflowSteps.count >= 2 else { return nil }
+
+    return UserPattern(
+        id: UUID(),
+        type: .workflowSequence,
+        value: workflowSteps.map(\.0),
+        context: PatternContext(
+            formType: nil,
+            documentType: session.contextType,
+            workflowPhase: nil,
+            timeOfDay: nil
+        ),
+        occurrences: 1,
+        confidence: 0.6,
+        lastOccurrence: Date(),
+        metadata: [
+            "totalDuration": session.interactions.last?.timestamp.timeIntervalSince(session.startTime) ?? 0,
+        ]
+    )
+}
+
+private func extractErrorCorrectionPatterns(from session: LearningSession) -> [UserPattern] {
+    var patterns: [UserPattern] = []
+
+    // Find error-correction pairs
+    for i in 0 ..< session.interactions.count - 1 {
+        let current = session.interactions[i]
+        let next = session.interactions[i + 1]
+
+        if current.type == "error", next.type == "correction" {
+            let errorType = current.metadata["errorType"] as? String ?? "unknown"
+            let correctionType = next.metadata["correctionType"] as? String ?? "unknown"
+
+            let pattern = UserPattern(
+                id: UUID(),
+                type: .errorCorrection,
+                value: ["error": errorType, "correction": correctionType],
+                context: PatternContext(
+                    formType: current.metadata["formType"] as? String,
                     documentType: nil,
                     workflowPhase: nil,
                     timeOfDay: nil
                 ),
-                occurrences: cluster.members.count,
-                confidence: cluster.cohesion,
+                occurrences: 1,
+                confidence: 0.7,
                 lastOccurrence: Date(),
                 metadata: [
-                    "fieldName": fieldName,
-                    "formType": interaction.metadata["formType"] as? String ?? "",
+                    "errorType": errorType,
+                    "correctionType": correctionType,
                 ]
             )
             patterns.append(pattern)
         }
-
-        return patterns
     }
 
-    // MARK: - Session Analysis
+    return patterns
+}
 
-    private func extractNavigationPattern(from session: LearningSession) -> UserPattern? {
-        let navigationSteps = session.interactions
-            .filter { $0.type == "navigation" }
-            .compactMap { $0.metadata["destination"] as? String }
+// MARK: - Helper Methods
 
-        guard navigationSteps.count >= 3 else { return nil }
+private func extractFieldSequences(from interactions: [UserInteraction]) -> [[String]] {
+    var sequences: [[String]] = []
+    var currentSequence: [String] = []
+    var lastTimestamp: Date?
 
-        // Check if this is a repeated navigation path
-        let pathHash = navigationSteps.joined(separator: "->")
-
-        return UserPattern(
-            id: UUID(),
-            type: .navigationPath,
-            value: navigationSteps,
-            context: PatternContext(
-                formType: nil,
-                documentType: nil,
-                workflowPhase: session.contextType,
-                timeOfDay: TimeOfDay(from: session.startTime)
-            ),
-            occurrences: 1,
-            confidence: 0.5, // Initial confidence
-            lastOccurrence: Date(),
-            metadata: ["pathLength": navigationSteps.count]
-        )
-    }
-
-    private func extractWorkflowPattern(from session: LearningSession) -> UserPattern? {
-        let workflowSteps = session.interactions
-            .filter { $0.type == "workflow_step" }
-            .compactMap { interaction -> (String, TimeInterval)? in
-                guard let stepName = interaction.metadata["stepName"] as? String else { return nil }
-                return (stepName, interaction.timestamp.timeIntervalSince(session.startTime))
-            }
-
-        guard workflowSteps.count >= 2 else { return nil }
-
-        return UserPattern(
-            id: UUID(),
-            type: .workflowSequence,
-            value: workflowSteps.map(\.0),
-            context: PatternContext(
-                formType: nil,
-                documentType: session.contextType,
-                workflowPhase: nil,
-                timeOfDay: nil
-            ),
-            occurrences: 1,
-            confidence: 0.6,
-            lastOccurrence: Date(),
-            metadata: [
-                "totalDuration": session.interactions.last?.timestamp.timeIntervalSince(session.startTime) ?? 0,
-            ]
-        )
-    }
-
-    private func extractErrorCorrectionPatterns(from session: LearningSession) -> [UserPattern] {
-        var patterns: [UserPattern] = []
-
-        // Find error-correction pairs
-        for i in 0 ..< session.interactions.count - 1 {
-            let current = session.interactions[i]
-            let next = session.interactions[i + 1]
-
-            if current.type == "error", next.type == "correction" {
-                let errorType = current.metadata["errorType"] as? String ?? "unknown"
-                let correctionType = next.metadata["correctionType"] as? String ?? "unknown"
-
-                let pattern = UserPattern(
-                    id: UUID(),
-                    type: .errorCorrection,
-                    value: ["error": errorType, "correction": correctionType],
-                    context: PatternContext(
-                        formType: current.metadata["formType"] as? String,
-                        documentType: nil,
-                        workflowPhase: nil,
-                        timeOfDay: nil
-                    ),
-                    occurrences: 1,
-                    confidence: 0.7,
-                    lastOccurrence: Date(),
-                    metadata: [
-                        "errorType": errorType,
-                        "correctionType": correctionType,
-                    ]
-                )
-                patterns.append(pattern)
-            }
-        }
-
-        return patterns
-    }
-
-    // MARK: - Helper Methods
-
-    private func extractFieldSequences(from interactions: [UserInteraction]) -> [[String]] {
-        var sequences: [[String]] = []
-        var currentSequence: [String] = []
-        var lastTimestamp: Date?
-
-        for interaction in interactions.sorted(by: { $0.timestamp < $1.timestamp }) {
-            if let fieldName = interaction.metadata["fieldName"] as? String {
-                if let last = lastTimestamp,
-                   interaction.timestamp.timeIntervalSince(last) > 30 {
-                    // New sequence if more than 30 seconds gap
-                    if !currentSequence.isEmpty {
-                        sequences.append(currentSequence)
-                    }
-                    currentSequence = [fieldName]
-                } else {
-                    currentSequence.append(fieldName)
+    for interaction in interactions.sorted(by: { $0.timestamp < $1.timestamp }) {
+        if let fieldName = interaction.metadata["fieldName"] as? String {
+            if let last = lastTimestamp,
+               interaction.timestamp.timeIntervalSince(last) > 30 {
+                // New sequence if more than 30 seconds gap
+                if !currentSequence.isEmpty {
+                    sequences.append(currentSequence)
                 }
-                lastTimestamp = interaction.timestamp
+                currentSequence = [fieldName]
+            } else {
+                currentSequence.append(fieldName)
             }
-        }
-
-        if !currentSequence.isEmpty {
-            sequences.append(currentSequence)
-        }
-
-        return sequences
-    }
-
-    private func calculateConfidence(
-        support: Int,
-        total: Int,
-        interactions: [UserInteraction],
-        currentTime: Date
-    ) -> Double {
-        guard total > 0 else { return 0 }
-
-        let frequency = Double(support) / Double(total)
-        let recency = calculateRecency(interactions: interactions, currentTime: currentTime)
-        let consistency = calculateConsistency(interactions: interactions)
-
-        // Weighted confidence score
-        return (frequency * 0.5) + (recency * 0.3) + (consistency * 0.2)
-    }
-
-    private func calculateRecency(interactions: [UserInteraction], currentTime: Date) -> Double {
-        guard !interactions.isEmpty else { return 0 }
-
-        // Sort interactions by timestamp (most recent first)
-        let sortedInteractions = interactions.sorted { $0.timestamp > $1.timestamp }
-
-        // Calculate recency score based on exponential decay
-        var recencyScore = 0.0
-        let decayFactor = 0.95 // Decay factor for older interactions
-        let maxAge: TimeInterval = 30 * 24 * 3600 // 30 days in seconds
-
-        for (index, interaction) in sortedInteractions.enumerated() {
-            let age = currentTime.timeIntervalSince(interaction.timestamp)
-            if age > maxAge { continue }
-
-            // Normalize age to [0, 1] where 0 is current time and 1 is maxAge
-            let normalizedAge = min(age / maxAge, 1.0)
-
-            // Apply exponential decay based on position and age
-            let positionWeight = pow(decayFactor, Double(index))
-            let ageWeight = 1.0 - normalizedAge
-
-            recencyScore += positionWeight * ageWeight
-        }
-
-        // Normalize the score to [0, 1]
-        let maxPossibleScore = (1.0 - pow(decayFactor, Double(interactions.count))) / (1.0 - decayFactor)
-        return min(recencyScore / maxPossibleScore, 1.0)
-    }
-
-    private func calculateConsistency(interactions: [UserInteraction]) -> Double {
-        guard interactions.count > 1 else { return 1.0 }
-
-        // Sort interactions by timestamp
-        let sortedInteractions = interactions.sorted { $0.timestamp < $1.timestamp }
-
-        // Calculate time intervals between consecutive interactions
-        var intervals: [TimeInterval] = []
-        for i in 1 ..< sortedInteractions.count {
-            let interval = sortedInteractions[i].timestamp.timeIntervalSince(sortedInteractions[i - 1].timestamp)
-            intervals.append(interval)
-        }
-
-        guard !intervals.isEmpty else { return 1.0 }
-
-        // Calculate mean and standard deviation of intervals
-        let mean = intervals.reduce(0, +) / Double(intervals.count)
-        let variance = intervals.map { pow($0 - mean, 2) }.reduce(0, +) / Double(intervals.count)
-        let standardDeviation = sqrt(variance)
-
-        // Calculate coefficient of variation (CV)
-        // Lower CV means more consistent timing
-        let cv = mean > 0 ? standardDeviation / mean : 0
-
-        // Convert CV to consistency score (inverse relationship)
-        // CV of 0 = perfect consistency (score 1.0)
-        // CV of 1 or higher = low consistency (score approaches 0)
-        let consistencyScore = exp(-cv) // Exponential decay based on CV
-
-        return consistencyScore
-    }
-
-    private func filterAndRankPatterns(_ patterns: [UserPattern]) -> [UserPattern] {
-        // Remove duplicates
-        var uniquePatterns: [UserPattern] = []
-        var seenIds = Set<UUID>()
-
-        for pattern in patterns where !seenIds.contains(pattern.id) {
-            seenIds.insert(pattern.id)
-            uniquePatterns.append(pattern)
-        }
-
-        // Filter by minimum confidence
-        let filtered = uniquePatterns.filter { $0.confidence >= 0.5 }
-
-        // Sort by confidence and occurrences
-        return filtered.sorted {
-            if $0.confidence == $1.confidence {
-                return $0.occurrences > $1.occurrences
-            }
-            return $0.confidence > $1.confidence
+            lastTimestamp = interaction.timestamp
         }
     }
+
+    if !currentSequence.isEmpty {
+        sequences.append(currentSequence)
+    }
+
+    return sequences
+}
+
+private func calculateConfidence(
+    support: Int,
+    total: Int,
+    interactions: [UserInteraction],
+    currentTime: Date
+) -> Double {
+    guard total > 0 else { return 0 }
+
+    let frequency = Double(support) / Double(total)
+    let recency = calculateRecency(interactions: interactions, currentTime: currentTime)
+    let consistency = calculateConsistency(interactions: interactions)
+
+    // Weighted confidence score
+    return (frequency * 0.5) + (recency * 0.3) + (consistency * 0.2)
+}
+
+private func calculateRecency(interactions: [UserInteraction], currentTime: Date) -> Double {
+    guard !interactions.isEmpty else { return 0 }
+
+    // Sort interactions by timestamp (most recent first)
+    let sortedInteractions = interactions.sorted { $0.timestamp > $1.timestamp }
+
+    // Calculate recency score based on exponential decay
+    var recencyScore = 0.0
+    let decayFactor = 0.95 // Decay factor for older interactions
+    let maxAge: TimeInterval = 30 * 24 * 3600 // 30 days in seconds
+
+    for (index, interaction) in sortedInteractions.enumerated() {
+        let age = currentTime.timeIntervalSince(interaction.timestamp)
+        if age > maxAge { continue }
+
+        // Normalize age to [0, 1] where 0 is current time and 1 is maxAge
+        let normalizedAge = min(age / maxAge, 1.0)
+
+        // Apply exponential decay based on position and age
+        let positionWeight = pow(decayFactor, Double(index))
+        let ageWeight = 1.0 - normalizedAge
+
+        recencyScore += positionWeight * ageWeight
+    }
+
+    // Normalize the score to [0, 1]
+    let maxPossibleScore = (1.0 - pow(decayFactor, Double(interactions.count))) / (1.0 - decayFactor)
+    return min(recencyScore / maxPossibleScore, 1.0)
+}
+
+private func calculateConsistency(interactions: [UserInteraction]) -> Double {
+    guard interactions.count > 1 else { return 1.0 }
+
+    // Sort interactions by timestamp
+    let sortedInteractions = interactions.sorted { $0.timestamp < $1.timestamp }
+
+    // Calculate time intervals between consecutive interactions
+    var intervals: [TimeInterval] = []
+    for i in 1 ..< sortedInteractions.count {
+        let interval = sortedInteractions[i].timestamp.timeIntervalSince(sortedInteractions[i - 1].timestamp)
+        intervals.append(interval)
+    }
+
+    guard !intervals.isEmpty else { return 1.0 }
+
+    // Calculate mean and standard deviation of intervals
+    let mean = intervals.reduce(0, +) / Double(intervals.count)
+    let variance = intervals.map { pow($0 - mean, 2) }.reduce(0, +) / Double(intervals.count)
+    let standardDeviation = sqrt(variance)
+
+    // Calculate coefficient of variation (CV)
+    // Lower CV means more consistent timing
+    let cv = mean > 0 ? standardDeviation / mean : 0
+
+    // Convert CV to consistency score (inverse relationship)
+    // CV of 0 = perfect consistency (score 1.0)
+    // CV of 1 or higher = low consistency (score approaches 0)
+    let consistencyScore = exp(-cv) // Exponential decay based on CV
+
+    return consistencyScore
+}
+
+private func filterAndRankPatterns(_ patterns: [UserPattern]) -> [UserPattern] {
+    // Remove duplicates
+    var uniquePatterns: [UserPattern] = []
+    var seenIds = Set<UUID>()
+
+    for pattern in patterns where !seenIds.contains(pattern.id) {
+        seenIds.insert(pattern.id)
+        uniquePatterns.append(pattern)
+    }
+
+    // Filter by minimum confidence
+    let filtered = uniquePatterns.filter { $0.confidence >= 0.5 }
+
+    // Sort by confidence and occurrences
+    return filtered.sorted {
+        if $0.confidence == $1.confidence {
+            return $0.occurrences > $1.occurrences
+        }
+        return $0.confidence > $1.confidence
+    }
+}
 }
 
 // MARK: - Supporting Algorithms
