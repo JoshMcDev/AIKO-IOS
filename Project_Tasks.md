@@ -2,12 +2,12 @@
 
 ## 📊 Project Overview
 **Last Updated**: 2025-08-04  
-**Total Tasks**: 54 (24 completed, 30 pending)  
+**Total Tasks**: 55 (24 completed, 31 pending)  
 **Completion Rate**: 44% 
 
 ---
 
-## 🚧 Pending Tasks (30/54)
+## 🚧 Pending Tasks (31/55)
 
 ### Priority 1: Agentic & Reinforcement Learning Enhancement (2 remaining tasks)
 
@@ -235,7 +235,7 @@
     - Create smart form pre-population based on user patterns
     - Implement predictive text for common user phrases/decisions
 
-### Priority 3: Smart Integrations & Provider Flexibility (8 tasks)
+### Priority 3: Smart Integrations & Provider Flexibility (9 tasks)
 
 - [ ] **Implement iOS Native Integrations Suite**
   - Priority: High
@@ -247,6 +247,56 @@
     - iOS Calendar & Reminders integration for deadline tracking
     - Local notifications system for acquisition milestones
     - Integration with existing form auto-population workflow
+
+- [ ] **Implement Cursor IDE-Style Multi-Panel macOS Interface**
+  - Priority: **HIGH - Major UX Enhancement**
+  - Status: 🚧 Not started
+  - Description: Create Cursor IDE-inspired multi-panel interface for macOS app with incremental implementation strategy
+  - **Research Foundation**: Based on comprehensive TDD research (R-001-cursor-ide-swiftui-architecture) and VanillaIce consensus validation (5-model agreement)
+  - **Implementation Strategy**: Incremental rollout with power-user toggle to balance complexity vs. value
+  - **Panel Layout Design**:
+    - **Left Sidebar**: Acquisition design scaffold (document generation pipeline by phase)
+    - **Top-Middle**: Current template editor (markdown → PDF/other formats)
+    - **Bottom-Middle**: Template browser (card-based search) + regulation search/query interface
+    - **Right Sidebar**: Agentic chat context window for AI assistance
+  - **Technical Architecture**:
+    - **SwiftUI Framework**: NavigationSplitView + HSplitView/VSplitView combination
+    - **State Management**: @Observable pattern with IDELayoutViewModel for complex state coordination
+    - **Panel System**: Custom ResizablePanel components with min/max constraints and persistence
+    - **Document Management**: Multi-document interface with tab-based navigation
+    - **Performance**: Lazy loading for template browser, efficient view recycling for documents
+  - **Implementation Phases**:
+    - **Phase 1 (Week 1-2)**: 3-pane MVP (scaffold, editor, chat) - Conservative default experience
+    - **Phase 2 (Week 2-3)**: Add bottom browser panel with collapsible chevron toggle
+    - **Phase 3 (Week 3+)**: Power-user mode via "Preferences → Labs → Enable Advanced Layout"
+  - **Technical Tasks**:
+    - Create `IDELayoutView.swift` with NavigationSplitView foundation
+    - Implement `ResizablePanel` component with drag handles and size persistence
+    - Build `AcquisitionScaffoldSidebar` with phase-based document pipeline visualization
+    - Design `TemplateEditorView` with markdown editing and live preview
+    - Create `TemplateBrowserView` with LazyVGrid card layout and search functionality
+    - Implement `RegulationSearchView` with semantic search integration
+    - Build `AgenticChatSidebar` with contextual AI conversation management
+    - Add panel size persistence using UserDefaults with proper state restoration
+    - Implement keyboard shortcuts for panel management (mirrors Xcode Assistant Editor patterns)
+    - Create feature flag system for progressive enhancement and usage analytics
+  - **Quality Standards**:
+    - **Swift 6 Compliance**: Full strict concurrency with proper actor isolation
+    - **SwiftLint Excellence**: Zero violations with production-ready code quality
+    - **Accessibility**: Full keyboard navigation and screen reader support
+    - **Performance**: Smooth panel resizing, <200ms document switching latency
+    - **macOS Integration**: Native look-and-feel with proper window management
+  - **Success Criteria**:
+    - 3-pane layout operational with smooth performance on macOS 13+
+    - Advanced 4-pane mode available for power users with usage analytics
+    - Panel configurations persist across app sessions
+    - Seamless integration with existing AIKO acquisition workflow
+    - User adoption >20% within 3 months validates continued investment
+  - **Research References**: 
+    - Cursor IDE architecture analysis and VSCode panel management patterns
+    - SwiftUI NavigationSplitView best practices and performance optimization
+    - macOS Human Interface Guidelines for panel-based applications
+    - Research documentation: `./research_cursor-ide-swiftui-architecture.md`
 
 - [ ] **Implement iCloud Sync with CloudKit Integration**
   - Priority: High
