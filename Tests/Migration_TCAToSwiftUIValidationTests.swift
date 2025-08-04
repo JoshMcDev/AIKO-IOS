@@ -8,6 +8,7 @@
 
 import XCTest
 import SwiftUI
+import LocalAuthentication
 @testable import AppCore
 
 /// Migration validation test suite for TCA → SwiftUI conversion
@@ -465,5 +466,49 @@ extension MockLLMKeychainService {
 
     var usesEncryption: Bool {
         return false
+    }
+}
+
+// MARK: - Mock Biometric Service for Migration Tests
+
+@MainActor
+class MockBiometricService: ObservableObject, BiometricAuthenticationServiceProtocol {
+    nonisolated(unsafe) var shouldSucceed = true
+    nonisolated(unsafe) var shouldCanEvaluate = true
+    
+    nonisolated func canEvaluateBiometrics() -> Bool {
+        return shouldCanEvaluate
+    }
+    
+    nonisolated func canEvaluateDeviceOwnerAuthentication() -> Bool {
+        return shouldCanEvaluate
+    }
+    
+    func authenticateWithBiometrics(reason: String) async throws -> Bool {
+        if shouldSucceed {
+            return true
+        } else {
+            throw LAError(.authenticationFailed)
+        }
+    }
+    
+    func authenticateWithPasscode(reason: String) async throws -> Bool {
+        if shouldSucceed {
+            return true
+        } else {
+            throw LAError(.authenticationFailed)
+        }
+    }
+    
+    nonisolated func biometryType() -> LABiometryType {
+        return .faceID
+    }
+    
+    nonisolated func biometryDescription() -> String {
+        return "Face ID"
+    }
+    
+    nonisolated func resetContext() {
+        // Mock implementation - does nothing
     }
 }

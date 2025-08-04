@@ -21,23 +21,35 @@ final class UserPatternLearningEngineTests: XCTestCase {
     
     // MARK: - Setup and Teardown
     
-    override func setUp() async throws {
-        try await super.setUp()
-        cancellables = Set<AnyCancellable>()
-        sut = UserPatternLearningEngine.shared
-        await sut.reset() // Ensure clean state for each test
+    override func setUp() {
+        super.setUp()
+        // Initialize on main actor in each test method
     }
     
-    override func tearDown() async throws {
+    override func tearDown() {
+        // Cleanup handled in each test method
+        super.tearDown()
+    }
+    
+    @MainActor
+    private func setupTest() {
+        cancellables = Set<AnyCancellable>()
+        sut = UserPatternLearningEngine.shared
+    }
+    
+    @MainActor
+    private func teardownTest() {
         cancellables?.removeAll()
         cancellables = nil
         sut = nil
-        try await super.tearDown()
     }
     
     // MARK: - Core Prediction Functionality Tests
     
     func testPredictWorkflowTransitions_ReturnsRankedPredictions() async throws {
+        await setupTest()
+        defer { Task { @MainActor in await self.teardownTest() } }
+        
         // GIVEN: Sufficient workflow patterns in learning engine
         let workflowState = PatternWorkflowState(
             currentStep: "requirements_gathering",
@@ -57,6 +69,9 @@ final class UserPatternLearningEngineTests: XCTestCase {
     }
     
     func testPrivacyConfigurationRespected() async throws {
+        await setupTest()
+        defer { Task { @MainActor in await self.teardownTest() } }
+        
         // GIVEN: Privacy settings disable predictions
         let privacyConfig = PredictionPrivacySettings(
             enablePredictions: false,
@@ -82,6 +97,9 @@ final class UserPatternLearningEngineTests: XCTestCase {
     }
     
     func testPredictionConfidenceThreshold() async throws {
+        await setupTest()
+        defer { Task { @MainActor in await self.teardownTest() } }
+        
         // GIVEN: Mixed confidence patterns in system
         await seedTestPatterns(withConfidences: [0.65, 0.69, 0.70, 0.71, 0.85])
         
@@ -105,6 +123,9 @@ final class UserPatternLearningEngineTests: XCTestCase {
     }
     
     func testWorkflowPatternFiltering() async throws {
+        await setupTest()
+        defer { Task { @MainActor in await self.teardownTest() } }
+        
         // GIVEN: Mixed pattern types in learning engine
         await seedMixedPatternTypes()
         
@@ -125,6 +146,9 @@ final class UserPatternLearningEngineTests: XCTestCase {
     }
     
     func testFeatureFlagIntegration() async throws {
+        await setupTest()
+        defer { Task { @MainActor in await self.teardownTest() } }
+        
         // GIVEN: Feature flag controls prediction availability
         let featureFlags = WorkflowPredictionFeatureFlags(
             enablePredictions: false,
@@ -149,6 +173,9 @@ final class UserPatternLearningEngineTests: XCTestCase {
     }
     
     func testPatternWeightingAccuracy() async throws {
+        await setupTest()
+        defer { Task { @MainActor in await self.teardownTest() } }
+        
         // GIVEN: Patterns with different recency and success rates
         await seedPatternsWithWeighting()
         
@@ -169,6 +196,9 @@ final class UserPatternLearningEngineTests: XCTestCase {
     }
     
     func testWorkflowContextMatching() async throws {
+        await setupTest()
+        defer { Task { @MainActor in await self.teardownTest() } }
+        
         // GIVEN: Patterns with various context similarities
         await seedContextualPatterns()
         
@@ -191,6 +221,9 @@ final class UserPatternLearningEngineTests: XCTestCase {
     // MARK: - Feedback Processing & Learning Tests
     
     func testProcessPredictionFeedback_UpdatesAccuracy() async throws {
+        await setupTest()
+        defer { Task { @MainActor in await self.teardownTest() } }
+        
         // GIVEN: Existing predictions with initial accuracy
         let predictionId = UUID()
         let feedback = WorkflowPredictionFeedback(
@@ -211,6 +244,9 @@ final class UserPatternLearningEngineTests: XCTestCase {
     }
     
     func testMetricsTracking() async throws {
+        await setupTest()
+        defer { Task { @MainActor in await self.teardownTest() } }
+        
         // GIVEN: MetricsCollector is available
         let feedback = WorkflowPredictionFeedback(
             predictionId: UUID(),
@@ -221,7 +257,7 @@ final class UserPatternLearningEngineTests: XCTestCase {
         )
         
         // WHEN: Processing feedback
-        await sut.processPredictionFeedback(feedback)
+        let _ = await sut.processPredictionFeedback(feedback)
         
         // THEN: Should send anonymized events to MetricsCollector
         // TODO: After GREEN phase - verify MetricsCollector receives feedback events
@@ -230,6 +266,9 @@ final class UserPatternLearningEngineTests: XCTestCase {
     }
     
     func testTransitionProbabilityUpdates() async throws {
+        await setupTest()
+        defer { Task { @MainActor in await self.teardownTest() } }
+        
         // GIVEN: WorkflowStateMachine is available
         let feedback = WorkflowPredictionFeedback(
             predictionId: UUID(),
@@ -240,7 +279,7 @@ final class UserPatternLearningEngineTests: XCTestCase {
         )
         
         // WHEN: Processing feedback
-        await sut.processPredictionFeedback(feedback)
+        let _ = await sut.processPredictionFeedback(feedback)
         
         // THEN: Should update WorkflowStateMachine probabilities
         // TODO: After GREEN phase - verify state machine receives updates

@@ -14,20 +14,44 @@ final class SecurityDocumentScannerTests: XCTestCase {
 
     private func createMockImageData() -> Data {
         #if canImport(UIKit)
-        return createMockImageData()
+        // Create 1x1 pixel UIImage and convert to PNG data
+        UIGraphicsBeginImageContext(CGSize(width: 1, height: 1))
+        let context = UIGraphicsGetCurrentContext()
+        context?.setFillColor(UIColor.white.cgColor)
+        context?.fill(CGRect(x: 0, y: 0, width: 1, height: 1))
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image?.pngData() ?? Data([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
         #else
         // Create mock PNG data for macOS tests
         return Data([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
         #endif
     }
 
+    #if canImport(UIKit)
+    private func createMockSensitiveImage() -> UIImage {
+        UIGraphicsBeginImageContext(CGSize(width: 100, height: 100))
+        let context = UIGraphicsGetCurrentContext()
+        context?.setFillColor(UIColor.white.cgColor)
+        context?.fill(CGRect(x: 0, y: 0, width: 100, height: 100))
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image ?? UIImage()
+    }
+    #else
+    private func createMockSensitiveImage() -> NSImage {
+        let size = NSSize(width: 100, height: 100)
+        return NSImage(size: size)
+    }
+    #endif
+
     private var viewModel: AppCore.DocumentScannerViewModel!
-    private var mockBiometricService: MockBiometricService!
+    private var mockBiometricService: MockSecurityBiometricService!
     private var mockSecureStorage: MockSecureStorage!
 
     override func setUp() async throws {
         viewModel = AppCore.DocumentScannerViewModel()
-        mockBiometricService = MockBiometricService()
+        mockBiometricService = MockSecurityBiometricService()
         mockSecureStorage = MockSecureStorage()
     }
 
@@ -143,7 +167,12 @@ final class SecurityDocumentScannerTests: XCTestCase {
 
         // Step 1: Create high-sensitivity document
         let sensitiveImage = createMockSensitiveImage()
+        #if canImport(UIKit)
         let sensitiveImageData = sensitiveImage.pngData() ?? Data()
+        #else
+        // On macOS, NSImage doesn't have pngData(), create mock data
+        let sensitiveImageData = Data([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
+        #endif
         let sensitivePage = AppCore.ScannedPage(
             imageData: sensitiveImageData,
             pageNumber: 1
@@ -425,17 +454,11 @@ final class SecurityDocumentScannerTests: XCTestCase {
 
     // MARK: - Helper Methods and Mock Objects
 
-    #if canImport(UIKit)
-    private func createMockSensitiveImage() -> UIImage {
-        // Create a mock image representing sensitive content
-        return UIImage()
-    }
-    #endif
 }
 
 // MARK: - Mock Security Services
 
-class MockBiometricService {
+class MockSecurityBiometricService {
     var promptShown = false
     var promptReason: String?
     var authResult: Bool = true

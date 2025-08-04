@@ -8,14 +8,14 @@ import Foundation
 open class LLMProviderSettingsService {
     // MARK: - Dependencies
 
-    private let biometricService: BiometricAuthenticationService
+    private let biometricService: any BiometricAuthenticationServiceProtocol
     private let keychainService: LLMKeychainServiceProtocol
     private let configurationService: LLMConfigurationServiceProtocol
 
     // MARK: - Initialization
 
     public init(
-        biometricService: BiometricAuthenticationService,
+        biometricService: any BiometricAuthenticationServiceProtocol,
         keychainService: LLMKeychainServiceProtocol,
         configurationService: LLMConfigurationServiceProtocol
     ) {

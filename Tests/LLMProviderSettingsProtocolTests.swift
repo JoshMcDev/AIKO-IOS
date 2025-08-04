@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import LocalAuthentication
 @testable import AppCore
 
 /// Comprehensive test suite for LLMProviderSettingsViewModelProtocol conformance
@@ -650,6 +651,49 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
         let clear2 = LLMProviderSettingsViewModel.AlertType.clearConfirmation
 
         XCTAssertEqual(clear1, clear2)
+    }
+    // MARK: - Mock Services
+    
+    @MainActor
+    class MockBiometricService: ObservableObject, BiometricAuthenticationServiceProtocol {
+        nonisolated(unsafe) var shouldSucceed = true
+        nonisolated(unsafe) var shouldCanEvaluate = true
+        
+        nonisolated func canEvaluateBiometrics() -> Bool {
+            return shouldCanEvaluate
+        }
+        
+        nonisolated func canEvaluateDeviceOwnerAuthentication() -> Bool {
+            return shouldCanEvaluate
+        }
+        
+        func authenticateWithBiometrics(reason: String) async throws -> Bool {
+            if shouldSucceed {
+                return true
+            } else {
+                throw LAError(.authenticationFailed)
+            }
+        }
+        
+        func authenticateWithPasscode(reason: String) async throws -> Bool {
+            if shouldSucceed {
+                return true
+            } else {
+                throw LAError(.authenticationFailed)
+            }
+        }
+        
+        nonisolated func biometryType() -> LABiometryType {
+            return .faceID
+        }
+        
+        nonisolated func biometryDescription() -> String {
+            return "Face ID"
+        }
+        
+        nonisolated func resetContext() {
+            // Mock implementation - does nothing
+        }
     }
 }
 

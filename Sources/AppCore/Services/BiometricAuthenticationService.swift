@@ -1,10 +1,22 @@
 import Foundation
 @preconcurrency import LocalAuthentication
 
+/// Protocol for biometric authentication services
+@MainActor
+public protocol BiometricAuthenticationServiceProtocol: ObservableObject {
+    nonisolated func canEvaluateBiometrics() -> Bool
+    nonisolated func canEvaluateDeviceOwnerAuthentication() -> Bool
+    func authenticateWithBiometrics(reason: String) async throws -> Bool
+    func authenticateWithPasscode(reason: String) async throws -> Bool
+    nonisolated func biometryType() -> LABiometryType
+    nonisolated func biometryDescription() -> String
+    nonisolated func resetContext()
+}
+
 /// Service for handling biometric authentication using Local Authentication framework
 /// Preserves security patterns from original TCA implementation (lines 395-424)
 @MainActor
-public final class BiometricAuthenticationService: ObservableObject {
+public final class BiometricAuthenticationService: ObservableObject, BiometricAuthenticationServiceProtocol {
     // MARK: - Properties
 
     private let context = LAContext()
@@ -12,13 +24,15 @@ public final class BiometricAuthenticationService: ObservableObject {
     // MARK: - Public Methods
 
     /// Check if biometric authentication is available on the device
-    public func canEvaluateBiometrics() -> Bool {
+    nonisolated public func canEvaluateBiometrics() -> Bool {
+        let context = LAContext()
         var error: NSError?
         return context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error)
     }
 
     /// Check if device owner authentication (biometrics or passcode) is available
-    public func canEvaluateDeviceOwnerAuthentication() -> Bool {
+    nonisolated public func canEvaluateDeviceOwnerAuthentication() -> Bool {
+        let context = LAContext()
         var error: NSError?
         return context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error)
     }
@@ -50,7 +64,8 @@ public final class BiometricAuthenticationService: ObservableObject {
     }
 
     /// Get the type of biometric authentication available
-    public func biometryType() -> LABiometryType {
+    nonisolated public func biometryType() -> LABiometryType {
+        let context = LAContext()
         var error: NSError?
         guard context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) else {
             return .none
@@ -59,7 +74,7 @@ public final class BiometricAuthenticationService: ObservableObject {
     }
 
     /// Get a localized description of the biometric authentication type
-    public func biometryDescription() -> String {
+    nonisolated public func biometryDescription() -> String {
         switch biometryType() {
         case .faceID:
             return "Face ID"
@@ -75,7 +90,7 @@ public final class BiometricAuthenticationService: ObservableObject {
     }
 
     /// Reset the authentication context (useful for testing)
-    public func resetContext() {
+    nonisolated public func resetContext() {
         // Create a new context to clear any cached authentication state
         // Note: LAContext doesn't have a public reset method
         Task { @MainActor in

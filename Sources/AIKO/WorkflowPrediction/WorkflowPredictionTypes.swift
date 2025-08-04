@@ -1,6 +1,6 @@
 import Foundation
 
-public struct WorkflowPrediction {
+public struct WorkflowPrediction: Sendable {
     public let id: UUID
     public let nextSteps: [String]
     public let confidence: Double
@@ -38,27 +38,41 @@ public enum PredictionFeedbackAction {
     case ignored
 }
 
-public struct PatternWorkflowState {
+public struct PatternWorkflowState: Sendable {
     public let currentStep: String
     public let completedSteps: [String]
     public let documentType: String
-    public let metadata: [String: Any]
+    public let metadata: [String: String]
+
+    public init(currentStep: String, completedSteps: [String], documentType: String, metadata: [String: String]) {
+        self.currentStep = currentStep
+        self.completedSteps = completedSteps
+        self.documentType = documentType
+        self.metadata = metadata
+    }
 }
 
-public struct PredictionOutcome {
+public struct PredictionOutcome: Sendable {
     public let prediction: String
     public let actual: String
     public let correct: Bool
 }
 
-public struct WorkflowPattern {
+public struct WorkflowPattern: Sendable {
     public let sequence: [String]
-    public let context: [String: Any]
+    public let context: [String: String]
     public let frequency: Int
     public let successRate: Double
+
+    public init(sequence: [String], context: [String: String], frequency: Int, successRate: Double) {
+        self.sequence = sequence
+        self.context = context
+        self.frequency = frequency
+        self.successRate = successRate
+    }
 }
 
-public enum ExpertiseLevel {
+public enum ExpertiseLevel: Sendable {
     case novice, low, intermediate, high, advanced, expert
 }
 
@@ -138,17 +152,46 @@ public struct ReliabilityDiagram {
     public let overallAccuracy: Double
 }
 
-public struct StatePrediction {
+public struct PredictionWorkflowContext: Sendable {
+    public let userId: String
+    public let sessionId: String
+    public let workflowType: String
+    public let contextMetadata: [String: String]
+
+    public init(userId: String, sessionId: String, workflowType: String, contextMetadata: [String: String]) {
+        self.userId = userId
+        self.sessionId = sessionId
+        self.workflowType = workflowType
+        self.contextMetadata = contextMetadata
+    }
+}
+
+public struct StatePrediction: Sendable {
     public let nextState: PredictionWorkflowState
     public let probability: Double
     public let confidence: Double
     public let reasoning: String
     public let estimatedDuration: TimeInterval?
+
+    public init(nextState: PredictionWorkflowState, probability: Double, confidence: Double, reasoning: String, estimatedDuration: TimeInterval?) {
+        self.nextState = nextState
+        self.probability = probability
+        self.confidence = confidence
+        self.reasoning = reasoning
+        self.estimatedDuration = estimatedDuration
+    }
 }
 
-public struct PredictionWorkflowState {
+public struct PredictionWorkflowState: Sendable {
     public let phase: String
     public let currentStep: String
     public let documentType: String
-    public let metadata: [String: Any]
+    public let metadata: [String: String] // Changed to Sendable type
+
+    public init(phase: String, currentStep: String, documentType: String, metadata: [String: String]) {
+        self.phase = phase
+        self.currentStep = currentStep
+        self.documentType = documentType
+        self.metadata = metadata
+    }
 }
