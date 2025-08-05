@@ -495,7 +495,6 @@ private func filterAndRankPatterns(_ patterns: [UserPattern]) -> [UserPattern] {
         return $0.confidence > $1.confidence
     }
 }
-}
 
 // MARK: - Supporting Algorithms
 

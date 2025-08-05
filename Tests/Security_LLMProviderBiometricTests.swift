@@ -6,22 +6,21 @@
 //  Copyright © 2025 AIKO. All rights reserved.
 //
 
-import XCTest
-import LocalAuthentication
 @testable import AppCore
+import LocalAuthentication
+import XCTest
 
 /// Security-focused test suite for biometric authentication in LLM provider settings
 /// Critical RED phase tests - ZERO tolerance for security regression
 /// Preserves LAContext patterns from original TCA implementation (lines 395-424)
 @MainActor
 final class SecurityLLMProviderBiometricTests: XCTestCase {
-
     // MARK: - Properties
 
-    private var biometricService: BiometricAuthenticationService!
-    private var settingsService: LLMProviderSettingsService!
-    private var mockKeychainService: MockSecureLLMKeychainService!
-    private var mockConfigService: MockLLMConfigurationService!
+    private var biometricService: BiometricAuthenticationService?
+    private var settingsService: LLMProviderSettingsService?
+    private var mockKeychainService: MockSecureLLMKeychainService?
+    private var mockConfigService: MockLLMConfigurationService?
 
     // MARK: - Setup
 
@@ -154,7 +153,7 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
         mockKeychainService.authenticationShouldSucceed = false
 
         // Attempt multiple authentications
-        for _ in 1...3 {
+        for _ in 1 ... 3 {
             do {
                 try await settingsService.authenticateAndSaveAPIKey("sk-ant-test123", for: .claude)
             } catch {
@@ -271,9 +270,9 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
 
         // Replace API keys with asterisks
         let apiKeyPatterns = [
-            "sk-ant-[a-zA-Z0-9]+",  // Anthropic keys
-            "sk-[a-zA-Z0-9]+",      // OpenAI keys
-            "AIza[a-zA-Z0-9]+",     // Google API keys
+            "sk-ant-[a-zA-Z0-9]+", // Anthropic keys
+            "sk-[a-zA-Z0-9]+", // OpenAI keys
+            "AIza[a-zA-Z0-9]+", // Google API keys
         ]
 
         for pattern in apiKeyPatterns {
@@ -297,7 +296,6 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
 // MARK: - Mock Secure Keychain Service
 
 final class MockSecureLLMKeychainService: LLMKeychainServiceProtocol, @unchecked Sendable {
-
     // Authentication control
     var shouldRequireAuth = false
     var authenticationShouldSucceed = true
@@ -328,13 +326,13 @@ final class MockSecureLLMKeychainService: LLMKeychainServiceProtocol, @unchecked
     func validateAPIKeyFormat(_ key: String, _ provider: LLMProvider) -> Bool {
         switch provider {
         case .claude:
-            return key.hasPrefix("sk-ant-") && key.count > 10
+            key.hasPrefix("sk-ant-") && key.count > 10
         case .openAI, .chatGPT:
-            return key.hasPrefix("sk-") && key.count > 10
+            key.hasPrefix("sk-") && key.count > 10
         case .gemini:
-            return key.hasPrefix("AIza") && key.count > 10
+            key.hasPrefix("AIza") && key.count > 10
         default:
-            return !key.isEmpty
+            !key.isEmpty
         }
     }
 
@@ -414,7 +412,7 @@ final class MockSecureLLMKeychainService: LLMKeychainServiceProtocol, @unchecked
             throw LAError(.biometryLockout) // Biometrics changed
         }
 
-        if !biometricsAvailable && passcodeAvailable {
+        if !biometricsAvailable, passcodeAvailable {
             passcodeAuthenticationAttempted = true
         }
 

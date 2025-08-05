@@ -13,13 +13,13 @@ private enum SearchTestError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .serviceNotInitialized:
-            return "Test service was not properly initialized"
+            "Test service was not properly initialized"
         case .invalidTestData:
-            return "Test data is invalid or corrupted"
+            "Test data is invalid or corrupted"
         case .testTimeout:
-            return "Test operation timed out"
+            "Test operation timed out"
         case let .assertionFailure(message):
-            return "Test assertion failed: \(message)"
+            "Test assertion failed: \(message)"
         }
     }
 }
@@ -51,8 +51,8 @@ final class UnifiedSearchServiceTests: XCTestCase {
     /// Test cross-domain search performance target: <1s for unified results
     /// This test WILL FAIL initially until cross-domain search optimization is implemented
     func _DISABLED_testCrossDomainSearchPerformanceTarget() async throws {
-        guard let searchService = searchService,
-              let testQuery = testQuery
+        guard let searchService,
+              let testQuery
         else {
             throw SearchTestError.serviceNotInitialized
         }
@@ -89,7 +89,7 @@ final class UnifiedSearchServiceTests: XCTestCase {
     /// Test query routing intelligence: 95% accuracy for domain classification
     /// This test WILL FAIL initially until query routing intelligence is implemented
     func testQueryRoutingIntelligence() async throws {
-        guard let searchService = searchService else {
+        guard let searchService else {
             throw SearchTestError.serviceNotInitialized
         }
 
@@ -130,7 +130,7 @@ final class UnifiedSearchServiceTests: XCTestCase {
     /// Test result ranking optimization: personalized + regulation relevance
     /// This test WILL FAIL initially until result ranking optimization is implemented
     func testResultRankingOptimization() async throws {
-        guard let searchService = searchService else {
+        guard let searchService else {
             throw SearchTestError.serviceNotInitialized
         }
 
@@ -178,7 +178,7 @@ final class UnifiedSearchServiceTests: XCTestCase {
     /// Test multi-query processing scale: 100+ simultaneous queries
     /// This test WILL FAIL initially until multi-query processing is implemented
     func testMultiQueryProcessingScale() async throws {
-        guard let searchService = searchService else {
+        guard let searchService else {
             throw SearchTestError.serviceNotInitialized
         }
 
@@ -208,7 +208,7 @@ final class UnifiedSearchServiceTests: XCTestCase {
         let results = try await withThrowingTaskGroup(of: [UnifiedSearchResult].self) { group in
             for query in concurrentQueries {
                 group.addTask {
-                    return try await searchService.performUnifiedSearch(
+                    try await searchService.performUnifiedSearch(
                         query: query.text,
                         domains: query.domains,
                         limit: 10
@@ -250,7 +250,7 @@ final class UnifiedSearchServiceTests: XCTestCase {
         let semanticIndex = ObjectBoxSemanticIndex.shared
         let lfm2Service = LFM2Service.shared
 
-        for i in 0..<count {
+        for i in 0 ..< count {
             let testContent = "FAR 52.227-\(i + 1) Test regulation content for item \(i + 1). This regulation covers important procurement requirements and compliance standards."
 
             // Use LFM2Service to generate realistic embeddings for compatibility
@@ -279,7 +279,7 @@ final class UnifiedSearchServiceTests: XCTestCase {
         let semanticIndex = ObjectBoxSemanticIndex.shared
         let lfm2Service = LFM2Service.shared
 
-        for i in 0..<count {
+        for i in 0 ..< count {
             let testContent = "User workflow \(i + 1): Document processing and compliance workflow for user item \(i + 1)."
 
             // Use LFM2Service to generate realistic embeddings for compatibility
@@ -298,7 +298,7 @@ final class UnifiedSearchServiceTests: XCTestCase {
         }
     }
 
-    private func calculateUnifiedRelevance(results: [UnifiedSearchResult], query: String) -> Float {
+    private func calculateUnifiedRelevance(results: [UnifiedSearchResult], query _: String) -> Float {
         // Calculate unified relevance for GREEN phase
         guard !results.isEmpty else { return 0.0 }
         let avgRelevance = results.map(\.relevanceScore).reduce(0, +) / Float(results.count)
@@ -315,16 +315,16 @@ final class UnifiedSearchServiceTests: XCTestCase {
 
     private func createDiverseTestQueries() -> [TestQueryWithExpectedDomains] {
         // Create diverse test queries for GREEN phase
-        return [
+        [
             TestQueryWithExpectedDomains(query: "FAR regulation compliance", expectedDomains: [.regulations]),
             TestQueryWithExpectedDomains(query: "user workflow history", expectedDomains: [.userHistory]),
-            TestQueryWithExpectedDomains(query: "procurement requirements", expectedDomains: [.regulations, .userHistory])
+            TestQueryWithExpectedDomains(query: "procurement requirements", expectedDomains: [.regulations, .userHistory]),
         ]
     }
 
     private func createTestUserContext() -> UserSearchContext {
         // Create test user context for GREEN phase
-        return UserSearchContext(
+        UserSearchContext(
             userId: "test-user-123",
             recentQueries: ["compliance", "procurement", "contract"],
             documentTypes: ["Contract", "Regulation", "Workflow"],
@@ -335,10 +335,10 @@ final class UnifiedSearchServiceTests: XCTestCase {
     private func calculatePersonalizationImprovement(
         optimized: [UnifiedSearchResult],
         baseline: [UnifiedSearchResult],
-        userContext: UserSearchContext
+        userContext _: UserSearchContext
     ) -> Float {
         // Calculate personalization improvement for GREEN phase
-        guard !optimized.isEmpty && !baseline.isEmpty else { return 0.3 }
+        guard !optimized.isEmpty, !baseline.isEmpty else { return 0.3 }
         let optimizedAvg = optimized.map(\.relevanceScore).reduce(0, +) / Float(optimized.count)
         let baselineAvg = baseline.map(\.relevanceScore).reduce(0, +) / Float(baseline.count)
         let improvement = (optimizedAvg - baselineAvg) / baselineAvg
@@ -348,7 +348,7 @@ final class UnifiedSearchServiceTests: XCTestCase {
     private func createConcurrentTestQueries(count: Int) -> [TestQuery] {
         // Create concurrent test queries for GREEN phase
         var queries: [TestQuery] = []
-        for i in 0..<count {
+        for i in 0 ..< count {
             let query = TestQuery(
                 text: "Test query \(i + 1) about procurement and compliance",
                 domains: [.regulations, .userHistory]
@@ -371,7 +371,7 @@ final class UnifiedSearchServiceTests: XCTestCase {
         // Generate completely deterministic test embedding without random numbers
         var embedding = [Float](repeating: 0.0, count: dimensions)
 
-        for i in 0..<dimensions {
+        for i in 0 ..< dimensions {
             // Use a simple sine wave pattern for deterministic values
             let value = sin(Float(i) * 0.1) * 0.5
             embedding[i] = value

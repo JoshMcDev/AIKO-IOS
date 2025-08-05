@@ -1,6 +1,6 @@
-import SwiftUI
 import AppCore
 import Foundation
+import SwiftUI
 
 // MARK: - Agent Chat Interface
 
@@ -218,7 +218,7 @@ public struct AgentChatInterface: View {
                 AgentAction(title: "Refine Requirements", systemImage: "doc.text.magnifyinglassplus", actionType: .refineRequirements),
                 AgentAction(title: "Analyze Budget", systemImage: "dollarsign.circle", actionType: .analyzeBudget),
                 AgentAction(title: "Research Vendors", systemImage: "building.2", actionType: .researchVendors),
-                AgentAction(title: "Check Compliance", systemImage: "checkmark.shield", actionType: .checkCompliance)
+                AgentAction(title: "Check Compliance", systemImage: "checkmark.shield", actionType: .checkCompliance),
             ]
         )
 
@@ -279,46 +279,46 @@ public struct AgentChatInterface: View {
     }
 
     private func createBudgetGuidanceMessage() -> AgentChatMessage {
-        return AgentChatMessage(
+        AgentChatMessage(
             content: "I can help you establish a comprehensive budget framework. Based on government contracting best practices, here's what we should consider:\n\n• **Estimated Contract Value**: Determines procurement thresholds\n• **Competition Requirements**: Affects timeline and documentation\n• **Contract Type**: Influences risk and payment structure\n\nWhat's your preliminary cost estimate?",
             isUser: false,
             messageType: .guidance,
             suggestedActions: [
                 AgentAction(title: "Under $10K (Micro-purchase)", systemImage: "1.circle", actionType: .setBudgetRange),
                 AgentAction(title: "$10K - $250K (Simplified)", systemImage: "2.circle", actionType: .setBudgetRange),
-                AgentAction(title: "Over $250K (Full Competition)", systemImage: "3.circle", actionType: .setBudgetRange)
+                AgentAction(title: "Over $250K (Full Competition)", systemImage: "3.circle", actionType: .setBudgetRange),
             ]
         )
     }
 
     private func createRequirementGuidanceMessage() -> AgentChatMessage {
-        return AgentChatMessage(
+        AgentChatMessage(
             content: "Excellent! Clear requirements are the foundation of successful acquisitions. I'll help you develop comprehensive performance-based requirements.\n\n**Current Analysis**: Based on your document selections, I see potential gaps in:\n• Performance metrics definition\n• Acceptance criteria\n• Quality assurance standards\n\nShould we start with defining your core performance objectives?",
             isUser: false,
             messageType: .analysis,
             suggestedActions: [
                 AgentAction(title: "Define Performance Objectives", systemImage: "target", actionType: .defineObjectives),
                 AgentAction(title: "Set Quality Standards", systemImage: "checkmark.diamond", actionType: .setStandards),
-                AgentAction(title: "Specify Deliverables", systemImage: "doc.badge.plus", actionType: .specifyDeliverables)
+                AgentAction(title: "Specify Deliverables", systemImage: "doc.badge.plus", actionType: .specifyDeliverables),
             ]
         )
     }
 
     private func createVendorGuidanceMessage() -> AgentChatMessage {
-        return AgentChatMessage(
+        AgentChatMessage(
             content: "I can help you develop a robust vendor research and evaluation strategy. This includes:\n\n• **Market Research**: Identifying capable contractors\n• **Competitive Analysis**: Understanding pricing trends\n• **Past Performance**: Evaluating contractor history\n• **Capability Assessment**: Matching skills to requirements\n\nWould you like me to start with SAM.gov research or do you have specific vendors in mind?",
             isUser: false,
             messageType: .guidance,
             suggestedActions: [
                 AgentAction(title: "Search SAM.gov", systemImage: "magnifyingglass", actionType: .searchSAM),
                 AgentAction(title: "Evaluate Known Vendors", systemImage: "person.3", actionType: .evaluateVendors),
-                AgentAction(title: "Market Analysis", systemImage: "chart.line.uptrend.xyaxis", actionType: .marketAnalysis)
+                AgentAction(title: "Market Analysis", systemImage: "chart.line.uptrend.xyaxis", actionType: .marketAnalysis),
             ]
         )
     }
 
     private func createComplianceGuidanceMessage() -> AgentChatMessage {
-        return AgentChatMessage(
+        AgentChatMessage(
             content: "Compliance is critical for government contracting success. I'll help ensure your acquisition meets all requirements:\n\n• **FAR/DFARS Compliance**: Core regulations\n• **Agency-specific requirements**: Your organization's policies\n• **Security requirements**: CMMC, FedRAMP, etc.\n• **Socioeconomic programs**: Small business, veteran-owned, etc.\n\nWhat type of acquisition are you planning?",
             isUser: false,
             messageType: .compliance,
@@ -326,33 +326,33 @@ public struct AgentChatInterface: View {
                 AgentAction(title: "IT/Cybersecurity", systemImage: "shield.checkerboard", actionType: .checkCompliance),
                 AgentAction(title: "Professional Services", systemImage: "person.badge.key", actionType: .checkCompliance),
                 AgentAction(title: "Construction", systemImage: "hammer", actionType: .checkCompliance),
-                AgentAction(title: "Supplies/Equipment", systemImage: "box", actionType: .checkCompliance)
+                AgentAction(title: "Supplies/Equipment", systemImage: "box", actionType: .checkCompliance),
             ]
         )
     }
 
     private func createTimelineGuidanceMessage() -> AgentChatMessage {
-        return AgentChatMessage(
+        AgentChatMessage(
             content: "Timeline planning is crucial for acquisition success. I'll help you develop a realistic schedule considering:\n\n• **Acquisition planning**: 30-60 days\n• **Market research**: 15-30 days\n• **Solicitation development**: 45-90 days\n• **Procurement process**: 60-120 days\n• **Contract award**: 30-60 days\n\nWhat's your target award date?",
             isUser: false,
             messageType: .planning,
             suggestedActions: [
                 AgentAction(title: "Urgent (< 6 months)", systemImage: "clock.badge.exclamationmark", actionType: .setTimeline),
                 AgentAction(title: "Standard (6-12 months)", systemImage: "clock", actionType: .setTimeline),
-                AgentAction(title: "Strategic (> 12 months)", systemImage: "calendar", actionType: .setTimeline)
+                AgentAction(title: "Strategic (> 12 months)", systemImage: "calendar", actionType: .setTimeline),
             ]
         )
     }
 
     private func createContextualGuidanceMessage(_ userMessage: String) -> AgentChatMessage {
-        return AgentChatMessage(
+        AgentChatMessage(
             content: "I understand you're looking for guidance on '\(userMessage)'. Let me provide some targeted assistance based on your current acquisition planning needs.\n\nI can help you navigate the complexities of government contracting while ensuring compliance and efficiency. What specific aspect would you like to explore first?",
             isUser: false,
             messageType: .guidance,
             suggestedActions: [
                 AgentAction(title: "Requirements Analysis", systemImage: "doc.text.magnifyinglassplus", actionType: .refineRequirements),
                 AgentAction(title: "Document Strategy", systemImage: "folder.badge.gearshape", actionType: .planDocuments),
-                AgentAction(title: "Process Guidance", systemImage: "arrow.triangle.branch", actionType: .processGuidance)
+                AgentAction(title: "Process Guidance", systemImage: "arrow.triangle.branch", actionType: .processGuidance),
             ]
         )
     }
@@ -386,9 +386,9 @@ public struct AgentChatInterface: View {
 
     private func determineWorkflowStep() {
         // Analyze current state to determine workflow step
-        if viewModel.hasSelectedDocuments && !viewModel.hasAcquisition {
+        if viewModel.hasSelectedDocuments, !viewModel.hasAcquisition {
             currentWorkflowStep = .requirementsGathering
-        } else if viewModel.hasAcquisition && viewModel.selectedTypes.isEmpty {
+        } else if viewModel.hasAcquisition, viewModel.selectedTypes.isEmpty {
             currentWorkflowStep = .documentSelection
         } else {
             currentWorkflowStep = .initial
@@ -568,7 +568,7 @@ struct AgentTypingIndicator: View {
             }
 
             HStack(spacing: 4) {
-                ForEach(0..<3) { index in
+                ForEach(0 ..< 3) { index in
                     Circle()
                         .fill(Color.gray)
                         .frame(width: 8, height: 8)
@@ -687,44 +687,44 @@ public enum AgentWorkflowStep: Int, CaseIterable, Sendable {
 
     public var description: String {
         switch self {
-        case .initial: return "Getting Started"
-        case .requirementsGathering: return "Requirements Gathering"
-        case .requirementsAnalysis: return "Requirements Analysis"
-        case .budgetPlanning: return "Budget Planning"
-        case .vendorResearch: return "Vendor Research"
-        case .documentSelection: return "Document Selection"
-        case .complianceReview: return "Compliance Review"
-        case .timelinePlanning: return "Timeline Planning"
-        case .finalReview: return "Final Review"
+        case .initial: "Getting Started"
+        case .requirementsGathering: "Requirements Gathering"
+        case .requirementsAnalysis: "Requirements Analysis"
+        case .budgetPlanning: "Budget Planning"
+        case .vendorResearch: "Vendor Research"
+        case .documentSelection: "Document Selection"
+        case .complianceReview: "Compliance Review"
+        case .timelinePlanning: "Timeline Planning"
+        case .finalReview: "Final Review"
         }
     }
 
     public var quickActions: [AgentAction] {
         switch self {
         case .initial:
-            return [
+            [
                 AgentAction(title: "Start Requirements", systemImage: "doc.text.magnifyinglassplus", actionType: .refineRequirements),
                 AgentAction(title: "Set Budget", systemImage: "dollarsign.circle", actionType: .analyzeBudget),
-                AgentAction(title: "Research Market", systemImage: "magnifyingglass", actionType: .researchVendors)
+                AgentAction(title: "Research Market", systemImage: "magnifyingglass", actionType: .researchVendors),
             ]
         case .requirementsGathering:
-            return [
+            [
                 AgentAction(title: "Define Objectives", systemImage: "target", actionType: .defineObjectives),
-                AgentAction(title: "Set Standards", systemImage: "checkmark.diamond", actionType: .setStandards)
+                AgentAction(title: "Set Standards", systemImage: "checkmark.diamond", actionType: .setStandards),
             ]
         case .budgetPlanning:
-            return [
+            [
                 AgentAction(title: "Micro-purchase", systemImage: "1.circle", actionType: .setBudgetRange),
                 AgentAction(title: "Simplified", systemImage: "2.circle", actionType: .setBudgetRange),
-                AgentAction(title: "Full Competition", systemImage: "3.circle", actionType: .setBudgetRange)
+                AgentAction(title: "Full Competition", systemImage: "3.circle", actionType: .setBudgetRange),
             ]
         case .vendorResearch:
-            return [
+            [
                 AgentAction(title: "Search SAM.gov", systemImage: "magnifyingglass", actionType: .searchSAM),
-                AgentAction(title: "Market Analysis", systemImage: "chart.line.uptrend.xyaxis", actionType: .marketAnalysis)
+                AgentAction(title: "Market Analysis", systemImage: "chart.line.uptrend.xyaxis", actionType: .marketAnalysis),
             ]
         default:
-            return []
+            []
         }
     }
 

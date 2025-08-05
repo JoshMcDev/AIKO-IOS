@@ -308,18 +308,25 @@ public final class SF33Factory: BaseFormFactory<SF33Form> {
             purpose: "Solicitation and award"
         )
 
-        let emptyAddress = try! PostalAddress(
+        guard let emptyAddress = try? PostalAddress(
             street: "TBD",
             city: "TBD",
             state: "TBD",
             zipCode: "00000",
             country: "USA"
-        )
+        ) else {
+            fatalError("Failed to create default postal address for SF33 form")
+        }
 
         return SF33Form(
             metadata: metadata,
             solicitation: SF33SolicitationSection(
-                solicitationNumber: try! SolicitationNumber("TBD-00000"),
+                solicitationNumber: {
+                    guard let number = try? SolicitationNumber("TBD-00000") else {
+                        fatalError("Failed to create default solicitation number")
+                    }
+                    return number
+                }(),
                 issueDate: Date(),
                 requisitionNumber: nil,
                 solicitationType: .rfp,
@@ -333,8 +340,18 @@ public final class SF33Factory: BaseFormFactory<SF33Form> {
                     cageCode: nil,
                     dunsNumber: nil,
                     taxId: "",
-                    phoneNumber: try! PhoneNumber("000-000-0000"),
-                    email: try! Email("placeholder@example.com"),
+                    phoneNumber: {
+                        guard let number = try? PhoneNumber("000-000-0000") else {
+                            fatalError("Failed to create default phone number")
+                        }
+                        return number
+                    }(),
+                    email: {
+                        guard let email = try? Email("placeholder@example.com") else {
+                            fatalError("Failed to create default email address")
+                        }
+                        return email
+                    }(),
                     authorizedRepresentative: ""
                 ),
                 offerDate: Date(),

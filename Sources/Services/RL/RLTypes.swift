@@ -54,7 +54,7 @@ public struct ContextualBandit: Codable, Sendable {
 
         // Use normal approximation to Beta distribution for simplicity
         // In production, use proper Beta distribution library
-        let sample = Double.random(in: max(0, mean - 2 * stdDev)...min(1, mean + 2 * stdDev))
+        let sample = Double.random(in: max(0, mean - 2 * stdDev) ... min(1, mean + 2 * stdDev))
         return sample
     }
 }
@@ -74,7 +74,7 @@ public struct RewardSignal: Sendable {
 
     public var totalReward: Double {
         // Weighted composition: 40% immediate, 30% delayed, 20% compliance, 10% efficiency
-        return immediateReward * 0.4 + delayedReward * 0.3 + complianceReward * 0.2 + efficiencyReward * 0.1
+        immediateReward * 0.4 + delayedReward * 0.3 + complianceReward * 0.2 + efficiencyReward * 0.1
     }
 }
 

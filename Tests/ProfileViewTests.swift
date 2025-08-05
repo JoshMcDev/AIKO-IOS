@@ -6,10 +6,10 @@
 //  Copyright © 2025 AIKO. All rights reserved.
 //
 
-import XCTest
-import SwiftUI
 @testable import AIKO
 @testable import AppCore
+import SwiftUI
+import XCTest
 
 // ProfileView is not accessible from the test target - commenting out for now
 // Will be restored when ProfileView is moved to the correct module
@@ -18,7 +18,6 @@ import SwiftUI
 /// Tests view initialization, state management, and user interactions
 @MainActor
 final class ProfileViewTests: XCTestCase {
-
     // MARK: - View Initialization Tests
 
     func testProfileView_CanBeInitialized() {
@@ -236,9 +235,9 @@ private final class MockProfileService: ProfileServiceProtocol, @unchecked Senda
     func loadProfile() async throws -> UserProfile {
         loadProfileCalled = true
         switch loadProfileResult {
-        case .success(let profile):
+        case let .success(profile):
             return profile
-        case .failure(let error):
+        case let .failure(error):
             throw error
         }
     }
@@ -250,7 +249,7 @@ private final class MockProfileService: ProfileServiceProtocol, @unchecked Senda
         switch saveProfileResult {
         case .success:
             return
-        case .failure(let error):
+        case let .failure(error):
             throw error
         }
     }

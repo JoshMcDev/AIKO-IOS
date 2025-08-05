@@ -53,7 +53,7 @@ public struct SearchTemplate: Identifiable, Sendable {
             category: .security,
             keywords: ["security", "clearance", "classified", "requirements"],
             content: "Security clearance requirements template..."
-        )
+        ),
     ]
 }
 

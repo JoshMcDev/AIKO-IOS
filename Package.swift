@@ -15,9 +15,11 @@ let package = Package(
         .package(url: "https://github.com/jamesrochabrun/SwiftAnthropic", branch: "main"),
         .package(url: "https://github.com/apple/swift-collections", from: "1.0.0"),
         .package(url: "https://github.com/vapor/multipart-kit", from: "4.5.0"),
+        .package(url: "https://github.com/ml-explore/mlx-swift", from: "0.18.0"),
     ],
     targets: [
         // MARK: - Compatibility Module for Non-Sendable Dependencies
+
         .target(
             name: "AikoCompat",
             dependencies: [
@@ -31,11 +33,13 @@ let package = Package(
         ),
 
         // MARK: - Shared Core Module (Platform-Agnostic)
+
         .target(
             name: "AppCore",
             dependencies: [
                 "AikoCompat",
                 .product(name: "Collections", package: "swift-collections"),
+                .product(name: "MLX", package: "mlx-swift"),
             ],
             path: "Sources/AppCore",
             exclude: ["README.md"],
@@ -45,6 +49,7 @@ let package = Package(
         ),
 
         // MARK: - iOS Platform Module
+
         .target(
             name: "AIKOiOS",
             dependencies: [
@@ -58,6 +63,7 @@ let package = Package(
         ),
 
         // MARK: - macOS Platform Module
+
         .target(
             name: "AIKOmacOS",
             dependencies: [
@@ -71,6 +77,7 @@ let package = Package(
         ),
 
         // MARK: - GraphRAG Module
+
         .target(
             name: "GraphRAG",
             dependencies: [
@@ -83,6 +90,7 @@ let package = Package(
         ),
 
         // MARK: - Main App Target
+
         .target(
             name: "AIKO",
             dependencies: [
@@ -135,6 +143,7 @@ let package = Package(
         ),
 
         // MARK: - Test Targets
+
         .testTarget(
             name: "AppCoreTests",
             dependencies: [

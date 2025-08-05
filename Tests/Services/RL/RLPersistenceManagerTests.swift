@@ -1,7 +1,7 @@
-import XCTest
-import Foundation
-import CoreData
 @testable import AIKO
+import CoreData
+import Foundation
+import XCTest
 
 /// Comprehensive test suite for RLPersistenceManager
 /// Testing Core Data integration for RL state persistence
@@ -12,13 +12,12 @@ import CoreData
 /// 3. Performance requirements for persistence operations
 /// 4. Error handling and data integrity
 final class RLPersistenceManagerTests: XCTestCase {
-
     // MARK: - Test Properties
 
-    var persistenceManager: RLPersistenceManager!
-    var mockCoreDataStack: AIKO.MockCoreDataStack!
-    private var testBandits: [AIKO.ActionIdentifier: AIKO.ContextualBandit]!
-    var testFeatureVector: FeatureVector!
+    var persistenceManager: RLPersistenceManager?
+    var mockCoreDataStack: AIKO.MockCoreDataStack?
+    private var testBandits: [AIKO.ActionIdentifier: AIKO.ContextualBandit]?
+    var testFeatureVector: FeatureVector?
 
     override func setUp() async throws {
         mockCoreDataStack = AIKO.MockCoreDataStack()
@@ -30,7 +29,7 @@ final class RLPersistenceManagerTests: XCTestCase {
             "value_normalized": 0.5,
             "complexity_score": 0.6,
             "days_remaining": 30.0,
-            "is_urgent": 0.0
+            "is_urgent": 0.0,
         ])
 
         // Create test bandits using AIKO types
@@ -48,7 +47,7 @@ final class RLPersistenceManagerTests: XCTestCase {
                 failureCount: 1.0,
                 lastUpdate: Date().addingTimeInterval(-3600),
                 totalSamples: 6
-            )
+            ),
         ]
     }
 
@@ -62,6 +61,13 @@ final class RLPersistenceManagerTests: XCTestCase {
     // MARK: - Bandit Persistence Tests
 
     func testSaveBandits_PersistenceOperation() async throws {
+        guard let persistenceManager,
+              let testBandits,
+              let mockCoreDataStack
+        else {
+            XCTFail("Test dependencies should be initialized")
+            return
+        }
         // RED PHASE: This test should FAIL initially
         // Testing basic bandit persistence to Core Data
 
@@ -91,6 +97,12 @@ final class RLPersistenceManagerTests: XCTestCase {
     }
 
     func testLoadBandits_RetrievalOperation() async throws {
+        guard let persistenceManager,
+              let testBandits
+        else {
+            XCTFail("Test dependencies should be initialized")
+            return
+        }
         // RED PHASE: This test should FAIL initially
         // Testing bandit retrieval from Core Data
 
@@ -117,11 +129,17 @@ final class RLPersistenceManagerTests: XCTestCase {
     }
 
     func testSaveLoad_RoundTripConsistency() async throws {
+        guard let persistenceManager,
+              var testBandits
+        else {
+            XCTFail("Test dependencies should be initialized")
+            return
+        }
         // RED PHASE: This test should FAIL initially
         // Testing round-trip persistence consistency
 
         // Given: Multiple save-load cycles
-        for iteration in 0..<5 {
+        for iteration in 0 ..< 5 {
             // Update bandits with new data
             for (identifier, _) in testBandits {
                 testBandits[identifier]?.updatePosterior(reward: Double(iteration) / 10.0)
@@ -152,6 +170,13 @@ final class RLPersistenceManagerTests: XCTestCase {
     // MARK: - Data Integrity Tests
 
     func testSaveBandits_OverwriteExisting() async throws {
+        guard let persistenceManager,
+              let testBandits,
+              let mockCoreDataStack
+        else {
+            XCTFail("Test dependencies should be initialized")
+            return
+        }
         // RED PHASE: This test should FAIL initially
         // Testing that saving bandits overwrites existing data
 
@@ -191,6 +216,10 @@ final class RLPersistenceManagerTests: XCTestCase {
     }
 
     func testLoadBandits_EmptyDatabase() async throws {
+        guard let persistenceManager else {
+            XCTFail("Persistence manager should be initialized")
+            return
+        }
         // RED PHASE: This test should FAIL initially
         // Testing loading from empty database
 
@@ -202,6 +231,10 @@ final class RLPersistenceManagerTests: XCTestCase {
     }
 
     func testFeatureVectorEncoding_JSONSerialization() async throws {
+        guard let persistenceManager else {
+            XCTFail("Persistence manager should be initialized")
+            return
+        }
         // RED PHASE: This test should FAIL initially
         // Testing JSON encoding/decoding of feature vectors
 
@@ -215,7 +248,7 @@ final class RLPersistenceManagerTests: XCTestCase {
             "has_52.215-1": 1.0,
             "has_52.209-5": 1.0,
             "workflow_progress": 0.75,
-            "documents_completed": 5.0
+            "documents_completed": 5.0,
         ])
 
         let complexBandits = [
@@ -225,7 +258,7 @@ final class RLPersistenceManagerTests: XCTestCase {
                 failureCount: 3.0,
                 lastUpdate: Date(),
                 totalSamples: 13
-            )
+            ),
         ]
 
         // When: Saving and loading complex features
@@ -252,16 +285,20 @@ final class RLPersistenceManagerTests: XCTestCase {
     // MARK: - Performance Tests
 
     func testSaveBandits_PerformanceLatency() async throws {
+        guard let persistenceManager else {
+            XCTFail("Persistence manager should be initialized")
+            return
+        }
         // RED PHASE: This test should FAIL initially
         // Testing save operation performance requirements
 
         // Given: Large number of bandits
         var largeBanditSet: [ActionIdentifier: ContextualBandit] = [:]
-        for i in 0..<1000 {
+        for i in 0 ..< 1000 {
             let features = FeatureVector(features: [
                 "docType_test\(i % 5)": 1.0,
                 "value_normalized": Double(i % 100) / 100.0,
-                "complexity_score": Double(i % 10) / 10.0
+                "complexity_score": Double(i % 10) / 10.0,
             ])
 
             let identifier = ActionIdentifier(actionId: "action-\(i)", contextHash: features.hash)
@@ -286,15 +323,19 @@ final class RLPersistenceManagerTests: XCTestCase {
     }
 
     func testLoadBandits_PerformanceLatency() async throws {
+        guard let persistenceManager else {
+            XCTFail("Persistence manager should be initialized")
+            return
+        }
         // RED PHASE: This test should FAIL initially
         // Testing load operation performance requirements
 
         // Given: Large bandit set is already saved
         var largeBanditSet: [ActionIdentifier: ContextualBandit] = [:]
-        for i in 0..<500 {
+        for i in 0 ..< 500 {
             let features = FeatureVector(features: [
                 "docType_load\(i % 3)": 1.0,
-                "value_normalized": Double(i % 50) / 50.0
+                "value_normalized": Double(i % 50) / 50.0,
             ])
 
             let identifier = ActionIdentifier(actionId: "load-action-\(i)", contextHash: features.hash)
@@ -324,6 +365,13 @@ final class RLPersistenceManagerTests: XCTestCase {
     // MARK: - Error Handling Tests
 
     func testSaveBandits_DatabaseError() async throws {
+        guard let persistenceManager,
+              let testBandits,
+              let mockCoreDataStack
+        else {
+            XCTFail("Test dependencies should be initialized")
+            return
+        }
         // RED PHASE: This test should FAIL initially
         // Testing error handling for database failures
 
@@ -341,6 +389,12 @@ final class RLPersistenceManagerTests: XCTestCase {
     }
 
     func testLoadBandits_CorruptedData() async throws {
+        guard let persistenceManager,
+              let mockCoreDataStack
+        else {
+            XCTFail("Test dependencies should be initialized")
+            return
+        }
         // RED PHASE: This test should FAIL initially
         // Testing error handling for corrupted data
 
@@ -348,7 +402,10 @@ final class RLPersistenceManagerTests: XCTestCase {
         let context = mockCoreDataStack.backgroundContext
 
         try await context.perform {
-            let entity = NSEntityDescription.entity(forEntityName: "RLBandit", in: context)!
+            guard let entity = NSEntityDescription.entity(forEntityName: "RLBandit", in: context) else {
+                XCTFail("Failed to get RLBandit entity description")
+                return
+            }
             let corruptedObject = NSManagedObject(entity: entity, insertInto: context)
 
             // Set invalid data
@@ -377,13 +434,16 @@ final class RLPersistenceManagerTests: XCTestCase {
         let concurrentOperations = 20
 
         // When: Multiple concurrent save operations
-        let persistenceManagerLocal = self.persistenceManager!
+        guard let persistenceManagerLocal = persistenceManager else {
+            XCTFail("Persistence manager should be initialized")
+            return
+        }
         try await withThrowingTaskGroup(of: Void.self) { group in
-            for i in 0..<concurrentOperations {
+            for i in 0 ..< concurrentOperations {
                 group.addTask {
                     let features = FeatureVector(features: [
                         "docType_concurrent\(i)": 1.0,
-                        "value_normalized": Double(i) / 100.0
+                        "value_normalized": Double(i) / 100.0,
                     ])
 
                     let bandits = [
@@ -393,7 +453,7 @@ final class RLPersistenceManagerTests: XCTestCase {
                             failureCount: 1.0,
                             lastUpdate: Date(),
                             totalSamples: i + 2
-                        )
+                        ),
                     ]
 
                     try await persistenceManagerLocal.saveBandits(bandits)
@@ -404,7 +464,7 @@ final class RLPersistenceManagerTests: XCTestCase {
         }
 
         // Then: All operations should complete without data corruption
-        let finalBandits = try await persistenceManager.loadBandits()
+        let finalBandits = try await persistenceManagerLocal.loadBandits()
         XCTAssertGreaterThan(finalBandits.count, 0, "Should have saved at least some bandits")
 
         // Verify data integrity
@@ -416,6 +476,7 @@ final class RLPersistenceManagerTests: XCTestCase {
     }
 
     // MARK: - Helper Types
+
     // Using AIKO module types instead of private definitions
 }
 
@@ -431,7 +492,7 @@ class MockCoreDataStack {
         container.persistentStoreDescriptions = [description]
 
         container.loadPersistentStores { _, error in
-            if let error = error {
+            if let error {
                 fatalError("Failed to load store: \(error)")
             }
         }

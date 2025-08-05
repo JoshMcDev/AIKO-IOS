@@ -1,5 +1,5 @@
-import SwiftUI
 import Combine
+import SwiftUI
 
 #if canImport(UIKit)
 import UIKit
@@ -72,7 +72,7 @@ public final class DocumentScannerViewModel: ObservableObject {
         fatalError("requestCameraPermissions not implemented - RED phase")
     }
 
-    public func processPage(_ page: ScannedPage) async throws -> ScannedPage {
+    public func processPage(_: ScannedPage) async throws -> ScannedPage {
         // RED phase stub - will be implemented in GREEN phase
         fatalError("processPage not implemented - RED phase")
     }
@@ -92,7 +92,7 @@ public final class DocumentScannerViewModel: ObservableObject {
         fatalError("saveDocument not implemented - RED phase")
     }
 
-    public func reorderPages(from: IndexSet, to: Int) {
+    public func reorderPages(from _: IndexSet, to _: Int) {
         // RED phase stub - will be implemented in GREEN phase
         fatalError("reorderPages not implemented - RED phase")
     }
@@ -102,14 +102,14 @@ public struct DocumentScannerView: View {
     @StateObject private var viewModel: DocumentScannerViewModel
 
     public init(viewModel: DocumentScannerViewModel = DocumentScannerViewModel()) {
-        self._viewModel = StateObject(wrappedValue: viewModel)
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
 
     public var body: some View {
         NavigationStack {
             VStack {
                 // Initial State
-                if !viewModel.isScanning && viewModel.pages.isEmpty {
+                if !viewModel.isScanning, viewModel.pages.isEmpty {
                     initialStateView
                 }
 

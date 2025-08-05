@@ -1,5 +1,5 @@
-import Foundation
 import AppCore
+import Foundation
 
 /// SAMGovLookupViewModel - SwiftUI @Observable Implementation
 /// PHASE 2: Business Logic View with Federal Entity Search Capabilities
@@ -7,12 +7,13 @@ import AppCore
 @Observable
 public final class SAMGovLookupViewModel: @unchecked Sendable {
     // MARK: - Constants
+
     private static let defaultSearchEntryCount = 3
 
     // MARK: - State Management
-    public var searchEntries: [SAMGovSearchEntry] = {
-        (0..<defaultSearchEntryCount).map { _ in SAMGovSearchEntry() }
-    }()
+
+    public var searchEntries: [SAMGovSearchEntry] = (0 ..< defaultSearchEntryCount).map { _ in SAMGovSearchEntry() }
+
     public var searchResults: [EntityDetail] = []
     public var isSearching: Bool = false
     public var errorMessage: String?
@@ -21,6 +22,7 @@ public final class SAMGovLookupViewModel: @unchecked Sendable {
     public var selectedEntityForReport: EntityDetail?
 
     // MARK: - Computed Properties
+
     public var shouldDisableBatchSearch: Bool {
         hasAnyActiveSearch || !hasValidSearchEntries
     }
@@ -34,9 +36,11 @@ public final class SAMGovLookupViewModel: @unchecked Sendable {
     }
 
     // MARK: - Service Dependencies
+
     private let samGovService: SAMGovServiceProtocol
 
     // MARK: - Initialization
+
     public init(samGovService: SAMGovServiceProtocol) {
         self.samGovService = samGovService
     }
@@ -106,7 +110,7 @@ public final class SAMGovLookupViewModel: @unchecked Sendable {
     }
 
     private func getSearchableEntryIndices() -> [Int] {
-        return searchEntries.enumerated().compactMap { index, entry in
+        searchEntries.enumerated().compactMap { index, entry in
             guard !entry.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
                   !entry.isSearching else { return nil }
             return index
@@ -126,7 +130,7 @@ public final class SAMGovLookupViewModel: @unchecked Sendable {
     }
 
     private func canRemoveSearchEntry(at index: Int) -> Bool {
-        return index > 0 &&
+        index > 0 &&
             index < searchEntries.count &&
             searchEntries.count > 1 &&
             !searchEntries[index].isSearching
@@ -155,7 +159,7 @@ public final class SAMGovLookupViewModel: @unchecked Sendable {
     // MARK: - Private Helper Methods
 
     private func isValidSearchIndex(_ index: Int) -> Bool {
-        return index >= 0 && index < searchEntries.count
+        index >= 0 && index < searchEntries.count
     }
 
     @MainActor
@@ -190,49 +194,49 @@ public final class SAMGovLookupViewModel: @unchecked Sendable {
     private func mapErrorToUserFriendlyMessage(_ error: Error) -> String {
         switch error {
         case let urlError as URLError:
-            return mapURLErrorToMessage(urlError)
+            mapURLErrorToMessage(urlError)
         case let samGovError as SAMGovError:
-            return mapSAMGovErrorToMessage(samGovError)
+            mapSAMGovErrorToMessage(samGovError)
         default:
-            return error.localizedDescription
+            error.localizedDescription
         }
     }
 
     private func mapURLErrorToMessage(_ urlError: URLError) -> String {
         switch urlError.code {
         case .notConnectedToInternet:
-            return "No Internet connection available. Please check your network settings."
+            "No Internet connection available. Please check your network settings."
         case .timedOut:
-            return "Request timed out. Please try again."
+            "Request timed out. Please try again."
         case .cannotFindHost, .cannotConnectToHost:
-            return "Cannot connect to SAM.gov servers. Please try again later."
+            "Cannot connect to SAM.gov servers. Please try again later."
         case .networkConnectionLost:
-            return "Network connection lost. Please check your Internet connection."
+            "Network connection lost. Please check your Internet connection."
         default:
-            return "Network error occurred: \(urlError.localizedDescription)"
+            "Network error occurred: \(urlError.localizedDescription)"
         }
     }
 
     private func mapSAMGovErrorToMessage(_ samGovError: SAMGovError) -> String {
         switch samGovError {
         case .rateLimitExceeded:
-            return "API rate limit exceeded. Please wait a moment before trying again."
+            "API rate limit exceeded. Please wait a moment before trying again."
         case .rateLimited:
-            return "Request was rate limited. Please wait before trying again."
+            "Request was rate limited. Please wait before trying again."
         case .invalidResponse:
-            return "Invalid response format from SAM.gov API."
+            "Invalid response format from SAM.gov API."
         case .invalidAPIKey:
-            return "Authentication failed - check API credentials."
+            "Authentication failed - check API credentials."
         case .entityNotFound:
-            return "Entity not found in SAM.gov database."
-        case .networkError(let message):
-            return "Network error: \(message)"
+            "Entity not found in SAM.gov database."
+        case let .networkError(message):
+            "Network error: \(message)"
         case .apiKeyRequired:
-            return "API key required for SAM.gov access."
+            "API key required for SAM.gov access."
         case .authenticationFailed:
-            return "Authentication failed with SAM.gov API. Please check your credentials."
+            "Authentication failed with SAM.gov API. Please check your credentials."
         case .invalidFormat:
-            return "Invalid format for search parameter. Please check your input."
+            "Invalid format for search parameter. Please check your input."
         }
     }
 }
@@ -256,17 +260,17 @@ public enum SAMGovSearchType: String, CaseIterable, Sendable {
 
     public var placeholder: String {
         switch self {
-        case .companyName: return "Enter company name..."
-        case .uei: return "Enter UEI (12 characters)..."
-        case .cage: return "Enter CAGE code..."
+        case .companyName: "Enter company name..."
+        case .uei: "Enter UEI (12 characters)..."
+        case .cage: "Enter CAGE code..."
         }
     }
 
     public var icon: String {
         switch self {
-        case .companyName: return "building.2"
-        case .uei: return "number"
-        case .cage: return "barcode"
+        case .companyName: "building.2"
+        case .uei: "number"
+        case .cage: "barcode"
         }
     }
 }

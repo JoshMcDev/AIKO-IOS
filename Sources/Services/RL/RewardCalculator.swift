@@ -1,21 +1,20 @@
-import Foundation
 import AppCore
+import Foundation
 
 /// RewardCalculator - Multi-signal reward computation for RL learning
 /// This is minimal scaffolding code to make tests compile but fail appropriately
 public struct RewardCalculator: Sendable {
-
     // MARK: - Reward Calculation - Scaffolding Implementation
 
     public static func calculate(
-        decision: DecisionResponse,
-        feedback: RLUserFeedback,
-        context: AcquisitionContext
+        decision _: DecisionResponse,
+        feedback _: RLUserFeedback,
+        context _: AcquisitionContext
     ) -> RewardSignal {
         // RED PHASE: Minimal implementation that will fail reward calculation tests
 
         // Return fixed low rewards that won't match test expectations
-        return RewardSignal(
+        RewardSignal(
             immediateReward: 0.1,
             delayedReward: 0.1,
             complianceReward: 0.1,
@@ -23,33 +22,33 @@ public struct RewardCalculator: Sendable {
         )
     }
 
-    private static func calculateImmediateReward(_ feedback: RLUserFeedback) -> Double {
+    private static func calculateImmediateReward(_: RLUserFeedback) -> Double {
         // RED PHASE: Fixed return to fail immediate reward tests
-        return 0.1
+        0.1
     }
 
     private static func calculateDelayedReward(
-        _ feedback: RLUserFeedback,
-        context: AcquisitionContext
+        _: RLUserFeedback,
+        context _: AcquisitionContext
     ) -> Double {
         // RED PHASE: Fixed return to fail delayed reward tests
-        return 0.1
+        0.1
     }
 
     private static func calculateComplianceReward(
-        _ decision: DecisionResponse,
-        context: AcquisitionContext
+        _: DecisionResponse,
+        context _: AcquisitionContext
     ) -> Double {
         // RED PHASE: Fixed return to fail compliance reward tests
-        return 0.1
+        0.1
     }
 
     private static func calculateEfficiencyReward(
-        _ feedback: RLUserFeedback,
-        context: AcquisitionContext
+        _: RLUserFeedback,
+        context _: AcquisitionContext
     ) -> Double {
         // RED PHASE: Fixed return to fail efficiency reward tests
-        return 0.1
+        0.1
     }
 }
 
@@ -100,7 +99,7 @@ public struct QualityMetrics: Codable, Sendable {
     }
 
     public var average: Double {
-        return (accuracy + completeness + compliance) / 3.0
+        (accuracy + completeness + compliance) / 3.0
     }
 }
 

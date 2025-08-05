@@ -1,15 +1,14 @@
-import XCTest
-import SwiftUI
-@testable import AppCore
 @testable import AIKO
+@testable import AppCore
+import SwiftUI
+import XCTest
 
 /// Comprehensive integration tests for SettingsView complete user workflow
 /// Tests end-to-end journey including settings modification, persistence, validation, and export/import
 @MainActor
 final class SettingsWorkflowIntegrationTests: XCTestCase, @unchecked Sendable {
-
-    var viewModel: SettingsViewModel!
-    var originalSettingsData: SettingsData!
+    var viewModel: SettingsViewModel?
+    var originalSettingsData: SettingsData?
 
     override func setUp() async throws {
         viewModel = SettingsViewModel()
@@ -24,6 +23,10 @@ final class SettingsWorkflowIntegrationTests: XCTestCase, @unchecked Sendable {
     // MARK: - Complete Settings Configuration Workflow
 
     func test_completeSettingsWorkflow_allSections_shouldPersistCorrectly() async {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // GIVEN: Fresh SettingsView with default values
         XCTAssertEqual(viewModel.settingsData.appSettings.theme, "system")
         XCTAssertEqual(viewModel.settingsData.apiSettings.selectedModel, "Claude 3 Opus")
@@ -118,6 +121,10 @@ final class SettingsWorkflowIntegrationTests: XCTestCase, @unchecked Sendable {
     }
 
     func test_settingsWorkflow_apiKeyManagement_shouldHandleCRUDOperations() async {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // GIVEN: Empty API key list
         XCTAssertTrue(viewModel.settingsData.apiSettings.apiKeys.isEmpty)
         XCTAssertEqual(viewModel.settingsData.apiSettings.selectedAPIKeyId, "")
@@ -175,6 +182,10 @@ final class SettingsWorkflowIntegrationTests: XCTestCase, @unchecked Sendable {
     }
 
     func test_settingsWorkflow_exportImportCycle_shouldPreserveAllData() async throws {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // GIVEN: Fully configured settings
         await viewModel.updateAppSetting(\.theme, value: "dark")
         await viewModel.updateAppSetting(\.accentColor, value: "purple")
@@ -227,6 +238,10 @@ final class SettingsWorkflowIntegrationTests: XCTestCase, @unchecked Sendable {
     }
 
     func test_settingsWorkflow_validationErrors_shouldShowAppropriateMessages() async {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // STEP 1: Test invalid API key validation
         let invalidAPIKey = APIKeyEntryData(name: "Invalid", key: "invalid-format", isActive: false)
         await viewModel.addAPIKey(invalidAPIKey)
@@ -261,6 +276,10 @@ final class SettingsWorkflowIntegrationTests: XCTestCase, @unchecked Sendable {
     }
 
     func test_settingsWorkflow_rapidUpdates_shouldMaintainConsistency() async {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // GIVEN: Settings view with rapid user interactions
         let updateTasks = await withTaskGroup(of: Void.self) { group in
             // Simulate rapid concurrent updates across different sections
@@ -290,6 +309,10 @@ final class SettingsWorkflowIntegrationTests: XCTestCase, @unchecked Sendable {
     }
 
     func test_settingsWorkflow_crossPlatformCompatibility_shouldWorkOnBothPlatforms() {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // GIVEN: SettingsView created for cross-platform usage
         let settingsView = SettingsView(viewModel: viewModel)
 
@@ -311,6 +334,10 @@ final class SettingsWorkflowIntegrationTests: XCTestCase, @unchecked Sendable {
     }
 
     func test_settingsWorkflow_appViewIntegration_shouldShowInSheet() {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // GIVEN: SettingsView integration with AppView
         let settingsView = SettingsView(viewModel: viewModel)
 
@@ -332,6 +359,10 @@ final class SettingsWorkflowIntegrationTests: XCTestCase, @unchecked Sendable {
     // MARK: - Performance Integration Tests
 
     func test_settingsWorkflow_performance_shouldCompleteWithinReasonableTime() async {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         let startTime = CFAbsoluteTimeGetCurrent()
 
         // Perform comprehensive settings configuration
@@ -357,8 +388,12 @@ final class SettingsWorkflowIntegrationTests: XCTestCase, @unchecked Sendable {
     }
 
     func test_settingsWorkflow_memoryUsage_shouldNotLeak() async {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // Create multiple settings configurations to test for memory leaks
-        for iteration in 1...10 {
+        for iteration in 1 ... 10 {
             let testAPIKey = APIKeyEntryData(
                 name: "Test Key \(iteration)",
                 key: "sk-ant-api03-test\(iteration)-1234567890abcdef",
@@ -387,7 +422,6 @@ final class SettingsWorkflowIntegrationTests: XCTestCase, @unchecked Sendable {
 // MARK: - Settings Validation Extensions
 
 extension SettingsWorkflowIntegrationTests {
-
     func test_settingsData_allSections_shouldHaveValidDefaults() {
         // Verify all settings sections have sensible defaults
         let defaults = SettingsData()

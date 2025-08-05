@@ -25,7 +25,7 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
     public func pickPhoto() async throws -> MediaAsset {
         // For GREEN phase, return a mock media asset
         // In real implementation, would use PHPickerViewController
-        return createMockMediaAsset()
+        createMockMediaAsset()
     }
 
     /// Pick multiple photos using PHPickerViewController - NEW method for CFMMS
@@ -33,7 +33,7 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
     public func pickMultiplePhotos() async throws -> [MediaAsset] {
         // For GREEN phase, return array of mock media assets
         // In real implementation, would use PHPickerViewController
-        return [createMockMediaAsset(), createMockMediaAsset()]
+        [createMockMediaAsset(), createMockMediaAsset()]
     }
 
     /// Load photo albums from photo library - NEW method for CFMMS
@@ -41,7 +41,7 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
     public func loadAlbums() async throws -> [PhotoAlbum] {
         // For GREEN phase, return mock photo albums
         // In real implementation, would use PHAssetCollection
-        return [
+        [
             PhotoAlbum(
                 id: "recents",
                 title: "Recents",
@@ -151,7 +151,7 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
                 break
             }
         }
-        fetchOptions.predicate = NSPredicate(format: "mediaType IN %@", mediaTypeFilters.map { $0.rawValue })
+        fetchOptions.predicate = NSPredicate(format: "mediaType IN %@", mediaTypeFilters.map(\.rawValue))
 
         // Configure sort order
         switch sortOrder {
@@ -166,7 +166,7 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
         }
 
         // Set fetch limit
-        if let limit = limit {
+        if let limit {
             fetchOptions.fetchLimit = limit
         }
 
@@ -321,7 +321,7 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
         return photoAssets
     }
 
-    public func exportAssetData(_ asset: PhotoAsset, options: ExportOptions) async throws -> Data {
+    public func exportAssetData(_ asset: PhotoAsset, options _: ExportOptions) async throws -> Data {
         guard let phAsset = PHAsset.fetchAssets(
             withLocalIdentifiers: [asset.localIdentifier],
             options: nil
@@ -419,7 +419,7 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
                 request.addResource(with: .photo, data: imageData, options: nil)
                 localIdentifier = request.placeholderForCreatedAsset?.localIdentifier
             }) { success, error in
-                if let error = error {
+                if let error {
                     continuation.resume(throwing: error)
                     return
                 }
@@ -447,7 +447,7 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
                 request.addResource(with: .video, fileURL: videoURL, options: nil)
                 localIdentifier = request.placeholderForCreatedAsset?.localIdentifier
             }) { success, error in
-                if let error = error {
+                if let error {
                     continuation.resume(throwing: error)
                     return
                 }
@@ -463,14 +463,14 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
     }
 
     public func deleteAssets(_ assets: [PhotoAsset]) async throws {
-        let identifiers = assets.map { $0.localIdentifier }
+        let identifiers = assets.map(\.localIdentifier)
         let fetchResult = PHAsset.fetchAssets(withLocalIdentifiers: identifiers, options: nil)
 
         return try await withCheckedThrowingContinuation { continuation in
             PHPhotoLibrary.shared().performChanges({
                 PHAssetChangeRequest.deleteAssets(fetchResult)
             }) { success, error in
-                if let error = error {
+                if let error {
                     continuation.resume(throwing: error)
                     return
                 }

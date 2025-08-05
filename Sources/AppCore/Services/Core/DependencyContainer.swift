@@ -1,12 +1,11 @@
-import Foundation
 import Combine
+import Foundation
 
 // MARK: - DependencyContainer - Platform-Agnostic Dependency Injection
 
 /// Unified dependency injection container that eliminates iOS/macOS service duplication
 /// Provides platform-agnostic registration and resolution of services
 public final class DependencyContainer: @unchecked Sendable {
-
     // MARK: - Singleton Access
 
     /// Shared container instance
@@ -57,7 +56,7 @@ public final class DependencyContainer: @unchecked Sendable {
         lock.withLock {
             let key = String(describing: type)
             factories[key] = { [weak self] in
-                guard let self = self else {
+                guard let self else {
                     fatalError("DependencyContainer deallocated during factory execution")
                 }
                 return factory(self)
@@ -105,13 +104,13 @@ public final class DependencyContainer: @unchecked Sendable {
     /// - Parameter type: Service protocol type to resolve
     /// - Returns: Service implementation instance or nil if not registered
     public func resolveOptional<T>(_ type: T.Type) -> T? {
-        return try? resolve(type)
+        try? resolve(type)
     }
 
     /// Check if a service is registered
     /// - Parameter type: Service protocol type to check
     /// - Returns: True if service is registered
-    public func isRegistered<T>(_ type: T.Type) -> Bool {
+    public func isRegistered(_ type: (some Any).Type) -> Bool {
         lock.withLock {
             let key = String(describing: type)
             return singletons[key] != nil || services[key] != nil || factories[key] != nil
@@ -131,7 +130,7 @@ public final class DependencyContainer: @unchecked Sendable {
 
     /// Remove a specific service registration
     /// - Parameter type: Service protocol type to remove
-    public func remove<T>(_ type: T.Type) {
+    public func remove(_ type: (some Any).Type) {
         lock.withLock {
             let key = String(describing: type)
             services.removeValue(forKey: key)
@@ -153,7 +152,6 @@ public final class DependencyContainer: @unchecked Sendable {
 // MARK: - Platform Service Registration
 
 private extension DependencyContainer {
-
     /// Register platform-specific service implementations
     func registerPlatformServices() {
         // TODO: Register clipboard service with platform-specific implementation
@@ -198,7 +196,6 @@ private extension DependencyContainer {
 // MARK: - Convenience Extensions
 
 public extension DependencyContainer {
-
     /// Property wrapper for automatic dependency injection
     @propertyWrapper
     struct Injected<T> {
@@ -215,7 +212,7 @@ public extension DependencyContainer {
 
         public init(_ type: T.Type) {
             self.type = type
-            self.keyPath = nil
+            keyPath = nil
         }
     }
 
@@ -225,7 +222,7 @@ public extension DependencyContainer {
         private let type: T.Type
 
         public var wrappedValue: T? {
-            return DependencyContainer.shared.resolveOptional(type)
+            DependencyContainer.shared.resolveOptional(type)
         }
 
         public init(_ type: T.Type) {
@@ -276,14 +273,14 @@ public enum DependencyError: Error, LocalizedError, Sendable {
 
     public var errorDescription: String? {
         switch self {
-        case .serviceNotRegistered(let service):
-            return "Service not registered: \(service)"
-        case .typeMismatch(let expected, let actual):
-            return "Type mismatch - expected: \(expected), actual: \(actual)"
-        case .circularDependency(let service):
-            return "Circular dependency detected for service: \(service)"
+        case let .serviceNotRegistered(service):
+            "Service not registered: \(service)"
+        case let .typeMismatch(expected, actual):
+            "Type mismatch - expected: \(expected), actual: \(actual)"
+        case let .circularDependency(service):
+            "Circular dependency detected for service: \(service)"
         case .containerNotInitialized:
-            return "Dependency container not initialized"
+            "Dependency container not initialized"
         }
     }
 }

@@ -69,7 +69,7 @@ public final class DocumentScannerServiceImpl: ObservableObject {
 
         do {
             // Use the existing scannerClient for actual scanning
-            guard let scannerClient = scannerClient else {
+            guard let scannerClient else {
                 throw DocumentScannerError.scanningNotAvailable
             }
             let document = try await scannerClient.scan()
@@ -81,7 +81,7 @@ public final class DocumentScannerServiceImpl: ObservableObject {
                     scanDuration: scanDuration,
                     pagesScanned: document.pages.count,
                     averagePageSize: calculateAveragePageSize(document.pages),
-                    qualityScores: document.pages.compactMap { $0.qualityScore },
+                    qualityScores: document.pages.compactMap(\.qualityScore),
                     deviceModel: getDeviceModel(),
                     osVersion: getOSVersion()
                 )
@@ -286,7 +286,7 @@ public final class DocumentScannerServiceImpl: ObservableObject {
 
         do {
             // Use existing image processor
-            guard let imageProcessor = imageProcessor else {
+            guard let imageProcessor else {
                 throw DocumentScannerError.enhancementFailed
             }
             let result = try await imageProcessor.processImage(
@@ -340,7 +340,7 @@ public final class DocumentScannerServiceImpl: ObservableObject {
 
         do {
             // Use enhanced OCR from scannerClient
-            guard let scannerClient = scannerClient else {
+            guard let scannerClient else {
                 throw DocumentScannerError.ocrFailed("Scanner client not available")
             }
             let ocrResult = try await scannerClient.performEnhancedOCR(imageData)
@@ -375,7 +375,7 @@ public final class DocumentScannerServiceImpl: ObservableObject {
         }
 
         // Otherwise, process the page to get quality metrics
-        guard let imageProcessor = imageProcessor else {
+        guard let imageProcessor else {
             throw DocumentScannerError.unknownError("Image processor not available")
         }
         let options = DocumentImageProcessor.ProcessingOptions(qualityTarget: .quality)

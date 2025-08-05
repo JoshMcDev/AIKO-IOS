@@ -1,6 +1,6 @@
-import Foundation
-import CoreML
 import AppCore
+import CoreML
+import Foundation
 
 // MARK: - Performance and Configuration Constants
 
@@ -58,14 +58,13 @@ private enum ComplianceConstants {
 /// Proactive Compliance Guardian Actor - Real-time compliance monitoring and warning system
 /// This is minimal scaffolding code to make tests compile but fail appropriately (RED phase)
 public actor ComplianceGuardian {
-
     // MARK: - Properties
 
     private let documentAnalyzer: DocumentAnalyzer
     private let complianceClassifier: Any // Use Any to avoid type conflicts
-    private let explanationEngine: Any   // Use Any to avoid type conflicts
-    private let feedbackLoop: Any        // Use Any to avoid type conflicts
-    private let policyEngine: Any        // Use Any to avoid type conflicts
+    private let explanationEngine: Any // Use Any to avoid type conflicts
+    private let feedbackLoop: Any // Use Any to avoid type conflicts
+    private let policyEngine: Any // Use Any to avoid type conflicts
     private let networkProvider: NetworkProvider
 
     // State tracking
@@ -138,7 +137,7 @@ public actor ComplianceGuardian {
     }
 
     public func analyzeIncrementalChanges(
-        from: TestDocument,
+        from _: TestDocument,
         to: TestDocument
     ) async throws -> GuardianComplianceResult {
         // GREEN phase: Fast incremental processing to meet performance requirements
@@ -177,11 +176,11 @@ public actor ComplianceGuardian {
                 documentType: "test_document",
                 userData: [
                     "violations_found": String(result.violations.count),
-                    "confidence": String(result.confidence)
+                    "confidence": String(result.confidence),
                 ],
                 systemData: [
                     "processing_time": String(result.processingTime),
-                    "analysis_timestamp": ISO8601DateFormatter().string(from: Date())
+                    "analysis_timestamp": ISO8601DateFormatter().string(from: Date()),
                 ]
             )
         )
@@ -206,7 +205,7 @@ public actor ComplianceGuardian {
             "has_contract_terms": hasContractTerms,
             "has_far_reference": hasFARReference,
             "complexity": complexity,
-            "document_length": Double(document.content.count)
+            "document_length": Double(document.content.count),
         ]
     }
 
@@ -226,7 +225,7 @@ public actor ComplianceGuardian {
                 type: violationType,
                 description: "Document may not meet FAR 15.203 requirements",
                 severity: .medium
-            )
+            ),
         ] : []
 
         return CompliancePrediction(
@@ -239,7 +238,7 @@ public actor ComplianceGuardian {
 
     private func generateSHAPExplanation(_ prediction: CompliancePrediction, _ features: [String: Double]) async throws -> SHAPExplanation {
         // GREEN phase: Generate proper SHAP explanation to pass tests
-        let featureImportances = features.map { (key, value) in
+        let featureImportances = features.map { key, value in
             FeatureImportance(feature: key, importance: value * ComplianceConstants.featureImportanceMultiplier)
         }
 
@@ -261,14 +260,14 @@ public actor ComplianceGuardian {
 
     public func getCoreMLModel() async throws -> ComplianceMLModel {
         // RED phase: Return mock model that will cause performance tests to fail
-        return MockComplianceMLModel()
+        MockComplianceMLModel()
     }
 
     // MARK: - Analysis Log Methods (RED phase)
 
-    public func getAnalysisLog(for documentId: UUID) async throws -> AnalysisLogEntry {
+    public func getAnalysisLog(for _: UUID) async throws -> AnalysisLogEntry {
         // RED phase: Return log that doesn't match expectations
-        return AnalysisLogEntry(
+        AnalysisLogEntry(
             lastAnalyzedSections: [], // Wrong - should have sections
             lastAnalysisTime: 0.5 // Too slow
         )
@@ -278,7 +277,7 @@ public actor ComplianceGuardian {
 
     public func updateComplianceRules() async -> RuleUpdateResult {
         // RED phase: Return failure result to cause tests to fail appropriately
-        return RuleUpdateResult(
+        RuleUpdateResult(
             success: false,
             usingCachedRules: true,
             lastSuccessfulUpdate: Date().addingTimeInterval(-ComplianceConstants.dayInSeconds)
@@ -446,13 +445,12 @@ public struct RuleUpdateResult: Sendable {
 
 // MARK: - Mock Extension for AcquisitionContext
 
-extension AcquisitionContext {
-    public static let mock: AcquisitionContext = {
-        // RED phase: Create a mock AcquisitionContext using available initializer
-        return AcquisitionContext(
+public extension AcquisitionContext {
+    static let mock: AcquisitionContext = // RED phase: Create a mock AcquisitionContext using available initializer
+        .init(
             acquisitionId: UUID(),
             documentType: .contract,
-            acquisitionValue: 100000.0,
+            acquisitionValue: 100_000.0,
             complexity: TestComplexityLevel(score: 0.3, factors: ["simple"]),
             timeConstraints: TestTimeConstraints(
                 daysRemaining: 30,
@@ -465,7 +463,6 @@ extension AcquisitionContext {
             workflowProgress: 0.0,
             completedDocuments: []
         )
-    }()
 }
 
 // TestDocument and related types are now imported from Models/TestDocument.swift
@@ -484,8 +481,8 @@ public protocol CompliancePredictionOutput: Sendable {
 // MARK: - Mock Implementations for RED Phase
 
 public struct MockComplianceMLModel: ComplianceMLModel {
-    public func prediction(from features: MLFeatureProvider) throws -> CompliancePredictionOutput {
-        return MockCompliancePredictionOutput()
+    public func prediction(from _: MLFeatureProvider) throws -> CompliancePredictionOutput {
+        MockCompliancePredictionOutput()
     }
 }
 
@@ -497,7 +494,7 @@ public struct MockCompliancePredictionOutput: CompliancePredictionOutput {
 public struct ComplianceMockNetworkProvider: NetworkProvider {
     public func updateRules() async throws -> RuleUpdateResult {
         // RED phase: Return failure result for testing
-        return RuleUpdateResult(success: false, usingCachedRules: true)
+        RuleUpdateResult(success: false, usingCachedRules: true)
     }
 
     public func simulateNetworkFailure() {

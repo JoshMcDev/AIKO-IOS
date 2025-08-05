@@ -1,11 +1,10 @@
-import Foundation
 import AppCore
+import Foundation
 
 // MARK: - SAM.gov API Repository Implementation
 
 /// Production SAM.gov API repository with live API integration
 public actor SAMGovRepository {
-
     // MARK: - Configuration
 
     private let apiKey = "zBy0Oy4TmGnzgqEWeKoRiifzDm9jotNwAitkOp89"
@@ -18,7 +17,7 @@ public actor SAMGovRepository {
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 30
         config.timeoutIntervalForResource = 60
-        self.session = URLSession(configuration: config)
+        session = URLSession(configuration: config)
     }
 
     // MARK: - Public API Methods
@@ -39,7 +38,7 @@ public actor SAMGovRepository {
             URLQueryItem(name: "entityName", value: query),
             URLQueryItem(name: "page", value: String(page)),
             URLQueryItem(name: "size", value: String(size)),
-            URLQueryItem(name: "format", value: "JSON")
+            URLQueryItem(name: "format", value: "JSON"),
         ]
 
         guard let url = components.url else {
@@ -53,7 +52,7 @@ public actor SAMGovRepository {
                 throw SAMGovError.invalidResponse
             }
 
-            guard 200...299 ~= httpResponse.statusCode else {
+            guard 200 ... 299 ~= httpResponse.statusCode else {
                 throw SAMGovError.invalidResponse
             }
 
@@ -85,7 +84,7 @@ public actor SAMGovRepository {
         components.queryItems = [
             URLQueryItem(name: "api_key", value: apiKey),
             URLQueryItem(name: "cageCode", value: cageCode),
-            URLQueryItem(name: "format", value: "JSON")
+            URLQueryItem(name: "format", value: "JSON"),
         ]
 
         guard let url = components.url else {
@@ -99,7 +98,7 @@ public actor SAMGovRepository {
                 throw SAMGovError.invalidResponse
             }
 
-            guard 200...299 ~= httpResponse.statusCode else {
+            guard 200 ... 299 ~= httpResponse.statusCode else {
                 throw SAMGovError.invalidResponse
             }
 
@@ -133,7 +132,7 @@ public actor SAMGovRepository {
         components.queryItems = [
             URLQueryItem(name: "api_key", value: apiKey),
             URLQueryItem(name: "ueiSAM", value: uei),
-            URLQueryItem(name: "format", value: "JSON")
+            URLQueryItem(name: "format", value: "JSON"),
         ]
 
         guard let url = components.url else {
@@ -147,7 +146,7 @@ public actor SAMGovRepository {
                 throw SAMGovError.invalidResponse
             }
 
-            guard 200...299 ~= httpResponse.statusCode else {
+            guard 200 ... 299 ~= httpResponse.statusCode else {
                 throw SAMGovError.invalidResponse
             }
 
@@ -388,12 +387,12 @@ struct SAMGovLinks: Codable {
 }
 
 // MARK: - Error Types
+
 // Note: SAMGovError is defined in SAMGovService.swift to avoid duplication
 
 // MARK: - Data Conversion Helpers
 
 extension SAMGovRepository {
-
     private func convertToEntitySummary(_ data: SAMGovEntityData) -> EntitySummary {
         let registration = data.entityRegistration
         let coreData = data.coreData
@@ -444,16 +443,16 @@ extension SAMGovRepository {
     }
 
     private func extractBusinessTypes(from businessTypes: BusinessTypes?) -> [String] {
-        return businessTypes?.businessTypeList?.compactMap { $0.businessTypeDesc } ?? []
+        businessTypes?.businessTypeList?.compactMap(\.businessTypeDesc) ?? []
     }
 
     private func extractPrimaryNAICS(from naicsCodes: [NAICSCodeData]?) -> String? {
-        return naicsCodes?.first { $0.isPrimary == "Y" }?.naicsCode ??
+        naicsCodes?.first { $0.isPrimary == "Y" }?.naicsCode ??
             naicsCodes?.first?.naicsCode
     }
 
     private func convertToEntityAddress(_ addressData: PhysicalAddressData?) -> EntityAddress? {
-        guard let addressData = addressData else { return nil }
+        guard let addressData else { return nil }
 
         return EntityAddress(
             line1: addressData.addressLine1 ?? "",
@@ -466,7 +465,7 @@ extension SAMGovRepository {
     }
 
     private func convertToPointOfContact(_ pocData: PointOfContactData?) -> PointOfContact? {
-        guard let pocData = pocData else { return nil }
+        guard let pocData else { return nil }
 
         return PointOfContact(
             firstName: pocData.firstName ?? "",
@@ -478,7 +477,7 @@ extension SAMGovRepository {
     }
 
     private func convertToNAICSCodes(_ naicsData: [NAICSCodeData]?) -> [NAICSCode] {
-        return naicsData?.map { data in
+        naicsData?.map { data in
             NAICSCode(
                 code: data.naicsCode ?? "",
                 description: data.naicsName ?? "",
@@ -488,19 +487,19 @@ extension SAMGovRepository {
     }
 
     private func checkSmallBusinessStatus(from naicsCodes: [NAICSCodeData]?) -> Bool {
-        return naicsCodes?.contains { $0.isSmallBusiness == "Y" } ?? false
+        naicsCodes?.contains { $0.isSmallBusiness == "Y" } ?? false
     }
 
     private func checkBusinessType(_ businessTypes: BusinessTypes?, code: String) -> Bool {
-        return businessTypes?.businessTypeList?.contains { $0.businessTypeCode == code } ?? false
+        businessTypes?.businessTypeList?.contains { $0.businessTypeCode == code } ?? false
     }
 
     private func parseExclusionStatus(_ exclusionFlag: String?) -> Bool {
-        return exclusionFlag?.lowercased() == "y" || exclusionFlag?.lowercased() == "yes"
+        exclusionFlag?.lowercased() == "y" || exclusionFlag?.lowercased() == "yes"
     }
 
     private func parseDate(_ dateString: String?) -> Date? {
-        guard let dateString = dateString else { return nil }
+        guard let dateString else { return nil }
 
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -512,28 +511,27 @@ extension SAMGovRepository {
 
 // MARK: - Factory Method
 
-extension SAMGovRepository {
-
+public extension SAMGovRepository {
     /// Create a live SAMGovService using this repository
-    public func createService() -> SAMGovService {
-        return SAMGovService(
+    func createService() -> SAMGovService {
+        SAMGovService(
             searchEntity: { [weak self] query in
-                guard let self = self else {
+                guard let self else {
                     throw SAMGovError.invalidResponse
                 }
-                return try await self.searchEntities(query: query)
+                return try await searchEntities(query: query)
             },
             getEntityByCAGE: { [weak self] cageCode in
-                guard let self = self else {
+                guard let self else {
                     throw SAMGovError.invalidResponse
                 }
-                return try await self.getEntityByCAGE(cageCode)
+                return try await getEntityByCAGE(cageCode)
             },
             getEntityByUEI: { [weak self] uei in
-                guard let self = self else {
+                guard let self else {
                     throw SAMGovError.invalidResponse
                 }
-                return try await self.getEntityByUEI(uei)
+                return try await getEntityByUEI(uei)
             }
         )
     }

@@ -1,8 +1,8 @@
-import XCTest
-import Foundation
-import CoreML
-import AppCore
 @testable import AIKO
+import AppCore
+import CoreML
+import Foundation
+import XCTest
 
 /// Comprehensive test suite for Proactive Compliance Guardian System
 /// Following TDD RED-GREEN-REFACTOR methodology with Swift 6 strict concurrency
@@ -11,7 +11,6 @@ import AppCore
 /// Performance Target: <200ms response time, >95% accuracy
 /// Integration: AgenticOrchestrator, LearningFeedbackLoop, DocumentChainManager
 final class ComplianceGuardianTests: XCTestCase {
-
     // MARK: - Test Infrastructure
 
     var mockDocumentAnalyzer: MockDocumentAnalyzer?
@@ -23,7 +22,6 @@ final class ComplianceGuardianTests: XCTestCase {
     var complianceGuardian: ComplianceGuardian?
 
     override func setUp() async throws {
-
         // Initialize mock dependencies
         mockDocumentAnalyzer = MockDocumentAnalyzer()
         mockComplianceClassifier = MockComplianceClassifier()
@@ -56,7 +54,6 @@ final class ComplianceGuardianTests: XCTestCase {
 // MARK: - Test Category 1: Core ComplianceGuardian Engine
 
 extension ComplianceGuardianTests {
-
     /// Test 1.1.1: Real-Time Response Latency
     /// Validates <200ms response time requirement
     func testRealTimeAnalysisLatency() async throws {
@@ -141,7 +138,6 @@ extension ComplianceGuardianTests {
 // MARK: - Test Category 2: ML Model Accuracy and SHAP Testing
 
 extension ComplianceGuardianTests {
-
     /// Test 1.2.1: Compliance Detection Accuracy
     /// Validates >95% accuracy requirement
     func testComplianceDetectionAccuracy() async throws {
@@ -152,8 +148,13 @@ extension ComplianceGuardianTests {
         let totalPredictions = testCases.count
 
         // WHEN: Classifying known compliance violations
+        guard let guardian = complianceGuardian else {
+            XCTFail("ComplianceGuardian not initialized")
+            return
+        }
+
         for testCase in testCases {
-            let prediction = try await complianceGuardian!.classifyDocument(testCase.document)
+            let prediction = try await guardian.classifyDocument(testCase.document)
             if prediction.violationType == testCase.expectedViolation {
                 correctPredictions += 1
             }
@@ -174,8 +175,13 @@ extension ComplianceGuardianTests {
         var falsePositives = 0
 
         // WHEN: Analyzing compliant documents
+        guard let guardian = complianceGuardian else {
+            XCTFail("ComplianceGuardian not initialized")
+            return
+        }
+
         for document in compliantDocuments {
-            let result = try await complianceGuardian!.classifyDocument(document)
+            let result = try await guardian.classifyDocument(document)
             if result.hasViolations {
                 falsePositives += 1
             }
@@ -195,8 +201,13 @@ extension ComplianceGuardianTests {
         let violationDocument = testDataset.getFARSection15203Violation()
 
         // WHEN: Generating SHAP explanations
-        let prediction = try await complianceGuardian!.classifyDocument(violationDocument)
-        let explanation = try await complianceGuardian!.explainPrediction(
+        guard let guardian = complianceGuardian else {
+            XCTFail("ComplianceGuardian not initialized")
+            return
+        }
+
+        let prediction = try await guardian.classifyDocument(violationDocument)
+        let explanation = try await guardian.explainPrediction(
             prediction: prediction,
             document: violationDocument
         )
@@ -216,7 +227,12 @@ extension ComplianceGuardianTests {
     /// Validates <50ms inference time
     func testCoreMLInferencePerformance() async throws {
         // GIVEN: Core ML model and test document
-        let coreMLModel = try await complianceGuardian!.getCoreMLModel()
+        guard let guardian = complianceGuardian else {
+            XCTFail("ComplianceGuardian not initialized")
+            return
+        }
+
+        let coreMLModel = try await guardian.getCoreMLModel()
         let testFeatures = generateTestFeatures()
 
         // WHEN: Running Core ML inference
@@ -235,7 +251,6 @@ extension ComplianceGuardianTests {
 // MARK: - Test Category 3: Integration Testing
 
 extension ComplianceGuardianTests {
-
     /// Test 2.1.1: Real-Time Document Event Processing
     /// Validates DocumentChainManager integration
     func testRealTimeDocumentEventProcessing() async throws {
@@ -243,9 +258,14 @@ extension ComplianceGuardianTests {
         let document = createTestDocument()
         let expectation = XCTestExpectation(description: "Compliance analysis triggered")
 
+        guard let guardian = complianceGuardian else {
+            XCTFail("ComplianceGuardian not initialized")
+            return
+        }
+
         let integrationCoordinator = try await ComplianceIntegrationCoordinator(
             documentManager: ComplianceDocumentChainManager.shared,
-            guardian: complianceGuardian!
+            guardian: guardian
         )
 
         integrationCoordinator.onComplianceResult = { (_: GuardianComplianceResult) in
@@ -268,15 +288,25 @@ extension ComplianceGuardianTests {
     /// Validates incremental change processing
     func testIncrementalChangeDetection() async throws {
         // GIVEN: An existing document with compliance status
+        guard let guardian = complianceGuardian else {
+            XCTFail("ComplianceGuardian not initialized")
+            return
+        }
+
         let document = try await ComplianceDocumentChainManager.shared.createDocument(generateTestDocument())
-        try await complianceGuardian!.analyzeDocument(document)
+        try await guardian.analyzeDocument(document)
 
         // WHEN: Making incremental changes
+        guard let guardian = complianceGuardian else {
+            XCTFail("ComplianceGuardian not initialized")
+            return
+        }
+
         let modifiedDocument = document.withModification(at: .paragraph(5))
         try await ComplianceDocumentChainManager.shared.updateDocument(modifiedDocument)
 
         // THEN: Only changed sections are re-analyzed
-        let analysisLog = try await complianceGuardian!.getAnalysisLog(for: document.id)
+        let analysisLog = try await guardian.getAnalysisLog(for: document.id)
         XCTAssertEqual(analysisLog.lastAnalyzedSections, [.paragraph(5)])
         XCTAssertLessThan(analysisLog.lastAnalysisTime, 0.100) // Quick incremental update
     }
@@ -333,7 +363,6 @@ extension ComplianceGuardianTests {
 // MARK: - Test Category 4: Swift 6 Concurrency Compliance
 
 extension ComplianceGuardianTests {
-
     /// Test 2.3.1: Actor Isolation Compliance
     /// Validates Swift 6 strict concurrency compliance
     func testActorIsolationCompliance() async throws {
@@ -342,7 +371,7 @@ extension ComplianceGuardianTests {
 
         // WHEN: Accessing actor from multiple tasks
         try await withThrowingTaskGroup(of: Void.self) { group in
-            for i in 0..<10 {
+            for i in 0 ..< 10 {
                 group.addTask {
                     let document = ComplianceGuardianTests.createTestDocumentWithId(i)
                     _ = try await guardian.analyzeDocument(document)
@@ -382,7 +411,6 @@ extension ComplianceGuardianTests {
 // MARK: - Test Category 5: User Interface and Experience
 
 extension ComplianceGuardianTests {
-
     /// Test 3.1.1: Level 1 Passive Indicators
     /// Validates progressive warning hierarchy
     func testLevel1PassiveIndicators() async throws {
@@ -476,7 +504,6 @@ extension ComplianceGuardianTests {
 // MARK: - Test Category 6: Performance and Memory Management
 
 extension ComplianceGuardianTests {
-
     /// Test 4.1.1: Memory Efficiency Under Load
     /// Validates memory usage constraints
     func testMemoryEfficiencyUnderLoad() async throws {
@@ -484,10 +511,15 @@ extension ComplianceGuardianTests {
         let numberOfMonitors = 10
         var monitors: [ComplianceGuardian] = []
 
-        let initialMemory = performanceMetrics!.getCurrentMemoryUsage()
+        guard let metrics = performanceMetrics else {
+            XCTFail("Performance metrics not initialized")
+            return
+        }
+
+        let initialMemory = metrics.getCurrentMemoryUsage()
 
         // WHEN: Creating multiple concurrent monitors
-        for _ in 0..<numberOfMonitors {
+        for _ in 0 ..< numberOfMonitors {
             let monitor = ComplianceGuardian()
             monitors.append(monitor)
 
@@ -495,7 +527,7 @@ extension ComplianceGuardianTests {
             try await monitor.analyzeDocument(generateLargeTestDocument())
         }
 
-        let peakMemory = performanceMetrics!.getCurrentMemoryUsage()
+        let peakMemory = metrics.getCurrentMemoryUsage()
         let memoryIncrease = peakMemory - initialMemory
 
         // THEN: Memory usage remains within acceptable bounds
@@ -506,7 +538,7 @@ extension ComplianceGuardianTests {
         monitors.removeAll()
         try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second for cleanup
 
-        let finalMemory = performanceMetrics!.getCurrentMemoryUsage()
+        let finalMemory = metrics.getCurrentMemoryUsage()
         let memoryLeak = finalMemory - initialMemory
         XCTAssertLessThan(memoryLeak, 10 * 1024 * 1024, // 10MB leak tolerance
                           "Potential memory leak detected: \(memoryLeak / 1024 / 1024)MB")
@@ -517,11 +549,21 @@ extension ComplianceGuardianTests {
     func testLargeDocumentProcessing() async throws {
         // GIVEN: A large document (>10MB)
         let largeDocument = generateTestDocument(withComplexity: .large) // >10MB
-        let memoryBefore = performanceMetrics!.getCurrentMemoryUsage()
+        guard let metrics = performanceMetrics else {
+            XCTFail("Performance metrics not initialized")
+            return
+        }
+
+        let memoryBefore = metrics.getCurrentMemoryUsage()
 
         // WHEN: Processing the large document
-        let result = try await complianceGuardian!.analyzeDocument(largeDocument)
-        let memoryPeak = performanceMetrics!.getCurrentMemoryUsage()
+        guard let guardian = complianceGuardian else {
+            XCTFail("ComplianceGuardian not initialized")
+            return
+        }
+
+        let result = try await guardian.analyzeDocument(largeDocument)
+        let memoryPeak = metrics.getCurrentMemoryUsage()
 
         // THEN: Memory usage remains reasonable
         let memoryIncrease = memoryPeak - memoryBefore
@@ -535,7 +577,6 @@ extension ComplianceGuardianTests {
 // MARK: - Test Category 7: Edge Cases and Error Handling
 
 extension ComplianceGuardianTests {
-
     /// Test 5.1.1: Rule Update Failure Handling
     /// Validates network failure graceful handling
     func testRuleUpdateFailureHandling() async throws {
@@ -566,8 +607,13 @@ extension ComplianceGuardianTests {
         let corruptedDocument = generateCorruptedDocument()
 
         // WHEN: Attempting to analyze corrupted document
+        guard let guardian = complianceGuardian else {
+            XCTFail("ComplianceGuardian not initialized")
+            return
+        }
+
         do {
-            _ = try await complianceGuardian!.analyzeDocument(corruptedDocument)
+            _ = try await guardian.analyzeDocument(corruptedDocument)
             XCTFail("Should have thrown an error for corrupted document")
         } catch let error as ComplianceError {
             // THEN: Appropriate error is thrown
@@ -580,9 +626,8 @@ extension ComplianceGuardianTests {
 // MARK: - Test Helper Methods and Mock Generation
 
 extension ComplianceGuardianTests {
-
-    private func generateTestDocument(withComplexity complexity: DocumentComplexity = .medium, id: Int = 0, size: DocumentSize = .medium) -> TestDocument {
-        return TestDocument(
+    private func generateTestDocument(withComplexity complexity: DocumentComplexity = .medium, id: Int = 0, size _: DocumentSize = .medium) -> TestDocument {
+        TestDocument(
             content: "Sample FAR document content with complexity level \(complexity)",
             complexity: complexity,
             testId: id
@@ -590,15 +635,15 @@ extension ComplianceGuardianTests {
     }
 
     private func generateTestDocuments(count: Int) -> [TestDocument] {
-        return (0..<count).map { generateTestDocument(id: $0) }
+        (0 ..< count).map { generateTestDocument(id: $0) }
     }
 
     private func generateLargeTestDocument() -> TestDocument {
-        return generateTestDocument(withComplexity: .high)
+        generateTestDocument(withComplexity: .high)
     }
 
     private func generateCorruptedDocument() -> TestDocument {
-        return TestDocument(
+        TestDocument(
             content: "CORRUPTED_CONTENT_\u{0000}",
             complexity: .low,
             testId: -1
@@ -606,7 +651,7 @@ extension ComplianceGuardianTests {
     }
 
     private func generateComplianceResult(severity: GuardianComplianceSeverity = .medium) -> GuardianComplianceResult {
-        return GuardianComplianceResult(
+        GuardianComplianceResult(
             documentId: UUID(),
             violations: [],
             confidence: 0.9,
@@ -617,27 +662,31 @@ extension ComplianceGuardianTests {
 
     private func generateTestFeatures() -> MLFeatureProvider {
         // GREEN phase: Return mock MLFeatureProvider to make tests pass
-        return MockMLFeatureProvider()
+        MockMLFeatureProvider()
     }
 
     private func measureAnalysisTime(for document: TestDocument) async throws -> TimeInterval {
         let startTime = CFAbsoluteTimeGetCurrent()
-        _ = try await complianceGuardian!.analyzeDocument(document)
+        _ = try await guardian.analyzeDocument(document)
         return CFAbsoluteTimeGetCurrent() - startTime
     }
 
     private func measureIncrementalAnalysisTime(from: TestDocument, to: TestDocument) async throws -> TimeInterval {
+        guard let guardian = complianceGuardian else {
+            throw TestError.guardianNotInitialized
+        }
+
         let startTime = CFAbsoluteTimeGetCurrent()
-        _ = try await complianceGuardian!.analyzeIncrementalChanges(from: from, to: to)
+        _ = try await guardian.analyzeIncrementalChanges(from: from, to: to)
         return CFAbsoluteTimeGetCurrent() - startTime
     }
 
     private func createTestDocument() -> TestDocument {
-        return generateTestDocument()
+        generateTestDocument()
     }
 
     private static func createTestDocumentWithId(_ id: Int) -> TestDocument {
-        return TestDocument(
+        TestDocument(
             content: "Sample FAR document content with ID \(id)",
             complexity: .medium,
             testId: id
@@ -651,12 +700,35 @@ enum DocumentSize {
     case small, medium, large
 }
 
+enum TestError: Error, LocalizedError {
+    case guardianNotInitialized
+    case performanceMetricsNotInitialized
+    case configurationFailed
+    case networkError
+    case authenticationFailed
+
+    var errorDescription: String? {
+        switch self {
+        case .guardianNotInitialized:
+            "ComplianceGuardian not initialized"
+        case .performanceMetricsNotInitialized:
+            "Performance metrics not initialized"
+        case .configurationFailed:
+            "Configuration failed"
+        case .networkError:
+            "Network error"
+        case .authenticationFailed:
+            "Authentication failed"
+        }
+    }
+}
+
 // MARK: - Test-Specific Performance Metrics
 
 struct TestPerformanceMetrics {
     func getCurrentMemoryUsage() -> Int64 {
         // Return mock memory usage for tests
-        return 100 * 1024 * 1024 // 100MB baseline
+        100 * 1024 * 1024 // 100MB baseline
     }
 }
 

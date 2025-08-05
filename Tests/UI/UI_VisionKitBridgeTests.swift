@@ -1,5 +1,5 @@
-import XCTest
 import SwiftUI
+import XCTest
 #if canImport(VisionKit)
 import VisionKit
 #endif
@@ -22,11 +22,11 @@ struct VisionKitAdapter {
         static func == (lhs: ScanResult, rhs: ScanResult) -> Bool {
             switch (lhs, rhs) {
             case (.success, .success), (.cancelled, .cancelled):
-                return true
-            case (.failed(let lhsError), .failed(let rhsError)):
-                return lhsError.localizedDescription == rhsError.localizedDescription
+                true
+            case let (.failed(lhsError), .failed(rhsError)):
+                lhsError.localizedDescription == rhsError.localizedDescription
             default:
-                return false
+                false
             }
         }
     }
@@ -53,24 +53,24 @@ struct VisionKitAdapter {
 
     // MARK: - Minimal Methods for Integration Tests
 
-    func startScan(configuration: ScanConfiguration) async -> [ScannedPage] {
+    func startScan(configuration _: ScanConfiguration) async -> [ScannedPage] {
         // RED phase implementation - minimal scaffolding
-        return []
+        []
     }
 
     func isProfessionalModeSupported(_ mode: ScanConfiguration.QualityMode) async -> Bool {
         // RED phase implementation - basic support check
         switch mode {
         case .fast, .balanced, .high:
-            return true
+            true
         case .professional:
-            return false
+            false
         }
     }
 
     func getContractsModeFeatures() async -> [ContractFeature] {
         // RED phase implementation - return basic contract features
-        return [.legalTextOptimization, .signatureDetection, .clauseExtraction]
+        [.legalTextOptimization, .signatureDetection, .clauseExtraction]
     }
 }
 
@@ -85,7 +85,7 @@ enum ContractFeature {
 
 /// Mock ScannedDocument for testing
 func createMockScannedDocument() -> ScannedDocument {
-    return ScannedDocument(
+    ScannedDocument(
         id: UUID(),
         pages: [],
         title: "Mock Document",
@@ -97,11 +97,10 @@ func createMockScannedDocument() -> ScannedDocument {
 #if canImport(VisionKit) && canImport(UIKit) && os(iOS)
 @MainActor
 final class UIVisionKitBridgeTests: XCTestCase {
-
-    private var visionKitBridge: VisionKitBridge!
-    private var mockCoordinator: MockVisionKitCoordinator!
-    private var testBinding: Binding<Bool>!
-    private var testResult: Binding<VisionKitAdapter.ScanResult?>!
+    private var visionKitBridge: VisionKitBridge?
+    private var mockCoordinator: MockVisionKitCoordinator?
+    private var testBinding: Binding<Bool>?
+    private var testResult: Binding<VisionKitAdapter.ScanResult?>?
 
     override func setUp() async throws {
         super.setUp()
@@ -277,7 +276,7 @@ final class UIVisionKitBridgeTests: XCTestCase {
         let mockError = DocumentScannerError.scanningNotAvailable
         mockCoordinator.simulateError(mockError)
 
-        if case .failed(let error) = testResult.wrappedValue {
+        if case let .failed(error) = testResult.wrappedValue {
             XCTAssertTrue(error is DocumentScannerError)
         } else {
             XCTFail("Error not properly propagated")
@@ -314,7 +313,7 @@ final class UIVisionKitBridgeTests: XCTestCase {
 
         mockCoordinator.documentCameraViewController(viewController, didFailWithError: mockError)
 
-        if case .failed(let error) = testResult.wrappedValue {
+        if case let .failed(error) = testResult.wrappedValue {
             XCTAssertTrue(error is DocumentScannerError)
         } else {
             XCTFail("Error not properly handled")
@@ -342,22 +341,22 @@ final class UIVisionKitBridgeTests: XCTestCase {
 class MockVisionKitCoordinator: NSObject, VNDocumentCameraViewControllerDelegate {
     var onScanComplete: ((VisionKitAdapter.ScanResult) -> Void)?
 
-    func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
+    func documentCameraViewController(_: VNDocumentCameraViewController, didFinishWith _: VNDocumentCameraScan) {
         // Mock implementation - will be replaced in GREEN phase
         onScanComplete?(.success(createMockScannedDocument()))
     }
 
-    func documentCameraViewControllerDidCancel(_ controller: VNDocumentCameraViewController) {
+    func documentCameraViewControllerDidCancel(_: VNDocumentCameraViewController) {
         // Mock implementation - will be replaced in GREEN phase
         onScanComplete?(.cancelled)
     }
 
-    func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFailWithError error: Error) {
+    func documentCameraViewController(_: VNDocumentCameraViewController, didFailWithError error: Error) {
         // Mock implementation - will be replaced in GREEN phase
         onScanComplete?(.failed(error))
     }
 
-    func simulateSuccessfulScan(_ scan: VNDocumentCameraScan) {
+    func simulateSuccessfulScan(_: VNDocumentCameraScan) {
         onScanComplete?(.success(createMockScannedDocument()))
     }
 
@@ -377,17 +376,17 @@ struct VisionKitBridge: UIViewControllerRepresentable {
     let onScanComplete: ((VisionKitAdapter.ScanResult) -> Void)?
 
     init(isPresented: Binding<Bool>, onScanComplete: ((VisionKitAdapter.ScanResult) -> Void)?) {
-        self._isPresented = isPresented
+        _isPresented = isPresented
         self.onScanComplete = onScanComplete
     }
 
-    func makeUIViewController(context: Context) -> VNDocumentCameraViewController {
+    func makeUIViewController(context _: Context) -> VNDocumentCameraViewController {
         let controller = VNDocumentCameraViewController()
         controller.delegate = makeCoordinator()
         return controller
     }
 
-    func updateUIViewController(_ uiViewController: VNDocumentCameraViewController, context: Context) {
+    func updateUIViewController(_: VNDocumentCameraViewController, context _: Context) {
         // No updates needed for this implementation
     }
 

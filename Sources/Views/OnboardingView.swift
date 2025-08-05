@@ -5,6 +5,7 @@ public struct OnboardingView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     // MARK: - Keyboard Navigation State
+
     #if os(macOS)
     @FocusState private var focusedField: OnboardingFocusField?
     #endif
@@ -95,6 +96,7 @@ public struct OnboardingView: View {
     }
 
     // MARK: - Keyboard Navigation Methods
+
     #if os(macOS)
     private func focusPreviousField() {
         switch focusedField {
@@ -213,9 +215,9 @@ public struct OnboardingView: View {
     private var nextButtonTitle: String {
         switch viewModel.currentStep {
         case .welcome, .apiSetup, .permissions:
-            return "Next"
+            "Next"
         case .completion:
-            return "Complete"
+            "Complete"
         }
     }
 }

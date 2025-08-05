@@ -1,18 +1,17 @@
-import Testing
-import Foundation
-import AppCore
 @testable import AIKO
+import AppCore
+import Foundation
+import Testing
 
 /// SAMGovLookupViewModel Test Suite
 /// PHASE 2: TDD Implementation - RED PHASE
 /// Following PHASE2_Restore_Business_Logic_Views_rubric.md requirements
 
 final class SAMGovLookupViewModelTests {
-
     // MARK: - Core Functionality Tests (RED PHASE)
 
     @Test("SAMGov CAGE code search returns valid EntityDetail")
-    func testCAGECodeSearchSuccess() async {
+    func cAGECodeSearchSuccess() async {
         // ARRANGE
         let mockService = MockSAMGovService()
         let expectedEntity = EntityDetail.mockCAGEEntity()
@@ -31,7 +30,7 @@ final class SAMGovLookupViewModelTests {
     }
 
     @Test("UEI search with valid 12-character UEI")
-    func testValidUEISearch() async {
+    func validUEISearch() async {
         // ARRANGE
         let mockService = MockSAMGovService()
         let expectedEntity = EntityDetail.mockUEIEntity()
@@ -50,7 +49,7 @@ final class SAMGovLookupViewModelTests {
     }
 
     @Test("Company name search with exact match")
-    func testCompanyNameExactMatch() async {
+    func companyNameExactMatch() async {
         // ARRANGE
         let mockService = MockSAMGovService()
         let searchResult = EntitySearchResult.mockSearchResult()
@@ -74,7 +73,7 @@ final class SAMGovLookupViewModelTests {
     }
 
     @Test("Multiple simultaneous searches complete successfully")
-    func testBatchSearchSuccess() async {
+    func batchSearchSuccess() async {
         // ARRANGE
         let mockService = MockSAMGovService()
         let entity1 = EntityDetail.mockCAGEEntity()
@@ -124,7 +123,7 @@ final class SAMGovLookupViewModelTests {
     }
 
     @Test("Invalid CAGE code shows appropriate error")
-    func testInvalidCAGEError() async {
+    func invalidCAGEError() async {
         // ARRANGE
         let mockService = MockSAMGovService()
         await mockService.setEntityByCAGE("INVALID", result: .failure(SAMGovError.entityNotFound))
@@ -141,7 +140,7 @@ final class SAMGovLookupViewModelTests {
     }
 
     @Test("Network failure displays user-friendly message")
-    func testNetworkFailureHandling() async {
+    func networkFailureHandling() async {
         // ARRANGE
         let mockService = MockSAMGovService()
         await mockService.setEntityByCAGE("NETWORK_FAIL", result: .failure(URLError(.notConnectedToInternet)))
@@ -158,7 +157,7 @@ final class SAMGovLookupViewModelTests {
     }
 
     @Test("API rate limiting handled gracefully")
-    func testRateLimitHandling() async {
+    func rateLimitHandling() async {
         // ARRANGE
         let mockService = MockSAMGovService()
         await mockService.setEntityByCAGE("RATE_LIMITED", result: .failure(SAMGovError.rateLimited))
@@ -175,7 +174,7 @@ final class SAMGovLookupViewModelTests {
     }
 
     @Test("Search state updates correctly during async operations")
-    func testSearchStateManagement() async {
+    func searchStateManagement() async {
         // ARRANGE
         let mockService = MockSAMGovService()
         let entity = EntityDetail.mockCAGEEntity()
@@ -197,7 +196,7 @@ final class SAMGovLookupViewModelTests {
     }
 
     @Test("Multiple search results accumulate properly")
-    func testResultAccumulation() async {
+    func resultAccumulation() async {
         // ARRANGE
         let mockService = MockSAMGovService()
         let entity1 = EntityDetail.mockCAGEEntity()
@@ -224,7 +223,7 @@ final class SAMGovLookupViewModelTests {
     // MARK: - Service Integration Tests (RED PHASE)
 
     @Test("SAMGovService dependency injection functional")
-    func testServiceInjection() {
+    func serviceInjection() {
         // ARRANGE & ACT
         let service = MockSAMGovService()
         let viewModel = SAMGovLookupViewModel(samGovService: service)
@@ -234,7 +233,7 @@ final class SAMGovLookupViewModelTests {
     }
 
     @Test("Mock service responses handled correctly")
-    func testMockServiceIntegration() async {
+    func mockServiceIntegration() async {
         // ARRANGE
         let mockService = MockSAMGovService()
         let expectedEntity = EntityDetail.mockCAGEEntity()
@@ -251,7 +250,7 @@ final class SAMGovLookupViewModelTests {
     }
 
     @Test("Service error propagation to ViewModel")
-    func testServiceErrorHandling() async {
+    func serviceErrorHandling() async {
         // ARRANGE
         let mockService = MockSAMGovService()
         let testError = SAMGovError.authenticationFailed
@@ -269,7 +268,7 @@ final class SAMGovLookupViewModelTests {
     }
 
     @Test("Invalid UEI format shows validation error")
-    func testInvalidUEIValidation() async {
+    func invalidUEIValidation() async {
         // ARRANGE
         let mockService = MockSAMGovService()
         await mockService.setEntityByUEI("INVALID_UEI", result: .failure(SAMGovError.invalidFormat))
@@ -312,8 +311,8 @@ actor MockSAMGovService: SAMGovServiceProtocol {
         }
 
         switch result {
-        case .success(let entity): return entity
-        case .failure(let error): throw error
+        case let .success(entity): return entity
+        case let .failure(error): throw error
         }
     }
 
@@ -323,8 +322,8 @@ actor MockSAMGovService: SAMGovServiceProtocol {
         }
 
         switch result {
-        case .success(let entity): return entity
-        case .failure(let error): throw error
+        case let .success(entity): return entity
+        case let .failure(error): throw error
         }
     }
 
@@ -334,8 +333,8 @@ actor MockSAMGovService: SAMGovServiceProtocol {
         }
 
         switch result {
-        case .success(let searchResult): return searchResult
-        case .failure(let error): throw error
+        case let .success(searchResult): return searchResult
+        case let .failure(error): throw error
         }
     }
 }
@@ -400,7 +399,7 @@ extension EntitySearchResult {
                     ueiSAM: "COMP123ENTITY",
                     entityName: "Test Defense Contractor",
                     registrationStatus: "Active"
-                )
+                ),
             ],
             totalCount: 1
         )
@@ -408,4 +407,5 @@ extension EntitySearchResult {
 }
 
 // MARK: - SAMGov Errors for Testing
+
 // Note: Using SAMGovError from SAMGovService.swift

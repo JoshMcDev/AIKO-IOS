@@ -406,43 +406,75 @@ public final class SF26Factory: BaseFormFactory<SF26Form> {
             purpose: "Contract award"
         )
 
-        let emptyAddress = try! PostalAddress(
+        guard let emptyAddress = try? PostalAddress(
             street: "TBD",
             city: "TBD",
             state: "TBD",
             zipCode: "00000",
             country: "USA"
-        )
+        ) else {
+            fatalError("Failed to create default postal address for SF26 form")
+        }
 
         return SF26Form(
             metadata: metadata,
             contractInfo: ContractInformation(
-                contractNumber: try! ContractNumber("TBD-00000"),
+                contractNumber: {
+                    guard let number = try? ContractNumber("TBD-00000") else {
+                        fatalError("Failed to create default contract number")
+                    }
+                    return number
+                }(),
                 awardDate: Date(),
                 contractType: .firmFixedPrice,
-                totalAmount: try! Money(amount: 0, currency: .usd)
+                totalAmount: {
+                    guard let money = try? Money(amount: 0, currency: .usd) else {
+                        fatalError("Failed to create default money amount")
+                    }
+                    return money
+                }()
             ),
             vendorInfo: VendorInformation(
                 name: "",
                 address: emptyAddress,
-                cageCode: try! CageCode("00000"),
+                cageCode: {
+                    guard let code = try? CageCode("00000") else {
+                        fatalError("Failed to create default CAGE code")
+                    }
+                    return code
+                }(),
                 taxId: ""
             ),
             supplies: SuppliesSection(
                 items: [],
-                performancePeriod: try! DateRange(
-                    from: Date(),
-                    to: Date().addingTimeInterval(365 * 24 * 60 * 60)
-                ),
-                placeOfPerformance: try! PlaceOfPerformance(
-                    address: emptyAddress,
-                    countryCode: "US"
-                )
+                performancePeriod: {
+                    guard let range = try? DateRange(
+                        from: Date(),
+                        to: Date().addingTimeInterval(365 * 24 * 60 * 60)
+                    ) else {
+                        fatalError("Failed to create default date range")
+                    }
+                    return range
+                }(),
+                placeOfPerformance: {
+                    guard let place = try? PlaceOfPerformance(
+                        address: emptyAddress,
+                        countryCode: "US"
+                    ) else {
+                        fatalError("Failed to create default place of performance")
+                    }
+                    return place
+                }()
             ),
             accounting: AccountingSection(
                 accountingClassification: "",
                 appropriation: "",
-                obligation: try! Money(amount: 0, currency: .usd)
+                obligation: {
+                    guard let money = try? Money(amount: 0, currency: .usd) else {
+                        fatalError("Failed to create default obligation amount")
+                    }
+                    return money
+                }()
             ),
             signatures: SignatureSection(
                 contractingOfficer: SignatureSection.SignatureBlock(

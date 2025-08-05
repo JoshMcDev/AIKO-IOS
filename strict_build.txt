@@ -1,0 +1,579 @@
+[0/1] Planning build
+Building for debugging...
+[0/1] Write swift-version--58304C5D6DBC2206.txt
+[2/5] Compiling AikoCompat AnthropicWrapper.swift
+[3/5] Emitting module AikoCompat
+[4/5] Compiling AikoCompat MigrationHelpers.swift
+[5/5] Compiling AikoCompat AIProvider.swift
+[6/144] Compiling AppCore Acquisition.swift
+[7/144] Compiling AppCore AcquisitionStatus.swift
+[8/144] Compiling AppCore BatchOperations.swift
+[9/144] Compiling AppCore BatchProcessingTypes.swift
+[10/144] Compiling AppCore CameraTypes.swift
+[11/144] Compiling AppCore ComprehensiveFARReference.swift
+[12/144] Compiling AppCore ConfidenceScore.swift
+[13/144] Compiling AppCore DFDocumentType.swift
+[14/144] Compiling AppCore DocumentCategory.swift
+[15/144] Compiling AppCore DocumentContextTypes.swift
+[16/144] Compiling AppCore DocumentParsingTypes.swift
+[17/144] Compiling AppCore DocumentStatus.swift
+[18/144] Compiling AppCore DocumentType.swift
+[19/144] Compiling AppCore ExtractedFormData.swift
+[20/144] Compiling AppCore FilePickerTypes.swift
+[21/144] Compiling AppCore FormField.swift
+[22/159] Compiling AppCore BuildConfiguration.swift
+[23/159] Compiling AppCore AcquisitionClient.swift
+[24/159] Compiling AppCore BiometricAuthenticationClient.swift
+[25/159] Compiling AppCore BlurEffectServiceClient.swift
+[26/159] Compiling AppCore CameraClient.swift
+[27/159] Compiling AppCore ClipboardServiceClient.swift
+[28/159] Compiling AppCore DocumentChainManagerClient.swift
+[29/159] Compiling AppCore DocumentContextExtractor.swift
+[30/159] Compiling AppCore DocumentScannerClient.swift
+[31/159] Compiling AppCore DocumentScannerServiceDependency.swift
+[32/159] Compiling AppCore EmailServiceClient.swift
+[33/159] Compiling AppCore FileServiceClient.swift
+[34/159] Compiling AppCore FileSystemClient.swift
+[35/159] Compiling AppCore FormAutoPopulationEngine.swift
+[36/159] Compiling AppCore FormAutoPopulationEngineEnhanced.swift
+[37/159] Compiling AppCore ImageLoaderClient.swift
+[38/159] Compiling AppCore DocumentContextExtractionService.swift
+[39/159] Compiling AppCore DocumentImageProcessor.swift
+[40/159] Compiling AppCore DocumentManagerProtocol.swift
+[41/159] Compiling AppCore DocumentScannerProtocol.swift
+[42/159] Compiling AppCore DocumentScannerService.swift
+[43/159] Compiling AppCore EmailServiceProtocol.swift
+[44/159] Compiling AppCore EnhancedOCREngine.swift
+[45/159] Compiling AppCore FARReferenceProtocol.swift
+[46/159] Compiling AppCore FieldValidator.swift
+[47/159] Compiling AppCore FileServiceProtocol.swift
+[48/159] Compiling AppCore FontScalingServiceProtocol.swift
+[49/159] Compiling AppCore GovernmentFormMapper.swift
+[50/159] Compiling AppCore HapticManagerProtocol.swift
+[51/159] Compiling AppCore ImageLoaderProtocol.swift
+[52/159] Compiling AppCore KeyboardServiceProtocol.swift
+[53/159] Emitting module AppCore
+[54/159] Compiling AppCore RequirementsData.swift
+[55/159] Compiling AppCore ScanContext.swift
+[56/159] Compiling AppCore ScanSession.swift
+[57/159] Compiling AppCore SearchTemplate.swift
+[58/159] Compiling AppCore SettingsData.swift
+[59/159] Compiling AppCore Theme.swift
+[60/159] Compiling AppCore UploadedDocument.swift
+[61/159] Compiling AppCore UserProfile.swift
+[62/159] Compiling AppCore DocumentScannerViewModelProtocol.swift
+[63/159] Compiling AppCore LLMProviderProtocol.swift
+[64/159] Compiling AppCore LLMProviderSettingsViewModelProtocol.swift
+[65/159] Compiling AppCore MediaManagementProtocols.swift
+[66/159] Compiling AppCore OfflineCacheProtocol.swift
+[67/159] Compiling AppCore AccessibilityServiceProtocol.swift
+[68/159] Compiling AppCore AcquisitionServiceProtocol.swift
+[69/159] Compiling AppCore KeyboardServiceClient.swift
+[70/159] Compiling AppCore MediaManagementClients.swift
+[71/159] Compiling AppCore MediaValidationServiceDependency.swift
+[72/159] Compiling AppCore NavigationServiceClient.swift
+[73/159] Compiling AppCore ProgressClient.swift
+[74/159] Compiling AppCore RequirementAnalyzerClient.swift
+[75/159] Compiling AppCore ScreenServiceClient.swift
+[76/159] Compiling AppCore SettingsManagerClient.swift
+[77/159] Compiling AppCore ShareServiceClient.swift
+[78/159] Compiling AppCore TextFieldServiceClient.swift
+[79/159] Compiling AppCore UserProfileClient.swift
+[80/159] Compiling AppCore VoiceRecordingClient.swift
+[81/159] Compiling AppCore WorkflowEngineClient.swift
+[82/159] Compiling AppCore DocumentScannerView.swift
+[83/159] Compiling AppCore AICoreTypes.swift
+[84/159] Compiling AppCore AIDocumentType.swift
+[85/159] Compiling AppCore LLMModelProviderService.swift
+[86/159] Compiling AppCore LLMProviderSettingsService.swift
+[87/159] Compiling AppCore MediaAssetCache.swift
+[88/159] Compiling AppCore MediaValidationService.swift
+[89/159] Compiling AppCore NavigationServiceProtocol.swift
+[90/159] Compiling AppCore OneTapWorkflowEngine.swift
+[91/159] Compiling AppCore PlatformViewServiceProtocol.swift
+[92/159] Compiling AppCore ProgressBridge.swift
+[93/159] Compiling AppCore ProgressTrackingEngine.swift
+[94/159] Compiling AppCore RequirementAnalyzerProtocol.swift
+[95/159] Compiling AppCore ScreenServiceProtocol.swift
+[96/159] Compiling AppCore SessionEngine.swift
+[97/159] Compiling AppCore SettingsManagerProtocol.swift
+[98/159] Compiling AppCore ShareServiceProtocol.swift
+[99/159] Compiling AppCore TextFieldServiceProtocol.swift
+[100/159] Compiling AppCore BiometricAuthenticationProtocol.swift
+[101/159] Compiling AppCore BiometricAuthenticationService.swift
+[102/159] Compiling AppCore BlurEffectServiceProtocol.swift
+[103/159] Compiling AppCore ClipboardServiceProtocol.swift
+[104/159] Compiling AppCore ConfidenceCalculator.swift
+[105/159] Compiling AppCore AIKOError.swift
+[106/159] Compiling AppCore AIOrchestrator.swift
+[107/159] Compiling AppCore ComplianceValidator.swift
+[108/159] Compiling AppCore DependencyContainer.swift
+[109/159] Compiling AppCore DocumentEngine.swift
+[110/159] Compiling AppCore FeatureFlags.swift
+[111/159] Compiling AppCore PersonalizationEngine.swift
+[112/159] Compiling AppCore PromptRegistry.swift
+[113/159] Compiling AppCore ServiceClientProtocol.swift
+[114/159] Compiling AppCore DocumentChainManagerProtocol.swift
+[115/159] Compiling AppCore AcquisitionContextClassifier.swift
+[116/159] Compiling AppCore AdaptiveFormMetricsCollector.swift
+[117/159] Compiling AppCore AdaptiveFormPopulationService.swift
+[118/159] Compiling AppCore FeatureStateEncoder.swift
+[119/159] Compiling AppCore FormDataTypes.swift
+[120/159] Compiling AppCore FormFieldQLearningAgent.swift
+[121/159] Compiling AppCore FormModificationTracker.swift
+[122/159] Compiling AppCore MockCoreDataActor.swift
+[123/159] Compiling AppCore TestingInfrastructure.swift
+[124/159] Compiling AppCore RLPersistenceManager.swift
+[125/159] Compiling AppCore RewardCalculator.swift
+[126/159] Compiling AppCore TestTypes.swift
+[127/159] Compiling AppCore ValueExplanationEngine.swift
+[128/159] Compiling AppCore BatchProcessingEngine.swift
+[129/159] Compiling AppCore BatchProcessor.swift
+[130/159] Compiling AppCore GeometryTypes.swift
+[131/159] Compiling AppCore GovernmentFormOCRModels.swift
+[132/159] Compiling AppCore MediaAsset.swift
+[133/159] Compiling AppCore MediaErrors.swift
+[134/159] Compiling AppCore MediaManagementTypes.swift
+[135/159] Compiling AppCore MediaMetadataTypes.swift
+[136/159] Compiling AppCore MediaSession.swift
+[137/159] Compiling AppCore MediaValidation.swift
+[138/159] Compiling AppCore MediaWorkflow.swift
+[139/159] Compiling AppCore MultiPageSession.swift
+[140/159] Compiling AppCore PopulationResult.swift
+[141/159] Compiling AppCore ProgressPhase.swift
+[142/159] Compiling AppCore ProgressSessionConfig.swift
+[143/159] Compiling AppCore ProgressState.swift
+[144/159] Compiling AppCore ProgressUpdate.swift
+[145/159] Compiling AppCore ThemeServiceProtocol.swift
+[146/159] Compiling AppCore UserProfileProtocol.swift
+[147/159] Compiling AppCore VoiceRecordingProtocol.swift
+[148/159] Compiling AppCore WorkflowEngineProtocol.swift
+[149/159] Compiling AppCore PlatformTypes.swift
+[150/159] Compiling AppCore LLMProviderSettingsViewModel.swift
+[151/159] Compiling AppCore ProfileViewModel.swift
+[152/159] Compiling AppCore HapticModifiers.swift
+[153/159] Compiling AppCore AppViewProtocol.swift
+[154/159] Compiling AppCore DownloadOptionsSheet.swift
+[155/159] Compiling AppCore InputArea.swift
+[156/159] Compiling AppCore KeyboardModifier.swift
+[157/159] Compiling AppCore NavigationModifier.swift
+[158/159] Compiling AppCore SharedComponents.swift
+[159/159] Compiling AppCore TextFieldModifier.swift
+[160/202] Compiling GraphRAG RegulationProcessor.swift
+[161/202] Emitting module AIKOmacOS
+[162/205] Compiling AIKOmacOS DependencyRegistration.swift
+[163/205] Compiling AIKOmacOS macOSAccessibilityServiceClient.swift
+[164/205] Compiling AIKOmacOS macOSBlurEffectServiceClient.swift
+[165/205] Compiling AIKOmacOS macOSClipboardServiceClient.swift
+[166/205] Compiling AIKOmacOS macOSTextFieldService.swift
+[167/205] Compiling AIKOmacOS macOSThemeService.swift
+[168/205] Compiling AIKOmacOS macOSDocumentPicker.swift
+[169/205] Compiling AIKOmacOS macOSImageLoader.swift
+[170/205] Compiling AIKOmacOS macOSKeyboardService.swift
+[171/205] Compiling AIKOmacOS macOSNavigationService.swift
+[172/205] Compiling AIKOmacOS macOSClipboardService.swift
+[173/205] Compiling AIKOmacOS macOSEmailService.swift
+[174/205] Compiling AIKOmacOS macOSFileService.swift
+[175/205] Compiling AIKOmacOS macOSFontScalingService.swift
+[176/205] Compiling AIKOmacOS macOSPlatformViewService.swift
+[177/205] Compiling AIKOmacOS macOSScreenService.swift
+[178/205] Compiling AIKOmacOS macOSShareService.swift
+[179/205] Compiling AIKOmacOS macOSScreenServiceClient.swift
+[180/205] Compiling AIKOmacOS macOSShareServiceClient.swift
+[181/205] Compiling AIKOmacOS macOSTextFieldServiceClient.swift
+[182/205] Compiling AIKOmacOS macOSThemeServiceClient.swift
+[183/205] Compiling AIKOmacOS macOSImageLoaderClient.swift
+[184/205] Compiling AIKOmacOS macOSKeyboardServiceClient.swift
+[185/205] Compiling AIKOmacOS macOSNavigationServiceClient.swift
+[186/205] Compiling AIKOmacOS macOSPlatformViewServiceClient.swift
+[187/205] Compiling AIKOmacOS macOSEmailServiceClient.swift
+[188/205] Compiling AIKOmacOS macOSFileServiceClient.swift
+[189/205] Compiling AIKOmacOS macOSFontScalingServiceClient.swift
+[190/205] Compiling AIKOmacOS macOSHapticManagerClient.swift
+[191/205] Compiling AIKOmacOS macOSVoiceRecordingClient.swift
+[192/205] Compiling AIKOmacOS macOSDocumentManager.swift
+[193/205] Compiling AIKOmacOS macOSAccessibilityService.swift
+[194/205] Compiling AIKOmacOS macOSBlurEffectService.swift
+[195/205] Compiling AIKOmacOS macOSImagePicker.swift
+[196/205] Compiling AIKOmacOS macOSNavigationStack.swift
+[197/205] Compiling AIKOmacOS macOSShareSheet.swift
+[198/205] Compiling GraphRAG MemoryMonitor.swift
+[199/205] Compiling GraphRAG UserWorkflowTracker.swift
+[200/205] Compiling GraphRAG LFM2Service.swift
+[201/205] Emitting module GraphRAG
+[202/205] Compiling GraphRAG GraphRAGTypes.swift
+[203/205] Compiling GraphRAG UnifiedSearchService.swift
+[204/205] Compiling GraphRAG ObjectBoxSemanticIndex.swift
+[205/205] Compiling GraphRAG SLMModelManager.swift
+[206/402] Compiling AIKO MultifactorConfidenceScorer.swift
+[207/402] Compiling AIKO UserPatternLearningEngine.swift
+[208/402] Compiling AIKO WorkflowPredictionTypes.swift
+[209/402] Compiling AIKO WorkflowStateMachine.swift
+[210/402] Compiling AIKO AnimationSystem.swift
+[211/402] Compiling AIKO EnhancedCard.swift
+[212/402] Compiling AIKO VisualEffects.swift
+[213/402] Compiling AIKO APIConfiguration.swift
+[214/402] Compiling AIKO EnhancedAPIConfiguration.swift
+[215/402] Compiling AIKO DynamicType.swift
+[216/402] Compiling AIKO Accessibility+Extensions.swift
+[217/402] Compiling AIKO MetricComparison+CoreDataClass.swift
+[218/402] Compiling AIKO MetricComparison+CoreDataProperties.swift
+[219/402] Compiling AIKO MetricInsight+CoreDataClass.swift
+[220/402] Compiling AIKO MetricInsight+CoreDataProperties.swift
+[221/402] Compiling AIKO MetricMeasurement+CoreDataClass.swift
+[222/402] Compiling AIKO MetricMeasurement+CoreDataProperties.swift
+[223/402] Compiling AIKO MetricRecommendation+CoreDataClass.swift
+[224/402] Compiling AIKO MetricRecommendation+CoreDataProperties.swift
+[225/402] Compiling AIKO MetricTrend+CoreDataClass.swift
+[226/402] Compiling AIKO MetricTrend+CoreDataProperties.swift
+[227/402] Compiling AIKO MetricValue+CoreDataClass.swift
+[228/423] Compiling AIKO MetricValue+CoreDataProperties.swift
+[229/423] Compiling AIKO MetricsReport+CoreDataClass.swift
+[230/423] Compiling AIKO MetricsReport+CoreDataProperties.swift
+[231/423] Compiling AIKO MetricsSummary+CoreDataClass.swift
+[232/423] Compiling AIKO MetricsSummary+CoreDataProperties.swift
+[233/423] Compiling AIKO TrendDataPoint+CoreDataClass.swift
+[234/423] Compiling AIKO TrendDataPoint+CoreDataProperties.swift
+[235/423] Compiling AIKO DomainEntity.swift
+[236/423] Compiling AIKO ValueObject.swift
+[237/423] Compiling AIKO AcquisitionEventHandlers.swift
+[238/423] Compiling AIKO DomainEventBus.swift
+[239/423] Compiling AIKO DomainEventDispatcher.swift
+[240/423] Compiling AIKO DomainEventStore.swift
+[241/423] Compiling AIKO EventSourcingAggregate.swift
+[242/423] Compiling AIKO FormFactory.swift
+[243/423] Compiling AIKO DD1155Form.swift
+[244/423] Compiling AIKO GovernmentForm.swift
+[245/423] Compiling AIKO SF1449Form.swift
+[246/423] Compiling AIKO SF18Form.swift
+[247/423] Compiling AIKO SF26Form.swift
+[248/423] Compiling AIKO SF30Form.swift
+[249/423] Compiling AIKO SF33Form.swift
+[250/423] Compiling AIKO SLATemplates.swift
+[251/423] Compiling AIKO SecureNetworkService.swift
+[252/423] Compiling AIKO SettingsManager.swift
+[253/423] Compiling AIKO SmartWorkflowEngine.swift
+[254/423] Compiling AIKO SpellCheckService.swift
+[255/423] Compiling AIKO StandardTemplateService.swift
+[256/423] Compiling AIKO AgenticOrchestratorTypes.swift
+[257/423] Compiling AIKO TemplateStorageService.swift
+[258/423] Compiling AIKO UnifiedTemplateService.swift
+[259/423] Compiling AIKO UserPatternTracker.swift
+[260/423] Compiling AIKO UserProfileService.swift
+[261/423] Compiling AIKO WorkflowEngine.swift
+[262/423] Compiling AIKO MockDataExtensions.swift
+[263/423] Compiling AIKO DocumentShareHelper.swift
+[264/423] Compiling AIKO AcquisitionsListViewModel.swift
+[265/423] Compiling AIKO DocumentExecutionViewModel.swift
+[266/423] Compiling AIKO SAMGovLookupViewModel.swift
+[267/423] Compiling AIKO AcquisitionsListView.swift
+[268/423] Compiling AIKO AppView.swift
+[269/423] Compiling AIKO CacheSyncStatusView.swift
+[270/423] Compiling AIKO ComplianceWarningView.swift
+[271/423] Compiling AIKO GeneratedFile+CoreDataClass.swift
+[272/423] Compiling AIKO GeneratedFile+CoreDataProperties.swift
+[273/423] Compiling AIKO GovernmentFormData+CoreDataClass.swift
+[274/423] Compiling AIKO GovernmentFormData+CoreDataProperties.swift
+[275/423] Compiling AIKO UploadedFile+CoreDataClass.swift
+[276/423] Compiling AIKO UploadedFile+CoreDataProperties.swift
+[277/423] Compiling AIKO DocumentChain.swift
+[278/423] Compiling AIKO DocumentTypeMapping.swift
+[279/423] Compiling AIKO FARUpdateStatus.swift
+[280/423] Compiling AIKO FollowOnAction.swift
+[281/423] Compiling AIKO FormTypes.swift
+[282/423] Compiling AIKO GovernmentFormModel.swift
+[283/423] Compiling AIKO Metrics.swift
+[284/423] Compiling AIKO ObjectType.swift
+[285/423] Compiling AIKO RegulationModels.swift
+[286/423] Compiling AIKO TestDocument.swift
+[287/423] Compiling AIKO WorkflowModels.swift
+[288/423] Compiling AIKO NavigationSplitViewContainer.swift
+[289/423] Compiling AIKO NavigationState.swift
+[290/423] Compiling AIKO AIDocumentGenerator.swift
+[291/423] Compiling AIKO AcquisitionService.swift
+[292/423] Compiling AIKO AdaptiveIntelligenceService.swift
+[293/423] Compiling AIKO SF44Form.swift
+[294/423] Compiling AIKO AcquisitionAggregate.swift
+[295/423] Compiling AIKO DomainService.swift
+[296/423] Compiling AIKO AppViewModel.swift
+[297/423] Compiling AIKO OnboardingViewModel.swift
+[298/423] Compiling AIKO ProfileComponents.swift
+[299/423] Compiling AIKO SettingsViewModel.swift
+[300/423] Compiling AIKO BackgroundSyncHandler.swift
+[301/423] Compiling AIKO CacheConnection.swift
+[302/423] Compiling AIKO CacheExtensions.swift
+[303/423] Compiling AIKO CacheInvalidationDemo.swift
+[304/423] Compiling AIKO CachePerformanceAnalytics.swift
+[305/423] Compiling AIKO CachePerformanceAnalyticsDemo.swift
+[306/423] Compiling AIKO CacheSyncViewModel.swift
+[307/423] Compiling AIKO ConsistentHash.swift
+[308/423] Compiling AIKO DistributedCache.swift
+[309/423] Compiling AIKO DistributedCacheDemo.swift
+[310/423] Compiling AIKO DistributedCacheProtocol.swift
+[311/423] Compiling AIKO CacheEntry.swift
+[312/423] Compiling AIKO SyncModels.swift
+[313/423] Compiling AIKO ObjectActionCache.swift
+[314/423] Compiling AIKO OfflineCacheAPI.swift
+[315/423] Compiling AIKO WordDocumentParser.swift
+[316/423] Compiling AIKO DocumentParserValidator.swift
+[317/423] Compiling AIKO EnhancedAPIKeyManager.swift
+[318/423] Compiling AIKO EnhancedContextualDefaults.swift
+[319/423] Compiling AIKO FARCompliance.swift
+[320/423] Compiling AIKO FARComplianceManager.swift
+[321/423] Compiling AIKO FARPart12Compliance.swift
+[322/423] Compiling AIKO FARPart12Wizard.swift
+[323/423] Compiling AIKO FARReferenceService.swift
+[324/423] Compiling AIKO FARValidationService.swift
+[325/423] Compiling AIKO FormIntelligenceAdapter.swift
+[326/423] Compiling AIKO FormMappingService.swift
+[327/423] Compiling AIKO FormRepository.swift
+[328/423] Compiling AIKO GovernmentAcquisitionPrompts.swift
+[329/423] Compiling AIKO GovernmentFormService.swift
+[330/423] Compiling AIKO LLMConfigurationManager.swift
+[331/423] Compiling AIKO LLMConversationManager.swift
+[332/423] Compiling AIKO LLMDocumentGenerator.swift
+[333/423] Compiling AIKO LLMKeychainService.swift
+[334/423] Compiling AIKO LLMManager.swift
+[335/423] Compiling AIKO AzureOpenAIProvider.swift
+[336/423] Compiling AIKO ClaudeProvider.swift
+[337/423] Compiling AIKO GeminiProvider.swift
+[338/423] Compiling AIKO LocalModelProvider.swift
+[339/423] Compiling AIKO OpenAIProvider.swift
+[340/423] Compiling AIKO LearningLoop.swift
+[341/423] Compiling AIKO MappingEngine.swift
+[342/423] Compiling AIKO MetricsService.swift
+[343/423] Compiling AIKO NetworkService.swift
+[344/423] Compiling AIKO OTAgreementTemplates.swift
+[345/423] Compiling AIKO ObjectActionHandler.swift
+[346/423] Compiling AIKO OptimizedObjectActionHandler.swift
+[347/423] Compiling AIKO ParallelDocumentGenerator.swift
+[348/423] Compiling AIKO FeatureStateEncoder.swift
+[349/423] Compiling AIKO LocalRLAgent.swift
+[350/423] Compiling AIKO RLPersistenceManager.swift
+[351/423] Compiling AIKO RLTypes.swift
+[352/423] Compiling AIKO RewardCalculator.swift
+[353/423] Compiling AIKO RTFFormatter.swift
+[354/423] Compiling AIKO RegulationRepository.swift
+[355/423] Compiling AIKO RegulationService.swift
+[356/423] Compiling AIKO RequirementAnalyzer.swift
+[357/423] Compiling AIKO SAMGovService.swift
+[358/423] Compiling AIKO AgenticOrchestrator.swift
+[359/423] Compiling AIKO BatchDocumentGenerator.swift
+[360/423] Compiling AIKO BiometricAuthenticationService.swift
+[361/423] Compiling AIKO CMMCComplianceTracker.swift
+[362/423] Compiling AIKO CMMCRequirementTemplates.swift
+[363/423] Compiling AIKO ComplianceClassifier.swift
+[364/423] Compiling AIKO ComplianceGuardian.swift
+[365/423] Compiling AIKO DocumentAnalyzer.swift
+[366/423] Compiling AIKO DocumentChainManager+Compliance.swift
+[367/423] Compiling AIKO LocalRLAgent+Compliance.swift
+[368/423] Compiling AIKO SHAPExplainer.swift
+[369/423] Compiling AIKO ConsolidatedDocumentCacheService.swift
+[370/423] Compiling AIKO CoreDataStack.swift
+[371/423] Compiling AIKO DFTemplateService.swift
+[372/423] Compiling AIKO DataExtractor.swift
+[373/423] Compiling AIKO DataTransformationService.swift
+[374/423] Compiling AIKO DocumentChainManager.swift
+[375/423] Compiling AIKO DocumentDeliveryService.swift
+[376/423] Compiling AIKO DocumentDependencyService.swift
+[377/423] Compiling AIKO DocumentGenerationCache.swift
+[378/423] Compiling AIKO DocumentGenerationPerformanceMonitor.swift
+[379/423] Compiling AIKO DocumentParser.swift
+[380/423] Emitting module AIKO
+[381/423] Compiling AIKO OfflineCacheManager.swift
+/Users/J/aiko/Sources/Infrastructure/CoreDataActor.swift:231:19: error: 'catch' block is unreachable because no errors are thrown in 'do' block
+229 | 
+230 |                     continuation.resume()
+231 |                 } catch {
+    |                   `- error: 'catch' block is unreachable because no errors are thrown in 'do' block
+232 |                     continuation.resume(throwing: error)
+233 |                 }
+[382/423] Compiling AIKO DiskCache.swift
+/Users/J/aiko/Sources/Infrastructure/CoreDataActor.swift:231:19: error: 'catch' block is unreachable because no errors are thrown in 'do' block
+229 | 
+230 |                     continuation.resume()
+231 |                 } catch {
+    |                   `- error: 'catch' block is unreachable because no errors are thrown in 'do' block
+232 |                     continuation.resume(throwing: error)
+233 |                 }
+[383/423] Compiling AIKO MemoryCache.swift
+/Users/J/aiko/Sources/Infrastructure/CoreDataActor.swift:231:19: error: 'catch' block is unreachable because no errors are thrown in 'do' block
+229 | 
+230 |                     continuation.resume()
+231 |                 } catch {
+    |                   `- error: 'catch' block is unreachable because no errors are thrown in 'do' block
+232 |                     continuation.resume(throwing: error)
+233 |                 }
+[384/423] Compiling AIKO SecureCache.swift
+/Users/J/aiko/Sources/Infrastructure/CoreDataActor.swift:231:19: error: 'catch' block is unreachable because no errors are thrown in 'do' block
+229 | 
+230 |                     continuation.resume()
+231 |                 } catch {
+    |                   `- error: 'catch' block is unreachable because no errors are thrown in 'do' block
+232 |                     continuation.resume(throwing: error)
+233 |                 }
+[385/423] Compiling AIKO CoreDataActor.swift
+/Users/J/aiko/Sources/Infrastructure/CoreDataActor.swift:231:19: error: 'catch' block is unreachable because no errors are thrown in 'do' block
+229 | 
+230 |                     continuation.resume()
+231 |                 } catch {
+    |                   `- error: 'catch' block is unreachable because no errors are thrown in 'do' block
+232 |                     continuation.resume(throwing: error)
+233 |                 }
+[386/423] Compiling AIKO CoreDataManager.swift
+/Users/J/aiko/Sources/Infrastructure/CoreDataActor.swift:231:19: error: 'catch' block is unreachable because no errors are thrown in 'do' block
+229 | 
+230 |                     continuation.resume()
+231 |                 } catch {
+    |                   `- error: 'catch' block is unreachable because no errors are thrown in 'do' block
+232 |                     continuation.resume(throwing: error)
+233 |                 }
+[387/423] Compiling AIKO AcquisitionServiceAdapter.swift
+/Users/J/aiko/Sources/Infrastructure/CoreDataActor.swift:231:19: error: 'catch' block is unreachable because no errors are thrown in 'do' block
+229 | 
+230 |                     continuation.resume()
+231 |                 } catch {
+    |                   `- error: 'catch' block is unreachable because no errors are thrown in 'do' block
+232 |                     continuation.resume(throwing: error)
+233 |                 }
+[388/423] Compiling AIKO SAMGovServiceAdapter.swift
+/Users/J/aiko/Sources/Infrastructure/CoreDataActor.swift:231:19: error: 'catch' block is unreachable because no errors are thrown in 'do' block
+229 | 
+230 |                     continuation.resume()
+231 |                 } catch {
+    |                   `- error: 'catch' block is unreachable because no errors are thrown in 'do' block
+232 |                     continuation.resume(throwing: error)
+233 |                 }
+[389/423] Compiling AIKO Acquisition+Mapping.swift
+/Users/J/aiko/Sources/Infrastructure/CoreDataActor.swift:231:19: error: 'catch' block is unreachable because no errors are thrown in 'do' block
+229 | 
+230 |                     continuation.resume()
+231 |                 } catch {
+    |                   `- error: 'catch' block is unreachable because no errors are thrown in 'do' block
+232 |                     continuation.resume(throwing: error)
+233 |                 }
+[390/423] Compiling AIKO AcquisitionRepository.swift
+/Users/J/aiko/Sources/Infrastructure/CoreDataActor.swift:231:19: error: 'catch' block is unreachable because no errors are thrown in 'do' block
+229 | 
+230 |                     continuation.resume()
+231 |                 } catch {
+    |                   `- error: 'catch' block is unreachable because no errors are thrown in 'do' block
+232 |                     continuation.resume(throwing: error)
+233 |                 }
+[391/423] Compiling AIKO CoreDataRepository.swift
+/Users/J/aiko/Sources/Infrastructure/CoreDataActor.swift:231:19: error: 'catch' block is unreachable because no errors are thrown in 'do' block
+229 | 
+230 |                     continuation.resume()
+231 |                 } catch {
+    |                   `- error: 'catch' block is unreachable because no errors are thrown in 'do' block
+232 |                     continuation.resume(throwing: error)
+233 |                 }
+[392/423] Compiling AIKO DocumentRepository.swift
+/Users/J/aiko/Sources/Infrastructure/CoreDataActor.swift:231:19: error: 'catch' block is unreachable because no errors are thrown in 'do' block
+229 | 
+230 |                     continuation.resume()
+231 |                 } catch {
+    |                   `- error: 'catch' block is unreachable because no errors are thrown in 'do' block
+232 |                     continuation.resume(throwing: error)
+233 |                 }
+[393/423] Compiling AIKO RepositoryExtensions.swift
+/Users/J/aiko/Sources/Infrastructure/CoreDataActor.swift:231:19: error: 'catch' block is unreachable because no errors are thrown in 'do' block
+229 | 
+230 |                     continuation.resume()
+231 |                 } catch {
+    |                   `- error: 'catch' block is unreachable because no errors are thrown in 'do' block
+232 |                     continuation.resume(throwing: error)
+233 |                 }
+[394/423] Compiling AIKO SAMGovRepository.swift
+/Users/J/aiko/Sources/Infrastructure/CoreDataActor.swift:231:19: error: 'catch' block is unreachable because no errors are thrown in 'do' block
+229 | 
+230 |                     continuation.resume()
+231 |                 } catch {
+    |                   `- error: 'catch' block is unreachable because no errors are thrown in 'do' block
+232 |                     continuation.resume(throwing: error)
+233 |                 }
+[395/423] Compiling AIKO BaseService.swift
+/Users/J/aiko/Sources/Infrastructure/CoreDataActor.swift:231:19: error: 'catch' block is unreachable because no errors are thrown in 'do' block
+229 | 
+230 |                     continuation.resume()
+231 |                 } catch {
+    |                   `- error: 'catch' block is unreachable because no errors are thrown in 'do' block
+232 |                     continuation.resume(throwing: error)
+233 |                 }
+[396/423] Compiling AIKO DocumentService.swift
+/Users/J/aiko/Sources/Infrastructure/CoreDataActor.swift:231:19: error: 'catch' block is unreachable because no errors are thrown in 'do' block
+229 | 
+230 |                     continuation.resume()
+231 |                 } catch {
+    |                   `- error: 'catch' block is unreachable because no errors are thrown in 'do' block
+232 |                     continuation.resume(throwing: error)
+233 |                 }
+[397/423] Compiling AIKO AppError.swift
+/Users/J/aiko/Sources/Infrastructure/CoreDataActor.swift:231:19: error: 'catch' block is unreachable because no errors are thrown in 'do' block
+229 | 
+230 |                     continuation.resume()
+231 |                 } catch {
+    |                   `- error: 'catch' block is unreachable because no errors are thrown in 'do' block
+232 |                     continuation.resume(throwing: error)
+233 |                 }
+[398/423] Compiling AIKO ComplianceModels.swift
+/Users/J/aiko/Sources/Infrastructure/CoreDataActor.swift:231:19: error: 'catch' block is unreachable because no errors are thrown in 'do' block
+229 | 
+230 |                     continuation.resume()
+231 |                 } catch {
+    |                   `- error: 'catch' block is unreachable because no errors are thrown in 'do' block
+232 |                     continuation.resume(throwing: error)
+233 |                 }
+[399/423] Compiling AIKO Acquisition+CoreDataClass.swift
+/Users/J/aiko/Sources/Infrastructure/CoreDataActor.swift:231:19: error: 'catch' block is unreachable because no errors are thrown in 'do' block
+229 | 
+230 |                     continuation.resume()
+231 |                 } catch {
+    |                   `- error: 'catch' block is unreachable because no errors are thrown in 'do' block
+232 |                     continuation.resume(throwing: error)
+233 |                 }
+[400/423] Compiling AIKO Acquisition+CoreDataProperties.swift
+/Users/J/aiko/Sources/Infrastructure/CoreDataActor.swift:231:19: error: 'catch' block is unreachable because no errors are thrown in 'do' block
+229 | 
+230 |                     continuation.resume()
+231 |                 } catch {
+    |                   `- error: 'catch' block is unreachable because no errors are thrown in 'do' block
+232 |                     continuation.resume(throwing: error)
+233 |                 }
+[401/423] Compiling AIKO AcquisitionDocument+CoreDataClass.swift
+/Users/J/aiko/Sources/Infrastructure/CoreDataActor.swift:231:19: error: 'catch' block is unreachable because no errors are thrown in 'do' block
+229 | 
+230 |                     continuation.resume()
+231 |                 } catch {
+    |                   `- error: 'catch' block is unreachable because no errors are thrown in 'do' block
+232 |                     continuation.resume(throwing: error)
+233 |                 }
+[402/423] Compiling AIKO AcquisitionDocument+CoreDataProperties.swift
+/Users/J/aiko/Sources/Infrastructure/CoreDataActor.swift:231:19: error: 'catch' block is unreachable because no errors are thrown in 'do' block
+229 | 
+230 |                     continuation.resume()
+231 |                 } catch {
+    |                   `- error: 'catch' block is unreachable because no errors are thrown in 'do' block
+232 |                     continuation.resume(throwing: error)
+233 |                 }
+[403/423] Compiling AIKO AgentChatInterface.swift
+[404/423] Compiling AIKO ComprehensiveChatInterface.swift
+[405/423] Compiling AIKO EnhancedChatView.swift
+[406/423] Compiling AIKO OriginalSAMGovInterface.swift
+[407/423] Compiling AIKO OriginalSAMReportPreview.swift
+[408/423] Compiling AIKO CustomTemplateDetailView.swift
+[409/423] Compiling AIKO DocumentChainView.swift
+[410/423] Compiling AIKO DocumentExecutionView.swift
+[411/423] Compiling AIKO FaceIDAuthenticationView.swift
+[412/423] Compiling AIKO FormSelectionView.swift
+[413/423] Compiling AIKO OnboardingView.swift
+[414/423] Compiling AIKO RichTextView.swift
+[415/423] Compiling AIKO SAMGovLookupView.swift
+[416/423] Compiling AIKO SAMReportView.swift
+[417/423] Compiling AIKO SAMReportViewPreview.swift
+[418/423] Compiling AIKO SearchDocumentTemplatesView.swift
+[419/423] Compiling AIKO SettingsView.swift
+[420/423] Compiling AIKO ShareButton.swift
+[421/423] Compiling AIKO TemplateDetailView.swift
+[422/423] Compiling AIKO UserGuideView.swift
+[423/423] Compiling AIKO resource_bundle_accessor.swift

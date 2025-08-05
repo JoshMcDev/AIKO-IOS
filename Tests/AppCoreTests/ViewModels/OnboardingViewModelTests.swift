@@ -1,12 +1,11 @@
-import XCTest
-import SwiftUI
-@testable import AppCore
 @testable import AIKO
+@testable import AppCore
+import SwiftUI
+import XCTest
 
 @MainActor
 final class OnboardingViewModelTests: XCTestCase {
-
-    var viewModel: OnboardingViewModel!
+    var viewModel: OnboardingViewModel?
 
     override func setUp() async throws {
         // Create test SettingsManager
@@ -150,7 +149,7 @@ final class OnboardingViewModelTests: XCTestCase {
 
     func test_navigationPerformance_shouldCompleteWithin100ms() {
         measure {
-            for _ in 0..<100 {
+            for _ in 0 ..< 100 {
                 viewModel.nextStep()
                 viewModel.previousStep()
             }
@@ -230,7 +229,6 @@ final class OnboardingViewModelTests: XCTestCase {
 // MARK: - OnboardingStep Tests
 
 extension OnboardingViewModelTests {
-
     func test_onboardingStep_shouldHaveCorrectProgressValues() {
         XCTAssertEqual(OnboardingStep.welcome.progress, 0.25)
         XCTAssertEqual(OnboardingStep.apiSetup.progress, 0.5)

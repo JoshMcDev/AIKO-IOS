@@ -16,13 +16,13 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
     public func extractMetadata(from data: Data, type: MediaType) async throws -> [MetadataField] {
         switch type {
         case .image:
-            return try await extractImageMetadata(from: data)
+            try await extractImageMetadata(from: data)
         case .video:
-            return try await extractVideoMetadata(from: data)
+            try await extractVideoMetadata(from: data)
         case .document:
-            return try await extractDocumentMetadata(from: data)
+            try await extractDocumentMetadata(from: data)
         default:
-            return try await extractDocumentMetadata(from: data)
+            try await extractDocumentMetadata(from: data)
         }
     }
 
@@ -40,7 +40,7 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
 
         return try await withCheckedThrowingContinuation { continuation in
             let request = VNRecognizeTextRequest { request, error in
-                if let error = error {
+                if let error {
                     continuation.resume(throwing: error)
                     return
                 }
@@ -77,7 +77,7 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
 
         return try await withCheckedThrowingContinuation { continuation in
             let request = VNDetectFaceRectanglesRequest { request, error in
-                if let error = error {
+                if let error {
                     continuation.resume(throwing: error)
                     return
                 }
@@ -110,7 +110,7 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
 
         return try await withCheckedThrowingContinuation { continuation in
             let request = VNClassifyImageRequest { request, error in
-                if let error = error {
+                if let error {
                     continuation.resume(throwing: error)
                     return
                 }
@@ -178,16 +178,15 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
         let data = try Data(contentsOf: url)
         let pathExtension = url.pathExtension.lowercased()
 
-        let mediaType: MediaType
-        switch pathExtension {
+        let mediaType: MediaType = switch pathExtension {
         case "jpg", "jpeg", "png", "gif", "bmp", "tiff", "heic":
-            mediaType = .image
+            .image
         case "mp4", "mov", "avi", "mkv", "wmv":
-            mediaType = .video
+            .video
         case "mp3", "wav", "aac", "flac", "m4a":
-            mediaType = .document
+            .document
         default:
-            mediaType = .document
+            .document
         }
 
         let fields = try await extractMetadata(from: data, type: mediaType) as [MetadataField]
@@ -341,8 +340,8 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
 
     public func extractText(from data: Data) async throws -> ExtractedText {
         let extractedTexts = try await extractText(from: data) as [ExtractedText]
-        let combinedText = extractedTexts.map { $0.text }.joined(separator: " ")
-        let averageConfidence = extractedTexts.isEmpty ? 0 : extractedTexts.map { $0.confidence }.reduce(0, +) / Double(extractedTexts.count)
+        let combinedText = extractedTexts.map(\.text).joined(separator: " ")
+        let averageConfidence = extractedTexts.isEmpty ? 0 : extractedTexts.map(\.confidence).reduce(0, +) / Double(extractedTexts.count)
 
         return ExtractedText(
             text: combinedText,
@@ -352,7 +351,7 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
     }
 
     public func analyzeImageContent(_ data: Data) async throws -> ImageAnalysis {
-        return try await analyzeImage(data)
+        try await analyzeImage(data)
     }
 
     public func extractWaveform(from url: URL, samples: Int) async throws -> [Float] {
@@ -374,12 +373,12 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
         let stride = Int(frameCount) / samples
         var waveform: [Float] = []
 
-        for i in 0..<samples {
+        for i in 0 ..< samples {
             let startIndex = i * stride
             let endIndex = min(startIndex + stride, Int(frameCount))
 
             var sum: Float = 0
-            for j in startIndex..<endIndex {
+            for j in startIndex ..< endIndex {
                 sum += abs(channelData[j])
             }
             waveform.append(sum / Float(endIndex - startIndex))
@@ -397,12 +396,12 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
 
         return try await withCheckedThrowingContinuation { continuation in
             imageGenerator.generateCGImagesAsynchronously(forTimes: [NSValue(time: cmTime)]) { _, cgImage, _, _, error in
-                if let error = error {
+                if let error {
                     continuation.resume(throwing: error)
                     return
                 }
 
-                guard let cgImage = cgImage else {
+                guard let cgImage else {
                     continuation.resume(throwing: MediaError.processingFailed("Could not generate frame"))
                     return
                 }
@@ -458,7 +457,8 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
 
     private func createCGImage(from data: Data) -> CGImage? {
         guard let imageSource = CGImageSourceCreateWithData(data as CFData, nil),
-              let cgImage = CGImageSourceCreateImageAtIndex(imageSource, 0, nil) else {
+              let cgImage = CGImageSourceCreateImageAtIndex(imageSource, 0, nil)
+        else {
             return nil
         }
         return cgImage
@@ -583,7 +583,8 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         guard let context = CGContext(data: nil, width: Int(scaledSize.width), height: Int(scaledSize.height),
                                       bitsPerComponent: 8, bytesPerRow: 0, space: colorSpace,
-                                      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else {
+                                      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+        else {
             throw MediaError.processingFailed("Could not create graphics context")
         }
 
@@ -618,12 +619,12 @@ public actor MediaMetadataService: MediaMetadataServiceProtocol {
 
         return try await withCheckedThrowingContinuation { continuation in
             imageGenerator.generateCGImagesAsynchronously(forTimes: [NSValue(time: cmTime)]) { _, cgImage, _, _, error in
-                if let error = error {
+                if let error {
                     continuation.resume(throwing: error)
                     return
                 }
 
-                guard let cgImage = cgImage else {
+                guard let cgImage else {
                     continuation.resume(throwing: MediaError.processingFailed("Could not generate video thumbnail"))
                     return
                 }

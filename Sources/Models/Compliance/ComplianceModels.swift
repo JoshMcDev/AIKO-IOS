@@ -1,6 +1,6 @@
-import Foundation
-import CoreML
 import AppCore
+import CoreML
+import Foundation
 
 // MARK: - Core Compliance Models
 
@@ -8,22 +8,22 @@ import AppCore
 public struct ComplianceTestDataset: Sendable {
     public static func loadKnownViolations() async throws -> ComplianceTestDataset {
         // RED phase: Return minimal dataset to cause accuracy test failures
-        return ComplianceTestDataset()
+        ComplianceTestDataset()
     }
 
     public func getKnownViolations() -> [TestCase] {
         // RED phase: Return empty test cases to cause accuracy failures
-        return []
+        []
     }
 
     public func getCompliantDocuments() -> [TestDocument] {
         // RED phase: Return empty documents to cause false positive test failures
-        return []
+        []
     }
 
     public func getFARSection15203Violation() -> TestDocument {
         // RED phase: Return basic document without proper violation markers
-        return TestDocument(
+        TestDocument(
             id: UUID(),
             content: "Basic document content",
             complexity: .low,
@@ -48,7 +48,7 @@ public struct CompliancePerformanceMetrics: Sendable {
 
     public func getCurrentMemoryUsage() -> Int64 {
         // RED phase: Return 0 to cause memory tracking test failures
-        return 0
+        0
     }
 }
 
@@ -56,9 +56,9 @@ public struct CompliancePerformanceMetrics: Sendable {
 public struct ComplianceWarningManager: Sendable {
     public init() {}
 
-    public func createWarning(for result: GuardianComplianceResult) async throws -> ComplianceUIWarningView {
+    public func createWarning(for _: GuardianComplianceResult) async throws -> ComplianceUIWarningView {
         // RED phase: Return basic warning that will fail UI tests
-        return ComplianceUIWarningView()
+        ComplianceUIWarningView()
     }
 }
 
@@ -81,26 +81,26 @@ public struct ComplianceUIWarningView: Sendable {
 
     public init() {
         // RED phase: Initialize with values that will fail UI tests
-        self.level = .passive
-        self.borderColor = .red // Wrong color for passive level
-        self.hasMarginIcon = false // Should be true for passive
-        self.interruptsWorkflow = true // Should be false for passive
-        self.hapticFeedback = .heavy // Wrong feedback for passive
-        self.detailedExplanation = nil
-        self.fixSuggestions = nil
-        self.supportsSwipeToDismiss = false
-        self.requiresExplicitAcknowledgment = false
-        self.generatesAuditTrail = false
-        self.isDismissibleWithoutAction = true
-        self.isDismissible = false
-        self.requiresExplicitAction = true
-        self.complianceDetails = nil
-        self.resolutionSuggestions = nil
+        level = .passive
+        borderColor = .red // Wrong color for passive level
+        hasMarginIcon = false // Should be true for passive
+        interruptsWorkflow = true // Should be false for passive
+        hapticFeedback = .heavy // Wrong feedback for passive
+        detailedExplanation = nil
+        fixSuggestions = nil
+        supportsSwipeToDismiss = false
+        requiresExplicitAcknowledgment = false
+        generatesAuditTrail = false
+        isDismissibleWithoutAction = true
+        isDismissible = false
+        requiresExplicitAction = true
+        complianceDetails = nil
+        resolutionSuggestions = nil
     }
 
     public func showTooltip() async throws -> ComplianceTooltip {
         // RED phase: Return empty tooltip to fail tests
-        return ComplianceTooltip()
+        ComplianceTooltip()
     }
 }
 
@@ -112,10 +112,10 @@ public struct ComplianceTooltip: Sendable {
 
     public init() {
         // RED phase: Initialize with nil values to fail tests
-        self.complianceDetails = nil
-        self.resolutionSuggestions = nil
-        self.isDismissible = false
-        self.requiresExplicitAction = true
+        complianceDetails = nil
+        resolutionSuggestions = nil
+        isDismissible = false
+        requiresExplicitAction = true
     }
 }
 
@@ -144,8 +144,8 @@ public final class ComplianceIntegrationCoordinator: @unchecked Sendable {
     public var onComplianceResult: (@Sendable (GuardianComplianceResult) -> Void)?
 
     public init(
-        documentManager: ComplianceDocumentChainManager,
-        guardian: ComplianceGuardian
+        documentManager _: ComplianceDocumentChainManager,
+        guardian _: ComplianceGuardian
     ) async throws {
         // RED phase: Basic initialization without proper integration
     }
@@ -193,26 +193,26 @@ public enum ComplianceError: Error, Sendable {
     public var type: ComplianceErrorType {
         switch self {
         case .invalidDocumentFormat:
-            return .invalidDocumentFormat
+            .invalidDocumentFormat
         case .networkFailure:
-            return .networkFailure
+            .networkFailure
         case .modelLoadFailure:
-            return .modelLoadFailure
+            .modelLoadFailure
         case .analysisTimeout:
-            return .analysisTimeout
+            .analysisTimeout
         }
     }
 
     public var recoverySuggestion: String {
         switch self {
         case .invalidDocumentFormat:
-            return "Check document format and try again"
+            "Check document format and try again"
         case .networkFailure:
-            return "Check network connection and retry"
+            "Check network connection and retry"
         case .modelLoadFailure:
-            return "Restart application to reload models"
+            "Restart application to reload models"
         case .analysisTimeout:
-            return "Try with a smaller document"
+            "Try with a smaller document"
         }
     }
 }
@@ -243,13 +243,13 @@ public protocol NetworkProvider: Sendable {
 public struct MockLearningFeedbackLoop: LearningFeedbackLoop {
     public init() {}
 
-    public func recordFeedback(_ feedback: ComplianceFeedback) async throws {
+    public func recordFeedback(_: ComplianceFeedback) async throws {
         // RED phase: Do nothing to cause integration test failures
     }
 
     public func getLastEvent() async throws -> LearningEvent {
         // RED phase: Return basic event with wrong type
-        return LearningEvent(
+        LearningEvent(
             eventType: .requirementEntered, // Wrong type for compliance
             context: LearningEvent.EventContext(
                 workflowState: "",
@@ -261,7 +261,7 @@ public struct MockLearningFeedbackLoop: LearningFeedbackLoop {
         )
     }
 
-    public func recordEvent(_ event: LearningEvent) async throws {
+    public func recordEvent(_: LearningEvent) async throws {
         // GREEN phase: Accept event recording to make tests pass
     }
 }
@@ -269,9 +269,9 @@ public struct MockLearningFeedbackLoop: LearningFeedbackLoop {
 public struct MockCompliancePolicyEngine: CompliancePolicyEngine {
     public init() {}
 
-    public func evaluatePolicy(_ document: TestDocument) async throws -> PolicyEvaluation {
+    public func evaluatePolicy(_: TestDocument) async throws -> PolicyEvaluation {
         // RED phase: Return empty evaluation
-        return PolicyEvaluation()
+        PolicyEvaluation()
     }
 }
 
@@ -283,7 +283,7 @@ public struct ComplianceFeedback: Sendable {
     public init(result: GuardianComplianceResult, userAction: UserAction) {
         self.result = result
         self.userAction = userAction
-        self.timestamp = Date()
+        timestamp = Date()
     }
 }
 
@@ -309,11 +309,11 @@ public class MockMLFeatureProvider: MLFeatureProvider {
     public init() {}
 
     public var featureNames: Set<String> {
-        return ["feature1", "feature2", "feature3"]
+        ["feature1", "feature2", "feature3"]
     }
 
-    public func featureValue(for featureName: String) -> MLFeatureValue? {
-        return MLFeatureValue(double: 0.5)
+    public func featureValue(for _: String) -> MLFeatureValue? {
+        MLFeatureValue(double: 0.5)
     }
 }
 

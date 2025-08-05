@@ -27,11 +27,11 @@ public struct UserProfile: Equatable, Codable, Sendable, Hashable {
     public var specializations: [String]
     public var preferredLanguage: String
     public var timeZone: String
-    public var mailingAddress: Address  // For ProfileView compatibility
+    public var mailingAddress: Address // For ProfileView compatibility
 
     // Template variable support for document generation
     public func asTemplateVariables() -> [String: String] {
-        return [
+        [
             "fullName": fullName,
             "title": title,
             "position": position,
@@ -43,10 +43,11 @@ public struct UserProfile: Equatable, Codable, Sendable, Hashable {
             "website": website,
             "bio": bio,
             "preferredLanguage": preferredLanguage,
-            "timeZone": timeZone
+            "timeZone": timeZone,
         ]
     }
-    public var billingAddress: Address  // For ProfileView compatibility
+
+    public var billingAddress: Address // For ProfileView compatibility
 
     public var createdAt: Date
     public var updatedAt: Date
@@ -185,12 +186,13 @@ public struct Address: Equatable, Codable, Sendable, Hashable {
 }
 
 // MARK: - Profile Validation
+
 // Extension provides compatibility with existing UI components
 
 public extension UserProfile {
     var completionPercentage: Double {
         var completedFields = 0
-        let totalFields = 24  // Updated for 20+ fields
+        let totalFields = 24 // Updated for 20+ fields
 
         if !fullName.isEmpty { completedFields += 1 }
         if !title.isEmpty { completedFields += 1 }

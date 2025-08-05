@@ -1,5 +1,5 @@
-import SwiftUI
 import AppCore
+import SwiftUI
 
 struct OriginalSAMReportPreview: View {
     let entities: [EntityDetail]
@@ -127,9 +127,9 @@ struct OriginalSAMReportPreview: View {
             // Report Metadata Grid - Original Clean Design
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 16) {
                 MetricCard(title: "Active Contractors", value: "\(entities.filter { $0.registrationStatus == "Active" }.count)", color: .green)
-                MetricCard(title: "Small Businesses", value: "\(entities.filter { $0.isSmallBusiness }.count)", color: .blue)
-                MetricCard(title: "Veteran-Owned", value: "\(entities.filter { $0.isVeteranOwned }.count)", color: .orange)
-                MetricCard(title: "With Exclusions", value: "\(entities.filter { $0.hasActiveExclusions }.count)", color: .red)
+                MetricCard(title: "Small Businesses", value: "\(entities.filter(\.isSmallBusiness).count)", color: .blue)
+                MetricCard(title: "Veteran-Owned", value: "\(entities.filter(\.isVeteranOwned).count)", color: .orange)
+                MetricCard(title: "With Exclusions", value: "\(entities.filter(\.hasActiveExclusions).count)", color: .red)
             }
         }
     }
@@ -150,7 +150,7 @@ struct OriginalSAMReportPreview: View {
                 )
 
                 SummaryPoint(
-                    text: "Risk Profile: \(calculateRiskProfile()) risk exposure with \(entities.filter { $0.hasActiveExclusions }.count) contractors having active exclusions"
+                    text: "Risk Profile: \(calculateRiskProfile()) risk exposure with \(entities.filter(\.hasActiveExclusions).count) contractors having active exclusions"
                 )
 
                 SummaryPoint(
@@ -218,9 +218,9 @@ struct OriginalSAMReportPreview: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 RiskIndicator(
-                    level: entities.filter { $0.hasActiveExclusions }.isEmpty ? .low : .high,
+                    level: entities.filter(\.hasActiveExclusions).isEmpty ? .low : .high,
                     title: "Exclusion Risk",
-                    description: "\(entities.filter { $0.hasActiveExclusions }.count) contractors with active exclusions"
+                    description: "\(entities.filter(\.hasActiveExclusions).count) contractors with active exclusions"
                 )
 
                 RiskIndicator(
@@ -322,30 +322,30 @@ struct OriginalSAMReportPreview: View {
     private func getCompetitionLevel() -> String {
         let count = entities.count
         switch count {
-        case 0...5: return "Low Competition"
-        case 6...15: return "Moderate Competition"
+        case 0 ... 5: return "Low Competition"
+        case 6 ... 15: return "Moderate Competition"
         default: return "High Competition"
         }
     }
 
     private func calculateRiskProfile() -> String {
-        let exclusionCount = entities.filter { $0.hasActiveExclusions }.count
+        let exclusionCount = entities.filter(\.hasActiveExclusions).count
         let riskPercentage = Double(exclusionCount) / Double(max(entities.count, 1))
 
         switch riskPercentage {
-        case 0...0.1: return "Low"
-        case 0.1...0.3: return "Moderate"
+        case 0 ... 0.1: return "Low"
+        case 0.1 ... 0.3: return "Moderate"
         default: return "High"
         }
     }
 
     private func calculateSmallBusinessPercentage() -> Int {
-        let smallBusinessCount = entities.filter { $0.isSmallBusiness }.count
+        let smallBusinessCount = entities.filter(\.isSmallBusiness).count
         return !entities.isEmpty ? Int((Double(smallBusinessCount) / Double(entities.count)) * 100) : 0
     }
 
     private func calculateNAICSDiversity() -> Int {
-        let allNAICS = entities.flatMap { $0.naicsCodes.map { $0.code } }
+        let allNAICS = entities.flatMap { $0.naicsCodes.map(\.code) }
         return Set(allNAICS).count
     }
 
@@ -363,11 +363,11 @@ struct OriginalSAMReportPreview: View {
 
     private func getMarketMaturity() -> String {
         let avgNAICSPerContractor = !entities.isEmpty ?
-            Double(entities.flatMap { $0.naicsCodes }.count) / Double(entities.count) : 0
+            Double(entities.flatMap(\.naicsCodes).count) / Double(entities.count) : 0
 
         switch avgNAICSPerContractor {
-        case 0...2: return "Emerging"
-        case 2...5: return "Developing"
+        case 0 ... 2: return "Emerging"
+        case 2 ... 5: return "Developing"
         default: return "Mature"
         }
     }
@@ -377,8 +377,8 @@ struct OriginalSAMReportPreview: View {
         let riskRatio = Double(inactiveCount) / Double(max(entities.count, 1))
 
         switch riskRatio {
-        case 0...0.1: return .low
-        case 0.1...0.3: return .medium
+        case 0 ... 0.1: return .low
+        case 0.1 ... 0.3: return .medium
         default: return .high
         }
     }
@@ -386,8 +386,8 @@ struct OriginalSAMReportPreview: View {
     private func calculateMarketConcentrationRisk() -> RiskLevel {
         let count = entities.count
         switch count {
-        case 0...3: return .high
-        case 4...10: return .medium
+        case 0 ... 3: return .high
+        case 4 ... 10: return .medium
         default: return .low
         }
     }
@@ -414,7 +414,7 @@ struct OriginalSAMReportPreview: View {
     }
 
     private func generateRiskMitigationRecommendation() -> String {
-        let exclusionCount = entities.filter { $0.hasActiveExclusions }.count
+        let exclusionCount = entities.filter(\.hasActiveExclusions).count
         if exclusionCount > 0 {
             return "Active exclusions detected in \(exclusionCount) contractors. Implement enhanced due diligence and exclusion screening procedures."
         } else {
@@ -568,21 +568,21 @@ struct StatusBadge: View {
 
     private var statusIcon: String {
         if hasExclusions {
-            return "exclamationmark.triangle.fill"
+            "exclamationmark.triangle.fill"
         } else if status == "Active" {
-            return "checkmark.circle.fill"
+            "checkmark.circle.fill"
         } else {
-            return "exclamationmark.circle.fill"
+            "exclamationmark.circle.fill"
         }
     }
 
     private var statusColor: Color {
         if hasExclusions {
-            return .red
+            .red
         } else if status == "Active" {
-            return .green
+            .green
         } else {
-            return .orange
+            .orange
         }
     }
 }
@@ -736,17 +736,17 @@ enum RiskLevel {
 
     var displayName: String {
         switch self {
-        case .low: return "Low Risk"
-        case .medium: return "Medium Risk"
-        case .high: return "High Risk"
+        case .low: "Low Risk"
+        case .medium: "Medium Risk"
+        case .high: "High Risk"
         }
     }
 
     var color: Color {
         switch self {
-        case .low: return .green
-        case .medium: return .orange
-        case .high: return .red
+        case .low: .green
+        case .medium: .orange
+        case .high: .red
         }
     }
 }
@@ -756,17 +756,17 @@ enum RecommendationPriority {
 
     var displayName: String {
         switch self {
-        case .low: return "Low Priority"
-        case .medium: return "Medium Priority"
-        case .high: return "High Priority"
+        case .low: "Low Priority"
+        case .medium: "Medium Priority"
+        case .high: "High Priority"
         }
     }
 
     var color: Color {
         switch self {
-        case .low: return .gray
-        case .medium: return .orange
-        case .high: return .red
+        case .low: .gray
+        case .medium: .orange
+        case .high: .red
         }
     }
 }
@@ -781,32 +781,32 @@ enum FollowOnReportType: String, CaseIterable {
 
     var icon: String {
         switch self {
-        case .marketAnalysis: return "chart.line.uptrend.xyaxis"
-        case .vendorCapabilities: return "building.2"
-        case .competitiveAnalysis: return "scale.3d"
-        case .pastPerformance: return "clock.arrow.circlepath"
+        case .marketAnalysis: "chart.line.uptrend.xyaxis"
+        case .vendorCapabilities: "building.2"
+        case .competitiveAnalysis: "scale.3d"
+        case .pastPerformance: "clock.arrow.circlepath"
         }
     }
 
     var description: String {
         switch self {
         case .marketAnalysis:
-            return "Deep market trends, pricing analysis, and opportunity assessment"
+            "Deep market trends, pricing analysis, and opportunity assessment"
         case .vendorCapabilities:
-            return "Technical capabilities, certifications, and capacity evaluation"
+            "Technical capabilities, certifications, and capacity evaluation"
         case .competitiveAnalysis:
-            return "Competitive positioning, strengths, weaknesses, and market share"
+            "Competitive positioning, strengths, weaknesses, and market share"
         case .pastPerformance:
-            return "Historical performance, contract success rates, and reliability metrics"
+            "Historical performance, contract success rates, and reliability metrics"
         }
     }
 
     var estimatedTime: String {
         switch self {
-        case .marketAnalysis: return "15-20 minutes"
-        case .vendorCapabilities: return "10-15 minutes"
-        case .competitiveAnalysis: return "20-25 minutes"
-        case .pastPerformance: return "12-18 minutes"
+        case .marketAnalysis: "15-20 minutes"
+        case .vendorCapabilities: "10-15 minutes"
+        case .competitiveAnalysis: "20-25 minutes"
+        case .pastPerformance: "12-18 minutes"
         }
     }
 }
@@ -995,7 +995,7 @@ struct FollowOnReportView: View {
         isGenerating = true
 
         // Simulate report generation time
-        let delay = Double.random(in: 2.0...5.0)
+        let delay = Double.random(in: 2.0 ... 5.0)
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
             isGenerating = false
             reportGenerated = true
@@ -1005,13 +1005,13 @@ struct FollowOnReportView: View {
     private func generateMockContent(for reportType: FollowOnReportType) -> String {
         switch reportType {
         case .marketAnalysis:
-            return "Market analysis reveals strong competition with \(entities.count) qualified vendors. Current market trends indicate increasing demand for specialized capabilities."
+            "Market analysis reveals strong competition with \(entities.count) qualified vendors. Current market trends indicate increasing demand for specialized capabilities."
         case .vendorCapabilities:
-            return "Vendor capability assessment shows diverse technical competencies across \(entities.count) contractors, with varying levels of certification and capacity."
+            "Vendor capability assessment shows diverse technical competencies across \(entities.count) contractors, with varying levels of certification and capacity."
         case .competitiveAnalysis:
-            return "Competitive landscape analysis identifies key market players, pricing strategies, and competitive advantages among \(entities.count) evaluated vendors."
+            "Competitive landscape analysis identifies key market players, pricing strategies, and competitive advantages among \(entities.count) evaluated vendors."
         case .pastPerformance:
-            return "Past performance evaluation demonstrates strong track record with average performance ratings above industry standards for \(entities.count) contractors."
+            "Past performance evaluation demonstrates strong track record with average performance ratings above industry standards for \(entities.count) contractors."
         }
     }
 }

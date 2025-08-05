@@ -1,5 +1,5 @@
-import XCTest
 import SwiftUI
+import XCTest
 #if canImport(UIKit)
 import UIKit
 #endif
@@ -14,10 +14,9 @@ typealias PerfTestDocumentScannerViewModel = AppCore.DocumentScannerViewModel
 
 @MainActor
 final class PerformanceDocumentScannerTests: XCTestCase {
-
-    private var viewModel: PerfTestDocumentScannerViewModel!
-    private var visionKitAdapter: MockVisionKitAdapter!
-    private var documentImageProcessor: MockDocumentImageProcessor!
+    private var viewModel: PerfTestDocumentScannerViewModel?
+    private var visionKitAdapter: MockVisionKitAdapter?
+    private var documentImageProcessor: MockDocumentImageProcessor?
 
     override func setUp() async throws {
         viewModel = PerfTestDocumentScannerViewModel()
@@ -71,7 +70,7 @@ final class PerformanceDocumentScannerTests: XCTestCase {
     func test_visionKitLaunch_optimizedForSpeed() async {
         // This test will fail in RED phase - VisionKit launch optimization not implemented
 
-        let config = VisionKitAdapter.ScanConfiguration(
+        _ = VisionKitAdapter.ScanConfiguration(
             presentationMode: .modal,
             qualityMode: .fast,
             professionalMode: .standard,
@@ -120,7 +119,7 @@ final class PerformanceDocumentScannerTests: XCTestCase {
         fpsMonitor.startMonitoring()
 
         // Perform multiple state updates
-        for i in 1...10 {
+        for i in 1 ... 10 {
             let page = AppCore.ScannedPage(
                 imageData: Data(),
                 ocrText: "Page \(i)",
@@ -145,7 +144,7 @@ final class PerformanceDocumentScannerTests: XCTestCase {
         // This test will fail in RED phase - page navigation performance not implemented
 
         // Add multiple pages
-        for i in 1...10 {
+        for i in 1 ... 10 {
             let page = AppCore.ScannedPage(
                 imageData: Data(),
                 ocrText: "Page \(i)",
@@ -198,7 +197,7 @@ final class PerformanceDocumentScannerTests: XCTestCase {
         // await viewModel.startBackgroundProcessing()
 
         // Simulate user interactions during background processing
-        for _ in 1...20 {
+        for _ in 1 ... 20 {
             // Simulate button tap
             responsivenessTester.simulateUserInteraction()
             try? await Task.sleep(nanoseconds: 50_000_000) // 50ms
@@ -220,7 +219,7 @@ final class PerformanceDocumentScannerTests: XCTestCase {
         let initialMemory = getMemoryUsage()
 
         // Add 10 high-resolution pages
-        for i in 1...10 {
+        for i in 1 ... 10 {
             #if canImport(UIKit)
             let highResImage = createHighResolutionImage()
             let imageData = highResImage.pngData() ?? Data()
@@ -250,7 +249,7 @@ final class PerformanceDocumentScannerTests: XCTestCase {
 
         // Perform scan with multiple pages
         await viewModel.startScanning()
-        for i in 1...5 {
+        for i in 1 ... 5 {
             #if canImport(UIKit)
             let imageData = createHighResolutionImage().pngData() ?? Data()
             #else
@@ -294,7 +293,7 @@ final class PerformanceDocumentScannerTests: XCTestCase {
         await viewModel.startScanning()
 
         // Add pages under memory pressure
-        for i in 1...3 {
+        for i in 1 ... 3 {
             let page = AppCore.ScannedPage(
                 imageData: Data(),
                 ocrText: "Page \(i)",
@@ -346,7 +345,7 @@ final class PerformanceDocumentScannerTests: XCTestCase {
         // Simulate scanning session
         try? await Task.sleep(nanoseconds: 5_000_000_000) // 5 seconds
 
-        for i in 1...3 {
+        for i in 1 ... 3 {
             let page = AppCore.ScannedPage(
                 imageData: Data(),
                 ocrText: "Page \(i)",
@@ -400,7 +399,7 @@ final class PerformanceDocumentScannerTests: XCTestCase {
         cameraEfficiencyMonitor.startMonitoring()
 
         // Configure camera for efficiency (not implemented)
-        let config = VisionKitAdapter.ScanConfiguration(
+        _ = VisionKitAdapter.ScanConfiguration(
             presentationMode: .modal,
             qualityMode: .balanced, // Balanced mode for efficiency
             professionalMode: .standard,
@@ -425,7 +424,7 @@ final class PerformanceDocumentScannerTests: XCTestCase {
     func test_concurrentPageProcessing_performanceGains() async {
         // This test will fail in RED phase - concurrent processing not implemented
 
-        let pages = (1...5).map { i in
+        _ = (1 ... 5).map { i in
             #if canImport(UIKit)
             let imageData = createHighResolutionImage().pngData() ?? Data()
             #else
@@ -464,18 +463,18 @@ final class PerformanceDocumentScannerTests: XCTestCase {
 
     private func getMemoryUsage() -> UInt64 {
         // Mock implementation - will be replaced in GREEN phase
-        return 0
+        0
     }
 
     #if canImport(UIKit)
     private func createHighResolutionImage() -> UIImage {
         // Mock implementation - will be replaced in GREEN phase
-        return UIImage()
+        UIImage()
     }
 
     private func createVeryLargeImage() -> UIImage {
         // Mock implementation - will be replaced in GREEN phase
-        return UIImage()
+        UIImage()
     }
     #endif
 
@@ -520,7 +519,7 @@ class MainThreadMonitor {
 
     func getMaxBlockTime() -> TimeInterval {
         // This will fail in RED phase - monitoring not implemented
-        return 0.0
+        0.0
     }
 }
 
@@ -539,24 +538,11 @@ class UIResponsivenessTester {
     }
 
     func getAverageResponseTime() -> TimeInterval {
-        return 0.0
+        0.0
     }
 }
 
-class BatteryUsageMonitor {
-    func startMonitoring() {
-        // This will fail in RED phase - battery monitoring not implemented
-        fatalError("Battery usage monitoring not implemented - this should fail in RED phase")
-    }
-
-    func stopMonitoring() {
-        // Implementation placeholder
-    }
-
-    func getBatteryUsage() -> Double {
-        return 0.0
-    }
-}
+// BatteryUsageMonitor is defined in AdaptiveFormPerformanceTests.swift
 
 class CameraEfficiencyMonitor {
     func startMonitoring() {
@@ -569,24 +555,24 @@ class CameraEfficiencyMonitor {
     }
 
     func getEfficiencyRating() -> Double {
-        return 0.0
+        0.0
     }
 }
 
 // MARK: - Extensions for Performance Testing
 
 extension DocumentImageProcessor {
-    func processLargeImage(_ imageData: Data) async -> ProcessingResult {
+    func processLargeImage(_: Data) async -> ProcessingResult {
         // This will fail in RED phase - large image processing not implemented
         fatalError("Large image processing not implemented - this should fail in RED phase")
     }
 
-    func processPage(_ page: AppCore.ScannedPage) async {
+    func processPage(_: AppCore.ScannedPage) async {
         // This will fail in RED phase - page processing not implemented
         fatalError("Page processing not implemented - this should fail in RED phase")
     }
 
-    func processPagesConcurrently(_ pages: [AppCore.ScannedPage]) async {
+    func processPagesConcurrently(_: [AppCore.ScannedPage]) async {
         // This will fail in RED phase - concurrent processing not implemented
         fatalError("Concurrent page processing not implemented - this should fail in RED phase")
     }
@@ -598,7 +584,7 @@ extension PerfTestDocumentScannerViewModel {
         fatalError("Camera presentation not implemented - this should fail in RED phase")
     }
 
-    func navigateToPage(_ pageIndex: Int) {
+    func navigateToPage(_: Int) {
         // This will fail in RED phase - page navigation not implemented
         fatalError("Page navigation not implemented - this should fail in RED phase")
     }

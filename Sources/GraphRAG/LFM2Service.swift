@@ -33,7 +33,7 @@ actor LFM2Service {
     private let embeddingDimensions = 768
 
     // Memory management constants
-    private struct MemoryConstants {
+    private enum MemoryConstants {
         static let limitMB: Int64 = 800 * 1024 * 1024 // 800MB
         static let baselineMB: Int64 = 100 * 1024 * 1024 // 100MB
         static let embeddingCostLarge: Int64 = 20 * 1024 // 20KB for large batches
@@ -43,12 +43,13 @@ actor LFM2Service {
     }
 
     // Performance constants
-    private struct PerformanceConstants {
+    private enum PerformanceConstants {
         static let batchSize = 50
         static let progressReportInterval = 10
         static let performanceTargetSeconds: TimeInterval = 2.0
         static let baselineBufferPercentage = 1.15 // 15% buffer for batch processing
     }
+
     private let maxTokenLength = 512
 
     // Hybrid Architecture Control
@@ -88,7 +89,7 @@ actor LFM2Service {
             let possibleModelNames = [
                 "LFM2-700M-Unsloth-XL-GraphRAG",
                 "LFM2-700M-Q6K",
-                "LFM2-700M"
+                "LFM2-700M",
             ]
 
             for modelName in possibleModelNames where Bundle.main.url(forResource: modelName, withExtension: "mlmodel") != nil {
@@ -168,7 +169,7 @@ actor LFM2Service {
         let possibleGGUFNames = [
             "LFM2-700M-Q6_K",
             "LFM2-700M-Unsloth-XL-Q6_K",
-            "LFM2-700M-Q8_0"
+            "LFM2-700M-Q8_0",
         ]
 
         for ggufName in possibleGGUFNames {
@@ -180,8 +181,8 @@ actor LFM2Service {
                     let coreMLModel = try await convertGGUFToCoreML(ggufURL: ggufURL, modelName: ggufName)
 
                     #if canImport(CoreML)
-                    self.model = coreMLModel
-                    self.isModelLoaded = true
+                    model = coreMLModel
+                    isModelLoaded = true
                     #endif
 
                     logger.info("✅ GGUF model converted and loaded: \(ggufName)")
@@ -200,7 +201,7 @@ actor LFM2Service {
     }
 
     /// Convert GGUF model to Core ML format for inference
-    private func convertGGUFToCoreML(ggufURL: URL, modelName: String) async throws -> MLModel {
+    private func convertGGUFToCoreML(ggufURL _: URL, modelName: String) async throws -> MLModel {
         logger.info("🔄 Converting GGUF to Core ML: \(modelName)")
 
         // Create a temporary directory for conversion
@@ -240,15 +241,15 @@ actor LFM2Service {
         try await createPlaceholderCoreMLModel(at: modelURL, modelName: "LFM2-Runtime")
 
         #if canImport(CoreML)
-        self.model = try MLModel(contentsOf: modelURL)
-        self.isModelLoaded = true
+        model = try MLModel(contentsOf: modelURL)
+        isModelLoaded = true
         #endif
 
         logger.info("✅ Runtime Core ML model generated and loaded")
     }
 
     /// Create a placeholder Core ML model that provides the expected embedding interface
-    private func createPlaceholderCoreMLModel(at url: URL, modelName: String) async throws {
+    private func createPlaceholderCoreMLModel(at _: URL, modelName: String) async throws {
         // In production, this would create a proper Core ML model programmatically
         // For now, this ensures the interface is available for development
         logger.info("🔧 Creating placeholder Core ML model: \(modelName)")
@@ -386,7 +387,7 @@ actor LFM2Service {
         let startTime = CFAbsoluteTimeGetCurrent()
 
         // Initialize memory simulation if not already enabled (for single embedding tests)
-        if !isMemorySimulationEnabled && ProcessInfo.processInfo.environment["XCTEST_SESSION_ID"] != nil {
+        if !isMemorySimulationEnabled, ProcessInfo.processInfo.environment["XCTEST_SESSION_ID"] != nil {
             isMemorySimulationEnabled = true
             simulatedMemoryUsage = 50 * 1024 * 1024 // 50MB baseline for single embedding
             peakSimulatedMemory = simulatedMemoryUsage
@@ -404,7 +405,7 @@ actor LFM2Service {
             // Try to use real model with lazy loading, fallback to mock
             #if canImport(CoreML)
             do {
-                if model == nil && !isModelLoaded {
+                if model == nil, !isModelLoaded {
                     // Lazy load the model on first use
                     logger.info("🔄 Lazy loading LFM2 model on first use...")
                     try await lazyLoadModel()
@@ -477,7 +478,7 @@ actor LFM2Service {
 
         for batchStart in stride(from: 0, to: texts.count, by: batchSize) {
             let batchEnd = min(batchStart + batchSize, texts.count)
-            let batch = Array(texts[batchStart..<batchEnd])
+            let batch = Array(texts[batchStart ..< batchEnd])
 
             logger.debug("🔄 Processing batch \(batchStart / batchSize + 1)/\(Int(ceil(Double(texts.count) / Double(batchSize))))")
 
@@ -602,12 +603,12 @@ actor LFM2Service {
 
     /// Get current simulated memory usage for testing
     func getSimulatedMemoryUsage() -> Int64 {
-        return simulatedMemoryUsage
+        simulatedMemoryUsage
     }
 
     /// Get peak simulated memory usage for testing
     func getPeakSimulatedMemoryUsage() -> Int64 {
-        return peakSimulatedMemory
+        peakSimulatedMemory
     }
 
     // MARK: - Memory Management Helpers
@@ -640,7 +641,7 @@ actor LFM2Service {
         simulatedMemoryUsage += embeddingMemoryCost
 
         // Trigger aggressive cleanup every N embeddings for large batches
-        if (globalIndex + 1) % MemoryConstants.cleanupThreshold == 0 && totalTexts > 500 {
+        if (globalIndex + 1) % MemoryConstants.cleanupThreshold == 0, totalTexts > 500 {
             let aggressiveCleanup: Int64 = simulatedMemoryUsage / 2 // Clean up half the accumulated memory
             simulatedMemoryUsage = max(simulatedMemoryUsage - aggressiveCleanup, MemoryConstants.baselineMB)
         }
@@ -746,7 +747,7 @@ actor LFM2Service {
             seed = seed &* 1_103_515_245 &+ 12345 // Linear congruential generator
             // Use safer bit manipulation and conversion
             let shiftedSeed = seed >> 16
-            let truncatedSeed = UInt32(shiftedSeed & 0xFFFFFFFF) // Mask to ensure it fits in UInt32
+            let truncatedSeed = UInt32(shiftedSeed & 0xFFFF_FFFF) // Mask to ensure it fits in UInt32
             let normalizedValue = Float(truncatedSeed) / Float(UInt32.max) // Use UInt32.max for safer division
             // Scale to [-1, 1] range
             embedding[i] = (normalizedValue * 2.0) - 1.0
@@ -858,12 +859,12 @@ actor LFM2Service {
 
         // Vectorized token filling
         let tokenCount = min(tokenIds.count, maxTokenLength)
-        for i in 0..<tokenCount {
+        for i in 0 ..< tokenCount {
             inputArray[i] = NSNumber(value: tokenIds[i])
         }
 
         // Zero-pad remaining positions in bulk
-        for i in tokenCount..<maxTokenLength {
+        for i in tokenCount ..< maxTokenLength {
             inputArray[i] = NSNumber(value: 0)
         }
 
@@ -894,7 +895,7 @@ actor LFM2Service {
         tokenIds.append(1)
 
         // Fast hash-based tokenization with safer conversions
-        for i in 0..<wordCount {
+        for i in 0 ..< wordCount {
             let word = words[i]
             let hash = word.djb2hash
             // Use UInt64 intermediate for safer modulo and conversion
@@ -988,27 +989,27 @@ actor LFM2Service {
 
 /// Deployment mode for LFM2 service operation
 enum DeploymentMode: String, CaseIterable {
-    case mockOnly = "mock-only"           // Always use mock embeddings
-    case hybridLazy = "hybrid-lazy"       // Lazy-load real model, fallback to mock
-    case realOnly = "real-only"           // Always use real model (future)
+    case mockOnly = "mock-only" // Always use mock embeddings
+    case hybridLazy = "hybrid-lazy" // Lazy-load real model, fallback to mock
+    case realOnly = "real-only" // Always use real model (future)
 
     var description: String {
         switch self {
         case .mockOnly:
-            return "Mock embeddings only (no Core ML model)"
+            "Mock embeddings only (no Core ML model)"
         case .hybridLazy:
-            return "Lazy-loaded Core ML model with mock fallback"
+            "Lazy-loaded Core ML model with mock fallback"
         case .realOnly:
-            return "Core ML model only (no mock fallback)"
+            "Core ML model only (no mock fallback)"
         }
     }
 
     var shouldLoadModel: Bool {
         switch self {
         case .mockOnly:
-            return false
+            false
         case .hybridLazy, .realOnly:
-            return true
+            true
         }
     }
 }
@@ -1142,10 +1143,10 @@ extension LFM2Service {
         let tracker = performanceTracker
         let modelLoadDuration = modelLoadTime.map { Date().timeIntervalSince($0) } ?? 0.0
 
-        return PerformanceMetrics(
-            averageEmbeddingTime: await tracker.averageEmbeddingTime,
-            totalEmbeddingsGenerated: await tracker.totalEmbeddingsGenerated,
-            peakMemoryUsage: await tracker.peakMemoryUsage,
+        return await PerformanceMetrics(
+            averageEmbeddingTime: tracker.averageEmbeddingTime,
+            totalEmbeddingsGenerated: tracker.totalEmbeddingsGenerated,
+            peakMemoryUsage: tracker.peakMemoryUsage,
             modelLoadTime: modelLoadDuration
         )
     }
@@ -1182,12 +1183,12 @@ private actor PerformanceTracker {
 
     /// Get total embeddings generated
     var totalEmbeddingsGenerated: Int {
-        return _totalEmbeddingsGenerated
+        _totalEmbeddingsGenerated
     }
 
     /// Get peak memory usage
     var peakMemoryUsage: Int64 {
-        return _peakMemoryUsage
+        _peakMemoryUsage
     }
 
     /// Update memory usage tracking

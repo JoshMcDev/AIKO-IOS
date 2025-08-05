@@ -169,7 +169,7 @@ public actor MediaAssetCache: MediaAssetCacheProtocol {
     }
 
     public func currentCacheSize() async -> Int64 {
-        return totalSize
+        totalSize
     }
 
     public func clearCache() async {
@@ -187,7 +187,7 @@ public actor MediaAssetCache: MediaAssetCacheProtocol {
     }
 
     public func getCacheStats() async -> CacheStatistics {
-        return CacheStatistics(
+        CacheStatistics(
             totalItems: cache.count,
             totalSize: totalSize,
             hitCount: stats.hitCount,
@@ -205,7 +205,7 @@ public actor MediaAssetCache: MediaAssetCacheProtocol {
         }
 
         // Evict least recently used items until we have enough space
-        while totalSize + requiredSize > Self.maxCacheSize && !accessOrder.isEmpty {
+        while totalSize + requiredSize > Self.maxCacheSize, !accessOrder.isEmpty {
             await evictLeastRecentlyUsed()
         }
     }

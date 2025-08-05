@@ -1,12 +1,11 @@
-import XCTest
-import SwiftUI
 @testable import AIKO
+import SwiftUI
+import XCTest
 
 /// Tests for NavigationSplitView container and platform detection
 /// These tests are designed to FAIL initially (Red phase) and pass after Green phase implementation
 @MainActor
 final class NavigationSplitViewTests: XCTestCase {
-
     // MARK: - Platform Detection Tests
 
     func testPlatformCapabilitiesIOS() {
@@ -170,7 +169,7 @@ final class NavigationSplitViewTests: XCTestCase {
             .search(SearchContext(query: "test")),
             .settings(.general),
             .quickAction(.scanDocument),
-            .workflow(NavigationWorkflowStep(id: WorkflowStepID("test"), name: "Test"))
+            .workflow(NavigationWorkflowStep(id: WorkflowStepID("test"), name: "Test")),
         ]
 
         // Each destination should have a corresponding view
@@ -308,7 +307,7 @@ final class NavigationSplitViewTests: XCTestCase {
         let iterations = 1000
         let startTime = CFAbsoluteTimeGetCurrent()
 
-        for _ in 0..<iterations {
+        for _ in 0 ..< iterations {
             #if os(iOS)
             let capabilities = PlatformCapabilities(
                 platform: .iOS,
@@ -386,7 +385,7 @@ final class NavigationSplitViewTests: XCTestCase {
             .search(SearchContext(query: "test")),
             .settings(.general),
             .quickAction(.scanDocument),
-            .workflow(NavigationWorkflowStep(id: WorkflowStepID("WF-001"), name: "Test"))
+            .workflow(NavigationWorkflowStep(id: WorkflowStepID("WF-001"), name: "Test")),
         ]
 
         // All destinations should be available on both platforms
@@ -412,7 +411,6 @@ final class NavigationSplitViewTests: XCTestCase {
 // MARK: - Test Helpers and Extensions
 
 extension NavigationSplitViewTests {
-
     /// Helper method to create test NavigationState
     private func createTestNavigationState() -> NavigationState {
         let state = NavigationState()
@@ -421,7 +419,7 @@ extension NavigationSplitViewTests {
 
     /// Helper method to create test PlatformCapabilities for iOS
     private func createIOSPlatformCapabilities() -> PlatformCapabilities {
-        return PlatformCapabilities(
+        PlatformCapabilities(
             platform: .iOS,
             hasCamera: true,
             hasMenuBar: false,
@@ -435,7 +433,7 @@ extension NavigationSplitViewTests {
 
     /// Helper method to create test PlatformCapabilities for macOS
     private func createMacOSPlatformCapabilities() -> PlatformCapabilities {
-        return PlatformCapabilities(
+        PlatformCapabilities(
             platform: .macOS,
             hasCamera: false,
             hasMenuBar: true,

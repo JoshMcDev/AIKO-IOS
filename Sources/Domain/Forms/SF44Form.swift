@@ -440,13 +440,15 @@ public final class SF44Factory: BaseFormFactory<SF44Form> {
             purpose: "Purchase order and payment"
         )
 
-        let emptyAddress = try! PostalAddress(
+        guard let emptyAddress = try? PostalAddress(
             street: "TBD",
             city: "TBD",
             state: "TBD",
             zipCode: "00000",
             country: "USA"
-        )
+        ) else {
+            fatalError("Failed to create default postal address for SF44 form")
+        }
 
         return SF44Form(
             metadata: metadata,
@@ -463,8 +465,18 @@ public final class SF44Factory: BaseFormFactory<SF44Form> {
             ),
             suppliesServices: SuppliesServicesSection(
                 items: [],
-                subtotal: try! Money(amount: 0, currency: .usd),
-                total: try! Money(amount: 0, currency: .usd)
+                subtotal: {
+                    guard let money = try? Money(amount: 0, currency: .usd) else {
+                        fatalError("Failed to create default subtotal amount")
+                    }
+                    return money
+                }(),
+                total: {
+                    guard let money = try? Money(amount: 0, currency: .usd) else {
+                        fatalError("Failed to create default total amount")
+                    }
+                    return money
+                }()
             ),
             shipping: ShippingSection(shipTo: emptyAddress),
             invoice: InvoiceSection(),

@@ -115,7 +115,7 @@ actor ObjectBoxSemanticIndex {
     // MARK: - Storage Performance
 
     func getStorageStats() async -> StorageStats {
-        return StorageStats(
+        StorageStats(
             regulationCount: regulationStore.count,
             userWorkflowCount: userWorkflowStore.count,
             totalSize: calculateTotalSize()
@@ -136,7 +136,7 @@ actor ObjectBoxSemanticIndex {
         let magnitudeA = sqrt(a.map { $0 * $0 }.reduce(0, +))
         let magnitudeB = sqrt(b.map { $0 * $0 }.reduce(0, +))
 
-        guard magnitudeA > 0 && magnitudeB > 0 else { return 0.0 }
+        guard magnitudeA > 0, magnitudeB > 0 else { return 0.0 }
 
         return dotProduct / (magnitudeA * magnitudeB)
     }

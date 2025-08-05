@@ -679,32 +679,32 @@ public actor OneTapWorkflowEngine {
     /// Determine progress phase based on workflow progress
     private func determineProgressPhase(from progress: Double) -> ProgressPhase {
         switch progress {
-        case 0.0..<0.2:
-            return .scanning
-        case 0.2..<0.6:
-            return .processing
-        case 0.6..<0.8:
-            return .ocr
-        case 0.8..<1.0:
-            return .formPopulation
+        case 0.0 ..< 0.2:
+            .scanning
+        case 0.2 ..< 0.6:
+            .processing
+        case 0.6 ..< 0.8:
+            .ocr
+        case 0.8 ..< 1.0:
+            .formPopulation
         default:
-            return .completed
+            .completed
         }
     }
 
     /// Determine current operation description based on progress
     private func determineCurrentOperation(from progress: Double) -> String {
         switch progress {
-        case 0.0..<0.2:
-            return "Scanning document..."
-        case 0.2..<0.6:
-            return "Processing and enhancing image..."
-        case 0.6..<0.8:
-            return "Extracting text with OCR..."
-        case 0.8..<1.0:
-            return "Auto-filling form fields..."
+        case 0.0 ..< 0.2:
+            "Scanning document..."
+        case 0.2 ..< 0.6:
+            "Processing and enhancing image..."
+        case 0.6 ..< 0.8:
+            "Extracting text with OCR..."
+        case 0.8 ..< 1.0:
+            "Auto-filling form fields..."
         default:
-            return "Workflow completed"
+            "Workflow completed"
         }
     }
 

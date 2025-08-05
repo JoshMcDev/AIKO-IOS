@@ -177,9 +177,9 @@ public enum DocumentType: String, CaseIterable, Identifiable, Codable, Sendable 
              .justificationApproval, .codes, .competitionAnalysis, .procurementSourcing,
              .rrd, .requestForQuoteSimplified, .requestForQuote, .requestForProposal,
              .contractScaffold, .corAppointment, .otherTransactionAgreement, .farUpdates:
-            return "rtf"  // Rich Text Format for formatted documents
+            "rtf" // Rich Text Format for formatted documents
         case .analytics:
-            return "pdf"  // PDF for analytics reports
+            "pdf" // PDF for analytics reports
         }
     }
 }

@@ -1,5 +1,5 @@
-import Foundation
 import AppCore
+import Foundation
 import UIKit
 
 // MARK: - iOS Document Manager Implementation
@@ -7,7 +7,6 @@ import UIKit
 /// iOS-specific implementation of DocumentManagerProtocol
 /// Handles document downloads, storage, and management on iOS platform
 public final class IOSDocumentManager: DocumentManagerProtocol, @unchecked Sendable {
-
     // MARK: - Properties
 
     private let session: URLSession
@@ -23,14 +22,14 @@ public final class IOSDocumentManager: DocumentManagerProtocol, @unchecked Senda
         config.timeoutIntervalForRequest = 60
         config.timeoutIntervalForResource = 300
         config.waitsForConnectivity = true
-        self.session = URLSession(configuration: config)
+        session = URLSession(configuration: config)
 
-        self.fileManager = FileManager.default
-        self.downloadQueue = DispatchQueue(label: "com.aiko.document.download", qos: .userInitiated)
+        fileManager = FileManager.default
+        downloadQueue = DispatchQueue(label: "com.aiko.document.download", qos: .userInitiated)
 
         // Get iOS Documents directory
         do {
-            self.documentsDirectory = try fileManager.url(
+            documentsDirectory = try fileManager.url(
                 for: .documentDirectory,
                 in: .userDomainMask,
                 appropriateFor: nil,
@@ -38,7 +37,7 @@ public final class IOSDocumentManager: DocumentManagerProtocol, @unchecked Senda
             )
         } catch {
             // Fallback to temporary directory if documents directory is unavailable
-            self.documentsDirectory = fileManager.temporaryDirectory
+            documentsDirectory = fileManager.temporaryDirectory
         }
 
         // Create subdirectories for different document types
@@ -247,7 +246,8 @@ public final class IOSDocumentManager: DocumentManagerProtocol, @unchecked Senda
         let (tempURL, response) = try await session.download(from: url)
 
         guard let httpResponse = response as? HTTPURLResponse,
-              200...299 ~= httpResponse.statusCode else {
+              200 ... 299 ~= httpResponse.statusCode
+        else {
             throw DocumentManagerError.downloadFailed("HTTP error: \(response)")
         }
 
@@ -285,15 +285,14 @@ public final class IOSDocumentManager: DocumentManagerProtocol, @unchecked Senda
 
 // MARK: - iOS-Specific Extensions
 
-extension IOSDocumentManager {
-
+public extension IOSDocumentManager {
     /// Share documents using iOS share sheet
     /// - Parameters:
     ///   - documentURLs: URLs of documents to share
     ///   - sourceView: Source view for iPad popover presentation
     /// - Returns: UIActivityViewController for presentation
     @MainActor
-    public func createShareController(
+    func createShareController(
         for documentURLs: [URL],
         sourceView: UIView? = nil
     ) -> UIActivityViewController {
@@ -303,7 +302,7 @@ extension IOSDocumentManager {
         )
 
         // Configure for iPad
-        if let sourceView = sourceView,
+        if let sourceView,
            let popover = activityController.popoverPresentationController {
             popover.sourceView = sourceView
             popover.sourceRect = sourceView.bounds
@@ -316,7 +315,7 @@ extension IOSDocumentManager {
     /// - Parameter documentURL: URL of document to open
     /// - Throws: DocumentManagerError if opening fails
     @MainActor
-    public func openDocument(at documentURL: URL) throws {
+    func openDocument(at documentURL: URL) throws {
         guard fileManager.fileExists(atPath: documentURL.path) else {
             throw DocumentManagerError.documentNotFound(UUID())
         }

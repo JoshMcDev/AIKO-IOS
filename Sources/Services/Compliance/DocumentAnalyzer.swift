@@ -1,5 +1,5 @@
-import Foundation
 import AppCore
+import Foundation
 
 /// Document Analyzer - Processes documents for compliance analysis
 /// This is minimal scaffolding code for RED phase
@@ -51,14 +51,14 @@ public struct ComplianceDocumentSection: Sendable {
 public struct MockDocumentAnalyzer: DocumentAnalyzer {
     public init() {}
 
-    public func analyzeDocument(_ document: TestDocument) async throws -> DocumentAnalysisResult {
+    public func analyzeDocument(_: TestDocument) async throws -> DocumentAnalysisResult {
         // RED phase: Minimal implementation that will cause test failures
-        return DocumentAnalysisResult()
+        DocumentAnalysisResult()
     }
 
-    public func extractFeatures(_ document: TestDocument) async throws -> [String: Double] {
+    public func extractFeatures(_: TestDocument) async throws -> [String: Double] {
         // RED phase: Return empty features to cause test failures
-        return [:]
+        [:]
     }
 }
 

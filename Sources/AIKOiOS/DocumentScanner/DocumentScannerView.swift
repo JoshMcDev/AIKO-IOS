@@ -129,7 +129,7 @@ public struct VisionKitBridge<ViewModel: DocumentScannerViewModelProtocol>: UIVi
     }
 
     public func makeCoordinator() -> Coordinator {
-        return Coordinator(viewModel: viewModel, isPresented: $isPresented)
+        Coordinator(viewModel: viewModel, isPresented: $isPresented)
     }
 
     @MainActor
@@ -142,7 +142,7 @@ public struct VisionKitBridge<ViewModel: DocumentScannerViewModelProtocol>: UIVi
             self.isPresented = isPresented
         }
 
-        nonisolated public func documentCameraViewController(
+        public nonisolated func documentCameraViewController(
             _: VNDocumentCameraViewController,
             didFinishWith scan: VNDocumentCameraScan
         ) {
@@ -175,7 +175,7 @@ public struct VisionKitBridge<ViewModel: DocumentScannerViewModelProtocol>: UIVi
             }
         }
 
-        nonisolated public func documentCameraViewControllerDidCancel(
+        public nonisolated func documentCameraViewControllerDidCancel(
             _: VNDocumentCameraViewController
         ) {
             Task { @MainActor in
@@ -183,7 +183,7 @@ public struct VisionKitBridge<ViewModel: DocumentScannerViewModelProtocol>: UIVi
             }
         }
 
-        nonisolated public func documentCameraViewController(
+        public nonisolated func documentCameraViewController(
             _: VNDocumentCameraViewController,
             didFailWithError _: Error
         ) {
@@ -214,15 +214,15 @@ public enum DocumentScannerError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .scanningNotAvailable:
-            return "Document scanning is not available on this device"
+            "Document scanning is not available on this device"
         case .userCancelled:
-            return "Scanning was cancelled"
+            "Scanning was cancelled"
         case .invalidImageData:
-            return "The image data is invalid or corrupted"
+            "The image data is invalid or corrupted"
         case .cameraPermissionDenied:
-            return "Camera access is required to scan documents"
+            "Camera access is required to scan documents"
         case let .unknownError(message):
-            return message
+            message
         }
     }
 }

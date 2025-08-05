@@ -44,25 +44,25 @@ public struct GovernmentFormMapper: Sendable {
     ) async throws -> [FormField] {
         switch formType {
         case .sf30:
-            return try await sf30Mapper.mapFields(from: ocrResult)
+            try await sf30Mapper.mapFields(from: ocrResult)
         case .sf1449:
-            return try await sf1449Mapper.mapFields(from: ocrResult)
+            try await sf1449Mapper.mapFields(from: ocrResult)
         case .dd1155:
-            return try await dd1155Mapper.mapFields(from: ocrResult)
+            try await dd1155Mapper.mapFields(from: ocrResult)
         case .sf18:
-            return try await sf18Mapper.mapFields(from: ocrResult)
+            try await sf18Mapper.mapFields(from: ocrResult)
         case .sf26:
-            return try await sf26Mapper.mapFields(from: ocrResult)
+            try await sf26Mapper.mapFields(from: ocrResult)
         case .sf33:
-            return try await sf33Mapper.mapFields(from: ocrResult)
+            try await sf33Mapper.mapFields(from: ocrResult)
         case .sf44:
-            return try await sf44Mapper.mapFields(from: ocrResult)
+            try await sf44Mapper.mapFields(from: ocrResult)
         case .sf1408:
-            return try await sf1408Mapper.mapFields(from: ocrResult)
+            try await sf1408Mapper.mapFields(from: ocrResult)
         case .sf1442:
-            return try await sf1442Mapper.mapFields(from: ocrResult)
+            try await sf1442Mapper.mapFields(from: ocrResult)
         case .custom:
-            return try await customMapper.mapFields(from: ocrResult)
+            try await customMapper.mapFields(from: ocrResult)
         }
     }
 
@@ -513,7 +513,7 @@ struct CustomFormMapper: Sendable {
             ("amount", "\\$([0-9,]+(?:\\.[0-9]{2})?)", ["$"], .currency),
             ("date", "(\\d{1,2}/\\d{1,2}/\\d{4})", [], .date),
             ("cageCode", "CAGE\\s*:?\\s*([A-Z0-9]{5})", ["CAGE"], .cageCode),
-            ("uei", "UEI\\s*:?\\s*([A-Z0-9]{12})", ["UEI"], .uei)
+            ("uei", "UEI\\s*:?\\s*([A-Z0-9]{12})", ["UEI"], .uei),
         ]
 
         for (name, pattern, removePatterns, fieldType) in patterns {

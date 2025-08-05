@@ -56,11 +56,11 @@ public struct ShareButton: View {
     private var buttonTitle: String {
         switch buttonStyle {
         case .icon:
-            return "􀈂" // SF Symbol for share
+            "􀈂" // SF Symbol for share
         case .text:
-            return "Share"
+            "Share"
         case .iconAndText:
-            return "Share"
+            "Share"
         }
     }
 }

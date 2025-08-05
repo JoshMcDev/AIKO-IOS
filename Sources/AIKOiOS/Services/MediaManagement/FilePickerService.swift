@@ -16,11 +16,11 @@ final class DocumentPickerCoordinator: NSObject, UIDocumentPickerDelegate {
         super.init()
     }
 
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+    func documentPicker(_: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         completion(urls, nil)
     }
 
-    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+    func documentPickerWasCancelled(_: UIDocumentPickerViewController) {
         completion([], nil)
     }
 }
@@ -31,26 +31,26 @@ final class DocumentPickerCoordinator: NSObject, UIDocumentPickerDelegate {
 private func convertToUTType(_ mediaType: MediaType) -> UniformTypeIdentifiers.UTType? {
     switch mediaType {
     case .image, .photo, .screenshot:
-        return UniformTypeIdentifiers.UTType.image
+        UniformTypeIdentifiers.UTType.image
     case .video:
-        return UniformTypeIdentifiers.UTType.movie
+        UniformTypeIdentifiers.UTType.movie
     case .document, .file:
-        return UniformTypeIdentifiers.UTType.data
+        UniformTypeIdentifiers.UTType.data
     case .camera:
-        return UniformTypeIdentifiers.UTType.image
+        UniformTypeIdentifiers.UTType.image
     }
 }
 
 /// Convert AppCore.UTType to iOS UTType
 private func convertToIOSUTType(_ utType: AppCore.UTType) -> UniformTypeIdentifiers.UTType {
-    return UniformTypeIdentifiers.UTType(utType.identifier) ?? UniformTypeIdentifiers.UTType.data
+    UniformTypeIdentifiers.UTType(utType.identifier) ?? UniformTypeIdentifiers.UTType.data
 }
 
 /// iOS implementation of file picker service
 @available(iOS 16.0, *)
 public actor FilePickerService: FilePickerServiceProtocol {
     private var recentlyPicked: [URL] = []
-    private var defaultOptions: FilePickerOptions = FilePickerOptions(
+    private var defaultOptions: FilePickerOptions = .init(
         allowedTypes: [AppCore.UTType.data],
         allowsMultipleSelection: false,
         maxFileSize: nil
@@ -70,7 +70,7 @@ public actor FilePickerService: FilePickerServiceProtocol {
                 documentPicker.shouldShowFileExtensions = true
 
                 let coordinator = DocumentPickerCoordinator { urls, error in
-                    if let error = error {
+                    if let error {
                         continuation.resume(throwing: error)
                         return
                     }
@@ -123,7 +123,8 @@ public actor FilePickerService: FilePickerServiceProtocol {
                 guard let presentingViewController = UIApplication.shared.connectedScenes
                         .compactMap({ $0 as? UIWindowScene })
                         .first?.windows
-                        .first(where: { $0.isKeyWindow })?.rootViewController else {
+                        .first(where: { $0.isKeyWindow })?.rootViewController
+                else {
                     continuation.resume(throwing: MediaError.processingFailed("No presenting view controller found"))
                     return
                 }
@@ -149,7 +150,7 @@ public actor FilePickerService: FilePickerServiceProtocol {
             AppCore.UTType(identifier: "org.openxmlformats.presentationml.presentation"),
             AppCore.UTType(identifier: "com.microsoft.powerpoint.ppt"),
             AppCore.UTType(identifier: "public.zip-archive"),
-            AppCore.UTType(identifier: "public.json")
+            AppCore.UTType(identifier: "public.json"),
         ]
     }
 
@@ -166,7 +167,7 @@ public actor FilePickerService: FilePickerServiceProtocol {
     }
 
     public func getCurrentOptions() async -> FilePickerOptions {
-        return defaultOptions
+        defaultOptions
     }
 
     // MARK: - Extended Methods
@@ -197,18 +198,18 @@ public actor FilePickerService: FilePickerServiceProtocol {
         )
 
         let result = try await presentFilePicker(options: options)
-        return result.selectedFiles.map { $0.url }
+        return result.selectedFiles.map(\.url)
     }
 
     public func pickFolder() async throws -> URL {
-        return try await withCheckedThrowingContinuation { continuation in
+        try await withCheckedThrowingContinuation { continuation in
             Task { @MainActor in
                 let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.folder])
                 documentPicker.allowsMultipleSelection = false
                 documentPicker.shouldShowFileExtensions = true
 
                 let coordinator = DocumentPickerCoordinator { urls, error in
-                    if let error = error {
+                    if let error {
                         continuation.resume(throwing: error)
                         return
                     }
@@ -226,7 +227,8 @@ public actor FilePickerService: FilePickerServiceProtocol {
                 guard let presentingViewController = UIApplication.shared.connectedScenes
                         .compactMap({ $0 as? UIWindowScene })
                         .first?.windows
-                        .first(where: { $0.isKeyWindow })?.rootViewController else {
+                        .first(where: { $0.isKeyWindow })?.rootViewController
+                else {
                     continuation.resume(throwing: MediaError.processingFailed("No presenting view controller found"))
                     return
                 }
@@ -238,17 +240,17 @@ public actor FilePickerService: FilePickerServiceProtocol {
 
     public func saveFile(
         _ sourceURL: URL,
-        suggestedName: String?,
-        allowedTypes: [MediaType]
+        suggestedName _: String?,
+        allowedTypes _: [MediaType]
     ) async throws -> URL {
         // Note: UTTypes parameter is not used in UIDocumentPickerViewController for exporting
 
-        return try await withCheckedThrowingContinuation { continuation in
+        try await withCheckedThrowingContinuation { continuation in
             Task { @MainActor in
                 let documentPicker = UIDocumentPickerViewController(forExporting: [sourceURL])
 
                 let coordinator = DocumentPickerCoordinator { urls, error in
-                    if let error = error {
+                    if let error {
                         continuation.resume(throwing: error)
                         return
                     }
@@ -266,7 +268,8 @@ public actor FilePickerService: FilePickerServiceProtocol {
                 guard let presentingViewController = UIApplication.shared.connectedScenes
                         .compactMap({ $0 as? UIWindowScene })
                         .first?.windows
-                        .first(where: { $0.isKeyWindow })?.rootViewController else {
+                        .first(where: { $0.isKeyWindow })?.rootViewController
+                else {
                     continuation.resume(throwing: MediaError.processingFailed("No presenting view controller found"))
                     return
                 }

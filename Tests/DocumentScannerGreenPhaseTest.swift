@@ -1,7 +1,7 @@
-import XCTest
-import SwiftUI
 @testable import AIKO
 @testable import AppCore
+import SwiftUI
+import XCTest
 
 // Use specific import to resolve ambiguity - Green phase tests specific
 typealias GreenPhaseTestDocumentScannerViewModel = AppCore.DocumentScannerViewModel
@@ -9,8 +9,7 @@ typealias GreenPhaseTestDocumentScannerViewModel = AppCore.DocumentScannerViewMo
 /// Isolated GREEN phase test that verifies core implementations without UIKit dependencies
 @MainActor
 final class DocumentScannerGreenPhaseTest: XCTestCase {
-
-    private var viewModel: GreenPhaseTestDocumentScannerViewModel!
+    private var viewModel: GreenPhaseTestDocumentScannerViewModel?
 
     override func setUp() async throws {
         viewModel = GreenPhaseTestDocumentScannerViewModel()

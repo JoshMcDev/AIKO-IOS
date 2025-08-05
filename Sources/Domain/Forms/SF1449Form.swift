@@ -373,13 +373,15 @@ public final class SF1449Factory: BaseFormFactory<SF1449Form> {
             purpose: "Commercial acquisition"
         )
 
-        let emptyAddress = try! PostalAddress(
+        guard let emptyAddress = try? PostalAddress(
             street: "TBD",
             city: "TBD",
             state: "TBD",
             zipCode: "00000",
             country: "USA"
-        )
+        ) else {
+            fatalError("Failed to create default postal address for SF1449 form")
+        }
 
         return SF1449Form(
             metadata: metadata,
@@ -393,7 +395,12 @@ public final class SF1449Factory: BaseFormFactory<SF1449Form> {
             ),
             schedule: ScheduleSection(
                 items: [],
-                totalPrice: try! Money(amount: 0, currency: .usd)
+                totalPrice: {
+                    guard let money = try? Money(amount: 0, currency: .usd) else {
+                        fatalError("Failed to create default total price amount")
+                    }
+                    return money
+                }()
             ),
             delivery: DeliverySection(
                 deliveryAddress: emptyAddress

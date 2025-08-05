@@ -26,7 +26,7 @@ final class LiveSAMTest: XCTestCase {
         components.queryItems = [
             URLQueryItem(name: "api_key", value: apiKey),
             URLQueryItem(name: "cageCode", value: cageCode),
-            URLQueryItem(name: "format", value: "JSON")
+            URLQueryItem(name: "format", value: "JSON"),
         ]
 
         guard let url = components.url else {
@@ -51,7 +51,7 @@ final class LiveSAMTest: XCTestCase {
 
             print("\n📊 Response Status: \(httpResponse.statusCode)")
 
-            if 200...299 ~= httpResponse.statusCode {
+            if 200 ... 299 ~= httpResponse.statusCode {
                 print("✅ API Call Successful!")
 
                 // Parse JSON response

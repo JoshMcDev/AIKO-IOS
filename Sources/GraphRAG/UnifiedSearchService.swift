@@ -28,7 +28,7 @@ actor UnifiedSearchService {
             let regulationResults = try await semanticIndex.findSimilarRegulations(
                 queryEmbedding: regulationQueryEmbedding,
                 limit: limit,
-                threshold: 0.15  // Adjusted threshold based on observed LFM2Service similarities
+                threshold: 0.15 // Adjusted threshold based on observed LFM2Service similarities
             )
 
             let unifiedResults = regulationResults.map { result in
@@ -62,7 +62,7 @@ actor UnifiedSearchService {
             let userResults = try await semanticIndex.findSimilarUserWorkflow(
                 queryEmbedding: userQueryEmbedding,
                 limit: limit,
-                threshold: 0.15  // Adjusted threshold based on observed LFM2Service similarities
+                threshold: 0.15 // Adjusted threshold based on observed LFM2Service similarities
             )
 
             let unifiedResults = userResults.map { result in
@@ -219,7 +219,7 @@ actor UnifiedSearchService {
         let magnitudeA = sqrt(a.map { $0 * $0 }.reduce(0, +))
         let magnitudeB = sqrt(b.map { $0 * $0 }.reduce(0, +))
 
-        guard magnitudeA > 0 && magnitudeB > 0 else { return 0.0 }
+        guard magnitudeA > 0, magnitudeB > 0 else { return 0.0 }
 
         return dotProduct / (magnitudeA * magnitudeB)
     }
@@ -228,7 +228,7 @@ actor UnifiedSearchService {
         results: [UnifiedSearchResult],
         userContext: UserSearchContext
     ) -> [UnifiedSearchResult] {
-        return results.map { result in
+        results.map { result in
             var personalizedResult = result
             var personalizedScore = result.relevanceScore
 

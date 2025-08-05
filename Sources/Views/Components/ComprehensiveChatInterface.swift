@@ -1,10 +1,10 @@
-import SwiftUI
 import AppCore
 import Foundation
+import SwiftUI
 #if os(iOS)
-import UIKit
-import Speech
 import AVFoundation
+import Speech
+import UIKit
 #endif
 
 // MARK: - Comprehensive Chat Interface
@@ -210,7 +210,7 @@ public struct ComprehensiveChatInterface: View {
     }
 
     #if os(iOS)
-    private func handleImageCapture(_ image: UIImage) {
+    private func handleImageCapture(_: UIImage) {
         let imageMessage = ChatMessage(
             content: "📸 Captured image for analysis",
             isUser: true
@@ -370,7 +370,7 @@ struct FileUploadButton: View {
             allowsMultipleSelection: false
         ) { result in
             switch result {
-            case .success(let urls):
+            case let .success(urls):
                 if let url = urls.first {
                     onFileSelected(url)
                 }
@@ -470,7 +470,7 @@ struct ImagePickerView: UIViewControllerRepresentable {
         return picker
     }
 
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+    func updateUIViewController(_: UIImagePickerController, context _: Context) {}
 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -483,14 +483,14 @@ struct ImagePickerView: UIViewControllerRepresentable {
             self.parent = parent
         }
 
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+        func imagePickerController(_: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
             if let image = info[.originalImage] as? UIImage {
                 parent.onImageSelected(image)
             }
             parent.presentationMode.wrappedValue.dismiss()
         }
 
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        func imagePickerControllerDidCancel(_: UIImagePickerController) {
             parent.presentationMode.wrappedValue.dismiss()
         }
     }

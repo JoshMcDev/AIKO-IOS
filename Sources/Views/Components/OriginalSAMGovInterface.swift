@@ -1,5 +1,5 @@
-import SwiftUI
 import AppCore
+import SwiftUI
 #if os(macOS)
 import AppKit
 #elseif os(iOS)
@@ -291,7 +291,7 @@ struct OriginalSAMGovInterface: View {
 
     private func performAllSearches() {
         for index in searchEntries.indices {
-            if !searchEntries[index].text.isEmpty && !searchEntries[index].isSearching {
+            if !searchEntries[index].text.isEmpty, !searchEntries[index].isSearching {
                 performSearch(for: index)
             }
         }

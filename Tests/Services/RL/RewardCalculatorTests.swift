@@ -1,6 +1,6 @@
-import XCTest
-import Foundation
 @testable import AIKO
+import Foundation
+import XCTest
 
 /// Comprehensive test suite for RewardCalculator
 /// Testing multi-signal reward computation with validation
@@ -11,18 +11,17 @@ import Foundation
 /// 3. Edge case handling and boundary conditions
 /// 4. Performance requirements for reward processing
 final class RewardCalculatorTests: XCTestCase {
-
     // MARK: - Test Properties
 
-    var testContext: AcquisitionContext!
-    var testDecision: DecisionResponse!
-    var standardAction: WorkflowAction!
+    var testContext: AcquisitionContext?
+    var testDecision: DecisionResponse?
+    var standardAction: WorkflowAction?
 
     override func setUp() async throws {
         testContext = AcquisitionContext(
             acquisitionId: UUID(),
             documentType: .purchaseRequest,
-            acquisitionValue: 100000.0,
+            acquisitionValue: 100_000.0,
             complexity: TestComplexityLevel(score: 0.5, factors: ["standard"]),
             timeConstraints: TestTimeConstraints(
                 daysRemaining: 30,
@@ -32,7 +31,7 @@ final class RewardCalculatorTests: XCTestCase {
             regulatoryRequirements: Set([
                 TestFARClause(clauseNumber: "52.215-1", isCritical: true),
                 TestFARClause(clauseNumber: "52.209-5", isCritical: false),
-                TestFARClause(clauseNumber: "52.233-1", isCritical: true)
+                TestFARClause(clauseNumber: "52.233-1", isCritical: true),
             ]),
             historicalSuccess: 0.8,
             userProfile: TestUserProfile(experienceLevel: 0.7),
@@ -79,7 +78,7 @@ final class RewardCalculatorTests: XCTestCase {
                     requirement: "Dispute resolution compliance",
                     severity: .critical,
                     automated: true
-                )
+                ),
             ],
             estimatedDuration: 1800.0
         )
@@ -106,6 +105,13 @@ final class RewardCalculatorTests: XCTestCase {
     func testImmediateReward_AcceptedOutcome() throws {
         // RED PHASE: This test should FAIL initially
         // Testing immediate reward calculation for accepted outcomes
+
+        guard let testDecision,
+              let testContext
+        else {
+            XCTFail("Test decision and context should be initialized")
+            return
+        }
 
         // Given: User feedback with accepted outcome
         let acceptedFeedback = RLUserFeedback(
@@ -387,7 +393,7 @@ final class RewardCalculatorTests: XCTestCase {
                     requirement: "Dispute resolution compliance",
                     severity: .critical,
                     automated: true
-                )
+                ),
             ],
             estimatedDuration: 1800.0
         )
@@ -456,7 +462,7 @@ final class RewardCalculatorTests: XCTestCase {
                     requirement: "Responsibility certification",
                     severity: .major,
                     automated: true
-                )
+                ),
                 // Missing 52.233-1 (critical)
             ],
             estimatedDuration: 1500.0
@@ -518,7 +524,7 @@ final class RewardCalculatorTests: XCTestCase {
                     requirement: "Responsibility certification",
                     severity: .major,
                     automated: true
-                )
+                ),
                 // Missing both critical clauses: 52.215-1 and 52.233-1
             ],
             estimatedDuration: 1200.0
@@ -670,7 +676,7 @@ final class RewardCalculatorTests: XCTestCase {
             RLUserFeedback(outcome: .accepted, satisfactionScore: 1.0, workflowCompleted: true, qualityMetrics: QualityMetrics(accuracy: 1.0, completeness: 1.0, compliance: 1.0), timeTaken: 900.0, comments: nil),
             RLUserFeedback(outcome: .rejected, satisfactionScore: 0.0, workflowCompleted: false, qualityMetrics: QualityMetrics(accuracy: 0.0, completeness: 0.0, compliance: 0.0), timeTaken: 7200.0, comments: nil),
             RLUserFeedback(outcome: .acceptedWithModifications, satisfactionScore: 0.5, workflowCompleted: true, qualityMetrics: QualityMetrics(accuracy: 0.5, completeness: 0.5, compliance: 0.5), timeTaken: 3600.0, comments: nil),
-            RLUserFeedback(outcome: .deferred, satisfactionScore: nil, workflowCompleted: false, qualityMetrics: QualityMetrics(accuracy: 0.3, completeness: 0.4, compliance: 0.8), timeTaken: nil, comments: nil)
+            RLUserFeedback(outcome: .deferred, satisfactionScore: nil, workflowCompleted: false, qualityMetrics: QualityMetrics(accuracy: 0.3, completeness: 0.4, compliance: 0.8), timeTaken: nil, comments: nil),
         ]
 
         // When: Rewards are calculated for various feedback scenarios
@@ -710,7 +716,7 @@ final class RewardCalculatorTests: XCTestCase {
         // When: Multiple reward calculations are performed
         let startTime = CFAbsoluteTimeGetCurrent()
 
-        for _ in 0..<iterations {
+        for _ in 0 ..< iterations {
             _ = RewardCalculator.calculate(
                 decision: testDecision,
                 feedback: feedback,
@@ -743,7 +749,7 @@ final class RewardCalculatorTests: XCTestCase {
         var rewards: [RewardSignal] = []
 
         // When: Same calculation is performed multiple times
-        for _ in 0..<100 {
+        for _ in 0 ..< 100 {
             let reward = RewardCalculator.calculate(
                 decision: testDecision,
                 feedback: feedback,

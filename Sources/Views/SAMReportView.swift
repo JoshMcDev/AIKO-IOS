@@ -1,28 +1,33 @@
-import SwiftUI
 import Foundation
+import SwiftUI
 
 // Import SAM.gov service types
 // Note: Adjust import path based on your project structure
 // If SAMGovService is in a different module, import that module instead
 
 // MARK: - SAM Report View
+
 /// Custom SAM.gov report view with CAGE expiration validation, NAICS codes, and PSC codes
 struct SAMReportView: View {
     // MARK: - State
+
     @State private var showShareSheet = false
     @State private var showingSATBotAlert = false
 
     // MARK: - Sample Data
+
     let entity: EntityDetail
     let acquisitionValue: Double
 
     // MARK: - Initializer
+
     init(entity: EntityDetail? = nil, acquisitionValue: Double = 150_000) {
         self.entity = entity ?? Self.createSampleEntity()
         self.acquisitionValue = acquisitionValue
     }
 
     // MARK: - Body
+
     var body: some View {
         ZStack {
             // Dark background
@@ -75,6 +80,7 @@ struct SAMReportView: View {
     }
 
     // MARK: - Header View
+
     private var headerView: some View {
         HStack {
             // SAM icon placeholder
@@ -123,31 +129,28 @@ struct SAMReportView: View {
     }
 
     // MARK: - CAGE Expiration Card (First Item)
+
     private var cageExpirationCard: some View {
         let isExpired = isEntityExpired
         let isExpiringSoon = isEntityExpiringSoon
         let expirationDate = entity.expirationDate ?? Date().addingTimeInterval(365 * 24 * 60 * 60)
 
         // Determine status and colors
-        let (statusText, statusColor, backgroundColor) = {
-            if isExpired {
-                return ("Inactive", Color.red, Color.red.opacity(0.2))
-            } else if isExpiringSoon {
-                return ("Expiring Soon", Color.orange, Color.yellow.opacity(0.2))
-            } else {
-                return ("Active", Color.green, Color.green.opacity(0.2))
-            }
-        }()
+        let (statusText, statusColor, backgroundColor) = if isExpired {
+            ("Inactive", Color.red, Color.red.opacity(0.2))
+        } else if isExpiringSoon {
+            ("Expiring Soon", Color.orange, Color.yellow.opacity(0.2))
+        } else {
+            ("Active", Color.green, Color.green.opacity(0.2))
+        }
 
-        let iconName = {
-            if isExpired {
-                return "exclamationmark.circle"
-            } else if isExpiringSoon {
-                return "exclamationmark.triangle"
-            } else {
-                return "checkmark.circle"
-            }
-        }()
+        let iconName = if isExpired {
+            "exclamationmark.circle"
+        } else if isExpiringSoon {
+            "exclamationmark.triangle"
+        } else {
+            "checkmark.circle"
+        }
 
         return HStack {
             Image(systemName: iconName)
@@ -170,6 +173,7 @@ struct SAMReportView: View {
     }
 
     // MARK: - SAT Bot Section
+
     private var satBotSection: some View {
         HStack {
             Image(systemName: "envelope")
@@ -200,6 +204,7 @@ struct SAMReportView: View {
     }
 
     // MARK: - Company Information
+
     private var companyInformationSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("COMPANY INFORMATION")
@@ -238,6 +243,7 @@ struct SAMReportView: View {
     }
 
     // MARK: - Compliance Status
+
     private var complianceStatusSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("COMPLIANCE STATUS")
@@ -286,6 +292,7 @@ struct SAMReportView: View {
     }
 
     // MARK: - Business Certifications
+
     private var businessCertificationsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("BUSINESS CERTIFICATIONS")
@@ -317,6 +324,7 @@ struct SAMReportView: View {
     }
 
     // MARK: - NAICS Codes with Small Business Sizes
+
     private var naicsCodesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("NAICS CODES")
@@ -365,6 +373,7 @@ struct SAMReportView: View {
     }
 
     // MARK: - PSC Codes
+
     private var pscCodesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("PSC CODES")
@@ -384,6 +393,7 @@ struct SAMReportView: View {
     }
 
     // MARK: - Share View
+
     private var shareView: some View {
         VStack(spacing: 20) {
             Text("Share SAM Report")
@@ -557,8 +567,8 @@ struct SAMPSCRow: View {
 // MARK: - Extensions and Sample Data
 
 extension SAMReportView {
-
     // MARK: - Computed Properties
+
     private var isEntityExpired: Bool {
         guard let expirationDate = entity.expirationDate else { return false }
         return expirationDate < Date()
@@ -579,6 +589,7 @@ extension SAMReportView {
     }
 
     // MARK: - Sample Data
+
     private static func createSampleEntity() -> EntityDetail {
         EntityDetail(
             ueiSAM: "R7TBP9D4VNJ3",
@@ -590,7 +601,7 @@ extension SAMReportView {
             expirationDate: Calendar.current.date(byAdding: .day, value: 15, to: Date()),
             businessTypes: [
                 "For Profit Organization",
-                "Limited Liability Company"
+                "Limited Liability Company",
             ],
             address: EntityAddress(
                 line1: "1777 Aviation Way",
@@ -633,7 +644,7 @@ extension SAMReportView {
                 isPrimary: false,
                 smallBusinessSize: "1,500 employees",
                 isSmallBusiness: false
-            )
+            ),
         ]
     }
 
@@ -642,7 +653,7 @@ extension SAMReportView {
             PSCCode(code: "V1A1", description: "Air Charter for Things"),
             PSCCode(code: "V1A2", description: "Air Charter for People"),
             PSCCode(code: "R425", description: "Engineering Support"),
-            PSCCode(code: "J019", description: "Maintenance and Repair of Aircraft")
+            PSCCode(code: "J019", description: "Maintenance and Repair of Aircraft"),
         ]
     }
 

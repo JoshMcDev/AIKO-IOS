@@ -135,7 +135,7 @@ public enum DocumentScannerFeatureIntegration {
     @MainActor
     public static func createMigrationClient() -> DocumentScannerClient {
         // Return default implementation for now
-        return DocumentScannerClient.testValue
+        DocumentScannerClient.testValue
     }
 }
 
@@ -152,7 +152,7 @@ public enum DocumentScannerPerformanceIntegration {
     /// Gets performance insights for dashboard display
     public static func getInsightsForDashboard() async -> PerformanceInsights {
         // Return default insights for now
-        return PerformanceInsights(
+        PerformanceInsights(
             averageScanTime: 2.0,
             averageProcessingTime: 1.5,
             averageQualityScore: 0.85

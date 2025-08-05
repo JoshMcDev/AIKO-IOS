@@ -421,7 +421,7 @@ public struct TestMediaValidationService: MediaValidationServiceProtocol {
     }
 
     public func validateFileSize(_: Int64, _: MediaType) -> Bool {
-        return false // Always fail in RED phase
+        false // Always fail in RED phase
     }
 
     public func scanForMalware(_: Data) async throws -> SecurityInfo {

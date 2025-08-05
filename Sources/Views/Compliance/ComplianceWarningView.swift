@@ -1,5 +1,5 @@
-import SwiftUI
 import AppCore
+import SwiftUI
 
 /// Compliance Warning SwiftUI View - Progressive UI warning hierarchy implementation
 /// This is minimal scaffolding code for RED phase
@@ -8,8 +8,8 @@ public struct ComplianceWarningSwiftUIView: View, Sendable {
     private let warningLevel: ComplianceWarningLevel
 
     public init(result: GuardianComplianceResult = GuardianComplianceResult(), level: ComplianceWarningLevel = .level1Passive) {
-        self.complianceResult = result
-        self.warningLevel = level
+        complianceResult = result
+        warningLevel = level
     }
 
     public var body: some View {

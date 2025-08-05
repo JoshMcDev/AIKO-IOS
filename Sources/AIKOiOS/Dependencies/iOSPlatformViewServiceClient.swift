@@ -21,7 +21,7 @@ public extension PlatformViewServiceClient {
                 service.createShareSheet(items: items)
             },
             _createSidebarNavigation: { sidebar, detail in
-                service.createSidebarNavigation(sidebar: { sidebar() }, detail: { detail() })
+                service.createSidebarNavigation { sidebar() } detail: { detail() }
             },
             _applyWindowStyle: { view in
                 service.applyWindowStyle(to: view)

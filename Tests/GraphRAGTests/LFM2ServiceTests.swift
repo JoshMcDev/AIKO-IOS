@@ -13,13 +13,13 @@ private enum LFM2TestError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .serviceNotInitialized:
-            return "Test service was not properly initialized"
+            "Test service was not properly initialized"
         case .invalidTestData:
-            return "Test data is invalid or corrupted"
+            "Test data is invalid or corrupted"
         case .testTimeout:
-            return "Test operation timed out"
+            "Test operation timed out"
         case let .assertionFailure(message):
-            return "Test assertion failed: \(message)"
+            "Test assertion failed: \(message)"
         }
     }
 }
@@ -47,7 +47,7 @@ final class LFM2ServiceTests: XCTestCase {
     /// Test embedding generation performance target: <2s per 512-token chunk
     /// This test WILL FAIL initially until implementation meets performance target
     func testEmbeddingGenerationPerformanceTarget() async throws {
-        guard let lfm2Service = lfm2Service else {
+        guard let lfm2Service else {
             throw LFM2TestError.serviceNotInitialized
         }
 
@@ -79,7 +79,7 @@ final class LFM2ServiceTests: XCTestCase {
     /// Test memory usage compliance target: <800MB peak usage
     /// This test WILL FAIL initially until memory optimization is implemented
     func testMemoryUsageCompliance() async throws {
-        guard let lfm2Service = lfm2Service else {
+        guard let lfm2Service else {
             throw LFM2TestError.serviceNotInitialized
         }
 
@@ -117,7 +117,7 @@ final class LFM2ServiceTests: XCTestCase {
     /// Test domain optimization effectiveness: 15-20% improvement
     /// This test WILL FAIL initially until domain optimization is implemented
     func testDomainOptimizationEffectiveness() async throws {
-        guard let lfm2Service = lfm2Service else {
+        guard let lfm2Service else {
             throw LFM2TestError.serviceNotInitialized
         }
 
@@ -145,7 +145,7 @@ final class LFM2ServiceTests: XCTestCase {
     /// This test WILL FAIL initially until batch processing optimization is implemented
     /// Hash overflow issue RESOLVED - test re-enabled for TDD RED phase
     func testBatchProcessingScale() async throws {
-        guard let lfm2Service = lfm2Service else {
+        guard let lfm2Service else {
             throw LFM2TestError.serviceNotInitialized
         }
 
@@ -261,7 +261,7 @@ final class LFM2ServiceTests: XCTestCase {
         let magnitudeA = sqrt(a.map { $0 * $0 }.reduce(0, +))
         let magnitudeB = sqrt(b.map { $0 * $0 }.reduce(0, +))
 
-        guard magnitudeA > 0 && magnitudeB > 0 else { return 0.0 }
+        guard magnitudeA > 0, magnitudeB > 0 else { return 0.0 }
 
         return dotProduct / (magnitudeA * magnitudeB)
     }
@@ -284,7 +284,7 @@ final class LFM2ServiceTests: XCTestCase {
     }
 
     private func measureSingleEmbeddingTime() async -> TimeInterval {
-        guard let lfm2Service = lfm2Service else {
+        guard let lfm2Service else {
             return 2.0 // Return default time if service not initialized
         }
 

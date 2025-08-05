@@ -14,7 +14,7 @@ import XCTest
 final class WorkflowStateMachineTests: XCTestCase {
     // MARK: - Properties
 
-    private var sut: WorkflowStateMachine!
+    private var sut: WorkflowStateMachine?
 
     // MARK: - Setup and Teardown
 

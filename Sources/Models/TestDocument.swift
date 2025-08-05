@@ -21,16 +21,16 @@ public struct TestDocument: Sendable {
     }
 
     public func withIncrementalChange(at location: DocumentLocation) -> TestDocument {
-        return TestDocument(
-            id: self.id,
-            content: self.content + " [MODIFIED_AT_\(location)]",
-            complexity: self.complexity,
-            testId: self.testId
+        TestDocument(
+            id: id,
+            content: content + " [MODIFIED_AT_\(location)]",
+            complexity: complexity,
+            testId: testId
         )
     }
 
     public func withModification(at location: DocumentLocation) -> TestDocument {
-        return withIncrementalChange(at: location)
+        withIncrementalChange(at: location)
     }
 }
 

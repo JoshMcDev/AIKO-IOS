@@ -205,7 +205,7 @@ actor SLMModelManager {
     func generateCompletion(
         prompt: String,
         maxTokens: Int = 512,
-        temperature: Float = 0.7
+        temperature _: Float = 0.7
     ) async throws -> String {
         guard isInitialized, currentModel != nil else {
             throw SLMError.modelNotInitialized
@@ -265,7 +265,7 @@ actor SLMModelManager {
 
         // Add special tokens
         let startToken: Int32 = 1 // BOS token
-        let endToken: Int32 = 2   // EOS token
+        let endToken: Int32 = 2 // EOS token
 
         return [startToken] + tokens + [endToken]
     }
@@ -279,7 +279,7 @@ actor SLMModelManager {
         let maxLength = min(tokens.count, config.contextWindow)
         let inputArray = try MLMultiArray(shape: [1, NSNumber(value: maxLength)], dataType: .int32)
 
-        for i in 0..<maxLength {
+        for i in 0 ..< maxLength {
             inputArray[i] = NSNumber(value: tokens[i])
         }
 
@@ -515,7 +515,7 @@ extension String {
     var djb2hash: UInt {
         // Completely overflow-safe hash implementation using actual DJB2 algorithm
         var hash: UInt = 5381
-        for byte in self.utf8 {
+        for byte in utf8 {
             // Use wrapping arithmetic to prevent overflow
             hash = hash &* 33 &+ UInt(byte)
         }

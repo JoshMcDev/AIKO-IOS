@@ -1,25 +1,28 @@
-import XCTest
-import SwiftUI
 @testable import AIKO
 @testable import AppCore
+import SwiftUI
+import XCTest
 
 @MainActor
 final class UIDocumentScannerFlowTests: XCTestCase {
-
-    private var app: XCUIApplication!
+    private var app: XCUIApplication?
 
     override func setUp() async throws {
         continueAfterFailure = false
         app = XCUIApplication()
 
         // Configure for UI testing
+        guard let app else {
+            XCTFail("App should be initialized")
+            return
+        }
         app.launchArguments.append("--uitesting")
         app.launchEnvironment["MOCK_CAMERA_ENABLED"] = "true"
         app.launch()
     }
 
     override func tearDown() async throws {
-        app.terminate()
+        app?.terminate()
         app = nil
     }
 
@@ -27,6 +30,11 @@ final class UIDocumentScannerFlowTests: XCTestCase {
 
     func test_firstTimeScan_completesSuccessfully() {
         // This test will fail in RED phase - UI flow not implemented
+
+        guard let app else {
+            XCTFail("App should be initialized")
+            return
+        }
 
         // Step 1: Navigate to document scanner
         let scanButton = app.buttons["Start Document Scan"]
@@ -75,7 +83,7 @@ final class UIDocumentScannerFlowTests: XCTestCase {
         let addPageButton = app.buttons["Add Page"]
         XCTAssertTrue(addPageButton.waitForExistence(timeout: 5))
 
-        for pageNumber in 2...3 {
+        for pageNumber in 2 ... 3 {
             addPageButton.tap()
 
             // Wait for scanner to reappear
@@ -446,12 +454,12 @@ final class UIDocumentScannerFlowTests: XCTestCase {
         XCTAssertTrue(prevButton.exists)
 
         // Test smooth transitions
-        for _ in 1...3 {
+        for _ in 1 ... 3 {
             nextButton.tap()
             sleep(1) // Allow animation to complete
         }
 
-        for _ in 1...3 {
+        for _ in 1 ... 3 {
             prevButton.tap()
             sleep(1) // Allow animation to complete
         }

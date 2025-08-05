@@ -34,7 +34,7 @@ actor RegulationProcessor {
     }
 
     func processRegulation(input: TestRegulationInput) async throws -> ProcessedRegulation {
-        return try await processHTMLRegulation(html: input.html, source: input.source)
+        try await processHTMLRegulation(html: input.html, source: input.source)
     }
 
     // MARK: - HTML Processing
@@ -101,21 +101,19 @@ actor RegulationProcessor {
     }
 
     private func extractRegulationNumber(from html: String, source: RegulationSource) -> String {
-        let patterns: [String]
-
-        switch source {
+        let patterns: [String] = switch source {
         case .far:
-            patterns = [
+            [
                 "FAR\\s+\\d+\\.\\d+-\\d+",
                 "\\d+\\.\\d+-\\d+",
             ]
         case .dfars:
-            patterns = [
+            [
                 "DFARS\\s+\\d+\\.\\d+-\\d+",
                 "\\d+\\.\\d+-\\d+",
             ]
         case .agency:
-            patterns = [
+            [
                 "[A-Z]+\\s+\\d+\\.\\d+-\\d+",
                 "\\d+\\.\\d+-\\d+",
             ]
@@ -142,7 +140,7 @@ actor RegulationProcessor {
             if let match = html.range(of: pattern, options: .regularExpression) {
                 let titleMatch = html[match]
                 let cleanTitle = cleanHTML(String(titleMatch))
-                if !cleanTitle.isEmpty && cleanTitle.count > 5 {
+                if !cleanTitle.isEmpty, cleanTitle.count > 5 {
                     return cleanTitle
                 }
             }
@@ -193,23 +191,21 @@ actor RegulationProcessor {
     }
 
     private func splitIntoSections(_ text: String, source: RegulationSource) -> [RegulationSection] {
-        let patterns: [String]
-
-        switch source {
+        let patterns: [String] = switch source {
         case .far:
-            patterns = [
+            [
                 "\\([a-z]\\)\\s+", // (a), (b), etc.
                 "\\(\\d+\\)\\s+", // (1), (2), etc.
                 "\\([ivx]+\\)\\s+", // (i), (ii), etc.
             ]
         case .dfars:
-            patterns = [
+            [
                 "\\([A-Z]\\)\\s+", // (A), (B), etc.
                 "\\(\\d+\\)\\s+", // (1), (2), etc.
                 "\\([ivx]+\\)\\s+", // (i), (ii), etc.
             ]
         case .agency:
-            patterns = [
+            [
                 "\\d+\\.\\d+\\s+", // 1.1, 1.2, etc.
                 "\\([a-z]\\)\\s+", // (a), (b), etc.
                 "\\(\\d+\\)\\s+", // (1), (2), etc.
@@ -247,7 +243,12 @@ actor RegulationProcessor {
 
     private func findMatches(in text: String, pattern: String) -> [String] {
         var matches: [String] = []
-        let regex = try! NSRegularExpression(pattern: pattern)
+
+        guard let regex = try? NSRegularExpression(pattern: pattern) else {
+            // Return empty array if regex creation fails
+            return []
+        }
+
         let results = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
 
         for result in results {
@@ -260,7 +261,7 @@ actor RegulationProcessor {
     }
 
     private func splitByPattern(_ text: String, pattern _: String) -> [String] {
-        return text.components(separatedBy: .whitespacesAndNewlines)
+        text.components(separatedBy: .whitespacesAndNewlines)
             .filter { !$0.isEmpty }
             .chunked(into: maxChunkSize / 4) // Rough word-to-token estimate
             .map { $0.joined(separator: " ") }
@@ -316,7 +317,7 @@ private struct RegulationSection {
 
 private extension Array {
     func chunked(into size: Int) -> [[Element]] {
-        return stride(from: 0, to: count, by: size).map {
+        stride(from: 0, to: count, by: size).map {
             Array(self[$0 ..< Swift.min($0 + size, count)])
         }
     }

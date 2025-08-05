@@ -105,7 +105,7 @@ public actor CameraService: CameraServiceProtocol {
     }
 
     public func isCameraAvailable() async -> Bool {
-        return AVCaptureDevice.default(for: .video) != nil
+        AVCaptureDevice.default(for: .video) != nil
     }
 
     public func getAvailableCameraPositions() async -> [String] {
@@ -171,7 +171,7 @@ public actor CameraService: CameraServiceProtocol {
     ) async throws -> CapturedPhoto {
         try await setupCaptureSession(position: position)
 
-        guard let photoOutput = self.photoOutput else {
+        guard let photoOutput else {
             throw MediaError.processingFailed("Photo output not configured")
         }
 
@@ -196,9 +196,9 @@ public actor CameraService: CameraServiceProtocol {
         return try await withCheckedThrowingContinuation { continuation in
             let delegate = PhotoCaptureDelegate { result in
                 switch result {
-                case .success(let photo):
+                case let .success(photo):
                     continuation.resume(returning: photo)
-                case .failure(let error):
+                case let .failure(error):
                     continuation.resume(throwing: error)
                 }
             }
@@ -214,7 +214,7 @@ public actor CameraService: CameraServiceProtocol {
     ) async throws -> CameraRecordingSession {
         try await setupCaptureSession(position: position, includeAudio: options.audioEnabled)
 
-        guard let movieOutput = self.movieOutput else {
+        guard let movieOutput else {
             throw MediaError.processingFailed("Movie output not configured")
         }
 
@@ -235,7 +235,7 @@ public actor CameraService: CameraServiceProtocol {
                 switch result {
                 case .success:
                     continuation.resume(returning: session)
-                case .failure(let error):
+                case let .failure(error):
                     continuation.resume(throwing: error)
                 }
             }
@@ -246,7 +246,7 @@ public actor CameraService: CameraServiceProtocol {
     }
 
     public func stopVideoRecording(_ session: CameraRecordingSession) async throws -> CapturedVideo {
-        guard let movieOutput = self.movieOutput else {
+        guard let movieOutput else {
             throw MediaError.processingFailed("Movie output not configured")
         }
 
@@ -266,7 +266,7 @@ public actor CameraService: CameraServiceProtocol {
                         fileSize: 0 // Placeholder
                     )
                     continuation.resume(returning: video)
-                case .failure(let error):
+                case let .failure(error):
                     continuation.resume(throwing: error)
                 }
             }
@@ -277,7 +277,7 @@ public actor CameraService: CameraServiceProtocol {
         }
     }
 
-    public func configureCameraSettings(_ settings: CameraSettings) async throws {
+    public func configureCameraSettings(_: CameraSettings) async throws {
         guard let device = currentDevice else {
             throw MediaError.processingFailed("No active camera device")
         }
@@ -315,7 +315,7 @@ public actor CameraService: CameraServiceProtocol {
         )
 
         return discoverySession.devices.compactMap { _ in
-            return CameraDevice.back // Simplified for now
+            CameraDevice.back // Simplified for now
         }
     }
 
@@ -342,9 +342,9 @@ public actor CameraService: CameraServiceProtocol {
             let newInput = try AVCaptureDeviceInput(device: newDevice)
             if session.canAddInput(newInput) {
                 session.addInput(newInput)
-                self.videoInput = newInput
-                self.currentDevice = newDevice
-                self.currentPosition = position
+                videoInput = newInput
+                currentDevice = newDevice
+                currentPosition = position
             } else {
                 throw MediaError.processingFailed("Cannot add camera input")
             }
@@ -356,7 +356,7 @@ public actor CameraService: CameraServiceProtocol {
         session.commitConfiguration()
     }
 
-    public func setFlashMode(_ mode: FlashMode) async throws {
+    public func setFlashMode(_: FlashMode) async throws {
         guard let device = currentDevice else {
             throw MediaError.processingFailed("No active camera device")
         }
@@ -485,9 +485,9 @@ public actor CameraService: CameraServiceProtocol {
         }
 
         session.addInput(input)
-        self.videoInput = input
-        self.currentDevice = device
-        self.currentPosition = position
+        videoInput = input
+        currentDevice = device
+        currentPosition = position
     }
 
     private func setupAudioInput() throws {
@@ -517,7 +517,7 @@ public actor CameraService: CameraServiceProtocol {
 
         if session.canAddOutput(output) {
             session.addOutput(output)
-            self.photoOutput = output
+            photoOutput = output
         }
     }
 
@@ -528,7 +528,7 @@ public actor CameraService: CameraServiceProtocol {
 
         if session.canAddOutput(output) {
             session.addOutput(output)
-            self.movieOutput = output
+            movieOutput = output
         }
     }
 }
@@ -543,8 +543,8 @@ private class PhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate {
         super.init()
     }
 
-    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-        if let error = error {
+    func photoOutput(_: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        if let error {
             completion(.failure(error))
             return
         }
@@ -574,12 +574,12 @@ private class VideoCaptureDelegate: NSObject, AVCaptureFileOutputRecordingDelega
         super.init()
     }
 
-    func fileOutput(_ output: AVCaptureFileOutput, didStartRecordingTo fileURL: URL, from connections: [AVCaptureConnection]) {
+    func fileOutput(_: AVCaptureFileOutput, didStartRecordingTo _: URL, from _: [AVCaptureConnection]) {
         completion(.success(()))
     }
 
-    func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
-        if let error = error {
+    func fileOutput(_: AVCaptureFileOutput, didFinishRecordingTo _: URL, from _: [AVCaptureConnection], error: Error?) {
+        if let error {
             completion(.failure(error))
         } else {
             completion(.success(()))
@@ -593,11 +593,11 @@ extension CameraFocusMode {
     var avFocusMode: AVCaptureDevice.FocusMode {
         switch self {
         case .auto:
-            return .autoFocus
+            .autoFocus
         case .manual:
-            return .locked
+            .locked
         case .continuous:
-            return .continuousAutoFocus
+            .continuousAutoFocus
         }
     }
 }
@@ -606,11 +606,11 @@ extension CameraExposureMode {
     var avExposureMode: AVCaptureDevice.ExposureMode {
         switch self {
         case .auto:
-            return .autoExpose
+            .autoExpose
         case .manual:
-            return .locked
+            .locked
         case .continuous:
-            return .continuousAutoExposure
+            .continuousAutoExposure
         }
     }
 }
@@ -619,11 +619,11 @@ extension CameraWhiteBalanceMode {
     var avWhiteBalanceMode: AVCaptureDevice.WhiteBalanceMode {
         switch self {
         case .auto:
-            return .autoWhiteBalance
+            .autoWhiteBalance
         case .manual:
-            return .locked
+            .locked
         case .continuous:
-            return .continuousAutoWhiteBalance
+            .continuousAutoWhiteBalance
         }
     }
 }

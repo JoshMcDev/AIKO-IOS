@@ -148,8 +148,8 @@ struct LLMProviderSettingsView: View {
                     Alert(title: Text(""))
                 }
             }
-        }
-        }
+        })
+    }
 }
 
 // MARK: - Provider Row View
@@ -227,7 +227,7 @@ struct ProviderConfigurationView: View {
                                 Text("Configure API access")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
-                            })
+                            }
                         }
                         .padding(.vertical, 8)
                     }
@@ -376,8 +376,8 @@ struct ProviderConfigurationView: View {
                     }
                 }
             }
-        }
-        }
+        })
+    }
 
     private func getAPIKeyHelperText() -> String {
         switch provider {
@@ -449,7 +449,7 @@ struct ProviderPriorityView: View {
                     )) {
                         ForEach(LLMProviderPriority.FallbackBehavior.allCases, id: \.self) { behavior in
                             Text(behavior.displayName).tag(behavior)
-                        })
+                        }
                     }
                     .pickerStyle(SegmentedPickerStyle())
                 } header: {
@@ -482,8 +482,8 @@ struct ProviderPriorityView: View {
             .toolbar {
                 EditButton()
             }
-        }
-        }
+        })
+    }
 }
 
 // MARK: - Extensions

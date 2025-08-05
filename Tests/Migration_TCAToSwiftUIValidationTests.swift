@@ -6,23 +6,22 @@
 //  Copyright © 2025 AIKO. All rights reserved.
 //
 
-import XCTest
-import SwiftUI
-import LocalAuthentication
 @testable import AppCore
+import LocalAuthentication
+import SwiftUI
+import XCTest
 
 /// Migration validation test suite for TCA → SwiftUI conversion
 /// Ensures functional parity and prevents regression during migration
 /// RED phase tests - will fail until proper migration implementation
 @MainActor
 final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
-
     // MARK: - Properties
 
-    private var modernViewModel: LLMProviderSettingsViewModel!
-    private var mockService: MockLLMProviderSettingsService!
-    private var mockConfigService: MockLLMConfigurationService!
-    private var mockKeychainService: MockLLMKeychainService!
+    private var modernViewModel: LLMProviderSettingsViewModel?
+    private var mockService: MockLLMProviderSettingsService?
+    private var mockConfigService: MockLLMConfigurationService?
+    private var mockKeychainService: MockLLMKeychainService?
 
     // MARK: - Setup
 
@@ -65,15 +64,15 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
             "Clear all configurations",
             "Model selection and temperature adjustment",
             "Custom endpoint configuration",
-            "Real-time validation and error handling"
+            "Real-time validation and error handling",
         ]
 
         var implementedFeatures: [String] = []
 
         // Test provider selection
         modernViewModel.selectProvider(.claude)
-        if modernViewModel.selectedProvider == .claude &&
-            modernViewModel.isProviderConfigSheetPresented {
+        if modernViewModel.selectedProvider == .claude,
+           modernViewModel.isProviderConfigSheetPresented {
             implementedFeatures.append("Provider selection and configuration")
         }
 
@@ -133,7 +132,7 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
             "Save configuration with biometric auth",
             "Navigate to priority settings",
             "Drag to reorder providers",
-            "Clear all with confirmation"
+            "Clear all with confirmation",
         ]
 
         var workingInteractions: [String] = []
@@ -150,7 +149,8 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
         }
 
         // Model selection
-        if let models = modernViewModel.getModelsForProvider(.claude), !models.isEmpty {
+        let models = modernViewModel.getModelsForProvider(.claude)
+        if !models.isEmpty {
             workingInteractions.append("Select model from picker")
         }
 
@@ -238,7 +238,7 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
             "temperatureChanged": "updateTemperature",
             "customEndpointChanged": "updateCustomEndpoint",
             "fallbackBehaviorChanged": "updateFallbackBehavior",
-            "moveProvider": "moveProvider"
+            "moveProvider": "moveProvider",
         ]
 
         var mappedActions: [String] = []
@@ -304,26 +304,26 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
         // This is validated at compile time by not importing ComposableArchitecture
 
         // Protocol conformance should be to SwiftUI protocols, not TCA
-        XCTAssertTrue(modernViewModel is ObservableObject)
-        XCTAssertTrue(modernViewModel is LLMProviderSettingsViewModelProtocol)
+        XCTAssertNotNil(modernViewModel as? any ObservableObject)
+        XCTAssertNotNil(modernViewModel as? any LLMProviderSettingsViewModelProtocol)
 
         // State management should be @Observable, not TCA State
         // This is validated by the @Observable macro on the class
     }
 
-    func test_swiftUIPatterns_correctlyImplemented() {
+    func test_swiftUIPatterns_correctlyImplemented() async {
         // RED: Should fail - SwiftUI pattern validation not complete
 
         // Test that proper SwiftUI patterns are used
 
         // @Observable pattern
-        XCTAssertTrue(modernViewModel is ObservableObject)
+        XCTAssertTrue(modernViewModel is any ObservableObject)
 
         // Property wrappers (simulated - actual test in view)
         let hasBindableProperties = [
             modernViewModel.isProviderConfigSheetPresented,
             modernViewModel.selectedProvider != nil,
-            modernViewModel.alert != nil
+            modernViewModel.alert != nil,
         ].contains(true)
         XCTAssertTrue(hasBindableProperties)
 
@@ -353,7 +353,7 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
 
         // Simulate existing configuration
         mockConfigService.shouldSucceed = true
-        let testConfig = TestFixtures.testConfig
+        _ = TestFixtures.testConfig
 
         await modernViewModel.loadConfigurations()
 
@@ -365,8 +365,7 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
     func test_existingAPIKeys_remainValid() async {
         // RED: Should fail - API key preservation not implemented
 
-        // Simulate existing API keys in keychain
-        mockKeychainService.hasStoredKeys = true
+        // Simulate existing API keys in keychain (property is read-only, simulated via mock setup)
 
         let isValid = modernViewModel.validateAPIKeyFormat("sk-ant-test123", for: .claude)
         XCTAssertTrue(isValid)
@@ -402,7 +401,7 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
             "API keys encrypted in keychain": false,
             "No plaintext key storage": false,
             "Authentication on key access": false,
-            "Secure key deletion": false
+            "Secure key deletion": false,
         ]
 
         var validatedFeatures: [String: Bool] = securityFeatures
@@ -442,7 +441,7 @@ extension TestFixtures {
         "configuredProviders": ["claude", "openai"],
         "providerPriority": "sequential",
         "alert": "none",
-        "uiState": "idle"
+        "uiState": "idle",
     ]
 
     static let expectedModernState = LLMProviderSettingsViewModel.ProviderPriority(
@@ -455,17 +454,17 @@ extension TestFixtures {
 
 extension MockLLMConfigurationService {
     var mockActiveProvider: LLMProviderConfig? {
-        return TestFixtures.testConfig
+        TestFixtures.testConfig
     }
 }
 
 extension MockLLMKeychainService {
     var hasStoredKeys: Bool {
-        return false
+        false
     }
 
     var usesEncryption: Bool {
-        return false
+        false
     }
 }
 
@@ -475,39 +474,39 @@ extension MockLLMKeychainService {
 class MockBiometricService: ObservableObject, BiometricAuthenticationServiceProtocol {
     nonisolated(unsafe) var shouldSucceed = true
     nonisolated(unsafe) var shouldCanEvaluate = true
-    
+
     nonisolated func canEvaluateBiometrics() -> Bool {
-        return shouldCanEvaluate
+        shouldCanEvaluate
     }
-    
+
     nonisolated func canEvaluateDeviceOwnerAuthentication() -> Bool {
-        return shouldCanEvaluate
+        shouldCanEvaluate
     }
-    
-    func authenticateWithBiometrics(reason: String) async throws -> Bool {
+
+    func authenticateWithBiometrics(reason _: String) async throws -> Bool {
         if shouldSucceed {
             return true
         } else {
             throw LAError(.authenticationFailed)
         }
     }
-    
-    func authenticateWithPasscode(reason: String) async throws -> Bool {
+
+    func authenticateWithPasscode(reason _: String) async throws -> Bool {
         if shouldSucceed {
             return true
         } else {
             throw LAError(.authenticationFailed)
         }
     }
-    
+
     nonisolated func biometryType() -> LABiometryType {
-        return .faceID
+        .faceID
     }
-    
+
     nonisolated func biometryDescription() -> String {
-        return "Face ID"
+        "Face ID"
     }
-    
+
     nonisolated func resetContext() {
         // Mock implementation - does nothing
     }

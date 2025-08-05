@@ -2,8 +2,8 @@ import AppCore
 import Foundation
 import SwiftUI
 #if os(iOS)
-import UIKit
 import AVFoundation
+import UIKit
 #else
 import AppKit
 #endif
@@ -18,11 +18,11 @@ public enum DocumentGenerationError: Error, LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .noDocumentGenerated:
-            return "No document was generated"
+            "No document was generated"
         case .invalidDocumentType:
-            return "Invalid document type specified"
-        case .generationFailed(let reason):
-            return "Document generation failed: \(reason)"
+            "Invalid document type specified"
+        case let .generationFailed(reason):
+            "Document generation failed: \(reason)"
         }
     }
 }
@@ -37,11 +37,11 @@ public enum ProfileError: Error, LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .invalidName:
-            return "Profile name is required and cannot be empty"
+            "Profile name is required and cannot be empty"
         case .invalidEmail:
-            return "Invalid email address format"
+            "Invalid email address format"
         case .invalidOrganization:
-            return "Organization name is required and cannot be empty"
+            "Organization name is required and cannot be empty"
         }
     }
 }
@@ -50,6 +50,7 @@ public enum ProfileError: Error, LocalizedError {
 @Observable
 public final class AppViewModel {
     // MARK: - Child ViewModels
+
     public var documentGenerationViewModel = DocumentGenerationViewModel()
     public var profileViewModel = ProfileViewModel()
     public var onboardingViewModel = OnboardingViewModel()
@@ -61,6 +62,7 @@ public final class AppViewModel {
     public var smartWorkflowEngine = SmartWorkflowEngine.shared
 
     // MARK: - Navigation State
+
     public var isOnboardingCompleted: Bool = false
     public var isAuthenticated: Bool = false
     public var isAuthenticating: Bool = false
@@ -87,6 +89,7 @@ public final class AppViewModel {
     public var showingSAMGovLookup: Bool = false
 
     // MARK: - Document Selection State
+
     public var selectedTypes: Set<AppCore.DocumentType> = []
     public var selectedDFTypes: Set<AppCore.DFDocumentType> = []
     public var documentStatus: [AppCore.DocumentType: DocumentStatus] = [:]
@@ -96,6 +99,7 @@ public final class AppViewModel {
     }
 
     // MARK: - Document Sharing State
+
     public var showingDocumentSelection: Bool = false
     public var showingShareSheet: Bool = false
     public var shareTargetAcquisitionId: UUID?
@@ -104,12 +108,14 @@ public final class AppViewModel {
     public var shareItems: [Any] = []
 
     // MARK: - Input Area State (for original InputArea component)
+
     public var requirements: String = ""
     public var isGenerating: Bool = false
     public var uploadedDocuments: [UploadedDocument] = []
     public var isRecording: Bool = false
 
     // MARK: - Error Handling
+
     public var error: Error?
     public var showingError: Bool = false
 
@@ -167,7 +173,7 @@ public final class AppViewModel {
         switch docType {
         case .sow, .soo:
             // Statement of Work needs clear deliverables and tasks
-            if requirements.contains("deliverable") && requirements.contains("task") && requirements.count > 200 {
+            if requirements.contains("deliverable"), requirements.contains("task"), requirements.count > 200 {
                 return .ready
             } else if requirements.count > 100 {
                 return .needsMoreInfo
@@ -177,7 +183,7 @@ public final class AppViewModel {
 
         case .pws:
             // Performance Work Statement needs performance standards
-            if requirements.contains("performance") && requirements.contains("standard") && requirements.contains("metric") {
+            if requirements.contains("performance"), requirements.contains("standard"), requirements.contains("metric") {
                 return .ready
             } else if requirements.contains("performance") {
                 return .needsMoreInfo
@@ -287,28 +293,29 @@ public final class AppViewModel {
         switch docType {
         case .marketResearch:
             // Market research can be done with minimal info
-            return .needsMoreInfo
+            .needsMoreInfo
         case .acquisitionPlan:
             // Acquisition plan needs substantial information
-            return .notReady
+            .notReady
         case .sow, .soo, .pws, .qasp:
             // Work statements need acquisition context
-            return .notReady
+            .notReady
         case .requestForProposal, .requestForQuote:
             // Solicitations need comprehensive requirements
-            return .notReady
+            .notReady
         case .evaluationPlan:
             // Evaluation plan needs requirements context
-            return .notReady
+            .notReady
         case .contractScaffold:
             // Contract needs all components
-            return .notReady
+            .notReady
         default:
-            return .needsMoreInfo
+            .needsMoreInfo
         }
     }
 
     // MARK: - App Lifecycle
+
     public func onAppear() {
         // Initialize app state
         if !isOnboardingCompleted {
@@ -321,6 +328,7 @@ public final class AppViewModel {
     }
 
     // MARK: - Authentication
+
     public func authenticateWithFaceID() {
         isAuthenticating = true
         authenticationError = nil
@@ -338,6 +346,7 @@ public final class AppViewModel {
     }
 
     // MARK: - Navigation Actions
+
     public func toggleMenu(_ show: Bool? = nil) {
         showingMenu = show ?? !showingMenu
     }
@@ -455,7 +464,7 @@ public final class AppViewModel {
         )
 
         // Auto-trigger agent chat if confidence is too low
-        if analysis.shouldTriggerAgentChat && analysis.confidenceScore < 0.4 {
+        if analysis.shouldTriggerAgentChat, analysis.confidenceScore < 0.4 {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 self.showingAcquisitionChat = true
             }
@@ -463,6 +472,7 @@ public final class AppViewModel {
     }
 
     // MARK: - Document Selection Actions
+
     public func toggleDocumentType(_ documentType: AppCore.DocumentType) {
         let wasSelected = selectedTypes.contains(documentType)
 
@@ -513,6 +523,7 @@ public final class AppViewModel {
     }
 
     // MARK: - Download Actions
+
     public func showDownloadOptions(for acquisition: AppCore.Acquisition) {
         downloadTargetAcquisition = acquisition
         downloadTargetAcquisitionId = acquisition.id
@@ -526,6 +537,7 @@ public final class AppViewModel {
     }
 
     // MARK: - Share Actions
+
     public func showDocumentSelection(for acquisitionId: UUID, mode: ShareMode = .singleDocument) {
         shareTargetAcquisitionId = acquisitionId
         shareMode = mode
@@ -553,20 +565,21 @@ public final class AppViewModel {
     }
 
     // MARK: - Error Handling
+
     public func setError(_ error: AppError) {
         self.error = error
-        self.showingError = true
+        showingError = true
     }
 
     public func clearError() {
-        self.error = nil
-        self.showingError = false
+        error = nil
+        showingError = false
     }
 
     // MARK: - InputArea Methods
 
     public func updateRequirements(_ newRequirements: String) {
-        self.requirements = newRequirements
+        requirements = newRequirements
     }
 
     public func analyzeRequirements() {
@@ -607,6 +620,7 @@ public final class AppViewModel {
 }
 
 // MARK: - Supporting Types
+
 public enum MenuItem: String, CaseIterable, Identifiable {
     case profile = "Profile"
     case acquisitions = "Acquisitions"
@@ -619,15 +633,15 @@ public enum MenuItem: String, CaseIterable, Identifiable {
     public var systemImage: String {
         switch self {
         case .profile:
-            return "person.circle"
+            "person.circle"
         case .acquisitions:
-            return "doc.text"
+            "doc.text"
         case .userGuide:
-            return "book"
+            "book"
         case .searchTemplates:
-            return "magnifyingglass"
+            "magnifyingglass"
         case .settings:
-            return "gear"
+            "gear"
         }
     }
 }
@@ -686,7 +700,7 @@ public final class DocumentGenerationViewModel {
 
             // Phase 3: Finalization
             generationProgress = 0.9
-            self.generatedContent = generatedDocument.content
+            generatedContent = generatedDocument.content
 
             generationProgress = 1.0
 
@@ -761,7 +775,7 @@ public final class ProfileViewModel {
             throw ProfileError.invalidName
         }
 
-        if !profile.email.isEmpty && !isValidEmail(profile.email) {
+        if !profile.email.isEmpty, !isValidEmail(profile.email) {
             throw ProfileError.invalidEmail
         }
 
@@ -848,7 +862,7 @@ public final class AcquisitionChatViewModel {
     }
 
     private func loadChatHistory() {
-        guard let acquisition = acquisition else {
+        guard let acquisition else {
             messages = []
             return
         }
@@ -865,13 +879,13 @@ public final class AcquisitionChatViewModel {
                 ChatMessage(
                     content: "Hello! I'm here to help you with your acquisition: \"\(acquisition.title)\". What would you like to know or discuss?",
                     isUser: false
-                )
+                ),
             ]
         }
     }
 
     private func saveChatHistory() {
-        guard let acquisition = acquisition else { return }
+        guard let acquisition else { return }
 
         let historyKey = "chatHistory_\(acquisition.id.uuidString)"
 
@@ -1135,7 +1149,6 @@ public final class GlobalScanViewModel {
             if let rootViewController = UIApplication.shared.connectedScenes
                 .compactMap({ $0 as? UIWindowScene })
                 .first?.windows.first?.rootViewController {
-
                 // Scan accessible elements
                 let accessibleElements = findAccessibleElements(in: rootViewController.view)
                 scanContent += "Accessible Elements: \(accessibleElements.count)\n"
@@ -1158,7 +1171,7 @@ public final class GlobalScanViewModel {
     private func findAccessibleElements(in view: UIView) -> [UIView] {
         var elements: [UIView] = []
 
-        if view.isAccessibilityElement && view.accessibilityLabel != nil {
+        if view.isAccessibilityElement, view.accessibilityLabel != nil {
             elements.append(view)
         }
 
@@ -1198,7 +1211,7 @@ public final class GlobalScanViewModel {
     }
 
     private func scanWindowHierarchy(_ view: NSView?) -> [String] {
-        guard let view = view else { return [] }
+        guard let view else { return [] }
 
         var elements: [String] = []
 
@@ -1232,7 +1245,7 @@ public struct ChatMessage: Identifiable, Sendable, Codable {
     public let timestamp: Date
 
     public init(content: String, isUser: Bool, timestamp: Date = Date()) {
-        self.id = UUID()
+        id = UUID()
         self.content = content
         self.isUser = isUser
         self.timestamp = timestamp
@@ -1245,7 +1258,7 @@ public struct ScanResult: Identifiable, Sendable {
     public let timestamp: Date
 
     public init(content: String, timestamp: Date = Date()) {
-        self.id = UUID()
+        id = UUID()
         self.content = content
         self.timestamp = timestamp
     }

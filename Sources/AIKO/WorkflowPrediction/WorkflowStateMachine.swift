@@ -68,7 +68,7 @@ actor WorkflowStateMachine {
 
     /// Gets current workflow state
     func getCurrentState() async -> PredictionWorkflowState? {
-        return currentState
+        currentState
     }
 
     /// Adds state to history without changing current state
@@ -79,7 +79,7 @@ actor WorkflowStateMachine {
 
     /// Returns current history count for memory monitoring
     func getHistoryCount() async -> Int {
-        return history.elementCount
+        history.elementCount
     }
 
     // MARK: - Transition Management
@@ -99,13 +99,13 @@ actor WorkflowStateMachine {
 
     /// Gets transition probability between states
     func getTransitionProbability(from: String, to: String) async -> Double {
-        return transitionMatrix[from]?[to] ?? 0.0
+        transitionMatrix[from]?[to] ?? 0.0
     }
 
     /// Validates workflow state transitions using domain-specific rules
     func validateTransition(from: PredictionWorkflowState, to: PredictionWorkflowState) async -> Bool {
         // Enhanced validation logic based on acquisition workflow rules
-        return await isValidWorkflowTransition(from: from, to: to)
+        await isValidWorkflowTransition(from: from, to: to)
     }
 
     // MARK: - Prediction Generation
@@ -145,12 +145,12 @@ actor WorkflowStateMachine {
                 probability: probability
             )
 
-            let prediction = StatePrediction(
+            let prediction = await StatePrediction(
                 nextState: nextState,
                 probability: probability,
                 confidence: confidence,
-                reasoning: await generateReasoning(from: state, to: nextState, probability: probability),
-                estimatedDuration: await estimateDuration(from: state, to: nextState)
+                reasoning: generateReasoning(from: state, to: nextState, probability: probability),
+                estimatedDuration: estimateDuration(from: state, to: nextState)
             )
 
             predictions.append(prediction)
@@ -228,7 +228,7 @@ actor WorkflowStateMachine {
 
     /// Creates a unique key for state identification
     private func createStateKey(from state: PredictionWorkflowState) -> String {
-        return "\(state.phase)|\(state.currentStep)|\(state.documentType)"
+        "\(state.phase)|\(state.currentStep)|\(state.documentType)"
     }
 
     /// Creates state from key string
@@ -269,9 +269,9 @@ actor WorkflowStateMachine {
 
         // Weighted combination (research-backed weights aligned with MultifactorConfidenceScorer)
         return historicalAccuracy * PFSMConstants.historicalAccuracyWeight +
-               patternStrength * PFSMConstants.patternStrengthWeight +
-               temporalRelevance * PFSMConstants.temporalRelevanceWeight +
-               probability * PFSMConstants.probabilityWeight
+            patternStrength * PFSMConstants.patternStrengthWeight +
+            temporalRelevance * PFSMConstants.temporalRelevanceWeight +
+            probability * PFSMConstants.probabilityWeight
     }
 
     /// Generates fallback predictions for new users or insufficient data
@@ -308,17 +308,17 @@ actor WorkflowStateMachine {
     /// Helper methods for confidence calculation
     private func getHistoricalAccuracy(from _: PredictionWorkflowState, to _: PredictionWorkflowState) async -> Double {
         // Placeholder - would analyze past prediction accuracy
-        return PFSMConstants.fallbackHistoricalAccuracy
+        PFSMConstants.fallbackHistoricalAccuracy
     }
 
     private func getPatternStrength(from _: PredictionWorkflowState, to _: PredictionWorkflowState) async -> Double {
         // Placeholder - would analyze pattern matching strength
-        return PFSMConstants.fallbackPatternStrength
+        PFSMConstants.fallbackPatternStrength
     }
 
     private func getTemporalRelevance(from _: PredictionWorkflowState, to _: PredictionWorkflowState) async -> Double {
         // Placeholder - would analyze time-based relevance
-        return PFSMConstants.fallbackTemporalRelevance
+        PFSMConstants.fallbackTemporalRelevance
     }
 
     private func generateReasoning(
@@ -326,26 +326,26 @@ actor WorkflowStateMachine {
         to: PredictionWorkflowState,
         probability: Double
     ) async -> String {
-        return "Based on \(Int(probability * 100))% historical probability from \(from.currentStep) to \(to.currentStep)"
+        "Based on \(Int(probability * 100))% historical probability from \(from.currentStep) to \(to.currentStep)"
     }
 
     private func estimateDuration(from _: PredictionWorkflowState, to _: PredictionWorkflowState) async -> TimeInterval? {
         // Placeholder - would estimate based on historical data
-        return PFSMConstants.fallbackDurationSeconds
+        PFSMConstants.fallbackDurationSeconds
     }
 
     private func getDefaultTransitions(for phase: String) -> [(String, String)] {
         switch phase {
         case "planning":
-            return [("execution", "vendor_research"), ("review", "requirements_review")]
+            [("execution", "vendor_research"), ("review", "requirements_review")]
         case "execution":
-            return [("review", "technical_evaluation"), ("closeout", "contract_completion")]
+            [("review", "technical_evaluation"), ("closeout", "contract_completion")]
         case "review":
-            return [("execution", "contract_negotiation"), ("closeout", "final_approval")]
+            [("execution", "contract_negotiation"), ("closeout", "final_approval")]
         case "closeout":
-            return [("planning", "lessons_learned")]
+            [("planning", "lessons_learned")]
         default:
-            return [("planning", "initial_research")]
+            [("planning", "initial_research")]
         }
     }
 }
@@ -394,11 +394,11 @@ private class WorkflowStateBuffer<T> {
     }
 
     var elementCount: Int {
-        return count
+        count
     }
 
     var isEmpty: Bool {
         // swiftlint:disable:next empty_count
-        return count == 0
+        count == 0
     }
 }

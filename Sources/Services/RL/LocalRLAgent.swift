@@ -120,7 +120,7 @@ public actor LocalRLAgent {
     }
 
     public func getBandits() async -> [ActionIdentifier: ContextualBandit] {
-        return contextualBandits
+        contextualBandits
     }
 
     private func calculateThompsonSample(alpha: Double, beta: Double) -> Double {
@@ -155,7 +155,7 @@ public actor LocalRLAgent {
 
     private func calculateTotalReward(_ reward: RewardSignal) -> Double {
         // Use the standardized calculation from RewardSignal
-        return reward.totalReward
+        reward.totalReward
     }
 }
 
@@ -193,6 +193,6 @@ public final class MockRLPersistenceManager: @unchecked Sendable {
 
     public func loadBandits() async throws -> [ActionIdentifier: ContextualBandit] {
         // Mock implementation: Return stored bandits
-        return storedBandits
+        storedBandits
     }
 }

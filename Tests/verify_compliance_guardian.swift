@@ -3,6 +3,7 @@
 import Foundation
 
 // MARK: - RED Phase Verification Script for ComplianceGuardian
+
 // This script demonstrates that our ComplianceGuardian RED phase scaffolding
 // compiles and behaves as expected for TDD RED phase
 
@@ -16,7 +17,7 @@ let requiredFiles = [
     "/Users/J/aiko/Sources/Services/Compliance/ComplianceGuardian.swift",
     "/Users/J/aiko/Sources/Models/Compliance/ComplianceModels.swift",
     "/Users/J/aiko/Sources/Models/TestDocument.swift",
-    "/Users/J/aiko/Tests/ComplianceGuardianTests.swift"
+    "/Users/J/aiko/Tests/ComplianceGuardianTests.swift",
 ]
 
 var allFilesPresent = true

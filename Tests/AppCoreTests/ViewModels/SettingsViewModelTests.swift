@@ -1,13 +1,12 @@
-import XCTest
-import SwiftUI
-@testable import AppCore
 @testable import AIKO
+@testable import AppCore
+import SwiftUI
+import XCTest
 
 @MainActor
 final class SettingsViewModelTests: XCTestCase {
-
-    var viewModel: SettingsViewModel!
-    var mockSettingsData: AppCore.SettingsData!
+    var viewModel: SettingsViewModel?
+    var mockSettingsData: AppCore.SettingsData?
 
     override func setUp() async throws {
         mockSettingsData = AppCore.SettingsData()
@@ -25,6 +24,11 @@ final class SettingsViewModelTests: XCTestCase {
         // Given: Fresh SettingsViewModel
         // When: Checking initial state
         // Then: Should have default settings loaded
+        guard let viewModel = viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         XCTAssertNotNil(viewModel.settingsData)
         XCTAssertEqual(viewModel.settingsData.appSettings.theme, "system")
         XCTAssertEqual(viewModel.settingsData.appSettings.accentColor, "blue")
@@ -36,6 +40,11 @@ final class SettingsViewModelTests: XCTestCase {
 
     func test_appSettingsUpdate_shouldUpdateAndPersistImmediately() async {
         // Given: SettingsViewModel with default app settings
+        guard let viewModel = viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         XCTAssertEqual(viewModel.settingsData.appSettings.theme, "system")
 
         // When: Updating theme setting
@@ -49,6 +58,11 @@ final class SettingsViewModelTests: XCTestCase {
 
     func test_apiSettingsUpdate_shouldUpdateAPIConfiguration() async {
         // Given: SettingsViewModel with default API settings
+        guard let viewModel = viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         XCTAssertEqual(viewModel.settingsData.apiSettings.selectedModel, "Claude 3 Opus")
 
         // When: Updating API model
@@ -61,6 +75,11 @@ final class SettingsViewModelTests: XCTestCase {
 
     func test_documentSettingsUpdate_shouldUpdateDocumentConfiguration() async {
         // Given: SettingsViewModel with default document settings
+        guard let viewModel = viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         XCTAssertTrue(viewModel.settingsData.documentSettings.includeMetadata)
 
         // When: Updating document metadata setting
@@ -73,6 +92,11 @@ final class SettingsViewModelTests: XCTestCase {
 
     func test_notificationSettingsUpdate_shouldUpdateNotificationPreferences() async {
         // Given: SettingsViewModel with default notification settings
+        guard let viewModel = viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         XCTAssertTrue(viewModel.settingsData.notificationSettings.enableNotifications)
 
         // When: Disabling notifications
@@ -85,6 +109,11 @@ final class SettingsViewModelTests: XCTestCase {
 
     func test_privacySettingsUpdate_shouldUpdatePrivacyConfiguration() async {
         // Given: SettingsViewModel with default privacy settings
+        guard let viewModel = viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         XCTAssertFalse(viewModel.settingsData.dataPrivacySettings.analyticsEnabled)
 
         // When: Enabling analytics
@@ -97,6 +126,11 @@ final class SettingsViewModelTests: XCTestCase {
 
     func test_advancedSettingsUpdate_shouldUpdateAdvancedConfiguration() async {
         // Given: SettingsViewModel with default advanced settings
+        guard let viewModel = viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         XCTAssertFalse(viewModel.settingsData.advancedSettings.debugModeEnabled)
 
         // When: Enabling debug mode
@@ -109,6 +143,11 @@ final class SettingsViewModelTests: XCTestCase {
 
     func test_apiKeyManagement_shouldAddAndRemoveAPIKeys() async {
         // Given: SettingsViewModel with no API keys
+        guard let viewModel = viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         XCTAssertTrue(viewModel.settingsData.apiSettings.apiKeys.isEmpty)
 
         // When: Adding API key
@@ -128,6 +167,11 @@ final class SettingsViewModelTests: XCTestCase {
 
     func test_apiKeySelection_shouldUpdateSelectedAPIKey() async {
         // Given: SettingsViewModel with multiple API keys
+        guard let viewModel = viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         let key1 = APIKeyEntryData(name: "Key 1", key: "sk-ant-api03-key1", isActive: true)
         let key2 = APIKeyEntryData(name: "Key 2", key: "sk-ant-api03-key2", isActive: false)
 
@@ -146,6 +190,11 @@ final class SettingsViewModelTests: XCTestCase {
     // MARK: - MoP Tests: Performance Requirements
 
     func test_settingsUpdate_shouldCompleteWithin500ms() async {
+        guard let viewModel = viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         let startTime = CFAbsoluteTimeGetCurrent()
 
         // When: Updating multiple settings rapidly
@@ -158,6 +207,11 @@ final class SettingsViewModelTests: XCTestCase {
     }
 
     func test_settingsPersistence_shouldCompleteWithin1Second() async {
+        guard let viewModel = viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         let startTime = CFAbsoluteTimeGetCurrent()
 
         // When: Persisting settings to storage
@@ -175,10 +229,10 @@ final class SettingsViewModelTests: XCTestCase {
             return
         }
 
-        for i in 0..<100 {
-            settingsUpdates.append({
+        for i in 0 ..< 100 {
+            settingsUpdates.append {
                 await vm.updateAppSetting(\.autoSaveInterval, value: i)
-            })
+            }
         }
 
         // When: Performing many updates (simulating heavy usage)
@@ -197,6 +251,11 @@ final class SettingsViewModelTests: XCTestCase {
 
     func test_observablePattern_shouldTriggerUIUpdatesOnSettingsChange() async {
         // Given: SettingsViewModel in initial state
+        guard let viewModel = viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         let initialTheme = viewModel.settingsData.appSettings.theme
 
         // When: Changing settings (simulating @Observable behavior)
@@ -209,6 +268,11 @@ final class SettingsViewModelTests: XCTestCase {
 
     func test_settingsDataIntegration_shouldWorkWithExistingModels() {
         // Given: SettingsViewModel with existing SettingsData structure
+        guard let viewModel = viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         // When: Accessing all settings sections
         // Then: Should have all required sections available
         XCTAssertNotNil(viewModel.settingsData.appSettings)
@@ -223,6 +287,11 @@ final class SettingsViewModelTests: XCTestCase {
 
     func test_invalidAPIKey_shouldProvideValidationError() async {
         // Given: Invalid API key format
+        guard let viewModel = viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         let invalidKey = APIKeyEntryData(name: "Invalid", key: "invalid-format", isActive: false)
 
         // When: Adding invalid API key
@@ -236,6 +305,11 @@ final class SettingsViewModelTests: XCTestCase {
 
     func test_settingsSaveFailure_shouldHandleErrorGracefully() async {
         // Given: SettingsViewModel with simulated save failure
+        guard let viewModel = viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         viewModel.simulateSaveFailure = true
 
         // When: Attempting to save settings
@@ -254,7 +328,7 @@ final class SettingsViewModelTests: XCTestCase {
             return
         }
         await withTaskGroup(of: Void.self) { group in
-            for i in 0..<10 {
+            for i in 0 ..< 10 {
                 group.addTask {
                     await vm.updateAppSetting(\.autoSaveInterval, value: i * 10)
                 }
@@ -262,14 +336,19 @@ final class SettingsViewModelTests: XCTestCase {
         }
 
         // Then: Should handle concurrent updates without corruption
-        XCTAssertFalse(viewModel.isLoading)
-        XCTAssertNotEqual(viewModel.saveStatus, .error)
+        XCTAssertFalse(vm.isLoading)
+        XCTAssertNotEqual(vm.saveStatus, .error)
     }
 
     // MARK: - Reset and Restore Tests
 
     func test_resetToDefaults_shouldRestoreDefaultSettings() async {
         // Given: SettingsViewModel with modified settings
+        guard let viewModel = viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         await viewModel.updateAppSetting(\.theme, value: "dark")
         await viewModel.updateAppSetting(\.accentColor, value: "red")
         XCTAssertEqual(viewModel.settingsData.appSettings.theme, "dark")
@@ -285,6 +364,11 @@ final class SettingsViewModelTests: XCTestCase {
 
     func test_exportSettings_shouldGenerateValidExportData() async {
         // Given: SettingsViewModel with configured settings
+        guard let viewModel = viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         await viewModel.updateAppSetting(\.theme, value: "dark")
 
         // When: Exporting settings
@@ -299,8 +383,12 @@ final class SettingsViewModelTests: XCTestCase {
 // MARK: - Settings Validation Tests
 
 extension SettingsViewModelTests {
-
     func test_themeValidation_shouldAcceptValidThemes() async {
+        guard let viewModel = viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         let validThemes = ["system", "light", "dark"]
 
         for theme in validThemes {
@@ -311,6 +399,11 @@ extension SettingsViewModelTests {
     }
 
     func test_autoSaveIntervalValidation_shouldEnforceReasonableLimits() async {
+        guard let viewModel = viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         // Test minimum boundary
         await viewModel.updateAppSetting(\.autoSaveInterval, value: 5)
         XCTAssertGreaterThanOrEqual(viewModel.settingsData.appSettings.autoSaveInterval, 10)

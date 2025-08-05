@@ -11,7 +11,7 @@ print(String(repeating: "=", count: 50))
 let testFiles = [
     "Tests/LLMProviderSettingsProtocolTests.swift",
     "Tests/Security_LLMProviderBiometricTests.swift",
-    "Tests/Migration_TCAToSwiftUIValidationTests.swift"
+    "Tests/Migration_TCAToSwiftUIValidationTests.swift",
 ]
 
 var allTestsExist = true

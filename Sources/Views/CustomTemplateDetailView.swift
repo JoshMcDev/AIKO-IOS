@@ -18,7 +18,7 @@ public struct CustomTemplateDetailView: View {
 
     public init(template: CustomTemplate) {
         self.template = template
-        self._editedContent = State(initialValue: template.content)
+        _editedContent = State(initialValue: template.content)
     }
 
     public var body: some View {

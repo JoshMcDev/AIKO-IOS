@@ -1,5 +1,5 @@
-import Foundation
 import AppCore
+import Foundation
 
 /// DocumentExecutionViewModel - Federal Document Generation & Execution
 ///
@@ -18,11 +18,12 @@ import AppCore
 @MainActor
 @Observable
 public final class DocumentExecutionViewModel: @unchecked Sendable {
-
     // MARK: - Dependencies
+
     private let documentService: DocumentExecutionService
 
     // MARK: - Core State
+
     public let acquisition: AppCore.Acquisition
     public var availableDocumentTypes: [DocumentType] = []
     public var generatedDocuments: [GeneratedDocument] = []
@@ -31,6 +32,7 @@ public final class DocumentExecutionViewModel: @unchecked Sendable {
     public var errorMessage: String?
 
     // MARK: - Selection State
+
     public var selectedDocumentType: DocumentType?
     public var selectedDocumentForPreview: GeneratedDocument?
     public var showingDocumentPreview: Bool = false
@@ -45,11 +47,11 @@ public final class DocumentExecutionViewModel: @unchecked Sendable {
     /// Current status text for generation state
     public var generationStatusText: String {
         if isGenerating {
-            return "Generating documents... \(Int(generationProgress * 100))%"
+            "Generating documents... \(Int(generationProgress * 100))%"
         } else if hasGeneratedDocuments {
-            return "\(generatedDocuments.count) document(s) generated"
+            "\(generatedDocuments.count) document(s) generated"
         } else {
-            return "Ready to generate documents"
+            "Ready to generate documents"
         }
     }
 
@@ -87,54 +89,54 @@ public final class DocumentExecutionViewModel: @unchecked Sendable {
         switch status {
         case .draft:
             // Draft acquisitions include planning documents
-            return [
+            [
                 .marketResearch,
                 .acquisitionPlan,
                 .sow,
                 .pws,
-                .qasp
+                .qasp,
             ]
         case .inProgress, .underReview:
             // In-progress and under review acquisitions focus on execution documents
-            return [
+            [
                 .sow,
                 .pws,
                 .qasp,
                 .evaluationPlan,
-                .fiscalLawReview
+                .fiscalLawReview,
             ]
         case .approved, .awarded:
             // Approved and awarded acquisitions focus on contract documents
-            return [
+            [
                 .sow,
                 .pws,
                 .qasp,
-                .justificationApproval
+                .justificationApproval,
             ]
         case .completed:
             // Completed acquisitions allow all document types for reporting
-            return [
+            [
                 .sow,
                 .pws,
                 .qasp,
                 .costEstimate,
-                .evaluationPlan
+                .evaluationPlan,
             ]
         case .cancelled:
             // Cancelled acquisitions have limited document options
-            return [
-                .justificationApproval
+            [
+                .justificationApproval,
             ]
         case .onHold:
             // On hold acquisitions maintain current document options
-            return [
+            [
                 .sow,
                 .pws,
-                .qasp
+                .qasp,
             ]
         case .archived:
             // Archived acquisitions are read-only
-            return []
+            []
         }
     }
 
@@ -309,7 +311,7 @@ public enum DocumentExecutionError: LocalizedError, Sendable {
 
     public var errorDescription: String? {
         switch self {
-        case .generationFailed(let reason):
+        case let .generationFailed(reason):
             "Document generation failed: \(reason)"
         case .serviceUnavailable:
             "Document service unavailable"

@@ -5,7 +5,6 @@ import SwiftUI
 /// This enables platform-agnostic view models that work across iOS and macOS
 @MainActor
 public protocol DocumentScannerViewModelProtocol: ObservableObject {
-
     // MARK: - State Properties
 
     /// Whether scanning is currently active

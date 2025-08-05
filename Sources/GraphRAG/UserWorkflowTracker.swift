@@ -59,7 +59,7 @@ actor UserWorkflowTracker {
     }
 
     func getEncryptedWorkflowData(userId: String) async throws -> Data {
-        return try await getRawStoredData(userId: userId)
+        try await getRawStoredData(userId: userId)
     }
 
     func getEncryptionInfo(userId: String) async throws -> EncryptionInfo {
@@ -344,13 +344,13 @@ enum WorkflowTrackerError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .noEncryptionKey:
-            return "No encryption key found for user"
+            "No encryption key found for user"
         case .encryptionFailed:
-            return "Failed to encrypt workflow data"
+            "Failed to encrypt workflow data"
         case .decryptionFailed:
-            return "Failed to decrypt workflow data"
+            "Failed to decrypt workflow data"
         case .invalidData:
-            return "Invalid workflow data format"
+            "Invalid workflow data format"
         }
     }
 }

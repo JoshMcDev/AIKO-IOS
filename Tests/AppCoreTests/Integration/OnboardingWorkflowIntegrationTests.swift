@@ -1,15 +1,14 @@
-import XCTest
-import SwiftUI
-@testable import AppCore
 @testable import AIKO
+@testable import AppCore
+import SwiftUI
+import XCTest
 
 /// Comprehensive integration tests for OnboardingView complete user workflow
 /// Tests end-to-end journey from welcome → API setup → permissions → completion
 @MainActor
 final class OnboardingWorkflowIntegrationTests: XCTestCase, @unchecked Sendable {
-
-    var viewModel: OnboardingViewModel!
-    var settingsManager: SettingsManager!
+    var viewModel: OnboardingViewModel?
+    var settingsManager: SettingsManager?
 
     override func setUp() async throws {
         // Create test SettingsManager with validation
@@ -22,7 +21,7 @@ final class OnboardingWorkflowIntegrationTests: XCTestCase, @unchecked Sendable 
             loadAPIKey: { "test-api-key" },
             validateAPIKey: { key in
                 // Realistic validation: must start with sk-ant- and be at least 40 characters
-                return key.hasPrefix("sk-ant-") && key.count >= 40
+                key.hasPrefix("sk-ant-") && key.count >= 40
             },
             exportData: { _ in URL(fileURLWithPath: "/tmp/test.json") },
             importData: { _ in },
@@ -288,11 +287,11 @@ final class OnboardingWorkflowIntegrationTests: XCTestCase, @unchecked Sendable 
             }
 
             func getSaveWasCalled() -> Bool {
-                return saveWasCalled
+                saveWasCalled
             }
 
             func getSavedAPIKey() -> String? {
-                return savedAPIKey
+                savedAPIKey
             }
         }
 
@@ -378,7 +377,6 @@ final class OnboardingWorkflowIntegrationTests: XCTestCase, @unchecked Sendable 
 // MARK: - OnboardingViewModel Test Extensions
 
 extension OnboardingWorkflowIntegrationTests {
-
     func test_onboardingStep_allSteps_shouldHaveValidConfiguration() {
         // Verify all steps have proper configuration for UI
         for step in OnboardingStep.allCases {
@@ -392,7 +390,7 @@ extension OnboardingWorkflowIntegrationTests {
     func test_onboardingStep_progressSequence_shouldBeCorrectlyOrdered() {
         let steps = OnboardingStep.allCases.sorted { $0.rawValue < $1.rawValue }
 
-        for i in 1..<steps.count {
+        for i in 1 ..< steps.count {
             let previousStep = steps[i - 1]
             let currentStep = steps[i]
 

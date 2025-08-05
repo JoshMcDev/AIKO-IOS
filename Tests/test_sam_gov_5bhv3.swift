@@ -5,7 +5,6 @@ import XCTest
 // This simulates the functionality that would be available in the app
 
 final class TestSAMGovSearch: XCTestCase {
-
     func testSAMGovSearch() throws {
         print("🔍 Testing SAM.gov Interface with CAGE Code: 5BHV3")
         print(String(repeating: "=", count: 50))
@@ -54,7 +53,7 @@ final class TestSAMGovSearch: XCTestCase {
             "Market Analysis Reports (15-20 minutes)",
             "Vendor Capabilities Assessment (10-15 minutes)",
             "Competitive Analysis (20-25 minutes)",
-            "Past Performance Evaluation (12-18 minutes)"
+            "Past Performance Evaluation (12-18 minutes)",
         ]
 
         for (index, option) in followOnOptions.enumerated() {

@@ -19,7 +19,7 @@ let criticalFiles = [
     "Sources/Services/Compliance/ComplianceGuardian.swift",
     "Sources/Models/Compliance/ComplianceModels.swift",
     "Sources/Models/TestDocument.swift",
-    "Tests/ComplianceGuardianTests.swift"
+    "Tests/ComplianceGuardianTests.swift",
 ]
 
 var allFilesExist = true

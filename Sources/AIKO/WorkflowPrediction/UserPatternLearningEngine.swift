@@ -331,7 +331,7 @@ public class UserPatternLearningEngine {
 
     /// Finds similar patterns for context-aware predictions
     private func findSimilarPatterns(for state: PatternWorkflowState) async -> [WorkflowPattern] {
-        return learnedPatterns.filter { pattern in
+        learnedPatterns.filter { pattern in
             // Filter by document type relevance
             let documentMatch = pattern.context["documentType"] == state.documentType
 
@@ -344,7 +344,7 @@ public class UserPatternLearningEngine {
 
     /// Creates workflow pattern from current state
     private func createWorkflowPattern(from state: PatternWorkflowState) -> WorkflowPattern {
-        return WorkflowPattern(
+        WorkflowPattern(
             sequence: [state.currentStep] + state.completedSteps,
             context: [
                 "documentType": state.documentType,
@@ -395,7 +395,7 @@ public class UserPatternLearningEngine {
         _ predictions: [StatePrediction],
         originalState: PatternWorkflowState
     ) async -> [WorkflowPrediction] {
-        return predictions.map { prediction in
+        predictions.map { prediction in
             WorkflowPrediction(
                 id: UUID(),
                 nextSteps: [prediction.nextState.currentStep],
@@ -413,15 +413,15 @@ public class UserPatternLearningEngine {
     private func inferPhaseFromStep(_ step: String) -> String {
         switch step {
         case let s where s.contains("planning") || s.contains("research") || s.contains("requirements"):
-            return "planning"
+            "planning"
         case let s where s.contains("execution") || s.contains("development") || s.contains("implementation"):
-            return "execution"
+            "execution"
         case let s where s.contains("review") || s.contains("evaluation") || s.contains("assessment"):
-            return "review"
+            "review"
         case let s where s.contains("closeout") || s.contains("completion") || s.contains("final"):
-            return "closeout"
+            "closeout"
         default:
-            return "planning" // Default phase
+            "planning" // Default phase
         }
     }
 
@@ -430,15 +430,15 @@ public class UserPatternLearningEngine {
         // Simplified resource inference - in production would use learned patterns
         switch state.phase {
         case "planning":
-            return ["Project Manager", "Business Analyst", "Documentation"]
+            ["Project Manager", "Business Analyst", "Documentation"]
         case "execution":
-            return ["Developer", "Designer", "Testing Environment"]
+            ["Developer", "Designer", "Testing Environment"]
         case "review":
-            return ["Reviewer", "Quality Assurance", "Documentation"]
+            ["Reviewer", "Quality Assurance", "Documentation"]
         case "closeout":
-            return ["Project Manager", "Stakeholder Sign-off"]
+            ["Project Manager", "Stakeholder Sign-off"]
         default:
-            return ["Team Member"]
+            ["Team Member"]
         }
     }
 

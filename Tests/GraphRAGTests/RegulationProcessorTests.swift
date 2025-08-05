@@ -13,13 +13,13 @@ private enum RegulationTestError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .serviceNotInitialized:
-            return "Test service was not properly initialized"
+            "Test service was not properly initialized"
         case .invalidTestData:
-            return "Test data is invalid or corrupted"
+            "Test data is invalid or corrupted"
         case .testTimeout:
-            return "Test operation timed out"
+            "Test operation timed out"
         case let .assertionFailure(message):
-            return "Test assertion failed: \(message)"
+            "Test assertion failed: \(message)"
         }
     }
 }
@@ -47,7 +47,7 @@ final class RegulationProcessorTests: XCTestCase {
     /// Test HTML processing performance target: <500ms per regulation
     /// This test WILL FAIL initially until HTML processing optimization is implemented
     func testHTMLProcessingPerformanceTarget() async throws {
-        guard let regulationProcessor = regulationProcessor else {
+        guard let regulationProcessor else {
             throw RegulationTestError.serviceNotInitialized
         }
 
@@ -84,7 +84,7 @@ final class RegulationProcessorTests: XCTestCase {
     /// Test smart chunking effectiveness: >85% semantic coherence within chunks
     /// This test WILL FAIL initially until smart chunking is implemented
     func testSmartChunkingEffectiveness() async throws {
-        guard let regulationProcessor = regulationProcessor else {
+        guard let regulationProcessor else {
             throw RegulationTestError.serviceNotInitialized
         }
 
@@ -119,7 +119,7 @@ final class RegulationProcessorTests: XCTestCase {
     /// Test government regulation specialization: FAR/DFARS specific processing
     /// This test WILL FAIL initially until regulation specialization is implemented
     func testGovernmentRegulationSpecialization() async throws {
-        guard let regulationProcessor = regulationProcessor else {
+        guard let regulationProcessor else {
             throw RegulationTestError.serviceNotInitialized
         }
 
@@ -162,7 +162,7 @@ final class RegulationProcessorTests: XCTestCase {
     /// Test concurrent processing scale: 25+ regulations simultaneously
     /// This test WILL FAIL initially until concurrent processing is implemented
     func testConcurrentProcessingScale() async throws {
-        guard let regulationProcessor = regulationProcessor else {
+        guard let regulationProcessor else {
             throw RegulationTestError.serviceNotInitialized
         }
 
@@ -175,7 +175,7 @@ final class RegulationProcessorTests: XCTestCase {
         let processedRegulations = try await withThrowingTaskGroup(of: GraphRAG.ProcessedRegulation.self) { group in
             for regulation in testRegulations {
                 group.addTask { [regulationProcessor = self.regulationProcessor] in
-                    guard let regulationProcessor = regulationProcessor else {
+                    guard let regulationProcessor else {
                         throw RegulationTestError.serviceNotInitialized
                     }
                     return try await regulationProcessor.processHTMLRegulation(
@@ -213,7 +213,7 @@ final class RegulationProcessorTests: XCTestCase {
 
     private func createTestFARHTML() -> String {
         // Basic test FAR HTML structure for testing purposes
-        return """
+        """
         <html>
         <head><title>FAR 52.212-1 Test Regulation</title></head>
         <body>
@@ -233,7 +233,7 @@ final class RegulationProcessorTests: XCTestCase {
 
     private func createTestDFARSHTML() -> String {
         // Basic test DFARS HTML structure for testing purposes
-        return """
+        """
         <html>
         <head><title>DFARS 252.212-7001 Test Regulation</title></head>
         <body>
@@ -253,7 +253,7 @@ final class RegulationProcessorTests: XCTestCase {
 
     private func createComplexFARRegulation() -> String {
         // Complex FAR regulation with multiple sections for testing chunking
-        return """
+        """
         <html>
         <head><title>FAR 52.219-1 Complex Small Business Program Representations</title></head>
         <body>
@@ -282,7 +282,7 @@ final class RegulationProcessorTests: XCTestCase {
     private func createMultipleFARRegulations(count: Int) -> [String] {
         // Generate multiple test FAR regulations for performance testing
         var regulations: [String] = []
-        for i in 1...count {
+        for i in 1 ... count {
             let regulation = """
             <html>
             <head><title>FAR 52.212-\(i) Test Regulation \(i)</title></head>
@@ -306,7 +306,7 @@ final class RegulationProcessorTests: XCTestCase {
     private func createTestRegulations(count: Int) -> [TestRegulationInput] {
         // Generate test regulation inputs for concurrent processing
         var regulations: [TestRegulationInput] = []
-        for i in 1...count {
+        for i in 1 ... count {
             let source: RegulationSource = (i % 2 == 0) ? .dfars : .far
             let htmlContent = (source == .far) ? createTestFARHTML() : createTestDFARSHTML()
             regulations.append(TestRegulationInput(html: htmlContent, source: source))

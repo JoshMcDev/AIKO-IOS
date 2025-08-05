@@ -326,6 +326,13 @@ public struct PerformanceTrend: Equatable, Sendable {
         self.changePercent = changePercent
         self.timeFrame = timeFrame
     }
+
+    public static func == (lhs: PerformanceTrend, rhs: PerformanceTrend) -> Bool {
+        lhs.metric == rhs.metric &&
+            lhs.trend == rhs.trend &&
+            lhs.changePercent == rhs.changePercent &&
+            lhs.timeFrame == rhs.timeFrame
+    }
 }
 
 public enum PerformanceMetric: String, CaseIterable, Equatable, Sendable {

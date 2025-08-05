@@ -348,26 +348,26 @@ class LLMProviderAdapter: LLMProviderProtocol {
 
     /// Get API key from keychain
     @MainActor
-    protected func getAPIKey() async -> String? {
+    internal func getAPIKey() async -> String? {
         LLMConfigurationManager.shared.getAPIKey(for: provider)
     }
 
     /// Track an active task
-    protected func trackTask(_ task: Task<Void, Never>) {
+    internal func trackTask(_ task: Task<Void, Never>) {
         taskQueue.async(flags: .barrier) {
             self.activeTasks.insert(task)
         }
     }
 
     /// Remove a completed task
-    protected func removeTask(_ task: Task<Void, Never>) {
+    internal func removeTask(_ task: Task<Void, Never>) {
         taskQueue.async(flags: .barrier) {
             self.activeTasks.remove(task)
         }
     }
 
     /// Build headers with authentication
-    protected func buildHeaders(apiKey _: String) -> [String: String] {
+    internal func buildHeaders(apiKey _: String) -> [String: String] {
         var headers = [
             "Content-Type": "application/json",
         ]
@@ -381,7 +381,7 @@ class LLMProviderAdapter: LLMProviderProtocol {
     }
 
     /// Get base URL for requests
-    protected func getBaseURL() -> String {
+    internal func getBaseURL() -> String {
         configuration.customEndpoint ?? provider.baseURL
     }
 }

@@ -1,6 +1,6 @@
-import SwiftUI
 import AppCore
 import Foundation
+import SwiftUI
 
 /// Main AppView using native SwiftUI with @Observable AppViewModel
 /// This replaces the TCA-based AppView implementation
@@ -494,7 +494,7 @@ struct AuthenticationView: View {
                     .cornerRadius(12)
                 }
 
-                if let error = error {
+                if let error {
                     Text(error)
                         .font(.caption)
                         .foregroundColor(.red)
@@ -847,13 +847,13 @@ struct CategoryChipView: View {
 
     private func categoryIcon(for category: AppCore.TemplateCategory) -> String {
         switch category {
-        case .all: return "square.grid.2x2"
-        case .technology: return "laptopcomputer"
-        case .services: return "briefcase"
-        case .logistics: return "truck.box"
-        case .security: return "shield"
-        case .construction: return "hammer"
-        case .research: return "flask"
+        case .all: "square.grid.2x2"
+        case .technology: "laptopcomputer"
+        case .services: "briefcase"
+        case .logistics: "truck.box"
+        case .security: "shield"
+        case .construction: "hammer"
+        case .research: "flask"
         }
     }
 }
@@ -1050,7 +1050,7 @@ struct TemplateDetailSheet: View {
         var variables: Set<String> = []
 
         regex?.enumerateMatches(in: template.content, options: [], range: range) { match, _, _ in
-            if let match = match, let range = Range(match.range(at: 1), in: template.content) {
+            if let match, let range = Range(match.range(at: 1), in: template.content) {
                 let variable = String(template.content[range])
                 variables.insert(variable)
             }
@@ -1132,11 +1132,11 @@ struct TemplateRowView: View {
 struct ShareSheet: UIViewControllerRepresentable {
     let items: [Any]
 
-    func makeUIViewController(context: Context) -> UIActivityViewController {
+    func makeUIViewController(context _: Context) -> UIActivityViewController {
         UIActivityViewController(activityItems: items, applicationActivities: nil)
     }
 
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+    func updateUIViewController(_: UIActivityViewController, context _: Context) {}
 }
 
 #endif
@@ -1231,7 +1231,7 @@ struct RoundedCorner: Shape {
 }
 #else
 extension View {
-    func roundedCorner(_ radius: CGFloat, corners: String = "allCorners") -> some View {
+    func roundedCorner(_ radius: CGFloat, corners _: String = "allCorners") -> some View {
         clipShape(RoundedRectangle(cornerRadius: radius))
     }
 }

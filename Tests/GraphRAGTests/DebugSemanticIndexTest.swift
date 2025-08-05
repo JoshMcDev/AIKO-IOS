@@ -1,9 +1,8 @@
-import XCTest
 @testable import GraphRAG
+import XCTest
 
 /// Debug test to understand why UnifiedSearchServiceTests returns empty results
 final class DebugSemanticIndexTest: XCTestCase {
-
     func testSemanticIndexDataFlow() async throws {
         let semanticIndex = ObjectBoxSemanticIndex.shared
 
@@ -42,7 +41,7 @@ final class DebugSemanticIndexTest: XCTestCase {
         let results = try await semanticIndex.findSimilarRegulations(
             queryEmbedding: queryEmbedding,
             limit: 10,
-            threshold: 0.1  // Very low threshold
+            threshold: 0.1 // Very low threshold
         )
 
         print("🔍 Debug: Search returned \(results.count) results")
@@ -91,7 +90,7 @@ final class DebugSemanticIndexTest: XCTestCase {
     private func createTestEmbedding(dimensions: Int) -> [Float] {
         var embedding = [Float](repeating: 0.0, count: dimensions)
 
-        for i in 0..<dimensions {
+        for i in 0 ..< dimensions {
             let value = sin(Float(i) * 0.1) * 0.5
             embedding[i] = value
         }
@@ -112,7 +111,7 @@ final class DebugSemanticIndexTest: XCTestCase {
         let magnitudeA = sqrt(a.map { $0 * $0 }.reduce(0, +))
         let magnitudeB = sqrt(b.map { $0 * $0 }.reduce(0, +))
 
-        guard magnitudeA > 0 && magnitudeB > 0 else { return 0.0 }
+        guard magnitudeA > 0, magnitudeB > 0 else { return 0.0 }
 
         return dotProduct / (magnitudeA * magnitudeB)
     }

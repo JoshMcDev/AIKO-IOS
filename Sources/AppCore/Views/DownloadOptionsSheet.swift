@@ -333,7 +333,7 @@ public struct DownloadOptionsSheet: View {
         }
 
         do {
-            guard let documentManager = documentManager else {
+            guard let documentManager else {
                 throw DocumentManagerError.downloadFailed("Document manager not available")
             }
 
@@ -415,9 +415,9 @@ struct DocumentDownloadRow: View {
         return formatter.string(fromByteCount: Int64(bytes))
     }
 
-    private func getFileTypeIcon(for fileType: String) -> String {
+    private func getFileTypeIcon(for _: String) -> String {
         // Use generic document icon for all types
-        return "doc.richtext"
+        "doc.richtext"
     }
 
     private func getFileTypeColor(for fileType: String) -> Color {
@@ -566,7 +566,7 @@ public struct DocumentSelectionSheet: View {
     }
 
     private func loadAcquisition() async {
-        guard let acquisitionId = acquisitionId else {
+        guard let acquisitionId else {
             await MainActor.run {
                 isLoading = false
             }

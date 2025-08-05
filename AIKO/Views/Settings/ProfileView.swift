@@ -6,9 +6,9 @@
 //  Copyright © 2025 AIKO. All rights reserved.
 //
 
-import SwiftUI
-import PhotosUI
 import AppCore
+import PhotosUI
+import SwiftUI
 
 /// ProfileView - SwiftUI view for managing user profile
 /// PHASE 3: Enhanced Features implementation
@@ -54,7 +54,7 @@ struct ProfileView: View {
                 }
             }
             .alert("Profile", isPresented: $showingAlert) {
-                Button("OK", role: .cancel) { }
+                Button("OK", role: .cancel) {}
             } message: {
                 Text(alertMessage)
             }

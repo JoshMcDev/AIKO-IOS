@@ -1,6 +1,7 @@
-import XCTest
-import Foundation
 @testable import AIKO
+@testable import AppCore
+import Foundation
+import XCTest
 
 /// Comprehensive test suite for FeatureStateEncoder
 /// Testing feature extraction and context-to-feature conversion
@@ -11,19 +12,18 @@ import Foundation
 /// 3. Edge case handling and error scenarios
 /// 4. Performance requirements for encoding speed
 final class FeatureStateEncoderTests: XCTestCase {
-
     // MARK: - Test Properties
 
-    var testContext: AcquisitionContext!
-    var complexContext: AcquisitionContext!
-    var minimalContext: AcquisitionContext!
+    var testContext: TestAcquisitionContext?
+    var complexContext: TestAcquisitionContext?
+    var minimalContext: TestAcquisitionContext?
 
     override func setUp() async throws {
         // Standard test context
-        testContext = AcquisitionContext(
+        testContext = TestAcquisitionContext(
             acquisitionId: UUID(),
             documentType: .purchaseRequest,
-            acquisitionValue: 150000.0,
+            acquisitionValue: 150_000.0,
             complexity: TestComplexityLevel(score: 0.6, factors: ["multi-step", "regulatory"]),
             timeConstraints: TestTimeConstraints(
                 daysRemaining: 45,
@@ -33,7 +33,7 @@ final class FeatureStateEncoderTests: XCTestCase {
             regulatoryRequirements: Set([
                 TestFARClause(clauseNumber: "52.215-1", isCritical: true),
                 TestFARClause(clauseNumber: "52.209-5", isCritical: false),
-                TestFARClause(clauseNumber: "52.233-1", isCritical: true)
+                TestFARClause(clauseNumber: "52.233-1", isCritical: true),
             ]),
             historicalSuccess: 0.75,
             userProfile: TestUserProfile(experienceLevel: 0.8),
@@ -42,27 +42,27 @@ final class FeatureStateEncoderTests: XCTestCase {
         )
 
         // Complex context with many features
-        complexContext = AcquisitionContext(
+        complexContext = TestAcquisitionContext(
             acquisitionId: UUID(),
             documentType: .sourceSelection,
-            acquisitionValue: 5000000.0,
+            acquisitionValue: 5_000_000.0,
             complexity: TestComplexityLevel(score: 0.95, factors: ["complex", "multi-vendor", "high-value", "critical"]),
             timeConstraints: TestTimeConstraints(
                 daysRemaining: 5,
                 isUrgent: true,
                 expectedDuration: 28800.0
             ),
-            regulatoryRequirements: Set((1...15).map {
+            regulatoryRequirements: Set((1 ... 15).map {
                 TestFARClause(clauseNumber: "52.215-\($0)", isCritical: $0 <= 5)
             }),
             historicalSuccess: 0.45,
             userProfile: TestUserProfile(experienceLevel: 0.3),
             workflowProgress: 0.8,
-            completedDocuments: Array(1...10).map { "document-\($0)" }
+            completedDocuments: Array(1 ... 10).map { "document-\($0)" }
         )
 
         // Minimal context
-        minimalContext = AcquisitionContext(
+        minimalContext = TestAcquisitionContext(
             acquisitionId: UUID(),
             documentType: .simplePurchase,
             acquisitionValue: 1000.0,
@@ -72,7 +72,7 @@ final class FeatureStateEncoderTests: XCTestCase {
                 isUrgent: false,
                 expectedDuration: 1800.0
             ),
-            regulatoryRequirements: Set([]),
+            regulatoryRequirements: Set<TestFARClause>(),
             historicalSuccess: 0.95,
             userProfile: TestUserProfile(experienceLevel: 0.9),
             workflowProgress: 0.0,
@@ -92,6 +92,13 @@ final class FeatureStateEncoderTests: XCTestCase {
         // RED PHASE: This test should FAIL initially
         // Testing one-hot encoding of document types
 
+        guard let testContext,
+              let complexContext
+        else {
+            XCTFail("Test contexts should be initialized")
+            return
+        }
+
         // When: Context is encoded
         let features = FeatureStateEncoder.encode(testContext)
 
@@ -110,15 +117,32 @@ final class FeatureStateEncoderTests: XCTestCase {
         // RED PHASE: This test should FAIL initially
         // Testing acquisition value normalization
 
+        guard let testContext,
+              let complexContext,
+              let minimalContext
+        else {
+            XCTFail("Test contexts should be initialized")
+            return
+        }
+
         // When: Different contexts with varying values are encoded
         let standardFeatures = FeatureStateEncoder.encode(testContext) // $150k
         let highValueFeatures = FeatureStateEncoder.encode(complexContext) // $5M
         let lowValueFeatures = FeatureStateEncoder.encode(minimalContext) // $1k
 
         // Then: Values should be normalized to [0,1] range
-        let standardValue = standardFeatures.features["value_normalized"]!
-        let highValue = highValueFeatures.features["value_normalized"]!
-        let lowValue = lowValueFeatures.features["value_normalized"]!
+        guard let standardValue = standardFeatures.features["value_normalized"] else {
+            XCTFail("Standard value_normalized feature should exist")
+            return
+        }
+        guard let highValue = highValueFeatures.features["value_normalized"] else {
+            XCTFail("High value_normalized feature should exist")
+            return
+        }
+        guard let lowValue = lowValueFeatures.features["value_normalized"] else {
+            XCTFail("Low value_normalized feature should exist")
+            return
+        }
 
         XCTAssertTrue(standardValue >= 0.0 && standardValue <= 1.0, "Standard value should be normalized")
         XCTAssertTrue(highValue >= 0.0 && highValue <= 1.0, "High value should be normalized")
@@ -129,8 +153,14 @@ final class FeatureStateEncoderTests: XCTestCase {
         XCTAssertGreaterThan(standardValue, lowValue, "Medium value should be higher than low value")
 
         // Test log scaling
-        let standardLogValue = standardFeatures.features["value_log"]!
-        let highLogValue = highValueFeatures.features["value_log"]!
+        guard let standardLogValue = standardFeatures.features["value_log"] else {
+            XCTFail("Standard value_log feature should exist")
+            return
+        }
+        guard let highLogValue = highValueFeatures.features["value_log"] else {
+            XCTFail("High value_log feature should exist")
+            return
+        }
 
         XCTAssertGreaterThan(highLogValue, standardLogValue, "Log values should preserve ordering")
         XCTAssertGreaterThan(standardLogValue, 0.0, "Log values should be positive")
@@ -139,6 +169,14 @@ final class FeatureStateEncoderTests: XCTestCase {
     func testFeatureExtraction_ComplexityFeatures() throws {
         // RED PHASE: This test should FAIL initially
         // Testing complexity score and requirement count encoding
+
+        guard let testContext,
+              let complexContext,
+              let minimalContext
+        else {
+            XCTFail("Test contexts should be initialized")
+            return
+        }
 
         // When: Contexts with different complexity are encoded
         let simpleFeatures = FeatureStateEncoder.encode(minimalContext)
@@ -199,6 +237,14 @@ final class FeatureStateEncoderTests: XCTestCase {
         // RED PHASE: This test should FAIL initially
         // Testing regulatory requirement encoding (up to 10 most common)
 
+        guard let testContext,
+              let complexContext,
+              let minimalContext
+        else {
+            XCTFail("Test contexts should be initialized")
+            return
+        }
+
         // When: Context with multiple requirements is encoded
         let features = FeatureStateEncoder.encode(testContext)
 
@@ -221,6 +267,14 @@ final class FeatureStateEncoderTests: XCTestCase {
     func testFeatureExtraction_WorkflowStateFeatures() throws {
         // RED PHASE: This test should FAIL initially
         // Testing workflow progress and completion features
+
+        guard let testContext,
+              let complexContext,
+              let minimalContext
+        else {
+            XCTFail("Test contexts should be initialized")
+            return
+        }
 
         // When: Context is encoded
         let features = FeatureStateEncoder.encode(testContext)
@@ -247,8 +301,11 @@ final class FeatureStateEncoderTests: XCTestCase {
         // Testing hash consistency for identical contexts
 
         // Given: Two identical contexts
-        let context1 = testContext!
-        let context2 = AcquisitionContext(
+        guard let context1 = testContext else {
+            XCTFail("Test context should be initialized")
+            return
+        }
+        let context2 = TestAcquisitionContext(
             acquisitionId: UUID(), // Different ID but same content
             documentType: context1.documentType,
             acquisitionValue: context1.acquisitionValue,
@@ -273,7 +330,11 @@ final class FeatureStateEncoderTests: XCTestCase {
         for (key, value1) in features1.features {
             let value2 = features2.features[key]
             XCTAssertNotNil(value2, "Feature \(key) should exist in both vectors")
-            XCTAssertEqual(value1, value2!, accuracy: 1e-6, "Feature \(key) values should match")
+            guard let value2 else {
+                XCTFail("Feature \(key) should exist in both vectors")
+                return
+            }
+            XCTAssertEqual(value1, value2, accuracy: 1e-6, "Feature \(key) values should match")
         }
     }
 
@@ -281,11 +342,14 @@ final class FeatureStateEncoderTests: XCTestCase {
         // RED PHASE: This test should FAIL initially
         // Testing hash stability across multiple encodings
 
-        let context = testContext!
+        guard let context = testContext else {
+            XCTFail("Test context should be initialized")
+            return
+        }
         var hashes: [Int] = []
 
         // When: Same context is encoded multiple times
-        for _ in 0..<10 {
+        for _ in 0 ..< 10 {
             let features = FeatureStateEncoder.encode(context)
             hashes.append(features.hash)
         }
@@ -298,6 +362,13 @@ final class FeatureStateEncoderTests: XCTestCase {
     func testFeatureVector_Equatability() throws {
         // RED PHASE: This test should FAIL initially
         // Testing FeatureVector equality comparison
+
+        guard let testContext,
+              let complexContext
+        else {
+            XCTFail("Test contexts should be initialized")
+            return
+        }
 
         let features1 = FeatureStateEncoder.encode(testContext)
         let features2 = FeatureStateEncoder.encode(testContext)
@@ -314,6 +385,11 @@ final class FeatureStateEncoderTests: XCTestCase {
         // RED PHASE: This test should FAIL initially
         // Testing context with no regulatory requirements
 
+        guard let minimalContext else {
+            XCTFail("Minimal context should be initialized")
+            return
+        }
+
         // When: Context with empty regulatory requirements is encoded
         let features = FeatureStateEncoder.encode(minimalContext)
 
@@ -329,13 +405,13 @@ final class FeatureStateEncoderTests: XCTestCase {
         // RED PHASE: This test should FAIL initially
         // Testing extreme acquisition values
 
-        let extremeContext = AcquisitionContext(
+        let extremeContext = TestAcquisitionContext(
             acquisitionId: UUID(),
             documentType: .majorConstruction,
             acquisitionValue: 100_000_000.0, // $100M
             complexity: TestComplexityLevel(score: 1.0, factors: ["extreme"]),
             timeConstraints: TestTimeConstraints(daysRemaining: 1, isUrgent: true, expectedDuration: 86400.0),
-            regulatoryRequirements: Set(),
+            regulatoryRequirements: Set<TestFARClause>(),
             historicalSuccess: 0.0,
             userProfile: TestUserProfile(experienceLevel: 0.0),
             workflowProgress: 1.0,
@@ -346,7 +422,10 @@ final class FeatureStateEncoderTests: XCTestCase {
         let features = FeatureStateEncoder.encode(extremeContext)
 
         // Then: Values should still be properly normalized
-        let normalizedValue = features.features["value_normalized"]!
+        guard let normalizedValue = features.features["value_normalized"] else {
+            XCTFail("value_normalized feature should exist")
+            return
+        }
         XCTAssertTrue(normalizedValue >= 0.0 && normalizedValue <= 1.0, "Extreme values should be normalized")
         XCTAssertGreaterThan(normalizedValue, 0.9, "Very high values should approach 1.0")
 
@@ -363,13 +442,13 @@ final class FeatureStateEncoderTests: XCTestCase {
         // This test will need to be implemented when we have contexts with optional values
         // For now, test with minimal data
 
-        let sparseContext = AcquisitionContext(
+        let sparseContext = TestAcquisitionContext(
             acquisitionId: UUID(),
             documentType: .other,
             acquisitionValue: 0.0,
             complexity: TestComplexityLevel(score: 0.0, factors: []),
             timeConstraints: TestTimeConstraints(daysRemaining: 0, isUrgent: false, expectedDuration: 0.0),
-            regulatoryRequirements: Set(),
+            regulatoryRequirements: Set<TestFARClause>(),
             historicalSuccess: 0.0,
             userProfile: TestUserProfile(experienceLevel: 0.0),
             workflowProgress: 0.0,
@@ -391,13 +470,20 @@ final class FeatureStateEncoderTests: XCTestCase {
         // RED PHASE: This test should FAIL initially
         // Testing feature encoding performance requirements
 
-        let contexts = [testContext!, complexContext!, minimalContext!]
+        guard let testCtx = testContext,
+              let complexCtx = complexContext,
+              let minimalCtx = minimalContext
+        else {
+            XCTFail("Test contexts should be initialized")
+            return
+        }
+        let contexts = [testCtx, complexCtx, minimalCtx]
         let iterations = 1000
 
         // When: Multiple encoding operations are performed
         let startTime = CFAbsoluteTimeGetCurrent()
 
-        for _ in 0..<iterations {
+        for _ in 0 ..< iterations {
             for context in contexts {
                 _ = FeatureStateEncoder.encode(context)
             }
@@ -419,8 +505,8 @@ final class FeatureStateEncoderTests: XCTestCase {
         let initialMemory = getMemoryUsage()
 
         // Create many feature vectors
-        var featureVectors: [FeatureVector] = []
-        for i in 0..<1000 {
+        var featureVectors: [AppCore.FeatureVector] = []
+        for i in 0 ..< 1000 {
             let context = createVariedContext(index: i)
             let features = FeatureStateEncoder.encode(context)
             featureVectors.append(features)
@@ -439,10 +525,10 @@ final class FeatureStateEncoderTests: XCTestCase {
 
     // MARK: - Helper Methods
 
-    private func createVariedContext(index: Int) -> AcquisitionContext {
-        let documentTypes: [TestDocumentType] = [.purchaseRequest, .sourceSelection, .emergencyProcurement, .simplePurchase]
+    private func createVariedContext(index: Int) -> TestAcquisitionContext {
+        let documentTypes: [AppCore.TestDocumentType] = [.purchaseRequest, .sourceSelection, .emergencyProcurement, .simplePurchase]
 
-        return AcquisitionContext(
+        return TestAcquisitionContext(
             acquisitionId: UUID(),
             documentType: documentTypes[index % documentTypes.count],
             acquisitionValue: Double(1000 + index * 10000),
@@ -456,7 +542,7 @@ final class FeatureStateEncoderTests: XCTestCase {
             historicalSuccess: Double(index % 100) / 100.0,
             userProfile: TestUserProfile(experienceLevel: Double(index % 100) / 100.0),
             workflowProgress: Double(index % 100) / 100.0,
-            completedDocuments: (0..<(index % 5)).map { "doc-\($0)" }
+            completedDocuments: (0 ..< (index % 5)).map { "doc-\($0)" }
         )
     }
 

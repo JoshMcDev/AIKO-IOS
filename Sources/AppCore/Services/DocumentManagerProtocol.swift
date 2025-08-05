@@ -1,12 +1,11 @@
-import Foundation
 import Combine
+import Foundation
 
 // MARK: - Document Manager Protocol
 
 /// Protocol defining document management operations across platforms
 /// Provides unified interface for document download, storage, and management
 public protocol DocumentManagerProtocol: Sendable {
-
     // MARK: - Document Download Operations
 
     /// Download multiple documents with progress tracking
@@ -120,42 +119,42 @@ public enum DocumentManagerError: Error, LocalizedError, Sendable {
     public var errorDescription: String? {
         switch self {
         case let .networkError(message):
-            return "Network error: \(message)"
+            "Network error: \(message)"
         case let .storageError(message):
-            return "Storage error: \(message)"
+            "Storage error: \(message)"
         case let .fileSystemError(message):
-            return "File system error: \(message)"
+            "File system error: \(message)"
         case let .invalidDocument(message):
-            return "Invalid document: \(message)"
+            "Invalid document: \(message)"
         case let .downloadFailed(message):
-            return "Download failed: \(message)"
+            "Download failed: \(message)"
         case let .insufficientStorage(needed):
-            return "Insufficient storage space. Need \(ByteCountFormatter().string(fromByteCount: needed)) more."
+            "Insufficient storage space. Need \(ByteCountFormatter().string(fromByteCount: needed)) more."
         case .permissionDenied:
-            return "Permission denied. Please check app permissions for file access."
+            "Permission denied. Please check app permissions for file access."
         case let .documentNotFound(id):
-            return "Document not found: \(id.uuidString)"
+            "Document not found: \(id.uuidString)"
         case let .unsupportedDocumentType(type):
-            return "Unsupported document type: \(type)"
+            "Unsupported document type: \(type)"
         case .corruptedData:
-            return "Document data is corrupted and cannot be processed."
+            "Document data is corrupted and cannot be processed."
         }
     }
 
     public var recoverySuggestion: String? {
         switch self {
         case .networkError:
-            return "Check your internet connection and try again."
+            "Check your internet connection and try again."
         case .storageError, .insufficientStorage:
-            return "Free up storage space and try again."
+            "Free up storage space and try again."
         case .fileSystemError:
-            return "Check file permissions and try again."
+            "Check file permissions and try again."
         case .permissionDenied:
-            return "Grant file access permission in Settings."
+            "Grant file access permission in Settings."
         case .downloadFailed:
-            return "Try downloading the document again."
+            "Try downloading the document again."
         default:
-            return "Please try again or contact support if the problem persists."
+            "Please try again or contact support if the problem persists."
         }
     }
 }
@@ -182,7 +181,7 @@ public struct DocumentOperationProgress: Sendable {
         self.fileName = fileName
         self.bytesProcessed = bytesProcessed
         self.totalBytes = totalBytes
-        self.progress = totalBytes > 0 ? Double(bytesProcessed) / Double(totalBytes) : 0.0
+        progress = totalBytes > 0 ? Double(bytesProcessed) / Double(totalBytes) : 0.0
         self.estimatedTimeRemaining = estimatedTimeRemaining
     }
 }

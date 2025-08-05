@@ -1,12 +1,11 @@
-import XCTest
-import SwiftUI
-@testable import AppCore
 @testable import AIKO
+@testable import AppCore
+import SwiftUI
+import XCTest
 
 @MainActor
 final class OnboardingViewTests: XCTestCase {
-
-    var viewModel: OnboardingViewModel!
+    var viewModel: OnboardingViewModel?
 
     override func setUp() async throws {
         // Create test SettingsManager
@@ -35,6 +34,11 @@ final class OnboardingViewTests: XCTestCase {
 
     func test_onboardingViewInitialization_shouldCreateWithViewModel() {
         // Given: OnboardingViewModel
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         // When: Creating OnboardingView
         let onboardingView = OnboardingView(viewModel: viewModel)
 
@@ -44,6 +48,11 @@ final class OnboardingViewTests: XCTestCase {
 
     func test_welcomeStep_shouldDisplayWelcomeContent() {
         // Given: OnboardingView at welcome step
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         viewModel.currentStep = .welcome
         let onboardingView = OnboardingView(viewModel: viewModel)
 
@@ -56,6 +65,11 @@ final class OnboardingViewTests: XCTestCase {
 
     func test_apiSetupStep_shouldDisplayAPIConfiguration() {
         // Given: OnboardingView at API setup step
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         viewModel.currentStep = .apiSetup
         let onboardingView = OnboardingView(viewModel: viewModel)
 
@@ -68,6 +82,11 @@ final class OnboardingViewTests: XCTestCase {
 
     func test_permissionsStep_shouldDisplayPermissionsContent() {
         // Given: OnboardingView at permissions step
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         viewModel.currentStep = .permissions
         let onboardingView = OnboardingView(viewModel: viewModel)
 
@@ -80,6 +99,11 @@ final class OnboardingViewTests: XCTestCase {
 
     func test_completionStep_shouldDisplayCompletionContent() {
         // Given: OnboardingView at completion step
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         viewModel.currentStep = .completion
         let onboardingView = OnboardingView(viewModel: viewModel)
 
@@ -91,6 +115,11 @@ final class OnboardingViewTests: XCTestCase {
     }
 
     func test_navigationButtons_shouldBeConfiguredCorrectlyForEachStep() {
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         let onboardingView = OnboardingView(viewModel: viewModel)
 
         // Welcome step: only Next button
@@ -120,6 +149,11 @@ final class OnboardingViewTests: XCTestCase {
 
     func test_navigationStack_shouldMaintainProperNavigationState() {
         // Given: OnboardingView with NavigationStack
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         let onboardingView = OnboardingView(viewModel: viewModel)
 
         // When: Navigation path is modified
@@ -130,6 +164,11 @@ final class OnboardingViewTests: XCTestCase {
     }
 
     func test_stepContent_shouldRenderCorrectViewForEachStep() {
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         let onboardingView = OnboardingView(viewModel: viewModel)
 
         // Test each step renders appropriate content
@@ -158,6 +197,11 @@ final class OnboardingViewTests: XCTestCase {
 
     func test_apiKeyInput_shouldBindToViewModel() {
         // Given: OnboardingView at API setup step
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         viewModel.currentStep = .apiSetup
         let onboardingView = OnboardingView(viewModel: viewModel)
 
@@ -171,6 +215,11 @@ final class OnboardingViewTests: XCTestCase {
 
     func test_faceIDToggle_shouldBindToViewModel() {
         // Given: OnboardingView at permissions step
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         viewModel.currentStep = .permissions
         let onboardingView = OnboardingView(viewModel: viewModel)
 
@@ -185,6 +234,11 @@ final class OnboardingViewTests: XCTestCase {
 
     func test_validationError_shouldDisplayErrorMessage() {
         // Given: OnboardingView with validation error
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         viewModel.currentStep = .apiSetup
         viewModel.validationError = "Invalid API key format"
         let onboardingView = OnboardingView(viewModel: viewModel)
@@ -197,6 +251,11 @@ final class OnboardingViewTests: XCTestCase {
 
     func test_loadingState_shouldDisableInteraction() {
         // Given: OnboardingView in loading state
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         viewModel.isLoading = true
         let onboardingView = OnboardingView(viewModel: viewModel)
 
@@ -209,6 +268,11 @@ final class OnboardingViewTests: XCTestCase {
     // MARK: - Accessibility Tests
 
     func test_accessibilityLabels_shouldBeProperlyConfigured() {
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         let onboardingView = OnboardingView(viewModel: viewModel)
 
         // Test that each step has proper accessibility configuration
@@ -226,6 +290,11 @@ final class OnboardingViewTests: XCTestCase {
     // MARK: - Performance Tests
 
     func test_viewRendering_shouldCompleteQuickly() {
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         measure {
             for step in OnboardingStep.allCases {
                 viewModel.currentStep = step
@@ -240,6 +309,11 @@ final class OnboardingViewTests: XCTestCase {
 
     func test_appViewIntegration_shouldAcceptViewModelParameter() {
         // Given: OnboardingViewModel instance
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         // When: Creating OnboardingView as it would be used in AppView
         let onboardingView = OnboardingView(viewModel: viewModel)
 
@@ -254,7 +328,6 @@ final class OnboardingViewTests: XCTestCase {
 // MARK: - OnboardingStep Extension Tests
 
 extension OnboardingViewTests {
-
     func test_onboardingStepAllCases_shouldIncludeAllSteps() {
         let allSteps = OnboardingStep.allCases
 

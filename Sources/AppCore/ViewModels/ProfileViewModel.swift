@@ -15,7 +15,6 @@ import SwiftUI
 @MainActor
 @Observable
 public final class ProfileViewModel: ObservableObject {
-
     // MARK: - Constants
 
     private enum Constants {
@@ -152,14 +151,14 @@ public final class ProfileViewModel: ObservableObject {
     }
 
     public func validateRequired(_ value: String, fieldName: String) -> String? {
-        return value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? ValidationMessage.requiredField(fieldName) : nil
+        value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? ValidationMessage.requiredField(fieldName) : nil
     }
 
     // MARK: - Computed Properties
 
     public var profileCompletionPercentage: Double {
         // Delegate to the UserProfile's own completionPercentage implementation
-        return profile.completionPercentage
+        profile.completionPercentage
     }
 
     // MARK: - Private Methods
@@ -192,10 +191,10 @@ public final class ProfileViewModel: ObservableObject {
     private func startAutoSave() {
         autoSaveTask?.cancel()
         autoSaveTask = Task {
-            while !Task.isCancelled && isEditing {
+            while !Task.isCancelled, isEditing {
                 do {
                     try await Task.sleep(nanoseconds: Constants.autoSaveDebounceInterval)
-                    if !Task.isCancelled && isEditing && validateProfile() {
+                    if !Task.isCancelled, isEditing, validateProfile() {
                         await saveProfile()
                     }
                 } catch {

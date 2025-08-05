@@ -1,15 +1,14 @@
-import XCTest
-import SwiftUI
-import ObjectiveC
 @testable import AIKO
+import ObjectiveC
+import SwiftUI
+import XCTest
 
 /// Comprehensive test suite for NavigationState enum-driven navigation
 /// These tests are designed to FAIL initially (Red phase) and pass after Green phase implementation
 /// Coverage target: 95% as specified in TDD rubric
 @MainActor
 final class NavigationStateTests: XCTestCase, @unchecked Sendable {
-
-    var navigationState: NavigationState!
+    var navigationState: NavigationState?
 
     override func setUp() async throws {
         navigationState = NavigationState()
@@ -44,7 +43,7 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
         // Test hashability
         let destinations: Set<NavigationState.NavigationDestination> = [
             acquisitionDest, documentDest, complianceDest, searchDest,
-            settingsDest, quickActionDest, workflowDest
+            settingsDest, quickActionDest, workflowDest,
         ]
         XCTAssertEqual(destinations.count, 7)
     }
@@ -85,6 +84,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
     // MARK: - Observable Pattern Tests
 
     func testNavigationStateObservable() {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         // Test that NavigationState is @Observable
         XCTAssertTrue(navigationState is any Observable)
 
@@ -100,6 +103,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
     // MARK: - Navigation Method Tests (These will FAIL in Red phase)
 
     func testNavigateToAcquisition() async {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         let acquisitionID = AcquisitionID("ACQ-2025-001")
         let destination = NavigationState.NavigationDestination.acquisition(acquisitionID)
 
@@ -113,6 +120,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
     }
 
     func testNavigateToDocument() async {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         let documentID = DocumentID("DOC-2025-001")
         let destination = NavigationState.NavigationDestination.document(documentID)
 
@@ -124,6 +135,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
     }
 
     func testNavigateToCompliance() async {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         let complianceID = ComplianceCheckID("COMP-2025-001")
         let destination = NavigationState.NavigationDestination.compliance(complianceID)
 
@@ -166,7 +181,7 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
 
     func testNavigationHistoryManagement() async {
         // Test navigation history limit (should maintain 50 entries max)
-        for i in 1...60 {
+        for i in 1 ... 60 {
             let destination = NavigationState.NavigationDestination.acquisition(AcquisitionID("ACQ-\(i)"))
             await navigationState.navigate(to: destination)
         }
@@ -284,7 +299,7 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
             .notStarted,
             .inProgress(step: 2, of: 5),
             .completed,
-            .failed("Test error")
+            .failed("Test error"),
         ]
 
         let encoder = JSONEncoder()
@@ -376,7 +391,7 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
         let destinations = [
             NavigationState.NavigationDestination.acquisition(AcquisitionID("ACQ-001")),
             NavigationState.NavigationDestination.document(DocumentID("DOC-001")),
-            NavigationState.NavigationDestination.compliance(ComplianceCheckID("COMP-001"))
+            NavigationState.NavigationDestination.compliance(ComplianceCheckID("COMP-001")),
         ]
 
         // Perform concurrent navigation
@@ -425,7 +440,7 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
         // Test performance with large navigation history
         let startTime = CFAbsoluteTimeGetCurrent()
 
-        for i in 1...1000 {
+        for i in 1 ... 1000 {
             let destination = NavigationState.NavigationDestination.acquisition(AcquisitionID("PERF-\(i)"))
             await navigationState.navigate(to: destination)
         }
@@ -458,7 +473,7 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
         let destination = NavigationState.NavigationDestination.acquisition(acquisitionID)
 
         switch destination {
-        case .acquisition(let id):
+        case let .acquisition(id):
             XCTAssertEqual(id, acquisitionID, "Type-safe extraction should work")
         default:
             XCTFail("Type matching should work correctly")
@@ -487,7 +502,6 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
 
 /// This extension ensures we have comprehensive test coverage for all NavigationState functionality
 extension NavigationStateTests {
-
     func testTestCoverageCompleteness() {
         // Verify we have tests for all major NavigationState functionality
         // This meta-test ensures we don't miss critical test cases
@@ -519,7 +533,7 @@ extension NavigationStateTests {
             "testLargeNavigationHistoryPerformance",
             "testWorkflowFailureHandling",
             "testNavigationDestinationTypeSafety",
-            "testWorkflowTypeDefinitions"
+            "testWorkflowTypeDefinitions",
         ]
 
         // Get all test methods using runtime reflection
@@ -531,7 +545,7 @@ extension NavigationStateTests {
         }
 
         var testMethods: [String] = []
-        for i in 0..<methodCount {
+        for i in 0 ..< methodCount {
             let selector = method_getName(methods[Int(i)])
             let methodName = String(cString: sel_getName(selector))
             if methodName.hasPrefix("test") {

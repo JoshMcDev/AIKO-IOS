@@ -41,12 +41,12 @@ actor LocalRLAgent {
     // MARK: - Initialization
 
     init() {
-        self.banditAlgorithm = ContextualBandits(
+        banditAlgorithm = ContextualBandits(
             algorithmType: .thompsonSampling,
             explorationRate: explorationRate
         )
-        self.actionSpace = AcquisitionActionSpace()
-        self.stateEncoder = WorkflowStateEncoder()
+        actionSpace = AcquisitionActionSpace()
+        stateEncoder = WorkflowStateEncoder()
 
         logger.info("LocalRLAgent initialized with Thompson Sampling")
     }
@@ -83,10 +83,10 @@ actor LocalRLAgent {
             features: features
         )
 
-        let recommendation = RLRecommendation(
+        let recommendation = await RLRecommendation(
             action: selectedAction,
             confidence: confidence,
-            parameters: await generateActionParameters(action: selectedAction, context: context),
+            parameters: generateActionParameters(action: selectedAction, context: context),
             reasoning: generateReasoning(action: selectedAction, confidence: confidence, context: context),
             alternatives: alternatives
         )
@@ -187,12 +187,12 @@ actor LocalRLAgent {
         let actionDistribution = calculateActionDistribution()
         let statePerformance = calculateStatePerformance()
 
-        return RLAnalytics(
+        return await RLAnalytics(
             totalDecisions: totalDecisions,
             totalReward: totalReward,
             averageReward: averageReward,
             recentAverageReward: recentAverageReward,
-            learningProgress: await getLearningProgress(),
+            learningProgress: getLearningProgress(),
             actionDistribution: actionDistribution,
             statePerformance: statePerformance,
             explorationRate: explorationRate
@@ -275,7 +275,7 @@ actor LocalRLAgent {
                 selectedAction: action,
                 availableActions: actionSpace.getAllActions(),
                 features: []
-            ).map { $0.type.rawValue }
+            ).map(\.type.rawValue)
 
         case .validateCompliance:
             parameters["checkLevel"] = context.risk.rawValue > 0.5 ? "thorough" : "standard"
@@ -391,18 +391,18 @@ struct RLState {
     let complexity: Double
     let userExperience: Double
 
-    init(from workflowState: AcquisitionWorkflowState?, request: DecisionRequest) {
-        self.phase = request.workflowPhase ?? "unknown"
-        self.documentType = request.documentType
-        self.completedSteps = request.completedSteps
-        self.pendingSteps = request.pendingSteps
-        self.context = request.context
+    init(from _: AcquisitionWorkflowState?, request: DecisionRequest) {
+        phase = request.workflowPhase ?? "unknown"
+        documentType = request.documentType
+        completedSteps = request.completedSteps
+        pendingSteps = request.pendingSteps
+        context = request.context
 
         // Calculate complexity based on context
-        self.complexity = RLState.calculateComplexity(from: request)
+        complexity = RLState.calculateComplexity(from: request)
 
         // Estimate user experience (could be enhanced with actual user data)
-        self.userExperience = 0.5 // Default neutral experience
+        userExperience = 0.5 // Default neutral experience
     }
 
     private static func calculateComplexity(from request: DecisionRequest) -> Double {
@@ -432,7 +432,7 @@ struct RLContext {
     let timeContext: TimeOfDay
 
     static func empty() -> RLContext {
-        return RLContext(
+        RLContext(
             patterns: LearnedPreferences(patterns: [], confidence: 0.0),
             complexity: 0.0,
             risk: .low,
@@ -449,10 +449,10 @@ struct RLAction {
     let description: String
 
     init(type: RLActionType, parameters: [String: Any] = [:]) {
-        self.id = UUID()
+        id = UUID()
         self.type = type
         self.parameters = parameters
-        self.description = type.description
+        description = type.description
     }
 }
 
@@ -466,12 +466,12 @@ enum RLActionType: String, CaseIterable {
 
     var description: String {
         switch self {
-        case .fillField: return "Auto-fill form field based on patterns"
-        case .generateDocument: return "Generate document from template"
-        case .suggestWorkflowStep: return "Suggest next workflow step"
-        case .requestManualInput: return "Request manual user input"
-        case .validateCompliance: return "Validate regulatory compliance"
-        case .optimizeWorkflow: return "Optimize workflow efficiency"
+        case .fillField: "Auto-fill form field based on patterns"
+        case .generateDocument: "Generate document from template"
+        case .suggestWorkflowStep: "Suggest next workflow step"
+        case .requestManualInput: "Request manual user input"
+        case .validateCompliance: "Validate regulatory compliance"
+        case .optimizeWorkflow: "Optimize workflow efficiency"
         }
     }
 }
@@ -528,11 +528,11 @@ actor ContextualBandits {
     func selectAction(features: [Double], availableActions: [RLAction]) async -> RLAction {
         switch algorithmType {
         case .thompsonSampling:
-            return await thompsonSamplingSelection(features: features, actions: availableActions)
+            await thompsonSamplingSelection(features: features, actions: availableActions)
         case .upperConfidenceBound:
-            return await ucbSelection(features: features, actions: availableActions)
+            await ucbSelection(features: features, actions: availableActions)
         case .epsilonGreedy:
-            return await epsilonGreedySelection(features: features, actions: availableActions)
+            await epsilonGreedySelection(features: features, actions: availableActions)
         }
     }
 
@@ -559,7 +559,10 @@ actor ContextualBandits {
     // MARK: - Algorithm Implementations
 
     private func thompsonSamplingSelection(features: [Double], actions: [RLAction]) async -> RLAction {
-        var bestAction = actions.first!
+        guard let firstAction = actions.first else {
+            fatalError("Actions array cannot be empty for Thompson sampling")
+        }
+        var bestAction = firstAction
         var bestSample = -Double.infinity
 
         for action in actions {
@@ -577,7 +580,10 @@ actor ContextualBandits {
     }
 
     private func ucbSelection(features: [Double], actions: [RLAction]) async -> RLAction {
-        var bestAction = actions.first!
+        guard let firstAction = actions.first else {
+            fatalError("Actions array cannot be empty for UCB selection")
+        }
+        var bestAction = firstAction
         var bestUCB = -Double.infinity
 
         let totalTrials = actionModels.values.reduce(0) { $0 + $1.trialCount }
@@ -603,12 +609,18 @@ actor ContextualBandits {
 
     private func epsilonGreedySelection(features: [Double], actions: [RLAction]) async -> RLAction {
         // Exploration vs exploitation
-        if Double.random(in: 0...1) < explorationRate {
+        if Double.random(in: 0 ... 1) < explorationRate {
             // Explore: random action
-            return actions.randomElement() ?? actions.first!
+            guard let randomAction = actions.randomElement() else {
+                fatalError("Actions array cannot be empty for epsilon-greedy exploration")
+            }
+            return randomAction
         } else {
             // Exploit: best known action
-            var bestAction = actions.first!
+            guard let firstAction = actions.first else {
+                fatalError("Actions array cannot be empty for epsilon-greedy exploitation")
+            }
+            var bestAction = firstAction
             var bestReward = -Double.infinity
 
             for action in actions {
@@ -636,11 +648,11 @@ class ActionModel {
 
     func update(features: [Double], reward: Double) {
         self.features.append(features)
-        self.rewards.append(reward)
-        self.trialCount += 1
+        rewards.append(reward)
+        trialCount += 1
     }
 
-    func getMeanReward(features: [Double]) -> Double {
+    func getMeanReward(features _: [Double]) -> Double {
         guard !rewards.isEmpty else { return 0.0 }
 
         // Simple average for now - could be enhanced with feature similarity weighting
@@ -662,14 +674,14 @@ class ActionModel {
     }
 
     func sampleReward(features: [Double]) -> Double {
-        guard trialCount > 0 else { return Double.random(in: -1...1) }
+        guard trialCount > 0 else { return Double.random(in: -1 ... 1) }
 
         let mean = getMeanReward(features: features)
         let variance = rewards.map { pow($0 - mean, 2) }.reduce(0, +) / Double(rewards.count)
         let stdDev = sqrt(variance + 0.1) // Add small constant for numerical stability
 
         // Sample from normal distribution
-        return mean + stdDev * Double.random(in: -2...2) // Approximate normal distribution
+        return mean + stdDev * Double.random(in: -2 ... 2) // Approximate normal distribution
     }
 }
 
@@ -682,11 +694,11 @@ struct AcquisitionActionSpace {
         RLAction(type: .suggestWorkflowStep),
         RLAction(type: .requestManualInput),
         RLAction(type: .validateCompliance),
-        RLAction(type: .optimizeWorkflow)
+        RLAction(type: .optimizeWorkflow),
     ]
 
     func getAllActions() -> [RLAction] {
-        return allActions
+        allActions
     }
 
     func getAvailableActions(for state: RLState) -> [RLAction] {
@@ -696,7 +708,7 @@ struct AcquisitionActionSpace {
         // Always available actions
         availableActions.append(contentsOf: [
             RLAction(type: .requestManualInput),
-            RLAction(type: .validateCompliance)
+            RLAction(type: .validateCompliance),
         ])
 
         // Phase-specific actions

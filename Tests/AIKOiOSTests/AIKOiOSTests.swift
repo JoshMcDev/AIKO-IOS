@@ -1,5 +1,5 @@
-import XCTest
 @testable import AppCore
+import XCTest
 
 #if canImport(AIKOiOS)
 @testable import AIKOiOS
@@ -8,7 +8,6 @@ import XCTest
 /// iOS-specific tests for AIKO application
 /// Tests platform-specific implementations and iOS-only features
 final class AIKOiOSTests: XCTestCase {
-
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
@@ -49,7 +48,7 @@ final class AIKOiOSTests: XCTestCase {
 
     func testPerformanceExample() throws {
         // This is an example of a performance test case.
-        self.measure {
+        measure {
             // Put the code you want to measure the time of here.
         }
     }

@@ -5,7 +5,6 @@ import Foundation
 /// Unified error type for the entire AIKO application
 /// Eliminates duplication between NetworkError, ServiceError, SAMGovError, etc.
 public enum AIKOError: Error, LocalizedError, Sendable {
-
     // MARK: - Network Errors
 
     /// Network connection is unavailable
@@ -118,232 +117,225 @@ public enum AIKOError: Error, LocalizedError, Sendable {
         switch self {
         // Network Errors
         case .networkUnavailable:
-            return NSLocalizedString("network.unavailable",
-                                     comment: "Network connection is not available")
+            NSLocalizedString("network.unavailable",
+                              comment: "Network connection is not available")
         case .requestTimeout:
-            return NSLocalizedString("network.timeout",
-                                     comment: "Request timed out")
-        case .invalidRequest(let message, _):
-            return NSLocalizedString("network.invalid_request",
-                                     comment: "Invalid request: \(message)")
-        case .invalidResponse(let message, _):
-            return NSLocalizedString("network.invalid_response",
-                                     comment: "Invalid response: \(message)")
-        case .httpError(let statusCode, let message, _):
-            return NSLocalizedString("network.http_error",
-                                     comment: "HTTP \(statusCode): \(message)")
-        case .networkError(let message, _):
-            return NSLocalizedString("network.general_error",
-                                     comment: "Network error: \(message)")
-
+            NSLocalizedString("network.timeout",
+                              comment: "Request timed out")
+        case let .invalidRequest(message, _):
+            NSLocalizedString("network.invalid_request",
+                              comment: "Invalid request: \(message)")
+        case let .invalidResponse(message, _):
+            NSLocalizedString("network.invalid_response",
+                              comment: "Invalid response: \(message)")
+        case let .httpError(statusCode, message, _):
+            NSLocalizedString("network.http_error",
+                              comment: "HTTP \(statusCode): \(message)")
+        case let .networkError(message, _):
+            NSLocalizedString("network.general_error",
+                              comment: "Network error: \(message)")
         // Data Processing
-        case .encodingError(let message, _):
-            return NSLocalizedString("data.encoding_error",
-                                     comment: "Encoding failed: \(message)")
-        case .decodingError(let message, _):
-            return NSLocalizedString("data.decoding_error",
-                                     comment: "Decoding failed: \(message)")
-        case .validationError(let message, let field):
-            if let field = field {
-                return NSLocalizedString("data.validation_field_error",
-                                         comment: "Validation error in \(field): \(message)")
+        case let .encodingError(message, _):
+            NSLocalizedString("data.encoding_error",
+                              comment: "Encoding failed: \(message)")
+        case let .decodingError(message, _):
+            NSLocalizedString("data.decoding_error",
+                              comment: "Decoding failed: \(message)")
+        case let .validationError(message, field):
+            if let field {
+                NSLocalizedString("data.validation_field_error",
+                                  comment: "Validation error in \(field): \(message)")
             } else {
-                return NSLocalizedString("data.validation_error",
-                                         comment: "Validation error: \(message)")
+                NSLocalizedString("data.validation_error",
+                                  comment: "Validation error: \(message)")
             }
-        case .dataCorruption(let message, _):
-            return NSLocalizedString("data.corruption",
-                                     comment: "Data corruption: \(message)")
-
+        case let .dataCorruption(message, _):
+            NSLocalizedString("data.corruption",
+                              comment: "Data corruption: \(message)")
         // Authentication & Authorization
-        case .invalidAPIKey(let service):
-            if let service = service {
-                return NSLocalizedString("auth.invalid_api_key_service",
-                                         comment: "Invalid API key for \(service)")
+        case let .invalidAPIKey(service):
+            if let service {
+                NSLocalizedString("auth.invalid_api_key_service",
+                                  comment: "Invalid API key for \(service)")
             } else {
-                return NSLocalizedString("auth.invalid_api_key",
-                                         comment: "Invalid or missing API key")
+                NSLocalizedString("auth.invalid_api_key",
+                                  comment: "Invalid or missing API key")
             }
-        case .authenticationFailed(let message, _):
-            return NSLocalizedString("auth.authentication_failed",
-                                     comment: "Authentication failed: \(message)")
-        case .authorizationFailed(let message, let permission):
-            if let permission = permission {
-                return NSLocalizedString("auth.authorization_failed_permission",
-                                         comment: "Authorization failed - requires \(permission): \(message)")
+        case let .authenticationFailed(message, _):
+            NSLocalizedString("auth.authentication_failed",
+                              comment: "Authentication failed: \(message)")
+        case let .authorizationFailed(message, permission):
+            if let permission {
+                NSLocalizedString("auth.authorization_failed_permission",
+                                  comment: "Authorization failed - requires \(permission): \(message)")
             } else {
-                return NSLocalizedString("auth.authorization_failed",
-                                         comment: "Authorization failed: \(message)")
+                NSLocalizedString("auth.authorization_failed",
+                                  comment: "Authorization failed: \(message)")
             }
-        case .rateLimitExceeded(let service, let retryAfter):
-            if let service = service, let retryAfter = retryAfter {
-                return NSLocalizedString("auth.rate_limit_service_retry",
-                                         comment: "Rate limit exceeded for \(service). Retry after \(Int(retryAfter)) seconds")
-            } else if let service = service {
-                return NSLocalizedString("auth.rate_limit_service",
-                                         comment: "Rate limit exceeded for \(service)")
+        case let .rateLimitExceeded(service, retryAfter):
+            if let service, let retryAfter {
+                NSLocalizedString("auth.rate_limit_service_retry",
+                                  comment: "Rate limit exceeded for \(service). Retry after \(Int(retryAfter)) seconds")
+            } else if let service {
+                NSLocalizedString("auth.rate_limit_service",
+                                  comment: "Rate limit exceeded for \(service)")
             } else {
-                return NSLocalizedString("auth.rate_limit",
-                                         comment: "Rate limit exceeded")
+                NSLocalizedString("auth.rate_limit",
+                                  comment: "Rate limit exceeded")
             }
-
         // Resources
-        case .resourceNotFound(let message, let type):
-            if let type = type {
-                return NSLocalizedString("resource.not_found_type",
-                                         comment: "\(type) not found: \(message)")
+        case let .resourceNotFound(message, type):
+            if let type {
+                NSLocalizedString("resource.not_found_type",
+                                  comment: "\(type) not found: \(message)")
             } else {
-                return NSLocalizedString("resource.not_found",
-                                         comment: "Resource not found: \(message)")
+                NSLocalizedString("resource.not_found",
+                                  comment: "Resource not found: \(message)")
             }
-        case .resourceExists(let message, let type):
-            if let type = type {
-                return NSLocalizedString("resource.exists_type",
-                                         comment: "\(type) already exists: \(message)")
+        case let .resourceExists(message, type):
+            if let type {
+                NSLocalizedString("resource.exists_type",
+                                  comment: "\(type) already exists: \(message)")
             } else {
-                return NSLocalizedString("resource.exists",
-                                         comment: "Resource already exists: \(message)")
+                NSLocalizedString("resource.exists",
+                                  comment: "Resource already exists: \(message)")
             }
-        case .resourceBusy(let message, let type):
-            if let type = type {
-                return NSLocalizedString("resource.busy_type",
-                                         comment: "\(type) is busy: \(message)")
+        case let .resourceBusy(message, type):
+            if let type {
+                NSLocalizedString("resource.busy_type",
+                                  comment: "\(type) is busy: \(message)")
             } else {
-                return NSLocalizedString("resource.busy",
-                                         comment: "Resource is busy: \(message)")
+                NSLocalizedString("resource.busy",
+                                  comment: "Resource is busy: \(message)")
             }
-        case .insufficientStorage(let required, let available):
-            if let required = required, let available = available {
-                return NSLocalizedString("resource.insufficient_storage_details",
-                                         comment: "Insufficient storage: need \(ByteCountFormatter.string(fromByteCount: Int64(required), countStyle: .file)), have \(ByteCountFormatter.string(fromByteCount: Int64(available), countStyle: .file))")
+        case let .insufficientStorage(required, available):
+            if let required, let available {
+                NSLocalizedString("resource.insufficient_storage_details",
+                                  comment: "Insufficient storage: need \(ByteCountFormatter.string(fromByteCount: Int64(required), countStyle: .file)), have \(ByteCountFormatter.string(fromByteCount: Int64(available), countStyle: .file))")
             } else {
-                return NSLocalizedString("resource.insufficient_storage",
-                                         comment: "Insufficient storage space")
+                NSLocalizedString("resource.insufficient_storage",
+                                  comment: "Insufficient storage space")
             }
-
         // Service-Specific
-        case .samGovError(let type, _):
-            return type.localizedDescription
-        case .documentError(let type, _):
-            return type.localizedDescription
-        case .featureFlagError(let type, _):
-            return type.localizedDescription
-        case .persistenceError(let message, _):
-            return NSLocalizedString("persistence.error",
-                                     comment: "Persistence error: \(message)")
-
+        case let .samGovError(type, _):
+            type.localizedDescription
+        case let .documentError(type, _):
+            type.localizedDescription
+        case let .featureFlagError(type, _):
+            type.localizedDescription
+        case let .persistenceError(message, _):
+            NSLocalizedString("persistence.error",
+                              comment: "Persistence error: \(message)")
         // System
-        case .fileSystemError(let message, let path, _):
-            if let path = path {
-                return NSLocalizedString("system.filesystem_path_error",
-                                         comment: "File system error at \(path): \(message)")
+        case let .fileSystemError(message, path, _):
+            if let path {
+                NSLocalizedString("system.filesystem_path_error",
+                                  comment: "File system error at \(path): \(message)")
             } else {
-                return NSLocalizedString("system.filesystem_error",
-                                         comment: "File system error: \(message)")
+                NSLocalizedString("system.filesystem_error",
+                                  comment: "File system error: \(message)")
             }
-        case .memoryError(let message):
-            return NSLocalizedString("system.memory_error",
-                                     comment: "Memory error: \(message)")
-        case .configurationError(let message, let key):
-            if let key = key {
-                return NSLocalizedString("system.config_key_error",
-                                         comment: "Configuration error for \(key): \(message)")
+        case let .memoryError(message):
+            NSLocalizedString("system.memory_error",
+                              comment: "Memory error: \(message)")
+        case let .configurationError(message, key):
+            if let key {
+                NSLocalizedString("system.config_key_error",
+                                  comment: "Configuration error for \(key): \(message)")
             } else {
-                return NSLocalizedString("system.config_error",
-                                         comment: "Configuration error: \(message)")
+                NSLocalizedString("system.config_error",
+                                  comment: "Configuration error: \(message)")
             }
-        case .serviceUnavailable(let message, let service):
-            if let service = service {
-                return NSLocalizedString("system.service_unavailable_named",
-                                         comment: "\(service) is unavailable: \(message)")
+        case let .serviceUnavailable(message, service):
+            if let service {
+                NSLocalizedString("system.service_unavailable_named",
+                                  comment: "\(service) is unavailable: \(message)")
             } else {
-                return NSLocalizedString("system.service_unavailable",
-                                         comment: "Service unavailable: \(message)")
+                NSLocalizedString("system.service_unavailable",
+                                  comment: "Service unavailable: \(message)")
             }
-
         // User
         case .userCancelled:
-            return NSLocalizedString("user.cancelled",
-                                     comment: "Operation cancelled by user")
-        case .invalidInput(let message, let field):
-            if let field = field {
-                return NSLocalizedString("user.invalid_input_field",
-                                         comment: "Invalid input for \(field): \(message)")
+            NSLocalizedString("user.cancelled",
+                              comment: "Operation cancelled by user")
+        case let .invalidInput(message, field):
+            if let field {
+                NSLocalizedString("user.invalid_input_field",
+                                  comment: "Invalid input for \(field): \(message)")
             } else {
-                return NSLocalizedString("user.invalid_input",
-                                         comment: "Invalid input: \(message)")
+                NSLocalizedString("user.invalid_input",
+                                  comment: "Invalid input: \(message)")
             }
-        case .notSupported(let message, let feature):
-            if let feature = feature {
-                return NSLocalizedString("user.not_supported_feature",
-                                         comment: "\(feature) is not supported: \(message)")
+        case let .notSupported(message, feature):
+            if let feature {
+                NSLocalizedString("user.not_supported_feature",
+                                  comment: "\(feature) is not supported: \(message)")
             } else {
-                return NSLocalizedString("user.not_supported",
-                                         comment: "Not supported: \(message)")
+                NSLocalizedString("user.not_supported",
+                                  comment: "Not supported: \(message)")
             }
-
         // Unknown
-        case .unknownError(let message, _):
-            return NSLocalizedString("unknown.error",
-                                     comment: "Unknown error: \(message)")
+        case let .unknownError(message, _):
+            NSLocalizedString("unknown.error",
+                              comment: "Unknown error: \(message)")
         }
     }
 
     public var failureReason: String? {
         switch self {
-        case .networkUnavailable(let underlying),
-             .requestTimeout(let underlying),
-             .invalidRequest(_, let underlying),
-             .invalidResponse(_, let underlying),
-             .networkError(_, let underlying),
-             .encodingError(_, let underlying),
-             .decodingError(_, let underlying),
-             .dataCorruption(_, let underlying),
-             .authenticationFailed(_, let underlying),
-             .samGovError(_, let underlying),
-             .documentError(_, let underlying),
-             .featureFlagError(_, let underlying),
-             .persistenceError(_, let underlying),
-             .fileSystemError(_, _, let underlying),
-             .unknownError(_, let underlying):
-            return underlying?.localizedDescription
+        case let .networkUnavailable(underlying),
+             let .requestTimeout(underlying),
+             let .invalidRequest(_, underlying),
+             let .invalidResponse(_, underlying),
+             let .networkError(_, underlying),
+             let .encodingError(_, underlying),
+             let .decodingError(_, underlying),
+             let .dataCorruption(_, underlying),
+             let .authenticationFailed(_, underlying),
+             let .samGovError(_, underlying),
+             let .documentError(_, underlying),
+             let .featureFlagError(_, underlying),
+             let .persistenceError(_, underlying),
+             let .fileSystemError(_, _, underlying),
+             let .unknownError(_, underlying):
+            underlying?.localizedDescription
 
-        case .httpError(_, _, let responseData):
-            return responseData
+        case let .httpError(_, _, responseData):
+            responseData
 
         default:
-            return nil
+            nil
         }
     }
 
     public var recoverySuggestion: String? {
         switch self {
         case .networkUnavailable:
-            return NSLocalizedString("recovery.check_connection",
-                                     comment: "Check your internet connection and try again")
+            NSLocalizedString("recovery.check_connection",
+                              comment: "Check your internet connection and try again")
         case .requestTimeout:
-            return NSLocalizedString("recovery.retry_later",
-                                     comment: "Please try again in a few moments")
+            NSLocalizedString("recovery.retry_later",
+                              comment: "Please try again in a few moments")
         case .invalidAPIKey:
-            return NSLocalizedString("recovery.check_api_key",
-                                     comment: "Please check your API key configuration")
-        case .rateLimitExceeded(_, let retryAfter):
-            if let retryAfter = retryAfter {
-                return NSLocalizedString("recovery.retry_after_time",
-                                         comment: "Please wait \(Int(retryAfter)) seconds before trying again")
+            NSLocalizedString("recovery.check_api_key",
+                              comment: "Please check your API key configuration")
+        case let .rateLimitExceeded(_, retryAfter):
+            if let retryAfter {
+                NSLocalizedString("recovery.retry_after_time",
+                                  comment: "Please wait \(Int(retryAfter)) seconds before trying again")
             } else {
-                return NSLocalizedString("recovery.retry_later",
-                                         comment: "Please try again later")
+                NSLocalizedString("recovery.retry_later",
+                                  comment: "Please try again later")
             }
         case .insufficientStorage:
-            return NSLocalizedString("recovery.free_space",
-                                     comment: "Please free up some storage space and try again")
+            NSLocalizedString("recovery.free_space",
+                              comment: "Please free up some storage space and try again")
         case .userCancelled:
-            return NSLocalizedString("recovery.restart_operation",
-                                     comment: "You can restart the operation if needed")
+            NSLocalizedString("recovery.restart_operation",
+                              comment: "You can restart the operation if needed")
         default:
-            return NSLocalizedString("recovery.try_again",
-                                     comment: "Please try again")
+            NSLocalizedString("recovery.try_again",
+                              comment: "Please try again")
         }
     }
 }
@@ -362,23 +354,23 @@ public enum SAMGovErrorType: Sendable {
     var localizedDescription: String {
         switch self {
         case .invalidAPIKey:
-            return NSLocalizedString("samgov.invalid_api_key",
-                                     comment: "Invalid SAM.gov API key")
+            NSLocalizedString("samgov.invalid_api_key",
+                              comment: "Invalid SAM.gov API key")
         case .entityNotFound:
-            return NSLocalizedString("samgov.entity_not_found",
-                                     comment: "Entity not found in SAM.gov database")
-        case .networkError(let message):
-            return NSLocalizedString("samgov.network_error",
-                                     comment: "SAM.gov network error: \(message)")
+            NSLocalizedString("samgov.entity_not_found",
+                              comment: "Entity not found in SAM.gov database")
+        case let .networkError(message):
+            NSLocalizedString("samgov.network_error",
+                              comment: "SAM.gov network error: \(message)")
         case .invalidResponse:
-            return NSLocalizedString("samgov.invalid_response",
-                                     comment: "Invalid response from SAM.gov API")
+            NSLocalizedString("samgov.invalid_response",
+                              comment: "Invalid response from SAM.gov API")
         case .rateLimitExceeded:
-            return NSLocalizedString("samgov.rate_limit",
-                                     comment: "SAM.gov API rate limit exceeded")
+            NSLocalizedString("samgov.rate_limit",
+                              comment: "SAM.gov API rate limit exceeded")
         case .apiKeyRequired:
-            return NSLocalizedString("samgov.api_key_required",
-                                     comment: "SAM.gov API key is required")
+            NSLocalizedString("samgov.api_key_required",
+                              comment: "SAM.gov API key is required")
         }
     }
 }
@@ -394,24 +386,24 @@ public enum DocumentErrorType: Sendable {
 
     var localizedDescription: String {
         switch self {
-        case .invalidFormat(let format):
-            return NSLocalizedString("document.invalid_format",
-                                     comment: "Invalid document format: \(format)")
-        case .fileTooLarge(let size):
-            return NSLocalizedString("document.file_too_large",
-                                     comment: "File too large: \(ByteCountFormatter.string(fromByteCount: Int64(size), countStyle: .file))")
-        case .processingFailed(let reason):
-            return NSLocalizedString("document.processing_failed",
-                                     comment: "Document processing failed: \(reason)")
+        case let .invalidFormat(format):
+            NSLocalizedString("document.invalid_format",
+                              comment: "Invalid document format: \(format)")
+        case let .fileTooLarge(size):
+            NSLocalizedString("document.file_too_large",
+                              comment: "File too large: \(ByteCountFormatter.string(fromByteCount: Int64(size), countStyle: .file))")
+        case let .processingFailed(reason):
+            NSLocalizedString("document.processing_failed",
+                              comment: "Document processing failed: \(reason)")
         case .permissionDenied:
-            return NSLocalizedString("document.permission_denied",
-                                     comment: "Permission denied to access document")
-        case .fileNotFound(let path):
-            return NSLocalizedString("document.file_not_found",
-                                     comment: "Document not found: \(path)")
-        case .unsupportedType(let type):
-            return NSLocalizedString("document.unsupported_type",
-                                     comment: "Unsupported document type: \(type)")
+            NSLocalizedString("document.permission_denied",
+                              comment: "Permission denied to access document")
+        case let .fileNotFound(path):
+            NSLocalizedString("document.file_not_found",
+                              comment: "Document not found: \(path)")
+        case let .unsupportedType(type):
+            NSLocalizedString("document.unsupported_type",
+                              comment: "Unsupported document type: \(type)")
         }
     }
 }
@@ -425,18 +417,18 @@ public enum FeatureFlagErrorType: Sendable {
 
     var localizedDescription: String {
         switch self {
-        case .featureNotFound(let feature):
-            return NSLocalizedString("featureflag.not_found",
-                                     comment: "Feature flag not found: \(feature)")
-        case .invalidConfiguration(let config):
-            return NSLocalizedString("featureflag.invalid_config",
-                                     comment: "Invalid feature flag configuration: \(config)")
-        case .evaluationFailed(let reason):
-            return NSLocalizedString("featureflag.evaluation_failed",
-                                     comment: "Feature flag evaluation failed: \(reason)")
-        case .persistenceError(let reason):
-            return NSLocalizedString("featureflag.persistence_error",
-                                     comment: "Feature flag persistence error: \(reason)")
+        case let .featureNotFound(feature):
+            NSLocalizedString("featureflag.not_found",
+                              comment: "Feature flag not found: \(feature)")
+        case let .invalidConfiguration(config):
+            NSLocalizedString("featureflag.invalid_config",
+                              comment: "Invalid feature flag configuration: \(config)")
+        case let .evaluationFailed(reason):
+            NSLocalizedString("featureflag.evaluation_failed",
+                              comment: "Feature flag evaluation failed: \(reason)")
+        case let .persistenceError(reason):
+            NSLocalizedString("featureflag.persistence_error",
+                              comment: "Feature flag persistence error: \(reason)")
         }
     }
 }
@@ -444,37 +436,36 @@ public enum FeatureFlagErrorType: Sendable {
 // MARK: - Error Conversion Extensions
 
 public extension AIKOError {
-
     /// Convert from URLError
     static func from(_ urlError: URLError) -> AIKOError {
         switch urlError.code {
         case .notConnectedToInternet, .networkConnectionLost:
-            return .networkUnavailable(underlying: urlError)
+            .networkUnavailable(underlying: urlError)
         case .timedOut:
-            return .requestTimeout(underlying: urlError)
+            .requestTimeout(underlying: urlError)
         case .badURL:
-            return .invalidRequest("Invalid URL", underlying: urlError)
+            .invalidRequest("Invalid URL", underlying: urlError)
         case .cannotFindHost:
-            return .networkError("Cannot find host", underlying: urlError)
+            .networkError("Cannot find host", underlying: urlError)
         case .cannotConnectToHost:
-            return .networkError("Cannot connect to host", underlying: urlError)
+            .networkError("Cannot connect to host", underlying: urlError)
         case .userCancelledAuthentication:
-            return .userCancelled
+            .userCancelled
         default:
-            return .networkError(urlError.localizedDescription, underlying: urlError)
+            .networkError(urlError.localizedDescription, underlying: urlError)
         }
     }
 
     /// Convert from DecodingError
     static func from(_ decodingError: DecodingError) -> AIKOError {
         switch decodingError {
-        case .keyNotFound(let key, let context):
+        case let .keyNotFound(key, context):
             return .decodingError("Missing key '\(key.stringValue)' at \(context.codingPath.map(\.stringValue).joined(separator: "."))", underlying: decodingError)
-        case .typeMismatch(let type, let context):
+        case let .typeMismatch(type, context):
             return .decodingError("Type mismatch for '\(type)' at \(context.codingPath.map(\.stringValue).joined(separator: "."))", underlying: decodingError)
-        case .valueNotFound(let type, let context):
+        case let .valueNotFound(type, context):
             return .decodingError("Value not found for '\(type)' at \(context.codingPath.map(\.stringValue).joined(separator: "."))", underlying: decodingError)
-        case .dataCorrupted(let context):
+        case let .dataCorrupted(context):
             return .dataCorruption("Data corrupted at \(context.codingPath.map(\.stringValue).joined(separator: "."))", underlying: decodingError)
         @unknown default:
             return .decodingError("Unknown decoding error", underlying: decodingError)
@@ -484,7 +475,7 @@ public extension AIKOError {
     /// Convert from EncodingError
     static func from(_ encodingError: EncodingError) -> AIKOError {
         switch encodingError {
-        case .invalidValue(let value, let context):
+        case let .invalidValue(value, context):
             return .encodingError("Invalid value '\(value)' at \(context.codingPath.map(\.stringValue).joined(separator: "."))", underlying: encodingError)
         @unknown default:
             return .encodingError("Unknown encoding error", underlying: encodingError)
@@ -495,32 +486,31 @@ public extension AIKOError {
 // MARK: - Error Analytics & Reporting
 
 public extension AIKOError {
-
     /// Category for error analytics
     var category: String {
         switch self {
         case .networkUnavailable, .requestTimeout, .invalidRequest, .invalidResponse, .httpError, .networkError:
-            return "network"
+            "network"
         case .encodingError, .decodingError, .validationError, .dataCorruption:
-            return "data"
+            "data"
         case .invalidAPIKey, .authenticationFailed, .authorizationFailed, .rateLimitExceeded:
-            return "authentication"
+            "authentication"
         case .resourceNotFound, .resourceExists, .resourceBusy, .insufficientStorage:
-            return "resource"
+            "resource"
         case .samGovError:
-            return "samgov"
+            "samgov"
         case .documentError:
-            return "document"
+            "document"
         case .featureFlagError:
-            return "featureflag"
+            "featureflag"
         case .persistenceError:
-            return "persistence"
+            "persistence"
         case .fileSystemError, .memoryError, .configurationError, .serviceUnavailable:
-            return "system"
+            "system"
         case .userCancelled, .invalidInput, .notSupported:
-            return "user"
+            "user"
         case .unknownError:
-            return "unknown"
+            "unknown"
         }
     }
 
@@ -528,17 +518,17 @@ public extension AIKOError {
     var severity: ErrorSeverity {
         switch self {
         case .userCancelled:
-            return .info
+            .info
         case .invalidInput, .notSupported, .resourceNotFound:
-            return .warning
+            .warning
         case .networkUnavailable, .requestTimeout, .rateLimitExceeded, .insufficientStorage:
-            return .recoverable
+            .recoverable
         case .invalidAPIKey, .authenticationFailed, .authorizationFailed, .invalidRequest, .validationError:
-            return .error
+            .error
         case .dataCorruption, .memoryError, .serviceUnavailable, .configurationError:
-            return .critical
+            .critical
         default:
-            return .error
+            .error
         }
     }
 
@@ -546,9 +536,9 @@ public extension AIKOError {
     var shouldReport: Bool {
         switch severity {
         case .info:
-            return false
+            false
         case .warning, .recoverable, .error, .critical:
-            return true
+            true
         }
     }
 
@@ -572,10 +562,9 @@ public enum ErrorSeverity: String, CaseIterable, Sendable {
 // MARK: - Error Logging Integration
 
 public extension AIKOError {
-
     /// Create structured log entry for this error
     func logEntry() -> [String: Any] {
-        return [
+        [
             "error_code": code,
             "category": category,
             "severity": severity.rawValue,
@@ -584,31 +573,31 @@ public extension AIKOError {
             "recovery_suggestion": recoverySuggestion ?? "",
             "should_report": shouldReport,
             "timestamp": ISO8601DateFormatter().string(from: Date()),
-            "underlying_error": (self.underlyingError?.localizedDescription ?? "")
+            "underlying_error": (underlyingError?.localizedDescription ?? ""),
         ]
     }
 
     /// Get the underlying error if available
     private var underlyingError: Error? {
         switch self {
-        case .networkUnavailable(let underlying),
-             .requestTimeout(let underlying),
-             .invalidRequest(_, let underlying),
-             .invalidResponse(_, let underlying),
-             .networkError(_, let underlying),
-             .encodingError(_, let underlying),
-             .decodingError(_, let underlying),
-             .dataCorruption(_, let underlying),
-             .authenticationFailed(_, let underlying),
-             .samGovError(_, let underlying),
-             .documentError(_, let underlying),
-             .featureFlagError(_, let underlying),
-             .persistenceError(_, let underlying),
-             .fileSystemError(_, _, let underlying),
-             .unknownError(_, let underlying):
-            return underlying
+        case let .networkUnavailable(underlying),
+             let .requestTimeout(underlying),
+             let .invalidRequest(_, underlying),
+             let .invalidResponse(_, underlying),
+             let .networkError(_, underlying),
+             let .encodingError(_, underlying),
+             let .decodingError(_, underlying),
+             let .dataCorruption(_, underlying),
+             let .authenticationFailed(_, underlying),
+             let .samGovError(_, underlying),
+             let .documentError(_, underlying),
+             let .featureFlagError(_, underlying),
+             let .persistenceError(_, underlying),
+             let .fileSystemError(_, _, underlying),
+             let .unknownError(_, underlying):
+            underlying
         default:
-            return nil
+            nil
         }
     }
 }

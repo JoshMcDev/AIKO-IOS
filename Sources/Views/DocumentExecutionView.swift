@@ -1,5 +1,5 @@
-import SwiftUI
 import AppCore
+import SwiftUI
 #if os(macOS)
 import AppKit
 #endif
@@ -11,7 +11,7 @@ public struct DocumentExecutionView: View {
     @State private var viewModel: DocumentExecutionViewModel
 
     public init(acquisition: AppCore.Acquisition) {
-        self._viewModel = State(wrappedValue: DocumentExecutionViewModel(acquisition: acquisition))
+        _viewModel = State(wrappedValue: DocumentExecutionViewModel(acquisition: acquisition))
     }
 
     public var body: some View {
@@ -164,7 +164,7 @@ public struct DocumentExecutionView: View {
             errorView(errorMessage)
         } else if viewModel.isGenerating {
             generatingView
-        } else if !viewModel.hasGeneratedDocuments && viewModel.availableDocumentTypes.isEmpty {
+        } else if !viewModel.hasGeneratedDocuments, viewModel.availableDocumentTypes.isEmpty {
             emptyStateView
         } else {
             // Main content area - placeholder for now

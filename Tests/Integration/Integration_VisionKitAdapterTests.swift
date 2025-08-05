@@ -1,5 +1,5 @@
-import XCTest
 import SwiftUI
+import XCTest
 #if canImport(UIKit)
 import UIKit
 #endif
@@ -14,9 +14,8 @@ typealias IntegrationTestDocumentScannerViewModel = AppCore.DocumentScannerViewM
 
 @MainActor
 final class IntegrationVisionKitAdapterTests: XCTestCase {
-
-    private var visionKitAdapter: VisionKitAdapter!
-    private var mockDocumentScannerViewModel: IntegrationTestDocumentScannerViewModel!
+    private var visionKitAdapter: VisionKitAdapter?
+    private var mockDocumentScannerViewModel: IntegrationTestDocumentScannerViewModel?
 
     override func setUp() async throws {
         visionKitAdapter = VisionKitAdapter()
@@ -309,7 +308,7 @@ final class IntegrationVisionKitAdapterTests: XCTestCase {
         // This test is designed to fail in RED phase as memory management is not implemented
 
         // Step 1: Perform multiple scans
-        for _ in 1...5 {
+        for _ in 1 ... 5 {
             let config = VisionKitAdapter.ScanConfiguration(
                 presentationMode: .modal,
                 qualityMode: .high,
@@ -396,6 +395,7 @@ extension VisionKitAdapter {
 }
 
 // MARK: - Supporting Types for Integration Tests
+
 // Note: ContractFeature and other supporting methods are defined in UI_VisionKitBridgeTests.swift
 
 // ScannedDocument and ScannedPage types removed - using AppCore versions to avoid conflicts

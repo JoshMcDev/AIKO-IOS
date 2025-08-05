@@ -1,7 +1,7 @@
 #!/usr/bin/env swift
 
-import Foundation
 import AppCore
+import Foundation
 
 /// GREEN Phase Test Runner for LLM Provider Settings
 /// Verifies that the minimal implementations work correctly

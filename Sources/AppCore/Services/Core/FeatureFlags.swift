@@ -1,6 +1,6 @@
+import CryptoKit
 import Foundation
 import SwiftUI
-import CryptoKit
 
 /// FeatureFlags - Unified feature flag system for gradual rollout and rollback
 /// Week 1-2 deliverable: Feature flag system operational for gradual rollout
@@ -167,7 +167,7 @@ public final class FeatureFlags: @unchecked Sendable {
     ///   - userId: User identifier
     /// - Returns: True if feature is enabled for user
     public func isEnabled(_ feature: Feature, userId: String) async -> Bool {
-        return await isFeatureEnabledForUser(feature, userId: userId)
+        await isFeatureEnabledForUser(feature, userId: userId)
     }
 
     /// Log feature usage for specific user (Protocol method)
@@ -344,10 +344,10 @@ public actor RolloutManager {
         guard let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
             // Fallback to temporary directory if documents directory unavailable
             let tempPath = FileManager.default.temporaryDirectory
-            self.persistenceURL = tempPath.appendingPathComponent("FeatureFlags")
+            persistenceURL = tempPath.appendingPathComponent("FeatureFlags")
             return
         }
-        self.persistenceURL = documentsPath.appendingPathComponent("FeatureFlags")
+        persistenceURL = documentsPath.appendingPathComponent("FeatureFlags")
 
         // Create directory if needed
         try? FileManager.default.createDirectory(at: persistenceURL, withIntermediateDirectories: true)
@@ -394,7 +394,7 @@ public actor RolloutManager {
     /// - Parameter feature: Feature to query
     /// - Returns: Current rollout percentage (0-100)
     public func getRolloutPercentage(feature: Feature) -> Int {
-        return rolloutPercentages[feature] ?? 0
+        rolloutPercentages[feature] ?? 0
     }
 
     /// Determine if user is included in rollout using consistent hashing
@@ -449,7 +449,7 @@ public actor RolloutManager {
     /// - Parameter feature: Feature to query
     /// - Returns: Array of history entries
     public func getRolloutHistory(feature: Feature) -> [RolloutHistoryEntry] {
-        return rolloutHistory[feature] ?? []
+        rolloutHistory[feature] ?? []
     }
 
     /// Get current rollout statistics
@@ -475,7 +475,8 @@ public actor RolloutManager {
 
         guard FileManager.default.fileExists(atPath: stateFile.path),
               let data = try? Data(contentsOf: stateFile),
-              let state = try? JSONDecoder().decode(PersistedRolloutState.self, from: data) else {
+              let state = try? JSONDecoder().decode(PersistedRolloutState.self, from: data)
+        else {
             return
         }
 
@@ -557,10 +558,10 @@ public actor FeatureFlagAuditLogger {
         guard let documentsPath = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
             // Fallback to temporary directory if documents directory unavailable
             let tempPath = fileManager.temporaryDirectory
-            self.persistenceURL = tempPath.appendingPathComponent("FeatureFlags/AuditLogs")
+            persistenceURL = tempPath.appendingPathComponent("FeatureFlags/AuditLogs")
             return
         }
-        self.persistenceURL = documentsPath.appendingPathComponent("FeatureFlags/AuditLogs")
+        persistenceURL = documentsPath.appendingPathComponent("FeatureFlags/AuditLogs")
 
         // Create directory if needed
         try? fileManager.createDirectory(at: persistenceURL, withIntermediateDirectories: true)
@@ -610,7 +611,7 @@ public actor FeatureFlagAuditLogger {
     public func getAuditLog(limit: Int? = nil) -> [FeatureFlagAuditEntry] {
         let sortedLog = auditLog.sorted { $0.timestamp > $1.timestamp }
 
-        if let limit = limit {
+        if let limit {
             return Array(sortedLog.prefix(limit))
         }
 
@@ -627,7 +628,7 @@ public actor FeatureFlagAuditLogger {
             .filter { $0.feature == feature }
             .sorted { $0.timestamp > $1.timestamp }
 
-        if let limit = limit {
+        if let limit {
             return Array(filteredLog.prefix(limit))
         }
 
@@ -644,7 +645,7 @@ public actor FeatureFlagAuditLogger {
             .filter { $0.userId == userId }
             .sorted { $0.timestamp > $1.timestamp }
 
-        if let limit = limit {
+        if let limit {
             return Array(filteredLog.prefix(limit))
         }
 
@@ -697,7 +698,8 @@ public actor FeatureFlagAuditLogger {
 
         guard fileManager.fileExists(atPath: logFile.path),
               let data = try? Data(contentsOf: logFile),
-              let entries = try? JSONDecoder().decode([FeatureFlagAuditEntry].self, from: data) else {
+              let entries = try? JSONDecoder().decode([FeatureFlagAuditEntry].self, from: data)
+        else {
             return
         }
 
@@ -760,10 +762,10 @@ public actor FeatureFlagMetricsCollector {
         guard let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
             // Fallback to temporary directory if documents directory unavailable
             let tempPath = FileManager.default.temporaryDirectory
-            self.persistenceURL = tempPath.appendingPathComponent("FeatureFlags/Metrics")
+            persistenceURL = tempPath.appendingPathComponent("FeatureFlags/Metrics")
             return
         }
-        self.persistenceURL = documentsPath.appendingPathComponent("FeatureFlags/Metrics")
+        persistenceURL = documentsPath.appendingPathComponent("FeatureFlags/Metrics")
 
         // Create directory if needed
         try? FileManager.default.createDirectory(at: persistenceURL, withIntermediateDirectories: true)
@@ -787,9 +789,9 @@ public actor FeatureFlagMetricsCollector {
         // Start background collection task
         backgroundTask = Task { [weak self] in
             while !Task.isCancelled {
-                guard let self = self else { break }
-                try? await Task.sleep(nanoseconds: UInt64(self.collectionInterval * 1_000_000_000))
-                await self.collectSystemMetrics()
+                guard let self else { break }
+                try? await Task.sleep(nanoseconds: UInt64(collectionInterval * 1_000_000_000))
+                await collectSystemMetrics()
             }
         }
 
@@ -840,10 +842,10 @@ public actor FeatureFlagMetricsCollector {
         let totalMetrics = metrics.count
         let uniqueFeatures = Set(metrics.compactMap { metric in
             switch metric.type {
-            case .featureUsage(let feature), .featureEvaluation(let feature), .rolloutChange(let feature), .featureRollback(let feature):
-                return feature
+            case let .featureUsage(feature), let .featureEvaluation(feature), let .rolloutChange(feature), let .featureRollback(feature):
+                feature
             default:
-                return nil
+                nil
             }
         }).count
 
@@ -852,7 +854,7 @@ public actor FeatureFlagMetricsCollector {
         }.count
 
         let featureUsageCounts = Dictionary(uniqueKeysWithValues: metrics.compactMap { metric in
-            if case .featureUsage(let feature) = metric.type {
+            if case let .featureUsage(feature) = metric.type {
                 return (feature, 1)
             }
             return nil
@@ -875,14 +877,14 @@ public actor FeatureFlagMetricsCollector {
     public func getMetrics(for feature: Feature, limit: Int? = nil) -> [MetricEntry] {
         let filteredMetrics = metrics.filter { metric in
             switch metric.type {
-            case .featureUsage(let f), .featureEvaluation(let f), .rolloutChange(let f), .featureRollback(let f):
-                return f == feature
+            case let .featureUsage(f), let .featureEvaluation(f), let .rolloutChange(f), let .featureRollback(f):
+                f == feature
             default:
-                return false
+                false
             }
         }.sorted { $0.timestamp > $1.timestamp }
 
-        if let limit = limit {
+        if let limit {
             return Array(filteredMetrics.prefix(limit))
         }
 
@@ -994,7 +996,8 @@ public actor FeatureFlagMetricsCollector {
 
         guard FileManager.default.fileExists(atPath: metricsFile.path),
               let data = try? Data(contentsOf: metricsFile),
-              let entries = try? JSONDecoder().decode([MetricEntry].self, from: data) else {
+              let entries = try? JSONDecoder().decode([MetricEntry].self, from: data)
+        else {
             return
         }
 

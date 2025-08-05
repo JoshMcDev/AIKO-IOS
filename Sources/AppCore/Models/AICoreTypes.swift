@@ -150,20 +150,3 @@ public enum PromptPattern: String, CaseIterable, Codable, Sendable {
         }
     }
 }
-
-/// Acquisition context (already exists in tests but might need this version)
-public struct AcquisitionContext: Sendable {
-    public let programName: String
-    public let agency: String?
-    public let contractValue: Decimal?
-    public let timeline: DateInterval?
-    public let specialRequirements: [String]
-
-    public init(programName: String, agency: String? = nil, contractValue: Decimal? = nil, timeline: DateInterval? = nil, specialRequirements: [String] = []) {
-        self.programName = programName
-        self.agency = agency
-        self.contractValue = contractValue
-        self.timeline = timeline
-        self.specialRequirements = specialRequirements
-    }
-}

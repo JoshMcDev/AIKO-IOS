@@ -139,7 +139,7 @@ public final class AcquisitionServiceImpl: BaseService, @unchecked Sendable {
 
         // Store required documents in acquisition metadata
         var metadata: [String: Any] = [:]
-        metadata["requiredDocuments"] = requiredDocuments.map { $0.rawValue }
+        metadata["requiredDocuments"] = requiredDocuments.map(\.rawValue)
         metadata["determinedAt"] = Date()
         metadata["determinedBy"] = "RegulationEngine"
 

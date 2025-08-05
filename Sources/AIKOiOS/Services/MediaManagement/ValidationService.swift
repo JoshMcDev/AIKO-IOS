@@ -1,8 +1,8 @@
 import AppCore
-import Foundation
-import UniformTypeIdentifiers
 import CryptoKit
+import Foundation
 import UIKit
+import UniformTypeIdentifiers
 
 /// iOS implementation of validation service
 @available(iOS 16.0, *)
@@ -190,7 +190,7 @@ public actor ValidationService: ValidationServiceProtocol {
     public func generateRulesForContentType(_ contentType: String) async -> ValidationRules {
         switch contentType.lowercased() {
         case let type where type.hasPrefix("image/"):
-            return ValidationRules(
+            ValidationRules(
                 maxFileSize: 50 * 1024 * 1024, // 50MB maximum
                 allowedMimeTypes: Set(supportedImageFormats),
                 requireMetadata: true,
@@ -202,7 +202,7 @@ public actor ValidationService: ValidationServiceProtocol {
             )
 
         case let type where type.hasPrefix("video/"):
-            return ValidationRules(
+            ValidationRules(
                 maxFileSize: 500 * 1024 * 1024, // 500MB maximum
                 allowedMimeTypes: Set(supportedVideoFormats),
                 requireMetadata: false,
@@ -214,7 +214,7 @@ public actor ValidationService: ValidationServiceProtocol {
             )
 
         case let type where type.hasPrefix("audio/"):
-            return ValidationRules(
+            ValidationRules(
                 maxFileSize: 100 * 1024 * 1024, // 100MB maximum
                 allowedMimeTypes: Set(supportedAudioFormats),
                 requireMetadata: false,
@@ -226,7 +226,7 @@ public actor ValidationService: ValidationServiceProtocol {
             )
 
         case let type where type.hasPrefix("application/") || type.hasPrefix("text/"):
-            return ValidationRules(
+            ValidationRules(
                 maxFileSize: 50 * 1024 * 1024, // 50MB maximum
                 allowedMimeTypes: Set(supportedDocumentFormats),
                 requireMetadata: false,
@@ -239,7 +239,7 @@ public actor ValidationService: ValidationServiceProtocol {
 
         default:
             // Generic rules for unknown content types
-            return ValidationRules(
+            ValidationRules(
                 maxFileSize: 10 * 1024 * 1024, // 10MB conservative limit
                 allowedMimeTypes: Set(["application/octet-stream"]),
                 requireMetadata: false,
@@ -294,26 +294,26 @@ public actor ValidationService: ValidationServiceProtocol {
 
         // Image formats
         if bytes.count >= 4 {
-            if bytes[0] == 0xFF && bytes[1] == 0xD8 && bytes[2] == 0xFF {
+            if bytes[0] == 0xFF, bytes[1] == 0xD8, bytes[2] == 0xFF {
                 return "image/jpeg"
             }
-            if bytes[0] == 0x89 && bytes[1] == 0x50 && bytes[2] == 0x4E && bytes[3] == 0x47 {
+            if bytes[0] == 0x89, bytes[1] == 0x50, bytes[2] == 0x4E, bytes[3] == 0x47 {
                 return "image/png"
             }
-            if bytes[0] == 0x47 && bytes[1] == 0x49 && bytes[2] == 0x46 {
+            if bytes[0] == 0x47, bytes[1] == 0x49, bytes[2] == 0x46 {
                 return "image/gif"
             }
         }
 
         // Video formats
         if bytes.count >= 8 {
-            if bytes[4] == 0x66 && bytes[5] == 0x74 && bytes[6] == 0x79 && bytes[7] == 0x70 {
+            if bytes[4] == 0x66, bytes[5] == 0x74, bytes[6] == 0x79, bytes[7] == 0x70 {
                 return "video/mp4"
             }
         }
 
         // PDF
-        if bytes.count >= 4 && bytes[0] == 0x25 && bytes[1] == 0x50 && bytes[2] == 0x44 && bytes[3] == 0x46 {
+        if bytes.count >= 4, bytes[0] == 0x25, bytes[1] == 0x50, bytes[2] == 0x44, bytes[3] == 0x46 {
             return "application/pdf"
         }
 
@@ -323,7 +323,7 @@ public actor ValidationService: ValidationServiceProtocol {
     private func areCompatibleMimeTypes(detected: String, expected: String) -> Bool {
         let compatibilityMap = [
             "image/jpg": "image/jpeg",
-            "image/jpeg": "image/jpg"
+            "image/jpeg": "image/jpg",
         ]
 
         if let compatible = compatibilityMap[detected] {
@@ -352,7 +352,7 @@ public actor ValidationService: ValidationServiceProtocol {
         return fileSize <= maxFileSizeBytes
     }
 
-    private func validateContentSpecific(_ data: Data, mimeType: String, rules: ValidationRules) async throws -> Bool {
+    private func validateContentSpecific(_ data: Data, mimeType: String, rules _: ValidationRules) async throws -> Bool {
         // Additional validation specific to content type
 
         if mimeType.hasPrefix("image/") {
@@ -416,11 +416,11 @@ public actor ValidationService: ValidationServiceProtocol {
             "<script".data(using: .ascii),
             "javascript:".data(using: .ascii),
             "eval(".data(using: .ascii),
-            "document.cookie".data(using: .ascii)
+            "document.cookie".data(using: .ascii),
         ]
 
         for pattern in suspiciousPatterns {
-            if let pattern = pattern, data.range(of: pattern) != nil {
+            if let pattern, data.range(of: pattern) != nil {
                 return true
             }
         }

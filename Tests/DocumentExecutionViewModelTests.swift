@@ -1,14 +1,13 @@
-import Testing
 @testable import AIKO
 @testable import AppCore
 import Foundation
+import Testing
 
 /// TDD Test Suite for DocumentExecutionViewModel
 /// PHASE 2: Business Logic Views - Federal Document Generation & Execution
 /// Tests cover: Document generation, status tracking, progress monitoring, error handling
 @MainActor
 final class DocumentExecutionViewModelTests {
-
     // MARK: - Test Data Setup
 
     private func createMockAcquisition() -> AppCore.Acquisition {
@@ -47,7 +46,7 @@ final class DocumentExecutionViewModelTests {
                 documentType: .qasp,
                 content: "QASP monitoring framework for quality standards...",
                 createdAt: Date().addingTimeInterval(-900) // 15 minutes ago
-            )
+            ),
         ]
     }
 
@@ -65,7 +64,7 @@ final class DocumentExecutionViewModelTests {
             },
             generateDocumentChain: { _ in
                 // Simulate document chain generation
-                return mockDocuments
+                mockDocuments
             },
             findDocumentsByType: { docType in
                 mockDocuments.compactMap { doc in
@@ -100,7 +99,7 @@ final class DocumentExecutionViewModelTests {
     }
 
     private func createErrorDocumentService() -> DocumentExecutionService {
-        return DocumentExecutionService(
+        DocumentExecutionService(
             generateDocument: { _, _, _ in
                 throw DocumentExecutionError.generationFailed("Mock generation error")
             },
@@ -126,7 +125,7 @@ final class DocumentExecutionViewModelTests {
     // MARK: - Initialization Tests
 
     @Test("DocumentExecutionViewModel initializes with empty state")
-    func testInitialization() {
+    func initialization() {
         let mockService = createMockDocumentService()
         let mockAcquisition = createMockAcquisition()
         let viewModel = DocumentExecutionViewModel(
@@ -164,7 +163,7 @@ final class DocumentExecutionViewModelTests {
     }
 
     @Test("DocumentExecutionViewModel filters document types by acquisition status")
-    func testFilterDocumentTypesByStatus() async {
+    func filterDocumentTypesByStatus() async {
         let mockService = createMockDocumentService()
         var mockAcquisition = createMockAcquisition()
         mockAcquisition.status = .draft // Draft status should show different document types
@@ -198,7 +197,7 @@ final class DocumentExecutionViewModelTests {
     // MARK: - Document Generation Tests
 
     @Test("DocumentExecutionViewModel generates single document successfully")
-    func testGenerateSingleDocument() async {
+    func generateSingleDocument() async {
         let mockService = createMockDocumentService()
         let mockAcquisition = createMockAcquisition()
         let viewModel = DocumentExecutionViewModel(
@@ -216,7 +215,7 @@ final class DocumentExecutionViewModelTests {
     }
 
     @Test("DocumentExecutionViewModel handles single document generation error")
-    func testGenerateSingleDocumentError() async {
+    func generateSingleDocumentError() async {
         let errorService = createErrorDocumentService()
         let mockAcquisition = createMockAcquisition()
         let viewModel = DocumentExecutionViewModel(
@@ -250,7 +249,7 @@ final class DocumentExecutionViewModelTests {
     }
 
     @Test("DocumentExecutionViewModel handles document chain generation error")
-    func testGenerateDocumentChainError() async {
+    func generateDocumentChainError() async {
         let errorService = createErrorDocumentService()
         let mockAcquisition = createMockAcquisition()
         let viewModel = DocumentExecutionViewModel(
@@ -343,7 +342,7 @@ final class DocumentExecutionViewModelTests {
     // MARK: - Document Validation Tests
 
     @Test("DocumentExecutionViewModel validates generated document")
-    func testValidateGeneratedDocument() async {
+    func validateGeneratedDocument() async {
         let mockService = createMockDocumentService()
         let mockAcquisition = createMockAcquisition()
         let viewModel = DocumentExecutionViewModel(
@@ -362,7 +361,7 @@ final class DocumentExecutionViewModelTests {
     }
 
     @Test("DocumentExecutionViewModel handles document validation error")
-    func testValidateDocumentError() async {
+    func validateDocumentError() async {
         let errorService = createErrorDocumentService()
         let mockAcquisition = createMockAcquisition()
         let viewModel = DocumentExecutionViewModel(
@@ -479,7 +478,7 @@ final class DocumentExecutionViewModelTests {
     // MARK: - Error Handling Tests
 
     @Test("DocumentExecutionViewModel handles service unavailable error")
-    func testServiceUnavailableError() async {
+    func serviceUnavailableError() async {
         let errorService = createErrorDocumentService()
         let mockAcquisition = createMockAcquisition()
         let viewModel = DocumentExecutionViewModel(
@@ -494,7 +493,7 @@ final class DocumentExecutionViewModelTests {
     }
 
     @Test("DocumentExecutionViewModel clears error message on retry")
-    func testClearErrorMessageOnRetry() async {
+    func clearErrorMessageOnRetry() async {
         let errorService = createErrorDocumentService()
         let mockAcquisition = createMockAcquisition()
         let viewModel = DocumentExecutionViewModel(

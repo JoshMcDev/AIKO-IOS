@@ -57,13 +57,12 @@ public actor AgenticOrchestrator {
         )
 
         // Determine decision mode based on confidence
-        let decisionMode: DecisionMode
-        if recommendation.confidence >= confidenceThresholds.autonomous {
-            decisionMode = .autonomous
+        let decisionMode: DecisionMode = if recommendation.confidence >= confidenceThresholds.autonomous {
+            .autonomous
         } else if recommendation.confidence >= confidenceThresholds.assisted {
-            decisionMode = .assisted
+            .assisted
         } else {
-            decisionMode = .deferred
+            .deferred
         }
 
         let response = DecisionResponse(
@@ -151,11 +150,11 @@ public actor AgenticOrchestrator {
     private func calculateImmediateReward(_ feedback: AgenticUserFeedback) -> Double {
         switch feedback.outcome {
         case .success:
-            return 1.0
+            1.0
         case .partial:
-            return 0.7
+            0.7
         case .failure, .abandoned:
-            return 0.0
+            0.0
         }
     }
 
@@ -166,19 +165,19 @@ public actor AgenticOrchestrator {
 
     private func calculateComplianceReward(_ feedback: AgenticUserFeedback) -> Double {
         // For now, use satisfaction score as compliance proxy
-        return feedback.satisfactionScore
+        feedback.satisfactionScore
     }
 
     private func calculateEfficiencyReward(_ feedback: AgenticUserFeedback) -> Double {
         // Base efficiency on satisfaction and completion
-        return feedback.workflowCompleted ? feedback.satisfactionScore : 0.3
+        feedback.workflowCompleted ? feedback.satisfactionScore : 0.3
     }
 
     /// Creates a standardized feature vector from acquisition context
     /// - Parameter context: The acquisition context to extract features from
     /// - Returns: FeatureVector with normalized features for ML processing
     private func createFeatureVector(from context: AcquisitionContext) -> FeatureVector {
-        return FeatureVector(features: [
+        FeatureVector(features: [
             "docType_\(context.documentType.rawValue)": 1.0,
             "complexity_score": context.complexity.score,
             "historical_success": context.historicalSuccess,
@@ -204,11 +203,11 @@ public enum DecisionMode: String, Codable, Sendable {
     public var description: String {
         switch self {
         case .autonomous:
-            return "Proceeding automatically with high confidence"
+            "Proceeding automatically with high confidence"
         case .assisted:
-            return "Recommendation provided, user confirmation requested"
+            "Recommendation provided, user confirmation requested"
         case .deferred:
-            return "Insufficient confidence, user input required"
+            "Insufficient confidence, user input required"
         }
     }
 }
@@ -279,30 +278,30 @@ extension UserPreferences {
 
 // MARK: - Compliance Integration Extensions
 
-extension AgenticOrchestrator {
+public extension AgenticOrchestrator {
     /// Make a compliance-related decision using RL agent
-    public func makeComplianceDecision(
-        context: AcquisitionContext,
-        complianceResult: GuardianComplianceResult
+    func makeComplianceDecision(
+        context _: AcquisitionContext,
+        complianceResult _: GuardianComplianceResult
     ) async throws -> ComplianceDecision {
         // RED phase: Return basic decision to cause integration test failures
-        return ComplianceDecision(
+        ComplianceDecision(
             confidence: 0.5, // Below threshold to cause test failures
             reasoning: "basic reasoning" // Missing "based on learning" text
         )
     }
 
     /// Record compliance feedback for RL learning
-    public func recordComplianceFeedback(
-        result: GuardianComplianceResult,
-        userAction: UserAction
+    func recordComplianceFeedback(
+        result _: GuardianComplianceResult,
+        userAction _: UserAction
     ) async throws {
         // RED phase: Minimal implementation to cause test failures
         // This should integrate with LearningFeedbackLoop but doesn't
     }
 
     /// Shared instance for integration testing - basic instance for RED phase
-    public static let shared: AgenticOrchestrator = {
+    static let shared: AgenticOrchestrator = {
         fatalError("AgenticOrchestrator.shared not properly initialized - RED phase")
     }()
 }

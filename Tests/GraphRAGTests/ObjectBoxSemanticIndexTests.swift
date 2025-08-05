@@ -26,8 +26,8 @@ final class ObjectBoxSemanticIndexTests: XCTestCase {
     /// Test search performance target: <1s for similarity search
     /// This test WILL FAIL initially until search optimization is implemented
     func testSearchPerformanceTarget() async throws {
-        guard let semanticIndex = semanticIndex,
-              let testEmbeddings = testEmbeddings
+        guard let semanticIndex,
+              let testEmbeddings
         else {
             XCTFail("Test setup failed")
             return
@@ -65,8 +65,8 @@ final class ObjectBoxSemanticIndexTests: XCTestCase {
     /// Test namespace isolation: 0% cross-contamination between domains
     /// This test WILL FAIL initially until namespace isolation is implemented
     func testNamespaceIsolation() async throws {
-        guard let semanticIndex = semanticIndex,
-              let testEmbeddings = testEmbeddings
+        guard let semanticIndex,
+              let testEmbeddings
         else {
             XCTFail("Test setup failed")
             return
@@ -116,7 +116,7 @@ final class ObjectBoxSemanticIndexTests: XCTestCase {
     /// Test storage operation performance: <100ms per embedding storage
     /// This test WILL FAIL initially until storage optimization is implemented
     func testStorageOperationPerformance() async throws {
-        guard let semanticIndex = semanticIndex else {
+        guard let semanticIndex else {
             XCTFail("Test setup failed")
             return
         }
@@ -152,7 +152,7 @@ final class ObjectBoxSemanticIndexTests: XCTestCase {
     /// Test data integrity: 100% fidelity for stored embeddings
     /// This test WILL FAIL initially until data integrity is implemented
     func testDataIntegrityRoundTrip() async throws {
-        guard let semanticIndex = semanticIndex else {
+        guard let semanticIndex else {
             XCTFail("Test setup failed")
             return
         }
@@ -199,8 +199,8 @@ final class ObjectBoxSemanticIndexTests: XCTestCase {
     /// Test concurrent access performance: 10 simultaneous operations
     /// This test WILL FAIL initially until concurrent access is implemented
     func testConcurrentAccessPerformance() async throws {
-        guard let semanticIndex = semanticIndex,
-              let testEmbeddings = testEmbeddings
+        guard let semanticIndex,
+              let testEmbeddings
         else {
             XCTFail("Test setup failed")
             return
@@ -242,7 +242,7 @@ final class ObjectBoxSemanticIndexTests: XCTestCase {
         let allResults = try await semanticIndex.findSimilarRegulations(
             queryEmbedding: testEmbeddings,
             limit: concurrentOperations,
-            threshold: 0.1  // Lower threshold to ensure we find results
+            threshold: 0.1 // Lower threshold to ensure we find results
         )
         XCTAssertGreaterThanOrEqual(allResults.count, 1, "At least one concurrent operation should have completed")
     }
@@ -269,7 +269,7 @@ final class ObjectBoxSemanticIndexTests: XCTestCase {
     }
 
     private func populateIndexWithTestData(count: Int) async throws {
-        guard let semanticIndex = semanticIndex else {
+        guard let semanticIndex else {
             throw XCTestError(.failureWhileWaiting)
         }
 
@@ -295,7 +295,7 @@ final class ObjectBoxSemanticIndexTests: XCTestCase {
     }
 
     private func createRegulationMetadata() -> RegulationMetadata {
-        return RegulationMetadata(
+        RegulationMetadata(
             regulationNumber: "FAR 52.227-1",
             title: "Authorization and Consent",
             subpart: nil,
@@ -333,7 +333,7 @@ final class ObjectBoxSemanticIndexTests: XCTestCase {
         let magnitudeA = sqrt(a.map { $0 * $0 }.reduce(0, +))
         let magnitudeB = sqrt(b.map { $0 * $0 }.reduce(0, +))
 
-        guard magnitudeA > 0 && magnitudeB > 0 else { return 0.0 }
+        guard magnitudeA > 0, magnitudeB > 0 else { return 0.0 }
 
         return dotProduct / (magnitudeA * magnitudeB)
     }

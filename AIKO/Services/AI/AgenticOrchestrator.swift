@@ -40,10 +40,10 @@ actor AgenticOrchestrator {
     // MARK: - Initialization
 
     init() {
-        self.localRLAgent = LocalRLAgent()
-        self.patternRecognizer = PatternRecognitionAlgorithm()
-        self.userPatternEngine = UserPatternLearningEngine.shared
-        self.feedbackLoop = LearningFeedbackLoop()
+        localRLAgent = LocalRLAgent()
+        patternRecognizer = PatternRecognitionAlgorithm()
+        userPatternEngine = UserPatternLearningEngine.shared
+        feedbackLoop = LearningFeedbackLoop()
 
         logger.info("AgenticOrchestrator initialized with autonomous threshold: \(autonomousThreshold)")
     }
@@ -69,7 +69,7 @@ actor AgenticOrchestrator {
         // Combine with pattern recognition insights
         let patternInsights = await patternRecognizer.analyze(
             interaction: contextAnalysis.toUserInteraction(),
-            historicalData: await getHistoricalInteractions()
+            historicalData: getHistoricalInteractions()
         )
 
         // Make agentic decision based on confidence levels
@@ -140,16 +140,16 @@ actor AgenticOrchestrator {
             return false
         }.count
 
-        let averageConfidence = recentActions.map { $0.confidence }.reduce(0, +) / Double(max(1, recentActions.count))
+        let averageConfidence = recentActions.map(\.confidence).reduce(0, +) / Double(max(1, recentActions.count))
 
-        return AgenticPerformanceMetrics(
+        return await AgenticPerformanceMetrics(
             autonomousDecisionRate: Double(autonomousCount) / Double(max(1, recentActions.count)),
             assistedDecisionRate: Double(assistedCount) / Double(max(1, recentActions.count)),
             manualDecisionRate: Double(manualCount) / Double(max(1, recentActions.count)),
             successRate: Double(successfulActions) / Double(max(1, recentActions.count)),
             averageConfidence: averageConfidence,
             totalDecisions: recentActions.count,
-            learningProgress: await localRLAgent.getLearningProgress()
+            learningProgress: localRLAgent.getLearningProgress()
         )
     }
 
@@ -210,7 +210,6 @@ actor AgenticOrchestrator {
         patternInsights: [UserPattern],
         contextAnalysis: DecisionContextAnalysis
     ) async -> AgenticDecision {
-
         // Combine different confidence sources
         let combinedConfidence = combineConfidenceScores(
             rlConfidence: rlRecommendation.confidence,
@@ -222,7 +221,7 @@ actor AgenticOrchestrator {
         let decisionType: AgenticDecisionType
         let recommendation: AgenticRecommendation
 
-        if combinedConfidence >= autonomousThreshold && contextAnalysis.riskLevel.rawValue <= RiskLevel.medium.rawValue {
+        if combinedConfidence >= autonomousThreshold, contextAnalysis.riskLevel.rawValue <= RiskLevel.medium.rawValue {
             // High confidence, low-medium risk - make autonomous decision
             decisionType = .autonomous
             recommendation = AgenticRecommendation(
@@ -362,19 +361,19 @@ actor AgenticOrchestrator {
     }
 
     private func generateManualReasoning(_ context: DecisionContextAnalysis) -> String {
-        return "Manual input recommended due to: low confidence (\(Int(context.combinedConfidence * 100))%), high complexity (\(Int(context.complexityScore * 100))%), or insufficient historical data"
+        "Manual input recommended due to: low confidence (\(Int(context.combinedConfidence * 100))%), high complexity (\(Int(context.complexityScore * 100))%), or insufficient historical data"
     }
 
-    private func calculateReward(feedback: AgenticFeedback, action: AgenticAction) -> Double {
+    private func calculateReward(feedback: AgenticFeedback, action _: AgenticAction) -> Double {
         switch feedback.type {
         case .accepted:
-            return 1.0
+            1.0
         case .modified:
-            return 0.5
+            0.5
         case .rejected:
-            return -0.5
+            -0.5
         case .error:
-            return -1.0
+            -1.0
         }
     }
 
@@ -397,7 +396,7 @@ actor AgenticOrchestrator {
 
     private func getHistoricalInteractions() async -> [UserInteraction] {
         // Convert action history to user interactions for pattern analysis
-        return actionHistory.map { action in
+        actionHistory.map { action in
             UserInteraction(
                 id: action.id,
                 type: "agentic_decision",
@@ -406,7 +405,7 @@ actor AgenticOrchestrator {
                     "decisionType": action.decision.type.rawValue,
                     "confidence": action.confidence,
                     "documentType": action.request.documentType ?? "",
-                    "workflowPhase": action.request.workflowPhase ?? ""
+                    "workflowPhase": action.request.workflowPhase ?? "",
                 ]
             )
         }
@@ -438,9 +437,9 @@ struct AgenticDecision {
 }
 
 enum AgenticDecisionType: String {
-    case autonomous = "autonomous"
-    case assisted = "assisted"
-    case manual = "manual"
+    case autonomous
+    case assisted
+    case manual
 }
 
 struct AgenticRecommendation {
@@ -460,11 +459,11 @@ struct AgenticAction {
     var outcome: AgenticOutcome?
 
     func toState() -> RLState {
-        return RLState(from: nil, request: request)
+        RLState(from: nil, request: request)
     }
 
     func toRLAction() -> RLAction {
-        return decision.recommendation.action
+        decision.recommendation.action
     }
 }
 
@@ -485,13 +484,13 @@ struct AgenticFeedback {
     func toOutcome() -> AgenticOutcome {
         switch type {
         case .accepted:
-            return .success(reward: 1.0)
+            .success(reward: 1.0)
         case .modified:
-            return .partial(reward: 0.5)
+            .partial(reward: 0.5)
         case .rejected:
-            return .failure(penalty: -0.5)
+            .failure(penalty: -0.5)
         case .error:
-            return .failure(penalty: -1.0)
+            .failure(penalty: -1.0)
         }
     }
 }
@@ -521,7 +520,7 @@ struct DecisionContextAnalysis {
     var combinedConfidence: Double = 0.0
 
     func toUserInteraction() -> UserInteraction {
-        return UserInteraction(
+        UserInteraction(
             id: request.id,
             type: "decision_context",
             timestamp: request.timestamp,
@@ -529,7 +528,7 @@ struct DecisionContextAnalysis {
                 "complexity": complexityScore,
                 "risk": riskLevel.rawValue,
                 "documentType": request.documentType ?? "",
-                "workflowPhase": request.workflowPhase ?? ""
+                "workflowPhase": request.workflowPhase ?? "",
             ]
         )
     }
@@ -564,7 +563,7 @@ struct AgenticPerformanceMetrics {
 
 extension DecisionContextAnalysis {
     var combinedConfidence: Double {
-        return (context.patterns.confidence * 0.4) +
+        (context.patterns.confidence * 0.4) +
             (historicalPatterns.confidence * 0.3) +
             ((1.0 - complexityScore) * 0.2) +
             ((1.0 - riskLevel.rawValue) * 0.1)

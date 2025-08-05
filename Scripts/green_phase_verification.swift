@@ -8,7 +8,6 @@ import Foundation
 
 @MainActor
 class GreenPhaseVerifier {
-
     func verifyGreenPhase() async {
         print("🟢 GREEN Phase Verification Starting...")
         print("=" * 50)

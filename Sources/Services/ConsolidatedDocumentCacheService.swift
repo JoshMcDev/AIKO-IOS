@@ -29,7 +29,7 @@ public final class ConsolidatedDocumentCacheService {
     }
 
     // CONSOLIDATED: All caching strategies in one implementation
-    public func store<T: Codable>(_ item: T, forKey key: String, encrypted: Bool = false) async throws {
+    public func store(_ item: some Codable, forKey key: String, encrypted: Bool = false) async throws {
         let document = try CachedDocument(content: item, encrypted: encrypted)
 
         if encrypted {
@@ -60,11 +60,11 @@ public final class ConsolidatedDocumentCacheService {
     }
 
     public func size() -> Int {
-        return Int(memoryCache.totalCostLimit)
+        Int(memoryCache.totalCostLimit)
     }
 
     public func statistics() -> CacheStatistics {
-        return CacheStatistics(
+        CacheStatistics(
             hitRate: 0.85,
             totalHits: 0,
             totalMisses: 0,
@@ -79,7 +79,7 @@ private final class CachedDocument: @unchecked Sendable {
     let encrypted: Bool
     let timestamp: Date
 
-    init<T: Codable>(content: T, encrypted: Bool) throws {
+    init(content: some Codable, encrypted: Bool) throws {
         self.content = try JSONEncoder().encode(content)
         self.encrypted = encrypted
         timestamp = Date()
@@ -89,11 +89,11 @@ private final class CachedDocument: @unchecked Sendable {
 // Mock supporting classes for compilation
 private struct CacheEncryptionManager: Sendable {
     func encrypt(_ document: CachedDocument) async throws -> CachedDocument {
-        return document
+        document
     }
 
     func decrypt(_ document: CachedDocument) async throws -> CachedDocument {
-        return document
+        document
     }
 }
 
@@ -105,7 +105,7 @@ private struct CacheAdaptiveOptimizer: Sendable {
 
 private struct CacheUnifiedInterface: Sendable {
     func decode<T: Codable>(_ type: T.Type, from document: CachedDocument) throws -> T {
-        return try JSONDecoder().decode(type, from: document.content)
+        try JSONDecoder().decode(type, from: document.content)
     }
 }
 

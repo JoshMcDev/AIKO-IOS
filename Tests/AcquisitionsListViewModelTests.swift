@@ -1,14 +1,13 @@
-import Testing
 @testable import AIKO
 @testable import AppCore
 import Foundation
+import Testing
 
 /// TDD Test Suite for AcquisitionsListViewModel
 /// PHASE 2: Business Logic Views - Federal Acquisition Management
 /// Tests cover: Data fetching, filtering, sorting, CRUD operations, status management
 @MainActor
 final class AcquisitionsListViewModelTests {
-
     // MARK: - Test Data Setup
 
     private func createMockAcquisitions() -> [AppCore.Acquisition] {
@@ -56,7 +55,7 @@ final class AcquisitionsListViewModelTests {
                 lastModifiedDate: Date().addingTimeInterval(-86400 * 1), // 1 day ago
                 uploadedFiles: [],
                 generatedFiles: []
-            )
+            ),
         ]
     }
 
@@ -96,7 +95,7 @@ final class AcquisitionsListViewModelTests {
     // MARK: - Initialization Tests
 
     @Test("AcquisitionsListViewModel initializes with empty state")
-    func testInitialization() {
+    func initialization() {
         let mockService = createMockAcquisitionService()
         let viewModel = AcquisitionsListViewModel(acquisitionService: mockService)
 
@@ -125,7 +124,7 @@ final class AcquisitionsListViewModelTests {
     }
 
     @Test("AcquisitionsListViewModel handles loading errors")
-    func testLoadAcquisitionsError() async {
+    func loadAcquisitionsError() async {
         let errorService = AcquisitionService(
             createAcquisition: { _, _, _ in throw AcquisitionError.invalidData },
             fetchAcquisitions: { throw AcquisitionError.notFound },
@@ -148,7 +147,7 @@ final class AcquisitionsListViewModelTests {
     }
 
     @Test("AcquisitionsListViewModel sets loading state during fetch")
-    func testLoadingState() async {
+    func loadingState() async {
         let mockService = createMockAcquisitionService()
         let viewModel = AcquisitionsListViewModel(acquisitionService: mockService)
 
@@ -164,7 +163,7 @@ final class AcquisitionsListViewModelTests {
     // MARK: - Filtering Tests
 
     @Test("AcquisitionsListViewModel filters by single status")
-    func testFilterBySingleStatus() async {
+    func filterBySingleStatus() async {
         let mockService = createMockAcquisitionService()
         let viewModel = AcquisitionsListViewModel(acquisitionService: mockService)
 
@@ -177,7 +176,7 @@ final class AcquisitionsListViewModelTests {
     }
 
     @Test("AcquisitionsListViewModel filters by multiple statuses")
-    func testFilterByMultipleStatuses() async {
+    func filterByMultipleStatuses() async {
         let mockService = createMockAcquisitionService()
         let viewModel = AcquisitionsListViewModel(acquisitionService: mockService)
 
@@ -199,7 +198,7 @@ final class AcquisitionsListViewModelTests {
         viewModel.filterByPhase(.execution)
 
         let executionStatuses: Set<AcquisitionStatus> = [.inProgress, .underReview, .approved, .onHold]
-        let filteredStatuses = Set(viewModel.filteredAcquisitions.map { $0.status })
+        let filteredStatuses = Set(viewModel.filteredAcquisitions.map(\.status))
 
         #expect(viewModel.filteredAcquisitions.count >= 1)
         #expect(filteredStatuses.isSubset(of: executionStatuses))
@@ -224,7 +223,7 @@ final class AcquisitionsListViewModelTests {
     // MARK: - Search Tests
 
     @Test("AcquisitionsListViewModel searches by title")
-    func testSearchByTitle() async {
+    func searchByTitle() async {
         let mockService = createMockAcquisitionService()
         let viewModel = AcquisitionsListViewModel(acquisitionService: mockService)
 
@@ -237,7 +236,7 @@ final class AcquisitionsListViewModelTests {
     }
 
     @Test("AcquisitionsListViewModel searches by requirements")
-    func testSearchByRequirements() async {
+    func searchByRequirements() async {
         let mockService = createMockAcquisitionService()
         let viewModel = AcquisitionsListViewModel(acquisitionService: mockService)
 
@@ -249,7 +248,7 @@ final class AcquisitionsListViewModelTests {
     }
 
     @Test("AcquisitionsListViewModel searches by project number")
-    func testSearchByProjectNumber() async {
+    func searchByProjectNumber() async {
         let mockService = createMockAcquisitionService()
         let viewModel = AcquisitionsListViewModel(acquisitionService: mockService)
 
@@ -261,7 +260,7 @@ final class AcquisitionsListViewModelTests {
     }
 
     @Test("AcquisitionsListViewModel handles empty search results")
-    func testEmptySearchResults() async {
+    func emptySearchResults() async {
         let mockService = createMockAcquisitionService()
         let viewModel = AcquisitionsListViewModel(acquisitionService: mockService)
 
@@ -275,14 +274,14 @@ final class AcquisitionsListViewModelTests {
     // MARK: - Sorting Tests
 
     @Test("AcquisitionsListViewModel sorts by title ascending")
-    func testSortByTitleAscending() async {
+    func sortByTitleAscending() async {
         let mockService = createMockAcquisitionService()
         let viewModel = AcquisitionsListViewModel(acquisitionService: mockService)
 
         await viewModel.loadAcquisitions()
         viewModel.sortBy(.title, ascending: true)
 
-        let titles = viewModel.filteredAcquisitions.map { $0.title }
+        let titles = viewModel.filteredAcquisitions.map(\.title)
         let sortedTitles = titles.sorted()
 
         #expect(titles == sortedTitles)
@@ -291,14 +290,14 @@ final class AcquisitionsListViewModelTests {
     }
 
     @Test("AcquisitionsListViewModel sorts by creation date descending")
-    func testSortByCreationDateDescending() async {
+    func sortByCreationDateDescending() async {
         let mockService = createMockAcquisitionService()
         let viewModel = AcquisitionsListViewModel(acquisitionService: mockService)
 
         await viewModel.loadAcquisitions()
         viewModel.sortBy(.createdDate, ascending: false)
 
-        let dates = viewModel.filteredAcquisitions.map { $0.createdDate }
+        let dates = viewModel.filteredAcquisitions.map(\.createdDate)
         let sortedDates = dates.sorted(by: >)
 
         #expect(dates == sortedDates)
@@ -307,14 +306,14 @@ final class AcquisitionsListViewModelTests {
     }
 
     @Test("AcquisitionsListViewModel sorts by status")
-    func testSortByStatus() async {
+    func sortByStatus() async {
         let mockService = createMockAcquisitionService()
         let viewModel = AcquisitionsListViewModel(acquisitionService: mockService)
 
         await viewModel.loadAcquisitions()
         viewModel.sortBy(.status, ascending: true)
 
-        let statuses = viewModel.filteredAcquisitions.map { $0.status.rawValue }
+        let statuses = viewModel.filteredAcquisitions.map(\.status.rawValue)
         let sortedStatuses = statuses.sorted()
 
         #expect(statuses == sortedStatuses)
@@ -324,7 +323,7 @@ final class AcquisitionsListViewModelTests {
     // MARK: - Combined Filter and Search Tests
 
     @Test("AcquisitionsListViewModel applies search and filters together")
-    func testSearchAndFilterCombination() async {
+    func searchAndFilterCombination() async {
         let mockService = createMockAcquisitionService()
         let viewModel = AcquisitionsListViewModel(acquisitionService: mockService)
 
@@ -340,7 +339,7 @@ final class AcquisitionsListViewModelTests {
     // MARK: - Navigation Tests
 
     @Test("AcquisitionsListViewModel selects acquisition for details")
-    func testSelectAcquisitionForDetails() async {
+    func selectAcquisitionForDetails() async {
         let mockService = createMockAcquisitionService()
         let viewModel = AcquisitionsListViewModel(acquisitionService: mockService)
 

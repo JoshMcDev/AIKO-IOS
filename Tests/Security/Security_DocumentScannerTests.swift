@@ -1,15 +1,14 @@
-import XCTest
 import SwiftUI
+import XCTest
 #if canImport(UIKit)
 import UIKit
 #endif
-import LocalAuthentication
 @testable import AIKO
 @testable import AppCore
+import LocalAuthentication
 
 @MainActor
 final class SecurityDocumentScannerTests: XCTestCase {
-
     // MARK: - Cross-Platform Helper
 
     private func createMockImageData() -> Data {
@@ -45,9 +44,9 @@ final class SecurityDocumentScannerTests: XCTestCase {
     }
     #endif
 
-    private var viewModel: AppCore.DocumentScannerViewModel!
-    private var mockBiometricService: MockSecurityBiometricService!
-    private var mockSecureStorage: MockSecureStorage!
+    private var viewModel: AppCore.DocumentScannerViewModel?
+    private var mockBiometricService: MockSecurityBiometricService?
+    private var mockSecureStorage: MockSecureStorage?
 
     override func setUp() async throws {
         viewModel = AppCore.DocumentScannerViewModel()
@@ -453,7 +452,6 @@ final class SecurityDocumentScannerTests: XCTestCase {
     }
 
     // MARK: - Helper Methods and Mock Objects
-
 }
 
 // MARK: - Mock Security Services
@@ -488,7 +486,7 @@ class MockSecureStorage {
     }
 
     func retrieveEncryptedDocument(_ id: String) async -> EncryptedDocument? {
-        return documents[id]
+        documents[id]
     }
 }
 
@@ -548,13 +546,13 @@ enum SecurityAlert {
     case unauthorizedAccess
     case dataCorruption
 
-    var type: SecurityAlert { return self }
+    var type: SecurityAlert { self }
 }
 
 // MARK: - Security Utility Extensions (Stubs)
 
 extension AppCore.DocumentScannerViewModel {
-    func setSensitivityLevel(_ level: SensitivityLevel) {
+    func setSensitivityLevel(_: SensitivityLevel) {
         // This will fail in RED phase - sensitivity levels not implemented
         fatalError("Sensitivity levels not implemented - this should fail in RED phase")
     }
@@ -569,7 +567,7 @@ extension AppCore.DocumentScannerViewModel {
         fatalError("Integrity hashing not implemented - this should fail in RED phase")
     }
 
-    func verifyDocumentIntegrity(_ hash: String) async -> Bool {
+    func verifyDocumentIntegrity(_: String) async -> Bool {
         // This will fail in RED phase - integrity verification not implemented
         fatalError("Integrity verification not implemented - this should fail in RED phase")
     }
@@ -581,12 +579,12 @@ extension AppCore.DocumentScannerViewModel {
 
     var securityAlert: SecurityAlert? {
         // This will fail in RED phase - security alerts not implemented
-        return nil
+        nil
     }
 
     var documentId: String {
         // This will fail in RED phase - document ID not implemented
-        return ""
+        ""
     }
 }
 

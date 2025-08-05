@@ -12,7 +12,7 @@ public actor ScreenshotService: ScreenshotServiceProtocol {
     private var recordingStartTime: Date?
 
     public init() {
-        self.recorder = RPScreenRecorder.shared()
+        recorder = RPScreenRecorder.shared()
     }
 
     public func captureScreen() async throws -> ScreenshotResult {
@@ -24,7 +24,8 @@ public actor ScreenshotService: ScreenshotServiceProtocol {
             Task { @MainActor in
                 guard let windowScene = UIApplication.shared.connectedScenes
                         .compactMap({ $0 as? UIWindowScene })
-                        .first else {
+                        .first
+                else {
                     continuation.resume(throwing: MediaError.processingFailed("No active window scene found"))
                     return
                 }
@@ -136,7 +137,7 @@ public actor ScreenshotService: ScreenshotServiceProtocol {
     }
 
     public func startScreenRecording(options: ScreenRecordingOptions) async throws -> ScreenRecordingSession {
-        guard let recorder = recorder else {
+        guard let recorder else {
             throw MediaError.processingFailed("Screen recorder not initialized")
         }
 
@@ -155,7 +156,7 @@ public actor ScreenshotService: ScreenshotServiceProtocol {
 
         return try await withCheckedThrowingContinuation { continuation in
             recorder.startRecording { error in
-                if let error = error {
+                if let error {
                     continuation.resume(throwing: MediaError.processingFailed("Failed to start recording: \(error.localizedDescription)"))
                     return
                 }
@@ -174,18 +175,19 @@ public actor ScreenshotService: ScreenshotServiceProtocol {
     }
 
     public func stopScreenRecording(_ session: ScreenRecordingSession) async throws -> ScreenRecordingResult {
-        guard let recorder = recorder else {
+        guard let recorder else {
             throw MediaError.processingFailed("Screen recorder not initialized")
         }
 
         guard let currentSession = currentRecordingSession,
-              currentSession.id == session.id else {
+              currentSession.id == session.id
+        else {
             throw MediaError.processingFailed("No matching recording session found")
         }
 
         return try await withCheckedThrowingContinuation { continuation in
             recorder.stopRecording { _, error in
-                if let error = error {
+                if let error {
                     continuation.resume(throwing: MediaError.processingFailed("Failed to stop recording: \(error.localizedDescription)"))
                     return
                 }
@@ -230,6 +232,6 @@ public actor ScreenshotService: ScreenshotServiceProtocol {
     public func requestScreenRecordingPermission() async -> Bool {
         // On iOS, ReplayKit permissions are handled automatically when recording starts
         // We can only check availability
-        return RPScreenRecorder.shared().isAvailable
+        RPScreenRecorder.shared().isAvailable
     }
 }

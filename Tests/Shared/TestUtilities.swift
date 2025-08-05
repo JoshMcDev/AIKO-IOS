@@ -13,13 +13,13 @@ public enum GraphRAGTestError: Error, LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .serviceNotInitialized:
-            return "Test service was not properly initialized"
+            "Test service was not properly initialized"
         case .invalidTestData:
-            return "Test data is invalid or corrupted"
+            "Test data is invalid or corrupted"
         case .testTimeout:
-            return "Test operation timed out"
+            "Test operation timed out"
         case let .assertionFailure(message):
-            return "Test assertion failed: \(message)"
+            "Test assertion failed: \(message)"
         }
     }
 }
@@ -29,7 +29,7 @@ public enum GraphRAGTestError: Error, LocalizedError {
 public extension XCTestCase {
     /// Safely unwrap an optional service with a clear failure message
     func unwrapService<T>(_ service: T?, file: StaticString = #filePath, line: UInt = #line) throws -> T {
-        guard let service = service else {
+        guard let service else {
             XCTFail("Service not initialized", file: file, line: line)
             throw GraphRAGTestError.serviceNotInitialized
         }
@@ -43,7 +43,7 @@ public extension XCTestCase {
         file: StaticString = #filePath,
         line: UInt = #line
     ) async throws -> T {
-        return try await withThrowingTaskGroup(of: T.self) { group in
+        try await withThrowingTaskGroup(of: T.self) { group in
             group.addTask {
                 try await operation()
             }

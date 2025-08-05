@@ -1,9 +1,8 @@
-import XCTest
 @testable import GraphRAG
+import XCTest
 
 /// Minimal test to isolate the integer overflow issue
 final class MinimalOverflowTest: XCTestCase {
-
     func testBasicStringHash() throws {
         // Test the djb2hash function directly
         let testString = "hello world"

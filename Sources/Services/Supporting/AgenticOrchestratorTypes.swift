@@ -35,7 +35,7 @@ public struct WorkflowAction: Sendable, Identifiable, Codable, Hashable {
     }
 
     public static func == (lhs: WorkflowAction, rhs: WorkflowAction) -> Bool {
-        return lhs.id == rhs.id && lhs.actionType == rhs.actionType
+        lhs.id == rhs.id && lhs.actionType == rhs.actionType
     }
 
     enum CodingKeys: String, CodingKey {
@@ -134,15 +134,15 @@ public enum AgenticComplexityLevel: String, Codable, Sendable {
 
     public var numericValue: Double {
         switch self {
-        case .simple: return 1.0
-        case .moderate: return 2.0
-        case .complex: return 3.0
-        case .highlyComplex: return 4.0
+        case .simple: 1.0
+        case .moderate: 2.0
+        case .complex: 3.0
+        case .highlyComplex: 4.0
         }
     }
 
     public var score: Double {
-        return numericValue
+        numericValue
     }
 }
 
@@ -169,7 +169,7 @@ public struct Milestone: Sendable, Codable, Identifiable, Hashable {
     }
 
     public static func == (lhs: Milestone, rhs: Milestone) -> Bool {
-        return lhs.id == rhs.id &&
+        lhs.id == rhs.id &&
             lhs.name == rhs.name &&
             lhs.dueDate == rhs.dueDate &&
             lhs.dependencies == rhs.dependencies
@@ -184,10 +184,10 @@ public enum UrgencyLevel: String, Codable, Sendable {
 
     public var multiplier: Double {
         switch self {
-        case .low: return 0.5
-        case .normal: return 1.0
-        case .high: return 1.5
-        case .critical: return 2.0
+        case .low: 0.5
+        case .normal: 1.0
+        case .high: 1.5
+        case .critical: 2.0
         }
     }
 }
@@ -224,10 +224,10 @@ public enum ExperienceLevel: String, Codable, Sendable, Hashable {
 
     public var confidenceMultiplier: Double {
         switch self {
-        case .novice: return 0.7
-        case .intermediate: return 0.85
-        case .advanced: return 0.95
-        case .expert: return 1.0
+        case .novice: 0.7
+        case .intermediate: 0.85
+        case .advanced: 0.95
+        case .expert: 1.0
         }
     }
 }
@@ -263,7 +263,7 @@ public struct UserPreferences: Sendable, Codable, Hashable {
     }
 
     public static func == (lhs: UserPreferences, rhs: UserPreferences) -> Bool {
-        return lhs.automationPreference == rhs.automationPreference &&
+        lhs.automationPreference == rhs.automationPreference &&
             lhs.notificationSettings == rhs.notificationSettings &&
             lhs.workflowCustomizations == rhs.workflowCustomizations
     }
@@ -296,7 +296,7 @@ public struct NotificationSettings: Sendable, Codable, Hashable, Equatable {
     }
 
     public static func == (lhs: NotificationSettings, rhs: NotificationSettings) -> Bool {
-        return lhs.enablePushNotifications == rhs.enablePushNotifications &&
+        lhs.enablePushNotifications == rhs.enablePushNotifications &&
             lhs.emailDigest == rhs.emailDigest &&
             lhs.criticalOnly == rhs.criticalOnly
     }
@@ -316,7 +316,7 @@ public struct PerformanceMetrics: Sendable, Codable, Hashable {
     }
 
     public var overall: Double {
-        return (accuracy + speed + compliance + userSatisfaction) / 4.0
+        (accuracy + speed + compliance + userSatisfaction) / 4.0
     }
 }
 

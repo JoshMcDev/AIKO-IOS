@@ -174,7 +174,12 @@ public struct RequisitionNumber: ValueObject, Sendable {
     }
 
     /// Default placeholder requisition number for forms
-    public static let `default`: RequisitionNumber = try! RequisitionNumber("REQ-00000")
+    public static let `default`: RequisitionNumber = {
+        guard let defaultReq = try? RequisitionNumber("REQ-00000") else {
+            fatalError("Failed to create default requisition number - this is a programming error")
+        }
+        return defaultReq
+    }()
 }
 
 /// Delivery order number
@@ -239,7 +244,12 @@ public struct CageCode: ValueObject, Sendable {
     }
 
     /// Empty placeholder CAGE code for forms
-    public static let empty: CageCode = try! CageCode("00000")
+    public static let empty: CageCode = {
+        guard let emptyCage = try? CageCode("00000") else {
+            fatalError("Failed to create empty CAGE code - this is a programming error")
+        }
+        return emptyCage
+    }()
 }
 
 /// DUNS number value object

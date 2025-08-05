@@ -220,7 +220,10 @@ public final class AcquisitionAggregate: AggregateRoot<Acquisition>, @unchecked 
         if estimatedValue != nil { score += 1 }
 
         let percentage = Decimal(score) / Decimal(totalChecks) * 100
-        return try! Percentage(percentage)
+        guard let validPercentage = try? Percentage(percentage) else {
+            fatalError("Failed to create percentage from completeness calculation - this should never happen")
+        }
+        return validPercentage
     }
 
     // MARK: - Validation

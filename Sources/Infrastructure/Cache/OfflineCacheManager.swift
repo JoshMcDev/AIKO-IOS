@@ -45,7 +45,12 @@ final class OfflineCacheManager: ObservableObject {
             diskCache = try DiskCache(configuration: configuration)
         } catch {
             // Fallback to a basic disk cache if initialization fails
-            diskCache = try! DiskCache()
+            do {
+                diskCache = try DiskCache()
+            } catch {
+                // If even basic initialization fails, create minimal fallback
+                fatalError("Failed to initialize DiskCache: \(error)")
+            }
         }
 
         secureCache = SecureCache(configuration: configuration)

@@ -66,7 +66,7 @@ actor MultifactorConfidenceScorer {
         // Experience level mappings
         static let experienceLevelValues: [ExpertiseLevel: Double] = [
             .novice: 0.2, .low: 0.4, .intermediate: 0.6,
-            .high: 0.8, .advanced: 0.9, .expert: 1.0
+            .high: 0.8, .advanced: 0.9, .expert: 1.0,
         ]
 
         // Confidence category thresholds
@@ -99,7 +99,7 @@ actor MultifactorConfidenceScorer {
         guard !outcomes.isEmpty else { return ConfidenceConstants.neutralConfidence }
 
         // Calculate accuracy with confidence intervals
-        let correctPredictions = outcomes.filter { $0.correct }.count
+        let correctPredictions = outcomes.filter(\.correct).count
         let totalPredictions = outcomes.count
 
         // Bayesian prior: start with assumption of 50% accuracy
@@ -129,28 +129,28 @@ actor MultifactorConfidenceScorer {
         target: WorkflowPattern,
         candidates: [WorkflowPattern]
     ) async -> [Double] {
-        return await withTaskGroup(of: (Int, Double).self) { group in
+        await withTaskGroup(of: (Int, Double).self) { group in
             for (index, candidate) in candidates.enumerated() {
                 group.addTask { [self] in
-                    let sequenceSimilarity = await self.calculateSequenceSimilarity(
+                    let sequenceSimilarity = await calculateSequenceSimilarity(
                         target.sequence,
                         candidate.sequence
                     )
-                    let contextSimilarity = await self.calculateContextSimilarity(
+                    let contextSimilarity = await calculateContextSimilarity(
                         target.context,
                         candidate.context
                     )
-                    let frequencyWeight = await self.calculateFrequencyWeight(
+                    let frequencyWeight = await calculateFrequencyWeight(
                         candidate.frequency,
-                        maxFrequency: candidates.map { $0.frequency }.max() ?? 1
+                        maxFrequency: candidates.map(\.frequency).max() ?? 1
                     )
                     let successWeight = candidate.successRate
 
                     // Weighted combination of similarity factors
                     let strength = (sequenceSimilarity * ConfidenceConstants.sequenceSimilarityWeight +
-                        contextSimilarity * ConfidenceConstants.contextSimilaritySubWeight +
-                        frequencyWeight * ConfidenceConstants.frequencyWeight +
-                        successWeight * ConfidenceConstants.successWeight)
+                                        contextSimilarity * ConfidenceConstants.contextSimilaritySubWeight +
+                                        frequencyWeight * ConfidenceConstants.frequencyWeight +
+                                        successWeight * ConfidenceConstants.successWeight)
 
                     return (index, strength)
                 }
@@ -170,7 +170,7 @@ actor MultifactorConfidenceScorer {
         reference: PredictionWorkflowContext,
         candidates: [PredictionWorkflowContext]
     ) async -> [Double] {
-        return candidates.map { candidate in
+        candidates.map { candidate in
             // User ID match (binary)
             let userMatch = reference.userId == candidate.userId ? 1.0 : 0.0
 
@@ -288,7 +288,7 @@ actor MultifactorConfidenceScorer {
     /// Calculates confidence scores for multiple contexts efficiently
     func calculateConfidenceScores(contexts: [PredictionWorkflowContext]) async -> [Double] {
         // Batch process contexts for efficiency
-        return await withTaskGroup(of: (Int, Double).self) { group in
+        await withTaskGroup(of: (Int, Double).self) { group in
             for index in contexts.indices {
                 group.addTask { [self] in
                     // Create dummy components for basic confidence calculation
@@ -300,7 +300,7 @@ actor MultifactorConfidenceScorer {
                         temporalRelevance: ConfidenceConstants.dummyTemporalRelevance
                     )
 
-                    let confidence = await self.calculateWeightedConfidence(components: components)
+                    let confidence = await calculateWeightedConfidence(components: components)
                     return (index, confidence)
                 }
             }
@@ -338,7 +338,7 @@ actor MultifactorConfidenceScorer {
 
         // Apply Platt scaling (simplified implementation)
         // In production, this would use logistic regression fitting
-        let positiveCount = data.filter { $0.actualOutcome }.count
+        let positiveCount = data.filter(\.actualOutcome).count
         let totalCount = data.count
         _ = Double(positiveCount) / Double(totalCount)
 
@@ -363,7 +363,7 @@ actor MultifactorConfidenceScorer {
 
     /// Clamps confidence score to valid range [0.0, 1.0]
     func clampConfidenceScore(_ score: Double) async -> Double {
-        return min(1.0, max(0.0, score))
+        min(1.0, max(0.0, score))
     }
 
     /// Checks if recalibration is needed based on time and performance
@@ -380,7 +380,7 @@ actor MultifactorConfidenceScorer {
     /// Performs weekly recalibration with new data
     func performWeeklyRecalibration(data: [WeeklyCalibrationData]) async {
         // Aggregate calibration data from weekly batches
-        let allCalibrationPoints = data.flatMap { $0.calibrationPoints }
+        let allCalibrationPoints = data.flatMap(\.calibrationPoints)
 
         // Apply new calibration
         _ = await applyPlattScalingCalibration(data: allCalibrationPoints)
@@ -397,16 +397,16 @@ actor MultifactorConfidenceScorer {
 
     /// Maps confidence scores to categorical labels
     func mapConfidenceToCategories(scores: [Double]) async -> [String] {
-        return scores.map { score in
+        scores.map { score in
             switch score {
             case ConfidenceConstants.highConfidenceThreshold...:
-                return "high"
+                "high"
             case ConfidenceConstants.mediumConfidenceThreshold ..< ConfidenceConstants.highConfidenceThreshold:
-                return "medium"
+                "medium"
             case ConfidenceConstants.lowConfidenceThreshold ..< ConfidenceConstants.mediumConfidenceThreshold:
-                return "low"
+                "low"
             default:
-                return "very_low"
+                "very_low"
             }
         }
     }
@@ -428,7 +428,7 @@ actor MultifactorConfidenceScorer {
     /// Calculates statistical significance of Brier score
     func calculateStatisticalSignificance(_ brierScore: Double) async -> Bool {
         // Simplified significance test - in production would use proper statistical tests
-        return abs(brierScore - ConfidenceConstants.randomBaseline) > ConfidenceConstants.significanceThreshold
+        abs(brierScore - ConfidenceConstants.randomBaseline) > ConfidenceConstants.significanceThreshold
     }
 
     /// Generates calibration plot for confidence analysis
@@ -436,7 +436,7 @@ actor MultifactorConfidenceScorer {
         guard !data.isEmpty else { return nil }
 
         // Calculate R-squared for calibration quality
-        let meanObserved = data.map { $0.observedFrequency }.reduce(0, +) / Double(data.count)
+        let meanObserved = data.map(\.observedFrequency).reduce(0, +) / Double(data.count)
         let totalSumSquares = data.map { pow($0.observedFrequency - meanObserved, 2) }.reduce(0, +)
         let residualSumSquares = data.map { pow($0.observedFrequency - $0.binCenter, 2) }.reduce(0, +)
 
@@ -450,7 +450,7 @@ actor MultifactorConfidenceScorer {
         guard !data.isEmpty else { return nil }
 
         // Calculate overall accuracy weighted by sample sizes
-        let totalSamples = data.map { $0.sampleSize }.reduce(0, +)
+        let totalSamples = data.map(\.sampleSize).reduce(0, +)
         let weightedAccuracy = data.map { $0.accuracy * Double($0.sampleSize) }.reduce(0, +) / Double(totalSamples)
 
         return ReliabilityDiagram(points: data, overallAccuracy: weightedAccuracy)
@@ -468,7 +468,7 @@ actor MultifactorConfidenceScorer {
     private func applyTemporalDecay(accuracy: Double, outcomes _: [PredictionOutcome], decayRate: Double) async -> Double {
         // Apply temporal weighting to outcomes - more recent outcomes have higher weight
         // This is a simplified implementation
-        return accuracy * decayRate
+        accuracy * decayRate
     }
 
     private func calculateSequenceSimilarity(_ sequence1: [String], _ sequence2: [String]) async -> Double {
@@ -481,11 +481,11 @@ actor MultifactorConfidenceScorer {
 
     private func calculateContextSimilarity(_ context1: [String: String], _ context2: [String: String]) async -> Double {
         // Jaccard similarity for context dictionaries
-        return calculateJaccardSimilarity(context1, context2)
+        calculateJaccardSimilarity(context1, context2)
     }
 
     private func calculateFrequencyWeight(_ frequency: Int, maxFrequency: Int) async -> Double {
-        return maxFrequency > 0 ? Double(frequency) / Double(maxFrequency) : 0.0
+        maxFrequency > 0 ? Double(frequency) / Double(maxFrequency) : 0.0
     }
 
     private func calculateJaccardSimilarity(_ dict1: [String: String], _ dict2: [String: String]) -> Double {
@@ -499,7 +499,7 @@ actor MultifactorConfidenceScorer {
     }
 
     private func calculateSessionSimilarity(_ session1: String, _ session2: String) -> Double {
-        return session1 == session2 ? 1.0 : ConfidenceConstants.nonMatchingSessionSimilarity
+        session1 == session2 ? 1.0 : ConfidenceConstants.nonMatchingSessionSimilarity
     }
 
     private func calculateExperienceAlignment(userExperience: ExpertiseLevel, requiredExperience: ExpertiseLevel) -> Double {
@@ -522,12 +522,12 @@ actor MultifactorConfidenceScorer {
     }
 
     private func calculateComplexityAlignment(estimatedComplexity: ExpertiseLevel, userExperience: ExpertiseLevel) -> Double {
-        return calculateExperienceAlignment(userExperience: userExperience, requiredExperience: estimatedComplexity)
+        calculateExperienceAlignment(userExperience: userExperience, requiredExperience: estimatedComplexity)
     }
 
     private func calculateWorkflowStyleAlignment(preferredStyle _: WorkflowStyle, request _: WorkflowPredictionRequest) -> Double {
         // Simplified style alignment - in production would analyze request characteristics
-        return ConfidenceConstants.defaultStyleAlignment
+        ConfidenceConstants.defaultStyleAlignment
     }
 
     private func applyCalibratedConfidence(_ rawScore: Double) async -> Double {

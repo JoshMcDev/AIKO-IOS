@@ -20,7 +20,7 @@ public actor MediaValidationService: MediaValidationServiceProtocol {
         var isValid = true
 
         // Check if detected type matches expected
-        if let expectedMimeType = expectedMimeType, detectedMimeType != expectedMimeType {
+        if let expectedMimeType, detectedMimeType != expectedMimeType {
             issues.append("MIME type mismatch: detected '\(detectedMimeType)', expected '\(expectedMimeType)'")
             isValid = false
         }
@@ -53,7 +53,7 @@ public actor MediaValidationService: MediaValidationServiceProtocol {
         let isValid = actualSize <= maxSize
 
         var compressionSuggestion: CompressionSuggestion?
-        if !isValid && mediaType == .image {
+        if !isValid, mediaType == .image {
             // Suggest compression for oversized images
             let targetSize = maxSize
             let quality = Double(maxSize) / Double(actualSize)
@@ -165,12 +165,12 @@ public actor MediaValidationService: MediaValidationServiceProtocol {
         var colorProfile: EnhancedMetadataResult.ColorProfile?
         var gpsData: EnhancedMetadataResult.GPSData?
 
-        if includeEXIF && mediaType == .image {
+        if includeEXIF, mediaType == .image {
             exifData = extractEXIFData(from: data)
             gpsData = extractGPSData()
         }
 
-        if includeThumbnail && mediaType == .image {
+        if includeThumbnail, mediaType == .image {
             thumbnail = generateThumbnail(from: data)
         }
 
@@ -199,7 +199,7 @@ public actor MediaValidationService: MediaValidationServiceProtocol {
         // Validate dimensions for images
         if let providedDimensions = providedMetadata.dimensions {
             let actualDimensions = extractDimensions(from: data, mediaType: .image)
-            if let actualDimensions = actualDimensions,
+            if let actualDimensions,
                providedDimensions.width != actualDimensions.width ||
                 providedDimensions.height != actualDimensions.height {
                 issues.append("Dimension mismatch: metadata claims \(providedDimensions.width)x\(providedDimensions.height), actual is \(actualDimensions.width)x\(actualDimensions.height)")
@@ -277,19 +277,19 @@ public actor MediaValidationService: MediaValidationServiceProtocol {
         }
 
         // Check resolution
-        if let resolution = resolution {
+        if let resolution {
             if resolution.width < requirements.minResolution.width || resolution.height < requirements.minResolution.height {
                 isValid = false
             }
         }
 
         // Check bitrate
-        if let bitrate = bitrate, bitrate > requirements.maxBitrate {
+        if let bitrate, bitrate > requirements.maxBitrate {
             isValid = false
         }
 
         // Check audio track
-        if requirements.requireAudioTrack && !detectAudioTrack(data) {
+        if requirements.requireAudioTrack, !detectAudioTrack(data) {
             isValid = false
         }
 
@@ -323,7 +323,7 @@ public actor MediaValidationService: MediaValidationServiceProtocol {
                 fileName: asset.metadata.fileName ?? "unknown",
                 scanLevel: .comprehensive
             )
-            if let securityResult = securityResult, !securityResult.isSafe {
+            if let securityResult, !securityResult.isSafe {
                 isValid = false
             }
         }
@@ -349,7 +349,7 @@ public actor MediaValidationService: MediaValidationServiceProtocol {
         }
 
         // Thumbnail extraction if requested
-        if specification.extractThumbnail && asset.type == .image {
+        if specification.extractThumbnail, asset.type == .image {
             thumbnailData = generateThumbnail(from: data)
         }
 
@@ -450,12 +450,11 @@ public actor MediaValidationService: MediaValidationServiceProtocol {
     }
 
     public nonisolated func validateFileSize(_ fileSize: Int64, _ mediaType: MediaType) -> Bool {
-        let maxSize: Int64
-        switch mediaType {
-        case .image: maxSize = 10 * 1024 * 1024 // 10MB
-        case .video: maxSize = 100 * 1024 * 1024 // 100MB
-        case .document: maxSize = 25 * 1024 * 1024 // 25MB
-        default: maxSize = 50 * 1024 * 1024 // 50MB
+        let maxSize: Int64 = switch mediaType {
+        case .image: 10 * 1024 * 1024 // 10MB
+        case .video: 100 * 1024 * 1024 // 100MB
+        case .document: 25 * 1024 * 1024 // 25MB
+        default: 50 * 1024 * 1024 // 50MB
         }
 
         return fileSize <= maxSize
@@ -582,10 +581,10 @@ private extension MediaValidationService {
         // Check for PE (Windows) executable
         if header == Data([0x4D, 0x5A]) { return true }
         // Check for ELF (Linux) executable
-        if data.count >= 4 && data.prefix(4) == Data([0x7F, 0x45, 0x4C, 0x46]) { return true }
+        if data.count >= 4, data.prefix(4) == Data([0x7F, 0x45, 0x4C, 0x46]) { return true }
         // Check for Mach-O (macOS) executable
-        if data.count >= 4 && (data.prefix(4) == Data([0xFE, 0xED, 0xFA, 0xCE]) ||
-                                data.prefix(4) == Data([0xFE, 0xED, 0xFA, 0xCF])) { return true }
+        if data.count >= 4, data.prefix(4) == Data([0xFE, 0xED, 0xFA, 0xCE]) ||
+            data.prefix(4) == Data([0xFE, 0xED, 0xFA, 0xCF]) { return true }
 
         return false
     }
@@ -608,7 +607,7 @@ private extension MediaValidationService {
 
     func extractEXIFData(from _: Data) -> [String: String] {
         // Simplified EXIF extraction
-        return [
+        [
             "Make": "Apple",
             "Model": "iPhone",
             "DateTime": "2024:01:24 12:00:00",
@@ -619,7 +618,7 @@ private extension MediaValidationService {
 
     func generateThumbnail(from _: Data) -> Data? {
         // Simplified thumbnail generation
-        return Data(repeating: 0x89, count: 1024) // Mock thumbnail data
+        Data(repeating: 0x89, count: 1024) // Mock thumbnail data
     }
 
     // Legacy ColorProfile for existing interface compatibility
@@ -640,7 +639,7 @@ private extension MediaValidationService {
     }
 
     func extractColorProfile(from _: Data) -> ColorProfile? {
-        return ColorProfile(
+        ColorProfile(
             colorSpace: "sRGB",
             profileName: "sRGB IEC61966-2.1",
             profileSize: 1024
@@ -648,14 +647,14 @@ private extension MediaValidationService {
     }
 
     func extractColorProfileNested(from _: Data) -> EnhancedMetadataResult.ColorProfile? {
-        return EnhancedMetadataResult.ColorProfile(
+        EnhancedMetadataResult.ColorProfile(
             name: "sRGB IEC61966-2.1",
             colorSpace: "sRGB"
         )
     }
 
     func extractGPSData() -> EnhancedMetadataResult.GPSData? {
-        return EnhancedMetadataResult.GPSData(
+        EnhancedMetadataResult.GPSData(
             latitude: 37.7749,
             longitude: -122.4194,
             altitude: 10.0
@@ -688,11 +687,11 @@ private extension MediaValidationService {
 
     func isImageCorrupted(_ data: Data) -> Bool {
         // Simple corruption check - real implementation would use ImageIO
-        return data.count < 100 // Very small files are likely corrupted
+        data.count < 100 // Very small files are likely corrupted
     }
 
     func extractColorProfileName(from _: Data) -> String? {
-        return "sRGB IEC61966-2.1"
+        "sRGB IEC61966-2.1"
     }
 
     func detectVideoCodec(from data: Data) -> String {
@@ -709,7 +708,7 @@ private extension MediaValidationService {
 
     func detectAudioTrack(_ data: Data) -> Bool {
         // Simplified audio track detection
-        return data.count > 1024 // Assume larger files have audio
+        data.count > 1024 // Assume larger files have audio
     }
 
     func createCorrectedMetadata(from data: Data, original: MediaMetadata) -> MediaMetadata {
@@ -726,7 +725,7 @@ private extension MediaValidationService {
 
     func calculateImageQuality(_: Data) -> ImageQualityMetrics {
         // Simplified quality calculation
-        return ImageQualityMetrics(
+        ImageQualityMetrics(
             sharpness: 0.8,
             brightness: 0.7,
             contrast: 0.75,
@@ -738,17 +737,17 @@ private extension MediaValidationService {
 
     func estimateVideoDuration(_: Data) -> TimeInterval? {
         // Simplified duration estimation
-        return 30.0 // 30 seconds default
+        30.0 // 30 seconds default
     }
 
     func estimateVideoBitrate(_: Data) -> Int? {
         // Simplified bitrate estimation
-        return 5000 // 5000 kbps default
+        5000 // 5000 kbps default
     }
 
     func calculateOverallScore(results _: [String: Any]) -> Double {
         // Simple scoring algorithm
-        return 0.85 // 85% default score
+        0.85 // 85% default score
     }
 
     func estimateRemainingTime(completed: Int, total: Int) -> TimeInterval? {

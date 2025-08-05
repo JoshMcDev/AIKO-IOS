@@ -188,7 +188,7 @@ public actor BatchProcessingEngine: BatchProcessingEngineProtocol {
     }
 
     public func getOperationProgress(_ handle: BatchOperationHandle) async -> BatchProgress {
-        return operationProgress[handle.operationId] ?? BatchProgress(
+        operationProgress[handle.operationId] ?? BatchProgress(
             operationId: handle.operationId,
             totalItems: 0,
             status: .failed,
@@ -197,7 +197,7 @@ public actor BatchProcessingEngine: BatchProcessingEngineProtocol {
     }
 
     public func getOperationResults(_ handle: BatchOperationHandle) async -> [BatchOperationResult] {
-        return operationResults[handle.operationId] ?? []
+        operationResults[handle.operationId] ?? []
     }
 
     // MARK: - Private Implementation
@@ -269,11 +269,10 @@ public actor BatchProcessingEngine: BatchProcessingEngineProtocol {
         let completedItems = results.count { $0.status == .completed }
         let failedItems = results.count { $0.status == .failed }
 
-        let status: BatchOperationStatus
-        if currentIndex >= operation.assetIds.count {
-            status = .completed
+        let status: BatchOperationStatus = if currentIndex >= operation.assetIds.count {
+            .completed
         } else {
-            status = operationStatus[operation.id] ?? .running
+            operationStatus[operation.id] ?? .running
         }
 
         let progress = BatchProgress(
@@ -354,7 +353,7 @@ public actor BatchProcessingEngine: BatchProcessingEngineProtocol {
     }
 
     public func getActiveOperations() async -> [BatchOperationHandle] {
-        return Array(handles.values.filter { handle in
+        Array(handles.values.filter { handle in
             operationStatus[handle.operationId]?.isActive == true
         })
     }

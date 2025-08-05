@@ -80,35 +80,65 @@ public struct LineItem: Codable, Equatable {
 public final class DataExtractor {
     // MARK: - Regular Expressions
 
-    private let emailRegex = try! NSRegularExpression(
-        pattern: "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}",
-        options: []
-    )
+    private let emailRegex: NSRegularExpression = {
+        guard let regex = try? NSRegularExpression(
+            pattern: "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}",
+            options: []
+        ) else {
+            fatalError("Failed to create email regex - invalid pattern")
+        }
+        return regex
+    }()
 
-    private let phoneRegex = try! NSRegularExpression(
-        pattern: "\\b(?:\\+?1[-.]?)?\\(?([0-9]{3})\\)?[-.]?([0-9]{3})[-.]?([0-9]{4})\\b",
-        options: []
-    )
+    private let phoneRegex: NSRegularExpression = {
+        guard let regex = try? NSRegularExpression(
+            pattern: "\\b(?:\\+?1[-.]?)?\\(?([0-9]{3})\\)?[-.]?([0-9]{3})[-.]?([0-9]{4})\\b",
+            options: []
+        ) else {
+            fatalError("Failed to create phone regex - invalid pattern")
+        }
+        return regex
+    }()
 
-    private let priceRegex = try! NSRegularExpression(
-        pattern: "\\$\\s*([0-9]{1,3}(?:,[0-9]{3})*(?:\\.[0-9]{2})?)",
-        options: []
-    )
+    private let priceRegex: NSRegularExpression = {
+        guard let regex = try? NSRegularExpression(
+            pattern: "\\$\\s*([0-9]{1,3}(?:,[0-9]{3})*(?:\\.[0-9]{2})?)",
+            options: []
+        ) else {
+            fatalError("Failed to create price regex - invalid pattern")
+        }
+        return regex
+    }()
 
-    private let dateRegex = try! NSRegularExpression(
-        pattern: "\\b(0?[1-9]|1[0-2])[-/](0?[1-9]|[12][0-9]|3[01])[-/](\\d{2,4})\\b",
-        options: []
-    )
+    private let dateRegex: NSRegularExpression = {
+        guard let regex = try? NSRegularExpression(
+            pattern: "\\b(0?[1-9]|1[0-2])[-/](0?[1-9]|[12][0-9]|3[01])[-/](\\d{2,4})\\b",
+            options: []
+        ) else {
+            fatalError("Failed to create date regex - invalid pattern")
+        }
+        return regex
+    }()
 
-    private let ueiRegex = try! NSRegularExpression(
-        pattern: "\\b[A-Z0-9]{12}\\b",
-        options: []
-    )
+    private let ueiRegex: NSRegularExpression = {
+        guard let regex = try? NSRegularExpression(
+            pattern: "\\b[A-Z0-9]{12}\\b",
+            options: []
+        ) else {
+            fatalError("Failed to create UEI regex - invalid pattern")
+        }
+        return regex
+    }()
 
-    private let cageRegex = try! NSRegularExpression(
-        pattern: "\\b[A-Z0-9]{5}\\b",
-        options: []
-    )
+    private let cageRegex: NSRegularExpression = {
+        guard let regex = try? NSRegularExpression(
+            pattern: "\\b[A-Z0-9]{5}\\b",
+            options: []
+        ) else {
+            fatalError("Failed to create CAGE regex - invalid pattern")
+        }
+        return regex
+    }()
 
     // MARK: - Extract Method
 

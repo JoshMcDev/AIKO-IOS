@@ -5,7 +5,7 @@ import Foundation
 // Generate the ACTUAL original custom SAM report format from original_sam_report_before_migration.swift
 // This is the REAL format that includes CAGE expiration date, PSC codes, and small business sizes
 
-struct RealOriginalSAMReport {
+enum RealOriginalSAMReport {
     static func main() async {
         print("🎯 ORIGINAL CUSTOM SAM REPORT - EXACT FORMAT")
         print("📊 Using CAGE Code: 5BVH3 (Real Custom Template)")
@@ -52,7 +52,7 @@ struct RealOriginalSAMReport {
                 "Veteran-Owned Business",
                 "Service-Disabled Veteran-Owned Business",
                 "Limited Liability Company",
-                "Small Business (for all NAICS codes)"
+                "Small Business (for all NAICS codes)",
             ]
         )
     }

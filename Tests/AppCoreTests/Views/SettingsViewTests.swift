@@ -1,12 +1,11 @@
-import XCTest
-import SwiftUI
-@testable import AppCore
 @testable import AIKO
+@testable import AppCore
+import SwiftUI
+import XCTest
 
 @MainActor
 final class SettingsViewTests: XCTestCase {
-
-    var viewModel: SettingsViewModel!
+    var viewModel: SettingsViewModel?
 
     override func setUp() async throws {
         viewModel = SettingsViewModel()
@@ -19,6 +18,10 @@ final class SettingsViewTests: XCTestCase {
     // MARK: - MoE Tests: UI Functional Requirements
 
     func test_settingsViewInitialization_shouldCreateWithViewModel() {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // Given: SettingsViewModel
         // When: Creating SettingsView
         let settingsView = SettingsView(viewModel: viewModel)
@@ -28,6 +31,10 @@ final class SettingsViewTests: XCTestCase {
     }
 
     func test_formSections_shouldDisplayAllRequiredSections() {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // Given: SettingsView with SettingsViewModel
         let settingsView = SettingsView(viewModel: viewModel)
 
@@ -42,6 +49,10 @@ final class SettingsViewTests: XCTestCase {
     }
 
     func test_appSettings_shouldBindToViewModel() async {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // Given: SettingsView at default state
         XCTAssertEqual(viewModel.settingsData.appSettings.theme, "system")
 
@@ -53,6 +64,10 @@ final class SettingsViewTests: XCTestCase {
     }
 
     func test_apiSettings_shouldBindToViewModel() async {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // Given: SettingsView with default API settings
         XCTAssertEqual(viewModel.settingsData.apiSettings.selectedModel, "Claude 3 Opus")
 
@@ -64,6 +79,10 @@ final class SettingsViewTests: XCTestCase {
     }
 
     func test_documentSettings_shouldBindToViewModel() async {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // Given: SettingsView with default document settings
         XCTAssertTrue(viewModel.settingsData.documentSettings.includeMetadata)
 
@@ -75,6 +94,10 @@ final class SettingsViewTests: XCTestCase {
     }
 
     func test_notificationSettings_shouldBindToViewModel() async {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // Given: SettingsView with default notification settings
         XCTAssertTrue(viewModel.settingsData.notificationSettings.enableNotifications)
 
@@ -86,6 +109,10 @@ final class SettingsViewTests: XCTestCase {
     }
 
     func test_privacySettings_shouldBindToViewModel() async {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // Given: SettingsView with default privacy settings
         XCTAssertFalse(viewModel.settingsData.dataPrivacySettings.analyticsEnabled)
 
@@ -97,6 +124,10 @@ final class SettingsViewTests: XCTestCase {
     }
 
     func test_advancedSettings_shouldBindToViewModel() async {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // Given: SettingsView with default advanced settings
         XCTAssertFalse(viewModel.settingsData.advancedSettings.debugModeEnabled)
 
@@ -110,6 +141,10 @@ final class SettingsViewTests: XCTestCase {
     // MARK: - Advanced Features Tests
 
     func test_autoSaveSlider_shouldUpdateInterval() async {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // Given: SettingsView with auto save enabled
         await viewModel.updateAppSetting(\.autoSaveEnabled, value: true)
         XCTAssertTrue(viewModel.settingsData.appSettings.autoSaveEnabled)
@@ -123,6 +158,10 @@ final class SettingsViewTests: XCTestCase {
     }
 
     func test_maxRetriesSlider_shouldUpdateAPIRetries() async {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // Given: SettingsView with default max retries
         XCTAssertEqual(viewModel.settingsData.apiSettings.maxRetries, 3)
 
@@ -135,6 +174,10 @@ final class SettingsViewTests: XCTestCase {
     }
 
     func test_timeoutSlider_shouldUpdateAPITimeout() async {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // Given: SettingsView with default timeout
         XCTAssertEqual(viewModel.settingsData.apiSettings.timeoutInterval, 30.0)
 
@@ -147,6 +190,10 @@ final class SettingsViewTests: XCTestCase {
     }
 
     func test_dataRetentionSlider_shouldUpdateRetentionDays() async {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // Given: SettingsView with default data retention
         XCTAssertEqual(viewModel.settingsData.dataPrivacySettings.dataRetentionDays, 90)
 
@@ -159,6 +206,10 @@ final class SettingsViewTests: XCTestCase {
     }
 
     func test_cacheSizeSlider_shouldUpdateCacheSize() async {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // Given: SettingsView with default cache size
         XCTAssertEqual(viewModel.settingsData.advancedSettings.cacheSizeMB, 500)
 
@@ -171,6 +222,10 @@ final class SettingsViewTests: XCTestCase {
     }
 
     func test_maxConcurrentGenerationsSlider_shouldUpdateConcurrency() async {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // Given: SettingsView with default concurrent generations
         XCTAssertEqual(viewModel.settingsData.advancedSettings.maxConcurrentGenerations, 3)
 
@@ -185,6 +240,10 @@ final class SettingsViewTests: XCTestCase {
     // MARK: - Export/Import Tests
 
     func test_exportSettings_shouldGenerateValidData() async {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // Given: SettingsView with configured settings
         await viewModel.updateAppSetting(\.theme, value: "dark")
         await viewModel.updateAPISetting(\.selectedModel, value: "GPT-4")
@@ -208,6 +267,10 @@ final class SettingsViewTests: XCTestCase {
     // MARK: - Error Handling Tests
 
     func test_validationError_shouldBeDisplayedInAlert() async {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // Given: SettingsView with validation error potential
         let invalidKey = APIKeyEntryData(name: "Invalid", key: "invalid-format", isActive: false)
 
@@ -220,6 +283,10 @@ final class SettingsViewTests: XCTestCase {
     }
 
     func test_saveStatusView_shouldReflectCurrentStatus() {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         // Given: SettingsView with different save statuses
 
         // When: Save status is .none
@@ -244,6 +311,10 @@ final class SettingsViewTests: XCTestCase {
     // MARK: - Performance Tests
 
     func test_viewRendering_shouldCompleteQuickly() {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         measure {
             let settingsView = SettingsView(viewModel: viewModel)
             // Simulate view creation (actual rendering would happen in SwiftUI)
@@ -252,6 +323,10 @@ final class SettingsViewTests: XCTestCase {
     }
 
     func test_multipleSettingUpdates_shouldCompleteWithin500ms() async {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         let startTime = CFAbsoluteTimeGetCurrent()
 
         // When: Updating multiple settings rapidly
@@ -347,7 +422,6 @@ final class SettingsViewTests: XCTestCase {
 // MARK: - Slider Range Validation Tests
 
 extension SettingsViewTests {
-
     func test_sliderRanges_shouldEnforceCorrectBounds() async {
         // Auto save interval: 10-300 seconds
         await viewModel.updateAppSetting(\.autoSaveInterval, value: 5) // Below minimum

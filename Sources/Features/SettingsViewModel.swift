@@ -1,6 +1,6 @@
-import SwiftUI
-import Foundation
 import AppCore
+import Foundation
+import SwiftUI
 
 // MARK: - SaveStatus Enum
 
@@ -17,7 +17,6 @@ public enum SaveStatus: Equatable {
 @MainActor
 @Observable
 public final class SettingsViewModel {
-
     // MARK: - State Properties
 
     public var settingsData: SettingsData

@@ -1,6 +1,6 @@
-import XCTest
-import SwiftUI
 import AVFoundation
+import SwiftUI
+import XCTest
 #if canImport(UIKit)
 import UIKit
 #endif
@@ -12,7 +12,6 @@ import VisionKit
 
 @MainActor
 final class UIDocumentScannerViewModelTests: XCTestCase {
-
     // MARK: - Cross-Platform Helper
 
     private func createMockImage() -> Data {
@@ -24,9 +23,9 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
         #endif
     }
 
-    private var viewModel: AppCore.DocumentScannerViewModel!
-    private var mockVisionKitAdapter: MockVisionKitAdapter!
-    private var mockDocumentImageProcessor: MockDocumentImageProcessor!
+    private var viewModel: AppCore.DocumentScannerViewModel?
+    private var mockVisionKitAdapter: MockVisionKitAdapter?
+    private var mockDocumentImageProcessor: MockDocumentImageProcessor?
 
     override func setUp() async throws {
         mockVisionKitAdapter = MockVisionKitAdapter()
@@ -184,7 +183,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
         viewModel.addPage(page1)
         viewModel.addPage(page2)
         // viewModel.removePage(at: 0) // removePage method not implemented in RED phase
-        
+
         // RED phase - test should fail
         XCTFail("DocumentScannerViewModel.removePage not implemented - this test should fail in RED phase")
     }
@@ -278,7 +277,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_memoryUsage_staysBelow100MBFor10Pages() async {
         // This test will fail in RED phase - needs memory monitoring
-        for i in 1...10 {
+        for i in 1 ... 10 {
             let page = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "Page \(i)", pageNumber: i)
             viewModel.addPage(page)
         }
@@ -312,7 +311,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_largeDocumentScanning_avoidsMemoryLeaks() async {
         // This test will fail in RED phase - needs memory leak detection
-        for i in 1...50 {
+        for i in 1 ... 50 {
             let page = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "Page \(i)", pageNumber: i)
             viewModel.addPage(page)
         }
@@ -335,7 +334,12 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_repeatedScanning_maintainsStableMemoryUsage() async {
         // This test will fail in RED phase - needs memory stability
-        for _ in 1...5 {
+        guard let viewModel = viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
+        for _ in 1 ... 5 {
             await viewModel.startScanning()
             await viewModel.saveDocument()
         }
@@ -362,7 +366,7 @@ class MockDocumentImageProcessor {
 
 struct MockScannedPage {
     #if canImport(UIKit)
-    let image: UIImage = UIImage()
+    let image: UIImage = .init()
     #endif
     let ocrText: String = ""
     let confidence: Double = 1.0
@@ -374,7 +378,7 @@ struct MockScannedPage {
 
 #if canImport(UIKit)
 extension AppCore.ScannedPage {
-    init(image: UIImage, pageNumber: Int, ocrText: String, confidence: Double) {
+    init(image: UIImage, pageNumber: Int, ocrText: String, confidence _: Double) {
         // Convert UIImage to Data for the actual initializer
         let imageData = image.pngData() ?? Data()
         self.init(

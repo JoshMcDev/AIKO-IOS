@@ -1,7 +1,7 @@
-import SwiftUI
+import AppCore
 import Foundation
 import LocalAuthentication
-import AppCore
+import SwiftUI
 
 // MARK: - OnboardingStep Enum
 
@@ -13,7 +13,7 @@ public enum OnboardingStep: Int, CaseIterable, Comparable {
     case completion = 3
 
     public static func < (lhs: OnboardingStep, rhs: OnboardingStep) -> Bool {
-        return lhs.rawValue < rhs.rawValue
+        lhs.rawValue < rhs.rawValue
     }
 }
 
@@ -21,39 +21,39 @@ public extension OnboardingStep {
     var title: String {
         switch self {
         case .welcome:
-            return "Welcome to AIKO"
+            "Welcome to AIKO"
         case .apiSetup:
-            return "API Configuration"
+            "API Configuration"
         case .permissions:
-            return "Permissions"
+            "Permissions"
         case .completion:
-            return "Setup Complete"
+            "Setup Complete"
         }
     }
 
     var subtitle: String {
         switch self {
         case .welcome:
-            return "Let's get started with a quick introduction to set up your AI assistant."
+            "Let's get started with a quick introduction to set up your AI assistant."
         case .apiSetup:
-            return "Configure your API keys to connect with AI services for enhanced functionality."
+            "Configure your API keys to connect with AI services for enhanced functionality."
         case .permissions:
-            return "Grant necessary permissions for optimal security and user experience."
+            "Grant necessary permissions for optimal security and user experience."
         case .completion:
-            return "Your setup is now complete! You're ready to start using AIKO."
+            "Your setup is now complete! You're ready to start using AIKO."
         }
     }
 
     var progress: Double {
         switch self {
         case .welcome:
-            return 0.25
+            0.25
         case .apiSetup:
-            return 0.5
+            0.5
         case .permissions:
-            return 0.75
+            0.75
         case .completion:
-            return 1.0
+            1.0
         }
     }
 }
@@ -63,7 +63,6 @@ public extension OnboardingStep {
 @MainActor
 @Observable
 public final class OnboardingViewModel {
-
     // MARK: - Dependencies
 
     private let settingsManager: SettingsManager
@@ -78,7 +77,7 @@ public final class OnboardingViewModel {
 
     public var isOnboardingCompleted: Bool {
         get {
-            return UserDefaults.standard.bool(forKey: "onboardingCompleted")
+            UserDefaults.standard.bool(forKey: "onboardingCompleted")
         }
         set {
             UserDefaults.standard.set(newValue, forKey: "onboardingCompleted")
@@ -148,7 +147,7 @@ public final class OnboardingViewModel {
             break
         case .apiSetup:
             // Validate API key if not already validated
-            if !isAPIKeyValidated && !apiKey.isEmpty {
+            if !isAPIKeyValidated, !apiKey.isEmpty {
                 await validateAPIKey()
             }
         case .permissions:

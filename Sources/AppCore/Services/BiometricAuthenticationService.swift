@@ -24,14 +24,14 @@ public final class BiometricAuthenticationService: ObservableObject, BiometricAu
     // MARK: - Public Methods
 
     /// Check if biometric authentication is available on the device
-    nonisolated public func canEvaluateBiometrics() -> Bool {
+    public nonisolated func canEvaluateBiometrics() -> Bool {
         let context = LAContext()
         var error: NSError?
         return context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error)
     }
 
     /// Check if device owner authentication (biometrics or passcode) is available
-    nonisolated public func canEvaluateDeviceOwnerAuthentication() -> Bool {
+    public nonisolated func canEvaluateDeviceOwnerAuthentication() -> Bool {
         let context = LAContext()
         var error: NSError?
         return context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error)
@@ -64,7 +64,7 @@ public final class BiometricAuthenticationService: ObservableObject, BiometricAu
     }
 
     /// Get the type of biometric authentication available
-    nonisolated public func biometryType() -> LABiometryType {
+    public nonisolated func biometryType() -> LABiometryType {
         let context = LAContext()
         var error: NSError?
         guard context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) else {
@@ -74,7 +74,7 @@ public final class BiometricAuthenticationService: ObservableObject, BiometricAu
     }
 
     /// Get a localized description of the biometric authentication type
-    nonisolated public func biometryDescription() -> String {
+    public nonisolated func biometryDescription() -> String {
         switch biometryType() {
         case .faceID:
             return "Face ID"
@@ -90,7 +90,7 @@ public final class BiometricAuthenticationService: ObservableObject, BiometricAu
     }
 
     /// Reset the authentication context (useful for testing)
-    nonisolated public func resetContext() {
+    public nonisolated func resetContext() {
         // Create a new context to clear any cached authentication state
         // Note: LAContext doesn't have a public reset method
         Task { @MainActor in

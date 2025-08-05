@@ -1,10 +1,10 @@
-import Foundation
 import AppCore
+import Foundation
 
 /// Adapter that bridges the TCA SAMGovService dependency with the new SAMGovRepository
 public extension SAMGovService {
     /// Creates a SAMGovService backed by the object-oriented SAMGovRepository
-    static func repositoryBased(apiKey: String = "") -> SAMGovService {
+    static func repositoryBased(apiKey _: String = "") -> SAMGovService {
         let repository = SAMGovRepository()
 
         return SAMGovService(

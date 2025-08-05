@@ -1,13 +1,12 @@
-import SwiftUI
-import Observation
 import Foundation
+import Observation
+import SwiftUI
 
 /// NavigationState manages the complete navigation architecture for AIKO v6.0
 /// Implements enum-driven navigation with type-safe destinations and platform-specific adaptations
 /// This is the foundational component for PHASE 4: Platform Optimization
 @Observable
 public final class NavigationState: @unchecked Sendable {
-
     // MARK: - Navigation Types
 
     /// Type-safe navigation destinations using enum-driven pattern
@@ -24,26 +23,26 @@ public final class NavigationState: @unchecked Sendable {
         // Deep linking support for URL-based navigation
         public var deepLinkPath: String {
             switch self {
-            case .acquisition(let id): return "acquisition/\(id.rawValue)"
-            case .document(let id): return "document/\(id.rawValue)"
-            case .compliance(let id): return "compliance/\(id.rawValue)"
-            case .search(let context): return "search?q=\(context.query)"
-            case .settings(let section): return "settings/\(section.rawValue)"
-            case .quickAction(let type): return "action/\(type.rawValue)"
-            case .workflow(let step): return "workflow/\(step.id.rawValue)"
+            case let .acquisition(id): "acquisition/\(id.rawValue)"
+            case let .document(id): "document/\(id.rawValue)"
+            case let .compliance(id): "compliance/\(id.rawValue)"
+            case let .search(context): "search?q=\(context.query)"
+            case let .settings(section): "settings/\(section.rawValue)"
+            case let .quickAction(type): "action/\(type.rawValue)"
+            case let .workflow(step): "workflow/\(step.id.rawValue)"
             }
         }
 
         // Required for CaseIterable protocol (placeholder implementation)
         public static var allCases: [NavigationDestination] {
-            return [
+            [
                 .acquisition(AcquisitionID("sample")),
                 .document(DocumentID("sample")),
                 .compliance(ComplianceCheckID("sample")),
                 .search(SearchContext(query: "sample")),
                 .settings(.general),
                 .quickAction(QuickActionType.scanDocument),
-                .workflow(NavigationWorkflowStep(id: WorkflowStepID("sample"), name: "Sample"))
+                .workflow(NavigationWorkflowStep(id: WorkflowStepID("sample"), name: "Sample")),
             ]
         }
     }
@@ -57,29 +56,29 @@ public final class NavigationState: @unchecked Sendable {
 
         public var totalSteps: Int {
             switch self {
-            case .documentGeneration: return 3
-            case .complianceCheck: return 4
-            case .marketResearch: return 5
-            case .contractReview: return 6
+            case .documentGeneration: 3
+            case .complianceCheck: 4
+            case .marketResearch: 5
+            case .contractReview: 6
             }
         }
 
         public var firstDestination: NavigationDestination? {
             switch self {
             case .documentGeneration:
-                return .acquisition(AcquisitionID("new"))
+                .acquisition(AcquisitionID("new"))
             case .complianceCheck:
-                return .compliance(ComplianceCheckID("new"))
+                .compliance(ComplianceCheckID("new"))
             case .marketResearch:
-                return .search(SearchContext(query: "market analysis"))
+                .search(SearchContext(query: "market analysis"))
             case .contractReview:
-                return .document(DocumentID("contract"))
+                .document(DocumentID("contract"))
             }
         }
 
-        public func destination(for step: Int) -> NavigationDestination? {
+        public func destination(for _: Int) -> NavigationDestination? {
             // This is a placeholder - full implementation will be done in Green phase
-            return firstDestination
+            firstDestination
         }
     }
 
@@ -93,13 +92,13 @@ public final class NavigationState: @unchecked Sendable {
         public static func == (lhs: WorkflowProgress, rhs: WorkflowProgress) -> Bool {
             switch (lhs, rhs) {
             case (.notStarted, .notStarted), (.completed, .completed):
-                return true
-            case (.inProgress(let l1, let l2), .inProgress(let r1, let r2)):
-                return l1 == r1 && l2 == r2
-            case (.failed(let lError), .failed(let rError)):
-                return lError == rError
+                true
+            case let (.inProgress(l1, l2), .inProgress(r1, r2)):
+                l1 == r1 && l2 == r2
+            case let (.failed(lError), .failed(rError)):
+                lError == rError
             default:
-                return false
+                false
             }
         }
     }
@@ -126,6 +125,7 @@ public final class NavigationState: @unchecked Sendable {
     #endif
 
     // MARK: - Dependencies (Placeholder for now)
+
     private var telemetry: PerformanceTelemetry { PerformanceTelemetry.shared }
     private var coordinator: NavigationCoordinator { NavigationCoordinator.shared }
 
@@ -155,7 +155,7 @@ public final class NavigationState: @unchecked Sendable {
 
         // Update selected acquisition based on destination
         switch destination {
-        case .acquisition(let id):
+        case let .acquisition(id):
             selectedAcquisition = id
             detailPath.append(destination)
         case .document:
@@ -214,7 +214,7 @@ public final class NavigationState: @unchecked Sendable {
         guard let workflow = activeWorkflow else { return }
 
         switch workflowProgress {
-        case .inProgress(let currentStep, let totalSteps):
+        case let .inProgress(currentStep, totalSteps):
             let nextStep = currentStep + 1
 
             if nextStep <= totalSteps {
@@ -283,7 +283,7 @@ public struct AcquisitionID: Hashable, Codable, Sendable {
     public let rawValue: String
 
     public init(_ value: String) {
-        self.rawValue = value
+        rawValue = value
     }
 }
 
@@ -291,7 +291,7 @@ public struct DocumentID: Hashable, Codable, Sendable {
     public let rawValue: String
 
     public init(_ value: String) {
-        self.rawValue = value
+        rawValue = value
     }
 }
 
@@ -299,7 +299,7 @@ public struct ComplianceCheckID: Hashable, Codable, Sendable {
     public let rawValue: String
 
     public init(_ value: String) {
-        self.rawValue = value
+        rawValue = value
     }
 }
 
@@ -312,11 +312,11 @@ public struct SearchContext: Hashable, Codable, Sendable {
 }
 
 public enum NavigationSettingsSection: String, CaseIterable, Codable, Sendable {
-    case general = "general"
+    case general
     case llmProviders = "llm_providers"
-    case notifications = "notifications"
-    case security = "security"
-    case about = "about"
+    case notifications
+    case security
+    case about
 }
 
 public enum QuickActionType: String, CaseIterable, Codable, Sendable {
@@ -340,7 +340,7 @@ public struct WorkflowStepID: Hashable, Codable, Sendable {
     public let rawValue: String
 
     public init(_ value: String) {
-        self.rawValue = value
+        rawValue = value
     }
 }
 
@@ -356,9 +356,9 @@ public enum Tab: String, CaseIterable {
 
 public enum SheetPresentation: String, CaseIterable {
     case documentScanner = "document_scanner"
-    case settings = "settings"
-    case profile = "profile"
-    case acquisitions = "acquisitions"
+    case settings
+    case profile
+    case acquisitions
 }
 #endif
 
@@ -368,7 +368,7 @@ public struct WindowID: Hashable {
     public let rawValue: String
 
     public init(_ value: String) {
-        self.rawValue = value
+        rawValue = value
     }
 }
 
@@ -424,7 +424,7 @@ public class PerformanceTelemetry: @unchecked Sendable {
         }
     }
 
-    private func recordPerformanceMetric(destination: NavigationState.NavigationDestination, durationMs: Double) {
+    private func recordPerformanceMetric(destination _: NavigationState.NavigationDestination, durationMs: Double) {
         // In a full implementation, this would store metrics for analysis
         // For now, we ensure performance requirements are met
         assert(durationMs < 100, "Navigation performance requirement violated: \(durationMs)ms > 100ms")
@@ -453,9 +453,9 @@ public class NavigationCoordinator: @unchecked Sendable {
 
         // Update navigation state based on destination type
         switch destination {
-        case .acquisition(let id):
+        case let .acquisition(id):
             state.selectedAcquisition = id
-        case .settings(let section):
+        case let .settings(section):
             // Handle settings navigation
             #if os(iOS)
             if section == .general {

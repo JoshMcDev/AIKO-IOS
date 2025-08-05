@@ -1,31 +1,31 @@
-import Foundation
 import AppCore
+import Foundation
 
 // MARK: - LocalRLAgent Compliance Extensions
 
-extension LocalRLAgent {
+public extension LocalRLAgent {
     /// Shared instance for compliance integration testing
-    public static let shared: LocalRLAgent = {
+    static let shared: LocalRLAgent = {
         fatalError("LocalRLAgent.shared not properly initialized - RED phase")
     }()
 
     /// Get RL state for compliance context
-    public func getState(for context: AcquisitionContext) async throws -> RLState {
+    func getState(for _: AcquisitionContext) async throws -> RLState {
         // RED phase: Return basic state to cause test failures
-        return RLState(experienceCount: 0) // Will fail > 0 test
+        RLState(experienceCount: 0) // Will fail > 0 test
     }
 
     /// Calculate reward for compliance feedback
-    public func calculateReward(
+    func calculateReward(
         for action: UserAction,
-        context: AcquisitionContext
+        context _: AcquisitionContext
     ) async throws -> Double {
         // RED phase: Return positive reward to cause test failures
         switch action {
         case .dismissWarning(reason: .falsePositive):
-            return 0.5 // Should be negative for false positive
+            0.5 // Should be negative for false positive
         default:
-            return 0.0
+            0.0
         }
     }
 }

@@ -56,12 +56,12 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
     }
 
     public func getWorkflowDefinitions() async -> [WorkflowDefinition] {
-        return Array(workflows.values).map { workflow in
+        Array(workflows.values).map { workflow in
             WorkflowDefinition(
                 id: workflow.id,
                 name: workflow.name,
                 version: "1.0",
-                requiredSteps: workflow.steps.map { $0.type },
+                requiredSteps: workflow.steps.map(\.type),
                 supportedFormats: Set(["image", "video", "document"])
             )
         }
@@ -100,16 +100,16 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
         return WorkflowExecutionResult(
             executionHandle: handle,
             status: execution.status,
-            processedAssets: execution.results.map { $0.assetId },
+            processedAssets: execution.results.map(\.assetId),
             failedAssets: [],
-            errors: execution.errors.map { $0.message },
+            errors: execution.errors.map(\.message),
             duration: Date().timeIntervalSince(handle.startTime)
         )
     }
 
     public func getAvailableTemplates() async -> [WorkflowTemplate] {
         ensureTemplatesInitialized()
-        return templates.map { (name, workflow) in
+        return templates.map { name, workflow in
             WorkflowTemplate(
                 name: name,
                 description: workflow.description,
@@ -120,18 +120,18 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
     }
 
     public func getWorkflowCategories() async -> [WorkflowCategory] {
-        return [
+        [
             .photography,
             .videos,
             .documents,
             .compression,
             .enhancement,
-            .general
+            .general,
         ]
     }
 
     public func getWorkflowHistory(limit: Int) async -> [WorkflowExecutionResult] {
-        return Array(executionHistory.suffix(limit))
+        Array(executionHistory.suffix(limit))
     }
 
     public func validateWorkflow(_ definition: WorkflowDefinition) async -> WorkflowValidationResult {
@@ -188,7 +188,7 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
         let handle = WorkflowExecutionHandle(
             id: UUID(),
             workflowId: workflow.id,
-            assetIds: assets.map { $0.id },
+            assetIds: assets.map(\.id),
             startTime: Date()
         )
 
@@ -216,7 +216,7 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
     }
 
     public func monitorExecution(_ handle: WorkflowExecutionHandle) -> AsyncStream<WorkflowExecutionUpdate> {
-        return AsyncStream { continuation in
+        AsyncStream { continuation in
             progressContinuations[handle.id] = continuation
 
             // Send initial status
@@ -315,7 +315,7 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
     }
 
     public func listWorkflowTemplates() async -> [WorkflowTemplate] {
-        return await getAvailableTemplates()
+        await getAvailableTemplates()
     }
 
     public func deleteWorkflowTemplate(_ name: String) async throws {
@@ -342,7 +342,7 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
     private func continueWorkflowExecution(handle: WorkflowExecutionHandle) async {
         guard var execution = executions[handle.id] else { return }
 
-        while execution.currentStepIndex < execution.workflow.steps.count && execution.status == .running {
+        while execution.currentStepIndex < execution.workflow.steps.count, execution.status == .running {
             let step = execution.workflow.steps[execution.currentStepIndex]
 
             await notifyProgressUpdate(
@@ -410,9 +410,9 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
         let finalResult = WorkflowExecutionResult(
             executionHandle: handle,
             status: execution.status,
-            processedAssets: execution.results.map { $0.assetId },
+            processedAssets: execution.results.map(\.assetId),
             failedAssets: [],
-            errors: execution.errors.map { $0.message },
+            errors: execution.errors.map(\.message),
             duration: Date().timeIntervalSince(handle.startTime)
         )
 
@@ -467,7 +467,7 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
                     type: .resize,
                     name: "Resize Image",
                     order: 1
-                )
+                ),
             ]
         )
         templates["image_resize"] = imageResizeTemplate
@@ -492,7 +492,7 @@ public actor MediaWorkflowCoordinator: MediaWorkflowCoordinatorProtocol {
                     type: .export,
                     name: "Format Results",
                     order: 2
-                )
+                ),
             ]
         )
         templates["document_ocr"] = documentOCRTemplate

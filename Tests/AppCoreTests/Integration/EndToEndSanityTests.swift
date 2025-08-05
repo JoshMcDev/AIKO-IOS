@@ -1,16 +1,15 @@
-import XCTest
-import SwiftUI
-@testable import AppCore
 @testable import AIKO
+@testable import AppCore
+import SwiftUI
+import XCTest
 
 /// End-to-end sanity tests covering the complete user journey
 /// Tests the integration between OnboardingView, SettingsView, and AppView
 /// Validates the MVP implementation works correctly across the entire application flow
 @MainActor
 final class EndToEndSanityTests: XCTestCase {
-
-    var appViewModel: AppViewModel!
-    var settingsManager: SettingsManager!
+    var appViewModel: AppViewModel?
+    var settingsManager: SettingsManager?
 
     override func setUp() async throws {
         // Create test SettingsManager
@@ -22,7 +21,7 @@ final class EndToEndSanityTests: XCTestCase {
             saveAPIKey: { _ in },
             loadAPIKey: { "test-api-key" },
             validateAPIKey: { key in
-                return key.hasPrefix("sk-ant-") && key.count >= 40
+                key.hasPrefix("sk-ant-") && key.count >= 40
             },
             exportData: { _ in URL(fileURLWithPath: "/tmp/test.json") },
             importData: { _ in },
@@ -43,6 +42,12 @@ final class EndToEndSanityTests: XCTestCase {
     // MARK: - Complete Application Flow Tests
 
     func test_completeUserJourney_newUser_shouldSucceed() async {
+        guard let appViewModel,
+              let settingsManager
+        else {
+            XCTFail("AppViewModel and SettingsManager should be initialized")
+            return
+        }
         // GIVEN: New user starting the application
         XCTAssertFalse(appViewModel.isOnboardingCompleted)
         XCTAssertFalse(appViewModel.showingSettings)
@@ -122,6 +127,10 @@ final class EndToEndSanityTests: XCTestCase {
     }
 
     func test_completeUserJourney_existingUser_shouldSkipOnboarding() async {
+        guard let appViewModel else {
+            XCTFail("AppViewModel should be initialized")
+            return
+        }
         // GIVEN: Existing user (onboarding already completed)
         appViewModel.isOnboardingCompleted = true
 
@@ -153,6 +162,10 @@ final class EndToEndSanityTests: XCTestCase {
     }
 
     func test_appViewIntegration_conditionalViewDisplays_shouldWorkCorrectly() {
+        guard let appViewModel else {
+            XCTFail("AppViewModel should be initialized")
+            return
+        }
         // GIVEN: AppView with different states
 
         // STEP 1: New user state
@@ -197,6 +210,10 @@ final class EndToEndSanityTests: XCTestCase {
     }
 
     func test_crossPlatformCompatibility_shouldWorkOnBothPlatforms() {
+        guard let settingsManager else {
+            XCTFail("SettingsManager should be initialized")
+            return
+        }
         // GIVEN: Application components on current platform
         let onboardingViewModel = OnboardingViewModel(settingsManager: settingsManager)
         let settingsViewModel = SettingsViewModel()
@@ -225,6 +242,10 @@ final class EndToEndSanityTests: XCTestCase {
     }
 
     func test_errorHandling_shouldRecoverGracefully() async {
+        guard let settingsManager else {
+            XCTFail("SettingsManager should be initialized")
+            return
+        }
         // GIVEN: Application with potential error conditions
         let onboardingViewModel = OnboardingViewModel(settingsManager: settingsManager)
         let settingsViewModel = SettingsViewModel()
@@ -261,6 +282,10 @@ final class EndToEndSanityTests: XCTestCase {
     }
 
     func test_performanceAndStability_shouldMaintainResponsiveness() async {
+        guard let settingsManager else {
+            XCTFail("SettingsManager should be initialized")
+            return
+        }
         let startTime = CFAbsoluteTimeGetCurrent()
 
         // GIVEN: Complete application workflow simulation
@@ -345,6 +370,12 @@ final class EndToEndSanityTests: XCTestCase {
     // MARK: - MVP Requirements Validation
 
     func test_mvpRequirements_shouldMeetAllCriteria() async {
+        guard let appViewModel,
+              let settingsManager
+        else {
+            XCTFail("AppViewModel and SettingsManager should be initialized")
+            return
+        }
         // GIVEN: MVP requirements for OnboardingView and SettingsView
 
         // MVP REQUIREMENT 1: OnboardingView with 4-step flow

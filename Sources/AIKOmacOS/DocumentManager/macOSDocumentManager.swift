@@ -1,7 +1,7 @@
 #if os(macOS)
-import Foundation
 import AppCore
 import AppKit
+import Foundation
 import UniformTypeIdentifiers
 
 // MARK: - macOS Document Manager Implementation
@@ -9,7 +9,6 @@ import UniformTypeIdentifiers
 /// macOS-specific implementation of DocumentManagerProtocol
 /// Handles document downloads, storage, and management on macOS platform
 public final class MacOSDocumentManager: DocumentManagerProtocol, @unchecked Sendable {
-
     // MARK: - Properties
 
     private let session: URLSession
@@ -25,13 +24,13 @@ public final class MacOSDocumentManager: DocumentManagerProtocol, @unchecked Sen
         config.timeoutIntervalForRequest = 60
         config.timeoutIntervalForResource = 600 // Longer timeout for macOS
         config.waitsForConnectivity = true
-        self.session = URLSession(configuration: config)
+        session = URLSession(configuration: config)
 
-        self.fileManager = FileManager.default
-        self.downloadQueue = DispatchQueue(label: "com.aiko.document.download.macos", qos: .userInitiated)
+        fileManager = FileManager.default
+        downloadQueue = DispatchQueue(label: "com.aiko.document.download.macos", qos: .userInitiated)
 
         // Get macOS Documents directory - prefer Downloads folder for user access
-        self.documentsDirectory = fileManager.urls(for: .downloadsDirectory, in: .userDomainMask).first ??
+        documentsDirectory = fileManager.urls(for: .downloadsDirectory, in: .userDomainMask).first ??
             fileManager.urls(for: .documentDirectory, in: .userDomainMask).first ??
             fileManager.temporaryDirectory
 
@@ -233,7 +232,8 @@ public final class MacOSDocumentManager: DocumentManagerProtocol, @unchecked Sen
         let (tempURL, response) = try await session.download(from: url)
 
         guard let httpResponse = response as? HTTPURLResponse,
-              200...299 ~= httpResponse.statusCode else {
+              200 ... 299 ~= httpResponse.statusCode
+        else {
             throw DocumentManagerError.downloadFailed("HTTP error: \(response)")
         }
 
@@ -271,18 +271,17 @@ public final class MacOSDocumentManager: DocumentManagerProtocol, @unchecked Sen
 
 // MARK: - macOS-Specific Extensions
 
-extension MacOSDocumentManager {
-
+public extension MacOSDocumentManager {
     /// Reveal document in Finder
     /// - Parameter documentURL: URL of document to reveal
-    public func revealInFinder(documentURL: URL) {
+    func revealInFinder(documentURL: URL) {
         NSWorkspace.shared.selectFile(documentURL.path, inFileViewerRootedAtPath: "")
     }
 
     /// Open document with default app
     /// - Parameter documentURL: URL of document to open
     /// - Throws: DocumentManagerError if opening fails
-    public func openDocument(at documentURL: URL) throws {
+    func openDocument(at documentURL: URL) throws {
         guard fileManager.fileExists(atPath: documentURL.path) else {
             throw DocumentManagerError.documentNotFound(UUID())
         }
@@ -295,7 +294,7 @@ extension MacOSDocumentManager {
     /// Get file type description for display
     /// - Parameter documentURL: URL of document
     /// - Returns: Human-readable file type description
-    public func getFileTypeDescription(for documentURL: URL) -> String {
+    func getFileTypeDescription(for documentURL: URL) -> String {
         do {
             let resourceValues = try documentURL.resourceValues(forKeys: [.typeIdentifierKey])
             if let typeIdentifier = resourceValues.typeIdentifier,
@@ -312,8 +311,8 @@ extension MacOSDocumentManager {
     /// Get document icon for display
     /// - Parameter documentURL: URL of document
     /// - Returns: NSImage icon for the document
-    public func getDocumentIcon(for documentURL: URL) -> NSImage {
-        return NSWorkspace.shared.icon(forFile: documentURL.path)
+    func getDocumentIcon(for documentURL: URL) -> NSImage {
+        NSWorkspace.shared.icon(forFile: documentURL.path)
     }
 
     /// Create alias (symbolic link) to document
@@ -321,7 +320,7 @@ extension MacOSDocumentManager {
     ///   - documentURL: Source document URL
     ///   - aliasURL: Destination alias URL
     /// - Throws: DocumentManagerError if alias creation fails
-    public func createAlias(from documentURL: URL, to aliasURL: URL) throws {
+    func createAlias(from documentURL: URL, to aliasURL: URL) throws {
         do {
             try fileManager.createSymbolicLink(at: aliasURL, withDestinationURL: documentURL)
         } catch {

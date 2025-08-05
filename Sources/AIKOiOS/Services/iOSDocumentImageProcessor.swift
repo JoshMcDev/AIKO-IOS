@@ -23,15 +23,15 @@ private enum ProcessingError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidImageData:
-            return "Invalid image data provided"
-        case .processingFailed(let message):
-            return "Processing failed: \(message)"
+            "Invalid image data provided"
+        case let .processingFailed(message):
+            "Processing failed: \(message)"
         case .ocrNotAvailable:
-            return "OCR is not available on this device"
+            "OCR is not available on this device"
         case .textDetectionFailed:
-            return "Text detection failed"
-        case .ocrFailed(let message):
-            return "OCR failed: \(message)"
+            "Text detection failed"
+        case let .ocrFailed(message):
+            "OCR failed: \(message)"
         }
     }
 }
@@ -55,15 +55,15 @@ private enum ProcessingStep: String, CaseIterable, Sendable {
     // Convert to AppCore.ProcessingStep
     var toAppCoreStep: AppCore.ProcessingStep {
         switch self {
-        case .preprocessing: return .preprocessing
-        case .edgeDetection: return .edgeDetection
-        case .perspectiveCorrection: return .perspectiveCorrection
-        case .enhancement: return .enhancement
-        case .denoising: return .denoising
-        case .sharpening: return .sharpening
-        case .optimization: return .optimization
-        case .qualityAnalysis: return .qualityAnalysis
-        default: return .preprocessing // Default fallback for OCR-specific steps
+        case .preprocessing: .preprocessing
+        case .edgeDetection: .edgeDetection
+        case .perspectiveCorrection: .perspectiveCorrection
+        case .enhancement: .enhancement
+        case .denoising: .denoising
+        case .sharpening: .sharpening
+        case .optimization: .optimization
+        case .qualityAnalysis: .qualityAnalysis
+        default: .preprocessing // Default fallback for OCR-specific steps
         }
     }
 }
@@ -106,7 +106,7 @@ private final class SimpleDocumentProcessor: Sendable {
         let qualityMetrics: DocumentImageProcessor.QualityMetrics
     }
 
-    func processDocument(_ image: CIImage, options: DocumentImageProcessor.ProcessingOptions) async throws -> ProcessingResult {
+    func processDocument(_ image: CIImage, options _: DocumentImageProcessor.ProcessingOptions) async throws -> ProcessingResult {
         // Simplified document processing - in a real implementation this would include
         // sophisticated edge detection and perspective correction
         var processedImage = image

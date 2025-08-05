@@ -1,5 +1,5 @@
-import Foundation
 import AppCore
+import Foundation
 
 /// AcquisitionsListViewModel - SwiftUI @Observable Implementation
 /// PHASE 2: Business Logic View for Federal Acquisition Management
@@ -7,11 +7,12 @@ import AppCore
 @MainActor
 @Observable
 public final class AcquisitionsListViewModel: @unchecked Sendable {
-
     // MARK: - Dependencies
+
     private let acquisitionService: AcquisitionService
 
     // MARK: - Published State
+
     public var acquisitions: [AppCore.Acquisition] = []
     public var filteredAcquisitions: [AppCore.Acquisition] = []
     public var isLoading: Bool = false
@@ -27,7 +28,7 @@ public final class AcquisitionsListViewModel: @unchecked Sendable {
 
     /// Count of acquisitions with active status (draft, inProgress, underReview, approved, onHold)
     public var activeAcquisitionsCount: Int {
-        acquisitions.filter { $0.status.isActive }.count
+        acquisitions.filter(\.status.isActive).count
     }
 
     /// Whether any filters or search are currently applied
@@ -146,13 +147,13 @@ public final class AcquisitionsListViewModel: @unchecked Sendable {
         filtered.sort(by: { lhs, rhs in
             switch currentSort.field {
             case .title:
-                return currentSort.ascending ? lhs.title < rhs.title : lhs.title > rhs.title
+                currentSort.ascending ? lhs.title < rhs.title : lhs.title > rhs.title
             case .createdDate:
-                return currentSort.ascending ? lhs.createdDate < rhs.createdDate : lhs.createdDate > rhs.createdDate
+                currentSort.ascending ? lhs.createdDate < rhs.createdDate : lhs.createdDate > rhs.createdDate
             case .lastModifiedDate:
-                return currentSort.ascending ? lhs.lastModifiedDate < rhs.lastModifiedDate : lhs.lastModifiedDate > rhs.lastModifiedDate
+                currentSort.ascending ? lhs.lastModifiedDate < rhs.lastModifiedDate : lhs.lastModifiedDate > rhs.lastModifiedDate
             case .status:
-                return currentSort.ascending ? lhs.status.rawValue < rhs.status.rawValue : lhs.status.rawValue > rhs.status.rawValue
+                currentSort.ascending ? lhs.status.rawValue < rhs.status.rawValue : lhs.status.rawValue > rhs.status.rawValue
             }
         })
 

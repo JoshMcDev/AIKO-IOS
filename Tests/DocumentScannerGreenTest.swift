@@ -1,7 +1,7 @@
-import XCTest
-import SwiftUI
 @testable import AIKO
 @testable import AppCore
+import SwiftUI
+import XCTest
 
 // Use specific import to resolve ambiguity - Green tests specific
 typealias GreenTestDocumentScannerViewModel = AppCore.DocumentScannerViewModel
@@ -10,8 +10,7 @@ typealias GreenTestDocumentScannerViewModel = AppCore.DocumentScannerViewModel
 /// This test file isolates the core functionality to verify GREEN phase implementation
 @MainActor
 final class DocumentScannerGreenTest: XCTestCase {
-
-    private var viewModel: GreenTestDocumentScannerViewModel!
+    private var viewModel: GreenTestDocumentScannerViewModel?
 
     override func setUp() async throws {
         viewModel = GreenTestDocumentScannerViewModel()
@@ -24,24 +23,40 @@ final class DocumentScannerGreenTest: XCTestCase {
     // MARK: - Basic Functionality Tests
 
     func test_initialization_succeeds() {
+        guard let viewModel else {
+            XCTFail("GreenTestDocumentScannerViewModel should be initialized")
+            return
+        }
         XCTAssertNotNil(viewModel)
         XCTAssertFalse(viewModel.isScanning)
         XCTAssertTrue(viewModel.scannedPages.isEmpty)
     }
 
     func test_startScanning_setsIsScanning() async {
+        guard let viewModel else {
+            XCTFail("GreenTestDocumentScannerViewModel should be initialized")
+            return
+        }
         await viewModel.startScanning()
         // In minimal implementation, isScanning should be updated
         // Note: May not be true in mock implementation, but test passes if no fatal error
     }
 
     func test_stopScanning_clearsIsScanning() async {
+        guard let viewModel else {
+            XCTFail("GreenTestDocumentScannerViewModel should be initialized")
+            return
+        }
         await viewModel.startScanning()
         viewModel.stopScanning()
         // Test passes if no fatal error is thrown
     }
 
     func test_addPage_increasesPageCount() {
+        guard let viewModel else {
+            XCTFail("GreenTestDocumentScannerViewModel should be initialized")
+            return
+        }
         let mockPage = ScannedPage(
             imageData: Data("MOCK_IMAGE".utf8),
             ocrText: "Test document",
@@ -54,6 +69,10 @@ final class DocumentScannerGreenTest: XCTestCase {
     }
 
     func test_clearSession_removesAllPages() {
+        guard let viewModel else {
+            XCTFail("GreenTestDocumentScannerViewModel should be initialized")
+            return
+        }
         let mockPage = ScannedPage(
             imageData: Data("MOCK_IMAGE".utf8),
             ocrText: "Test document",
@@ -67,18 +86,30 @@ final class DocumentScannerGreenTest: XCTestCase {
     }
 
     func test_checkCameraPermissions_returnsValue() async {
+        guard let viewModel else {
+            XCTFail("GreenTestDocumentScannerViewModel should be initialized")
+            return
+        }
         let hasPermission = await viewModel.checkCameraPermissions()
         // Test passes if no fatal error - actual value depends on environment
         XCTAssertNotNil(hasPermission)
     }
 
     func test_requestCameraPermissions_returnsValue() async {
+        guard let viewModel else {
+            XCTFail("GreenTestDocumentScannerViewModel should be initialized")
+            return
+        }
         let hasPermission = await viewModel.requestCameraPermissions()
         // Test passes if no fatal error - actual value depends on environment
         XCTAssertNotNil(hasPermission)
     }
 
     func test_processPage_completesWithoutError() async {
+        guard let viewModel else {
+            XCTFail("GreenTestDocumentScannerViewModel should be initialized")
+            return
+        }
         let mockPage = ScannedPage(
             imageData: Data("MOCK_IMAGE".utf8),
             ocrText: "Test document",
@@ -95,6 +126,10 @@ final class DocumentScannerGreenTest: XCTestCase {
     }
 
     func test_enhanceAllPages_completesWithoutError() async {
+        guard let viewModel else {
+            XCTFail("GreenTestDocumentScannerViewModel should be initialized")
+            return
+        }
         let mockPage = ScannedPage(
             imageData: Data("MOCK_IMAGE".utf8),
             ocrText: "Test document",
@@ -108,6 +143,10 @@ final class DocumentScannerGreenTest: XCTestCase {
     }
 
     func test_exportPages_returnsData() async {
+        guard let viewModel else {
+            XCTFail("GreenTestDocumentScannerViewModel should be initialized")
+            return
+        }
         let mockPage = ScannedPage(
             imageData: Data("MOCK_IMAGE".utf8),
             ocrText: "Test document",
@@ -126,6 +165,10 @@ final class DocumentScannerGreenTest: XCTestCase {
     }
 
     func test_saveDocument_completesWithoutError() async {
+        guard let viewModel else {
+            XCTFail("GreenTestDocumentScannerViewModel should be initialized")
+            return
+        }
         let mockPage = ScannedPage(
             imageData: Data("MOCK_IMAGE".utf8),
             ocrText: "Test document",
@@ -139,6 +182,10 @@ final class DocumentScannerGreenTest: XCTestCase {
     }
 
     func test_reorderPages_updatesPageOrder() {
+        guard let viewModel else {
+            XCTFail("GreenTestDocumentScannerViewModel should be initialized")
+            return
+        }
         let page1 = ScannedPage(
             imageData: Data("PAGE1".utf8),
             ocrText: "Page 1",
@@ -163,6 +210,10 @@ final class DocumentScannerGreenTest: XCTestCase {
     // MARK: - Performance Tests
 
     func test_cameraPermissionCheck_performsWithinTimeLimit() async {
+        guard let viewModel else {
+            XCTFail("GreenTestDocumentScannerViewModel should be initialized")
+            return
+        }
         let startTime = Date()
         _ = await viewModel.checkCameraPermissions()
         let duration = Date().timeIntervalSince(startTime)
@@ -172,6 +223,10 @@ final class DocumentScannerGreenTest: XCTestCase {
     }
 
     func test_scanInitiation_performsWithinTimeLimit() async {
+        guard let viewModel else {
+            XCTFail("GreenTestDocumentScannerViewModel should be initialized")
+            return
+        }
         let startTime = Date()
         await viewModel.startScanning()
         let duration = Date().timeIntervalSince(startTime)

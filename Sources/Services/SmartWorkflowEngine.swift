@@ -35,7 +35,6 @@ public final class SmartWorkflowEngine {
         loadedAcquisition: AppCore.Acquisition?,
         documentStatus: [AppCore.DocumentType: DocumentStatus]
     ) -> WorkflowAnalysis {
-
         let analysis = performIntelligentAnalysis(
             selectedTypes: selectedTypes,
             selectedDFTypes: selectedDFTypes,
@@ -62,7 +61,6 @@ public final class SmartWorkflowEngine {
         selectedTypes: Set<AppCore.DocumentType>,
         loadedAcquisition: AppCore.Acquisition?
     ) -> ExecutionDecision {
-
         let criticalInfo = analyzeCriticalInformation(
             selectedTypes: selectedTypes,
             acquisition: loadedAcquisition
@@ -81,7 +79,7 @@ public final class SmartWorkflowEngine {
                 suggestedActions: [
                     .triggerAgentChat("I need help gathering missing requirements"),
                     .openRequirementsGathering,
-                    .suggestTemplates(criticalInfo.suggestedTemplates)
+                    .suggestTemplates(criticalInfo.suggestedTemplates),
                 ]
             )
         }
@@ -114,7 +112,6 @@ public final class SmartWorkflowEngine {
     public func getPersonalizedRecommendations(
         currentSelection: Set<AppCore.DocumentType>
     ) -> [SmartDocumentRecommendation] {
-
         var recommendations: [SmartDocumentRecommendation] = []
 
         // Analyze frequently selected document combinations
@@ -145,14 +142,13 @@ public final class SmartWorkflowEngine {
 
     private func performIntelligentAnalysis(
         selectedTypes: Set<AppCore.DocumentType>,
-        selectedDFTypes: Set<AppCore.DFDocumentType>,
+        selectedDFTypes _: Set<AppCore.DFDocumentType>,
         hasAcquisition: Bool,
         loadedAcquisition: AppCore.Acquisition?,
         documentStatus: [AppCore.DocumentType: DocumentStatus]
     ) -> WorkflowAnalysis {
-
         var gaps: [RequirementGap] = []
-        var confidence: Double = 1.0
+        var confidence = 1.0
         var shouldTrigger = false
         var message = ""
 
@@ -245,7 +241,7 @@ public final class SmartWorkflowEngine {
         let hasContract = selectedTypes.contains(.contractScaffold)
 
         // Check for conflicting selections
-        if hasSOW && hasPWS {
+        if hasSOW, hasPWS {
             return SelectionCoherence(
                 isCoherent: false,
                 coherenceScore: 0.7,
@@ -254,7 +250,7 @@ public final class SmartWorkflowEngine {
             )
         }
 
-        if hasRFP && hasRFQ {
+        if hasRFP, hasRFQ {
             return SelectionCoherence(
                 isCoherent: false,
                 coherenceScore: 0.6,
@@ -264,7 +260,7 @@ public final class SmartWorkflowEngine {
         }
 
         // Check for missing essential documents
-        if hasContract && !hasSOW && !hasPWS {
+        if hasContract, !hasSOW, !hasPWS {
             return SelectionCoherence(
                 isCoherent: false,
                 coherenceScore: 0.8,
@@ -285,11 +281,10 @@ public final class SmartWorkflowEngine {
         selectedTypes: Set<AppCore.DocumentType>,
         acquisition: AppCore.Acquisition?
     ) -> CriticalInfoAnalysis {
-
         var missingInfo: [String] = []
         var templates: [String] = []
 
-        guard let acquisition = acquisition else {
+        guard let acquisition else {
             return CriticalInfoAnalysis(
                 missingCriticalInfo: ["No acquisition loaded"],
                 suggestedTemplates: ["Basic Acquisition Template"]
@@ -314,9 +309,9 @@ public final class SmartWorkflowEngine {
 
         // Check for performance criteria
         if selectedTypes.contains(.pws) || selectedTypes.contains(.qasp) {
-            if !acquisition.requirements.localizedCaseInsensitiveContains("performance") &&
-                !acquisition.requirements.localizedCaseInsensitiveContains("metrics") &&
-                !acquisition.requirements.localizedCaseInsensitiveContains("criteria") {
+            if !acquisition.requirements.localizedCaseInsensitiveContains("performance"),
+               !acquisition.requirements.localizedCaseInsensitiveContains("metrics"),
+               !acquisition.requirements.localizedCaseInsensitiveContains("criteria") {
                 missingInfo.append("Performance metrics and success criteria")
                 templates.append("Performance Metrics Template")
             }
@@ -340,7 +335,7 @@ public final class SmartWorkflowEngine {
         )
     }
 
-    private func generateGuidanceMessage(gaps: [RequirementGap], confidence: Double) -> String {
+    private func generateGuidanceMessage(gaps: [RequirementGap], confidence _: Double) -> String {
         let criticalGaps = gaps.filter { $0.severity == .critical }
         let highGaps = gaps.filter { $0.severity == .high }
 
@@ -354,7 +349,7 @@ public final class SmartWorkflowEngine {
     }
 
     private func generateRecommendedActions(_ gaps: [RequirementGap]) -> [RecommendedAction] {
-        return gaps.map { gap in
+        gaps.map { gap in
             RecommendedAction(
                 title: gap.suggestedAction,
                 category: gap.category,
@@ -387,10 +382,10 @@ public final class SmartWorkflowEngine {
     private func analyzeFrequentCombinations() -> [Set<AppCore.DocumentType>] {
         // Analyze historical selections to find frequent combinations
         // This is a simplified implementation
-        return [
+        [
             [.sow, .requestForProposal, .evaluationPlan],
             [.pws, .qasp, .contractScaffold],
-            [.marketResearch, .acquisitionPlan, .requestForProposal]
+            [.marketResearch, .acquisitionPlan, .requestForProposal],
         ]
     }
 
@@ -398,7 +393,7 @@ public final class SmartWorkflowEngine {
         var recommendations: [SmartDocumentRecommendation] = []
 
         // If they have SOW, suggest evaluation plan
-        if currentSelection.contains(.sow) && !currentSelection.contains(.evaluationPlan) {
+        if currentSelection.contains(.sow), !currentSelection.contains(.evaluationPlan) {
             recommendations.append(SmartDocumentRecommendation(
                 documentType: .evaluationPlan,
                 reason: "Evaluation Plan commonly pairs with Statement of Work",
@@ -408,7 +403,7 @@ public final class SmartWorkflowEngine {
         }
 
         // If they have PWS, suggest QASP
-        if currentSelection.contains(.pws) && !currentSelection.contains(.qasp) {
+        if currentSelection.contains(.pws), !currentSelection.contains(.qasp) {
             recommendations.append(SmartDocumentRecommendation(
                 documentType: .qasp,
                 reason: "Quality Assurance Surveillance Plan is essential for Performance Work Statements",
@@ -420,10 +415,10 @@ public final class SmartWorkflowEngine {
         return recommendations
     }
 
-    private func calculateRecommendationConfidence(_ docType: AppCore.DocumentType, _ currentSelection: Set<AppCore.DocumentType>) -> Double {
+    private func calculateRecommendationConfidence(_: AppCore.DocumentType, _: Set<AppCore.DocumentType>) -> Double {
         // Simplified confidence calculation
         // In practice, this would use machine learning or statistical models
-        return 0.7 + (Double.random(in: 0...0.3))
+        0.7 + (Double.random(in: 0 ... 0.3))
     }
 }
 
@@ -452,10 +447,10 @@ public struct RequirementGap {
 
         var priority: RecommendedAction.Priority {
             switch self {
-            case .low: return .low
-            case .medium: return .medium
-            case .high: return .high
-            case .critical: return .critical
+            case .low: .low
+            case .medium: .medium
+            case .high: .high
+            case .critical: .critical
             }
         }
     }

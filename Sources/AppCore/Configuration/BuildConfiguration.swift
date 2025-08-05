@@ -4,15 +4,14 @@ import os.log
 /// Build-time configuration for AIKO application
 /// Controls feature flags, model inclusion, and development vs production settings
 public enum BuildConfiguration {
-
     // MARK: - Model Configuration
 
     /// LFM2 model inclusion strategy
     public enum LFM2ModelStrategy {
-        case disabled           // No model files included (fastest builds, Xcode indexing friendly)
-        case developmentMock    // Mock-only mode for development
-        case productionHybrid   // Include model files for production builds
-        case fullProduction     // All model variants included
+        case disabled // No model files included (fastest builds, Xcode indexing friendly)
+        case developmentMock // Mock-only mode for development
+        case productionHybrid // Include model files for production builds
+        case fullProduction // All model variants included
     }
 
     /// Current LFM2 model strategy based on build configuration
@@ -47,12 +46,12 @@ public enum BuildConfiguration {
     /// Detect if running in Xcode development environment
     public static var isXcodeDevelopment: Bool {
         // Check if we're running in Xcode (vs command line builds)
-        return ProcessInfo.processInfo.environment["XCODE_VERSION_ACTUAL"] != nil
+        ProcessInfo.processInfo.environment["XCODE_VERSION_ACTUAL"] != nil
     }
 
     /// Detect if this is a CI/CD build
     public static var isContinuousIntegration: Bool {
-        return ProcessInfo.processInfo.environment["CI"] == "true" ||
+        ProcessInfo.processInfo.environment["CI"] == "true" ||
             ProcessInfo.processInfo.environment["GITHUB_ACTIONS"] == "true" ||
             ProcessInfo.processInfo.environment["XCODE_CLOUD"] == "1"
     }
@@ -61,9 +60,9 @@ public enum BuildConfiguration {
     public static var shouldExcludeLargeModels: Bool {
         switch lfm2ModelStrategy {
         case .disabled, .developmentMock:
-            return true
+            true
         case .productionHybrid, .fullProduction:
-            return false
+            false
         }
     }
 
@@ -77,7 +76,7 @@ public enum BuildConfiguration {
 
     /// Check if model size exceeds development limits
     public static func isModelTooLargeForDevelopment(_ modelSize: Int64) -> Bool {
-        return isXcodeDevelopment && modelSize > maxDevelopmentModelSize
+        isXcodeDevelopment && modelSize > maxDevelopmentModelSize
     }
 
     // MARK: - Logging Configuration
@@ -112,23 +111,22 @@ public enum BuildConfiguration {
 
 // MARK: - Configuration Validation
 
-extension BuildConfiguration {
-
+public extension BuildConfiguration {
     /// Validate current build configuration and log warnings if needed
-    public static func validateConfiguration() {
+    static func validateConfiguration() {
         let logger = Logger(subsystem: "com.aiko.core", category: "BuildConfiguration")
 
         // Log configuration summary
         logger.info("📋 \(configurationSummary)")
 
         // Warn about large model files in development
-        if isXcodeDevelopment && !shouldExcludeLargeModels {
+        if isXcodeDevelopment, !shouldExcludeLargeModels {
             logger.warning("⚠️ Large model files included in Xcode build - may cause indexing issues")
             logger.info("💡 Set AIKO_LFM2_STRATEGY=mock to disable model files for development")
         }
 
         // Validate model strategy consistency
-        if lfm2ModelStrategy == .fullProduction && isXcodeDevelopment {
+        if lfm2ModelStrategy == .fullProduction, isXcodeDevelopment {
             logger.warning("⚠️ Full production model strategy in development environment")
         }
 

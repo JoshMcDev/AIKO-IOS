@@ -1,11 +1,10 @@
-import SwiftUI
 import Foundation
+import SwiftUI
 
 /// NavigationSplitView foundation for PHASE 4: Platform Optimization
 /// Implements universal navigation container with platform-conditional adaptations
 /// RED PHASE: Basic scaffolding that will fail comprehensive integration tests
 public struct NavigationSplitViewContainer: View {
-
     @State private var navigationState = NavigationState()
     @Environment(\.horizontalSizeClass) var sizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
@@ -116,19 +115,19 @@ public struct NavigationSplitViewContainer: View {
     @ViewBuilder
     private func destinationView(for destination: NavigationState.NavigationDestination) -> some View {
         switch destination {
-        case .acquisition(let id):
+        case let .acquisition(id):
             NavigationAcquisitionDetailView(acquisitionID: id)
-        case .document(let id):
+        case let .document(id):
             DocumentDetailView(documentID: id)
-        case .compliance(let id):
+        case let .compliance(id):
             ComplianceDetailView(complianceID: id)
-        case .search(let context):
+        case let .search(context):
             SearchResultsView(searchContext: context)
-        case .settings(let section):
+        case let .settings(section):
             SettingsDetailView(section: section)
-        case .quickAction(let type):
+        case let .quickAction(type):
             QuickActionView(actionType: type)
-        case .workflow(let step):
+        case let .workflow(step):
             WorkflowStepView(workflowStep: step)
         }
     }

@@ -1,6 +1,6 @@
-import XCTest
-import Foundation
 @testable import AIKO
+import Foundation
+import XCTest
 
 /// Comprehensive test suite for LocalRLAgent with Contextual Multi-Armed Bandits
 /// Testing Thompson Sampling algorithm with statistical validation
@@ -11,14 +11,13 @@ import Foundation
 /// 3. Contextual bandit learning
 /// 4. Exploration vs exploitation balance
 final class LocalRLAgentTests: XCTestCase {
-
     // MARK: - Test Properties
 
-    var rlAgent: LocalRLAgent!
-    var mockPersistenceManager: MockRLPersistenceManager!
-    var statisticalValidator: StatisticalTestFramework!
-    var testContext: FeatureVector!
-    var standardActions: [WorkflowAction]!
+    var rlAgent: LocalRLAgent?
+    var mockPersistenceManager: MockRLPersistenceManager?
+    var statisticalValidator: StatisticalTestFramework?
+    var testContext: FeatureVector?
+    var standardActions: [WorkflowAction]?
 
     override func setUp() async throws {
         mockPersistenceManager = MockRLPersistenceManager()
@@ -31,7 +30,7 @@ final class LocalRLAgentTests: XCTestCase {
             "complexity_score": 0.5,
             "historical_success": 0.8,
             "time_pressure": 0.5,
-            "experience_level": 0.7
+            "experience_level": 0.7,
         ])
 
         // Create standard actions for testing
@@ -67,7 +66,7 @@ final class LocalRLAgentTests: XCTestCase {
                 automationLevel: .assisted,
                 complianceChecks: [sampleComplianceCheck],
                 estimatedDuration: 600.0
-            )
+            ),
         ]
 
         // Initialize RL agent
@@ -90,6 +89,14 @@ final class LocalRLAgentTests: XCTestCase {
     func testThompsonSampling_InitialPriorDistribution() async throws {
         // RED PHASE: This test should FAIL initially
         // Testing proper initialization of Beta prior distributions
+
+        guard let rlAgent,
+              let testContext,
+              let standardActions
+        else {
+            XCTFail("Test properties should be initialized")
+            return
+        }
 
         // When: First action selection is requested
         let recommendation = try await rlAgent.selectAction(
@@ -115,6 +122,14 @@ final class LocalRLAgentTests: XCTestCase {
         // RED PHASE: This test should FAIL initially
         // Testing Bayesian posterior updates with reward signals
 
+        guard let rlAgent,
+              let testContext,
+              let standardActions
+        else {
+            XCTFail("Test properties should be initialized")
+            return
+        }
+
         // Given: Initial action selection
         let initialRecommendation = try await rlAgent.selectAction(
             context: testContext,
@@ -126,7 +141,10 @@ final class LocalRLAgentTests: XCTestCase {
             action: initialRecommendation.action,
             contextHash: testContext.hash
         )
-        let initialBandit = initialBandits[actionKey]!
+        guard let initialBandit = initialBandits[actionKey] else {
+            XCTFail("Initial bandit should exist for action key")
+            return
+        }
 
         // When: Positive reward is provided
         let positiveReward = RewardSignal(
@@ -144,7 +162,10 @@ final class LocalRLAgentTests: XCTestCase {
 
         // Then: Posterior should be updated correctly
         let updatedBandits = await rlAgent.getBandits()
-        let updatedBandit = updatedBandits[actionKey]!
+        guard let updatedBandit = updatedBandits[actionKey] else {
+            XCTFail("Updated bandit should exist for action key")
+            return
+        }
 
         XCTAssertGreaterThan(updatedBandit.successCount, initialBandit.successCount, "Success count should increase with positive reward")
         XCTAssertEqual(updatedBandit.failureCount, initialBandit.failureCount, "Failure count should remain unchanged with positive reward")
@@ -165,7 +186,10 @@ final class LocalRLAgentTests: XCTestCase {
         )
 
         let finalBandits = await rlAgent.getBandits()
-        let finalBandit = finalBandits[actionKey]!
+        guard let finalBandit = finalBandits[actionKey] else {
+            XCTFail("Final bandit should exist for action key")
+            return
+        }
 
         XCTAssertGreaterThan(finalBandit.failureCount, updatedBandit.failureCount, "Failure count should increase with negative reward")
     }
@@ -174,13 +198,22 @@ final class LocalRLAgentTests: XCTestCase {
         // RED PHASE: This test should FAIL initially
         // Statistical test for Thompson Sampling convergence behavior
 
+        guard let rlAgent,
+              let testContext,
+              let standardActions,
+              let statisticalValidator
+        else {
+            XCTFail("Test properties should be initialized")
+            return
+        }
+
         let trials = 1000
         let optimalAction = standardActions[0]
         var selectedActions: [WorkflowAction] = []
         var rewards: [Double] = []
 
         // Simulate optimal bandit scenario
-        for _ in 0..<trials {
+        for _ in 0 ..< trials {
             let recommendation = try await rlAgent.selectAction(
                 context: testContext,
                 actions: standardActions
@@ -229,29 +262,36 @@ final class LocalRLAgentTests: XCTestCase {
         // RED PHASE: This test should FAIL initially
         // Testing context similarity handling and generalization
 
+        guard let rlAgent,
+              let standardActions
+        else {
+            XCTFail("Test properties should be initialized")
+            return
+        }
+
         let similarContext1 = FeatureVector(features: [
             "docType_purchaseRequest": 1.0,
             "value_normalized": 0.5,
             "complexity_score": 0.4,
-            "days_remaining": 30.0
+            "days_remaining": 30.0,
         ])
 
         let similarContext2 = FeatureVector(features: [
             "docType_purchaseRequest": 1.0,
             "value_normalized": 0.52,
             "complexity_score": 0.42,
-            "days_remaining": 31.0
+            "days_remaining": 31.0,
         ])
 
         let dissimilarContext = FeatureVector(features: [
             "docType_sourceSelection": 1.0,
             "value_normalized": 0.9,
             "complexity_score": 0.8,
-            "days_remaining": 7.0
+            "days_remaining": 7.0,
         ])
 
         // Train on similar context 1
-        for _ in 0..<20 {
+        for _ in 0 ..< 20 {
             let recommendation = try await rlAgent.selectAction(
                 context: similarContext1,
                 actions: standardActions
@@ -295,10 +335,17 @@ final class LocalRLAgentTests: XCTestCase {
         // RED PHASE: This test should FAIL initially
         // Testing multi-armed bandit selection across different contexts
 
+        guard let rlAgent,
+              let standardActions
+        else {
+            XCTFail("Test properties should be initialized")
+            return
+        }
+
         let contexts = [
             createFeatureVector(docType: "purchaseRequest", complexity: 0.3),
             createFeatureVector(docType: "sourceSelection", complexity: 0.7),
-            createFeatureVector(docType: "emergencyProcurement", complexity: 0.9)
+            createFeatureVector(docType: "emergencyProcurement", complexity: 0.9),
         ]
 
         var contextActionMapping: [Int: [WorkflowAction]] = [:]
@@ -308,7 +355,7 @@ final class LocalRLAgentTests: XCTestCase {
             let optimalActionIndex = contextIndex % standardActions.count
             contextActionMapping[contextIndex] = []
 
-            for _ in 0..<50 {
+            for _ in 0 ..< 50 {
                 let recommendation = try await rlAgent.selectAction(
                     context: context,
                     actions: standardActions
@@ -349,6 +396,14 @@ final class LocalRLAgentTests: XCTestCase {
         // RED PHASE: This test should FAIL initially
         // Testing confidence calculation based on posterior distribution
 
+        guard let rlAgent,
+              let testContext,
+              let standardActions
+        else {
+            XCTFail("Test properties should be initialized")
+            return
+        }
+
         // Given: Fresh agent with no learning
         let initialRecommendation = try await rlAgent.selectAction(
             context: testContext,
@@ -357,7 +412,7 @@ final class LocalRLAgentTests: XCTestCase {
         let initialConfidence = initialRecommendation.confidence
 
         // When: Multiple positive feedbacks are provided
-        for _ in 0..<10 {
+        for _ in 0 ..< 10 {
             let reward = RewardSignal(
                 immediateReward: 1.0,
                 delayedReward: 0.9,
@@ -387,16 +442,24 @@ final class LocalRLAgentTests: XCTestCase {
         // RED PHASE: This test should FAIL initially
         // Testing uncertainty quantification in confidence scores
 
+        guard let rlAgent,
+              let testContext,
+              let standardActions
+        else {
+            XCTFail("Test properties should be initialized")
+            return
+        }
+
         let uncertainContext = FeatureVector(features: [
             "docType_novel": 1.0,
             "value_normalized": 0.95,
-            "complexity_score": 0.9
+            "complexity_score": 0.9,
         ])
 
-        let certainContext = testContext!
+        let certainContext = testContext
 
         // Provide extensive training for certain context
-        for _ in 0..<100 {
+        for _ in 0 ..< 100 {
             let recommendation = try await rlAgent.selectAction(
                 context: certainContext,
                 actions: standardActions
@@ -439,13 +502,17 @@ final class LocalRLAgentTests: XCTestCase {
         // Testing thread safety under concurrent action selections
 
         let concurrentRequests = 50
-        let contexts = (0..<concurrentRequests).map { index in
+        let contexts = (0 ..< concurrentRequests).map { index in
             createFeatureVector(docType: "test", complexity: Double(index) / 100.0)
         }
 
         // When: Multiple concurrent action selections
-        let rlAgentLocal = self.rlAgent!
-        let standardActionsLocal = self.standardActions!
+        guard let rlAgentLocal = rlAgent,
+              let standardActionsLocal = standardActions
+        else {
+            XCTFail("Test properties should be initialized")
+            return
+        }
         let recommendations = try await withThrowingTaskGroup(of: ActionRecommendation.self) { group in
             for context in contexts {
                 group.addTask {
@@ -478,14 +545,22 @@ final class LocalRLAgentTests: XCTestCase {
         // RED PHASE: This test should FAIL initially
         // Testing action selection performance requirements
 
-        let context = testContext!
+        guard let rlAgent,
+              let testContext,
+              let standardActions
+        else {
+            XCTFail("Test properties should be initialized")
+            return
+        }
+
+        let context = testContext
         let iterations = 100
 
-        let measurements = try await (0..<iterations).asyncMap { _ in
+        let measurements = try await (0 ..< iterations).asyncMap { _ in
             let startTime = CFAbsoluteTimeGetCurrent()
-            _ = try await self.rlAgent.selectAction(
+            _ = try await rlAgent.selectAction(
                 context: context,
-                actions: self.standardActions
+                actions: standardActions
             )
             let endTime = CFAbsoluteTimeGetCurrent()
             return endTime - startTime
@@ -501,17 +576,17 @@ final class LocalRLAgentTests: XCTestCase {
     // MARK: - Helper Methods
 
     private func createFeatureVector(docType: String, complexity: Double) -> FeatureVector {
-        return FeatureVector(features: [
+        FeatureVector(features: [
             "docType_\(docType)": 1.0,
             "complexity_score": complexity,
             "value_normalized": 0.5,
-            "days_remaining": 30.0
+            "days_remaining": 30.0,
         ])
     }
 
     private func calculateExplorationRate(_ actions: any Sequence<WorkflowAction>) -> Double {
         let actionArray = Array(actions)
-        let uniqueActions = Set(actionArray.map { $0.id })
+        let uniqueActions = Set(actionArray.map(\.id))
         return Double(uniqueActions.count) / Double(actionArray.count)
     }
 }
@@ -519,7 +594,6 @@ final class LocalRLAgentTests: XCTestCase {
 // MARK: - Statistical Test Framework
 
 struct StatisticalTestFramework {
-
     struct ConvergenceResult {
         let hasConverged: Bool
         let regretBound: Double
@@ -531,13 +605,13 @@ struct StatisticalTestFramework {
         selectedActions: [WorkflowAction],
         optimalAction: WorkflowAction,
         trials: Int,
-        confidenceLevel: Double = 0.95
+        confidenceLevel _: Double = 0.95
     ) -> ConvergenceResult {
         // Calculate cumulative regret
         var cumulativeRegret: Double = 0
         var optimalSelections = 0
 
-        for (_, action) in selectedActions.enumerated() {
+        for action in selectedActions {
             if action.id == optimalAction.id {
                 optimalSelections += 1
             } else {
@@ -568,7 +642,7 @@ struct StatisticalTestFramework {
 
 extension AcquisitionContext {
     static func createTest() -> AcquisitionContext {
-        return AcquisitionContext(
+        AcquisitionContext(
             acquisitionId: UUID(),
             documentType: .purchaseRequest,
             acquisitionValue: 50000.0,

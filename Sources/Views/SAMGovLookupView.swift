@@ -1,6 +1,6 @@
-import SwiftUI
 import AppCore
 import Foundation
+import SwiftUI
 
 /// SAMGovLookupView - PHASE 2 Business Logic View Restoration
 /// Modern SwiftUI implementation with @Observable ViewModel pattern
@@ -512,16 +512,16 @@ struct SAMGovLookupView_Previews: PreviewProvider {
 }
 
 struct PreviewMockSAMGovService: SAMGovServiceProtocol {
-    func getEntityByCAGE(_ cage: String) async throws -> EntityDetail {
-        return EntityDetail.mockCAGEEntity()
+    func getEntityByCAGE(_: String) async throws -> EntityDetail {
+        EntityDetail.mockCAGEEntity()
     }
 
-    func getEntityByUEI(_ uei: String) async throws -> EntityDetail {
-        return EntityDetail.mockUEIEntity()
+    func getEntityByUEI(_: String) async throws -> EntityDetail {
+        EntityDetail.mockUEIEntity()
     }
 
-    func searchEntity(_ query: String) async throws -> EntitySearchResult {
-        return EntitySearchResult.mockSearchResult()
+    func searchEntity(_: String) async throws -> EntitySearchResult {
+        EntitySearchResult.mockSearchResult()
     }
 }
 #endif

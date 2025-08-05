@@ -15,22 +15,22 @@ public enum ViewType {
 extension View {
     func inspect() throws -> Self {
         // Minimal implementation to satisfy testing
-        return self
+        self
     }
 
-    func find(button label: String) throws -> Self {
+    func find(button _: String) throws -> Self {
         // Placeholder implementation
-        return self
+        self
     }
 
-    func find(text label: String) throws -> Self {
+    func find(text _: String) throws -> Self {
         // Placeholder implementation
-        return self
+        self
     }
 
-    func find<T>(_: T.Type) throws -> Self {
+    func find(_: (some Any).Type) throws -> Self {
         // Placeholder implementation
-        return self
+        self
     }
 
     func tap() throws {
@@ -39,12 +39,12 @@ extension View {
 
     func accessibilityLabel() throws -> String? {
         // Placeholder implementation
-        return nil
+        nil
     }
 
     func accessibilityHint() throws -> String? {
         // Placeholder implementation
-        return nil
+        nil
     }
 }
 

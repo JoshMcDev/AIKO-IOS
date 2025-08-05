@@ -14,13 +14,13 @@ private enum WorkflowTestError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .serviceNotInitialized:
-            return "Test service was not properly initialized"
+            "Test service was not properly initialized"
         case .invalidTestData:
-            return "Test data is invalid or corrupted"
+            "Test data is invalid or corrupted"
         case .testTimeout:
-            return "Test operation timed out"
+            "Test operation timed out"
         case let .assertionFailure(message):
-            return "Test assertion failed: \(message)"
+            "Test assertion failed: \(message)"
         }
     }
 }
@@ -50,8 +50,8 @@ final class UserWorkflowTrackerTests: XCTestCase {
     /// Test privacy compliance: 100% data encryption and zero data leakage
     /// This test WILL FAIL initially until privacy compliance is implemented
     func testPrivacyCompliance() async throws {
-        guard let workflowTracker = workflowTracker,
-              let testUserId = testUserId
+        guard let workflowTracker,
+              let testUserId
         else {
             throw WorkflowTestError.serviceNotInitialized
         }
@@ -90,8 +90,8 @@ final class UserWorkflowTrackerTests: XCTestCase {
     /// Test data encryption effectiveness: AES-256 with secure key management
     /// This test WILL FAIL initially until data encryption is implemented
     func testDataEncryptionEffectiveness() async throws {
-        guard let workflowTracker = workflowTracker,
-              let testUserId = testUserId
+        guard let workflowTracker,
+              let testUserId
         else {
             throw WorkflowTestError.serviceNotInitialized
         }
@@ -138,8 +138,8 @@ final class UserWorkflowTrackerTests: XCTestCase {
     /// Test workflow pattern recognition: >80% accuracy for pattern detection
     /// This test WILL FAIL initially until pattern recognition is implemented
     func testWorkflowPatternRecognition() async throws {
-        guard let workflowTracker = workflowTracker,
-              let testUserId = testUserId
+        guard let workflowTracker,
+              let testUserId
         else {
             throw WorkflowTestError.serviceNotInitialized
         }
@@ -195,8 +195,8 @@ final class UserWorkflowTrackerTests: XCTestCase {
     /// Test real-time tracking performance: <50ms latency for workflow recording
     /// This test WILL FAIL initially until real-time tracking optimization is implemented
     func testRealTimeTrackingPerformance() async throws {
-        guard let workflowTracker = workflowTracker,
-              let testUserId = testUserId
+        guard let workflowTracker,
+              let testUserId
         else {
             throw WorkflowTestError.serviceNotInitialized
         }
@@ -236,8 +236,8 @@ final class UserWorkflowTrackerTests: XCTestCase {
         try await withThrowingTaskGroup(of: Void.self) { group in
             for step in concurrentSteps {
                 group.addTask { [workflowTracker = self.workflowTracker, testUserId = self.testUserId] in
-                    guard let workflowTracker = workflowTracker,
-                          let testUserId = testUserId
+                    guard let workflowTracker,
+                          let testUserId
                     else {
                         throw WorkflowTestError.serviceNotInitialized
                     }
@@ -258,7 +258,7 @@ final class UserWorkflowTrackerTests: XCTestCase {
     // MARK: - Test Helper Methods (WILL FAIL until implemented)
 
     private func createSensitiveWorkflowData() -> WorkflowStep {
-        return WorkflowStep(
+        WorkflowStep(
             stepId: UUID().uuidString,
             timestamp: Date(),
             documentType: "Classified Contract",
@@ -267,7 +267,7 @@ final class UserWorkflowTrackerTests: XCTestCase {
                 "vendor": "Secure Defense Corp",
                 "clearanceLevel": "SECRET",
                 "ssn": "123-45-6789",
-                "personalData": "Sensitive information here"
+                "personalData": "Sensitive information here",
             ],
             userActions: [
                 UserAction(
@@ -279,13 +279,13 @@ final class UserWorkflowTrackerTests: XCTestCase {
                     actionType: "encrypt_submit",
                     target: "secure_submission",
                     timestamp: Date()
-                )
+                ),
             ]
         )
     }
 
     private func createTestWorkflowData() -> WorkflowStep {
-        return WorkflowStep(
+        WorkflowStep(
             stepId: UUID().uuidString,
             timestamp: Date(),
             documentType: "Contract Submission",
@@ -293,7 +293,7 @@ final class UserWorkflowTrackerTests: XCTestCase {
                 "contractNumber": "FAR-2024-001",
                 "vendor": "Test Vendor Inc",
                 "amount": "100000",
-                "status": "pending"
+                "status": "pending",
             ],
             userActions: [
                 UserAction(
@@ -305,7 +305,7 @@ final class UserWorkflowTrackerTests: XCTestCase {
                     actionType: "submit",
                     target: "contract_submission",
                     timestamp: Date()
-                )
+                ),
             ]
         )
     }
@@ -316,7 +316,7 @@ final class UserWorkflowTrackerTests: XCTestCase {
         let dataString = String(data: data, encoding: .utf8) ?? ""
 
         // If it can be converted to readable UTF-8, it's likely not encrypted
-        if !dataString.isEmpty && dataString.contains(where: { $0.isLetter }) {
+        if !dataString.isEmpty, dataString.contains(where: \.isLetter) {
             return false
         }
 
@@ -337,7 +337,7 @@ final class UserWorkflowTrackerTests: XCTestCase {
             "123-45-6789",
             "clearanceLevel",
             "personalData",
-            "Sensitive information"
+            "Sensitive information",
         ]
 
         let lowercaseData = dataString.lowercased()
@@ -387,7 +387,7 @@ final class UserWorkflowTrackerTests: XCTestCase {
         let documentTypes = ["Contract", "Invoice", "Report", "Proposal", "Amendment"]
         let patterns = ["Linear", "Branching", "Cyclical", "Hierarchical", "Random"]
 
-        for i in 0..<count {
+        for i in 0 ..< count {
             let documentType = documentTypes[i % documentTypes.count]
             let pattern = patterns[i % patterns.count]
 
@@ -414,7 +414,7 @@ final class UserWorkflowTrackerTests: XCTestCase {
         let actionTypes = ["form_fill", "submit", "review", "approve", "edit", "save"]
         let targets = ["contract_form", "invoice_form", "report_form", "submission_portal"]
 
-        for i in 0..<count {
+        for i in 0 ..< count {
             let step = WorkflowStep(
                 stepId: "rt-step-\(i)",
                 timestamp: Date().addingTimeInterval(TimeInterval(i)),
@@ -422,14 +422,14 @@ final class UserWorkflowTrackerTests: XCTestCase {
                 formFields: [
                     "fieldA": "value\(i)",
                     "fieldB": "data\(i % 10)",
-                    "timestamp": "\(Date().timeIntervalSince1970)"
+                    "timestamp": "\(Date().timeIntervalSince1970)",
                 ],
                 userActions: [
                     UserAction(
                         actionType: actionTypes[i % actionTypes.count],
                         target: targets[i % targets.count],
                         timestamp: Date()
-                    )
+                    ),
                 ]
             )
             steps.append(step)
@@ -441,7 +441,7 @@ final class UserWorkflowTrackerTests: XCTestCase {
     private func createWorkflowStepsForSequence(sequenceIndex: Int, documentType: String, stepCount: Int) -> [WorkflowStep] {
         var steps: [WorkflowStep] = []
 
-        for stepIndex in 0..<stepCount {
+        for stepIndex in 0 ..< stepCount {
             let step = WorkflowStep(
                 stepId: "seq\(sequenceIndex)-step\(stepIndex)",
                 timestamp: Date().addingTimeInterval(TimeInterval(stepIndex * 60)), // 1 minute apart
@@ -450,14 +450,14 @@ final class UserWorkflowTrackerTests: XCTestCase {
                     "sequenceId": "\(sequenceIndex)",
                     "stepIndex": "\(stepIndex)",
                     "documentNumber": "\(documentType)-\(sequenceIndex)",
-                    "status": stepIndex == stepCount - 1 ? "complete" : "in_progress"
+                    "status": stepIndex == stepCount - 1 ? "complete" : "in_progress",
                 ],
                 userActions: [
                     UserAction(
                         actionType: stepIndex == 0 ? "create" : (stepIndex == stepCount - 1 ? "finalize" : "process"),
                         target: "\(documentType.lowercased())_step\(stepIndex)",
                         timestamp: Date()
-                    )
+                    ),
                 ]
             )
             steps.append(step)

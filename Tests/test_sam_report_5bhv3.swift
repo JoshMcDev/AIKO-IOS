@@ -41,7 +41,7 @@ final class SAMReportTest: XCTestCase {
 
     // Create mock entity based on CAGE 5BVH3
     func createMockEntityDetail() -> MockEntityDetailReportTest {
-        return MockEntityDetailReportTest(
+        MockEntityDetailReportTest(
             ueiSAM: "MOCK123456789",
             entityName: "Test Contractor for CAGE 5BVH3",
             legalBusinessName: "Test Contractor LLC",
@@ -64,14 +64,14 @@ final class SAMReportTest: XCTestCase {
             ),
             naicsCodes: [
                 MockNAICSCode(code: "541511", description: "Custom Computer Programming Services", isPrimary: true),
-                MockNAICSCode(code: "541512", description: "Computer Systems Design Services", isPrimary: false)
+                MockNAICSCode(code: "541512", description: "Computer Systems Design Services", isPrimary: false),
             ]
         )
     }
 
     // Generate comprehensive SAM report
     func generateSAMReport(for entities: [MockEntityDetailReportTest]) -> SAMReport {
-        return SAMReport(
+        SAMReport(
             entities: entities,
             executiveSummary: generateExecutiveSummary(entities),
             marketIntelligence: generateMarketIntelligence(entities),
@@ -83,8 +83,8 @@ final class SAMReportTest: XCTestCase {
 
     func generateExecutiveSummary(_ entities: [MockEntityDetailReportTest]) -> ExecutiveSummary {
         let activeCount = entities.filter { $0.registrationStatus == "Active" }.count
-        let smallBusinessCount = entities.filter { $0.isSmallBusiness }.count
-        let exclusionCount = entities.filter { $0.hasActiveExclusions }.count
+        let smallBusinessCount = entities.filter(\.isSmallBusiness).count
+        let exclusionCount = entities.filter(\.hasActiveExclusions).count
 
         let activeRate = !entities.isEmpty ? Int((Double(activeCount) / Double(entities.count)) * 100) : 0
         let smallBusinessRate = !entities.isEmpty ? Int((Double(smallBusinessCount) / Double(entities.count)) * 100) : 0
@@ -98,7 +98,7 @@ final class SAMReportTest: XCTestCase {
     }
 
     func generateMarketIntelligence(_ entities: [MockEntityDetailReportTest]) -> MarketIntelligence {
-        let allNAICS = entities.flatMap { $0.naicsCodes.map { $0.code } }
+        let allNAICS = entities.flatMap { $0.naicsCodes.map(\.code) }
         let naicsDiversity = Set(allNAICS).count
         let states = entities.compactMap { $0.address?.state }
         let geographicSpread = Set(states).count
@@ -114,19 +114,19 @@ final class SAMReportTest: XCTestCase {
     }
 
     func generateRiskAssessment(_ entities: [MockEntityDetailReportTest]) -> RiskAssessment {
-        let exclusionRisk = entities.filter { $0.hasActiveExclusions }.isEmpty ? "Low" : "High"
+        let exclusionRisk = entities.filter(\.hasActiveExclusions).isEmpty ? "Low" : "High"
         let performanceRisk = calculatePerformanceRisk(entities)
         let concentrationRisk = calculateConcentrationRisk(entities.count)
 
         return RiskAssessment(
-            exclusionRisk: "\(exclusionRisk) - \(entities.filter { $0.hasActiveExclusions }.count) contractor(s) with active exclusions",
+            exclusionRisk: "\(exclusionRisk) - \(entities.filter(\.hasActiveExclusions).count) contractor(s) with active exclusions",
             performanceRisk: "\(performanceRisk) - Based on registration status and business type analysis",
             concentrationRisk: "\(concentrationRisk) - Competitive landscape and supplier diversity assessment"
         )
     }
 
     func generateRecommendations(_ entities: [MockEntityDetailReportTest]) -> [Recommendation] {
-        let smallBusinessCount = entities.filter { $0.isSmallBusiness }.count
+        let smallBusinessCount = entities.filter(\.isSmallBusiness).count
         let smallBusinessPercentage = !entities.isEmpty ? Int((Double(smallBusinessCount) / Double(entities.count)) * 100) : 0
 
         var recommendations: [Recommendation] = []
@@ -139,19 +139,18 @@ final class SAMReportTest: XCTestCase {
 
         // Competition Analysis
         let competitionLevel = getCompetitionLevel(entities.count)
-        let competition: String
-        switch competitionLevel {
+        let competition = switch competitionLevel {
         case "Low Competition":
-            competition = "Limited competition detected. Focus on capability demonstration and past performance differentiation."
+            "Limited competition detected. Focus on capability demonstration and past performance differentiation."
         case "Moderate Competition":
-            competition = "Balanced competitive environment. Emphasize unique value propositions and competitive pricing strategies."
+            "Balanced competitive environment. Emphasize unique value propositions and competitive pricing strategies."
         default:
-            competition = "Highly competitive market. Consider niche specialization or teaming arrangements to strengthen position."
+            "Highly competitive market. Consider niche specialization or teaming arrangements to strengthen position."
         }
         recommendations.append(Recommendation(priority: "Medium", title: "Competition Analysis", content: competition))
 
         // Risk Mitigation
-        let exclusionCount = entities.filter { $0.hasActiveExclusions }.count
+        let exclusionCount = entities.filter(\.hasActiveExclusions).count
         let riskMitigation = exclusionCount > 0
             ? "Active exclusions detected in \(exclusionCount) contractor(s). Implement enhanced due diligence and exclusion screening procedures."
             : "No active exclusions identified. Maintain standard compliance monitoring and due diligence processes."
@@ -164,8 +163,8 @@ final class SAMReportTest: XCTestCase {
         print("   📊 Report Metrics:")
         print("      • Total Contractors: \(report.entities.count)")
         print("      • Active: \(report.entities.filter { $0.registrationStatus == "Active" }.count)")
-        print("      • Small Business: \(report.entities.filter { $0.isSmallBusiness }.count)")
-        print("      • Veteran-Owned: \(report.entities.filter { $0.isVeteranOwned }.count)")
+        print("      • Small Business: \(report.entities.filter(\.isSmallBusiness).count)")
+        print("      • Veteran-Owned: \(report.entities.filter(\.isVeteranOwned).count)")
 
         print("\n   📋 Executive Summary:")
         print("      • \(report.executiveSummary.marketAnalysis)")
@@ -199,28 +198,28 @@ final class SAMReportTest: XCTestCase {
     // Helper functions
     func getCompetitionLevel(_ count: Int) -> String {
         switch count {
-        case 0...5: return "Low Competition"
-        case 6...15: return "Moderate Competition"
-        default: return "High Competition"
+        case 0 ... 5: "Low Competition"
+        case 6 ... 15: "Moderate Competition"
+        default: "High Competition"
         }
     }
 
     func calculateRiskProfile(_ exclusionCount: Int, total: Int) -> String {
         let riskPercentage = Double(exclusionCount) / Double(max(total, 1))
         switch riskPercentage {
-        case 0...0.1: return "Low"
-        case 0.1...0.3: return "Moderate"
+        case 0 ... 0.1: return "Low"
+        case 0.1 ... 0.3: return "Moderate"
         default: return "High"
         }
     }
 
     func getMarketMaturity(_ entities: [MockEntityDetailReportTest]) -> String {
         let avgNAICSPerContractor = !entities.isEmpty ?
-            Double(entities.flatMap { $0.naicsCodes }.count) / Double(entities.count) : 0
+            Double(entities.flatMap(\.naicsCodes).count) / Double(entities.count) : 0
 
         switch avgNAICSPerContractor {
-        case 0...2: return "Emerging"
-        case 2...5: return "Developing"
+        case 0 ... 2: return "Emerging"
+        case 2 ... 5: return "Developing"
         default: return "Mature"
         }
     }
@@ -230,17 +229,17 @@ final class SAMReportTest: XCTestCase {
         let riskRatio = Double(inactiveCount) / Double(max(entities.count, 1))
 
         switch riskRatio {
-        case 0...0.1: return "Low"
-        case 0.1...0.3: return "Medium"
+        case 0 ... 0.1: return "Low"
+        case 0.1 ... 0.3: return "Medium"
         default: return "High"
         }
     }
 
     func calculateConcentrationRisk(_ count: Int) -> String {
         switch count {
-        case 0...3: return "High"
-        case 4...10: return "Medium"
-        default: return "Low"
+        case 0 ... 3: "High"
+        case 4 ... 10: "Medium"
+        default: "Low"
         }
     }
 }

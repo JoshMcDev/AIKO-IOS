@@ -52,7 +52,12 @@ public struct PhoneNumber: ValueObject, Sendable {
     }
 
     /// Empty placeholder phone number for forms
-    public static let empty: PhoneNumber = try! PhoneNumber("0000000000")
+    public static let empty: PhoneNumber = {
+        guard let emptyPhone = try? PhoneNumber("0000000000") else {
+            fatalError("Failed to create empty placeholder phone number - this is a programming error")
+        }
+        return emptyPhone
+    }()
 }
 
 /// Money value object
@@ -94,7 +99,12 @@ public struct Money: ValueObject, Sendable {
     }
 
     /// Zero amount in USD for use in forms
-    public static let zero: Money = try! Money(amount: 0, currency: .usd)
+    public static let zero: Money = {
+        guard let zeroMoney = try? Money(amount: 0, currency: .usd) else {
+            fatalError("Failed to create zero money amount - this is a programming error")
+        }
+        return zeroMoney
+    }()
 }
 
 /// Currency enumeration

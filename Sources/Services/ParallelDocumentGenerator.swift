@@ -543,7 +543,7 @@ public struct DocumentGenerationPreloader: Sendable {
         for _: [DocumentType],
         dfDocumentTypes _: [DFDocumentType]
     ) async throws -> PreloadedData {
-        return PreloadedData()
+        PreloadedData()
     }
 
     public func preloadCachedDocuments(
@@ -551,7 +551,7 @@ public struct DocumentGenerationPreloader: Sendable {
         requirements _: String,
         profile _: UserProfile?
     ) async throws -> [DocumentType: String] {
-        return [:]
+        [:]
     }
 
     public func preloadCachedDFDocuments(
@@ -559,7 +559,7 @@ public struct DocumentGenerationPreloader: Sendable {
         requirements _: String,
         profile _: UserProfile?
     ) async throws -> [DFDocumentType: String] {
-        return [:]
+        [:]
     }
 
     public static let liveValue = DocumentGenerationPreloader()

@@ -1,6 +1,7 @@
 import SwiftUI
 
 // MARK: - SAM Report View Preview Helper
+
 /// Helper view for previewing SAMReportView in Xcode with sample data
 
 #if DEBUG
@@ -66,7 +67,7 @@ struct SAMReportViewPreview_Previews: PreviewProvider {
             businessTypes: [
                 "For Profit Organization",
                 "Limited Liability Company",
-                "Veteran-Owned Business"
+                "Veteran-Owned Business",
             ],
             address: EntityAddress(
                 line1: "1777 Aviation Way",
@@ -98,7 +99,7 @@ struct SAMReportViewPreview_Previews: PreviewProvider {
             expirationDate: Calendar.current.date(byAdding: .day, value: 15, to: Date()),
             businessTypes: [
                 "For Profit Organization",
-                "Small Business"
+                "Small Business",
             ],
             address: EntityAddress(
                 line1: "456 Warning Street",
@@ -128,7 +129,7 @@ struct SAMReportViewPreview_Previews: PreviewProvider {
             expirationDate: Calendar.current.date(from: DateComponents(year: 2023, month: 12, day: 15)),
             businessTypes: [
                 "For Profit Organization",
-                "Small Business"
+                "Small Business",
             ],
             address: EntityAddress(
                 line1: "123 Expired Street",

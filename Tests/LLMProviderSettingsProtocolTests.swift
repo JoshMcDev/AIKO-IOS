@@ -6,22 +6,21 @@
 //  Copyright © 2025 AIKO. All rights reserved.
 //
 
-import XCTest
-import LocalAuthentication
 @testable import AppCore
+import LocalAuthentication
+import XCTest
 
 /// Comprehensive test suite for LLMProviderSettingsViewModelProtocol conformance
 /// Part of RED phase - implementing failing tests before implementation
 /// Follows DocumentScannerView testing pattern with 125+ test methods
 @MainActor
 final class LLMProviderSettingsProtocolTests: XCTestCase {
-
     // MARK: - Properties
 
-    private var viewModel: LLMProviderSettingsViewModel!
-    private var mockService: MockLLMProviderSettingsService!
-    private var mockConfigService: MockLLMConfigurationService!
-    private var mockKeychainService: MockLLMKeychainService!
+    private var viewModel: LLMProviderSettingsViewModel?
+    private var mockService: MockLLMProviderSettingsService?
+    private var mockConfigService: MockLLMConfigurationService?
+    private var mockKeychainService: MockLLMKeychainService?
 
     // MARK: - Setup
 
@@ -55,11 +54,19 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
 
     func test_viewModel_conformsToProtocol() {
         // RED: This should pass - viewModel conforms to protocol
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
         XCTAssertTrue(viewModel is any LLMProviderSettingsViewModelProtocol)
     }
 
     func test_protocolRequiredProperties_allImplemented() {
         // RED: Test that all required properties exist
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
         XCTAssertNotNil(viewModel.uiState)
         XCTAssertEqual(viewModel.uiState, .idle)
         XCTAssertNil(viewModel.alert)
@@ -75,6 +82,10 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
     func test_protocolRequiredMethods_allImplemented() {
         // RED: Verify all protocol methods are implemented
         // These calls should compile but may fail at runtime (expected in RED phase)
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
         Task {
             await viewModel.loadConfigurations()
             viewModel.selectProvider(.claude)
@@ -102,14 +113,22 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
 
     func test_protocolStateProperties_correctTypes() {
         // RED: Verify state properties have correct types
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
         XCTAssertTrue(type(of: viewModel.uiState) == LLMProviderSettingsViewModel.UIState.self)
-        XCTAssertTrue(type(of: viewModel.alert) == Optional<LLMProviderSettingsViewModel.AlertType>.self)
+        XCTAssertTrue(type(of: viewModel.alert) == LLMProviderSettingsViewModel.AlertType?.self)
         XCTAssertTrue(type(of: viewModel.providerPriority) == LLMProviderSettingsViewModel.ProviderPriority.self)
-        XCTAssertTrue(type(of: viewModel.configuredProviders) == Array<LLMProvider>.self)
+        XCTAssertTrue(type(of: viewModel.configuredProviders) == [LLMProvider].self)
     }
 
     func test_protocolAsyncMethods_correctSignatures() async {
         // RED: Test async method signatures are correct
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
         await viewModel.loadConfigurations()
         await viewModel.saveProviderConfiguration()
         await viewModel.removeProviderConfiguration()
@@ -127,6 +146,10 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
 
     func test_protocolBindingProperties_correctGetSet() {
         // RED: Test binding properties work correctly
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
         viewModel.isProviderConfigSheetPresented = true
         XCTAssertTrue(viewModel.isProviderConfigSheetPresented)
 
@@ -136,7 +159,7 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
         viewModel.alert = .error("Test")
         XCTAssertNotNil(viewModel.alert)
 
-        if case .error(let message) = viewModel.alert {
+        if case let .error(message) = viewModel.alert {
             XCTAssertEqual(message, "Test")
         } else {
             XCTFail("Alert should be error type")
@@ -145,6 +168,10 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
 
     func test_protocolObservableObject_conformance() {
         // RED: Test ObservableObject conformance
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
         XCTAssertTrue(viewModel is ObservableObject)
 
         // Test that property changes trigger objectWillChange
@@ -160,6 +187,10 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
 
     func test_protocolMainActorIsolation_enforced() {
         // RED: Verify @MainActor isolation
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
         XCTAssertTrue(Thread.isMainThread)
 
         // All property access should be on main thread
@@ -173,6 +204,10 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
 
     func test_initialState_allPropertiesCorrectlySet() {
         // RED: Should fail - initial state may not be correctly set
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
         XCTAssertEqual(viewModel.uiState, .idle)
         XCTAssertNil(viewModel.activeProvider)
         XCTAssertTrue(viewModel.configuredProviders.isEmpty)
@@ -187,16 +222,28 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
 
     func test_initialState_uiStateIsIdle() {
         // RED: Should pass - initial UI state should be idle
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
         XCTAssertEqual(viewModel.uiState, .idle)
     }
 
     func test_initialState_noActiveProvider() {
         // RED: Should pass - no active provider initially
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
         XCTAssertNil(viewModel.activeProvider)
     }
 
     func test_initialState_emptyConfiguredProviders() {
         // RED: Should pass - no configured providers initially
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
         XCTAssertTrue(viewModel.configuredProviders.isEmpty)
     }
 
@@ -234,7 +281,7 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
         await viewModel.loadConfigurations()
 
         // Should be error state (will fail in RED phase)
-        if case .error(let message) = viewModel.uiState {
+        if case let .error(message) = viewModel.uiState {
             XCTAssertFalse(message.isEmpty)
         } else {
             XCTFail("Expected error state")
@@ -272,7 +319,7 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
 
     func test_concurrentStateChanges_handledCorrectly() async {
         // RED: Should fail - concurrent access not properly handled
-        let tasks = (0..<10).map { _ in
+        let tasks = (0 ..< 10).map { _ in
             Task {
                 await viewModel.loadConfigurations()
             }
@@ -308,7 +355,10 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
         viewModel.providerConfigState = TestFixtures.testProviderConfigState
 
         // Start multiple operations - capture viewModel to avoid concurrent access issues
-        let localViewModel = viewModel!
+        guard let localViewModel = viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
         async let load = localViewModel.loadConfigurations()
         async let save = localViewModel.saveProviderConfiguration()
         async let clear = localViewModel.clearAllConfigurations()
@@ -353,7 +403,7 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
 
         // Should show error for no models (will fail in RED phase)
         XCTAssertNotNil(viewModel.alert)
-        if case .error(let message) = viewModel.alert {
+        if case let .error(message) = viewModel.alert {
             XCTAssertTrue(message.contains("No models available"))
         } else {
             XCTFail("Expected error alert")
@@ -456,7 +506,7 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
         await viewModel.saveProviderConfiguration()
 
         XCTAssertNotNil(viewModel.alert)
-        if case .error(let message) = viewModel.alert {
+        if case let .error(message) = viewModel.alert {
             XCTAssertTrue(message.contains("API key is required"))
         } else {
             XCTFail("Expected error alert")
@@ -473,7 +523,7 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
         await viewModel.saveProviderConfiguration()
 
         XCTAssertNotNil(viewModel.alert)
-        if case .error(let message) = viewModel.alert {
+        if case let .error(message) = viewModel.alert {
             XCTAssertTrue(message.contains("Invalid API key format"))
         } else {
             XCTFail("Expected error alert")
@@ -509,7 +559,7 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
 
         await viewModel.loadConfigurations()
 
-        if case .error(let message) = viewModel.uiState {
+        if case let .error(message) = viewModel.uiState {
             XCTAssertFalse(message.isEmpty)
         } else {
             XCTFail("Expected error state")
@@ -527,7 +577,7 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
         await viewModel.saveProviderConfiguration()
 
         XCTAssertNotNil(viewModel.alert)
-        if case .error(let message) = viewModel.alert {
+        if case let .error(message) = viewModel.alert {
             XCTAssertTrue(message.contains("Authentication failed"))
         } else {
             XCTFail("Expected error alert")
@@ -555,7 +605,7 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
         await viewModel.clearAllConfigurations()
 
         XCTAssertNotNil(viewModel.alert)
-        if case .error(let message) = viewModel.alert {
+        if case let .error(message) = viewModel.alert {
             XCTAssertFalse(message.isEmpty)
         } else {
             XCTFail("Expected error alert")
@@ -589,7 +639,7 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
         viewModel.alert = .error("First error")
         viewModel.alert = .success("Success message")
 
-        if case .success(let message) = viewModel.alert {
+        if case let .success(message) = viewModel.alert {
             XCTAssertEqual(message, "Success message")
         } else {
             XCTFail("Expected success alert")
@@ -601,7 +651,7 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
         viewModel.showError("Test error message")
 
         XCTAssertNotNil(viewModel.alert)
-        if case .error(let message) = viewModel.alert {
+        if case let .error(message) = viewModel.alert {
             XCTAssertEqual(message, "Test error message")
         } else {
             XCTFail("Expected error alert")
@@ -613,7 +663,7 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
         viewModel.showSuccess("Test success message")
 
         XCTAssertNotNil(viewModel.alert)
-        if case .success(let message) = viewModel.alert {
+        if case let .success(message) = viewModel.alert {
             XCTAssertEqual(message, "Test success message")
         } else {
             XCTFail("Expected success alert")
@@ -652,45 +702,46 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
 
         XCTAssertEqual(clear1, clear2)
     }
+
     // MARK: - Mock Services
-    
+
     @MainActor
     class MockBiometricService: ObservableObject, BiometricAuthenticationServiceProtocol {
         nonisolated(unsafe) var shouldSucceed = true
         nonisolated(unsafe) var shouldCanEvaluate = true
-        
+
         nonisolated func canEvaluateBiometrics() -> Bool {
-            return shouldCanEvaluate
+            shouldCanEvaluate
         }
-        
+
         nonisolated func canEvaluateDeviceOwnerAuthentication() -> Bool {
-            return shouldCanEvaluate
+            shouldCanEvaluate
         }
-        
-        func authenticateWithBiometrics(reason: String) async throws -> Bool {
+
+        func authenticateWithBiometrics(reason _: String) async throws -> Bool {
             if shouldSucceed {
                 return true
             } else {
                 throw LAError(.authenticationFailed)
             }
         }
-        
-        func authenticateWithPasscode(reason: String) async throws -> Bool {
+
+        func authenticateWithPasscode(reason _: String) async throws -> Bool {
             if shouldSucceed {
                 return true
             } else {
                 throw LAError(.authenticationFailed)
             }
         }
-        
+
         nonisolated func biometryType() -> LABiometryType {
-            return .faceID
+            .faceID
         }
-        
+
         nonisolated func biometryDescription() -> String {
-            return "Face ID"
+            "Face ID"
         }
-        
+
         nonisolated func resetContext() {
             // Mock implementation - does nothing
         }
@@ -699,7 +750,7 @@ final class LLMProviderSettingsProtocolTests: XCTestCase {
 
 // MARK: - Test Fixtures and Mocks
 
-struct TestFixtures {
+enum TestFixtures {
     static let testModel = LLMModel(
         id: "claude-3-opus-20240229",
         name: "Claude 3 Opus",
@@ -732,11 +783,11 @@ enum TestError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .configurationFailed:
-            return "Configuration failed"
+            "Configuration failed"
         case .networkError:
-            return "Network error"
+            "Network error"
         case .authenticationFailed:
-            return "Authentication failed"
+            "Authentication failed"
         }
     }
 }
@@ -766,11 +817,11 @@ class MockLLMProviderSettingsService: LLMProviderSettingsService {
         }
     }
 
-    override func validateAPIKeyFormat(_ key: String, for provider: LLMProvider) -> Bool {
-        return shouldValidateFormat
+    override func validateAPIKeyFormat(_: String, for _: LLMProvider) -> Bool {
+        shouldValidateFormat
     }
 
-    override func testProviderConnection(_ config: LLMProviderConfig) async throws -> Bool {
+    override func testProviderConnection(_: LLMProviderConfig) async throws -> Bool {
         if !shouldSucceed {
             throw errorToThrow ?? TestError.networkError
         }
@@ -803,13 +854,13 @@ final class MockLLMConfigurationService: LLMConfigurationServiceProtocol, @unche
         return nil
     }
 
-    func configureProvider(_ provider: LLMProvider, apiKey: String, config: LLMProviderConfig) async throws {
+    func configureProvider(_: LLMProvider, apiKey _: String, config _: LLMProviderConfig) async throws {
         if !shouldSucceed {
             throw errorToThrow ?? TestError.configurationFailed
         }
     }
 
-    func removeProvider(_ provider: LLMProvider) async throws {
+    func removeProvider(_: LLMProvider) async throws {
         if !shouldSucceed {
             throw errorToThrow ?? TestError.configurationFailed
         }
@@ -821,7 +872,7 @@ final class MockLLMConfigurationService: LLMConfigurationServiceProtocol, @unche
         }
     }
 
-    func updateProviderPriority(_ priority: LLMProviderSettingsViewModel.ProviderPriority) async throws {
+    func updateProviderPriority(_: LLMProviderSettingsViewModel.ProviderPriority) async throws {
         if !shouldSucceed {
             throw errorToThrow ?? TestError.configurationFailed
         }
@@ -831,20 +882,20 @@ final class MockLLMConfigurationService: LLMConfigurationServiceProtocol, @unche
 final class MockLLMKeychainService: LLMKeychainServiceProtocol, @unchecked Sendable {
     var shouldValidate = true
 
-    func validateAPIKeyFormat(_ key: String, _ provider: LLMProvider) -> Bool {
-        return shouldValidate
+    func validateAPIKeyFormat(_: String, _: LLMProvider) -> Bool {
+        shouldValidate
     }
 
-    func saveAPIKey(_ key: String, for provider: LLMProvider) async throws {
+    func saveAPIKey(_: String, for _: LLMProvider) async throws {
         // Mock implementation - does nothing
     }
 
-    func getAPIKey(for provider: LLMProvider) async throws -> String {
+    func getAPIKey(for _: LLMProvider) async throws -> String {
         // Mock implementation - returns empty string for tests
-        return ""
+        ""
     }
 
-    func deleteAPIKey(for provider: LLMProvider) async throws {
+    func deleteAPIKey(for _: LLMProvider) async throws {
         // Mock implementation - does nothing
     }
 

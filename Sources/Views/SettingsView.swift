@@ -12,28 +12,28 @@ enum SettingsSection: String, CaseIterable {
     case advanced = "Advanced"
 
     var title: String {
-        return rawValue
+        rawValue
     }
 
     var icon: String {
         switch self {
-        case .app: return "gearshape"
-        case .api: return "key"
-        case .documents: return "doc.text"
-        case .notifications: return "bell"
-        case .privacy: return "lock.shield"
-        case .advanced: return "wrench.and.screwdriver"
+        case .app: "gearshape"
+        case .api: "key"
+        case .documents: "doc.text"
+        case .notifications: "bell"
+        case .privacy: "lock.shield"
+        case .advanced: "wrench.and.screwdriver"
         }
     }
 
     var iconColor: Color {
         switch self {
-        case .app: return .blue
-        case .api: return .orange
-        case .documents: return .green
-        case .notifications: return .purple
-        case .privacy: return .red
-        case .advanced: return .gray
+        case .app: .blue
+        case .api: .orange
+        case .documents: .green
+        case .notifications: .purple
+        case .privacy: .red
+        case .advanced: .gray
         }
     }
 }
@@ -48,6 +48,7 @@ public struct SettingsView: View {
     @State private var exportURL: URL?
 
     // MARK: - macOS Navigation State
+
     #if os(macOS)
     @State private var selectedSection: SettingsSection = .app
     #endif
@@ -121,7 +122,7 @@ public struct SettingsView: View {
         .navigationSplitViewStyle(.balanced)
         .disabled(viewModel.isLoading)
         .alert("Reset Settings", isPresented: $showingResetAlert) {
-            Button("Cancel", role: .cancel) { }
+            Button("Cancel", role: .cancel) {}
             Button("Reset", role: .destructive) {
                 Task {
                     await viewModel.resetToDefaults()
@@ -205,7 +206,7 @@ public struct SettingsView: View {
             }
             .disabled(viewModel.isLoading)
             .alert("Reset Settings", isPresented: $showingResetAlert) {
-                Button("Cancel", role: .cancel) { }
+                Button("Cancel", role: .cancel) {}
                 Button("Reset", role: .destructive) {
                     Task {
                         await viewModel.resetToDefaults()
@@ -293,7 +294,7 @@ public struct SettingsView: View {
                                 }
                             }
                         ),
-                        in: 10...300,
+                        in: 10 ... 300,
                         step: 10
                     )
 
@@ -352,7 +353,7 @@ public struct SettingsView: View {
                             }
                         }
                     ),
-                    in: 1...10,
+                    in: 1 ... 10,
                     step: 1
                 )
             }
@@ -374,7 +375,7 @@ public struct SettingsView: View {
                             }
                         }
                     ),
-                    in: 5...120,
+                    in: 5 ... 120,
                     step: 5
                 )
             }
@@ -527,7 +528,7 @@ public struct SettingsView: View {
                             }
                         }
                     ),
-                    in: 1...365,
+                    in: 1 ... 365,
                     step: 1
                 )
 
@@ -593,7 +594,7 @@ public struct SettingsView: View {
                             }
                         }
                     ),
-                    in: 50...2000,
+                    in: 50 ... 2000,
                     step: 50
                 )
 
@@ -625,7 +626,7 @@ public struct SettingsView: View {
                             }
                         }
                     ),
-                    in: 1...10,
+                    in: 1 ... 10,
                     step: 1
                 )
             }

@@ -18,7 +18,7 @@ final class DetailedSAMTest: XCTestCase {
         components.queryItems = [
             URLQueryItem(name: "api_key", value: apiKey),
             URLQueryItem(name: "cageCode", value: cageCode),
-            URLQueryItem(name: "format", value: "JSON")
+            URLQueryItem(name: "format", value: "JSON"),
         ]
 
         guard let url = components.url else {
@@ -41,12 +41,11 @@ final class DetailedSAMTest: XCTestCase {
             print("📊 HTTP Status: \(httpResponse.statusCode)")
             print("📊 Response Size: \(data.count) bytes")
 
-            if 200...299 ~= httpResponse.statusCode {
+            if 200 ... 299 ~= httpResponse.statusCode {
                 // Pretty print the JSON response
                 if let jsonObject = try? JSONSerialization.jsonObject(with: data),
                    let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted),
                    let prettyString = String(data: prettyData, encoding: .utf8) {
-
                     print("\n📋 Complete API Response:")
                     print(prettyString)
                 } else {

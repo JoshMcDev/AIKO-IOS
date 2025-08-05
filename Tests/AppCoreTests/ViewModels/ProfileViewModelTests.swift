@@ -6,14 +6,13 @@
 //  Copyright © 2025 AIKO. All rights reserved.
 //
 
-import XCTest
 @testable import AppCore
+import XCTest
 
 /// ProfileViewModelTests - TDD RED Phase
 /// Comprehensive test suite for ProfileViewModel following TDD rubric
 /// Target Coverage: >95%
 final class ProfileViewModelTests: XCTestCase {
-
     @MainActor
     private func createViewModel() -> (ProfileViewModel, MockProfileService) {
         let mockService = MockProfileService()
@@ -354,9 +353,9 @@ private final class MockProfileService: ProfileServiceProtocol, @unchecked Senda
     func loadProfile() async throws -> UserProfile {
         loadProfileCalled = true
         switch loadProfileResult {
-        case .success(let profile):
+        case let .success(profile):
             return profile
-        case .failure(let error):
+        case let .failure(error):
             throw error
         }
     }
@@ -368,7 +367,7 @@ private final class MockProfileService: ProfileServiceProtocol, @unchecked Senda
         switch saveProfileResult {
         case .success:
             return
-        case .failure(let error):
+        case let .failure(error):
             throw error
         }
     }

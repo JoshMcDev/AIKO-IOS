@@ -1,5 +1,5 @@
-import Foundation
 import Combine
+import Foundation
 
 // MARK: - ServiceClientProtocol - Unified API Client Base
 
@@ -28,7 +28,6 @@ public protocol ServiceClientProtocol: Sendable {
 // MARK: - Default Implementation
 
 public extension ServiceClientProtocol {
-
     /// Default JSON decoder with ISO8601 date strategy
     var decoder: JSONDecoder {
         let decoder = JSONDecoder()
@@ -48,7 +47,7 @@ public extension ServiceClientProtocol {
         [
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "User-Agent": "AIKO/1.0"
+            "User-Agent": "AIKO/1.0",
         ]
     }
 
@@ -78,7 +77,6 @@ public extension ServiceClientProtocol {
 // MARK: - HTTP Request Building
 
 public extension ServiceClientProtocol {
-
     /// Build URLRequest with consistent configuration
     /// - Parameters:
     ///   - path: API endpoint path (relative to baseURL)
@@ -99,7 +97,7 @@ public extension ServiceClientProtocol {
         }
 
         // Add query parameters
-        if let queryItems = queryItems {
+        if let queryItems {
             urlComponents.queryItems = queryItems
         }
 
@@ -117,7 +115,7 @@ public extension ServiceClientProtocol {
         }
 
         // Apply custom headers (can override defaults)
-        if let headers = headers {
+        if let headers {
             for (key, value) in headers {
                 request.setValue(value, forHTTPHeaderField: key)
             }
@@ -139,7 +137,7 @@ public extension ServiceClientProtocol {
     ) async throws -> (Data, HTTPURLResponse) {
         var lastError: Error?
 
-        for attempt in 1...retryCount {
+        for attempt in 1 ... retryCount {
             do {
                 let (data, response) = try await session.data(for: request)
 
@@ -164,8 +162,8 @@ public extension ServiceClientProtocol {
 
                 // Don't retry client errors (4xx) or specific error types
                 if let aikoError = error as? AIKOError,
-                   case .httpError(let statusCode, _, _) = aikoError,
-                   (400..<500).contains(statusCode) {
+                   case let .httpError(statusCode, _, _) = aikoError,
+                   (400 ..< 500).contains(statusCode) {
                     throw transformError(error)
                 }
 
@@ -184,7 +182,6 @@ public extension ServiceClientProtocol {
 // MARK: - Convenience Methods
 
 public extension ServiceClientProtocol {
-
     /// GET request returning decoded JSON
     func get<T: Decodable>(
         path: String,
@@ -209,9 +206,9 @@ public extension ServiceClientProtocol {
     }
 
     /// POST request with encoded body returning decoded JSON
-    func post<T: Decodable, U: Encodable>(
+    func post<T: Decodable>(
         path: String,
-        body: U,
+        body: some Encodable,
         responseType: T.Type,
         headers: [String: String]? = nil,
         queryItems: [URLQueryItem]? = nil
@@ -241,9 +238,9 @@ public extension ServiceClientProtocol {
     }
 
     /// PUT request with encoded body returning decoded JSON
-    func put<T: Decodable, U: Encodable>(
+    func put<T: Decodable>(
         path: String,
-        body: U,
+        body: some Encodable,
         responseType: T.Type,
         headers: [String: String]? = nil,
         queryItems: [URLQueryItem]? = nil
@@ -349,17 +346,17 @@ public enum HTTPMethod: String, Sendable {
 extension HTTPURLResponse {
     /// Check if status code indicates success (200-299)
     var isSuccessful: Bool {
-        (200..<300).contains(statusCode)
+        (200 ..< 300).contains(statusCode)
     }
 
     /// Check if status code indicates client error (400-499)
     var isClientError: Bool {
-        (400..<500).contains(statusCode)
+        (400 ..< 500).contains(statusCode)
     }
 
     /// Check if status code indicates server error (500-599)
     var isServerError: Bool {
-        (500..<600).contains(statusCode)
+        (500 ..< 600).contains(statusCode)
     }
 }
 
@@ -377,7 +374,7 @@ open class BaseServiceClient: @unchecked Sendable, ServiceClientProtocol {
     public init(baseURL: URL, session: URLSession? = nil) {
         self.baseURL = baseURL
 
-        if let session = session {
+        if let session {
             self.session = session
         } else {
             // Create optimized session configuration

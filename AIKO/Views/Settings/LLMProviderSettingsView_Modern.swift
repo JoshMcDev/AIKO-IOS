@@ -134,7 +134,7 @@ public struct LLMProviderSettingsView<ViewModel: LLMProviderSettingsViewModelPro
     // MARK: - Alert Actions
 
     @ViewBuilder
-    private func alertActions(for alert: ViewModel.AlertType) -> some View {
+    private func alertActions(for _: ViewModel.AlertType) -> some View {
         // Implementation will be completed in GREEN phase
         // Based on the alert type, provide appropriate actions
         Button("OK") {
@@ -435,22 +435,22 @@ extension LLMProviderSettingsViewModel.AlertType {
     var title: String {
         switch self {
         case .clearConfirmation:
-            return "Clear All API Keys?"
+            "Clear All API Keys?"
         case .error:
-            return "Error"
+            "Error"
         case .success:
-            return "Success"
+            "Success"
         }
     }
 
     var message: String {
         switch self {
         case .clearConfirmation:
-            return "This action cannot be undone. All provider configurations will be removed."
-        case .error(let message):
-            return message
-        case .success(let message):
-            return message
+            "This action cannot be undone. All provider configurations will be removed."
+        case let .error(message):
+            message
+        case let .success(message):
+            message
         }
     }
 }

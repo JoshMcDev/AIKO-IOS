@@ -1,0 +1,212 @@
+Building for production...
+[0/211] Copying PrivacyInfo.xcprivacy
+[0/211] Write sources
+[23/211] Compiling _NumericsShims _NumericsShims.c
+[23/211] Write sources
+[25/211] Write swift-version--58304C5D6DBC2206.txt
+[26/211] Compiling _AtomicsShims.c
+[27/212] Compiling version.cpp
+[28/213] Compiling scheduler.cpp
+[29/213] Compiling utils.cpp
+[31/213] Compiling _NIOBase64 Base64.swift
+[32/216] Compiling RealModule AlgebraicField.swift
+[33/217] Compiling _NIODataStructures Heap.swift
+[33/217] Compiling random.cpp
+[35/218] Compiling InternalCollectionsUtilities FixedWidthInteger+roundUpToPowerOfTwo.swift
+[35/218] Compiling linalg.cpp
+[37/219] Compiling ComplexModule Arithmetic.swift
+[37/219] Compiling no_gguf.cpp
+[39/221] Compiling Numerics Numerics.swift
+[40/222] Compiling HeapModule Heap+Descriptions.swift
+[40/223] Compiling load.cpp
+[41/224] Compiling safetensors.cpp
+[43/224] Compiling Atomics OptionalRawRepresentable.swift
+[44/224] Compiling DequeModule Deque+Codable.swift
+[44/224] Compiling transforms.cpp
+[46/224] Compiling OrderedCollections _HashTable+Bucket.swift
+[46/224] Compiling fft.cpp
+[47/224] Compiling graph_utils.cpp
+[48/224] Compiling primitives.cpp
+[49/224] Compiling dtype_utils.cpp
+[50/224] Compiling dtype.cpp
+[51/224] Compiling no_ring.cpp
+[52/224] Compiling no_mpi.cpp
+[53/224] Compiling primitives.cpp
+[55/224] Compiling HashTreeCollections _AncestorHashSlots.swift
+[55/224] Compiling ops.cpp
+[56/224] Compiling device.cpp
+[57/224] Compiling distributed.cpp
+[58/224] Compiling utils.cpp
+[59/224] Compiling einsum.cpp
+[60/224] Compiling ops.cpp
+[61/224] Compiling unary.cpp
+[63/224] Compiling SwiftAnthropic AIProxyCertificatePinning.swift
+[63/224] Compiling ternary.cpp
+[64/224] Compiling slicing.cpp
+[65/224] Compiling softmax.cpp
+[66/224] Compiling sort.cpp
+[67/224] Compiling fast.cpp
+[68/224] Compiling scan.cpp
+[69/224] Compiling compile.cpp
+[70/224] Compiling resident.cpp
+[71/224] Compiling rope.cpp
+[72/224] Compiling scaled_dot_product_attention.cpp
+[74/224] Compiling _RopeModule BigString+Builder.swift
+[74/224] Compiling reduce.cpp
+[75/224] Compiling primitives.cpp
+[76/224] Compiling normalization.cpp
+[77/224] Compiling logsumexp.cpp
+[78/224] Compiling quantized.cpp
+[79/224] Compiling metal.cpp
+[80/224] Compiling distributed.cpp
+[81/224] Compiling event.cpp
+[82/224] Compiling matmul.cpp
+[83/224] Compiling hadamard.cpp
+[84/224] Compiling fence.cpp
+[85/224] Compiling indexing.cpp
+[86/224] Compiling jit_kernels.cpp
+[87/224] Compiling custom_kernel.cpp
+[88/224] Compiling allocator.cpp
+[89/224] Compiling threefry.cpp
+[90/224] Compiling copy.cpp
+[91/224] Compiling device.cpp
+[92/224] Compiling binary.cpp
+[93/224] Compiling compiled.cpp
+[94/224] Compiling conv.cpp
+[95/224] Compiling svd.cpp
+[96/224] Compiling softmax.cpp
+[97/224] Compiling fft.cpp
+[98/224] Compiling select.cpp
+[99/224] Compiling qrf.cpp
+[100/224] Compiling matmul.cpp
+[101/224] Compiling export.cpp
+[102/224] Compiling jit_compiler.cpp
+[103/224] Compiling masked_mm.cpp
+[104/224] Compiling quantized.cpp
+[105/224] Compiling luf.cpp
+[106/224] Compiling logsumexp.cpp
+[107/224] Compiling primitives.cpp
+[108/224] Compiling cblas.cpp
+[109/224] Compiling hadamard.cpp
+[110/224] Compiling bnns.cpp
+[111/224] Compiling inverse.cpp
+[112/224] Compiling encoder.cpp
+[113/224] Compiling eval.cpp
+[114/224] Compiling distributed.cpp
+[115/224] Compiling sort.cpp
+[116/224] Compiling scan.cpp
+[117/224] Compiling eigh.cpp
+[118/224] Compiling utils.cpp
+[119/224] Compiling cholesky.cpp
+[120/224] Compiling unary.cpp
+[121/224] Compiling slicing.cpp
+[122/224] Compiling reduce.cpp
+[123/224] Compiling arg_reduce.cpp
+[124/224] Compiling fft.cpp
+[125/224] Compiling compiled.cpp
+[126/224] Compiling broadcasting.cpp
+[127/224] Compiling utils.cpp
+[128/224] Compiling unary_ops.cpp
+[129/224] Compiling unary.cpp
+[130/224] Compiling ternary_ops.cpp
+[131/224] Compiling ternary.cpp
+[132/224] Compiling steel_gemm_splitk.cpp
+[133/224] Compiling load.cpp
+[134/224] Compiling steel_gemm_masked.cpp
+[135/224] Compiling steel_gemm_gather.cpp
+[136/224] Compiling steel_gemm_fused.cpp
+[137/224] Compiling steel_conv_general.cpp
+[138/224] Compiling steel_conv.cpp
+[139/224] Compiling sort.cpp
+[140/224] Compiling softmax.cpp
+[141/224] Compiling scatter_axis.cpp
+[142/224] Compiling scatter.cpp
+[143/224] Compiling scan.cpp
+[144/224] Compiling reduce.cpp
+[145/224] Compiling reduce_utils.cpp
+[146/224] Compiling logsumexp.cpp
+[146/224] Compiling quantized.cpp
+[148/224] Compiling gemv_masked.cpp
+[149/224] Compiling hadamard.cpp
+[150/224] Compiling gemm.cpp
+[151/224] Compiling gather_axis.cpp
+[152/224] Compiling fft.cpp
+[153/224] Compiling gather.cpp
+[154/224] Compiling conv.cpp
+[155/224] Compiling copy.cpp
+[156/224] Compiling binary_two.cpp
+[157/224] Compiling compiled_preamble.cpp
+[158/224] Compiling binary_ops.cpp
+[159/224] Compiling binary.cpp
+[160/224] Compiling arange.cpp
+[161/224] Compiling common.cpp
+[162/224] Compiling allocator.cpp
+[163/224] Compiling version.cpp
+[164/224] Compiling transforms_impl.cpp
+[165/224] Compiling array.cpp
+[166/224] Compiling vector.cpp
+[167/224] Compiling conv.cpp
+[168/224] Compiling string.cpp
+[169/224] Compiling transforms.cpp
+[170/224] Compiling reduce.cpp
+[171/224] Compiling compiled_conditional.cpp
+[172/224] Compiling stream.cpp
+[173/224] Compiling random.cpp
+[174/224] Compiling memory.cpp
+[175/224] Compiling metal.cpp
+[176/224] Compiling linalg.cpp
+[177/224] Compiling io_types.cpp
+[178/224] Compiling error.cpp
+[179/224] Compiling map.cpp
+[180/224] Compiling io.cpp
+[181/224] Compiling ops.cpp
+[182/224] Compiling fft.cpp
+[183/224] Compiling export.cpp
+[184/224] Compiling CNIOWindows shim.c
+[185/224] Compiling CNIOWindows WSAStartup.c
+[186/224] Compiling CNIOWASI CNIOWASI.c
+[187/224] Compiling CNIOLinux shim.c
+[188/224] Compiling CNIOLinux liburing_shims.c
+[189/224] Compiling device.cpp
+[190/224] Compiling fast.cpp
+[191/224] Compiling compile.cpp
+[192/224] Compiling CNIOLLHTTP c_nio_http.c
+[193/224] Compiling CNIOLLHTTP c_nio_api.c
+[194/224] Compiling CNIODarwin shim.c
+[195/224] Write sources
+[199/224] Copying Templates
+[200/224] Compiling CNIOLLHTTP c_nio_llhttp.c
+[201/224] Compiling c-nioatomics.c
+[201/224] Copying Source Selection Procedures.pdf
+[201/224] Copying SF44_Form.md
+[201/224] Copying SF33_Form.md
+[201/224] Copying SF30_Form.md
+[201/224] Copying SF26_Form.md
+[201/224] Copying SF18_Form.md
+[201/224] Copying SF1449_Form.md
+[201/224] Copying SAMIcon.png
+[201/224] Copying MetricsModel.xcdatamodeld
+[211/224] Copying DFTemplates
+[212/224] Copying DD1155_Form.md
+[212/224] Copying AppIcon.png
+[214/224] Copying AIKO_Updated.xcdatamodeld
+[215/224] Copying AIKO.xcdatamodeld
+[216/224] Write sources
+[217/226] Compiling c-atomics.c
+[218/227] Compiling closure.cpp
+[219/227] Compiling format.cc
+[221/227] Compiling NIOConcurrencyHelpers NIOAtomic.swift
+[221/228] Compiling array.cpp
+[223/228] Compiling BitCollections BitArray+BitwiseOperations.swift
+[224/229] Compiling Collections Collections.swift
+[225/229] Compiling AikoCompat AIProvider.swift
+[226/229] Compiling NIOCore AddressedEnvelope.swift
+[226/231] Compiling copy.cpp
+[228/231] Compiling NIOEmbedded AsyncTestingChannel.swift
+[229/231] Compiling NIOPosix BSDSocketAPICommon.swift
+[230/232] Compiling NIO Exports.swift
+[231/233] Compiling NIOHTTP1 ByteCollectionUtils.swift
+[231/234] Compiling indexing.cpp
+[233/234] Compiling MultipartKit BasicCodingKey.swift
+[233/234] Compiling binary.cpp
+[235/235] Compiling MLX ArrayAt.swift
