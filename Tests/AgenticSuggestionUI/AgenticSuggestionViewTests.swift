@@ -383,7 +383,7 @@ final class AgenticSuggestionViewTests: XCTestCase {
 
 // MARK: - Mock Types
 
-class AgenticSuggestionViewTestMockOrchestrator: AIKO.AgenticOrchestratorProtocol, Sendable {
+class MockOrchestrator: AIKO.AgenticOrchestratorProtocol, Sendable {
     private let _suggestions: [AIKO.DecisionResponse] = []
 
     func makeDecision(_ request: DecisionRequest) async throws -> AIKO.DecisionResponse {
@@ -404,7 +404,7 @@ class AgenticSuggestionViewTestMockOrchestrator: AIKO.AgenticOrchestratorProtoco
     }
 }
 
-class AgenticSuggestionViewTestMockComplianceGuardian: AIKO.ComplianceGuardianProtocol, Sendable {
+class MockComplianceGuardian: AIKO.ComplianceGuardianProtocol, Sendable {
     func validateCompliance(for _: AIKO.AcquisitionContext) async throws -> ComplianceValidationResult {
         // RED PHASE: Mock implementation
         ComplianceValidationResult(isCompliant: true, warnings: [], recommendations: [])

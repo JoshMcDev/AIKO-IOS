@@ -35,7 +35,7 @@ final class RLPersistenceManagerTests: XCTestCase {
             "days_remaining": 30.0,
             "is_urgent": 0.0,
         ])
-        
+
         guard let testFeatureVector else {
             XCTFail("TestFeatureVector should be initialized")
             return

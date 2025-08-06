@@ -36,7 +36,7 @@ final class ComplianceGuardianTests: XCTestCase {
             XCTFail("Mock dependencies should be initialized")
             return
         }
-        
+
         complianceGuardian = AIKO.ComplianceGuardian(
             documentAnalyzer: mockDocumentAnalyzer,
             complianceClassifier: mockComplianceClassifier,

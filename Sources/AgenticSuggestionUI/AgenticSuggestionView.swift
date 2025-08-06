@@ -439,7 +439,7 @@ public struct AgenticSuggestionView: View {
             await MainActor.run {
                 // Pre-calculate colors for common confidence values to improve rendering
                 [0.45, 0.65, 0.75, 0.85, 0.95].forEach { confidence in
-                    ConfidenceIndicator.calculateConfidenceColorStatic(for: confidence)
+                    _ = ConfidenceIndicator.calculateConfidenceColorStatic(for: confidence)
                 }
             }
         }.value
@@ -449,7 +449,7 @@ public struct AgenticSuggestionView: View {
     private func preloadSuggestionResources(_ suggestion: DecisionResponse) async {
         // This could pre-load additional data, images, or perform expensive calculations
         // For now, we'll pre-cache the confidence color if not already cached
-        ConfidenceIndicator.calculateConfidenceColorStatic(for: suggestion.confidence)
+        _ = ConfidenceIndicator.calculateConfidenceColorStatic(for: suggestion.confidence)
     }
 
     private func handleAcceptSuggestion(_ suggestion: DecisionResponse) {

@@ -70,7 +70,7 @@ final class UIDocumentScannerFlowTests: XCTestCase {
 
     func test_multiPageDocumentScan_userExperience() {
         // This test will fail in RED phase - multi-page UI flow not implemented
-        
+
         guard let app else {
             XCTFail("App should be initialized")
             return
@@ -117,7 +117,7 @@ final class UIDocumentScannerFlowTests: XCTestCase {
 
     func test_errorRecoveryJourney_userCanRecover() {
         // This test will fail in RED phase - error recovery UI not implemented
-        
+
         guard let app else {
             XCTFail("App should be initialized")
             return
@@ -159,7 +159,7 @@ final class UIDocumentScannerFlowTests: XCTestCase {
 
     func test_backgroundAppReturn_resumesScanning() {
         // This test will fail in RED phase - background resume not implemented
-        
+
         guard let app else {
             XCTFail("App should be initialized")
             return

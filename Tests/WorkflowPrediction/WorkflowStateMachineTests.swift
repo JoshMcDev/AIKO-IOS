@@ -153,12 +153,12 @@ final class WorkflowStateMachineTests: XCTestCase {
             documentType: "Contract",
             metadata: [:]
         )
-        
+
         guard let sut else {
             XCTFail("WorkflowStateMachine should be initialized")
             return
         }
-        
+
         await sut.updateCurrentState(currentState)
 
         // WHEN: Attempting impossible transition

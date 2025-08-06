@@ -563,7 +563,7 @@ final class AdaptiveFormPerformanceTests: XCTestCase {
 
         while CFAbsoluteTimeGetCurrent() - startTime < operationDuration {
             // Continuous MLX inference operations
-            await mlxBenchmarker.performContinuousInference(duration: 10) // 10 second bursts
+            await mlxBenchmarker?.performContinuousInference(duration: 10) // 10 second bursts
 
             // Check for thermal throttling
             let currentThermalState = await thermalMonitor.getCurrentThermalState()
@@ -1291,13 +1291,13 @@ final class ThermalStateMonitor {
         isMonitoring = false
     }
 
-    func getCurrentThermalState() async -> ThermalState {
+    func getCurrentThermalState() async -> SystemThermalState {
         // Simulate thermal state
-        let states: [ThermalState] = [.nominal, .fair, .serious]
+        let states: [SystemThermalState] = [.nominal, .fair, .serious]
         return states.randomElement() ?? .nominal
     }
 
-    func calculateThermalImpact(from initial: ThermalState, to final: ThermalState) -> Double {
+    func calculateThermalImpact(from initial: SystemThermalState, to final: SystemThermalState) -> Double {
         let initialValue = initial.rawValue
         let finalValue = final.rawValue
         return Double(finalValue - initialValue) / 3.0 // Normalized 0-1

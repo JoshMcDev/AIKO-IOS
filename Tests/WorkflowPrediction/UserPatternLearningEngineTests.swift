@@ -94,7 +94,7 @@ final class UserPatternLearningEngineTests: XCTestCase {
     func testPredictionConfidenceThreshold() async throws {
         await setupTest()
         defer { Task { @MainActor in await self.teardownTest() } }
-        
+
         guard let sut else {
             XCTFail("UserPatternLearningEngine should be initialized")
             return
@@ -125,7 +125,7 @@ final class UserPatternLearningEngineTests: XCTestCase {
     func testWorkflowPatternFiltering() async throws {
         await setupTest()
         defer { Task { @MainActor in await self.teardownTest() } }
-        
+
         guard let sut else {
             XCTFail("UserPatternLearningEngine should be initialized")
             return
@@ -153,7 +153,7 @@ final class UserPatternLearningEngineTests: XCTestCase {
     func testFeatureFlagIntegration() async throws {
         await setupTest()
         defer { Task { @MainActor in await self.teardownTest() } }
-        
+
         guard let sut else {
             XCTFail("UserPatternLearningEngine should be initialized")
             return
@@ -185,7 +185,7 @@ final class UserPatternLearningEngineTests: XCTestCase {
     func testPatternWeightingAccuracy() async throws {
         await setupTest()
         defer { Task { @MainActor in await self.teardownTest() } }
-        
+
         guard let sut else {
             XCTFail("UserPatternLearningEngine should be initialized")
             return
@@ -213,7 +213,7 @@ final class UserPatternLearningEngineTests: XCTestCase {
     func testWorkflowContextMatching() async throws {
         await setupTest()
         defer { Task { @MainActor in await self.teardownTest() } }
-        
+
         guard let sut else {
             XCTFail("UserPatternLearningEngine should be initialized")
             return
@@ -243,7 +243,7 @@ final class UserPatternLearningEngineTests: XCTestCase {
     func testProcessPredictionFeedback_UpdatesAccuracy() async throws {
         await setupTest()
         defer { Task { @MainActor in await self.teardownTest() } }
-        
+
         guard let sut else {
             XCTFail("UserPatternLearningEngine should be initialized")
             return
@@ -271,7 +271,7 @@ final class UserPatternLearningEngineTests: XCTestCase {
     func testMetricsTracking() async throws {
         await setupTest()
         defer { Task { @MainActor in await self.teardownTest() } }
-        
+
         guard let sut else {
             XCTFail("UserPatternLearningEngine should be initialized")
             return
@@ -298,7 +298,7 @@ final class UserPatternLearningEngineTests: XCTestCase {
     func testTransitionProbabilityUpdates() async throws {
         await setupTest()
         defer { Task { @MainActor in await self.teardownTest() } }
-        
+
         guard let sut else {
             XCTFail("UserPatternLearningEngine should be initialized")
             return

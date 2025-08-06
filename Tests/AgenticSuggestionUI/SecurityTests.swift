@@ -58,7 +58,7 @@ final class AgenticSuggestionUISecurityTests: XCTestCase {
         // Mock setting current suggestions - actual implementation would use load method
         // viewModel.currentSuggestions = [cuiSuggestion]
 
-        let view = AgenticSuggestionView(viewModel: viewModel)
+        _ = AgenticSuggestionView(viewModel: viewModel)
 
         // When: View renders CUI data
         // Then: Should apply appropriate data protection markings and handling
@@ -181,7 +181,7 @@ final class AgenticSuggestionUISecurityTests: XCTestCase {
             XCTFail("MockSecurityManager should be initialized")
             return
         }
-        
+
         let authValidation = mockSecurityManager.validateUserAuthentication()
         XCTAssertTrue(authValidation.isAuthenticated, "Should validate user authentication")
         XCTAssertNotNil(authValidation.userCredentials, "Should have valid credentials")
@@ -197,7 +197,7 @@ final class AgenticSuggestionUISecurityTests: XCTestCase {
             XCTFail("ViewModel and MockSecurityManager should be initialized")
             return
         }
-        
+
         // When: Decision is made
         // Create AIKO context for SuggestionViewModel - convert from AppCore context
         let aikoContext = AIKO.AcquisitionContext(
@@ -260,7 +260,7 @@ final class AgenticSuggestionUISecurityTests: XCTestCase {
 
         // When: Malicious input is provided
         let maliciousInput = "<script>alert('xss')</script>Modify timeline"
-        
+
         guard let mockSecurityManager else {
             XCTFail("MockSecurityManager should be initialized")
             return
@@ -760,7 +760,7 @@ struct UserCredentials {
     let validUntil: Date
 }
 
-struct AuditEntry {
+struct AgenticSecurityAuditEntry {
     let timestamp: Date
     let eventType: AuditEventType
     let userId: String
@@ -918,9 +918,9 @@ final class MockSecurityManager: Sendable {
         )
     }
 
-    func getAuditTrail() -> [AuditEntry] {
+    func getAuditTrail() -> [AgenticSecurityAuditEntry] {
         [
-            AuditEntry(timestamp: Date(), eventType: .decisionMade, userId: "test_user", details: [:]),
+            AgenticSecurityAuditEntry(timestamp: Date(), eventType: .decisionMade, userId: "test_user", details: [:]),
         ]
     }
 
@@ -984,7 +984,7 @@ final class SecurityTestMockAgenticOrchestrator: AIKO.AgenticOrchestratorProtoco
             timestamp: Date()
         )
     }
-    
+
     func provideFeedback(for _: AIKO.DecisionResponse, feedback _: AgenticUserFeedback) async throws {
         // Mock implementation for security testing
     }
@@ -994,7 +994,7 @@ final class SecurityTestMockComplianceGuardian: AIKO.ComplianceGuardianProtocol,
     func validateCompliance(for _: AIKO.AcquisitionContext) async throws -> ComplianceValidationResult {
         ComplianceValidationResult(isCompliant: true, warnings: [], recommendations: [])
     }
-    
+
     func validateCompliance(for _: AppCore.AcquisitionContext) async throws -> ComplianceResult {
         ComplianceResult(
             isCompliant: true,
@@ -1003,7 +1003,7 @@ final class SecurityTestMockComplianceGuardian: AIKO.ComplianceGuardianProtocol,
             farReferences: []
         )
     }
-    
+
     func validateSecurityControls(for _: AppCore.AcquisitionContext) async throws -> ComplianceValidation {
         ComplianceValidation(
             hasAccessControl: true,
@@ -1030,7 +1030,7 @@ extension AgenticSuggestionUISecurityTests {
             timestamp: Date()
         )
     }
-    
+
     private func createAIKODecisionWithRegulatoryReferences() -> AIKO.DecisionResponse {
         guard let testContext else {
             fatalError("Test context should be initialized")

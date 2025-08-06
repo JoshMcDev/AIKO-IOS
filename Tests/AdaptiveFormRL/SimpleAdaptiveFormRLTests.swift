@@ -45,14 +45,10 @@ final class SimpleAdaptiveFormRLTests: XCTestCase {
 
     func testAcquisitionContextClassifier_canClassifyContext() async throws {
         let classifier = AcquisitionContextClassifier()
-        let testData = AcquisitionAggregate(
-            id: UUID(),
+        let testData = AppCore.AcquisitionAggregate(
             title: "IT Services Contract",
-            requirements: "Software development with cloud computing. We need cloud hosting and database management services.",
-            projectDescription: "Software development with cloud computing",
-            estimatedValue: 100_000,
-            deadline: Date().addingTimeInterval(30 * 24 * 3600),
-            isRecurring: false
+            description: "Software development with cloud computing",
+            requirements: ["Software development", "Cloud hosting", "Database management services"]
         )
 
         let result = try await classifier.classifyAcquisition(testData)

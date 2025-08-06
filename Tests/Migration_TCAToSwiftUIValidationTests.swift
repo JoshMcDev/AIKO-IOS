@@ -32,14 +32,14 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
         let mockBiometricService = MockBiometricService()
         mockService = MockLLMProviderSettingsService(
             biometricService: mockBiometricService,
-            keychainService: mockKeychainService,
-            configurationService: mockConfigService
+            keychainService: mockKeychainService ?? MockLLMKeychainService(),
+            configurationService: mockConfigService ?? MockLLMConfigurationService()
         )
 
         modernViewModel = LLMProviderSettingsViewModel(
-            configurationService: mockConfigService,
-            keychainService: mockKeychainService,
-            settingsService: mockService
+            configurationService: mockConfigService ?? MockLLMConfigurationService(),
+            keychainService: mockKeychainService ?? MockLLMKeychainService(),
+            settingsService: mockService ?? MockLLMProviderSettingsService(biometricService: MockBiometricService(), keychainService: MockLLMKeychainService(), configurationService: MockLLMConfigurationService())
         )
     }
 
@@ -161,7 +161,7 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
         }
 
         // Biometric auth (simulated)
-        if mockService.shouldAuthenticate {
+        if mockService?.shouldAuthenticate == true {
             workingInteractions.append("Save configuration with biometric auth")
         }
 
@@ -206,7 +206,7 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
         XCTAssertNotEqual(modernViewModel?.uiState, .idle)
 
         // Error state handling
-        mockConfigService.shouldSucceed = false
+        mockConfigService?.shouldSucceed = false
         await modernViewModel?.loadConfigurations()
 
         if case .error = modernViewModel?.uiState {
@@ -317,7 +317,10 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
         // Test that proper SwiftUI patterns are used
 
         // @Observable pattern
-        XCTAssertTrue(modernViewModel is any ObservableObject)
+        XCTAssertNotNil(modernViewModel)
+        if let viewModel = modernViewModel {
+            XCTAssertTrue(viewModel is any ObservableObject)
+        }
 
         // Property wrappers (simulated - actual test in view)
         let hasBindableProperties = [
@@ -352,7 +355,7 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
         // RED: Should fail - configuration persistence not implemented
 
         // Simulate existing configuration
-        mockConfigService.shouldSucceed = true
+        mockConfigService?.shouldSucceed = true
         _ = TestFixtures.testConfig
 
         await modernViewModel?.loadConfigurations()
@@ -372,7 +375,7 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
 
         // Keys should remain accessible after migration
         // This test ensures no security data loss
-        XCTAssertTrue(mockKeychainService.hasStoredKeys)
+        XCTAssertTrue(mockKeychainService?.hasStoredKeys == true)
     }
 
     func test_existingPriorities_preserved() async {

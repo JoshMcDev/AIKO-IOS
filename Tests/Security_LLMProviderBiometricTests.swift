@@ -56,7 +56,7 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
             XCTFail("Services should be initialized")
             return
         }
-        
+
         mockKeychainService.shouldRequireAuth = true
         mockKeychainService.authenticationShouldSucceed = true
 
@@ -74,7 +74,7 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
             XCTFail("Services should be initialized")
             return
         }
-        
+
         mockKeychainService.shouldRequireAuth = true
         mockKeychainService.authenticationShouldSucceed = false
 
@@ -96,7 +96,7 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
             XCTFail("Services should be initialized")
             return
         }
-        
+
         mockKeychainService.shouldRequireAuth = true
         mockKeychainService.biometricsAvailable = false
         mockKeychainService.passcodeAvailable = true
@@ -117,7 +117,7 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
             XCTFail("Services should be initialized")
             return
         }
-        
+
         mockKeychainService.shouldRequireAuth = true
         mockKeychainService.authenticationShouldCancel = true
 
@@ -136,7 +136,7 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
             XCTFail("Services should be initialized")
             return
         }
-        
+
         mockKeychainService.shouldRequireAuth = true
         mockKeychainService.deviceLocked = true
 
@@ -155,7 +155,7 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
             XCTFail("Services should be initialized")
             return
         }
-        
+
         mockKeychainService.shouldRequireAuth = true
         mockKeychainService.biometricsChanged = true
 
@@ -174,7 +174,7 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
             XCTFail("Services should be initialized")
             return
         }
-        
+
         mockKeychainService.shouldRequireAuth = true
         mockKeychainService.authenticationTimeout = true
 
@@ -193,7 +193,7 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
             XCTFail("Services should be initialized")
             return
         }
-        
+
         mockKeychainService.shouldRequireAuth = true
         mockKeychainService.authenticationShouldSucceed = false
 
@@ -218,7 +218,7 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
             XCTFail("MockKeychainService should be initialized")
             return
         }
-        
+
         mockKeychainService.shouldRequireAuth = true
 
         do {
@@ -235,7 +235,7 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
             XCTFail("Services should be initialized")
             return
         }
-        
+
         mockKeychainService.shouldUseHardwareEncryption = true
 
         try? await settingsService.authenticateAndSaveAPIKey("sk-ant-test123", for: .claude)
@@ -250,7 +250,7 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
             XCTFail("Services should be initialized")
             return
         }
-        
+
         // First save a key
         mockKeychainService.authenticationShouldSucceed = true
         try? await settingsService.authenticateAndSaveAPIKey("sk-ant-test123", for: .claude)
@@ -270,7 +270,7 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
             XCTFail("Services should be initialized")
             return
         }
-        
+
         mockKeychainService.shouldTrackAccess = true
 
         try? await settingsService.authenticateAndSaveAPIKey("sk-ant-test123", for: .claude)
@@ -290,7 +290,7 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
             XCTFail("Services should be initialized")
             return
         }
-        
+
         mockKeychainService.authenticationShouldSucceed = true
         try? await settingsService.authenticateAndSaveAPIKey("sk-ant-test123", for: .claude)
 

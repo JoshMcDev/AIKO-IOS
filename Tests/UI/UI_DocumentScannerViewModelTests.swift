@@ -46,7 +46,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("ViewModel should be initialized")
             return
         }
-        
+
         XCTAssertFalse(viewModel.isScanning)
         XCTAssertTrue(viewModel.scannedPages.isEmpty)
         XCTAssertNil(viewModel.error)
@@ -59,7 +59,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("ViewModel should be initialized")
             return
         }
-        
+
         await viewModel.startScanning()
         XCTAssertFalse(viewModel.isScanning) // Should be false after mock completion
         // XCTAssertNotNil(viewModel.scanSession) // scanSession property not implemented in RED phase
@@ -72,7 +72,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("ViewModel should be initialized")
             return
         }
-        
+
         await viewModel.startScanning()
 
         // Mock a completed scan with pages
@@ -93,7 +93,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("ViewModel should be initialized")
             return
         }
-        
+
         await viewModel.startScanning()
 
         // Cancel scanning (not implemented yet)
@@ -108,7 +108,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("ViewModel should be initialized")
             return
         }
-        
+
         mockVisionKitAdapter?.shouldThrowError = true
 
         await viewModel.startScanning()
@@ -123,7 +123,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("ViewModel should be initialized")
             return
         }
-        
+
         // viewModel.error = DocumentScannerError.cameraNotAvailable // DocumentScannerError not available
 
         // Clear error (not implemented yet)
@@ -140,7 +140,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("ViewModel should be initialized")
             return
         }
-        
+
         let hasPermission = await viewModel.checkCameraPermissions()
         XCTAssertTrue(hasPermission) // Will fail - not implemented
     }
@@ -152,7 +152,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("MockVisionKitAdapter and ViewModel should be initialized")
             return
         }
-        
+
         mockVisionKitAdapter.cameraPermissionStatus = .denied
 
         let hasPermission = await viewModel.checkCameraPermissions()
@@ -166,7 +166,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("MockVisionKitAdapter and ViewModel should be initialized")
             return
         }
-        
+
         mockVisionKitAdapter.cameraPermissionStatus = .notDetermined
 
         let granted = await viewModel.requestCameraPermissions()
@@ -180,7 +180,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("MockVisionKitAdapter and ViewModel should be initialized")
             return
         }
-        
+
         mockVisionKitAdapter.cameraPermissionStatus = .denied
 
         let granted = await viewModel.requestCameraPermissions()
@@ -194,7 +194,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("MockVisionKitAdapter and ViewModel should be initialized")
             return
         }
-        
+
         mockVisionKitAdapter.cameraPermissionStatus = .denied
 
         await viewModel.startScanning()
@@ -210,7 +210,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("ViewModel should be initialized")
             return
         }
-        
+
         let page1 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "", pageNumber: 1)
         let page2 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "", pageNumber: 2)
 
@@ -225,7 +225,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("ViewModel should be initialized")
             return
         }
-        
+
         let page1 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "Page 1", pageNumber: 1)
         let page2 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "Page 2", pageNumber: 2)
 
@@ -241,7 +241,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("ViewModel should be initialized")
             return
         }
-        
+
         let page = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "", pageNumber: 1)
 
         viewModel.addPage(page)
@@ -255,7 +255,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("ViewModel should be initialized")
             return
         }
-        
+
         let page1 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "", pageNumber: 1)
         let page2 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "", pageNumber: 2)
 
@@ -273,7 +273,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("ViewModel should be initialized")
             return
         }
-        
+
         let page1 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "Page 1", pageNumber: 1)
         let page2 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "Page 2", pageNumber: 2)
 
@@ -292,7 +292,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("ViewModel should be initialized")
             return
         }
-        
+
         let page = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "", pageNumber: 1)
         viewModel.addPage(page)
 
@@ -311,7 +311,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("MockVisionKitAdapter and ViewModel should be initialized")
             return
         }
-        
+
         mockVisionKitAdapter.mockScanResult = .success(AppCore.ScannedDocument(pages: []))
 
         await viewModel.startScanning()
@@ -326,7 +326,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("ViewModel should be initialized")
             return
         }
-        
+
         let page = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "", pageNumber: 1)
         viewModel.addPage(page)
 
@@ -343,7 +343,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("MockVisionKitAdapter and ViewModel should be initialized")
             return
         }
-        
+
         mockVisionKitAdapter.shouldThrowError = true
 
         await viewModel.startScanning()
@@ -358,7 +358,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("MockVisionKitAdapter and ViewModel should be initialized")
             return
         }
-        
+
         mockVisionKitAdapter.simulateTimeout = true
 
         await viewModel.startScanning()
@@ -373,7 +373,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("ViewModel should be initialized")
             return
         }
-        
+
         let startTime = CFAbsoluteTimeGetCurrent()
 
         await viewModel.startScanning()
@@ -388,7 +388,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("ViewModel should be initialized")
             return
         }
-        
+
         let startTime = CFAbsoluteTimeGetCurrent()
 
         await viewModel.startScanning()
@@ -403,7 +403,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("ViewModel should be initialized")
             return
         }
-        
+
         for i in 1 ... 10 {
             let page = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "Page \(i)", pageNumber: i)
             viewModel.addPage(page)
@@ -419,7 +419,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("ViewModel should be initialized")
             return
         }
-        
+
         let expectation = XCTestExpectation(description: "Background processing")
 
         Task {
@@ -447,7 +447,7 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
             XCTFail("ViewModel should be initialized")
             return
         }
-        
+
         for i in 1 ... 50 {
             let page = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "Page \(i)", pageNumber: i)
             viewModel.addPage(page)

@@ -342,11 +342,11 @@ final class AIReasoningViewTests: XCTestCase {
     private func createTestComplianceContext() -> ComplianceContext {
         ComplianceContext(
             farReferences: [
-                FARReference(section: "52.212-1", title: "Instructions to Offerors", url: "https://example.com/far"),
-                FARReference(section: "52.212-3", title: "Offeror Representations", url: "https://example.com/far"),
+                FARReference(part: "52", subpart: "212", section: "52.212-1", paragraph: nil),
+                FARReference(part: "52", subpart: "212", section: "52.212-3", paragraph: nil),
             ],
             dfarsReferences: [
-                DFARSReference(section: "252.212-7001", title: "Contract Terms", url: "https://example.com/dfars"),
+                AgenticDFARSReference(section: "252.212-7001", title: "Contract Terms", url: "https://example.com/dfars"),
             ],
             complianceScore: 0.94,
             riskFactors: ["procurement value", "timeline constraints"]
@@ -378,9 +378,9 @@ final class AIReasoningViewTests: XCTestCase {
     private func createComplianceContextWithFAR() -> ComplianceContext {
         ComplianceContext(
             farReferences: [
-                FARReference(section: "52.212-1", title: "Instructions to Offerors", url: "https://acquisition.gov/far/52.212-1"),
-                FARReference(section: "52.212-3", title: "Offeror Representations", url: "https://acquisition.gov/far/52.212-3"),
-                FARReference(section: "52.215-1", title: "Proposal Preparation", url: "https://acquisition.gov/far/52.215-1"),
+                FARReference(part: "52", subpart: "212", section: "52.212-1", paragraph: nil),
+                FARReference(part: "52", subpart: "212", section: "52.212-3", paragraph: nil),
+                FARReference(part: "52", subpart: "215", section: "52.215-1", paragraph: nil),
             ],
             dfarsReferences: [],
             complianceScore: 0.96,
@@ -392,8 +392,8 @@ final class AIReasoningViewTests: XCTestCase {
         ComplianceContext(
             farReferences: [],
             dfarsReferences: [
-                DFARSReference(section: "252.212-7001", title: "Contract Terms and Conditions", url: "https://acquisition.gov/dfars/252.212-7001"),
-                DFARSReference(section: "252.225-7012", title: "Preference for Domestic Specialty Metals", url: "https://acquisition.gov/dfars/252.225-7012"),
+                AgenticDFARSReference(section: "252.212-7001", title: "Contract Terms", url: "https://example.com/dfars"),
+                AgenticDFARSReference(section: "252.225-7012", title: "Specialty Metals", url: "https://example.com/dfars"),
             ],
             complianceScore: 0.88,
             riskFactors: ["dfars compliance", "specialty metals"]

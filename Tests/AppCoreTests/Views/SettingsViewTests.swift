@@ -443,7 +443,7 @@ extension SettingsViewTests {
             XCTFail("SettingsViewModel should be initialized")
             return
         }
-        
+
         // Auto save interval: 10-300 seconds
         await viewModel.updateAppSetting(\.autoSaveInterval, value: 5) // Below minimum
         XCTAssertGreaterThanOrEqual(viewModel.settingsData.appSettings.autoSaveInterval, 10)

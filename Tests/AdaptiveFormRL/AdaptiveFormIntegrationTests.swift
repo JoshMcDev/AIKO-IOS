@@ -830,8 +830,8 @@ final class AdaptiveFormIntegrationTests: XCTestCase {
 
     // MARK: - Test Helper Methods
 
-    private func createTestAcquisition(title: String) -> AcquisitionAggregate {
-        AcquisitionAggregate(
+    private func createTestAcquisition(title: String) -> TestAcquisitionAggregate {
+        TestAcquisitionAggregate(
             id: UUID(),
             title: title,
             requirements: "Test requirements for \(title)",
@@ -841,8 +841,22 @@ final class AdaptiveFormIntegrationTests: XCTestCase {
             isRecurring: false
         )
     }
+}
 
-    private func createTestAcquisitionContext(_ category: ContextCategory) -> AcquisitionContext {
+// MARK: - Test-Specific Types
+
+struct TestAcquisitionAggregate {
+    let id: UUID
+    let title: String
+    let requirements: String
+    let projectDescription: String
+    let estimatedValue: Double
+    let deadline: Date
+    let isRecurring: Bool
+}
+
+extension AdaptiveFormIntegrationTests {
+    private func createTestAcquisitionContext(_ category: ContextCategory) -> AppCore.AcquisitionContext {
         let acquisitionType: AcquisitionType = switch category {
         case .informationTechnology:
             .commercialItem
@@ -879,7 +893,7 @@ final class AdaptiveFormIntegrationTests: XCTestCase {
         QLearningAction(value: value, confidence: confidence)
     }
 
-    private func createHighConfidenceScenario() -> (formData: AppCore.FormData, acquisition: AcquisitionAggregate, userProfile: AppCore.UserProfile) {
+    private func createHighConfidenceScenario() -> (formData: AppCore.FormData, acquisition: AIKO.AcquisitionAggregate, userProfile: AppCore.UserProfile) {
         // Create test form fields using the correct AppCore FormField
         let testField = AppCore.FormField(
             name: "testField",
@@ -934,7 +948,13 @@ final class AdaptiveFormIntegrationTests: XCTestCase {
 
 // MARK: - Test Extensions
 
-extension AdaptiveFormEventType {
+enum AdaptiveFormEventType {
+    case formPopulated
+    case fieldModified
+    case suggestionAccepted
+    case suggestionRejected
+    case contextClassified
+
     init?(rawValue: String) {
         switch rawValue {
         case "form_populated":

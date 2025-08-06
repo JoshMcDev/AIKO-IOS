@@ -202,7 +202,7 @@ final class FeatureStateEncoderTests: XCTestCase {
             XCTFail("Test contexts should be initialized")
             return
         }
-        
+
         // When: Contexts with different time constraints are encoded
         let urgentFeatures = FeatureStateEncoder.encode(complexContext) // 5 days, urgent
         let routineFeatures = FeatureStateEncoder.encode(testContext) // 45 days, not urgent
@@ -227,7 +227,7 @@ final class FeatureStateEncoderTests: XCTestCase {
             XCTFail("Test contexts should be initialized")
             return
         }
-        
+
         // When: Context is encoded
         let features = FeatureStateEncoder.encode(testContext)
 
