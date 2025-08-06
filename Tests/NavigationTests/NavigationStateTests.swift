@@ -12,6 +12,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws {
         navigationState = NavigationState()
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         await navigationState.initialize()
     }
 
@@ -150,6 +154,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
     }
 
     func testNavigateToSearch() async {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         let searchContext = SearchContext(query: "FAR 52.219-9")
         let destination = NavigationState.NavigationDestination.search(searchContext)
 
@@ -161,6 +169,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
     }
 
     func testNavigateToSettings() async {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         let destination = NavigationState.NavigationDestination.settings(.llmProviders)
 
         await navigationState.navigate(to: destination)
@@ -171,6 +183,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
     }
 
     func testNavigateToQuickAction() async {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         let destination = NavigationState.NavigationDestination.quickAction(.scanDocument)
 
         await navigationState.navigate(to: destination)
@@ -180,6 +196,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
     }
 
     func testNavigationHistoryManagement() async {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         // Test navigation history limit (should maintain 50 entries max)
         for i in 1 ... 60 {
             let destination = NavigationState.NavigationDestination.acquisition(AcquisitionID("ACQ-\(i)"))
@@ -194,6 +214,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
     }
 
     func testNavigationPerformanceTracking() async {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         let destination = NavigationState.NavigationDestination.acquisition(AcquisitionID("ACQ-PERF-001"))
 
         let startTime = CFAbsoluteTimeGetCurrent()
@@ -210,6 +234,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
     // MARK: - Workflow Management Tests (These will FAIL in Red phase)
 
     func testStartDocumentGenerationWorkflow() async {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         await navigationState.startWorkflow(.documentGeneration)
 
         // These assertions will FAIL in Red phase - workflow implementation incomplete
@@ -222,6 +250,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
     }
 
     func testStartComplianceCheckWorkflow() async {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         await navigationState.startWorkflow(.complianceCheck)
 
         // These assertions will FAIL in Red phase
@@ -233,6 +265,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
     }
 
     func testStartMarketResearchWorkflow() async {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         await navigationState.startWorkflow(.marketResearch)
 
         // These assertions will FAIL in Red phase
@@ -244,6 +280,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
     }
 
     func testStartContractReviewWorkflow() async {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         await navigationState.startWorkflow(.contractReview)
 
         // These assertions will FAIL in Red phase
@@ -255,6 +295,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
     }
 
     func testAdvanceWorkflowProgression() async {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         // Start a workflow
         await navigationState.startWorkflow(.documentGeneration)
 
@@ -316,12 +360,20 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
 
     #if os(iOS)
     func testIOSSpecificState() {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         // Test iOS-specific navigation state
         XCTAssertEqual(navigationState.selectedTab, .dashboard, "iOS should default to dashboard tab")
         XCTAssertNil(navigationState.sheetPresentation, "No sheet should be presented initially")
     }
 
     func testIOSTabNavigation() async {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         navigationState.selectedTab = .documents
         XCTAssertEqual(navigationState.selectedTab, .documents, "Tab selection should update")
 
@@ -330,6 +382,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
     }
 
     func testIOSSheetPresentation() async {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         navigationState.sheetPresentation = .documentScanner
         XCTAssertEqual(navigationState.sheetPresentation, .documentScanner, "Sheet presentation should update")
 
@@ -340,6 +396,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
 
     #if os(macOS)
     func testMacOSSpecificState() {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         // Test macOS-specific navigation state
         XCTAssertTrue(navigationState.activeWindows.isEmpty, "macOS should start with no active windows")
         XCTAssertNotNil(navigationState.toolbarState, "macOS should have toolbar state")
@@ -347,6 +407,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
     }
 
     func testMacOSWindowManagement() async {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         let windowID = WindowID("test-window")
         navigationState.activeWindows.insert(windowID)
 
@@ -358,6 +422,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
     }
 
     func testMacOSToolbarState() async {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         navigationState.toolbarState.openInNewWindow = true
         XCTAssertTrue(navigationState.toolbarState.openInNewWindow, "Toolbar state should update")
     }
@@ -366,6 +434,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
     // MARK: - Integration Tests (These will FAIL in Red phase)
 
     func testCompleteWorkflowNavigation() async {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         // Test complete workflow with navigation
         await navigationState.startWorkflow(.documentGeneration)
 
@@ -387,6 +459,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
     }
 
     func testConcurrentNavigationOperations() async {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         // Test that concurrent navigation operations are handled properly
         let destinations = [
             NavigationState.NavigationDestination.acquisition(AcquisitionID("ACQ-001")),
@@ -398,7 +474,7 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
         await withTaskGroup(of: Void.self) { group in
             for destination in destinations {
                 group.addTask {
-                    await self.navigationState.navigate(to: destination)
+                    await navigationState.navigate(to: destination)
                 }
             }
         }
@@ -423,6 +499,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
     // MARK: - Performance Tests
 
     func testNavigationPerformanceUnder100ms() async {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         // Test that navigation completes within 100ms (TDD requirement)
         let destination = NavigationState.NavigationDestination.acquisition(AcquisitionID("PERF-TEST"))
 
@@ -437,6 +517,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
     }
 
     func testLargeNavigationHistoryPerformance() async {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         // Test performance with large navigation history
         let startTime = CFAbsoluteTimeGetCurrent()
 
@@ -456,6 +540,10 @@ final class NavigationStateTests: XCTestCase, @unchecked Sendable {
     // MARK: - Error Handling Tests
 
     func testWorkflowFailureHandling() async {
+        guard let navigationState else {
+            XCTFail("NavigationState should be initialized")
+            return
+        }
         await navigationState.startWorkflow(.documentGeneration)
 
         // Simulate workflow failure (this logic will be implemented in Green phase)

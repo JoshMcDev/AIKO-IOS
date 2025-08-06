@@ -21,6 +21,10 @@ final class MultifactorConfidenceScoringTests: XCTestCase {
     override func setUp() async throws {
         try await super.setUp()
         sut = MultifactorConfidenceScorer()
+        guard let sut else {
+            XCTFail("MultifactorConfidenceScorer should be initialized")
+            return
+        }
         await sut.reset() // Ensure clean state for each test
     }
 

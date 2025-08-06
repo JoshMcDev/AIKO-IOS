@@ -83,6 +83,11 @@ final class RewardCalculatorTests: XCTestCase {
             estimatedDuration: 1800.0
         )
 
+        guard let standardAction, let testContext else {
+            XCTFail("StandardAction and testContext should be initialized")
+            return
+        }
+        
         testDecision = DecisionResponse(
             selectedAction: standardAction,
             confidence: 0.8,
@@ -150,6 +155,11 @@ final class RewardCalculatorTests: XCTestCase {
             comments: "Inappropriate recommendation"
         )
 
+        guard let testDecision, let testContext else {
+            XCTFail("Test decision and context should be initialized")
+            return
+        }
+        
         // When: Reward is calculated
         let rewardSignal = RewardCalculator.calculate(
             decision: testDecision,
@@ -177,6 +187,11 @@ final class RewardCalculatorTests: XCTestCase {
             comments: "Good but needed adjustments"
         )
 
+        guard let testDecision, let testContext else {
+            XCTFail("Test decision and context should be initialized")
+            return
+        }
+        
         // When: Reward is calculated
         let rewardSignal = RewardCalculator.calculate(
             decision: testDecision,
@@ -203,6 +218,11 @@ final class RewardCalculatorTests: XCTestCase {
             comments: "Need more information"
         )
 
+        guard let testDecision, let testContext else {
+            XCTFail("Test decision and context should be initialized")
+            return
+        }
+        
         // When: Reward is calculated
         let rewardSignal = RewardCalculator.calculate(
             decision: testDecision,
@@ -230,6 +250,11 @@ final class RewardCalculatorTests: XCTestCase {
             comments: "Very satisfied"
         )
 
+        guard let testDecision, let testContext else {
+            XCTFail("Test decision and context should be initialized")
+            return
+        }
+        
         // When: Reward is calculated
         let highSatisfactionReward = RewardCalculator.calculate(
             decision: testDecision,
@@ -283,6 +308,11 @@ final class RewardCalculatorTests: XCTestCase {
             comments: "Workflow still in progress"
         )
 
+        guard let testDecision, let testContext else {
+            XCTFail("Test decision and context should be initialized")
+            return
+        }
+        
         // When: Rewards are calculated
         let completedReward = RewardCalculator.calculate(
             decision: testDecision,
@@ -328,6 +358,11 @@ final class RewardCalculatorTests: XCTestCase {
             comments: "Lower quality output"
         )
 
+        guard let testDecision, let testContext else {
+            XCTFail("Test decision and context should be initialized")
+            return
+        }
+        
         // When: Rewards are calculated
         let highQualityReward = RewardCalculator.calculate(
             decision: testDecision,
@@ -398,6 +433,11 @@ final class RewardCalculatorTests: XCTestCase {
             estimatedDuration: 1800.0
         )
 
+        guard let testContext else {
+            XCTFail("Test context should be initialized")
+            return
+        }
+        
         let fullComplianceDecision = DecisionResponse(
             selectedAction: fullComplianceAction,
             confidence: 0.8,
@@ -468,6 +508,11 @@ final class RewardCalculatorTests: XCTestCase {
             estimatedDuration: 1500.0
         )
 
+        guard let testContext else {
+            XCTFail("Test context should be initialized")
+            return
+        }
+        
         let partialComplianceDecision = DecisionResponse(
             selectedAction: partialComplianceAction,
             confidence: 0.7,
@@ -530,6 +575,11 @@ final class RewardCalculatorTests: XCTestCase {
             estimatedDuration: 1200.0
         )
 
+        guard let testContext else {
+            XCTFail("Test context should be initialized")
+            return
+        }
+        
         let nonCompliantDecision = DecisionResponse(
             selectedAction: nonCompliantAction,
             confidence: 0.6,
@@ -590,6 +640,11 @@ final class RewardCalculatorTests: XCTestCase {
             comments: "Took longer than expected"
         )
 
+        guard let testDecision, let testContext else {
+            XCTFail("Test decision and context should be initialized")
+            return
+        }
+        
         // When: Rewards are calculated
         let fastReward = RewardCalculator.calculate(
             decision: testDecision,
@@ -623,6 +678,11 @@ final class RewardCalculatorTests: XCTestCase {
             comments: "No time tracking"
         )
 
+        guard let testDecision, let testContext else {
+            XCTFail("Test decision and context should be initialized")
+            return
+        }
+        
         // When: Reward is calculated
         let rewardSignal = RewardCalculator.calculate(
             decision: testDecision,
@@ -650,6 +710,11 @@ final class RewardCalculatorTests: XCTestCase {
             comments: "Good performance"
         )
 
+        guard let testDecision, let testContext else {
+            XCTFail("Test decision and context should be initialized")
+            return
+        }
+        
         // When: Reward is calculated
         let rewardSignal = RewardCalculator.calculate(
             decision: testDecision,
@@ -679,6 +744,11 @@ final class RewardCalculatorTests: XCTestCase {
             RLUserFeedback(outcome: .deferred, satisfactionScore: nil, workflowCompleted: false, qualityMetrics: QualityMetrics(accuracy: 0.3, completeness: 0.4, compliance: 0.8), timeTaken: nil, comments: nil),
         ]
 
+        guard let testDecision, let testContext else {
+            XCTFail("Test decision and context should be initialized")
+            return
+        }
+        
         // When: Rewards are calculated for various feedback scenarios
         for feedback in feedbackVariations {
             let rewardSignal = RewardCalculator.calculate(
@@ -713,6 +783,11 @@ final class RewardCalculatorTests: XCTestCase {
 
         let iterations = 1000
 
+        guard let testDecision, let testContext else {
+            XCTFail("Test decision and context should be initialized")
+            return
+        }
+        
         // When: Multiple reward calculations are performed
         let startTime = CFAbsoluteTimeGetCurrent()
 
@@ -748,6 +823,11 @@ final class RewardCalculatorTests: XCTestCase {
 
         var rewards: [RewardSignal] = []
 
+        guard let testDecision, let testContext else {
+            XCTFail("Test decision and context should be initialized")
+            return
+        }
+        
         // When: Same calculation is performed multiple times
         for _ in 0 ..< 100 {
             let reward = RewardCalculator.calculate(
@@ -794,6 +874,11 @@ final class RewardCalculatorTests: XCTestCase {
             comments: "Terrible"
         )
 
+        guard let testDecision, let testContext else {
+            XCTFail("Test decision and context should be initialized")
+            return
+        }
+        
         // When: Rewards are calculated
         let maxReward = RewardCalculator.calculate(
             decision: testDecision,

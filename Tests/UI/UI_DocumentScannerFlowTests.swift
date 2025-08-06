@@ -70,6 +70,11 @@ final class UIDocumentScannerFlowTests: XCTestCase {
 
     func test_multiPageDocumentScan_userExperience() {
         // This test will fail in RED phase - multi-page UI flow not implemented
+        
+        guard let app else {
+            XCTFail("App should be initialized")
+            return
+        }
 
         // Step 1: Start scan
         let scanButton = app.buttons["Start Document Scan"]
@@ -112,6 +117,11 @@ final class UIDocumentScannerFlowTests: XCTestCase {
 
     func test_errorRecoveryJourney_userCanRecover() {
         // This test will fail in RED phase - error recovery UI not implemented
+        
+        guard let app else {
+            XCTFail("App should be initialized")
+            return
+        }
 
         // Step 1: Start scan
         let scanButton = app.buttons["Start Document Scan"]
@@ -149,6 +159,11 @@ final class UIDocumentScannerFlowTests: XCTestCase {
 
     func test_backgroundAppReturn_resumesScanning() {
         // This test will fail in RED phase - background resume not implemented
+        
+        guard let app else {
+            XCTFail("App should be initialized")
+            return
+        }
 
         // Step 1: Start scan
         let scanButton = app.buttons["Start Document Scan"]
@@ -182,6 +197,10 @@ final class UIDocumentScannerFlowTests: XCTestCase {
         // This test will fail in RED phase - permission flow UI not implemented
 
         // Step 1: Clear previous permissions
+        guard let app else {
+            XCTFail("App should be initialized")
+            return
+        }
         app.launchEnvironment["RESET_CAMERA_PERMISSIONS"] = "true"
         app.terminate()
         app.launch()
@@ -210,6 +229,11 @@ final class UIDocumentScannerFlowTests: XCTestCase {
 
     func test_permissionDenied_showsProperGuidance() {
         // This test will fail in RED phase - permission denied UI not implemented
+
+        guard let app else {
+            XCTFail("App should be initialized")
+            return
+        }
 
         // Step 1: Simulate denied permissions
         app.launchEnvironment["CAMERA_PERMISSION_STATUS"] = "denied"
@@ -240,6 +264,11 @@ final class UIDocumentScannerFlowTests: XCTestCase {
     func test_permissionGranted_proceedsToScanning() {
         // This test will fail in RED phase - permission granted flow not implemented
 
+        guard let app else {
+            XCTFail("App should be initialized")
+            return
+        }
+
         // Step 1: Ensure permissions are granted
         app.launchEnvironment["CAMERA_PERMISSION_STATUS"] = "authorized"
 
@@ -260,6 +289,11 @@ final class UIDocumentScannerFlowTests: XCTestCase {
 
     func test_settingsNavigation_worksCorrectly() {
         // This test will fail in RED phase - settings navigation not implemented
+
+        guard let app else {
+            XCTFail("App should be initialized")
+            return
+        }
 
         // Step 1: Navigate to permission denied state
         app.launchEnvironment["CAMERA_PERMISSION_STATUS"] = "denied"
@@ -282,6 +316,11 @@ final class UIDocumentScannerFlowTests: XCTestCase {
 
     func test_voiceOverNavigation_completeScanFlow() {
         // This test will fail in RED phase - VoiceOver support not implemented
+
+        guard let app else {
+            XCTFail("App should be initialized")
+            return
+        }
 
         // Step 1: Enable VoiceOver simulation
         app.launchEnvironment["VOICEOVER_ENABLED"] = "true"
@@ -312,6 +351,11 @@ final class UIDocumentScannerFlowTests: XCTestCase {
     func test_switchControlNavigation_accessibilityCompliant() {
         // This test will fail in RED phase - Switch Control support not implemented
 
+        guard let app else {
+            XCTFail("App should be initialized")
+            return
+        }
+
         // Step 1: Enable Switch Control simulation
         app.launchEnvironment["SWITCH_CONTROL_ENABLED"] = "true"
 
@@ -332,6 +376,11 @@ final class UIDocumentScannerFlowTests: XCTestCase {
 
     func test_keyboardNavigation_supportsFullWorkflow() {
         // This test will fail in RED phase - keyboard navigation not implemented
+
+        guard let app else {
+            XCTFail("App should be initialized")
+            return
+        }
 
         // Step 1: Navigate using keyboard
         app.typeText("\t") // Tab to scan button
@@ -356,6 +405,11 @@ final class UIDocumentScannerFlowTests: XCTestCase {
     func test_lowLightConditions_userGuidance() {
         // This test will fail in RED phase - low light handling not implemented
 
+        guard let app else {
+            XCTFail("App should be initialized")
+            return
+        }
+
         // Step 1: Simulate low light conditions
         app.launchEnvironment["LIGHTING_CONDITIONS"] = "low"
 
@@ -379,6 +433,11 @@ final class UIDocumentScannerFlowTests: XCTestCase {
     func test_documentTooFar_distanceGuidance() {
         // This test will fail in RED phase - distance guidance not implemented
 
+        guard let app else {
+            XCTFail("App should be initialized")
+            return
+        }
+
         // Step 1: Simulate document too far
         app.launchEnvironment["DOCUMENT_DISTANCE"] = "far"
 
@@ -394,6 +453,11 @@ final class UIDocumentScannerFlowTests: XCTestCase {
 
     func test_memoryWarning_handledGracefully() {
         // This test will fail in RED phase - memory warning handling not implemented
+
+        guard let app else {
+            XCTFail("App should be initialized")
+            return
+        }
 
         // Step 1: Start scan
         let scanButton = app.buttons["Start Document Scan"]
@@ -424,6 +488,11 @@ final class UIDocumentScannerFlowTests: XCTestCase {
     func test_scanButtonResponse_isImmediate() {
         // This test will fail in RED phase - button responsiveness not implemented
 
+        guard let app else {
+            XCTFail("App should be initialized")
+            return
+        }
+
         let scanButton = app.buttons["Start Document Scan"]
 
         let tapTime = CFAbsoluteTimeGetCurrent()
@@ -445,6 +514,11 @@ final class UIDocumentScannerFlowTests: XCTestCase {
 
         // Create multi-page document first
         test_multiPageDocumentScan_userExperience()
+
+        guard let app else {
+            XCTFail("App should be initialized")
+            return
+        }
 
         // Navigate between pages
         let nextButton = app.buttons["Next Page"]

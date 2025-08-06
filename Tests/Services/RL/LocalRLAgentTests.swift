@@ -70,6 +70,10 @@ final class LocalRLAgentTests: XCTestCase {
         ]
 
         // Initialize RL agent
+        guard let mockPersistenceManager else {
+            XCTFail("MockPersistenceManager should be initialized")
+            return
+        }
         rlAgent = try await LocalRLAgent(
             persistenceManager: mockPersistenceManager,
             initialBandits: [:]

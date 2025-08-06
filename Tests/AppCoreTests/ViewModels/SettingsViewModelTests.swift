@@ -10,6 +10,10 @@ final class SettingsViewModelTests: XCTestCase {
 
     override func setUp() async throws {
         mockSettingsData = AppCore.SettingsData()
+        guard let mockSettingsData else {
+            XCTFail("SettingsData should be initialized")
+            return
+        }
         viewModel = SettingsViewModel(settingsData: mockSettingsData)
     }
 

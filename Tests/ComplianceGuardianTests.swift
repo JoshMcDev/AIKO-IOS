@@ -19,7 +19,7 @@ final class ComplianceGuardianTests: XCTestCase {
     var mockLearningFeedbackLoop: MockLearningFeedbackLoop?
     var mockCompliancePolicyEngine: MockCompliancePolicyEngine?
     var performanceMetrics: TestPerformanceMetrics?
-    var complianceGuardian: ComplianceGuardian?
+    var complianceGuardian: AIKO.ComplianceGuardian?
 
     override func setUp() async throws {
         // Initialize mock dependencies
@@ -31,7 +31,13 @@ final class ComplianceGuardianTests: XCTestCase {
         performanceMetrics = TestPerformanceMetrics()
 
         // Initialize ComplianceGuardian with mocked dependencies
-        complianceGuardian = ComplianceGuardian(
+        guard let mockDocumentAnalyzer, let mockComplianceClassifier, let mockSHAPExplainer,
+              let mockLearningFeedbackLoop, let mockCompliancePolicyEngine else {
+            XCTFail("Mock dependencies should be initialized")
+            return
+        }
+        
+        complianceGuardian = AIKO.ComplianceGuardian(
             documentAnalyzer: mockDocumentAnalyzer,
             complianceClassifier: mockComplianceClassifier,
             explanationEngine: mockSHAPExplainer,
@@ -666,6 +672,9 @@ extension ComplianceGuardianTests {
     }
 
     private func measureAnalysisTime(for document: TestDocument) async throws -> TimeInterval {
+        guard let guardian = complianceGuardian else {
+            throw ComplianceGuardianTestError.guardianNotInitialized
+        }
         let startTime = CFAbsoluteTimeGetCurrent()
         _ = try await guardian.analyzeDocument(document)
         return CFAbsoluteTimeGetCurrent() - startTime
@@ -673,7 +682,7 @@ extension ComplianceGuardianTests {
 
     private func measureIncrementalAnalysisTime(from: TestDocument, to: TestDocument) async throws -> TimeInterval {
         guard let guardian = complianceGuardian else {
-            throw TestError.guardianNotInitialized
+            throw ComplianceGuardianTestError.guardianNotInitialized
         }
 
         let startTime = CFAbsoluteTimeGetCurrent()
@@ -700,7 +709,7 @@ enum DocumentSize {
     case small, medium, large
 }
 
-enum TestError: Error, LocalizedError {
+private enum ComplianceGuardianTestError: Error, LocalizedError {
     case guardianNotInitialized
     case performanceMetricsNotInitialized
     case configurationFailed

@@ -29,6 +29,10 @@ final class OnboardingWorkflowIntegrationTests: XCTestCase, @unchecked Sendable 
             performBackup: { _ in URL(fileURLWithPath: "/tmp/backup.json") },
             restoreBackup: { _, _ in }
         )
+        guard let settingsManager else {
+            XCTFail("SettingsManager should be initialized")
+            return
+        }
         viewModel = OnboardingViewModel(settingsManager: settingsManager)
     }
 
@@ -41,6 +45,10 @@ final class OnboardingWorkflowIntegrationTests: XCTestCase, @unchecked Sendable 
 
     func test_completeOnboardingWorkflow_validAPIKey_shouldSucceed() async {
         // GIVEN: User starts onboarding
+        guard let viewModel else {
+            XCTFail("OnboardingViewModel should be initialized")
+            return
+        }
         XCTAssertEqual(viewModel.currentStep, .welcome)
         XCTAssertFalse(viewModel.isOnboardingCompleted)
 
@@ -108,6 +116,10 @@ final class OnboardingWorkflowIntegrationTests: XCTestCase, @unchecked Sendable 
 
     func test_completeOnboardingWorkflow_skipAPIKey_shouldSucceed() async {
         // GIVEN: User starts onboarding
+        guard let viewModel else {
+            XCTFail("OnboardingViewModel should be initialized")
+            return
+        }
         XCTAssertEqual(viewModel.currentStep, .welcome)
 
         // STEP 1: Welcome screen
@@ -141,6 +153,10 @@ final class OnboardingWorkflowIntegrationTests: XCTestCase, @unchecked Sendable 
 
     func test_onboardingWorkflow_backNavigation_shouldMaintainState() async {
         // GIVEN: User progresses through onboarding
+        guard let viewModel else {
+            XCTFail("OnboardingViewModel should be initialized")
+            return
+        }
         await viewModel.proceedToNext() // Welcome → API Setup
         XCTAssertEqual(viewModel.currentStep, .apiSetup)
 
@@ -183,6 +199,10 @@ final class OnboardingWorkflowIntegrationTests: XCTestCase, @unchecked Sendable 
 
     func test_onboardingWorkflow_errorRecovery_shouldAllowRetry() async {
         // GIVEN: User is at API setup step
+        guard let viewModel else {
+            XCTFail("OnboardingViewModel should be initialized")
+            return
+        }
         await viewModel.proceedToNext() // Welcome → API Setup
         XCTAssertEqual(viewModel.currentStep, .apiSetup)
 
@@ -218,6 +238,10 @@ final class OnboardingWorkflowIntegrationTests: XCTestCase, @unchecked Sendable 
 
     func test_onboardingWorkflow_navigationStack_shouldMaintainProperPaths() async {
         // GIVEN: Fresh onboarding start
+        guard let viewModel else {
+            XCTFail("OnboardingViewModel should be initialized")
+            return
+        }
         XCTAssertEqual(viewModel.navigationPath.count, 0)
         XCTAssertEqual(viewModel.currentStep, .welcome)
 
@@ -254,6 +278,10 @@ final class OnboardingWorkflowIntegrationTests: XCTestCase, @unchecked Sendable 
 
     func test_onboardingWorkflow_loadingStates_shouldBlockInteraction() async {
         // GIVEN: User is at API setup step
+        guard let viewModel else {
+            XCTFail("OnboardingViewModel should be initialized")
+            return
+        }
         await viewModel.proceedToNext() // Welcome → API Setup
 
         // WHEN: API validation is in progress (simulate loading)
@@ -312,7 +340,15 @@ final class OnboardingWorkflowIntegrationTests: XCTestCase, @unchecked Sendable 
             performBackup: { _ in URL(fileURLWithPath: "/tmp/backup.json") },
             restoreBackup: { _, _ in }
         )
+        guard let settingsManager else {
+            XCTFail("SettingsManager should be initialized")
+            return
+        }
         viewModel = OnboardingViewModel(settingsManager: settingsManager)
+        guard let viewModel else {
+            XCTFail("OnboardingViewModel should be initialized")
+            return
+        }
 
         // GIVEN: Complete onboarding workflow
         await viewModel.proceedToNext() // Welcome → API Setup
@@ -335,6 +371,10 @@ final class OnboardingWorkflowIntegrationTests: XCTestCase, @unchecked Sendable 
 
     func test_onboardingWorkflow_appViewIntegration_shouldShowCorrectView() {
         // GIVEN: OnboardingViewModel in different states
+        guard let viewModel else {
+            XCTFail("OnboardingViewModel should be initialized")
+            return
+        }
 
         // WHEN: Onboarding not completed
         viewModel.isOnboardingCompleted = false
@@ -355,6 +395,10 @@ final class OnboardingWorkflowIntegrationTests: XCTestCase, @unchecked Sendable 
     // MARK: - Performance Integration Tests
 
     func test_onboardingWorkflow_performance_shouldCompleteWithinReasonableTime() async {
+        guard let viewModel else {
+            XCTFail("OnboardingViewModel should be initialized")
+            return
+        }
         let startTime = CFAbsoluteTimeGetCurrent()
 
         // Complete entire onboarding workflow

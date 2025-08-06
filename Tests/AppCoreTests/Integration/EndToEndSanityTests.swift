@@ -332,6 +332,10 @@ final class EndToEndSanityTests: XCTestCase {
 
     func test_dataIntegrity_shouldMaintainConsistentState() async {
         // GIVEN: Multiple view models operating on related data
+        guard let settingsManager else {
+            XCTFail("SettingsManager should be initialized")
+            return
+        }
         let onboardingViewModel = OnboardingViewModel(settingsManager: settingsManager)
         let settingsViewModel = SettingsViewModel()
 

@@ -70,48 +70,48 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
         var implementedFeatures: [String] = []
 
         // Test provider selection
-        modernViewModel.selectProvider(.claude)
-        if modernViewModel.selectedProvider == .claude,
-           modernViewModel.isProviderConfigSheetPresented {
+        modernViewModel?.selectProvider(.claude)
+        if modernViewModel?.selectedProvider == .claude,
+           modernViewModel?.isProviderConfigSheetPresented == true {
             implementedFeatures.append("Provider selection and configuration")
         }
 
         // Test biometric authentication
-        if modernViewModel.isAuthenticating == false { // Will be true during auth
-            await modernViewModel.authenticateAndSave()
-            if modernViewModel.isAuthenticating || mockService.authenticateAndSaveAPICalled {
+        if modernViewModel?.isAuthenticating == false { // Will be true during auth
+            await modernViewModel?.authenticateAndSave()
+            if modernViewModel?.isAuthenticating == true || mockService?.authenticateAndSaveAPICalled == true {
                 implementedFeatures.append("Biometric authentication for API key saving")
             }
         }
 
         // Test provider priority
-        await modernViewModel.updateFallbackBehavior(.loadBalanced)
-        if modernViewModel.providerPriority.fallbackBehavior == .loadBalanced {
+        await modernViewModel?.updateFallbackBehavior(.loadBalanced)
+        if modernViewModel?.providerPriority.fallbackBehavior == .loadBalanced {
             implementedFeatures.append("Provider priority management")
         }
 
         // Test clear all
-        await modernViewModel.clearAllConfigurations()
-        if modernViewModel.configuredProviders.isEmpty {
+        await modernViewModel?.clearAllConfigurations()
+        if modernViewModel?.configuredProviders.isEmpty == true {
             implementedFeatures.append("Clear all configurations")
         }
 
         // Test model selection
-        modernViewModel.providerConfigState = TestFixtures.testProviderConfigState
-        modernViewModel.updateSelectedModel(TestFixtures.testModel)
-        if modernViewModel.providerConfigState?.selectedModel == TestFixtures.testModel {
+        modernViewModel?.providerConfigState = TestFixtures.testProviderConfigState
+        modernViewModel?.updateSelectedModel(TestFixtures.testModel)
+        if modernViewModel?.providerConfigState?.selectedModel == TestFixtures.testModel {
             implementedFeatures.append("Model selection and temperature adjustment")
         }
 
         // Test custom endpoint
-        modernViewModel.updateCustomEndpoint("https://api.test.com")
-        if modernViewModel.providerConfigState?.customEndpoint == "https://api.test.com" {
+        modernViewModel?.updateCustomEndpoint("https://api.test.com")
+        if modernViewModel?.providerConfigState?.customEndpoint == "https://api.test.com" {
             implementedFeatures.append("Custom endpoint configuration")
         }
 
         // Test validation and error handling
-        modernViewModel.showError("Test error")
-        if modernViewModel.alert != nil {
+        modernViewModel?.showError("Test error")
+        if modernViewModel?.alert != nil {
             implementedFeatures.append("Real-time validation and error handling")
         }
 
@@ -138,25 +138,25 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
         var workingInteractions: [String] = []
 
         // Tap provider to configure
-        modernViewModel.selectProvider(.claude)
-        if modernViewModel.isProviderConfigSheetPresented {
+        modernViewModel?.selectProvider(.claude)
+        if modernViewModel?.isProviderConfigSheetPresented == true {
             workingInteractions.append("Tap provider to configure")
         }
 
         // API key field (simulated - actual implementation in view)
-        if modernViewModel.providerConfigState != nil {
+        if modernViewModel?.providerConfigState != nil {
             workingInteractions.append("Show/hide API key in secure field")
         }
 
         // Model selection
-        let models = modernViewModel.getModelsForProvider(.claude)
+        let models = modernViewModel?.getModelsForProvider(.claude) ?? []
         if !models.isEmpty {
             workingInteractions.append("Select model from picker")
         }
 
         // Temperature adjustment
-        modernViewModel.updateTemperature(0.8)
-        if modernViewModel.providerConfigState?.temperature == 0.8 {
+        modernViewModel?.updateTemperature(0.8)
+        if modernViewModel?.providerConfigState?.temperature == 0.8 {
             workingInteractions.append("Adjust temperature slider")
         }
 
@@ -171,13 +171,13 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
         // Drag to reorder (functional test)
         let indexSet = IndexSet([0])
         Task {
-            await modernViewModel.moveProvider(from: indexSet, to: 1)
+            await modernViewModel?.moveProvider(from: indexSet, to: 1)
         }
         workingInteractions.append("Drag to reorder providers")
 
         // Clear all confirmation
-        modernViewModel.showClearConfirmation()
-        if case .clearConfirmation = modernViewModel.alert {
+        modernViewModel?.showClearConfirmation()
+        if case .clearConfirmation = modernViewModel?.alert {
             workingInteractions.append("Clear all with confirmation")
         }
 
@@ -190,12 +190,12 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
         // RED: Should fail - state management equivalence not validated
 
         // Test state transitions match TCA behavior
-        let originalState = modernViewModel.uiState
+        let originalState = modernViewModel?.uiState
         XCTAssertEqual(originalState, .idle)
 
         // Loading state
         let loadTask = Task {
-            await modernViewModel.loadConfigurations()
+            await modernViewModel?.loadConfigurations()
         }
 
         // State should transition (but may fail in RED phase)
@@ -203,24 +203,24 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
         await loadTask.value
 
         // State should be loaded or error (not idle)
-        XCTAssertNotEqual(modernViewModel.uiState, .idle)
+        XCTAssertNotEqual(modernViewModel?.uiState, .idle)
 
         // Error state handling
         mockConfigService.shouldSucceed = false
-        await modernViewModel.loadConfigurations()
+        await modernViewModel?.loadConfigurations()
 
-        if case .error = modernViewModel.uiState {
+        if case .error = modernViewModel?.uiState {
             // Error state correctly set
         } else {
             XCTFail("Should set error state on failure")
         }
 
         // Alert state management
-        modernViewModel.showError("Test error")
-        XCTAssertTrue(modernViewModel.isAlertPresented)
+        modernViewModel?.showError("Test error")
+        XCTAssertTrue(modernViewModel?.isAlertPresented == true)
 
-        modernViewModel.dismissAlert()
-        XCTAssertFalse(modernViewModel.isAlertPresented)
+        modernViewModel?.dismissAlert()
+        XCTAssertFalse(modernViewModel?.isAlertPresented == true)
     }
 
     func test_migrationParity_actionsMappedToMethods() {
@@ -244,43 +244,43 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
         var mappedActions: [String] = []
 
         // Test each mapping
-        modernViewModel.selectProvider(.claude)
-        if modernViewModel.selectedProvider == .claude {
+        modernViewModel?.selectProvider(.claude)
+        if modernViewModel?.selectedProvider == .claude {
             mappedActions.append("providerTapped")
         }
 
-        modernViewModel.showClearConfirmation()
-        if case .clearConfirmation = modernViewModel.alert {
+        modernViewModel?.showClearConfirmation()
+        if case .clearConfirmation = modernViewModel?.alert {
             mappedActions.append("clearAllTapped")
         }
 
         // Sheet binding (property access)
-        _ = modernViewModel.isProviderConfigSheetPresented
+        _ = modernViewModel?.isProviderConfigSheetPresented
         mappedActions.append("setProviderConfigSheet")
 
         // Configuration methods exist (compilation test)
         Task {
-            await modernViewModel.saveProviderConfiguration()
-            await modernViewModel.removeProviderConfiguration()
-            await modernViewModel.updateFallbackBehavior(.sequential)
-            await modernViewModel.moveProvider(from: IndexSet([0]), to: 1)
+            await modernViewModel?.saveProviderConfiguration()
+            await modernViewModel?.removeProviderConfiguration()
+            await modernViewModel?.updateFallbackBehavior(.sequential)
+            await modernViewModel?.moveProvider(from: IndexSet([0]), to: 1)
         }
         mappedActions.append(contentsOf: ["saveConfiguration", "removeConfiguration",
                                           "fallbackBehaviorChanged", "moveProvider"])
 
         // Model and config updates
-        modernViewModel.providerConfigState = TestFixtures.testProviderConfigState
-        modernViewModel.updateSelectedModel(TestFixtures.testModel)
-        modernViewModel.updateTemperature(0.5)
-        modernViewModel.updateCustomEndpoint("https://test.com")
+        modernViewModel?.providerConfigState = TestFixtures.testProviderConfigState
+        modernViewModel?.updateSelectedModel(TestFixtures.testModel)
+        modernViewModel?.updateTemperature(0.5)
+        modernViewModel?.updateCustomEndpoint("https://test.com")
 
-        if modernViewModel.providerConfigState?.selectedModel == TestFixtures.testModel {
+        if modernViewModel?.providerConfigState?.selectedModel == TestFixtures.testModel {
             mappedActions.append("modelSelected")
         }
-        if modernViewModel.providerConfigState?.temperature == 0.5 {
+        if modernViewModel?.providerConfigState?.temperature == 0.5 {
             mappedActions.append("temperatureChanged")
         }
-        if modernViewModel.providerConfigState?.customEndpoint == "https://test.com" {
+        if modernViewModel?.providerConfigState?.customEndpoint == "https://test.com" {
             mappedActions.append("customEndpointChanged")
         }
 
@@ -321,28 +321,28 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
 
         // Property wrappers (simulated - actual test in view)
         let hasBindableProperties = [
-            modernViewModel.isProviderConfigSheetPresented,
-            modernViewModel.selectedProvider != nil,
-            modernViewModel.alert != nil,
+            modernViewModel?.isProviderConfigSheetPresented == true,
+            modernViewModel?.selectedProvider != nil,
+            modernViewModel?.alert != nil,
         ].contains(true)
         XCTAssertTrue(hasBindableProperties)
 
         // Async/await pattern
         Task {
-            await modernViewModel.loadConfigurations()
-            await modernViewModel.saveProviderConfiguration()
-            await modernViewModel.clearAllConfigurations()
+            await modernViewModel?.loadConfigurations()
+            await modernViewModel?.saveProviderConfiguration()
+            await modernViewModel?.clearAllConfigurations()
         }
 
         // Error handling with Result/throwing functions
         do {
-            _ = try await modernViewModel.testProviderConnection(TestFixtures.testConfig)
+            _ = try await modernViewModel?.testProviderConnection(TestFixtures.testConfig)
         } catch {
             // Expected to fail in RED phase
         }
 
         // State consistency
-        let stateIsConsistent = modernViewModel.isAlertPresented == (modernViewModel.alert != nil)
+        let stateIsConsistent = modernViewModel?.isAlertPresented == (modernViewModel?.alert != nil)
         XCTAssertTrue(stateIsConsistent)
     }
 
@@ -355,11 +355,11 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
         mockConfigService.shouldSucceed = true
         _ = TestFixtures.testConfig
 
-        await modernViewModel.loadConfigurations()
+        await modernViewModel?.loadConfigurations()
 
         // Existing configuration should be loaded (will fail in RED phase)
         // This test ensures no data loss during migration
-        XCTAssertNotNil(modernViewModel.activeProvider ?? mockConfigService.mockActiveProvider)
+        XCTAssertNotNil(modernViewModel?.activeProvider ?? mockConfigService?.mockActiveProvider)
     }
 
     func test_existingAPIKeys_remainValid() async {
@@ -367,7 +367,7 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
 
         // Simulate existing API keys in keychain (property is read-only, simulated via mock setup)
 
-        let isValid = modernViewModel.validateAPIKeyFormat("sk-ant-test123", for: .claude)
+        let isValid = modernViewModel?.validateAPIKeyFormat("sk-ant-test123", for: .claude) ?? false
         XCTAssertTrue(isValid)
 
         // Keys should remain accessible after migration
@@ -384,12 +384,12 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
             fallbackBehavior: .costOptimized
         )
 
-        modernViewModel.providerPriority = testPriority
-        await modernViewModel.updateFallbackBehavior(.costOptimized)
+        modernViewModel?.providerPriority = testPriority
+        await modernViewModel?.updateFallbackBehavior(.costOptimized)
 
         // Priority should be preserved (will fail in RED phase)
-        XCTAssertEqual(modernViewModel.providerPriority.fallbackBehavior, .costOptimized)
-        XCTAssertEqual(modernViewModel.providerPriority.providers, [.claude, .openAI, .gemini])
+        XCTAssertEqual(modernViewModel?.providerPriority.fallbackBehavior, .costOptimized)
+        XCTAssertEqual(modernViewModel?.providerPriority.providers, [.claude, .openAI, .gemini])
     }
 
     func test_noSecurityRegression_validated() async {
@@ -407,19 +407,19 @@ final class MigrationTCAToSwiftUIValidationTests: XCTestCase {
         var validatedFeatures: [String: Bool] = securityFeatures
 
         // Test biometric authentication
-        modernViewModel.providerConfigState = TestFixtures.testProviderConfigState
-        await modernViewModel.authenticateAndSave()
-        if mockService.authenticateAndSaveAPICalled {
+        modernViewModel?.providerConfigState = TestFixtures.testProviderConfigState
+        await modernViewModel?.authenticateAndSave()
+        if mockService?.authenticateAndSaveAPICalled == true {
             validatedFeatures["Biometric authentication required"] = true
         }
 
         // Test encrypted storage (simulated)
-        if mockKeychainService.usesEncryption {
+        if mockKeychainService?.usesEncryption == true {
             validatedFeatures["API keys encrypted in keychain"] = true
         }
 
         // Test no plaintext storage
-        let apiKey = modernViewModel.providerConfigState?.apiKey ?? ""
+        let apiKey = modernViewModel?.providerConfigState?.apiKey ?? ""
         if apiKey.isEmpty || !apiKey.contains("plaintext") {
             validatedFeatures["No plaintext key storage"] = true
         }

@@ -126,7 +126,7 @@ final class SimpleAdaptiveFormRLTests: XCTestCase {
     func testValueExplanationEngine_canGenerateExplanation() {
         let engine = ValueExplanationEngine()
 
-        let userProfile = UserProfile(
+        let userProfile = AppCore.UserProfile(
             id: UUID(),
             fullName: "Test User",
             title: "Developer",
@@ -141,8 +141,8 @@ final class SimpleAdaptiveFormRLTests: XCTestCase {
             defaultAdministeredByAddress: Address(),
             defaultPaymentAddress: Address(),
             defaultDeliveryAddress: Address(),
-            profileImageData: nil,
-            organizationLogoData: nil,
+            profileImageData: Data?.none,
+            organizationLogoData: Data?.none,
             website: "",
             linkedIn: "",
             twitter: "",
@@ -259,7 +259,7 @@ final class SimpleAdaptiveFormRLTests: XCTestCase {
             ),
         ])
 
-        let userProfile = UserProfile(
+        let userProfile = AppCore.UserProfile(
             id: UUID(),
             fullName: "Test User",
             title: "Contracting Officer",
@@ -274,8 +274,8 @@ final class SimpleAdaptiveFormRLTests: XCTestCase {
             defaultAdministeredByAddress: Address(),
             defaultPaymentAddress: Address(),
             defaultDeliveryAddress: Address(),
-            profileImageData: nil,
-            organizationLogoData: nil,
+            profileImageData: Data?.none,
+            organizationLogoData: Data?.none,
             website: "",
             linkedIn: "",
             twitter: "",
@@ -288,13 +288,9 @@ final class SimpleAdaptiveFormRLTests: XCTestCase {
         )
 
         let acquisitionAggregate = AcquisitionAggregate(
-            id: UUID(),
             title: "IT Services Contract",
-            requirements: "Software development with cloud hosting. We need cloud services and software development expertise.",
-            projectDescription: "Software development with cloud hosting",
-            estimatedValue: 150_000,
-            deadline: Date().addingTimeInterval(60 * 24 * 3600),
-            isRecurring: false
+            description: "Software development with cloud hosting",
+            requirements: ["Software development with cloud hosting", "Cloud services and software development expertise"]
         )
 
         // This should complete without throwing
@@ -304,7 +300,7 @@ final class SimpleAdaptiveFormRLTests: XCTestCase {
             acquisitionAggregate: acquisitionAggregate
         )
 
-        XCTAssertEqual(result.source, .adaptive)
+        XCTAssertEqual(result.source, PopulationSource.adaptive)
         XCTAssertFalse(result.predictions.isEmpty)
         XCTAssertGreaterThan(result.confidence, 0.0)
     }

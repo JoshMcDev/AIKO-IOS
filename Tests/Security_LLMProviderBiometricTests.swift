@@ -29,6 +29,11 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
         mockKeychainService = MockSecureLLMKeychainService()
         mockConfigService = MockLLMConfigurationService()
 
+        guard let biometricService, let mockKeychainService, let mockConfigService else {
+            XCTFail("Services should be initialized")
+            return
+        }
+
         settingsService = LLMProviderSettingsService(
             biometricService: biometricService,
             keychainService: mockKeychainService,
@@ -47,6 +52,11 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
 
     func test_biometricAuthentication_successFlow() async {
         // RED: Should fail - biometric success flow not implemented
+        guard let mockKeychainService, let settingsService else {
+            XCTFail("Services should be initialized")
+            return
+        }
+        
         mockKeychainService.shouldRequireAuth = true
         mockKeychainService.authenticationShouldSucceed = true
 
@@ -60,6 +70,11 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
 
     func test_biometricAuthentication_failureFlow() async {
         // RED: Should fail - biometric failure handling not implemented
+        guard let mockKeychainService, let settingsService else {
+            XCTFail("Services should be initialized")
+            return
+        }
+        
         mockKeychainService.shouldRequireAuth = true
         mockKeychainService.authenticationShouldSucceed = false
 
@@ -77,6 +92,11 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
     func test_biometricAuthentication_notAvailable_fallbackToPasscode() async {
         // RED: Should fail - fallback mechanism not implemented
         // Simulate biometrics not available but passcode available
+        guard let mockKeychainService, let settingsService else {
+            XCTFail("Services should be initialized")
+            return
+        }
+        
         mockKeychainService.shouldRequireAuth = true
         mockKeychainService.biometricsAvailable = false
         mockKeychainService.passcodeAvailable = true
@@ -93,6 +113,11 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
 
     func test_biometricAuthentication_cancelled_handlesGracefully() async {
         // RED: Should fail - cancellation handling not implemented
+        guard let mockKeychainService, let settingsService else {
+            XCTFail("Services should be initialized")
+            return
+        }
+        
         mockKeychainService.shouldRequireAuth = true
         mockKeychainService.authenticationShouldCancel = true
 
@@ -107,6 +132,11 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
 
     func test_biometricAuthentication_deviceLocked_handlesCorrectly() async {
         // RED: Should fail - device locked handling not implemented
+        guard let mockKeychainService, let settingsService else {
+            XCTFail("Services should be initialized")
+            return
+        }
+        
         mockKeychainService.shouldRequireAuth = true
         mockKeychainService.deviceLocked = true
 
@@ -121,6 +151,11 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
 
     func test_biometricAuthentication_biometricsChanged_reAuthenticates() async {
         // RED: Should fail - biometrics changed handling not implemented
+        guard let mockKeychainService, let settingsService else {
+            XCTFail("Services should be initialized")
+            return
+        }
+        
         mockKeychainService.shouldRequireAuth = true
         mockKeychainService.biometricsChanged = true
 
@@ -135,6 +170,11 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
 
     func test_biometricAuthentication_timeout_handlesCorrectly() async {
         // RED: Should fail - timeout handling not implemented
+        guard let mockKeychainService, let settingsService else {
+            XCTFail("Services should be initialized")
+            return
+        }
+        
         mockKeychainService.shouldRequireAuth = true
         mockKeychainService.authenticationTimeout = true
 
@@ -149,6 +189,11 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
 
     func test_biometricAuthentication_multipleAttempts_tracked() async {
         // RED: Should fail - attempt tracking not implemented
+        guard let mockKeychainService, let settingsService else {
+            XCTFail("Services should be initialized")
+            return
+        }
+        
         mockKeychainService.shouldRequireAuth = true
         mockKeychainService.authenticationShouldSucceed = false
 
@@ -169,6 +214,11 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
 
     func test_keychainAccess_requiresBiometricOrPasscode() async {
         // RED: Should fail - keychain access control not implemented
+        guard let mockKeychainService else {
+            XCTFail("MockKeychainService should be initialized")
+            return
+        }
+        
         mockKeychainService.shouldRequireAuth = true
 
         do {
@@ -181,6 +231,11 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
 
     func test_keychainStorage_usesHardwareEncryption() async {
         // RED: Should fail - hardware encryption verification not implemented
+        guard let mockKeychainService, let settingsService else {
+            XCTFail("Services should be initialized")
+            return
+        }
+        
         mockKeychainService.shouldUseHardwareEncryption = true
 
         try? await settingsService.authenticateAndSaveAPIKey("sk-ant-test123", for: .claude)
@@ -191,6 +246,11 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
 
     func test_keychainDeletion_secureWipe() async {
         // RED: Should fail - secure deletion not implemented
+        guard let mockKeychainService, let settingsService else {
+            XCTFail("Services should be initialized")
+            return
+        }
+        
         // First save a key
         mockKeychainService.authenticationShouldSucceed = true
         try? await settingsService.authenticateAndSaveAPIKey("sk-ant-test123", for: .claude)
@@ -206,6 +266,11 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
 
     func test_keychainAccess_auditTrail() async {
         // RED: Should fail - audit trail not implemented
+        guard let mockKeychainService, let settingsService else {
+            XCTFail("Services should be initialized")
+            return
+        }
+        
         mockKeychainService.shouldTrackAccess = true
 
         try? await settingsService.authenticateAndSaveAPIKey("sk-ant-test123", for: .claude)
@@ -221,6 +286,11 @@ final class SecurityLLMProviderBiometricTests: XCTestCase {
 
     func test_configurationExport_excludesAPIKeys() async {
         // RED: Should fail - export filtering not implemented
+        guard let mockKeychainService, let settingsService else {
+            XCTFail("Services should be initialized")
+            return
+        }
+        
         mockKeychainService.authenticationShouldSucceed = true
         try? await settingsService.authenticateAndSaveAPIKey("sk-ant-test123", for: .claude)
 

@@ -35,6 +35,11 @@ final class PerformanceDocumentScannerTests: XCTestCase {
     func test_scanInitiation_completesWithin200ms() async {
         // This test will fail in RED phase - performance optimization not implemented
 
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         let expectation = XCTestExpectation(description: "Scan initiation performance")
         let startTime = CFAbsoluteTimeGetCurrent()
 
@@ -53,6 +58,11 @@ final class PerformanceDocumentScannerTests: XCTestCase {
 
     func test_cameraPresentation_meetsPerfRequirements() async {
         // This test will fail in RED phase - camera presentation optimization not implemented
+
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
 
         let startTime = CFAbsoluteTimeGetCurrent()
 
@@ -94,6 +104,11 @@ final class PerformanceDocumentScannerTests: XCTestCase {
     func test_memoryAllocation_duringInitiation_isMinimal() async {
         // This test will fail in RED phase - memory allocation monitoring not implemented
 
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         let initialMemory = getMemoryUsage()
 
         await viewModel.startScanning()
@@ -111,6 +126,11 @@ final class PerformanceDocumentScannerTests: XCTestCase {
 
     func test_scanningUI_maintains60FPS() async {
         // This test will fail in RED phase - FPS monitoring not implemented
+
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
 
         await viewModel.startScanning()
 
@@ -143,6 +163,11 @@ final class PerformanceDocumentScannerTests: XCTestCase {
     func test_pageNavigation_respondsImmediately() async {
         // This test will fail in RED phase - page navigation performance not implemented
 
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         // Add multiple pages
         for i in 1 ... 10 {
             let page = AppCore.ScannedPage(
@@ -169,6 +194,11 @@ final class PerformanceDocumentScannerTests: XCTestCase {
 
     func test_stateUpdates_doNotBlockMainThread() async {
         // This test will fail in RED phase - main thread monitoring not implemented
+
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
 
         let mainThreadMonitor = MainThreadMonitor()
         mainThreadMonitor.startMonitoring()
@@ -216,6 +246,11 @@ final class PerformanceDocumentScannerTests: XCTestCase {
     func test_memoryUsage_10PageDocument_under100MB() async {
         // This test will fail in RED phase - memory monitoring not implemented
 
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         let initialMemory = getMemoryUsage()
 
         // Add 10 high-resolution pages
@@ -244,6 +279,11 @@ final class PerformanceDocumentScannerTests: XCTestCase {
 
     func test_memoryCleanup_afterScanCompletion() async {
         // This test will fail in RED phase - memory cleanup not implemented
+
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
 
         let initialMemory = getMemoryUsage()
 
@@ -286,6 +326,11 @@ final class PerformanceDocumentScannerTests: XCTestCase {
 
     func test_memoryPressure_handledGracefully() async {
         // This test will fail in RED phase - memory pressure handling not implemented
+
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
 
         // Simulate memory pressure
         simulateMemoryPressure()
@@ -337,6 +382,11 @@ final class PerformanceDocumentScannerTests: XCTestCase {
     func test_batteryUsage_duringScanning_isMinimal() async {
         // This test will fail in RED phase - battery monitoring not implemented
 
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+
         let batteryMonitor = BatteryUsageMonitor()
         batteryMonitor.startMonitoring()
 
@@ -368,6 +418,11 @@ final class PerformanceDocumentScannerTests: XCTestCase {
 
     func test_backgroundActivity_minimizesBatteryDrain() async {
         // This test will fail in RED phase - background activity optimization not implemented
+
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
 
         let batteryMonitor = BatteryUsageMonitor()
         batteryMonitor.startMonitoring()

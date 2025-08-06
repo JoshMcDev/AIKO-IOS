@@ -595,13 +595,9 @@ final class AcquisitionContextClassifierTests: XCTestCase {
             let requirements = "Professional \(selectedKeywords.joined(separator: ", ")) services needed for project \(i)"
 
             return AppCore.AcquisitionAggregate(
-                id: UUID(),
                 title: title,
-                requirements: requirements,
-                projectDescription: "Standard \(category.lowercased()) project with \(selectedKeywords.joined(separator: " and ")) requirements",
-                estimatedValue: Double.random(in: 10000 ... 1_000_000),
-                deadline: Date().addingTimeInterval(Double.random(in: 7 ... 180) * 24 * 3600),
-                isRecurring: Bool.random()
+                description: "Standard \(category.lowercased()) project with \(selectedKeywords.joined(separator: " and ")) requirements",
+                requirements: [requirements]
             )
         }
     }
@@ -610,14 +606,4 @@ final class AcquisitionContextClassifierTests: XCTestCase {
 // MARK: - Test Extensions
 
 // UrgencyLevel already conforms to Equatable in AIKO module
-
-extension ComplexityLevel: Equatable {
-    public static func == (lhs: ComplexityLevel, rhs: ComplexityLevel) -> Bool {
-        switch (lhs, rhs) {
-        case (.high, .high), (.medium, .medium), (.low, .low):
-            true
-        default:
-            false
-        }
-    }
-}
+// ComplexityLevel already conforms to Equatable via String RawRepresentable conformance

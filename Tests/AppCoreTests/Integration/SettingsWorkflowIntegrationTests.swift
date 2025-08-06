@@ -12,6 +12,10 @@ final class SettingsWorkflowIntegrationTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws {
         viewModel = SettingsViewModel()
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         originalSettingsData = viewModel.settingsData
     }
 
@@ -283,14 +287,14 @@ final class SettingsWorkflowIntegrationTests: XCTestCase, @unchecked Sendable {
         // GIVEN: Settings view with rapid user interactions
         let updateTasks = await withTaskGroup(of: Void.self) { group in
             // Simulate rapid concurrent updates across different sections
-            group.addTask { await self.viewModel.updateAppSetting(\.theme, value: "dark") }
-            group.addTask { await self.viewModel.updateAppSetting(\.accentColor, value: "red") }
-            group.addTask { await self.viewModel.updateAPISetting(\.selectedModel, value: "GPT-4") }
-            group.addTask { await self.viewModel.updateAPISetting(\.maxRetries, value: 7) }
-            group.addTask { await self.viewModel.updateDocumentSetting(\.includeMetadata, value: false) }
-            group.addTask { await self.viewModel.updateNotificationSetting(\.enableNotifications, value: false) }
-            group.addTask { await self.viewModel.updatePrivacySetting(\.analyticsEnabled, value: true) }
-            group.addTask { await self.viewModel.updateAdvancedSetting(\.debugModeEnabled, value: true) }
+            group.addTask { await viewModel.updateAppSetting(\.theme, value: "dark") }
+            group.addTask { await viewModel.updateAppSetting(\.accentColor, value: "red") }
+            group.addTask { await viewModel.updateAPISetting(\.selectedModel, value: "GPT-4") }
+            group.addTask { await viewModel.updateAPISetting(\.maxRetries, value: 7) }
+            group.addTask { await viewModel.updateDocumentSetting(\.includeMetadata, value: false) }
+            group.addTask { await viewModel.updateNotificationSetting(\.enableNotifications, value: false) }
+            group.addTask { await viewModel.updatePrivacySetting(\.analyticsEnabled, value: true) }
+            group.addTask { await viewModel.updateAdvancedSetting(\.debugModeEnabled, value: true) }
 
             return []
         }

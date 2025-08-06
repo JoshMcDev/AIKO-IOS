@@ -39,6 +39,11 @@ final class WorkflowStateMachineTests: XCTestCase {
             metadata: ["agency": "DOD", "value": "500000"]
         )
 
+        guard let sut else {
+            XCTFail("WorkflowStateMachine should be initialized")
+            return
+        }
+
         // WHEN: Setting current state
         await sut.updateCurrentState(initialState)
 
@@ -70,6 +75,10 @@ final class WorkflowStateMachineTests: XCTestCase {
         }
 
         // THEN: Should handle concurrent updates safely
+        guard let sut else {
+            XCTFail("WorkflowStateMachine should be initialized")
+            return
+        }
         let finalProbability = await sut.getTransitionProbability(from: fromState, to: toState)
         XCTAssertEqual(finalProbability, 0.0, "Expected 0.0 probability in RED phase")
         // TODO: After GREEN phase - verify concurrent access is safe
@@ -80,6 +89,11 @@ final class WorkflowStateMachineTests: XCTestCase {
         // GIVEN: More than 1000 history entries
         let maxEntries = 1000
         let overflowEntries = 50
+
+        guard let sut else {
+            XCTFail("WorkflowStateMachine should be initialized")
+            return
+        }
 
         // WHEN: Adding entries beyond buffer capacity
         for i in 0 ..< (maxEntries + overflowEntries) {
@@ -121,6 +135,10 @@ final class WorkflowStateMachineTests: XCTestCase {
         }
 
         // THEN: Should ensure thread-safe state access without data races
+        guard let sut else {
+            XCTFail("WorkflowStateMachine should be initialized")
+            return
+        }
         let finalState = await sut.getCurrentState()
         XCTAssertNil(finalState, "Expected nil state in RED phase")
         // TODO: After GREEN phase - verify no data races occur
@@ -135,6 +153,12 @@ final class WorkflowStateMachineTests: XCTestCase {
             documentType: "Contract",
             metadata: [:]
         )
+        
+        guard let sut else {
+            XCTFail("WorkflowStateMachine should be initialized")
+            return
+        }
+        
         await sut.updateCurrentState(currentState)
 
         // WHEN: Attempting impossible transition
@@ -162,12 +186,21 @@ final class WorkflowStateMachineTests: XCTestCase {
             metadata: ["value": "2000000", "agency": "Navy"]
         )
 
+        guard let sut else {
+            XCTFail("WorkflowStateMachine should be initialized")
+            return
+        }
+
         // WHEN: Persisting state and recreating state machine
         await sut.updateCurrentState(persistedState)
         await sut.persistState()
 
         // Simulate app restart
         sut = WorkflowStateMachine()
+        guard let sut else {
+            XCTFail("WorkflowStateMachine should be initialized after restart")
+            return
+        }
         await sut.loadPersistedState()
 
         // THEN: Should preserve state across sessions
@@ -189,6 +222,11 @@ final class WorkflowStateMachineTests: XCTestCase {
             metadata: ["complexity": "high"]
         )
 
+        guard let sut else {
+            XCTFail("WorkflowStateMachine should be initialized")
+            return
+        }
+
         // WHEN: Generating predictions with sufficient data
         let predictions = await sut.predictNextStates(from: currentState, maxPredictions: 5)
 
@@ -206,6 +244,11 @@ final class WorkflowStateMachineTests: XCTestCase {
             documentType: "SF-1449",
             metadata: [:]
         )
+
+        guard let sut else {
+            XCTFail("WorkflowStateMachine should be initialized")
+            return
+        }
 
         // WHEN: Requesting predictions for new user
         let predictions = await sut.predictNextStates(from: newUserState, maxPredictions: 3)
@@ -225,6 +268,11 @@ final class WorkflowStateMachineTests: XCTestCase {
             metadata: ["performance": "good"]
         )
 
+        guard let sut else {
+            XCTFail("WorkflowStateMachine should be initialized")
+            return
+        }
+
         // WHEN: Calculating prediction confidence
         let predictions = await sut.predictNextStates(from: testState, maxPredictions: 3)
 
@@ -243,6 +291,11 @@ final class WorkflowStateMachineTests: XCTestCase {
             metadata: [:]
         )
 
+        guard let sut else {
+            XCTFail("WorkflowStateMachine should be initialized")
+            return
+        }
+
         // WHEN: Generating multiple predictions
         let predictions = await sut.predictNextStates(from: testState, maxPredictions: 5)
 
@@ -260,6 +313,11 @@ final class WorkflowStateMachineTests: XCTestCase {
             documentType: "RFP",
             metadata: ["confidence": "high"]
         )
+
+        guard let sut else {
+            XCTFail("WorkflowStateMachine should be initialized")
+            return
+        }
 
         // WHEN: Requesting predictions with limit enforcement
         let predictions = await sut.predictNextStates(from: highConfidenceState, maxPredictions: 5)
@@ -281,6 +339,11 @@ final class WorkflowStateMachineTests: XCTestCase {
             metadata: [:]
         )
 
+        guard let sut else {
+            XCTFail("WorkflowStateMachine should be initialized")
+            return
+        }
+
         // WHEN: Calculating Markov chain probabilities
         let predictions = await sut.predictNextStates(from: testState, maxPredictions: 3)
 
@@ -300,6 +363,11 @@ final class WorkflowStateMachineTests: XCTestCase {
             documentType: "RFP",
             metadata: [:]
         )
+
+        guard let sut else {
+            XCTFail("WorkflowStateMachine should be initialized")
+            return
+        }
 
         // WHEN: Generating probabilistic transitions
         let predictions = await sut.predictNextStates(from: testState, maxPredictions: 4)
@@ -321,6 +389,11 @@ final class WorkflowStateMachineTests: XCTestCase {
             metadata: ["time_of_day": "morning", "day_of_week": "tuesday"]
         )
 
+        guard let sut else {
+            XCTFail("WorkflowStateMachine should be initialized")
+            return
+        }
+
         // WHEN: Recognizing temporal patterns
         let predictions = await sut.predictNextStates(from: testState, maxPredictions: 3)
 
@@ -340,6 +413,11 @@ final class WorkflowStateMachineTests: XCTestCase {
             documentType: "RFP",
             metadata: [:]
         )
+
+        guard let sut else {
+            XCTFail("WorkflowStateMachine should be initialized")
+            return
+        }
 
         // WHEN: Measuring prediction calculation latency
         let startTime = CFAbsoluteTimeGetCurrent()
@@ -365,6 +443,11 @@ final class WorkflowStateMachineTests: XCTestCase {
             metadata: [:]
         )
 
+        guard let sut else {
+            XCTFail("WorkflowStateMachine should be initialized")
+            return
+        }
+
         // WHEN: Generating predictions under memory pressure
         let predictions = await sut.predictNextStates(from: testState, maxPredictions: 3)
 
@@ -387,6 +470,11 @@ final class WorkflowStateMachineTests: XCTestCase {
                 documentType: "TestDoc",
                 metadata: [:]
             )
+
+            guard let sut else {
+                XCTFail("WorkflowStateMachine should be initialized")
+                return
+            }
 
             // WHEN: Requesting predictions with insufficient data
             let predictions = await sut.predictNextStates(from: testState, maxPredictions: 3)

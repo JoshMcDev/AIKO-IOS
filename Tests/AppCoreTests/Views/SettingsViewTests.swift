@@ -344,6 +344,10 @@ final class SettingsViewTests: XCTestCase {
 
     func test_crossPlatformCompatibility_shouldHandleiOSAndmacOS() {
         // Given: SettingsView created for cross-platform use
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         let settingsView = SettingsView(viewModel: viewModel)
 
         // When: Checking cross-platform elements
@@ -358,6 +362,10 @@ final class SettingsViewTests: XCTestCase {
 
     func test_apiKeyManagement_shouldAllowCRUDOperations() async {
         // Given: SettingsView with API key management
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         XCTAssertTrue(viewModel.settingsData.apiSettings.apiKeys.isEmpty)
 
         // When: Adding API key
@@ -388,6 +396,10 @@ final class SettingsViewTests: XCTestCase {
 
     func test_settingsViewIntegration_shouldWorkWithAppView() {
         // Given: SettingsView as it would be used in AppView
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         let settingsView = SettingsView(viewModel: viewModel)
 
         // When: Creating view for AppView integration
@@ -400,6 +412,10 @@ final class SettingsViewTests: XCTestCase {
 
     func test_resetToDefaults_shouldRestoreAllSettings() async {
         // Given: SettingsView with modified settings
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
         await viewModel.updateAppSetting(\.theme, value: "dark")
         await viewModel.updateAPISetting(\.selectedModel, value: "GPT-4")
         await viewModel.updateDocumentSetting(\.includeMetadata, value: false)
@@ -423,6 +439,11 @@ final class SettingsViewTests: XCTestCase {
 
 extension SettingsViewTests {
     func test_sliderRanges_shouldEnforceCorrectBounds() async {
+        guard let viewModel else {
+            XCTFail("SettingsViewModel should be initialized")
+            return
+        }
+        
         // Auto save interval: 10-300 seconds
         await viewModel.updateAppSetting(\.autoSaveInterval, value: 5) // Below minimum
         XCTAssertGreaterThanOrEqual(viewModel.settingsData.appSettings.autoSaveInterval, 10)

@@ -31,9 +31,9 @@ final class FeatureStateEncoderTests: XCTestCase {
                 expectedDuration: 5400.0
             ),
             regulatoryRequirements: Set([
-                TestFARClause(clauseNumber: "52.215-1", isCritical: true),
-                TestFARClause(clauseNumber: "52.209-5", isCritical: false),
-                TestFARClause(clauseNumber: "52.233-1", isCritical: true),
+                AppCore.TestFARClause(clauseNumber: "52.215-1", isCritical: true),
+                AppCore.TestFARClause(clauseNumber: "52.209-5", isCritical: false),
+                AppCore.TestFARClause(clauseNumber: "52.233-1", isCritical: true),
             ]),
             historicalSuccess: 0.75,
             userProfile: TestUserProfile(experienceLevel: 0.8),
@@ -53,7 +53,7 @@ final class FeatureStateEncoderTests: XCTestCase {
                 expectedDuration: 28800.0
             ),
             regulatoryRequirements: Set((1 ... 15).map {
-                TestFARClause(clauseNumber: "52.215-\($0)", isCritical: $0 <= 5)
+                AppCore.TestFARClause(clauseNumber: "52.215-\($0)", isCritical: $0 <= 5)
             }),
             historicalSuccess: 0.45,
             userProfile: TestUserProfile(experienceLevel: 0.3),
@@ -72,7 +72,7 @@ final class FeatureStateEncoderTests: XCTestCase {
                 isUrgent: false,
                 expectedDuration: 1800.0
             ),
-            regulatoryRequirements: Set<TestFARClause>(),
+            regulatoryRequirements: Set(),
             historicalSuccess: 0.95,
             userProfile: TestUserProfile(experienceLevel: 0.9),
             workflowProgress: 0.0,
@@ -198,6 +198,11 @@ final class FeatureStateEncoderTests: XCTestCase {
         // RED PHASE: This test should FAIL initially
         // Testing time constraint feature encoding
 
+        guard let complexContext, let testContext, let minimalContext else {
+            XCTFail("Test contexts should be initialized")
+            return
+        }
+        
         // When: Contexts with different time constraints are encoded
         let urgentFeatures = FeatureStateEncoder.encode(complexContext) // 5 days, urgent
         let routineFeatures = FeatureStateEncoder.encode(testContext) // 45 days, not urgent
@@ -218,6 +223,11 @@ final class FeatureStateEncoderTests: XCTestCase {
         // RED PHASE: This test should FAIL initially
         // Testing historical success and user experience encoding
 
+        guard let testContext, let complexContext, let minimalContext else {
+            XCTFail("Test contexts should be initialized")
+            return
+        }
+        
         // When: Context is encoded
         let features = FeatureStateEncoder.encode(testContext)
 
@@ -411,7 +421,7 @@ final class FeatureStateEncoderTests: XCTestCase {
             acquisitionValue: 100_000_000.0, // $100M
             complexity: TestComplexityLevel(score: 1.0, factors: ["extreme"]),
             timeConstraints: TestTimeConstraints(daysRemaining: 1, isUrgent: true, expectedDuration: 86400.0),
-            regulatoryRequirements: Set<TestFARClause>(),
+            regulatoryRequirements: Set(),
             historicalSuccess: 0.0,
             userProfile: TestUserProfile(experienceLevel: 0.0),
             workflowProgress: 1.0,
@@ -448,7 +458,7 @@ final class FeatureStateEncoderTests: XCTestCase {
             acquisitionValue: 0.0,
             complexity: TestComplexityLevel(score: 0.0, factors: []),
             timeConstraints: TestTimeConstraints(daysRemaining: 0, isUrgent: false, expectedDuration: 0.0),
-            regulatoryRequirements: Set<TestFARClause>(),
+            regulatoryRequirements: Set(),
             historicalSuccess: 0.0,
             userProfile: TestUserProfile(experienceLevel: 0.0),
             workflowProgress: 0.0,
@@ -538,7 +548,7 @@ final class FeatureStateEncoderTests: XCTestCase {
                 isUrgent: index % 10 == 0,
                 expectedDuration: Double(1800 + index * 60)
             ),
-            regulatoryRequirements: Set([TestFARClause(clauseNumber: "52.215-\(index % 20 + 1)", isCritical: index % 3 == 0)]),
+            regulatoryRequirements: Set([AppCore.TestFARClause(clauseNumber: "52.215-\(index % 20 + 1)", isCritical: index % 3 == 0)]),
             historicalSuccess: Double(index % 100) / 100.0,
             userProfile: TestUserProfile(experienceLevel: Double(index % 100) / 100.0),
             workflowProgress: Double(index % 100) / 100.0,

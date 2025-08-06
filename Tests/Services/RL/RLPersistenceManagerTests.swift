@@ -21,6 +21,10 @@ final class RLPersistenceManagerTests: XCTestCase {
 
     override func setUp() async throws {
         mockCoreDataStack = AIKO.MockCoreDataStack()
+        guard let mockCoreDataStack else {
+            XCTFail("MockCoreDataStack should be initialized")
+            return
+        }
         persistenceManager = RLPersistenceManager(coreDataStack: mockCoreDataStack)
 
         // Create test feature vector
@@ -31,6 +35,11 @@ final class RLPersistenceManagerTests: XCTestCase {
             "days_remaining": 30.0,
             "is_urgent": 0.0,
         ])
+        
+        guard let testFeatureVector else {
+            XCTFail("TestFeatureVector should be initialized")
+            return
+        }
 
         // Create test bandits using AIKO types
         testBandits = [

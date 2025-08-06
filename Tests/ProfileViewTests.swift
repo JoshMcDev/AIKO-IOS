@@ -74,7 +74,7 @@ final class ProfileViewTests: XCTestCase {
     func testProfileViewModel_LoadProfile_UpdatesState() async {
         // Arrange
         let mockService = MockProfileService()
-        let testProfile = UserProfile(
+        let testProfile = AppCore.UserProfile(
             fullName: "Test User",
             email: "test@example.com"
         )
@@ -189,7 +189,7 @@ final class ProfileViewTests: XCTestCase {
     func testProfileCompletion_WithAllFields_Returns100Percent() {
         // Arrange
         let viewModel = AppCore.ProfileViewModel()
-        viewModel.profile = UserProfile(
+        viewModel.profile = AppCore.UserProfile(
             fullName: "John Doe",
             title: "Developer",
             email: "john@example.com",
@@ -207,7 +207,7 @@ final class ProfileViewTests: XCTestCase {
     func testProfileCompletion_WithPartialFields_ReturnsPartialPercentage() {
         // Arrange
         let viewModel = AppCore.ProfileViewModel()
-        viewModel.profile = UserProfile(
+        viewModel.profile = AppCore.UserProfile(
             fullName: "John Doe",
             email: "john@example.com"
         )
@@ -224,15 +224,15 @@ final class ProfileViewTests: XCTestCase {
 // MARK: - Mock Service
 
 private final class MockProfileService: ProfileServiceProtocol, @unchecked Sendable {
-    var loadProfileResult: Result<UserProfile, Error> = .success(UserProfile())
+    var loadProfileResult: Result<AppCore.UserProfile, Error> = .success(AppCore.UserProfile())
     var saveProfileResult: Result<Void, Error> = .success(())
 
     var loadProfileCalled = false
     var saveProfileCalled = false
     var saveProfileCallCount = 0
-    var savedProfile: UserProfile?
+    var savedProfile: AppCore.UserProfile?
 
-    func loadProfile() async throws -> UserProfile {
+    func loadProfile() async throws -> AppCore.UserProfile {
         loadProfileCalled = true
         switch loadProfileResult {
         case let .success(profile):
@@ -242,7 +242,7 @@ private final class MockProfileService: ProfileServiceProtocol, @unchecked Senda
         }
     }
 
-    func saveProfile(_ profile: UserProfile) async throws {
+    func saveProfile(_ profile: AppCore.UserProfile) async throws {
         saveProfileCalled = true
         saveProfileCallCount += 1
         savedProfile = profile

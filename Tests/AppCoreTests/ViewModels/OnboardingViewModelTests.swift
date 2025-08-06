@@ -34,6 +34,10 @@ final class OnboardingViewModelTests: XCTestCase {
 
     func test_initialState_shouldStartAtWelcomeStep() {
         // Given: Fresh OnboardingViewModel
+        guard let viewModel else {
+            XCTFail("OnboardingViewModel should be initialized")
+            return
+        }
         // When: Checking initial state
         // Then: Should start at welcome step
         XCTAssertEqual(viewModel.currentStep, .welcome)
@@ -44,6 +48,10 @@ final class OnboardingViewModelTests: XCTestCase {
 
     func test_stepProgression_shouldNavigateForwardThroughAllSteps() {
         // Given: OnboardingViewModel at welcome step
+        guard let viewModel else {
+            XCTFail("OnboardingViewModel should be initialized")
+            return
+        }
         XCTAssertEqual(viewModel.currentStep, .welcome)
 
         // When: Advancing through all steps
@@ -63,6 +71,10 @@ final class OnboardingViewModelTests: XCTestCase {
 
     func test_stepProgression_shouldNavigateBackwardCorrectly() {
         // Given: OnboardingViewModel at completion step
+        guard let viewModel else {
+            XCTFail("OnboardingViewModel should be initialized")
+            return
+        }
         viewModel.currentStep = .completion
 
         // When: Going back through all steps
@@ -82,6 +94,10 @@ final class OnboardingViewModelTests: XCTestCase {
 
     func test_apiKeyValidation_shouldValidateCorrectFormat() async {
         // Given: Valid API key format
+        guard let viewModel else {
+            XCTFail("OnboardingViewModel should be initialized")
+            return
+        }
         let validAPIKey = "sk-ant-api03-1234567890abcdef"
         viewModel.apiKey = validAPIKey
 
@@ -96,6 +112,10 @@ final class OnboardingViewModelTests: XCTestCase {
 
     func test_apiKeyValidation_shouldRejectInvalidFormat() async {
         // Given: Invalid API key format
+        guard let viewModel else {
+            XCTFail("OnboardingViewModel should be initialized")
+            return
+        }
         let invalidAPIKey = "invalid-key-format"
         viewModel.apiKey = invalidAPIKey
 
@@ -110,6 +130,10 @@ final class OnboardingViewModelTests: XCTestCase {
 
     func test_onboardingCompletion_shouldPersistStateAndMarkComplete() async {
         // Given: OnboardingViewModel with valid API key
+        guard let viewModel else {
+            XCTFail("OnboardingViewModel should be initialized")
+            return
+        }
         viewModel.apiKey = "sk-ant-api03-1234567890abcdef"
         viewModel.isAPIKeyValidated = true
         viewModel.currentStep = .completion
@@ -124,6 +148,10 @@ final class OnboardingViewModelTests: XCTestCase {
 
     func test_canProceed_shouldReturnCorrectStateForEachStep() {
         // Welcome step: always can proceed
+        guard let viewModel else {
+            XCTFail("OnboardingViewModel should be initialized")
+            return
+        }
         viewModel.currentStep = .welcome
         XCTAssertTrue(viewModel.canProceed)
 
@@ -148,6 +176,10 @@ final class OnboardingViewModelTests: XCTestCase {
     // MARK: - MoP Tests: Performance Requirements
 
     func test_navigationPerformance_shouldCompleteWithin100ms() {
+        guard let viewModel else {
+            XCTFail("OnboardingViewModel should be initialized")
+            return
+        }
         measure {
             for _ in 0 ..< 100 {
                 viewModel.nextStep()
@@ -157,6 +189,10 @@ final class OnboardingViewModelTests: XCTestCase {
     }
 
     func test_apiKeyValidation_shouldCompleteWithin2Seconds() async {
+        guard let viewModel else {
+            XCTFail("OnboardingViewModel should be initialized")
+            return
+        }
         let startTime = CFAbsoluteTimeGetCurrent()
 
         viewModel.apiKey = "sk-ant-api03-1234567890abcdef"
@@ -170,6 +206,10 @@ final class OnboardingViewModelTests: XCTestCase {
 
     func test_navigationPath_shouldMaintainStateForSwiftUIIntegration() {
         // Given: OnboardingViewModel with NavigationPath
+        guard let viewModel else {
+            XCTFail("OnboardingViewModel should be initialized")
+            return
+        }
         XCTAssertTrue(viewModel.navigationPath.isEmpty)
 
         // When: Adding navigation destinations
@@ -181,6 +221,10 @@ final class OnboardingViewModelTests: XCTestCase {
 
     func test_observablePattern_shouldTriggerUIUpdatesOnStateChange() {
         // Given: OnboardingViewModel in initial state
+        guard let viewModel else {
+            XCTFail("OnboardingViewModel should be initialized")
+            return
+        }
         let initialStep = viewModel.currentStep
 
         // When: Observing state changes (simulated)
@@ -197,6 +241,10 @@ final class OnboardingViewModelTests: XCTestCase {
 
     func test_faceIDSetup_shouldHandleAuthenticationErrors() async {
         // Given: Face ID setup request
+        guard let viewModel else {
+            XCTFail("OnboardingViewModel should be initialized")
+            return
+        }
         let faceIDEnabled = false
 
         // When: Toggling Face ID (should handle gracefully if not available)
@@ -208,6 +256,10 @@ final class OnboardingViewModelTests: XCTestCase {
 
     func test_skipStep_shouldAdvanceToNextStepExceptCompletion() {
         // Given: OnboardingViewModel at API setup (skippable)
+        guard let viewModel else {
+            XCTFail("OnboardingViewModel should be initialized")
+            return
+        }
         viewModel.currentStep = .apiSetup
 
         // When: Skipping step

@@ -42,6 +42,11 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
     // MARK: - State Management Tests
 
     func test_initialState_isIdle() {
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+        
         XCTAssertFalse(viewModel.isScanning)
         XCTAssertTrue(viewModel.scannedPages.isEmpty)
         XCTAssertNil(viewModel.error)
@@ -50,6 +55,11 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
     }
 
     func test_startScanning_transitionsToScanningState() async {
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+        
         await viewModel.startScanning()
         XCTAssertFalse(viewModel.isScanning) // Should be false after mock completion
         // XCTAssertNotNil(viewModel.scanSession) // scanSession property not implemented in RED phase
@@ -58,6 +68,11 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_scanningComplete_transitionsToProcessingState() async {
         // This test will fail in RED phase - needs actual implementation
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+        
         await viewModel.startScanning()
 
         // Mock a completed scan with pages
@@ -74,6 +89,11 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_scanningCancelled_transitionsToIdleState() async {
         // This test will fail in RED phase - needs cancellation implementation
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+        
         await viewModel.startScanning()
 
         // Cancel scanning (not implemented yet)
@@ -84,7 +104,12 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_scanningError_transitionsToErrorState() async {
         // This test will fail in RED phase - needs error handling
-        mockVisionKitAdapter.shouldThrowError = true
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+        
+        mockVisionKitAdapter?.shouldThrowError = true
 
         await viewModel.startScanning()
 
@@ -94,7 +119,12 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_errorRecovery_transitionsBackToIdleState() async {
         // This test will fail in RED phase - needs error recovery
-        viewModel.error = DocumentScannerError.cameraNotAvailable
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+        
+        // viewModel.error = DocumentScannerError.cameraNotAvailable // DocumentScannerError not available
 
         // Clear error (not implemented yet)
         // viewModel.clearError()
@@ -106,12 +136,23 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_checkCameraPermissions_whenAuthorized_returnsTrue() async {
         // This test will fail in RED phase - needs permission checking
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+        
         let hasPermission = await viewModel.checkCameraPermissions()
         XCTAssertTrue(hasPermission) // Will fail - not implemented
     }
 
     func test_checkCameraPermissions_whenDenied_returnsFalse() async {
         // This test will fail in RED phase - needs permission checking
+        guard let mockVisionKitAdapter,
+              let viewModel else {
+            XCTFail("MockVisionKitAdapter and ViewModel should be initialized")
+            return
+        }
+        
         mockVisionKitAdapter.cameraPermissionStatus = .denied
 
         let hasPermission = await viewModel.checkCameraPermissions()
@@ -120,6 +161,12 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_requestCameraPermissions_whenFirstTime_showsPrompt() async {
         // This test will fail in RED phase - needs permission request
+        guard let mockVisionKitAdapter,
+              let viewModel else {
+            XCTFail("MockVisionKitAdapter and ViewModel should be initialized")
+            return
+        }
+        
         mockVisionKitAdapter.cameraPermissionStatus = .notDetermined
 
         let granted = await viewModel.requestCameraPermissions()
@@ -128,6 +175,12 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_requestCameraPermissions_whenDenied_showsSettingsAlert() async {
         // This test will fail in RED phase - needs settings alert
+        guard let mockVisionKitAdapter,
+              let viewModel else {
+            XCTFail("MockVisionKitAdapter and ViewModel should be initialized")
+            return
+        }
+        
         mockVisionKitAdapter.cameraPermissionStatus = .denied
 
         let granted = await viewModel.requestCameraPermissions()
@@ -136,6 +189,12 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_cameraPermissionDenied_displaysProperErrorMessage() async {
         // This test will fail in RED phase - needs error message display
+        guard let mockVisionKitAdapter,
+              let viewModel else {
+            XCTFail("MockVisionKitAdapter and ViewModel should be initialized")
+            return
+        }
+        
         mockVisionKitAdapter.cameraPermissionStatus = .denied
 
         await viewModel.startScanning()
@@ -147,6 +206,11 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
     // MARK: - Multi-Page Scan Workflow Tests
 
     func test_multiPageScan_tracksPageCount() {
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+        
         let page1 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "", pageNumber: 1)
         let page2 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "", pageNumber: 2)
 
@@ -157,6 +221,11 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
     }
 
     func test_multiPageScan_maintainsPageOrder() {
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+        
         let page1 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "Page 1", pageNumber: 1)
         let page2 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "Page 2", pageNumber: 2)
 
@@ -168,6 +237,11 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
     }
 
     func test_addPage_updatesDocumentPages() {
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+        
         let page = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "", pageNumber: 1)
 
         viewModel.addPage(page)
@@ -177,6 +251,11 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
     }
 
     func test_removePage_updatesDocumentPagesCorrectly() {
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+        
         let page1 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "", pageNumber: 1)
         let page2 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "", pageNumber: 2)
 
@@ -190,6 +269,11 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_reorderPages_maintainsDataIntegrity() {
         // This test will fail in RED phase - needs reorder implementation
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+        
         let page1 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "Page 1", pageNumber: 1)
         let page2 = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "Page 2", pageNumber: 2)
 
@@ -204,6 +288,11 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_scanComplete_finalizesPagesCorrectly() async {
         // This test will fail in RED phase - needs finalization
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+        
         let page = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "", pageNumber: 1)
         viewModel.addPage(page)
 
@@ -217,6 +306,12 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_visionKitAdapter_integration_returnsScannedDocument() async {
         // This test will fail in RED phase - needs service integration
+        guard let mockVisionKitAdapter,
+              let viewModel else {
+            XCTFail("MockVisionKitAdapter and ViewModel should be initialized")
+            return
+        }
+        
         mockVisionKitAdapter.mockScanResult = .success(AppCore.ScannedDocument(pages: []))
 
         await viewModel.startScanning()
@@ -227,6 +322,11 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_documentImageProcessor_integration_enhancesQuality() async {
         // This test will fail in RED phase - needs processor integration
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+        
         let page = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "", pageNumber: 1)
         viewModel.addPage(page)
 
@@ -238,6 +338,12 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_serviceFailure_handlesErrorsGracefully() async {
         // This test will fail in RED phase - needs error handling
+        guard let mockVisionKitAdapter,
+              let viewModel else {
+            XCTFail("MockVisionKitAdapter and ViewModel should be initialized")
+            return
+        }
+        
         mockVisionKitAdapter.shouldThrowError = true
 
         await viewModel.startScanning()
@@ -247,6 +353,12 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_serviceTimeout_implementsProperFallback() async {
         // This test will fail in RED phase - needs timeout handling
+        guard let mockVisionKitAdapter,
+              let viewModel else {
+            XCTFail("MockVisionKitAdapter and ViewModel should be initialized")
+            return
+        }
+        
         mockVisionKitAdapter.simulateTimeout = true
 
         await viewModel.startScanning()
@@ -257,6 +369,11 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
     // MARK: - Performance Requirements Tests
 
     func test_scanInitiation_completesWithin200ms() async {
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+        
         let startTime = CFAbsoluteTimeGetCurrent()
 
         await viewModel.startScanning()
@@ -267,6 +384,11 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_stateTransitions_maintainUIResponsiveness() async {
         // This test will fail in RED phase - needs UI responsiveness measurement
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+        
         let startTime = CFAbsoluteTimeGetCurrent()
 
         await viewModel.startScanning()
@@ -277,6 +399,11 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_memoryUsage_staysBelow100MBFor10Pages() async {
         // This test will fail in RED phase - needs memory monitoring
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+        
         for i in 1 ... 10 {
             let page = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "Page \(i)", pageNumber: i)
             viewModel.addPage(page)
@@ -288,6 +415,11 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_backgroundProcessing_doesNotBlockMainThread() async {
         // This test will fail in RED phase - needs background processing
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+        
         let expectation = XCTestExpectation(description: "Background processing")
 
         Task {
@@ -311,6 +443,11 @@ final class UIDocumentScannerViewModelTests: XCTestCase {
 
     func test_largeDocumentScanning_avoidsMemoryLeaks() async {
         // This test will fail in RED phase - needs memory leak detection
+        guard let viewModel else {
+            XCTFail("ViewModel should be initialized")
+            return
+        }
+        
         for i in 1 ... 50 {
             let page = AppCore.ScannedPage(imageData: createMockImage(), ocrText: "Page \(i)", pageNumber: i)
             viewModel.addPage(page)

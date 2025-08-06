@@ -34,7 +34,7 @@ final class AdaptiveFormPerformanceTests: XCTestCase {
             modificationTracker: FormModificationTracker(coreDataActor: mockCoreDataActor),
             explanationEngine: ValueExplanationEngine(),
             metricsCollector: AdaptiveFormMetricsCollector(),
-            agenticOrchestrator: MockAgenticOrchestrator()
+            agenticOrchestrator: PerformanceMockAgenticOrchestrator()
         )
 
         // Warm up MLX Swift framework
@@ -1312,7 +1312,7 @@ enum SystemThermalState: Int {
 }
 
 /// Mock orchestrator for testing
-final class MockAgenticOrchestrator: AgenticOrchestratorProtocol {
+final class PerformanceMockAgenticOrchestrator: AgenticOrchestratorProtocol {
     func recordLearningEvent(agentId _: String, outcome _: LearningOutcome, confidence _: Double) async {
         // Mock implementation
     }

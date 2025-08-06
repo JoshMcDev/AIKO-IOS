@@ -94,6 +94,11 @@ final class UserPatternLearningEngineTests: XCTestCase {
     func testPredictionConfidenceThreshold() async throws {
         await setupTest()
         defer { Task { @MainActor in await self.teardownTest() } }
+        
+        guard let sut else {
+            XCTFail("UserPatternLearningEngine should be initialized")
+            return
+        }
 
         // GIVEN: Mixed confidence patterns in system
         await seedTestPatterns(withConfidences: [0.65, 0.69, 0.70, 0.71, 0.85])
@@ -120,6 +125,11 @@ final class UserPatternLearningEngineTests: XCTestCase {
     func testWorkflowPatternFiltering() async throws {
         await setupTest()
         defer { Task { @MainActor in await self.teardownTest() } }
+        
+        guard let sut else {
+            XCTFail("UserPatternLearningEngine should be initialized")
+            return
+        }
 
         // GIVEN: Mixed pattern types in learning engine
         await seedMixedPatternTypes()
@@ -143,6 +153,11 @@ final class UserPatternLearningEngineTests: XCTestCase {
     func testFeatureFlagIntegration() async throws {
         await setupTest()
         defer { Task { @MainActor in await self.teardownTest() } }
+        
+        guard let sut else {
+            XCTFail("UserPatternLearningEngine should be initialized")
+            return
+        }
 
         // GIVEN: Feature flag controls prediction availability
         let featureFlags = WorkflowPredictionFeatureFlags(
@@ -170,6 +185,11 @@ final class UserPatternLearningEngineTests: XCTestCase {
     func testPatternWeightingAccuracy() async throws {
         await setupTest()
         defer { Task { @MainActor in await self.teardownTest() } }
+        
+        guard let sut else {
+            XCTFail("UserPatternLearningEngine should be initialized")
+            return
+        }
 
         // GIVEN: Patterns with different recency and success rates
         await seedPatternsWithWeighting()
@@ -193,6 +213,11 @@ final class UserPatternLearningEngineTests: XCTestCase {
     func testWorkflowContextMatching() async throws {
         await setupTest()
         defer { Task { @MainActor in await self.teardownTest() } }
+        
+        guard let sut else {
+            XCTFail("UserPatternLearningEngine should be initialized")
+            return
+        }
 
         // GIVEN: Patterns with various context similarities
         await seedContextualPatterns()
@@ -218,6 +243,11 @@ final class UserPatternLearningEngineTests: XCTestCase {
     func testProcessPredictionFeedback_UpdatesAccuracy() async throws {
         await setupTest()
         defer { Task { @MainActor in await self.teardownTest() } }
+        
+        guard let sut else {
+            XCTFail("UserPatternLearningEngine should be initialized")
+            return
+        }
 
         // GIVEN: Existing predictions with initial accuracy
         let predictionId = UUID()
@@ -241,6 +271,11 @@ final class UserPatternLearningEngineTests: XCTestCase {
     func testMetricsTracking() async throws {
         await setupTest()
         defer { Task { @MainActor in await self.teardownTest() } }
+        
+        guard let sut else {
+            XCTFail("UserPatternLearningEngine should be initialized")
+            return
+        }
 
         // GIVEN: MetricsCollector is available
         let feedback = WorkflowPredictionFeedback(
@@ -263,6 +298,11 @@ final class UserPatternLearningEngineTests: XCTestCase {
     func testTransitionProbabilityUpdates() async throws {
         await setupTest()
         defer { Task { @MainActor in await self.teardownTest() } }
+        
+        guard let sut else {
+            XCTFail("UserPatternLearningEngine should be initialized")
+            return
+        }
 
         // GIVEN: WorkflowStateMachine is available
         let feedback = WorkflowPredictionFeedback(

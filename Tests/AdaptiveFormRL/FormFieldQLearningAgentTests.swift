@@ -573,14 +573,4 @@ struct QLearningExperience {
 
 // MARK: - Extensions for Testing
 
-extension FieldType: CaseIterable {
-    public static let allCases: [FieldType] = [.textField, .dropdownField, .numberField, .dateField]
-}
-
-extension ContextCategory: CaseIterable {
-    public static let allCases: [ContextCategory] = [.informationTechnology, .construction, .professionalServices, .general]
-}
-
-extension UserSegment: CaseIterable {
-    public static let allCases: [UserSegment] = [.novice, .intermediate, .expert]
-}
+// Note: FieldType, ContextCategory, and UserSegment already have CaseIterable conformance in source files
