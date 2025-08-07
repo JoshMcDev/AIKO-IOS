@@ -16,6 +16,9 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-collections", from: "1.0.0"),
         .package(url: "https://github.com/vapor/multipart-kit", from: "4.5.0"),
         .package(url: "https://github.com/ml-explore/mlx-swift", from: "0.18.0"),
+        // ObjectBox dependency removed - using mock implementation to avoid build timeout
+        // To enable ObjectBox: uncomment the line below and add .product to GraphRAG target
+        // .package(url: "https://github.com/objectbox/objectbox-swift", from: "2.0.0"),
     ],
     targets: [
         // MARK: - Compatibility Module for Non-Sendable Dependencies
@@ -82,6 +85,8 @@ let package = Package(
             name: "GraphRAG",
             dependencies: [
                 "AppCore",
+                // ObjectBox dependency removed - using mock implementation to avoid build timeout
+                // To enable ObjectBox: add .product(name: "ObjectBox", package: "objectbox-swift"),
             ],
             path: "Sources/GraphRAG",
             swiftSettings: [

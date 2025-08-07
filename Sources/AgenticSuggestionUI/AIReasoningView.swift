@@ -2,7 +2,7 @@ import AppCore
 import SwiftUI
 
 #if canImport(UIKit)
-    import UIKit
+import UIKit
 #endif
 
 /// Expandable view for displaying AI reasoning with SHAP explanations and regulatory context

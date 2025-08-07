@@ -52,7 +52,7 @@ final class PrivacyComplianceTests: XCTestCase {
         // Verify no network calls were made during processing
         let finalNetworkCalls = networkMonitor.networkCallCount
         XCTAssertEqual(initialNetworkCalls, finalNetworkCalls,
-                      "Analytics processing should not make any network calls")
+                       "Analytics processing should not make any network calls")
     }
 
     func test_dataCollection_respectsPrivacySettings() async {
@@ -83,7 +83,7 @@ final class PrivacyComplianceTests: XCTestCase {
         // Verify the raw storage is encrypted
         let rawCoreDataFile = getCoreDataFileContents()
         XCTAssertFalse(rawCoreDataFile.contains("sensitive user behavior"),
-                      "Core Data file should not contain plaintext sensitive data")
+                       "Core Data file should not contain plaintext sensitive data")
     }
 
     func test_dataTransmission_preventedCompletely() async {
@@ -100,7 +100,7 @@ final class PrivacyComplianceTests: XCTestCase {
 
         // Verify no outbound network requests were attempted
         XCTAssertEqual(networkSpy.interceptedRequests.count, 0,
-                      "No network requests should be made during analytics operations")
+                       "No network requests should be made during analytics operations")
     }
 
     // MARK: - Data Anonymization Tests
@@ -141,7 +141,7 @@ final class PrivacyComplianceTests: XCTestCase {
             )
 
             XCTAssertLessThan(inferenceRisk, 0.1,
-                             "Membership inference risk should be below 10%")
+                              "Membership inference risk should be below 10%")
         }
     }
 
@@ -156,7 +156,7 @@ final class PrivacyComplianceTests: XCTestCase {
         let obfuscatedPrecision = calculateTimingPrecision(obfuscatedData)
 
         XCTAssertLessThan(obfuscatedPrecision, originalPrecision * 0.5,
-                         "Temporal precision should be significantly reduced")
+                          "Temporal precision should be significantly reduced")
     }
 
     // MARK: - Data Retention Policy Tests
@@ -179,9 +179,9 @@ final class PrivacyComplianceTests: XCTestCase {
 
         // Verify old data is deleted, new data remains
         XCTAssertFalse(remainingData.contains(where: { $0.id == oldData.id }),
-                      "Data older than retention period should be deleted")
+                       "Data older than retention period should be deleted")
         XCTAssertTrue(remainingData.contains(where: { $0.id == newData.id }),
-                     "Data within retention period should be preserved")
+                      "Data within retention period should be preserved")
     }
 
     func test_dataRetention_handlesUserPreferences() async {
@@ -203,9 +203,9 @@ final class PrivacyComplianceTests: XCTestCase {
             let remainingData = await privacyManager.retrieveAllStoredData()
 
             XCTAssertTrue(remainingData.contains(where: { $0.id == testData.id }),
-                         "Data within \(period) should be preserved")
+                          "Data within \(period) should be preserved")
             XCTAssertFalse(remainingData.contains(where: { $0.id == expiredData.id }),
-                          "Data beyond \(period) should be deleted")
+                           "Data beyond \(period) should be deleted")
 
             // Cleanup for next iteration
             await privacyManager.clearAllData()
@@ -275,7 +275,7 @@ final class PrivacyComplianceTests: XCTestCase {
         // Verify integrity is maintained
         let currentChecksum = auditTrail.calculateChecksum()
         XCTAssertEqual(originalChecksum, currentChecksum,
-                      "Audit trail integrity should be maintained")
+                       "Audit trail integrity should be maintained")
     }
 
     // MARK: - User Consent Tests
@@ -346,7 +346,7 @@ final class PrivacyComplianceTests: XCTestCase {
         let storageLocation = await privacyManager.getDataStorageLocation()
         XCTAssertTrue(storageLocation.isLocalDevice, "Data should be stored locally")
         XCTAssertFalse(storageLocation.involvesCrossBorderTransfer,
-                      "Data should not cross borders")
+                       "Data should not cross borders")
     }
 
     func test_exportCompliance_maintainsResidencyRequirements() async {
@@ -378,12 +378,12 @@ final class PrivacyComplianceTests: XCTestCase {
 
         XCTAssertNotNil(privacyImpact.riskScore)
         XCTAssertLessThan(privacyImpact.riskScore, 0.3,
-                         "Privacy risk should be low for on-device analytics")
+                          "Privacy risk should be low for on-device analytics")
 
         XCTAssertFalse(privacyImpact.identifiedRisks.isEmpty,
-                      "Assessment should identify potential risks")
+                       "Assessment should identify potential risks")
         XCTAssertFalse(privacyImpact.mitigationMeasures.isEmpty,
-                      "Assessment should include mitigation measures")
+                       "Assessment should include mitigation measures")
     }
 
     func test_continuousPrivacyMonitoring_detectsViolations() async {
@@ -398,7 +398,7 @@ final class PrivacyComplianceTests: XCTestCase {
 
         let violations = privacyMonitor.getDetectedViolations()
         XCTAssertGreaterThanOrEqual(violations.count, 2,
-                                   "Should detect simulated privacy violations")
+                                    "Should detect simulated privacy violations")
     }
 
     // MARK: - Compliance Validation Tests

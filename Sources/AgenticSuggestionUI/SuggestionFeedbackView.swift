@@ -2,7 +2,7 @@ import AppCore
 import SwiftUI
 
 #if canImport(UIKit)
-    import UIKit
+import UIKit
 #endif
 
 /// Three-state feedback interface (Accept/Modify/Decline) with learning integration

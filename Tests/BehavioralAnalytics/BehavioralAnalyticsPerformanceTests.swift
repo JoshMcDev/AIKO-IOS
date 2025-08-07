@@ -305,7 +305,7 @@ final class PerformanceTests: XCTestCase {
 
         // Cache should improve performance significantly
         XCTAssertLessThan(warmLoadTime, coldLoadTime * 0.3,
-                         "Cached load should be at least 70% faster")
+                          "Cached load should be at least 70% faster")
         XCTAssertLessThan(warmLoadTime, 0.1, "Cached load should be under 100ms")
     }
 
@@ -331,7 +331,7 @@ final class PerformanceTests: XCTestCase {
             let memoryIncrease = currentMemory - initialMemory
 
             XCTAssertLessThan(memoryIncrease, 100 * 1024 * 1024,
-                             "Memory usage should stay under 100MB for dataset size \(datasetSize)")
+                              "Memory usage should stay under 100MB for dataset size \(datasetSize)")
         }
 
         memoryMonitor.stopMonitoring()
@@ -364,7 +364,7 @@ final class PerformanceTests: XCTestCase {
                 let memoryGrowth = currentMemory - initialMemory
 
                 XCTAssertLessThan(memoryGrowth, 10 * 1024 * 1024,
-                                 "Memory should not grow by more than 10MB after cycle \(cycle)")
+                                  "Memory should not grow by more than 10MB after cycle \(cycle)")
             }
         }
 
@@ -390,7 +390,7 @@ final class PerformanceTests: XCTestCase {
             let updateTime = CFAbsoluteTimeGetCurrent() - updateStartTime
 
             XCTAssertLessThan(updateTime, 0.01,
-                             "Real-time update \(updateCycle) should complete within 10ms")
+                              "Real-time update \(updateCycle) should complete within 10ms")
 
             try? await Task.sleep(nanoseconds: 200_000_000) // 200ms between updates
         }
@@ -443,9 +443,9 @@ final class PerformanceTests: XCTestCase {
         stressTestMonitor.stopMonitoring()
 
         XCTAssertTrue(stressTestMonitor.systemRemainedStable,
-                     "System should remain stable under stress")
+                      "System should remain stable under stress")
         XCTAssertFalse(stressTestMonitor.detectedCrashes,
-                      "No crashes should occur during stress test")
+                       "No crashes should occur during stress test")
     }
 
     // MARK: - Helper Methods
@@ -703,9 +703,9 @@ class MemoryMonitor {
         let kerr: kern_return_t = withUnsafeMutablePointer(to: &info) {
             $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
                 task_info(mach_task_self_,
-                         task_flavor_t(MACH_TASK_BASIC_INFO),
-                         $0,
-                         &count)
+                          task_flavor_t(MACH_TASK_BASIC_INFO),
+                          $0,
+                          &count)
             }
         }
 

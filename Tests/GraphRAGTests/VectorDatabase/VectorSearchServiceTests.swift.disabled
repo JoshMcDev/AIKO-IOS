@@ -1,0 +1,890 @@
+import XCTest
+import Testing
+@testable import GraphRAG
+import Foundation
+import Security
+import CryptoKit
+
+/// VectorSearchService Tests - TDD RED Phase
+/// Tests designed to FAIL initially - implementing consensus-validated TDD rubric
+/// 
+/// Test Coverage:
+/// - T-UNI-003: Service Initialization (Enhanced)
+/// - T-UNI-004: CRUD Operations (Enhanced)
+/// - FIPS 140-2 compliance validation
+/// - Thread safety with Swift 6 compliance
+/// - Actor-based architecture validation
+@Suite("VectorSearchService Tests")
+@available(iOS 16.0, macOS 13.0, *)
+struct VectorSearchServiceTests {
+    
+    // MARK: - T-UNI-003: Service Initialization (Enhanced)
+    
+    @Test("Service initialization with FIPS-validated encryption")
+    func testServiceInitialization() async throws {
+        // This WILL FAIL until VectorSearchService is implemented
+        let service = VectorSearchService.shared
+        
+        // Test actor initialization
+        #expect(throws: VectorSearchError.notInitialized) {
+            try await service.getInitializationStatus()
+        }
+        
+        // Initialize service with FIPS-validated encryption
+        try await service.initialize()
+        
+        // Validate initialization status
+        let status = try await service.getInitializationStatus()
+        #expect(status.isInitialized)
+        #expect(status.hasFIPSCompliantEncryption)
+        #expect(status.hasValidObjectBoxStore)
+        
+        // Verify ObjectBox store creation with encryption
+        let storeInfo = try await service.getStoreInformation()
+        #expect(storeInfo.isEncrypted)
+        #expect(storeInfo.encryptionKeySource == .secureEnclave)
+        #expect(storeInfo.maxDbSizeKB == 100 * 1024) // 100MB limit
+    }
+    
+    @Test("FIPS-compliant encryption implementation (Consensus Enhancement)")
+    func testFIPSCompliantEncryption() async throws {
+        let service = VectorSearchService.shared
+        
+        // This WILL FAIL until FIPS implementation is complete
+        try await service.initialize()
+        
+        // Validate integration with Apple CoreCrypto FIPS build
+        let cryptoConfig = try await service.getCryptographicConfiguration()
+        #expect(cryptoConfig.usesFIPSValidatedModules)
+        #expect(cryptoConfig.cryptographicStandard == .fips140_2)
+        #expect(cryptoConfig.certificationLevel >= .level2)
+        
+        // Test certified cryptographic module usage
+        let modules = try await service.getValidatedCryptoModules()
+        #expect(!modules.isEmpty)
+        #expect(modules.allSatisfy { $0.isFIPSValidated })
+        
+        // Validate entropy source assessments
+        let entropySource = try await service.getEntropySourceAssessment()
+        #expect(entropySource.qualityRating >= .highQuality)
+        #expect(entropySource.isHardwareBacked)
+        
+        // Test accredited lab validation pathways
+        let validationPath = try await service.getValidationPath()
+        #expect(validationPath.hasAccreditedLabCertification)
+        #expect(!validationPath.validationCertificateIds.isEmpty)
+    }
+    
+    @Test("Threat modeling scenarios validation (Consensus Enhancement)")
+    func testThreatModelingScenarios() async throws {
+        let service = VectorSearchService.shared
+        try await service.initialize()
+        
+        // Test side-channel leakage prevention
+        let testVector = generateTestEmbedding768D()
+        let queryTimes = Array<TimeInterval>()
+        
+        // This WILL FAIL until timing attack protection is implemented
+        for _ in 0..<100 {
+            let startTime = CFAbsoluteTimeGetCurrent()
+            _ = try await service.searchSimilarRegulations(
+                queryEmbedding: testVector,
+                limit: 10,
+                threshold: 0.7
+            )
+            let endTime = CFAbsoluteTimeGetCurrent()
+            queryTimes.append(endTime - startTime)
+        }
+        
+        // Validate timing attack resistance - search times should be consistent
+        let timingVariance = calculateVariance(queryTimes)
+        #expect(timingVariance < 0.01, "High timing variance indicates potential side-channel leakage")
+        
+        // Test in-memory plaintext exposure mitigation
+        let memoryScanner = try MemorySecurityScanner()
+        try await memoryScanner.scanForPlaintextEmbeddings()
+        let exposureReport = try await memoryScanner.getExposureReport()
+        #expect(exposureReport.plaintextEmbeddingsFound == 0)
+        
+        // Test malformed query injection protection
+        let malformedQueries = [
+            [], // Empty vector
+            Array(repeating: Float.nan, count: 768), // NaN values
+            Array(repeating: Float.infinity, count: 768), // Infinity values
+            Array(repeating: 0.0, count: 512), // Wrong dimensions
+            Array(repeating: 0.0, count: 1024) // Oversized dimensions
+        ]
+        
+        for malformedQuery in malformedQueries {
+            #expect(throws: VectorSearchError.invalidQueryVector) {
+                _ = try await service.searchSimilarRegulations(
+                    queryEmbedding: malformedQuery,
+                    limit: 10,
+                    threshold: 0.7
+                )
+            }
+        }
+    }
+    
+    @Test("Failure recovery and graceful degradation")
+    func testFailureRecovery() async throws {
+        let service = VectorSearchService.shared
+        
+        // Test initialization failure scenarios
+        let corruptedService = try VectorSearchService.createWithCorruptedDatabase()
+        
+        #expect(throws: VectorSearchError.databaseCorruption) {
+            try await corruptedService.initialize()
+        }
+        
+        // Test rollback mechanisms
+        let validService = VectorSearchService.shared
+        try await validService.initialize()
+        
+        let testData = createTestRegulationData(count: 100)
+        
+        // Start batch operation and simulate failure midway
+        // This WILL FAIL until rollback mechanisms are implemented
+        try await validService.beginTransaction()
+        
+        let halfwayPoint = testData.count / 2
+        let firstHalf = Array(testData[0..<halfwayPoint])
+        
+        try await validService.storeBatchRegulations(firstHalf)
+        
+        // Simulate failure and trigger rollback
+        try await validService.simulateStorageFailure()
+        
+        #expect(throws: VectorSearchError.storageFailure) {
+            try await validService.storeBatchRegulations(Array(testData[halfwayPoint...]))
+        }
+        
+        // Verify rollback occurred - no data should be stored
+        try await validService.rollbackTransaction()
+        let storedCount = try await validService.getTotalRegulationCount()
+        #expect(storedCount == 0)
+        
+        // Test BoxStore compaction and async close scenarios
+        // This WILL FAIL until proper lifecycle management is implemented
+        try await validService.compactDatabase()
+        let compactionMetrics = try await validService.getCompactionMetrics()
+        #expect(compactionMetrics.spaceReclaimed > 0)
+        
+        try await validService.closeAsync()
+        let closeStatus = try await validService.getCloseStatus()
+        #expect(closeStatus.isGracefullyClosed)
+    }
+    
+    // MARK: - T-UNI-004: CRUD Operations (Enhanced)
+    
+    @Test("Vector storage with transaction integrity")
+    func testVectorStorage() async throws {
+        let service = VectorSearchService.shared
+        try await service.initialize()
+        
+        let testEmbedding = generateTestEmbedding768D()
+        let metadata = createTestMetadata()
+        
+        // Test individual embedding storage
+        // This WILL FAIL until storage operations are implemented
+        try await service.storeRegulationEmbedding(
+            content: "Test regulation for storage validation",
+            embedding: testEmbedding,
+            metadata: metadata
+        )
+        
+        // Verify storage with transaction integrity
+        let storedCount = try await service.getTotalRegulationCount()
+        #expect(storedCount == 1)
+        
+        // Test batch import with progress tracking
+        let batchData = createTestRegulationData(count: 50)
+        let progressTracker = VectorStorageProgressTracker()
+        
+        // This WILL FAIL until batch operations are implemented
+        try await service.storeBatchRegulationsWithProgress(
+            batchData,
+            progressHandler: { progress in
+                progressTracker.updateProgress(progress)
+            }
+        )
+        
+        let finalProgress = progressTracker.getCurrentProgress()
+        #expect(finalProgress.percentComplete == 100.0)
+        #expect(finalProgress.itemsProcessed == 50)
+        
+        // Test duplicate handling and conflict resolution
+        let duplicateData = RegulationData(
+            regulationId: batchData[0].regulationId, // Duplicate ID
+            content: "Different content for same ID",
+            embedding: generateTestEmbedding768D(),
+            metadata: createTestMetadata()
+        )
+        
+        // This WILL FAIL until conflict resolution is implemented
+        #expect(throws: VectorSearchError.duplicateRegulationId) {
+            try await service.storeRegulationEmbedding(
+                content: duplicateData.content,
+                embedding: duplicateData.embedding,
+                metadata: duplicateData.metadata
+            )
+        }
+        
+        // Test write amplification during bulk-ingest scenarios (Consensus Enhancement)
+        let bulkData = createTestRegulationData(count: 1000)
+        let storageMonitor = StorageAmplificationMonitor()
+        
+        try await storageMonitor.startMonitoring()
+        try await service.storeBatchRegulations(bulkData)
+        let amplificationMetrics = try await storageMonitor.stopMonitoring()
+        
+        // Write amplification should be reasonable (<3x for HNSW operations)
+        #expect(amplificationMetrics.writeAmplificationFactor < 3.0)
+    }
+    
+    @Test("Vector retrieval with performance validation")
+    func testVectorRetrieval() async throws {
+        let service = VectorSearchService.shared
+        try await service.initialize()
+        
+        // Store test data for retrieval
+        let testData = createTestRegulationData(count: 100)
+        try await service.storeBatchRegulations(testData)
+        
+        // Test individual vector retrieval
+        let targetId = testData[0].regulationId
+        
+        // This WILL FAIL until retrieval operations are implemented
+        let retrievedRegulation = try await service.retrieveRegulationById(targetId)
+        #expect(retrievedRegulation.regulationId == targetId)
+        #expect(retrievedRegulation.embedding.count == 768)
+        
+        // Test metadata filtering with pre-filtering optimization
+        let categoryFilter = RegulationFilter.category("Test Category")
+        
+        // This WILL FAIL until filtering is implemented
+        let filteredResults = try await service.searchRegulationsWithFilter(
+            queryEmbedding: generateTestEmbedding768D(),
+            filter: categoryFilter,
+            limit: 10
+        )
+        
+        #expect(filteredResults.allSatisfy { $0.metadata.category == "Test Category" })
+        
+        // Test not-found scenarios with proper error handling
+        #expect(throws: VectorSearchError.regulationNotFound) {
+            _ = try await service.retrieveRegulationById("NON-EXISTENT-ID")
+        }
+        
+        // Test cold-start performance after device reboot (Consensus Enhancement)
+        let coldStartService = try VectorSearchService.createColdStartInstance()
+        try await coldStartService.initialize()
+        
+        let coldStartTime = CFAbsoluteTimeGetCurrent()
+        let results = try await coldStartService.searchSimilarRegulations(
+            queryEmbedding: generateTestEmbedding768D(),
+            limit: 10,
+            threshold: 0.7
+        )
+        let coldStartDuration = CFAbsoluteTimeGetCurrent() - coldStartTime
+        
+        // Cold start should complete within 3 seconds per acceptance criteria
+        #expect(coldStartDuration < 3.0)
+        #expect(!results.isEmpty)
+    }
+    
+    @Test("Vector updates with HNSW index maintenance")
+    func testVectorUpdates() async throws {
+        let service = VectorSearchService.shared
+        try await service.initialize()
+        
+        // Store initial regulation
+        let initialData = createTestRegulationData(count: 1)[0]
+        try await service.storeRegulationEmbedding(
+            content: initialData.content,
+            embedding: initialData.embedding,
+            metadata: initialData.metadata
+        )
+        
+        // Update with new embedding
+        let updatedEmbedding = generateTestEmbedding768D()
+        let updatedContent = "Updated regulation content"
+        
+        // This WILL FAIL until update operations are implemented
+        try await service.updateRegulationEmbedding(
+            regulationId: initialData.regulationId,
+            newContent: updatedContent,
+            newEmbedding: updatedEmbedding,
+            versionInfo: "2.0"
+        )
+        
+        // Verify update occurred
+        let retrievedRegulation = try await service.retrieveRegulationById(initialData.regulationId)
+        #expect(retrievedRegulation.content == updatedContent)
+        #expect(retrievedRegulation.version == "2.0")
+        
+        // Test version tracking and conflict resolution
+        #expect(throws: VectorSearchError.versionConflict) {
+            try await service.updateRegulationEmbedding(
+                regulationId: initialData.regulationId,
+                newContent: "Conflicting update",
+                newEmbedding: generateTestEmbedding768D(),
+                expectedVersion: "1.0" // Stale version
+            )
+        }
+        
+        // Test incremental index rebuild interruption/resume logic (Consensus Enhancement)
+        let largeUpdateData = createTestRegulationData(count: 500)
+        let indexRebuildMonitor = IndexRebuildMonitor()
+        
+        try await indexRebuildMonitor.startMonitoring()
+        
+        // Start bulk update and simulate interruption
+        let updateTask = Task {
+            try await service.bulkUpdateRegulations(largeUpdateData)
+        }
+        
+        // Wait briefly then simulate interruption
+        try await Task.sleep(nanoseconds: 500_000_000) // 500ms
+        updateTask.cancel()
+        
+        // Verify interrupted rebuild can be resumed
+        let resumeResult = try await service.resumeInterruptedIndexRebuild()
+        #expect(resumeResult.wasResumed)
+        
+        let rebuildMetrics = try await indexRebuildMonitor.stopMonitoring()
+        #expect(rebuildMetrics.interruptionHandled)
+        #expect(rebuildMetrics.dataIntegrityMaintained)
+    }
+    
+    @Test("Vector deletion with index cleanup")
+    func testVectorDeletion() async throws {
+        let service = VectorSearchService.shared
+        try await service.initialize()
+        
+        // Store test data
+        let testData = createTestRegulationData(count: 50)
+        try await service.storeBatchRegulations(testData)
+        
+        let initialCount = try await service.getTotalRegulationCount()
+        #expect(initialCount == 50)
+        
+        // Test individual deletion
+        let targetId = testData[0].regulationId
+        
+        // This WILL FAIL until deletion operations are implemented
+        try await service.deleteRegulationById(targetId)
+        
+        let countAfterSingleDelete = try await service.getTotalRegulationCount()
+        #expect(countAfterSingleDelete == 49)
+        
+        // Verify regulation is actually deleted
+        #expect(throws: VectorSearchError.regulationNotFound) {
+            _ = try await service.retrieveRegulationById(targetId)
+        }
+        
+        // Test batch deletion with index cleanup
+        let idsToDelete = Array(testData[1...10]).map { $0.regulationId }
+        
+        try await service.deleteBatchRegulations(idsToDelete)
+        
+        let countAfterBatchDelete = try await service.getTotalRegulationCount()
+        #expect(countAfterBatchDelete == 39)
+        
+        // Test HNSW index consistency after deletions
+        let indexConsistencyReport = try await service.validateHNSWIndexConsistency()
+        #expect(indexConsistencyReport.isConsistent)
+        #expect(indexConsistencyReport.orphanedNodes == 0)
+        
+        // Test referential integrity preservation
+        let integrityReport = try await service.validateReferentialIntegrity()
+        #expect(integrityReport.hasIntegrityViolations == false)
+        
+        // Test out-of-sync multi-tenant replica handling (Consensus Enhancement)
+        let replicaManager = try MultiTenantReplicaManager()
+        
+        // Simulate out-of-sync replica
+        try await replicaManager.simulateReplicaDesync()
+        
+        // Test deletion with replica synchronization
+        let syncDeletion = try await service.deleteRegulationWithReplicaSync(
+            regulationId: testData[11].regulationId,
+            replicaManager: replicaManager
+        )
+        
+        #expect(syncDeletion.allReplicasSynced)
+        #expect(syncDeletion.conflictsResolved.count == 0)
+    }
+    
+    // MARK: - Swift 6 Concurrency and Thread Safety Tests
+    
+    @Test("Swift 6 strict concurrency compliance")
+    func testSwift6ConcurrencyCompliance() async throws {
+        let service = VectorSearchService.shared
+        try await service.initialize()
+        
+        // Test actor isolation with concurrent operations
+        let testData = createTestRegulationData(count: 100)
+        
+        // This WILL FAIL until proper actor isolation is implemented
+        try await withThrowingTaskGroup(of: Void.self) { group in
+            for data in testData {
+                group.addTask { @VectorSearchService in
+                    try await service.storeRegulationEmbedding(
+                        content: data.content,
+                        embedding: data.embedding,
+                        metadata: data.metadata
+                    )
+                }
+            }
+            
+            try await group.waitForAll()
+        }
+        
+        // Verify all data was stored correctly
+        let finalCount = try await service.getTotalRegulationCount()
+        #expect(finalCount == 100)
+        
+        // Test concurrent read/write operations without data races
+        let queryVector = generateTestEmbedding768D()
+        
+        try await withThrowingTaskGroup(of: Void.self) { group in
+            // Concurrent reads
+            for _ in 0..<10 {
+                group.addTask { @VectorSearchService in
+                    _ = try await service.searchSimilarRegulations(
+                        queryEmbedding: queryVector,
+                        limit: 10,
+                        threshold: 0.7
+                    )
+                }
+            }
+            
+            // Concurrent writes
+            for i in 0..<10 {
+                group.addTask { @VectorSearchService in
+                    try await service.storeRegulationEmbedding(
+                        content: "Concurrent regulation \(i)",
+                        embedding: generateTestEmbedding768D(),
+                        metadata: createTestMetadata()
+                    )
+                }
+            }
+            
+            try await group.waitForAll()
+        }
+        
+        // Validate data integrity after concurrent operations
+        let integrityReport = try await service.validateDataIntegrity()
+        #expect(integrityReport.hasIntegrityViolations == false)
+    }
+    
+    // MARK: - Helper Methods
+    
+    private func generateTestEmbedding768D() -> [Float] {
+        var embedding = Array<Float>(repeating: 0.0, count: 768)
+        
+        for i in 0..<768 {
+            embedding[i] = sin(Float(i) * 0.01) * 0.5 + 0.5
+        }
+        
+        // Normalize to unit vector
+        let magnitude = sqrt(embedding.map { $0 * $0 }.reduce(0, +))
+        if magnitude > 0 {
+            embedding = embedding.map { $0 / magnitude }
+        }
+        
+        return embedding
+    }
+    
+    private func createTestMetadata() -> RegulationMetadata {
+        return RegulationMetadata(
+            regulationNumber: "FAR-TEST-\(Int.random(in: 1000...9999))",
+            title: "Test Regulation",
+            category: "Test Category",
+            effectiveDate: Date(),
+            content: "Test content",
+            checksum: "TEST_CHECKSUM"
+        )
+    }
+    
+    private func createTestRegulationData(count: Int) -> [RegulationData] {
+        return Array(0..<count).map { i in
+            RegulationData(
+                regulationId: "FAR-TEST-\(i)",
+                content: "Test regulation content \(i)",
+                embedding: generateTestEmbedding768D(),
+                metadata: RegulationMetadata(
+                    regulationNumber: "FAR-TEST-\(i)",
+                    title: "Test Regulation \(i)",
+                    category: "Test Category",
+                    effectiveDate: Date(),
+                    content: "Test content \(i)",
+                    checksum: "CHECKSUM_\(i)"
+                )
+            )
+        }
+    }
+    
+    private func calculateVariance(_ values: [TimeInterval]) -> TimeInterval {
+        guard values.count > 1 else { return 0.0 }
+        
+        let mean = values.reduce(0, +) / Double(values.count)
+        let squaredDifferences = values.map { value in
+            let diff = value - mean
+            return diff * diff
+        }
+        
+        return squaredDifferences.reduce(0, +) / Double(values.count - 1)
+    }
+}
+
+// MARK: - Supporting Types (WILL FAIL until implemented)
+
+enum VectorSearchError: Error {
+    case notInitialized
+    case databaseCorruption
+    case invalidQueryVector
+    case regulationNotFound
+    case duplicateRegulationId
+    case versionConflict
+    case storageFailure
+    case indexCorruption
+}
+
+struct InitializationStatus {
+    let isInitialized: Bool = false
+    let hasFIPSCompliantEncryption: Bool = false
+    let hasValidObjectBoxStore: Bool = false
+}
+
+struct StoreInformation {
+    let isEncrypted: Bool = false
+    let encryptionKeySource: KeySource = .keychain
+    let maxDbSizeKB: Int = 0
+    
+    enum KeySource {
+        case keychain
+        case secureEnclave
+        case hardware
+    }
+}
+
+struct CryptographicConfiguration {
+    let usesFIPSValidatedModules: Bool = false
+    let cryptographicStandard: CryptographicStandard = .fips140_2
+    let certificationLevel: CertificationLevel = .level1
+    
+    enum CryptographicStandard {
+        case fips140_2
+        case commonCriteria
+    }
+    
+    enum CertificationLevel: Int {
+        case level1 = 1, level2, level3, level4
+    }
+}
+
+struct ValidatedCryptoModule {
+    let isFIPSValidated: Bool = false
+    let moduleId: String = ""
+}
+
+struct EntropySourceAssessment {
+    let qualityRating: QualityRating = .lowQuality
+    let isHardwareBacked: Bool = false
+    
+    enum QualityRating {
+        case lowQuality
+        case mediumQuality
+        case highQuality
+        case cryptographicGrade
+    }
+}
+
+struct ValidationPath {
+    let hasAccreditedLabCertification: Bool = false
+    let validationCertificateIds: [String] = []
+}
+
+struct MemorySecurityScanner {
+    init() throws {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func scanForPlaintextEmbeddings() async throws {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func getExposureReport() async throws -> ExposureReport {
+        throw VectorSearchError.notInitialized
+    }
+}
+
+struct ExposureReport {
+    let plaintextEmbeddingsFound: Int = 0
+}
+
+struct VectorStorageProgressTracker {
+    private var currentProgress: StorageProgress = StorageProgress()
+    
+    func updateProgress(_ progress: StorageProgress) {
+        currentProgress = progress
+    }
+    
+    func getCurrentProgress() -> StorageProgress {
+        return currentProgress
+    }
+}
+
+struct StorageProgress {
+    let percentComplete: Double = 0.0
+    let itemsProcessed: Int = 0
+    let totalItems: Int = 0
+}
+
+struct RegulationData {
+    let regulationId: String
+    let content: String
+    let embedding: [Float]
+    let metadata: RegulationMetadata
+}
+
+struct RegulationFilter {
+    static func category(_ category: String) -> RegulationFilter {
+        return RegulationFilter()
+    }
+}
+
+struct StorageAmplificationMonitor {
+    func startMonitoring() async throws {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func stopMonitoring() async throws -> AmplificationMetrics {
+        throw VectorSearchError.notInitialized
+    }
+}
+
+struct AmplificationMetrics {
+    let writeAmplificationFactor: Double = 0.0
+}
+
+struct IndexRebuildMonitor {
+    func startMonitoring() async throws {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func stopMonitoring() async throws -> RebuildMetrics {
+        throw VectorSearchError.notInitialized
+    }
+}
+
+struct RebuildMetrics {
+    let interruptionHandled: Bool = false
+    let dataIntegrityMaintained: Bool = false
+}
+
+struct ResumeResult {
+    let wasResumed: Bool = false
+}
+
+struct ConsistencyReport {
+    let isConsistent: Bool = false
+    let orphanedNodes: Int = 0
+}
+
+struct IntegrityReport {
+    let hasIntegrityViolations: Bool = true
+}
+
+struct MultiTenantReplicaManager {
+    init() throws {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func simulateReplicaDesync() async throws {
+        throw VectorSearchError.notInitialized
+    }
+}
+
+struct SyncDeletionResult {
+    let allReplicasSynced: Bool = false
+    let conflictsResolved: [String] = []
+}
+
+// VectorSearchService placeholder - WILL FAIL until implemented
+@globalActor
+actor VectorSearchService {
+    static let shared = VectorSearchService()
+    
+    private init() {}
+    
+    static func createWithCorruptedDatabase() throws -> VectorSearchService {
+        throw VectorSearchError.databaseCorruption
+    }
+    
+    static func createColdStartInstance() throws -> VectorSearchService {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func initialize() async throws {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func getInitializationStatus() async throws -> InitializationStatus {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func getStoreInformation() async throws -> StoreInformation {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func getCryptographicConfiguration() async throws -> CryptographicConfiguration {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func getValidatedCryptoModules() async throws -> [ValidatedCryptoModule] {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func getEntropySourceAssessment() async throws -> EntropySourceAssessment {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func getValidationPath() async throws -> ValidationPath {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func searchSimilarRegulations(
+        queryEmbedding: [Float],
+        limit: Int,
+        threshold: Float
+    ) async throws -> [RegulationSearchResult] {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func beginTransaction() async throws {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func storeBatchRegulations(_ data: [RegulationData]) async throws {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func simulateStorageFailure() async throws {
+        throw VectorSearchError.storageFailure
+    }
+    
+    func rollbackTransaction() async throws {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func getTotalRegulationCount() async throws -> Int {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func compactDatabase() async throws {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func getCompactionMetrics() async throws -> CompactionMetrics {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func closeAsync() async throws {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func getCloseStatus() async throws -> CloseStatus {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func storeRegulationEmbedding(
+        content: String,
+        embedding: [Float],
+        metadata: RegulationMetadata
+    ) async throws {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func storeBatchRegulationsWithProgress(
+        _ data: [RegulationData],
+        progressHandler: @escaping (StorageProgress) -> Void
+    ) async throws {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func retrieveRegulationById(_ id: String) async throws -> RegulationData {
+        throw VectorSearchError.regulationNotFound
+    }
+    
+    func searchRegulationsWithFilter(
+        queryEmbedding: [Float],
+        filter: RegulationFilter,
+        limit: Int
+    ) async throws -> [RegulationSearchResult] {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func updateRegulationEmbedding(
+        regulationId: String,
+        newContent: String,
+        newEmbedding: [Float],
+        versionInfo: String
+    ) async throws {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func updateRegulationEmbedding(
+        regulationId: String,
+        newContent: String,
+        newEmbedding: [Float],
+        expectedVersion: String
+    ) async throws {
+        throw VectorSearchError.versionConflict
+    }
+    
+    func bulkUpdateRegulations(_ data: [RegulationData]) async throws {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func resumeInterruptedIndexRebuild() async throws -> ResumeResult {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func deleteRegulationById(_ id: String) async throws {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func deleteBatchRegulations(_ ids: [String]) async throws {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func validateHNSWIndexConsistency() async throws -> ConsistencyReport {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func validateReferentialIntegrity() async throws -> IntegrityReport {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func deleteRegulationWithReplicaSync(
+        regulationId: String,
+        replicaManager: MultiTenantReplicaManager
+    ) async throws -> SyncDeletionResult {
+        throw VectorSearchError.notInitialized
+    }
+    
+    func validateDataIntegrity() async throws -> IntegrityReport {
+        throw VectorSearchError.notInitialized
+    }
+}
+
+struct CompactionMetrics {
+    let spaceReclaimed: Int = 0
+}
+
+struct CloseStatus {
+    let isGracefullyClosed: Bool = false
+}

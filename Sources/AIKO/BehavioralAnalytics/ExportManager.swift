@@ -3,11 +3,11 @@ import PDFKit
 import SwiftUI
 
 #if canImport(UIKit)
-    import UIKit
+import UIKit
 #endif
 
 #if canImport(AppKit)
-    import AppKit
+import AppKit
 #endif
 
 /// Manager for exporting analytics data in various formats
@@ -194,70 +194,70 @@ public final class ExportManager: ObservableObject {
 
         // For minimal GREEN phase implementation, return simple PDF content
         #if canImport(UIKit)
-            return try await generateUIKitPDF(data: data)
+        return try await generateUIKitPDF(data: data)
         #else
-            return try await generateSimplePDF(data: data)
+        return try await generateSimplePDF(data: data)
         #endif
     }
 
     #if canImport(UIKit)
-        private func generateUIKitPDF(data: AnalyticsDashboardData) async throws -> Data {
-            let pdfMetaData: [String: Any] = [
-                kCGPDFContextCreator as String: "AIKO Behavioral Analytics",
-                kCGPDFContextTitle as String: "Analytics Report",
-                kCGPDFContextSubject as String: "Behavioral Analytics Dashboard Export",
-            ]
+    private func generateUIKitPDF(data: AnalyticsDashboardData) async throws -> Data {
+        let pdfMetaData: [String: Any] = [
+            kCGPDFContextCreator as String: "AIKO Behavioral Analytics",
+            kCGPDFContextTitle as String: "Analytics Report",
+            kCGPDFContextSubject as String: "Behavioral Analytics Dashboard Export",
+        ]
 
-            let format = UIGraphicsPDFRendererFormat()
-            format.documentInfo = pdfMetaData
+        let format = UIGraphicsPDFRendererFormat()
+        format.documentInfo = pdfMetaData
 
-            let renderer = UIGraphicsPDFRenderer(bounds: CGRect(x: 0, y: 0, width: 612, height: 792), format: format)
+        let renderer = UIGraphicsPDFRenderer(bounds: CGRect(x: 0, y: 0, width: 612, height: 792), format: format)
 
-            await updateProgress(0.4)
+        await updateProgress(0.4)
 
-            let pdfData = renderer.pdfData { context in
-                context.beginPage()
+        let pdfData = renderer.pdfData { context in
+            context.beginPage()
 
-                var currentY: CGFloat = 50
+            var currentY: CGFloat = 50
 
-                // Title
-                let titleAttributes = [
-                    NSAttributedString.Key.font: fontFor(size: 24, weight: .bold),
-                    NSAttributedString.Key.foregroundColor: colorBlack(),
-                ]
-                let title = "Behavioral Analytics Report"
-                title.draw(at: CGPoint(x: 50, y: currentY), withAttributes: titleAttributes)
-                currentY += 40
-
-                // Date
-                let dateAttributes = [
-                    NSAttributedString.Key.font: fontFor(size: 12, weight: .regular),
-                    NSAttributedString.Key.foregroundColor: colorGray(),
-                ]
-                let dateString = "Generated: \(formatDate(data.lastUpdated))"
-                dateString.draw(at: CGPoint(x: 50, y: currentY), withAttributes: dateAttributes)
-                currentY += 30
-
-                // Overview section
-                currentY = drawUIKitSection(title: "Overview", startY: currentY, context: context)
-                currentY = drawMetric("Total Time Saved", value: formatTime(data.overview.totalTimeSaved), startY: currentY)
-                currentY = drawMetric("Learning Progress", value: "\(Int(data.overview.learningProgress * 100))%", startY: currentY)
-                currentY = drawMetric("Personalization Level", value: "\(Int(data.overview.personalizationLevel * 100))%", startY: currentY)
-                currentY = drawMetric("Automation Success", value: "\(Int(data.overview.automationSuccess * 100))%", startY: currentY)
-            }
-
-            await updateProgress(1.0)
-            return pdfData
-        }
-
-        private func drawUIKitSection(title: String, startY: CGFloat, context _: UIGraphicsPDFRendererContext) -> CGFloat {
-            let sectionAttributes = [
-                NSAttributedString.Key.font: fontFor(size: 18, weight: .bold),
+            // Title
+            let titleAttributes = [
+                NSAttributedString.Key.font: fontFor(size: 24, weight: .bold),
                 NSAttributedString.Key.foregroundColor: colorBlack(),
             ]
-            title.draw(at: CGPoint(x: 50, y: startY), withAttributes: sectionAttributes)
-            return startY + 25
+            let title = "Behavioral Analytics Report"
+            title.draw(at: CGPoint(x: 50, y: currentY), withAttributes: titleAttributes)
+            currentY += 40
+
+            // Date
+            let dateAttributes = [
+                NSAttributedString.Key.font: fontFor(size: 12, weight: .regular),
+                NSAttributedString.Key.foregroundColor: colorGray(),
+            ]
+            let dateString = "Generated: \(formatDate(data.lastUpdated))"
+            dateString.draw(at: CGPoint(x: 50, y: currentY), withAttributes: dateAttributes)
+            currentY += 30
+
+            // Overview section
+            currentY = drawUIKitSection(title: "Overview", startY: currentY, context: context)
+            currentY = drawMetric("Total Time Saved", value: formatTime(data.overview.totalTimeSaved), startY: currentY)
+            currentY = drawMetric("Learning Progress", value: "\(Int(data.overview.learningProgress * 100))%", startY: currentY)
+            currentY = drawMetric("Personalization Level", value: "\(Int(data.overview.personalizationLevel * 100))%", startY: currentY)
+            currentY = drawMetric("Automation Success", value: "\(Int(data.overview.automationSuccess * 100))%", startY: currentY)
         }
+
+        await updateProgress(1.0)
+        return pdfData
+    }
+
+    private func drawUIKitSection(title: String, startY: CGFloat, context _: UIGraphicsPDFRendererContext) -> CGFloat {
+        let sectionAttributes = [
+            NSAttributedString.Key.font: fontFor(size: 18, weight: .bold),
+            NSAttributedString.Key.foregroundColor: colorBlack(),
+        ]
+        title.draw(at: CGPoint(x: 50, y: startY), withAttributes: sectionAttributes)
+        return startY + 25
+    }
     #endif
 
     private func generateSimplePDF(data: AnalyticsDashboardData) async throws -> Data {
@@ -358,51 +358,51 @@ public final class ExportManager: ObservableObject {
 
     private func fontFor(size: CGFloat, weight: FontWeight) -> Any {
         #if canImport(UIKit)
-            switch weight {
-            case .bold:
-                return UIFont.boldSystemFont(ofSize: size)
-            case .regular:
-                return UIFont.systemFont(ofSize: size)
-            }
+        switch weight {
+        case .bold:
+            return UIFont.boldSystemFont(ofSize: size)
+        case .regular:
+            return UIFont.systemFont(ofSize: size)
+        }
         #elseif canImport(AppKit)
-            switch weight {
-            case .bold:
-                return NSFont.boldSystemFont(ofSize: size)
-            case .regular:
-                return NSFont.systemFont(ofSize: size)
-            }
-        #else
+        switch weight {
+        case .bold:
+            return NSFont.boldSystemFont(ofSize: size)
+        case .regular:
             return NSFont.systemFont(ofSize: size)
+        }
+        #else
+        return NSFont.systemFont(ofSize: size)
         #endif
     }
 
     private func colorBlack() -> Any {
         #if canImport(UIKit)
-            return UIColor.black
+        return UIColor.black
         #elseif canImport(AppKit)
-            return NSColor.black
+        return NSColor.black
         #else
-            return NSColor.black
+        return NSColor.black
         #endif
     }
 
     private func colorGray() -> Any {
         #if canImport(UIKit)
-            return UIColor.gray
+        return UIColor.gray
         #elseif canImport(AppKit)
-            return NSColor.gray
+        return NSColor.gray
         #else
-            return NSColor.gray
+        return NSColor.gray
         #endif
     }
 
     private func colorBlue() -> Any {
         #if canImport(UIKit)
-            return UIColor.blue
+        return UIColor.blue
         #elseif canImport(AppKit)
-            return NSColor.blue
+        return NSColor.blue
         #else
-            return NSColor.blue
+        return NSColor.blue
         #endif
     }
 }

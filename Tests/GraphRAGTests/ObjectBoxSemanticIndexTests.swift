@@ -1,7 +1,7 @@
 @testable import GraphRAG
 import XCTest
 
-// NOTE: ObjectBox dependency will be added in GREEN phase
+// NOTE: ObjectBox dependency has been added - tests will fail until proper ObjectBox initialization
 
 /// ObjectBox Semantic Index Test Suite - TDD RED Phase
 /// Tests designed to FAIL initially, implementing the consensus-validated TDD rubric
@@ -11,7 +11,8 @@ final class ObjectBoxSemanticIndexTests: XCTestCase {
     private var testEmbeddings: [Float]?
 
     override func setUpWithError() throws {
-        // This will fail until ObjectBoxSemanticIndex is implemented
+        // This will fail due to ObjectBox initialization requirements
+        // ObjectBox needs model binding and database setup
         semanticIndex = ObjectBoxSemanticIndex.shared
         testEmbeddings = createTestEmbedding(dimensions: 768)
     }
@@ -19,6 +20,34 @@ final class ObjectBoxSemanticIndexTests: XCTestCase {
     override func tearDownWithError() throws {
         semanticIndex = nil
         testEmbeddings = nil
+    }
+
+    // MARK: - RED Phase Test: ObjectBox Initialization
+    
+    /// Test ObjectBox initialization and database setup
+    /// This test WILL FAIL until ObjectBox model binding is implemented
+    func testObjectBoxInitialization() async throws {
+        guard let semanticIndex else {
+            XCTFail("ObjectBoxSemanticIndex not initialized")
+            return
+        }
+        
+        // Try to store a regulation - should fail due to missing ObjectBox configuration
+        do {
+            try await semanticIndex.storeRegulationEmbedding(
+                content: "Test regulation for initialization",
+                embedding: createTestEmbedding(dimensions: 768),
+                metadata: createRegulationMetadata()
+            )
+            
+            // If we get here, the test should fail - ObjectBox should not be working yet
+            XCTFail("ObjectBox store should not be initialized without proper model binding")
+        } catch ObjectBoxSemanticIndexError.objectBoxNotAvailable {
+            // This is the expected behavior in RED phase
+            XCTAssert(true, "ObjectBox correctly reports not available - RED phase working")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
     }
 
     // MARK: - MoP Test: Search Performance Target

@@ -2,7 +2,7 @@ import Charts
 import SwiftUI
 
 #if canImport(UIKit)
-    import UIKit
+import UIKit
 #endif
 
 /// Main Behavioral Analytics Dashboard View

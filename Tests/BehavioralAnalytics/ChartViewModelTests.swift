@@ -207,9 +207,9 @@ final class ChartViewModelTests: XCTestCase {
             await chartViewModel.applyFilters()
 
             XCTAssertFalse(chartViewModel.chartData.isEmpty,
-                          "Should have data for metric type: \(metricType)")
+                           "Should have data for metric type: \(metricType)")
             XCTAssertNotNil(chartViewModel.chartConfiguration.yAxisLabel,
-                          "Should have y-axis label for metric type: \(metricType)")
+                            "Should have y-axis label for metric type: \(metricType)")
         }
     }
 
@@ -353,8 +353,8 @@ final class ChartViewModelTests: XCTestCase {
 
         XCTAssertTrue(audioDescription.contains("Learning effectiveness"))
         XCTAssertTrue(audioDescription.contains("trending upward") ||
-                     audioDescription.contains("trending downward") ||
-                     audioDescription.contains("stable"))
+                        audioDescription.contains("trending downward") ||
+                        audioDescription.contains("stable"))
     }
 
     func test_chartAccessibility_providesDataSummary() async {
@@ -573,9 +573,9 @@ final class ChartViewModelTests: XCTestCase {
         let kerr: kern_return_t = withUnsafeMutablePointer(to: &info) {
             $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
                 task_info(mach_task_self_,
-                         task_flavor_t(MACH_TASK_BASIC_INFO),
-                         $0,
-                         &count)
+                          task_flavor_t(MACH_TASK_BASIC_INFO),
+                          $0,
+                          &count)
             }
         }
 

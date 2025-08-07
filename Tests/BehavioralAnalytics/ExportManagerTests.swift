@@ -664,9 +664,9 @@ final class ExportManagerTests: XCTestCase {
         let kerr: kern_return_t = withUnsafeMutablePointer(to: &info) {
             $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
                 task_info(mach_task_self_,
-                         task_flavor_t(MACH_TASK_BASIC_INFO),
-                         $0,
-                         &count)
+                          task_flavor_t(MACH_TASK_BASIC_INFO),
+                          $0,
+                          &count)
             }
         }
 

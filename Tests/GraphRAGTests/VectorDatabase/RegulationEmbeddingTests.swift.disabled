@@ -1,0 +1,549 @@
+import XCTest
+import Testing
+@testable import GraphRAG
+// NOTE: ObjectBox dependency will be added in GREEN phase
+import Foundation
+import Security
+import CryptoKit
+
+/// RegulationEmbedding Entity Tests - TDD RED Phase
+/// Tests designed to FAIL initially - implementing consensus-validated TDD rubric
+/// 
+/// Test Coverage:
+/// - T-UNI-001: Entity Creation and Validation (Enhanced)
+/// - T-UNI-002: HNSW Index Configuration (Enhanced)  
+/// - Schema evolution and migration testing
+/// - FIPS 140-2 compliance validation
+/// - Data boundary conditions and edge cases
+@Suite("RegulationEmbedding Entity Tests")
+@available(iOS 16.0, macOS 13.0, *)
+struct RegulationEmbeddingTests {
+    
+    // MARK: - T-UNI-001: Entity Creation and Validation (Enhanced)
+    
+    @Test("Entity creation with valid 768-dimensional vector")
+    func testRegulationEmbeddingCreation() async throws {
+        // Generate test embedding with exact 768 dimensions (LFM2-700M-GGUF output)
+        let testEmbedding = generateTestEmbedding768D()
+        let testMetadata = createValidRegulationMetadata()
+        
+        // This WILL FAIL until RegulationEmbedding entity is implemented
+        let embedding = RegulationEmbedding(
+            regulationId: "FAR-52.227-1",
+            content: "Test regulation content for entity validation",
+            title: "Authorization and Consent Test",
+            embedding: testEmbedding,
+            category: "Authorization",
+            effectiveDate: Date(),
+            version: "1.0",
+            checksum: "ABC123"
+        )
+        
+        // Validate required fields are set correctly
+        #expect(embedding.regulationId == "FAR-52.227-1")
+        #expect(embedding.content.count > 0)
+        #expect(embedding.embedding.count == 768)
+        #expect(embedding.category.count > 0)
+        #expect(embedding.checksum.count > 0)
+        #expect(embedding.schemaVersion == 1)
+    }
+    
+    @Test("Embedding dimension validation (768 required)")
+    func testEmbeddingDimensionValidation() async throws {
+        let validMetadata = createValidRegulationMetadata()
+        
+        // Test with correct 768 dimensions - should succeed
+        let valid768Embedding = Array(repeating: 0.5, count: 768)
+        
+        // This WILL FAIL until validation is implemented
+        #expect(throws: Never.self) {
+            let validEntity = RegulationEmbedding(
+                regulationId: "FAR-test-valid",
+                content: "Valid test content",
+                title: "Valid Test",
+                embedding: valid768Embedding,
+                category: "Test",
+                effectiveDate: Date(),
+                checksum: "VALID123"
+            )
+            try VectorValidator.validateEmbeddingDimensions(validEntity.embedding)
+        }
+        
+        // Test with incorrect dimensions - should fail
+        let invalid512Embedding = Array(repeating: 0.5, count: 512)
+        #expect(throws: VectorValidationError.invalidDimensions) {
+            try VectorValidator.validateEmbeddingDimensions(invalid512Embedding)
+        }
+        
+        // Test with zero dimensions - should fail
+        let emptyEmbedding: [Float] = []
+        #expect(throws: VectorValidationError.emptyVector) {
+            try VectorValidator.validateEmbeddingDimensions(emptyEmbedding)
+        }
+        
+        // Test with oversized dimensions - should fail
+        let oversizedEmbedding = Array(repeating: 0.5, count: 1024)
+        #expect(throws: VectorValidationError.invalidDimensions) {
+            try VectorValidator.validateEmbeddingDimensions(oversizedEmbedding)
+        }
+    }
+    
+    @Test("Data type boundary conditions (Consensus Enhancement)")
+    func testDataTypeBoundaryConditions() async throws {
+        // Test zero-vector handling
+        let zeroVector = Array(repeating: Float(0.0), count: 768)
+        
+        // This WILL FAIL until zero-vector handling is implemented
+        let zeroEmbedding = RegulationEmbedding(
+            regulationId: "FAR-zero-test",
+            content: "Zero vector test",
+            title: "Zero Vector Test",
+            embedding: zeroVector,
+            category: "Test",
+            effectiveDate: Date(),
+            checksum: "ZERO123"
+        )
+        
+        #expect(zeroEmbedding.embedding.allSatisfy { $0 == 0.0 })
+        
+        // Test near-duplicate vector detection
+        let vector1 = generateTestEmbedding768D()
+        let vector2 = vector1.map { $0 + 0.0001 } // Very similar vector
+        
+        // This WILL FAIL until near-duplicate detection is implemented
+        let similarity = try VectorMath.cosineSimilarity(vector1, vector2)
+        #expect(similarity > 0.999, "Near-duplicate vectors should have high similarity")
+        
+        // Test numerical precision edge cases
+        let precisionVector = Array(0..<768).map { Float($0) * Float.ulpOfOne }
+        
+        // This WILL FAIL until precision handling is implemented
+        let normalizedVector = try VectorMath.normalizeVector(precisionVector)
+        let magnitude = sqrt(normalizedVector.map { $0 * $0 }.reduce(0, +))
+        #expect(abs(magnitude - 1.0) < 0.0001, "Normalized vector should have unit magnitude")
+    }
+    
+    @Test("Metadata validation with uniqueness constraints")
+    func testMetadataValidation() async throws {
+        let currentDate = Date()
+        
+        // Test regulation ID uniqueness - should fail with duplicate
+        let embedding1 = RegulationEmbedding(
+            regulationId: "FAR-UNIQUE-TEST",
+            content: "First regulation content",
+            title: "First Regulation",
+            embedding: generateTestEmbedding768D(),
+            category: "Test Category",
+            effectiveDate: currentDate,
+            checksum: "FIRST123"
+        )
+        
+        let embedding2 = RegulationEmbedding(
+            regulationId: "FAR-UNIQUE-TEST", // Duplicate ID
+            content: "Second regulation content",
+            title: "Second Regulation",
+            embedding: generateTestEmbedding768D(),
+            category: "Test Category",
+            effectiveDate: currentDate,
+            checksum: "SECOND123"
+        )
+        
+        // This WILL FAIL until uniqueness constraint validation is implemented
+        #expect(throws: ValidationError.duplicateRegulationId) {
+            try RegulationValidator.validateUniqueId(embedding1.regulationId, existing: [embedding2])
+        }
+        
+        // Test effective date handling
+        let futureDate = Calendar.current.date(byAdding: .year, value: 1, to: Date())!
+        let embeddingFuture = RegulationEmbedding(
+            regulationId: "FAR-FUTURE-TEST",
+            content: "Future regulation",
+            title: "Future Regulation",
+            embedding: generateTestEmbedding768D(),
+            category: "Future",
+            effectiveDate: futureDate,
+            checksum: "FUTURE123"
+        )
+        
+        #expect(embeddingFuture.effectiveDate > Date())
+        
+        // Test version string format validation
+        let validVersions = ["1.0", "2.1.3", "10.0.0"]
+        let invalidVersions = ["", "v1.0", "1.0.0.0", "invalid"]
+        
+        // This WILL FAIL until version validation is implemented
+        for version in validVersions {
+            #expect(throws: Never.self) {
+                try VersionValidator.validateVersionString(version)
+            }
+        }
+        
+        for version in invalidVersions {
+            #expect(throws: ValidationError.invalidVersionFormat) {
+                try VersionValidator.validateVersionString(version)
+            }
+        }
+    }
+    
+    // MARK: - T-UNI-002: HNSW Index Configuration (Enhanced)
+    
+    @Test("HNSW index parameters with mobile optimization")
+    func testHNSWIndexParameters() async throws {
+        // This WILL FAIL until HNSW configuration parsing is implemented
+        let mockEntity = RegulationEmbedding()
+        
+        // Test mobile-optimized parameters from consensus validation
+        let expectedConfig = HNSWConfiguration(
+            dimensions: 768,
+            neighborsPerNode: 30,        // Balanced mobile config
+            indexingSearchCount: 200,     // Mobile-optimized efConstruction
+            distanceType: .cosine,
+            vectorCacheHintSizeKB: 1048576 // 1GB cache limit
+        )
+        
+        // This WILL FAIL until HNSWConfiguration is implemented
+        let parsedConfig = try HNSWAnnotationParser.parseConfiguration(from: mockEntity)
+        
+        #expect(parsedConfig.dimensions == expectedConfig.dimensions)
+        #expect(parsedConfig.neighborsPerNode == expectedConfig.neighborsPerNode)
+        #expect(parsedConfig.indexingSearchCount == expectedConfig.indexingSearchCount)
+        #expect(parsedConfig.distanceType == expectedConfig.distanceType)
+        #expect(parsedConfig.vectorCacheHintSizeKB == expectedConfig.vectorCacheHintSizeKB)
+    }
+    
+    @Test("HNSW parameter fuzzing under resource constraints (Consensus Enhancement)")
+    func testHNSWParameterFuzzing() async throws {
+        let testVector = generateTestEmbedding768D()
+        
+        // Test M values under different memory constraints
+        let mValues = [16, 30, 64] // From consensus validation
+        let memoryConstraints = [32_000_000, 64_000_000, 128_000_000] // 32MB, 64MB, 128MB
+        
+        for m in mValues {
+            for memoryLimit in memoryConstraints {
+                // This WILL FAIL until parameter adaptation is implemented
+                let adaptedConfig = try HNSWParameterAdapter.adaptForMemoryConstraint(
+                    baseM: m,
+                    memoryLimitBytes: memoryLimit,
+                    vectorDimensions: 768
+                )
+                
+                #expect(adaptedConfig.neighborsPerNode <= m)
+                #expect(adaptedConfig.memoryFootprintBytes <= memoryLimit)
+            }
+        }
+        
+        // Test efConstruction variations with recall/latency trade-offs
+        let efConstructionValues = [100, 200, 400]
+        
+        for efConstruction in efConstructionValues {
+            // This WILL FAIL until performance profiling is implemented
+            let metrics = try HNSWPerformanceProfiler.profileConfiguration(
+                dimensions: 768,
+                neighborsPerNode: 30,
+                indexingSearchCount: efConstruction,
+                testVectors: [testVector]
+            )
+            
+            #expect(metrics.buildLatencyMs > 0)
+            #expect(metrics.searchLatencyMs > 0)
+            #expect(metrics.recallAtK > 0.0)
+        }
+    }
+    
+    @Test("Schema evolution and migration support")
+    func testSchemaEvolution() async throws {
+        // Test schema version tracking
+        let v1Entity = RegulationEmbedding(
+            regulationId: "FAR-SCHEMA-V1",
+            content: "Schema version 1 content",
+            title: "Schema V1",
+            embedding: generateTestEmbedding768D(),
+            category: "Schema Test",
+            effectiveDate: Date(),
+            checksum: "V1_123"
+        )
+        
+        #expect(v1Entity.schemaVersion == 1)
+        
+        // This WILL FAIL until schema migration is implemented
+        let migrationPlan = try SchemaMigrationPlanner.planMigration(
+            from: 1,
+            to: 2,
+            entity: v1Entity
+        )
+        
+        #expect(migrationPlan.steps.count > 0)
+        #expect(migrationPlan.dataPreservationStrategy != .none)
+        
+        // Test backward compatibility
+        // This WILL FAIL until compatibility validation is implemented
+        #expect(throws: Never.self) {
+            try SchemaCompatibilityValidator.validateBackwardCompatibility(
+                currentVersion: 2,
+                targetVersion: 1
+            )
+        }
+        
+        // Test generated Swift code compilation after model changes
+        // This WILL FAIL until code generation validation is implemented
+        let compilationResult = try SwiftCodeValidator.validateGeneratedCode(
+            schemaVersion: 2,
+            entityDefinition: RegulationEmbedding.self
+        )
+        
+        #expect(compilationResult.isValid)
+        #expect(compilationResult.errors.isEmpty)
+    }
+    
+    // MARK: - FIPS 140-2 Compliance Testing (Consensus Critical)
+    
+    @Test("FIPS 140-2 compliant data protection")
+    func testFIPSCompliantDataProtection() async throws {
+        let sensitiveData = "Sensitive regulation content requiring protection"
+        let testEmbedding = generateTestEmbedding768D()
+        
+        // This WILL FAIL until FIPS compliance is implemented
+        let protectedEntity = try FIPSDataProtector.protectRegulationData(
+            content: sensitiveData,
+            embedding: testEmbedding,
+            regulationId: "FAR-FIPS-TEST"
+        )
+        
+        #expect(protectedEntity.isEncrypted)
+        #expect(protectedEntity.cryptographicStandard == .fips140_2)
+        
+        // Validate certified cryptographic module usage
+        let cryptoModule = try FIPSCryptoModule.getValidatedModule()
+        #expect(cryptoModule.isValidated)
+        #expect(cryptoModule.certificationLevel >= .level2)
+        
+        // Test Secure Enclave integration
+        // This WILL FAIL until Secure Enclave integration is implemented
+        let keyDerivation = try SecureEnclaveKeyDeriver.deriveEncryptionKey(
+            for: protectedEntity.regulationId
+        )
+        
+        #expect(keyDerivation.isHardwareBacked)
+        #expect(keyDerivation.enclaveGenerated)
+    }
+    
+    // MARK: - Helper Methods
+    
+    private func generateTestEmbedding768D() -> [Float] {
+        // Generate deterministic 768-dimensional embedding for testing
+        var embedding = Array<Float>(repeating: 0.0, count: 768)
+        
+        for i in 0..<768 {
+            // Create deterministic pattern for reproducible tests
+            embedding[i] = sin(Float(i) * 0.01) * 0.5 + 0.5
+        }
+        
+        // Normalize to unit vector for cosine similarity
+        let magnitude = sqrt(embedding.map { $0 * $0 }.reduce(0, +))
+        if magnitude > 0 {
+            embedding = embedding.map { $0 / magnitude }
+        }
+        
+        return embedding
+    }
+    
+    private func createValidRegulationMetadata() -> RegulationMetadata {
+        return RegulationMetadata(
+            regulationNumber: "FAR 52.227-1",
+            title: "Authorization and Consent",
+            category: "Authorization",
+            effectiveDate: Date(),
+            content: "Test regulation content",
+            checksum: "TEST_CHECKSUM_123"
+        )
+    }
+}
+
+// MARK: - Supporting Types and Enums (WILL FAIL until implemented)
+
+enum VectorValidationError: Error {
+    case invalidDimensions
+    case emptyVector
+    case invalidMagnitude
+}
+
+enum ValidationError: Error {
+    case duplicateRegulationId
+    case invalidVersionFormat
+    case invalidCategory
+}
+
+// These types WILL FAIL until implemented in GREEN phase
+struct VectorValidator {
+    static func validateEmbeddingDimensions(_ embedding: [Float]) throws {
+        throw VectorValidationError.invalidDimensions // Intentional failure for RED phase
+    }
+}
+
+struct VectorMath {
+    static func cosineSimilarity(_ a: [Float], _ b: [Float]) throws -> Float {
+        throw VectorValidationError.invalidDimensions // Intentional failure for RED phase
+    }
+    
+    static func normalizeVector(_ vector: [Float]) throws -> [Float] {
+        throw VectorValidationError.invalidDimensions // Intentional failure for RED phase
+    }
+}
+
+struct RegulationValidator {
+    static func validateUniqueId(_ id: String, existing: [RegulationEmbedding]) throws {
+        throw ValidationError.duplicateRegulationId // Intentional failure for RED phase
+    }
+}
+
+struct VersionValidator {
+    static func validateVersionString(_ version: String) throws {
+        throw ValidationError.invalidVersionFormat // Intentional failure for RED phase
+    }
+}
+
+struct HNSWConfiguration {
+    let dimensions: Int
+    let neighborsPerNode: Int
+    let indexingSearchCount: Int
+    let distanceType: DistanceType
+    let vectorCacheHintSizeKB: Int
+    let memoryFootprintBytes: Int = 0
+    
+    enum DistanceType {
+        case cosine
+        case euclidean
+    }
+}
+
+struct HNSWAnnotationParser {
+    static func parseConfiguration(from entity: RegulationEmbedding) throws -> HNSWConfiguration {
+        throw ValidationError.invalidCategory // Intentional failure for RED phase
+    }
+}
+
+struct HNSWParameterAdapter {
+    static func adaptForMemoryConstraint(
+        baseM: Int,
+        memoryLimitBytes: Int,
+        vectorDimensions: Int
+    ) throws -> HNSWConfiguration {
+        throw ValidationError.invalidCategory // Intentional failure for RED phase
+    }
+}
+
+struct HNSWPerformanceProfiler {
+    static func profileConfiguration(
+        dimensions: Int,
+        neighborsPerNode: Int,
+        indexingSearchCount: Int,
+        testVectors: [[Float]]
+    ) throws -> PerformanceMetrics {
+        throw ValidationError.invalidCategory // Intentional failure for RED phase
+    }
+}
+
+struct PerformanceMetrics {
+    let buildLatencyMs: Double = 0
+    let searchLatencyMs: Double = 0
+    let recallAtK: Double = 0
+}
+
+struct SchemaMigrationPlanner {
+    static func planMigration(
+        from: Int,
+        to: Int,
+        entity: RegulationEmbedding
+    ) throws -> MigrationPlan {
+        throw ValidationError.invalidCategory // Intentional failure for RED phase
+    }
+}
+
+struct MigrationPlan {
+    let steps: [MigrationStep] = []
+    let dataPreservationStrategy: DataPreservationStrategy = .none
+    
+    enum DataPreservationStrategy {
+        case none
+        case backup
+        case inPlace
+    }
+}
+
+struct MigrationStep {
+    let description: String = ""
+    let reversible: Bool = false
+}
+
+struct SchemaCompatibilityValidator {
+    static func validateBackwardCompatibility(
+        currentVersion: Int,
+        targetVersion: Int
+    ) throws {
+        throw ValidationError.invalidCategory // Intentional failure for RED phase
+    }
+}
+
+struct SwiftCodeValidator {
+    static func validateGeneratedCode(
+        schemaVersion: Int,
+        entityDefinition: Any.Type
+    ) throws -> CodeValidationResult {
+        throw ValidationError.invalidCategory // Intentional failure for RED phase
+    }
+}
+
+struct CodeValidationResult {
+    let isValid: Bool = false
+    let errors: [String] = []
+}
+
+// FIPS 140-2 Compliance Types (WILL FAIL until implemented)
+struct FIPSDataProtector {
+    static func protectRegulationData(
+        content: String,
+        embedding: [Float],
+        regulationId: String
+    ) throws -> ProtectedEntity {
+        throw ValidationError.invalidCategory // Intentional failure for RED phase
+    }
+}
+
+struct ProtectedEntity {
+    let isEncrypted: Bool = false
+    let cryptographicStandard: CryptographicStandard = .fips140_2
+    let regulationId: String = ""
+    
+    enum CryptographicStandard {
+        case fips140_2
+        case commonCriteria
+    }
+}
+
+struct FIPSCryptoModule {
+    let isValidated: Bool = false
+    let certificationLevel: CertificationLevel = .level1
+    
+    enum CertificationLevel: Int {
+        case level1 = 1
+        case level2 = 2
+        case level3 = 3
+        case level4 = 4
+    }
+    
+    static func getValidatedModule() throws -> FIPSCryptoModule {
+        throw ValidationError.invalidCategory // Intentional failure for RED phase
+    }
+}
+
+struct SecureEnclaveKeyDeriver {
+    static func deriveEncryptionKey(for regulationId: String) throws -> KeyDerivationResult {
+        throw ValidationError.invalidCategory // Intentional failure for RED phase
+    }
+}
+
+struct KeyDerivationResult {
+    let isHardwareBacked: Bool = false
+    let enclaveGenerated: Bool = false
+}

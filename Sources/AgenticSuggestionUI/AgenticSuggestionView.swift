@@ -802,15 +802,15 @@ private struct SystemInformationView: View {
             }
             .navigationTitle("System Information")
             #if os(iOS)
-                .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.inline)
             #endif
-                .toolbar {
-                    ToolbarItem(placement: .primaryAction) {
-                        Button("Done") {
-                            dismiss()
-                        }
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button("Done") {
+                        dismiss()
                     }
                 }
+            }
         }
     }
 
