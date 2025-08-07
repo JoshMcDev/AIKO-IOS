@@ -775,7 +775,7 @@ enum TestFixtures {
     )
 }
 
-enum TestError: Error, LocalizedError {
+enum LLMTestError: Error, LocalizedError {
     case configurationFailed
     case networkError
     case authenticationFailed
@@ -813,7 +813,7 @@ class MockLLMProviderSettingsService: LLMProviderSettingsService {
         }
 
         if !shouldSucceed {
-            throw errorToThrow ?? TestError.configurationFailed
+            throw errorToThrow ?? LLMTestError.configurationFailed
         }
     }
 
@@ -823,7 +823,7 @@ class MockLLMProviderSettingsService: LLMProviderSettingsService {
 
     override func testProviderConnection(_: LLMProviderConfig) async throws -> Bool {
         if !shouldSucceed {
-            throw errorToThrow ?? TestError.networkError
+            throw errorToThrow ?? LLMTestError.networkError
         }
         return true
     }
@@ -835,46 +835,46 @@ final class MockLLMConfigurationService: LLMConfigurationServiceProtocol, @unche
 
     func getActiveProvider() async throws -> LLMProviderConfig? {
         if !shouldSucceed {
-            throw errorToThrow ?? TestError.configurationFailed
+            throw errorToThrow ?? LLMTestError.configurationFailed
         }
         return nil
     }
 
     func getAvailableProviders() async throws -> [LLMProvider] {
         if !shouldSucceed {
-            throw errorToThrow ?? TestError.configurationFailed
+            throw errorToThrow ?? LLMTestError.configurationFailed
         }
         return []
     }
 
     func getProviderPriority() async throws -> LLMProviderSettingsViewModel.ProviderPriority? {
         if !shouldSucceed {
-            throw errorToThrow ?? TestError.configurationFailed
+            throw errorToThrow ?? LLMTestError.configurationFailed
         }
         return nil
     }
 
     func configureProvider(_: LLMProvider, apiKey _: String, config _: LLMProviderConfig) async throws {
         if !shouldSucceed {
-            throw errorToThrow ?? TestError.configurationFailed
+            throw errorToThrow ?? LLMTestError.configurationFailed
         }
     }
 
     func removeProvider(_: LLMProvider) async throws {
         if !shouldSucceed {
-            throw errorToThrow ?? TestError.configurationFailed
+            throw errorToThrow ?? LLMTestError.configurationFailed
         }
     }
 
     func clearAllConfigurations() async throws {
         if !shouldSucceed {
-            throw errorToThrow ?? TestError.configurationFailed
+            throw errorToThrow ?? LLMTestError.configurationFailed
         }
     }
 
     func updateProviderPriority(_: LLMProviderSettingsViewModel.ProviderPriority) async throws {
         if !shouldSucceed {
-            throw errorToThrow ?? TestError.configurationFailed
+            throw errorToThrow ?? LLMTestError.configurationFailed
         }
     }
 }

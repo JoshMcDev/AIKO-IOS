@@ -10,16 +10,16 @@ final class SuggestionViewModelTests: XCTestCase {
     // MARK: - Test Properties
 
     var viewModel: SuggestionViewModel?
-    var mockOrchestrator: MockAgenticOrchestrator?
+    var mockOrchestrator: SuggestionMockAgenticOrchestrator?
     var mockComplianceGuardian: MockComplianceGuardian?
-    var testContext: AcquisitionContext?
+    var testContext: AIKO.AcquisitionContext?
 
     // MARK: - Setup & Teardown
 
     override func setUp() async throws {
         try await super.setUp()
 
-        mockOrchestrator = MockAgenticOrchestrator()
+        mockOrchestrator = SuggestionMockAgenticOrchestrator()
         mockComplianceGuardian = MockComplianceGuardian()
 
         viewModel = await SuggestionViewModel(
@@ -328,8 +328,8 @@ final class SuggestionViewModelTests: XCTestCase {
 
     // MARK: - Helper Methods
 
-    private func createTestAcquisitionContext() -> AcquisitionContext {
-        AcquisitionContext(
+    private func createTestAcquisitionContext() -> AIKO.AcquisitionContext {
+        AIKO.AcquisitionContext(
             acquisitionId: UUID(),
             documentType: .requestForProposal,
             acquisitionValue: 100_000.0,
@@ -343,8 +343,8 @@ final class SuggestionViewModelTests: XCTestCase {
         )
     }
 
-    private func createTestDecisionResponse() -> DecisionResponse {
-        DecisionResponse(
+    private func createTestDecisionResponse() -> AIKO.DecisionResponse {
+        AIKO.DecisionResponse(
             selectedAction: WorkflowAction.placeholder,
             confidence: 0.78,
             decisionMode: .assisted,
@@ -355,8 +355,8 @@ final class SuggestionViewModelTests: XCTestCase {
         )
     }
 
-    private func createHighConfidenceSuggestion() -> DecisionResponse {
-        DecisionResponse(
+    private func createHighConfidenceSuggestion() -> AIKO.DecisionResponse {
+        AIKO.DecisionResponse(
             selectedAction: WorkflowAction.placeholder,
             confidence: 0.92,
             decisionMode: .autonomous,
@@ -367,8 +367,8 @@ final class SuggestionViewModelTests: XCTestCase {
         )
     }
 
-    private func createLowConfidenceSuggestion() -> DecisionResponse {
-        DecisionResponse(
+    private func createLowConfidenceSuggestion() -> AIKO.DecisionResponse {
+        AIKO.DecisionResponse(
             selectedAction: WorkflowAction.placeholder,
             confidence: 0.45,
             decisionMode: .deferred,
@@ -379,9 +379,9 @@ final class SuggestionViewModelTests: XCTestCase {
         )
     }
 
-    private func createLargeSuggestionSet() -> [DecisionResponse] {
+    private func createLargeSuggestionSet() -> [AIKO.DecisionResponse] {
         Array(0 ..< 100).map { index in
-            DecisionResponse(
+            AIKO.DecisionResponse(
                 selectedAction: WorkflowAction.placeholder,
                 confidence: Double.random(in: 0.3 ... 0.95),
                 decisionMode: .assisted,
@@ -396,12 +396,20 @@ final class SuggestionViewModelTests: XCTestCase {
 
 // MARK: - Enhanced Mock Types
 
-class MockAgenticOrchestrator: Sendable {
+class MockComplianceGuardian: Sendable {
+    var complianceIssues: [String] = []
+    
+    func checkCompliance(for context: AIKO.AcquisitionContext) -> [String] {
+        return complianceIssues
+    }
+}
+
+class SuggestionMockAgenticOrchestrator: Sendable {
     var shouldThrowError = false
     var networkError = false
     var feedbackCallCount = 0
 
-    func makeDecision(_ request: DecisionRequest) async throws -> DecisionResponse {
+    func makeDecision(_ request: DecisionRequest) async throws -> AIKO.DecisionResponse {
         if shouldThrowError {
             throw TestError.mockError
         }
@@ -410,7 +418,7 @@ class MockAgenticOrchestrator: Sendable {
             throw TestError.networkError
         }
 
-        return DecisionResponse(
+        return AIKO.DecisionResponse(
             selectedAction: WorkflowAction.placeholder,
             confidence: 0.75,
             decisionMode: .assisted,
@@ -421,7 +429,7 @@ class MockAgenticOrchestrator: Sendable {
         )
     }
 
-    func provideFeedback(for _: DecisionResponse, feedback _: AgenticUserFeedback) async throws {
+    func provideFeedback(for _: AIKO.DecisionResponse, feedback _: AgenticUserFeedback) async throws {
         feedbackCallCount += 1
 
         if shouldThrowError {

@@ -65,6 +65,11 @@ final class SecurityDocumentScannerTests: XCTestCase {
     func test_cameraPermissions_respectedCorrectly() async {
         // This test will fail in RED phase - camera permission security not implemented
 
+        guard let viewModel = viewModel else {
+            XCTFail("ViewModel not initialized")
+            return
+        }
+
         // Step 1: Verify permission is requested before camera access
         let hasPermission = await viewModel.checkCameraPermissions()
 
@@ -90,13 +95,13 @@ final class SecurityDocumentScannerTests: XCTestCase {
         // This test will fail in RED phase - secure image handling not implemented
 
         // Step 1: Scan document
-        await viewModel.startScanning()
+        await viewModel?.startScanning()
         let mockImageData = createMockImageData()
         let mockPage = AppCore.ScannedPage(
             imageData: mockImageData,
             pageNumber: 1
         )
-        viewModel.addPage(mockPage)
+        viewModel?.addPage(mockPage)
 
         // Step 2: Verify image data is encrypted in memory (not implemented)
         // let encryptedImageData = viewModel.getEncryptedImageData(for: 0)
@@ -121,8 +126,8 @@ final class SecurityDocumentScannerTests: XCTestCase {
             imageData: mockImageData,
             pageNumber: 1
         )
-        viewModel.addPage(mockPage)
-        await viewModel.saveDocument()
+        viewModel?.addPage(mockPage)
+        await viewModel?.saveDocument()
 
         // Step 2: Verify data storage compliance (not implemented)
         // let storageCompliance = await SecurityAuditor.auditDataStorage()
@@ -137,13 +142,13 @@ final class SecurityDocumentScannerTests: XCTestCase {
         // This test will fail in RED phase - background data protection not implemented
 
         // Step 1: Start scan with sensitive data
-        await viewModel.startScanning()
+        await viewModel?.startScanning()
         let sensitiveImageData = createMockImageData()
         let sensitiveePage = AppCore.ScannedPage(
             imageData: sensitiveImageData,
             pageNumber: 1
         )
-        viewModel.addPage(sensitiveePage)
+        viewModel?.addPage(sensitiveePage)
 
         // Step 2: Simulate app going to background (not implemented)
         // await viewModel.enterBackgroundMode()
@@ -176,7 +181,7 @@ final class SecurityDocumentScannerTests: XCTestCase {
             imageData: sensitiveImageData,
             pageNumber: 1
         )
-        viewModel.addPage(sensitivePage)
+        viewModel?.addPage(sensitivePage)
 
         // Step 2: Save document with encryption (not implemented)
         // await viewModel.saveDocumentWithEncryption()
@@ -206,7 +211,7 @@ final class SecurityDocumentScannerTests: XCTestCase {
             imageData: mockImageData,
             pageNumber: 1
         )
-        viewModel.addPage(mockPage)
+        viewModel?.addPage(mockPage)
 
         // await viewModel.uploadToCloud(configuration: cloudConfig)
 
@@ -257,7 +262,7 @@ final class SecurityDocumentScannerTests: XCTestCase {
             imageData: mockImageData,
             pageNumber: 1
         )
-        viewModel.addPage(mockPage)
+        viewModel?.addPage(mockPage)
         // await viewModel.saveDocument(retentionPolicy: retentionPolicy)
 
         // Step 3: Verify retention policy is enforced
@@ -277,7 +282,7 @@ final class SecurityDocumentScannerTests: XCTestCase {
         // viewModel.setSensitivityLevel(.high)
 
         // Step 2: Attempt to start scan without authentication
-        await viewModel.startScanning()
+        await viewModel?.startScanning()
 
         // Step 3: Verify biometric prompt appears (not implemented)
         // XCTAssertTrue(mockBiometricService.promptShown)
@@ -297,9 +302,9 @@ final class SecurityDocumentScannerTests: XCTestCase {
         // viewModel.setSensitivityLevel(.high)
 
         // Step 2: Simulate authentication failure
-        mockBiometricService.simulateAuthFailure()
+        mockBiometricService?.simulateAuthFailure()
 
-        await viewModel.startScanning()
+        await viewModel?.startScanning()
 
         // Step 3: Verify access is blocked (not implemented)
         // XCTAssertFalse(viewModel.isScanning)
@@ -313,14 +318,14 @@ final class SecurityDocumentScannerTests: XCTestCase {
         // This test will fail in RED phase - session timeout not implemented
 
         // Step 1: Authenticate successfully
-        mockBiometricService.simulateSuccessfulAuth()
-        await viewModel.startScanning()
+        mockBiometricService?.simulateSuccessfulAuth()
+        await viewModel?.startScanning()
 
         // Step 2: Simulate session timeout (not implemented)
         // await SessionManager.simulateTimeout()
 
         // Step 3: Attempt another scan
-        await viewModel.startScanning()
+        await viewModel?.startScanning()
 
         // Step 4: Verify re-authentication is required
         // XCTAssertTrue(mockBiometricService.promptShown)
@@ -339,8 +344,8 @@ final class SecurityDocumentScannerTests: XCTestCase {
             imageData: originalImageData,
             pageNumber: 1
         )
-        viewModel.addPage(originalPage)
-        await viewModel.saveDocument()
+        viewModel?.addPage(originalPage)
+        await viewModel?.saveDocument()
 
         // Step 2: Generate integrity hash (not implemented)
         // let integrityHash = await viewModel.generateIntegrityHash()
@@ -362,7 +367,7 @@ final class SecurityDocumentScannerTests: XCTestCase {
             imageData: secureImageData,
             pageNumber: 1
         )
-        viewModel.addPage(securePage)
+        viewModel?.addPage(securePage)
         // await viewModel.saveDocumentWithTamperDetection()
 
         // Step 2: Simulate tampering attempt (not implemented)
@@ -390,7 +395,7 @@ final class SecurityDocumentScannerTests: XCTestCase {
             imageData: sensitiveImageData,
             pageNumber: 1
         )
-        viewModel.addPage(sensitivePage)
+        viewModel?.addPage(sensitivePage)
 
         // Step 2: Process OCR with encryption (not implemented)
         // let ocrResult = await viewModel.processOCRSecurely()
@@ -437,7 +442,7 @@ final class SecurityDocumentScannerTests: XCTestCase {
             imageData: sensitiveImageData,
             pageNumber: 1
         )
-        viewModel.addPage(sensitivePage)
+        viewModel?.addPage(sensitivePage)
 
         // Step 2: Auto-detect and redact sensitive data (not implemented)
         // await viewModel.detectAndRedactSensitiveData()
