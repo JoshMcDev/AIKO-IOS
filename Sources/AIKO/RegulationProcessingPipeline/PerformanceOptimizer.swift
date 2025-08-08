@@ -249,7 +249,7 @@ public actor PerformanceOptimizer {
             // Schedule preloading in background
             Task.detached(priority: .background) {
                 // Preload logic here
-                await self.logger.debug("Preloading related item: \(relatedKey)")
+                self.logger.debug("Preloading related item: \(relatedKey)")
             }
         }
     }

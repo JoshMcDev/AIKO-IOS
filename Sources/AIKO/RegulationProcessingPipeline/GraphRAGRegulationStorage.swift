@@ -127,20 +127,11 @@ public actor GraphRAGRegulationStorage {
         }
 
         // Apply compression if enabled
-        var processedChunk = chunk
-        if enableCompression {
-            processedChunk = try await compressChunk(chunk)
-        }
+        let processedChunk = enableCompression ? try await compressChunk(chunk) : chunk
 
         // Store in vector index
-        let stringMetadata = chunk.metadata.compactMapValues { value in
-            if let stringValue = value as? String {
-                return stringValue
-            } else {
-                return String(describing: value)
-            }
-        }
-        try await vectorIndex.storeVector(id: chunk.id, vector: chunk.embedding, metadata: stringMetadata)
+        // metadata is already [String: String], so we can use it directly
+        try await vectorIndex.storeVector(id: processedChunk.id, vector: processedChunk.embedding, metadata: processedChunk.metadata)
 
         // Update caches
         if enableLRUCache {
@@ -361,8 +352,8 @@ public actor GraphRAGRegulationStorage {
 
     public func runCorruptionDetection(scope: StorageCorruptionScope) async -> StorageCorruptionDetectionResult {
         var corruptedChunkIds: [UUID] = []
-        var detectionAccuracy = 0.98
-        var indexIntegrityScore = indexStatistics.indexIntegrityScore
+        let detectionAccuracy = 0.98
+        let indexIntegrityScore = indexStatistics.indexIntegrityScore
         var affectedVectors = 0
         var metadataConsistencyScore = 1.0
 
@@ -604,7 +595,7 @@ public actor GraphRAGRegulationStorage {
         let numCommunities = max(3, min(6, indexStatistics.totalVectors / 20))
         var communities: [StorageDetectedCommunity] = []
 
-        for i in 0 ..< numCommunities {
+        for _ in 0 ..< numCommunities {
             let memberCount = max(minCommunitySize, Int.random(in: 5 ... 25))
             communities.append(StorageDetectedCommunity(
                 id: UUID(),

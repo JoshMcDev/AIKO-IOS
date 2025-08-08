@@ -114,7 +114,7 @@ public actor FailureTracker {
     public func getRecoveryStatistics() async -> RecoveryStatistics {
         // Since we're using generic Error, we can't access specific properties
         let totalRetryAttempts = failures.count // Simplified - count failures as retry attempts
-        let transientFailures = 0 // Can't determine transient failures without specific error type
+        _ = 0 // Can't determine transient failures without specific error type - using _ to suppress warning
 
         let totalAttempts = successes.count + failures.count
         let recoveryRate = totalAttempts > 0 ? Double(successes.count) / Double(totalAttempts) : 0.0

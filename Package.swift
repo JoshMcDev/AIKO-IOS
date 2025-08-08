@@ -182,17 +182,7 @@ let package = Package(
                 "GraphRAG",
                 "AppCore",
             ],
-            path: "Tests/Unit/GraphRAGTests",
-            exclude: [
-                "LFM2ServiceTests.swift.disabled",
-                "MinimalOverflowTest.swift.disabled",
-                "DebugSemanticIndexTest.swift.disabled",
-                "RegulationProcessorTests.swift.disabled",
-                "UserWorkflowTrackerTests.swift.disabled",
-                "UnifiedSearchServiceTests.swift.disabled",
-                "VectorDatabase/VectorSearchServiceTests.swift.disabled",
-                "VectorDatabase/RegulationEmbeddingTests.swift.disabled",
-            ]
+            path: "Tests/Unit/GraphRAGTests"
         ),
         // Temporarily disabled due to overlapping sources
         // .testTarget(

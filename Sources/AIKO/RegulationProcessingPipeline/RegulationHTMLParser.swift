@@ -33,7 +33,7 @@ public class RegulationHTMLParser {
         let initialMemory = await memoryMonitor.getCurrentUsage()
 
         var errors: [ParseError] = []
-        var warnings: [ParseWarning] = []
+        let warnings: [ParseWarning] = []
         var recoveryActions: [RecoveryAction] = []
         var confidence = 1.0
         var formattedContent: NSAttributedString?
@@ -442,7 +442,7 @@ public class RegulationHTMLParser {
         if let lists = try? doc.select("ol, ul") {
             for (index, list) in lists.enumerated() {
                 let depth = calculateDepth(of: list)
-                let type: ListType = (try? list.tagName()) == "ol" ? .ordered : .unordered
+                let type: ListType = list.tagName() == "ol" ? .ordered : .unordered
 
                 nestedLists.append(NestedListStructure(
                     depth: depth,
@@ -460,7 +460,7 @@ public class RegulationHTMLParser {
         var current = element.parent()
 
         while let parent = current {
-            if (try? parent.tagName()) == "li" {
+            if parent.tagName() == "li" {
                 depth += 1
             }
             current = parent.parent()
@@ -483,7 +483,7 @@ public class RegulationHTMLParser {
             }
         }
 
-        if let body = try? doc.body() {
+        if let body = doc.body() {
             traverseElement(body, currentDepth: 1)
         }
 
