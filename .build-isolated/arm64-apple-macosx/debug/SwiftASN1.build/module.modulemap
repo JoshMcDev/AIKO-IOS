@@ -1,0 +1,4 @@
+module SwiftASN1 {
+    header "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/SwiftASN1.build/SwiftASN1-Swift.h"
+    requires objc
+}

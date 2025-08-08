@@ -34,7 +34,7 @@ struct FaceIDAuthenticationView: View {
                             .font(.system(size: 60))
                             .foregroundColor(Theme.Colors.aikoAccent)
                             .overlay(
-                                ProgressView()
+                                SwiftUI.ProgressView()
                                     .progressViewStyle(CircularProgressViewStyle(tint: Theme.Colors.aikoAccent))
                                     .scaleEffect(1.5)
                             )

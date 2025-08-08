@@ -1,0 +1,4 @@
+module AsyncAlgorithms {
+    header "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AsyncAlgorithms.build/AsyncAlgorithms-Swift.h"
+    requires objc
+}

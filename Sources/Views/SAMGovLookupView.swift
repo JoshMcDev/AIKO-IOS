@@ -172,7 +172,7 @@ public struct SAMGovLookupView: View {
         }) {
             HStack {
                 if viewModel.isSearching {
-                    ProgressView()
+                    SwiftUI.ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         .scaleEffect(0.8)
                 } else {
@@ -339,7 +339,7 @@ struct SearchEntryCard: View {
                 // Search button
                 Button(action: onSearch) {
                     if entry.isSearching {
-                        ProgressView()
+                        SwiftUI.ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .blue))
                             .scaleEffect(0.8)
                     } else {

@@ -1,0 +1,119 @@
+version: 1
+rules:
+  # Critical Security Patterns
+  force_unwrap:
+    id: force_unwrap
+    severity: critical
+    language: swift
+    pattern: |
+      $EXPR!
+    message: "Force unwrap detected - use safe unwrapping"
+    
+  missing_error_handling:
+    id: missing_error_handling
+    severity: critical
+    language: swift
+    pattern: |
+      try $EXPR
+    not:
+      inside:
+        kind: do_statement
+    message: "Try without do-catch block"
+    
+  hardcoded_secret:
+    id: hardcoded_secret
+    severity: critical
+    language: swift
+    patterns:
+      - pattern: |
+          $VAR = "ghp_$TOKEN"
+      - pattern: |
+          $VAR = "api_key=$VALUE"
+      - pattern: |
+          $VAR = "password=$VALUE"
+    message: "Potential hardcoded secret detected"
+    
+  unencrypted_storage:
+    id: unencrypted_storage
+    severity: critical
+    language: swift
+    pattern: |
+      UserDefaults.standard.set($VALUE, forKey: $KEY)
+    where:
+      $KEY:
+        regex: "password|token|secret|key|credential"
+    message: "Sensitive data stored without encryption"
+    
+  # Major Code Quality Patterns
+  long_method:
+    id: long_method
+    severity: major
+    language: swift
+    pattern: |
+      func $NAME($PARAMS) $RETURN {
+        $$$BODY
+      }
+    where:
+      $BODY:
+        line_count: ">20"
+    message: "Method exceeds 20 lines"
+    
+  complex_conditional:
+    id: complex_conditional
+    severity: major
+    language: swift
+    patterns:
+      - pattern: |
+          if $COND1 && $COND2 && $COND3 && $COND4 {
+            $$$BODY
+          }
+      - pattern: |
+          if $COND1 || $COND2 || $COND3 || $COND4 {
+            $$$BODY
+          }
+    message: "Complex conditional with 4+ conditions"
+    
+  solid_srp_violation:
+    id: solid_srp_violation
+    severity: major
+    language: swift
+    pattern: |
+      class $NAME {
+        $$$MEMBERS
+      }
+    where:
+      $MEMBERS:
+        contains_all:
+          - pattern: "func fetch"
+          - pattern: "func parse"
+          - pattern: "func store"
+          - pattern: "func display"
+    message: "Class violates Single Responsibility Principle"
+    
+  solid_dip_violation:
+    id: solid_dip_violation
+    severity: major
+    language: swift
+    pattern: |
+      class $NAME {
+        let $VAR = $CONCRETE()
+      }
+    where:
+      $CONCRETE:
+        not:
+          regex: "Protocol|Mock|Stub"
+    message: "Direct concrete dependency instead of protocol"
+    
+  unvalidated_input:
+    id: unvalidated_input
+    severity: major
+    language: swift
+    patterns:
+      - pattern: |
+          JSONDecoder().decode($TYPE, from: $DATA)
+      - pattern: |
+          String(data: $DATA, encoding: .utf8)
+    not:
+      inside:
+        kind: do_statement
+    message: "Input parsing without validation or error handling"

@@ -1,0 +1,17 @@
+{
+  "": {
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/UnixSignals.build/master.swiftdeps"
+  },
+  "/Users/J/aiko/.build-isolated/checkouts/swift-service-lifecycle/Sources/UnixSignals/UnixSignal.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/UnixSignals.build/UnixSignal.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/UnixSignals.build/UnixSignal.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/UnixSignals.build/UnixSignal~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/UnixSignals.build/UnixSignal.swiftdeps"
+  },
+  "/Users/J/aiko/.build-isolated/checkouts/swift-service-lifecycle/Sources/UnixSignals/UnixSignalsSequence.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/UnixSignals.build/UnixSignalsSequence.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/UnixSignals.build/UnixSignalsSequence.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/UnixSignals.build/UnixSignalsSequence~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/UnixSignals.build/UnixSignalsSequence.swiftdeps"
+  }
+}

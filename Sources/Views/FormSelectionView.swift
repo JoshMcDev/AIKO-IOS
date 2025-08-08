@@ -253,10 +253,20 @@ public struct FormSelectionView: View {
 
                     // Compliance indicator
                     HStack {
-                        ProgressView(value: formSelection.complianceScore)
-                            .progressViewStyle(LinearProgressViewStyle())
-                            .tint(complianceColor(for: formSelection.complianceScore))
-                            .frame(width: 100)
+                        // Simple progress bar representation
+                        GeometryReader { geometry in
+                            ZStack(alignment: .leading) {
+                                Rectangle()
+                                    .frame(width: geometry.size.width, height: 4)
+                                    .opacity(0.3)
+                                    .foregroundColor(Color.gray)
+
+                                Rectangle()
+                                    .frame(width: min(CGFloat(formSelection.complianceScore) * geometry.size.width, geometry.size.width), height: 4)
+                                    .foregroundColor(complianceColor(for: formSelection.complianceScore))
+                            }
+                        }
+                        .frame(width: 100, height: 4)
 
                         Text("\(Int(formSelection.complianceScore * 100))% Match")
                             .font(.caption2)

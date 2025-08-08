@@ -1,0 +1,4 @@
+module Numerics {
+    header "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/Numerics.build/Numerics-Swift.h"
+    requires objc
+}

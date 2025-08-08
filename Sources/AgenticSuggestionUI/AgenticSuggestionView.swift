@@ -168,8 +168,7 @@ public struct AgenticSuggestionView: View {
 
     private var processingView: some View {
         VStack(spacing: 12) {
-            ProgressView()
-                .progressViewStyle(CircularProgressViewStyle())
+            SwiftUI.ProgressView()
                 .accessibilityLabel("Loading suggestions")
                 .accessibilityValue("Processing in progress")
                 .accessibilityAddTraits(.updatesFrequently)

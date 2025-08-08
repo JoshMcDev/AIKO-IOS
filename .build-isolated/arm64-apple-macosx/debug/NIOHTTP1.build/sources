@@ -1,0 +1,17 @@
+/Users/J/aiko/.build-isolated/checkouts/swift-nio/Sources/NIOHTTP1/ByteCollectionUtils.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-nio/Sources/NIOHTTP1/HTTPDecoder.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-nio/Sources/NIOHTTP1/HTTPEncoder.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-nio/Sources/NIOHTTP1/HTTPHeaderValidator.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-nio/Sources/NIOHTTP1/HTTPHeaders+Validation.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-nio/Sources/NIOHTTP1/HTTPPipelineSetup.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-nio/Sources/NIOHTTP1/HTTPServerPipelineHandler.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-nio/Sources/NIOHTTP1/HTTPServerProtocolErrorHandler.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-nio/Sources/NIOHTTP1/HTTPServerUpgradeHandler.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-nio/Sources/NIOHTTP1/HTTPTypedPipelineSetup.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-nio/Sources/NIOHTTP1/HTTPTypes.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-nio/Sources/NIOHTTP1/NIOHTTPClientUpgradeHandler.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-nio/Sources/NIOHTTP1/NIOHTTPObjectAggregator.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-nio/Sources/NIOHTTP1/NIOTypedHTTPClientUpgradeHandler.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-nio/Sources/NIOHTTP1/NIOTypedHTTPClientUpgraderStateMachine.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-nio/Sources/NIOHTTP1/NIOTypedHTTPServerUpgradeHandler.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-nio/Sources/NIOHTTP1/NIOTypedHTTPServerUpgraderStateMachine.swift

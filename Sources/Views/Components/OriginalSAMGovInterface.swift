@@ -124,7 +124,7 @@ struct OriginalSAMGovInterface: View {
                             Button(action: performAllSearches) {
                                 HStack {
                                     if searchEntries.contains(where: \.isSearching) {
-                                        ProgressView()
+                                        SwiftUI.ProgressView()
                                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                             .scaleEffect(0.8)
                                     } else {
@@ -366,7 +366,7 @@ struct SearchEntryView: View {
                 // Search button with magnifying glass
                 Button(action: onSearch) {
                     if entry.isSearching {
-                        ProgressView()
+                        SwiftUI.ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .blue))
                             .scaleEffect(0.8)
                     } else {

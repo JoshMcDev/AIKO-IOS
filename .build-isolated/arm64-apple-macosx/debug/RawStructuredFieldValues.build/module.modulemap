@@ -1,0 +1,4 @@
+module RawStructuredFieldValues {
+    header "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/RawStructuredFieldValues.build/RawStructuredFieldValues-Swift.h"
+    requires objc
+}

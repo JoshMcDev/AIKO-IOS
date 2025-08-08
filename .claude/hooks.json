@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "Task": {
+      "after": [
+        {
+          "name": "tdd-qa-validation-complete",
+          "script": "afplay '/Users/J/Library/Mobile Documents/com~apple~CloudDocs/Downloads/thor_goat_screaming.mp3'",
+          "condition": {
+            "type": "output_contains",
+            "patterns": [
+              "TDD PHASER.*tdd-updoc-manager.*performance.*VALIDATED"
+            ]
+          },
+          "description": "Plays Thor goat scream when TDD phase completes validating QA enforcer performance",
+          "enabled": true
+        }
+      ]
+    }
+  },
+  "settings": {
+    "log_level": "info", 
+    "log_path": "/Users/J/aiko/.claude/hooks/logs/",
+    "timeout_seconds": 10,
+    "fail_silently": true
+  }
+}

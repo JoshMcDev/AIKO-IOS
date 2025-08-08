@@ -293,8 +293,11 @@ private struct APISetupStepView: View {
             }
 
             if viewModel.isLoading {
-                ProgressView("Validating...")
-                    .font(.caption)
+                VStack {
+                    SwiftUI.ProgressView()
+                    Text("Validating...")
+                        .font(.caption)
+                }
             }
         }
         .onAppear {
@@ -365,8 +368,11 @@ private struct PermissionsStepView: View {
             }
 
             if viewModel.isLoading {
-                ProgressView("Configuring...")
-                    .font(.caption)
+                VStack {
+                    SwiftUI.ProgressView()
+                    Text("Configuring...")
+                        .font(.caption)
+                }
             }
         }
     }
@@ -413,8 +419,7 @@ private struct OnboardingProgressBar: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
-            ProgressView(value: progress)
-                .progressViewStyle(.linear)
+            SwiftUI.ProgressView(value: progress, total: 1.0)
                 .tint(.blue)
 
             Text(currentStep.title)

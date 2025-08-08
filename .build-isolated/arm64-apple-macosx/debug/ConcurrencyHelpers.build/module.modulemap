@@ -1,0 +1,4 @@
+module ConcurrencyHelpers {
+    header "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/ConcurrencyHelpers.build/ConcurrencyHelpers-Swift.h"
+    requires objc
+}

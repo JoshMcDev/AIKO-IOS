@@ -1,0 +1,4 @@
+module HTTPTypesFoundation {
+    header "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/HTTPTypesFoundation.build/HTTPTypesFoundation-Swift.h"
+    requires objc
+}

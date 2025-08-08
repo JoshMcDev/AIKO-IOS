@@ -7,14 +7,14 @@ public struct LearningLoop: Sendable {
     // Core learning functions
     public var startLearning: @Sendable () async -> Void
     public var recordEvent: @Sendable (LearningEvent) async -> Void
-    public var processQueue: @Sendable () async throws -> ProcessingResult
+    public var processQueue: @Sendable () async throws -> LearningProcessingResult
     public var generateInsights: @Sendable () async throws -> [Insight]
     public var applyLearnings: @Sendable ([Learning]) async throws -> Void
 
     public init(
         startLearning: @escaping @Sendable () async -> Void,
         recordEvent: @escaping @Sendable (LearningEvent) async -> Void,
-        processQueue: @escaping @Sendable () async throws -> ProcessingResult,
+        processQueue: @escaping @Sendable () async throws -> LearningProcessingResult,
         generateInsights: @escaping @Sendable () async throws -> [Insight],
         applyLearnings: @escaping @Sendable ([Learning]) async throws -> Void
     ) {
@@ -89,7 +89,7 @@ public struct LearningEvent: Equatable, Codable, Sendable {
 
 // MARK: - Processing Result
 
-public struct ProcessingResult: Equatable, Sendable {
+public struct LearningProcessingResult: Equatable, Sendable {
     public let eventsProcessed: Int
     public let learningsGenerated: [Learning]
     public let patternsDetected: [DetectedPattern]
@@ -243,7 +243,7 @@ public extension LearningLoop {
             generateInsights: {
                 let recentEvents = await eventQueue.getRecent(limit: 1000)
                 let patterns = try await patternDetector.detect(in: recentEvents)
-                return try await insightGenerator.generate(from: ProcessingResult(
+                return try await insightGenerator.generate(from: LearningProcessingResult(
                     eventsProcessed: recentEvents.count,
                     learningsGenerated: [],
                     patternsDetected: patterns,
@@ -324,7 +324,7 @@ private struct PatternDetector {
 // MARK: - Insight Generator
 
 private struct InsightGenerator {
-    func generate(from result: ProcessingResult) async throws -> [Insight] {
+    func generate(from result: LearningProcessingResult) async throws -> [Insight] {
         var insights: [Insight] = []
 
         // Generate insights from patterns
@@ -436,10 +436,10 @@ public extension LearningLoop {
 
 // MARK: - Helper Functions
 
-private func processEvents(_ queue: EventQueue, _ detector: PatternDetector) async throws -> ProcessingResult {
+private func processEvents(_ queue: EventQueue, _ detector: PatternDetector) async throws -> LearningProcessingResult {
     let events = await queue.dequeue(count: 100)
     guard !events.isEmpty else {
-        return ProcessingResult(
+        return LearningProcessingResult(
             eventsProcessed: 0,
             learningsGenerated: [],
             patternsDetected: [],
@@ -451,7 +451,7 @@ private func processEvents(_ queue: EventQueue, _ detector: PatternDetector) asy
     let learnings = generateLearnings(from: events, patterns: patterns)
     let anomalies = detectAnomalies(in: events)
 
-    return ProcessingResult(
+    return LearningProcessingResult(
         eventsProcessed: events.count,
         learningsGenerated: learnings,
         patternsDetected: patterns,

@@ -152,7 +152,7 @@ public struct DocumentScannerView: View {
 
     private var scanningStateView: some View {
         VStack {
-            ProgressView()
+            SwiftUI.ProgressView()
             Text("Scanning...")
             Button("Cancel") {
                 viewModel.cancelScanning()

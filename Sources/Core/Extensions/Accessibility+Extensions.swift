@@ -232,7 +232,7 @@ struct AccessibleLoadingView: View {
     @State private var loadingProgress = 0.0
 
     var body: some View {
-        ProgressView(value: loadingProgress)
+        SwiftUI.ProgressView(value: loadingProgress, total: 1.0)
             .accessibilityLabel(message)
             .accessibilityValue("\(Int(loadingProgress * 100))% complete")
             .onAppear {

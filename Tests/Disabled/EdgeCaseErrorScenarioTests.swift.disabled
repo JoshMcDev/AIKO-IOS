@@ -1,0 +1,1319 @@
+@testable import AIKO
+import AppCore
+import Foundation
+import XCTest
+
+/// Edge Case and Error Scenario Tests for Launch-Time Regulation Fetching
+/// Following TDD RED-GREEN-REFACTOR methodology
+///
+/// Test Status: RED PHASE - All tests designed to fail initially
+/// Focus: Network failures, device constraints, data corruption, interruptions
+final class EdgeCaseErrorScenarioTests: XCTestCase {
+
+    // MARK: - Test Infrastructure
+
+    var networkSimulator: NetworkConditionSimulator?
+    var deviceConstraintSimulator: DeviceConstraintSimulator?
+    var errorRecoveryValidator: ErrorRecoveryValidator?
+    var resilienceTestHarness: ResilienceTestHarness?
+
+    override func setUp() async throws {
+        networkSimulator = NetworkConditionSimulator()
+        deviceConstraintSimulator = DeviceConstraintSimulator()
+        errorRecoveryValidator = ErrorRecoveryValidator()
+        resilienceTestHarness = ResilienceTestHarness()
+    }
+
+    override func tearDown() async throws {
+        networkSimulator = nil
+        deviceConstraintSimulator = nil
+        errorRecoveryValidator = nil
+        resilienceTestHarness = nil
+    }
+}
+
+// MARK: - Network and Connectivity Edge Cases
+
+extension EdgeCaseErrorScenarioTests {
+
+    /// Test 1.1: Network Interruption with Checkpoint Recovery
+    /// Validates robust recovery from network failures at various points
+    func testNetworkInterruptionWithCheckpointRecovery() async throws {
+        // GIVEN: Network interruption scenarios at different processing stages
+        guard let networkSimulator = networkSimulator,
+              let errorRecoveryValidator = errorRecoveryValidator else {
+            XCTFail("Test infrastructure not initialized")
+            return
+        }
+
+        let interruptionScenarios = [
+            NetworkInterruptionScenario(
+                stage: .manifestFetch,
+                interruptionPoint: 0.25,
+                duration: 5.0,
+                expectedRecovery: .resumeFromStart
+            ),
+            NetworkInterruptionScenario(
+                stage: .regulationDownload,
+                interruptionPoint: 0.5,
+                duration: 10.0,
+                expectedRecovery: .resumeFromCheckpoint
+            ),
+            NetworkInterruptionScenario(
+                stage: .embeddingProcessing,
+                interruptionPoint: 0.75,
+                duration: 3.0,
+                expectedRecovery: .resumeFromCheckpoint
+            ),
+            NetworkInterruptionScenario(
+                stage: .indexing,
+                interruptionPoint: 0.9,
+                duration: 2.0,
+                expectedRecovery: .resumeFromCheckpoint
+            )
+        ]
+
+        // WHEN: Testing each interruption scenario
+        for scenario in interruptionScenarios {
+            let recoveryResult = try await networkSimulator.simulateNetworkInterruption(scenario) { simulator in
+                // Start processing and wait for interruption
+                let processor = try await simulator.startRegulationProcessing()
+
+                // Wait for interruption point
+                try await simulator.waitForInterruptionPoint(scenario.interruptionPoint)
+
+                // Simulate network failure
+                simulator.disconnectNetwork(duration: scenario.duration)
+
+                // Attempt recovery when network returns
+                return try await processor.recoverFromInterruption()
+            }
+
+            // THEN: Recovery should match expected behavior
+            XCTAssertTrue(recoveryResult.recoverySuccessful, "Recovery should succeed for \(scenario.stage)")
+            XCTAssertEqual(recoveryResult.recoveryType, scenario.expectedRecovery, "Recovery type should match expected")
+            XCTAssertLessThan(recoveryResult.dataLoss, 0.05, "Data loss should be <5% for \(scenario.stage)")
+            XCTAssertLessThan(recoveryResult.additionalTime, scenario.duration * 1.2, "Additional time should be reasonable")
+
+            // Validate checkpoint integrity
+            if scenario.expectedRecovery == .resumeFromCheckpoint {
+                XCTAssertNotNil(recoveryResult.checkpointData, "Checkpoint data should exist")
+                XCTAssertTrue(recoveryResult.checkpointValid, "Checkpoint should be valid")
+                XCTAssertGreaterThan(recoveryResult.resumedFromProgress, scenario.interruptionPoint - 0.1, "Should resume near interruption point")
+            }
+        }
+
+        // This test will FAIL until network interruption recovery is implemented
+        XCTFail("Network interruption recovery not implemented")
+    }
+
+    /// Test 1.2: Rate Limiting and API Constraint Handling
+    /// Validates graceful handling of GitHub API rate limits
+    func testRateLimitingAndAPIConstraintHandling() async throws {
+        // GIVEN: Rate limiting scenarios with exponential backoff
+        guard let networkSimulator = networkSimulator else {
+            XCTFail("Network simulator not initialized")
+            return
+        }
+
+        // WHEN: Triggering rate limiting scenarios
+        let rateLimitScenarios = [
+            RateLimitScenario(
+                requestsBeforeLimit: 50,
+                resetTimeSeconds: 300,
+                retryStrategy: .exponentialBackoff,
+                expectedBehavior: .queueRequests
+            ),
+            RateLimitScenario(
+                requestsBeforeLimit: 5000,
+                resetTimeSeconds: 3600,
+                retryStrategy: .linearBackoff,
+                expectedBehavior: .pauseProcessing
+            ),
+            RateLimitScenario(
+                requestsBeforeLimit: 0, // Immediate rate limit
+                resetTimeSeconds: 60,
+                retryStrategy: .exponentialBackoff,
+                expectedBehavior: .deferToNextWindow
+            )
+        ]
+
+        for scenario in rateLimitScenarios {
+            let rateLimitResult = try await networkSimulator.simulateRateLimit(scenario) { simulator in
+                // Attempt to exceed rate limit
+                var requestCount = 0
+                while requestCount < scenario.requestsBeforeLimit + 10 {
+                    do {
+                        try await simulator.makeAPIRequest()
+                        requestCount += 1
+                    } catch NetworkError.rateLimitExceeded {
+                        break
+                    }
+                }
+
+                // Validate rate limiting behavior
+                return try await simulator.handleRateLimitExceeded()
+            }
+
+            // THEN: Rate limiting should be handled gracefully
+            XCTAssertEqual(rateLimitResult.behavior, scenario.expectedBehavior, "Behavior should match expected")
+            XCTAssertTrue(rateLimitResult.backoffApplied, "Backoff should be applied")
+            XCTAssertGreaterThan(rateLimitResult.backoffTime, 1.0, "Backoff time should be reasonable")
+            XCTAssertLessThan(rateLimitResult.backoffTime, 3600.0, "Backoff time should not be excessive")
+
+            // Validate user communication
+            XCTAssertNotNil(rateLimitResult.userNotification, "User should be notified")
+            XCTAssertTrue(rateLimitResult.userNotification!.contains("rate limit"), "Notification should mention rate limiting")
+        }
+
+        // This test will FAIL until rate limiting handling is implemented
+        XCTFail("Rate limiting handling not implemented")
+    }
+
+    /// Test 1.3: Network Quality Adaptation and Cellular Data Handling
+    /// Validates adaptive behavior based on network conditions
+    func testNetworkQualityAdaptationAndCellularDataHandling() async throws {
+        // GIVEN: Various network quality conditions
+        guard let networkSimulator = networkSimulator else {
+            XCTFail("Network simulator not initialized")
+            return
+        }
+
+        let networkConditions = [
+            NetworkCondition(
+                type: .wifi,
+                speed: .high,
+                stability: .stable,
+                expectedBehavior: .fullProcessing,
+                shouldWarnUser: false
+            ),
+            NetworkCondition(
+                type: .cellular5G,
+                speed: .high,
+                stability: .stable,
+                expectedBehavior: .warnAndProceed,
+                shouldWarnUser: true
+            ),
+            NetworkCondition(
+                type: .cellularLTE,
+                speed: .medium,
+                stability: .moderate,
+                expectedBehavior: .warnAndOptimize,
+                shouldWarnUser: true
+            ),
+            NetworkCondition(
+                type: .cellular3G,
+                speed: .low,
+                stability: .unstable,
+                expectedBehavior: .recommendWifi,
+                shouldWarnUser: true
+            ),
+            NetworkCondition(
+                type: .wifi,
+                speed: .low,
+                stability: .unstable,
+                expectedBehavior: .adaptiveProcessing,
+                shouldWarnUser: false
+            )
+        ]
+
+        // WHEN: Testing adaptation to each network condition
+        for condition in networkConditions {
+            networkSimulator.simulateNetworkCondition(condition)
+
+            let adaptationResult = try await networkSimulator.testNetworkAdaptation { adapter in
+                // Start regulation processing
+                let processor = try await adapter.createRegulationProcessor()
+                try await processor.adaptToNetworkCondition(condition)
+
+                return try await processor.measureAdaptedBehavior()
+            }
+
+            // THEN: Behavior should adapt to network conditions
+            XCTAssertEqual(adaptationResult.behavior, condition.expectedBehavior, "Behavior should match expected for \(condition.type)")
+            XCTAssertEqual(adaptationResult.userWarned, condition.shouldWarnUser, "User warning should match expected for \(condition.type)")
+
+            // Validate adaptation strategies
+            switch condition.expectedBehavior {
+            case .fullProcessing:
+                XCTAssertEqual(adaptationResult.chunkSize, 50, "Should use standard chunk size")
+                XCTAssertEqual(adaptationResult.concurrency, 4, "Should use standard concurrency")
+
+            case .warnAndOptimize:
+                XCTAssertLessThan(adaptationResult.chunkSize, 50, "Should reduce chunk size")
+                XCTAssertLessThan(adaptationResult.concurrency, 4, "Should reduce concurrency")
+
+            case .recommendWifi:
+                XCTAssertTrue(adaptationResult.processingPaused, "Should pause processing")
+                XCTAssertNotNil(adaptationResult.wifiRecommendation, "Should recommend WiFi")
+
+            default:
+                break
+            }
+        }
+
+        // This test will FAIL until network quality adaptation is implemented
+        XCTFail("Network quality adaptation not implemented")
+    }
+}
+
+// MARK: - Device and System Constraint Edge Cases
+
+extension EdgeCaseErrorScenarioTests {
+
+    /// Test 2.1: Memory Pressure Handling with Adaptive Processing
+    /// Validates graceful degradation under memory pressure
+    func testMemoryPressureHandlingWithAdaptiveProcessing() async throws {
+        // GIVEN: Memory pressure simulation scenarios
+        guard let deviceConstraintSimulator = deviceConstraintSimulator else {
+            XCTFail("Device constraint simulator not initialized")
+            return
+        }
+
+        let memoryPressureScenarios = [
+            MemoryPressureScenario(
+                level: .warning,
+                availableMemory: 200 * 1024 * 1024, // 200MB
+                expectedAdaptation: .reduceChunkSize,
+                shouldCompleteProcessing: true
+            ),
+            MemoryPressureScenario(
+                level: .urgent,
+                availableMemory: 100 * 1024 * 1024, // 100MB
+                expectedAdaptation: .reduceBatchSizeAndConcurrency,
+                shouldCompleteProcessing: true
+            ),
+            MemoryPressureScenario(
+                level: .critical,
+                availableMemory: 50 * 1024 * 1024, // 50MB
+                expectedAdaptation: .pauseAndNotifyUser,
+                shouldCompleteProcessing: false
+            )
+        ]
+
+        // WHEN: Testing each memory pressure scenario
+        for scenario in memoryPressureScenarios {
+            deviceConstraintSimulator.simulateMemoryPressure(scenario)
+
+            let pressureResult = try await deviceConstraintSimulator.testMemoryPressureHandling { simulator in
+                let processor = try await simulator.createMemoryConstrainedProcessor()
+
+                // Start processing under memory pressure
+                try await processor.startProcessingWithMemoryMonitoring()
+
+                // Simulate memory pressure increase
+                simulator.increaseMemoryPressure(to: scenario.level)
+
+                return try await processor.handleMemoryPressureEvent()
+            }
+
+            // THEN: System should adapt appropriately
+            XCTAssertEqual(pressureResult.adaptation, scenario.expectedAdaptation, "Adaptation should match expected for \(scenario.level)")
+            XCTAssertEqual(pressureResult.processingCompleted, scenario.shouldCompleteProcessing, "Processing completion should match expected")
+
+            // Validate memory usage stayed within bounds
+            XCTAssertLessThan(pressureResult.peakMemoryUsage, scenario.availableMemory * 2, "Memory usage should stay reasonable")
+
+            // Validate user communication for critical scenarios
+            if scenario.level == .critical {
+                XCTAssertTrue(pressureResult.userNotified, "User should be notified of critical memory pressure")
+                XCTAssertNotNil(pressureResult.userGuidance, "User should receive guidance")
+            }
+        }
+
+        // This test will FAIL until memory pressure handling is implemented
+        XCTFail("Memory pressure handling not implemented")
+    }
+
+    /// Test 2.2: Storage Exhaustion and Disk Space Management
+    /// Validates handling of insufficient storage scenarios
+    func testStorageExhaustionAndDiskSpaceManagement() async throws {
+        // GIVEN: Storage constraint scenarios
+        guard let deviceConstraintSimulator = deviceConstraintSimulator else {
+            XCTFail("Device constraint simulator not initialized")
+            return
+        }
+
+        let storageScenarios = [
+            StorageScenario(
+                availableSpace: 5 * 1024 * 1024 * 1024, // 5GB
+                requiredSpace: 2 * 1024 * 1024 * 1024, // 2GB
+                expectedBehavior: .proceedWithFullSetup,
+                shouldWarnUser: false
+            ),
+            StorageScenario(
+                availableSpace: 1 * 1024 * 1024 * 1024, // 1GB
+                requiredSpace: 2 * 1024 * 1024 * 1024, // 2GB
+                expectedBehavior: .offerSelectiveDownload,
+                shouldWarnUser: true
+            ),
+            StorageScenario(
+                availableSpace: 500 * 1024 * 1024, // 500MB
+                requiredSpace: 2 * 1024 * 1024 * 1024, // 2GB
+                expectedBehavior: .requireUserAction,
+                shouldWarnUser: true
+            ),
+            StorageScenario(
+                availableSpace: 100 * 1024 * 1024, // 100MB
+                requiredSpace: 2 * 1024 * 1024 * 1024, // 2GB
+                expectedBehavior: .blockProcessing,
+                shouldWarnUser: true
+            )
+        ]
+
+        // WHEN: Testing each storage scenario
+        for scenario in storageScenarios {
+            deviceConstraintSimulator.simulateStorageConstraint(scenario)
+
+            let storageResult = try await deviceConstraintSimulator.testStorageHandling { simulator in
+                let processor = try await simulator.createStorageAwareProcessor()
+
+                // Attempt to start regulation setup
+                return try await processor.handleStorageConstraint(scenario)
+            }
+
+            // THEN: Storage handling should match expected behavior
+            XCTAssertEqual(storageResult.behavior, scenario.expectedBehavior, "Behavior should match expected for \(scenario.availableSpace) available")
+            XCTAssertEqual(storageResult.userWarned, scenario.shouldWarnUser, "User warning should match expected")
+
+            // Validate specific behaviors
+            switch scenario.expectedBehavior {
+            case .proceedWithFullSetup:
+                XCTAssertTrue(storageResult.processingAllowed, "Processing should be allowed")
+                XCTAssertFalse(storageResult.selectiveDownloadOffered, "Selective download should not be offered")
+
+            case .offerSelectiveDownload:
+                XCTAssertTrue(storageResult.selectiveDownloadOffered, "Selective download should be offered")
+                XCTAssertNotNil(storageResult.downloadOptions, "Download options should be provided")
+                XCTAssertTrue(storageResult.downloadOptions!.count > 1, "Multiple options should be available")
+
+            case .requireUserAction:
+                XCTAssertTrue(storageResult.userActionRequired, "User action should be required")
+                XCTAssertNotNil(storageResult.storageManagementGuidance, "Storage management guidance should be provided")
+
+            case .blockProcessing:
+                XCTAssertFalse(storageResult.processingAllowed, "Processing should be blocked")
+                XCTAssertNotNil(storageResult.errorMessage, "Error message should be provided")
+            }
+        }
+
+        // This test will FAIL until storage management is implemented
+        XCTFail("Storage exhaustion handling not implemented")
+    }
+
+    /// Test 2.3: Older Device Performance Degradation (A12/A13)
+    /// Validates performance adaptation on memory-constrained older devices
+    func testOlderDevicePerformanceDegradation() async throws {
+        // GIVEN: Older device configurations with constraints
+        guard let deviceConstraintSimulator = deviceConstraintSimulator else {
+            XCTFail("Device constraint simulator not initialized")
+            return
+        }
+
+        let olderDevices = [
+            OlderDeviceConfiguration(
+                processor: "A12",
+                memory: 3 * 1024 * 1024 * 1024, // 3GB
+                coreMLPerformance: 1.0,
+                expectedOptimizations: [.reduceModelPrecision, .increaseBatchSize, .enableDiskCaching],
+                maxProcessingTime: 600.0 // 10 minutes
+            ),
+            OlderDeviceConfiguration(
+                processor: "A13",
+                memory: 4 * 1024 * 1024 * 1024, // 4GB
+                coreMLPerformance: 1.2,
+                expectedOptimizations: [.reduceBatchSize, .enableDiskCaching],
+                maxProcessingTime: 480.0 // 8 minutes
+            )
+        ]
+
+        // WHEN: Testing performance on older devices
+        for device in olderDevices {
+            deviceConstraintSimulator.simulateOlderDevice(device)
+
+            let performanceResult = try await deviceConstraintSimulator.testOlderDevicePerformance { simulator in
+                let processor = try await simulator.createOptimizedProcessor(for: device)
+
+                let startTime = CFAbsoluteTimeGetCurrent()
+                try await processor.processRegulationDatabase()
+                let processingTime = CFAbsoluteTimeGetCurrent() - startTime
+
+                return OlderDevicePerformanceResult(
+                    device: device,
+                    processingTime: processingTime,
+                    optimizationsApplied: processor.getAppliedOptimizations(),
+                    memoryUsage: processor.getPeakMemoryUsage(),
+                    userExperience: processor.getUserExperienceRating()
+                )
+            }
+
+            // THEN: Performance should be optimized for device capabilities
+            XCTAssertLessThan(performanceResult.processingTime, device.maxProcessingTime, "Processing should complete within time limit on \(device.processor)")
+            XCTAssertLessThan(performanceResult.memoryUsage, device.memory / 2, "Memory usage should not exceed 50% of device capacity")
+
+            // Validate optimizations were applied
+            for expectedOptimization in device.expectedOptimizations {
+                XCTAssertTrue(performanceResult.optimizationsApplied.contains(expectedOptimization), "Should apply \(expectedOptimization) optimization on \(device.processor)")
+            }
+
+            // Validate user experience
+            XCTAssertGreaterThan(performanceResult.userExperience, 3.0, "User experience should be acceptable on \(device.processor)")
+        }
+
+        // This test will FAIL until older device optimization is implemented
+        XCTFail("Older device performance optimization not implemented")
+    }
+}
+
+// MARK: - Data Integrity and Corruption Edge Cases
+
+extension EdgeCaseErrorScenarioTests {
+
+    /// Test 3.1: File Corruption Detection and Recovery
+    /// Validates robust handling of corrupted regulation files
+    func testFileCorruptionDetectionAndRecovery() async throws {
+        // GIVEN: Various file corruption scenarios
+        guard let resilienceTestHarness = resilienceTestHarness else {
+            XCTFail("Resilience test harness not initialized")
+            return
+        }
+
+        let corruptionScenarios = [
+            CorruptionScenario(
+                type: .partialDownload,
+                severity: .moderate,
+                affectedFiles: 1,
+                expectedRecovery: .retryDownload,
+                shouldRecoverAutomatically: true
+            ),
+            CorruptionScenario(
+                type: .hashMismatch,
+                severity: .high,
+                affectedFiles: 5,
+                expectedRecovery: .retryDownload,
+                shouldRecoverAutomatically: true
+            ),
+            CorruptionScenario(
+                type: .malformedJSON,
+                severity: .critical,
+                affectedFiles: 1,
+                expectedRecovery: .skipFile,
+                shouldRecoverAutomatically: false
+            ),
+            CorruptionScenario(
+                type: .networkTimeout,
+                severity: .moderate,
+                affectedFiles: 10,
+                expectedRecovery: .retryWithBackoff,
+                shouldRecoverAutomatically: true
+            )
+        ]
+
+        // WHEN: Testing each corruption scenario
+        for scenario in corruptionScenarios {
+            let corruptionResult = try await resilienceTestHarness.simulateFileCorruption(scenario) { harness in
+                // Start processing with corruption simulation
+                let processor = try await harness.createCorruptionTestProcessor()
+
+                // Inject corruption at specified points
+                harness.injectCorruption(scenario)
+
+                // Process regulations and handle corruption
+                return try await processor.processWithCorruptionHandling()
+            }
+
+            // THEN: Corruption should be detected and handled appropriately
+            XCTAssertTrue(corruptionResult.corruptionDetected, "Corruption should be detected for \(scenario.type)")
+            XCTAssertEqual(corruptionResult.recoveryStrategy, scenario.expectedRecovery, "Recovery strategy should match expected")
+            XCTAssertEqual(corruptionResult.automaticRecovery, scenario.shouldRecoverAutomatically, "Automatic recovery should match expected")
+
+            // Validate recovery effectiveness
+            if scenario.shouldRecoverAutomatically {
+                XCTAssertTrue(corruptionResult.processingCompleted, "Processing should complete after automatic recovery")
+                XCTAssertLessThan(corruptionResult.dataLoss, 0.1, "Data loss should be minimal with automatic recovery")
+            }
+
+            // Validate user communication
+            if scenario.severity == .critical {
+                XCTAssertTrue(corruptionResult.userNotified, "User should be notified of critical corruption")
+                XCTAssertNotNil(corruptionResult.errorDetails, "Error details should be provided")
+            }
+        }
+
+        // This test will FAIL until file corruption handling is implemented
+        XCTFail("File corruption detection and recovery not implemented")
+    }
+
+    /// Test 3.2: Database Corruption Detection and Repair
+    /// Validates ObjectBox database integrity and repair mechanisms
+    func testDatabaseCorruptionDetectionAndRepair() async throws {
+        // GIVEN: Database corruption simulation scenarios
+        guard let resilienceTestHarness = resilienceTestHarness else {
+            XCTFail("Resilience test harness not initialized")
+            return
+        }
+
+        let dbCorruptionScenarios = [
+            DatabaseCorruptionScenario(
+                type: .indexCorruption,
+                severity: .moderate,
+                repairStrategy: .rebuildIndex,
+                expectedDataLoss: 0.0
+            ),
+            DatabaseCorruptionScenario(
+                type: .dataFileCorruption,
+                severity: .high,
+                repairStrategy: .restoreFromBackup,
+                expectedDataLoss: 0.05
+            ),
+            DatabaseCorruptionScenario(
+                type: .schemaCorruption,
+                severity: .critical,
+                repairStrategy: .recreateDatabase,
+                expectedDataLoss: 1.0
+            ),
+            DatabaseCorruptionScenario(
+                type: .lockFileCorruption,
+                severity: .moderate,
+                repairStrategy: .clearLockAndRestart,
+                expectedDataLoss: 0.0
+            )
+        ]
+
+        // WHEN: Testing each database corruption scenario
+        for scenario in dbCorruptionScenarios {
+            let dbResult = try await resilienceTestHarness.simulateDatabaseCorruption(scenario) { harness in
+                // Set up database with test data
+                let database = try await harness.createTestDatabase(regulationCount: 100)
+
+                // Inject database corruption
+                harness.injectDatabaseCorruption(scenario)
+
+                // Attempt database operations and repair
+                return try await database.detectAndRepairCorruption()
+            }
+
+            // THEN: Database corruption should be handled appropriately
+            XCTAssertTrue(dbResult.corruptionDetected, "Corruption should be detected for \(scenario.type)")
+            XCTAssertEqual(dbResult.repairStrategy, scenario.repairStrategy, "Repair strategy should match expected")
+            XCTAssertLessThanOrEqual(dbResult.actualDataLoss, scenario.expectedDataLoss + 0.01, "Data loss should not exceed expected")
+
+            // Validate database integrity after repair
+            XCTAssertTrue(dbResult.integrityRestored, "Database integrity should be restored")
+            XCTAssertTrue(dbResult.operationsResumed, "Database operations should resume")
+
+            // Validate user communication for critical scenarios
+            if scenario.severity == .critical {
+                XCTAssertTrue(dbResult.userNotified, "User should be notified of critical database corruption")
+                XCTAssertNotNil(dbResult.recoveryGuidance, "Recovery guidance should be provided")
+            }
+        }
+
+        // This test will FAIL until database corruption handling is implemented
+        XCTFail("Database corruption detection and repair not implemented")
+    }
+
+    /// Test 3.3: Schema Migration and Version Compatibility
+    /// Validates handling of regulation data format changes
+    func testSchemaMigrationAndVersionCompatibility() async throws {
+        // GIVEN: Schema version compatibility scenarios
+        guard let resilienceTestHarness = resilienceTestHarness else {
+            XCTFail("Resilience test harness not initialized")
+            return
+        }
+
+        let migrationScenarios = [
+            SchemaMigrationScenario(
+                fromVersion: "1.0",
+                toVersion: "1.1",
+                changeType: .addField,
+                backwardCompatible: true,
+                migrationComplexity: .simple
+            ),
+            SchemaMigrationScenario(
+                fromVersion: "1.1",
+                toVersion: "2.0",
+                changeType: .restructureData,
+                backwardCompatible: false,
+                migrationComplexity: .complex
+            ),
+            SchemaMigrationScenario(
+                fromVersion: "2.0",
+                toVersion: "2.1",
+                changeType: .removeField,
+                backwardCompatible: true,
+                migrationComplexity: .moderate
+            ),
+            SchemaMigrationScenario(
+                fromVersion: "1.0",
+                toVersion: "3.0",
+                changeType: .majorRestructure,
+                backwardCompatible: false,
+                migrationComplexity: .complex
+            )
+        ]
+
+        // WHEN: Testing each schema migration scenario
+        for scenario in migrationScenarios {
+            let migrationResult = try await resilienceTestHarness.testSchemaMigration(scenario) { harness in
+                // Set up database with old schema
+                let oldDatabase = try await harness.createDatabaseWithSchema(version: scenario.fromVersion)
+                try await oldDatabase.populateWithTestData(regulationCount: 50)
+
+                // Perform schema migration
+                let migrator = try await harness.createSchemaMigrator()
+                return try await migrator.migrateSchema(from: scenario.fromVersion, to: scenario.toVersion)
+            }
+
+            // THEN: Schema migration should be handled correctly
+            XCTAssertTrue(migrationResult.migrationSucceeded, "Migration should succeed from \(scenario.fromVersion) to \(scenario.toVersion)")
+            XCTAssertEqual(migrationResult.dataIntegrityMaintained, scenario.backwardCompatible, "Data integrity should match backward compatibility")
+
+            // Validate migration completeness
+            XCTAssertEqual(migrationResult.migratedRecords, 50, "All records should be migrated")
+            XCTAssertLessThan(migrationResult.migrationTime, 60.0, "Migration should complete within 1 minute")
+
+            // Validate backward compatibility handling
+            if !scenario.backwardCompatible {
+                XCTAssertTrue(migrationResult.userPromptShown, "User should be prompted for breaking changes")
+                XCTAssertNotNil(migrationResult.backupCreated, "Backup should be created for breaking changes")
+            }
+
+            // Validate rollback capability for complex migrations
+            if scenario.migrationComplexity == .complex {
+                XCTAssertTrue(migrationResult.rollbackSupported, "Complex migrations should support rollback")
+                XCTAssertNotNil(migrationResult.rollbackData, "Rollback data should be available")
+            }
+        }
+
+        // This test will FAIL until schema migration is implemented
+        XCTFail("Schema migration and version compatibility not implemented")
+    }
+}
+
+// MARK: - Processing Interruption Edge Cases
+
+extension EdgeCaseErrorScenarioTests {
+
+    /// Test 4.1: App Termination During Processing
+    /// Validates graceful handling of app termination mid-process
+    func testAppTerminationDuringProcessing() async throws {
+        // GIVEN: App termination scenarios at different processing stages
+        guard let resilienceTestHarness = resilienceTestHarness else {
+            XCTFail("Resilience test harness not initialized")
+            return
+        }
+
+        let terminationScenarios = [
+            AppTerminationScenario(
+                stage: .downloading,
+                progressPercentage: 0.3,
+                terminationType: .userForceQuit,
+                expectedRecovery: .resumeFromCheckpoint
+            ),
+            AppTerminationScenario(
+                stage: .processing,
+                progressPercentage: 0.6,
+                terminationType: .systemKill,
+                expectedRecovery: .resumeFromCheckpoint
+            ),
+            AppTerminationScenario(
+                stage: .indexing,
+                progressPercentage: 0.9,
+                terminationType: .outOfMemory,
+                expectedRecovery: .resumeFromCheckpoint
+            ),
+            AppTerminationScenario(
+                stage: .finalizing,
+                progressPercentage: 0.95,
+                terminationType: .deviceRestart,
+                expectedRecovery: .quickResume
+            )
+        ]
+
+        // WHEN: Testing each termination scenario
+        for scenario in terminationScenarios {
+            let terminationResult = try await resilienceTestHarness.simulateAppTermination(scenario) { harness in
+                // Start regulation processing
+                let processor = try await harness.createResilienceTestProcessor()
+
+                // Process until termination point
+                try await processor.processUntilProgress(scenario.progressPercentage)
+
+                // Simulate app termination
+                harness.simulateAppTermination(type: scenario.terminationType)
+
+                // Simulate app restart and recovery
+                let recoveredProcessor = try await harness.restartAppAndRecoverProcessor()
+                return try await recoveredProcessor.attemptRecovery()
+            }
+
+            // THEN: Recovery should work according to termination type
+            XCTAssertEqual(terminationResult.recoveryType, scenario.expectedRecovery, "Recovery type should match expected for \(scenario.terminationType)")
+            XCTAssertGreaterThanOrEqual(terminationResult.recoveredProgress, scenario.progressPercentage - 0.1, "Should recover most progress")
+
+            // Validate recovery effectiveness
+            switch scenario.expectedRecovery {
+            case .resumeFromCheckpoint:
+                XCTAssertNotNil(terminationResult.checkpointData, "Checkpoint data should exist")
+                XCTAssertLessThan(terminationResult.dataLoss, 0.1, "Data loss should be minimal")
+
+            case .quickResume:
+                XCTAssertLessThan(terminationResult.resumeTime, 5.0, "Quick resume should be fast")
+                XCTAssertLessThan(terminationResult.dataLoss, 0.05, "Data loss should be very minimal")
+            }
+
+            // Validate cleanup and resource management
+            XCTAssertTrue(terminationResult.resourcesCleaned, "Resources should be cleaned up")
+            XCTAssertTrue(terminationResult.tempFilesCleaned, "Temporary files should be cleaned")
+            XCTAssertFalse(terminationResult.corruptionIntroduced, "No corruption should be introduced")
+        }
+
+        // This test will FAIL until app termination handling is implemented
+        XCTFail("App termination handling not implemented")
+    }
+
+    /// Test 4.2: Background Task Expiration
+    /// Validates handling of iOS background processing limits
+    func testBackgroundTaskExpiration() async throws {
+        // GIVEN: Background task expiration scenarios
+        guard let resilienceTestHarness = resilienceTestHarness else {
+            XCTFail("Resilience test harness not initialized")
+            return
+        }
+
+        let expirationScenarios = [
+            BackgroundTaskScenario(
+                taskType: .bgProcessing,
+                timeLimit: 30.0,
+                workloadSize: .large,
+                expectedBehavior: .gracefulShutdown
+            ),
+            BackgroundTaskScenario(
+                taskType: .bgAppRefresh,
+                timeLimit: 30.0,
+                workloadSize: .medium,
+                expectedBehavior: .saveProgressAndExit
+            ),
+            BackgroundTaskScenario(
+                taskType: .userInitiated,
+                timeLimit: 60.0,
+                workloadSize: .small,
+                expectedBehavior: .completeInForeground
+            )
+        ]
+
+        // WHEN: Testing each background task scenario
+        for scenario in expirationScenarios {
+            let expirationResult = try await resilienceTestHarness.simulateBackgroundTaskExpiration(scenario) { harness in
+                // Start background processing
+                let backgroundProcessor = try await harness.createBackgroundTaskProcessor(type: scenario.taskType)
+
+                // Begin processing with expiration monitoring
+                let task = Task {
+                    try await backgroundProcessor.processWithExpirationHandling(workload: scenario.workloadSize)
+                }
+
+                // Simulate task expiration
+                try await Task.sleep(nanoseconds: UInt64(scenario.timeLimit * 1_000_000_000))
+                harness.triggerBackgroundTaskExpiration(task: task)
+
+                return try await backgroundProcessor.handleExpiration()
+            }
+
+            // THEN: Background task expiration should be handled gracefully
+            XCTAssertEqual(expirationResult.behavior, scenario.expectedBehavior, "Behavior should match expected for \(scenario.taskType)")
+            XCTAssertLessThan(expirationResult.shutdownTime, 5.0, "Shutdown should be quick")
+
+            // Validate specific behaviors
+            switch scenario.expectedBehavior {
+            case .gracefulShutdown:
+                XCTAssertTrue(expirationResult.progressSaved, "Progress should be saved")
+                XCTAssertTrue(expirationResult.resourcesCleaned, "Resources should be cleaned")
+                XCTAssertNotNil(expirationResult.resumeToken, "Resume token should be created")
+
+            case .saveProgressAndExit:
+                XCTAssertTrue(expirationResult.progressSaved, "Progress should be saved")
+                XCTAssertTrue(expirationResult.cleanExit, "Should exit cleanly")
+
+            case .completeInForeground:
+                XCTAssertTrue(expirationResult.transitionedToForeground, "Should transition to foreground")
+                XCTAssertTrue(expirationResult.processingContinued, "Processing should continue")
+            }
+        }
+
+        // This test will FAIL until background task expiration handling is implemented
+        XCTFail("Background task expiration handling not implemented")
+    }
+}
+
+// MARK: - Supporting Types for Edge Case Tests
+
+struct NetworkInterruptionScenario {
+    let stage: ProcessingStage
+    let interruptionPoint: Double
+    let duration: TimeInterval
+    let expectedRecovery: NetworkRecoveryType
+}
+
+enum ProcessingStage {
+    case manifestFetch
+    case regulationDownload
+    case embeddingProcessing
+    case indexing
+}
+
+enum NetworkRecoveryType {
+    case resumeFromStart
+    case resumeFromCheckpoint
+}
+
+struct NetworkRecoveryResult {
+    let recoverySuccessful: Bool
+    let recoveryType: NetworkRecoveryType
+    let dataLoss: Double
+    let additionalTime: TimeInterval
+    let checkpointData: Data?
+    let checkpointValid: Bool
+    let resumedFromProgress: Double
+}
+
+struct RateLimitScenario {
+    let requestsBeforeLimit: Int
+    let resetTimeSeconds: Int
+    let retryStrategy: BackoffStrategy
+    let expectedBehavior: RateLimitBehavior
+}
+
+enum BackoffStrategy {
+    case exponentialBackoff
+    case linearBackoff
+}
+
+enum RateLimitBehavior {
+    case queueRequests
+    case pauseProcessing
+    case deferToNextWindow
+}
+
+struct RateLimitResult {
+    let behavior: RateLimitBehavior
+    let backoffApplied: Bool
+    let backoffTime: TimeInterval
+    let userNotification: String?
+}
+
+struct NetworkCondition {
+    let type: NetworkType
+    let speed: NetworkSpeed
+    let stability: NetworkStability
+    let expectedBehavior: NetworkAdaptationBehavior
+    let shouldWarnUser: Bool
+}
+
+enum NetworkType {
+    case wifi
+    case cellular5G
+    case cellularLTE
+    case cellular3G
+}
+
+enum NetworkSpeed {
+    case high
+    case medium
+    case low
+}
+
+enum NetworkStability {
+    case stable
+    case moderate
+    case unstable
+}
+
+enum NetworkAdaptationBehavior {
+    case fullProcessing
+    case warnAndProceed
+    case warnAndOptimize
+    case recommendWifi
+    case adaptiveProcessing
+}
+
+struct NetworkAdaptationResult {
+    let behavior: NetworkAdaptationBehavior
+    let userWarned: Bool
+    let chunkSize: Int
+    let concurrency: Int
+    let processingPaused: Bool
+    let wifiRecommendation: String?
+}
+
+struct EdgeCaseMemoryPressureScenario {
+    let level: AIKO.MemoryPressureLevel
+    let availableMemory: Int64
+    let expectedAdaptation: MemoryAdaptation
+    let shouldCompleteProcessing: Bool
+}
+
+enum MemoryAdaptation {
+    case reduceChunkSize
+    case reduceBatchSizeAndConcurrency
+    case pauseAndNotifyUser
+}
+
+struct EdgeCaseMemoryPressureResult {
+    let adaptation: MemoryAdaptation
+    let processingCompleted: Bool
+    let peakMemoryUsage: Int64
+    let userNotified: Bool
+    let userGuidance: String?
+}
+
+struct StorageScenario {
+    let availableSpace: Int64
+    let requiredSpace: Int64
+    let expectedBehavior: StorageBehavior
+    let shouldWarnUser: Bool
+}
+
+enum StorageBehavior {
+    case proceedWithFullSetup
+    case offerSelectiveDownload
+    case requireUserAction
+    case blockProcessing
+}
+
+struct EdgeCaseStorageResult {
+    let behavior: StorageBehavior
+    let userWarned: Bool
+    let processingAllowed: Bool
+    let selectiveDownloadOffered: Bool
+    let downloadOptions: [String]?
+    let userActionRequired: Bool
+    let storageManagementGuidance: String?
+    let errorMessage: String?
+}
+
+struct OlderDeviceConfiguration {
+    let processor: String
+    let memory: Int64
+    let coreMLPerformance: Double
+    let expectedOptimizations: [DeviceOptimization]
+    let maxProcessingTime: TimeInterval
+}
+
+enum DeviceOptimization {
+    case reduceModelPrecision
+    case increaseBatchSize
+    case reduceBatchSize
+    case enableDiskCaching
+}
+
+struct OlderDevicePerformanceResult {
+    let device: OlderDeviceConfiguration
+    let processingTime: TimeInterval
+    let optimizationsApplied: [DeviceOptimization]
+    let memoryUsage: Int64
+    let userExperience: Double
+}
+
+struct CorruptionScenario {
+    let type: CorruptionType
+    let severity: CorruptionSeverity
+    let affectedFiles: Int
+    let expectedRecovery: CorruptionRecovery
+    let shouldRecoverAutomatically: Bool
+}
+
+enum CorruptionType {
+    case partialDownload
+    case hashMismatch
+    case malformedJSON
+    case networkTimeout
+}
+
+enum CorruptionSeverity {
+    case moderate
+    case high
+    case critical
+}
+
+enum CorruptionRecovery {
+    case retryDownload
+    case skipFile
+    case retryWithBackoff
+}
+
+struct CorruptionResult {
+    let corruptionDetected: Bool
+    let recoveryStrategy: CorruptionRecovery
+    let automaticRecovery: Bool
+    let processingCompleted: Bool
+    let dataLoss: Double
+    let userNotified: Bool
+    let errorDetails: String?
+}
+
+struct DatabaseCorruptionScenario {
+    let type: DatabaseCorruptionType
+    let severity: CorruptionSeverity
+    let repairStrategy: DatabaseRepairStrategy
+    let expectedDataLoss: Double
+}
+
+enum DatabaseCorruptionType {
+    case indexCorruption
+    case dataFileCorruption
+    case schemaCorruption
+    case lockFileCorruption
+}
+
+enum DatabaseRepairStrategy {
+    case rebuildIndex
+    case restoreFromBackup
+    case recreateDatabase
+    case clearLockAndRestart
+}
+
+struct DatabaseCorruptionResult {
+    let corruptionDetected: Bool
+    let repairStrategy: DatabaseRepairStrategy
+    let actualDataLoss: Double
+    let integrityRestored: Bool
+    let operationsResumed: Bool
+    let userNotified: Bool
+    let recoveryGuidance: String?
+}
+
+struct SchemaMigrationScenario {
+    let fromVersion: String
+    let toVersion: String
+    let changeType: SchemaChangeType
+    let backwardCompatible: Bool
+    let migrationComplexity: MigrationComplexity
+}
+
+enum SchemaChangeType {
+    case addField
+    case removeField
+    case restructureData
+    case majorRestructure
+}
+
+enum MigrationComplexity {
+    case simple
+    case moderate
+    case complex
+}
+
+struct SchemaMigrationResult {
+    let migrationSucceeded: Bool
+    let dataIntegrityMaintained: Bool
+    let migratedRecords: Int
+    let migrationTime: TimeInterval
+    let userPromptShown: Bool
+    let backupCreated: String?
+    let rollbackSupported: Bool
+    let rollbackData: Data?
+}
+
+struct AppTerminationScenario {
+    let stage: ProcessingStage
+    let progressPercentage: Double
+    let terminationType: TerminationType
+    let expectedRecovery: NetworkRecoveryType
+}
+
+enum TerminationType {
+    case userForceQuit
+    case systemKill
+    case outOfMemory
+    case deviceRestart
+}
+
+struct AppTerminationResult {
+    let recoveryType: NetworkRecoveryType
+    let recoveredProgress: Double
+    let checkpointData: Data?
+    let dataLoss: Double
+    let resumeTime: TimeInterval
+    let resourcesCleaned: Bool
+    let tempFilesCleaned: Bool
+    let corruptionIntroduced: Bool
+}
+
+struct BackgroundTaskScenario {
+    let taskType: BackgroundTaskType
+    let timeLimit: TimeInterval
+    let workloadSize: WorkloadSize
+    let expectedBehavior: BackgroundTaskBehavior
+}
+
+enum BackgroundTaskType {
+    case bgProcessing
+    case bgAppRefresh
+    case userInitiated
+}
+
+enum WorkloadSize {
+    case small
+    case medium
+    case large
+}
+
+enum BackgroundTaskBehavior {
+    case gracefulShutdown
+    case saveProgressAndExit
+    case completeInForeground
+}
+
+struct BackgroundTaskResult {
+    let behavior: BackgroundTaskBehavior
+    let shutdownTime: TimeInterval
+    let progressSaved: Bool
+    let resourcesCleaned: Bool
+    let resumeToken: String?
+    let cleanExit: Bool
+    let transitionedToForeground: Bool
+    let processingContinued: Bool
+}
+
+// MARK: - Mock Infrastructure (These will fail until implemented)
+
+class NetworkConditionSimulator {
+    func simulateNetworkInterruption(_ scenario: NetworkInterruptionScenario, operation: (NetworkSimulator) async throws -> NetworkRecoveryResult) async throws -> NetworkRecoveryResult {
+        // This will fail - network interruption simulation not implemented
+        throw RegulationFetchingError.serviceNotConfigured
+    }
+
+    func simulateRateLimit(_ scenario: RateLimitScenario, operation: (RateLimitSimulator) async throws -> RateLimitResult) async throws -> RateLimitResult {
+        // This will fail - rate limit simulation not implemented
+        throw RegulationFetchingError.serviceNotConfigured
+    }
+
+    func simulateNetworkCondition(_ condition: NetworkCondition) {
+        // Mock network condition simulation
+    }
+
+    func testNetworkAdaptation(operation: (NetworkAdapter) async throws -> NetworkAdaptationResult) async throws -> NetworkAdaptationResult {
+        // This will fail - network adaptation not implemented
+        throw RegulationFetchingError.serviceNotConfigured
+    }
+}
+
+class DeviceConstraintSimulator {
+    func simulateMemoryPressure(_ scenario: EdgeCaseMemoryPressureScenario) {
+        // Mock memory pressure simulation
+    }
+
+    func testMemoryPressureHandling(operation: (MemoryConstraintSimulator) async throws -> EdgeCaseMemoryPressureResult) async throws -> EdgeCaseMemoryPressureResult {
+        // This will fail - memory pressure handling not implemented
+        throw RegulationFetchingError.serviceNotConfigured
+    }
+
+    func simulateStorageConstraint(_ scenario: StorageScenario) {
+        // Mock storage constraint simulation
+    }
+
+    func testStorageHandling(operation: (StorageConstraintSimulator) async throws -> EdgeCaseStorageResult) async throws -> EdgeCaseStorageResult {
+        // This will fail - storage handling not implemented
+        throw RegulationFetchingError.serviceNotConfigured
+    }
+
+    func simulateOlderDevice(_ device: OlderDeviceConfiguration) {
+        // Mock older device simulation
+    }
+
+    func testOlderDevicePerformance(operation: (OlderDeviceSimulator) async throws -> OlderDevicePerformanceResult) async throws -> OlderDevicePerformanceResult {
+        // This will fail - older device optimization not implemented
+        throw RegulationFetchingError.serviceNotConfigured
+    }
+}
+
+class ErrorRecoveryValidator {
+    // Mock error recovery validation
+}
+
+class ResilienceTestHarness {
+    func simulateFileCorruption(_ scenario: CorruptionScenario, operation: (CorruptionTestHarness) async throws -> CorruptionResult) async throws -> CorruptionResult {
+        // This will fail - file corruption handling not implemented
+        throw RegulationFetchingError.serviceNotConfigured
+    }
+
+    func simulateDatabaseCorruption(_ scenario: DatabaseCorruptionScenario, operation: (DatabaseCorruptionHarness) async throws -> DatabaseCorruptionResult) async throws -> DatabaseCorruptionResult {
+        // This will fail - database corruption handling not implemented
+        throw RegulationFetchingError.serviceNotConfigured
+    }
+
+    func testSchemaMigration(_ scenario: SchemaMigrationScenario, operation: (SchemaMigrationHarness) async throws -> SchemaMigrationResult) async throws -> SchemaMigrationResult {
+        // This will fail - schema migration not implemented
+        throw RegulationFetchingError.serviceNotConfigured
+    }
+
+    func simulateAppTermination(_ scenario: AppTerminationScenario, operation: (AppTerminationHarness) async throws -> AppTerminationResult) async throws -> AppTerminationResult {
+        // This will fail - app termination handling not implemented
+        throw RegulationFetchingError.serviceNotConfigured
+    }
+
+    func simulateBackgroundTaskExpiration(_ scenario: BackgroundTaskScenario, operation: (BackgroundTaskHarness) async throws -> BackgroundTaskResult) async throws -> BackgroundTaskResult {
+        // This will fail - background task expiration handling not implemented
+        throw RegulationFetchingError.serviceNotConfigured
+    }
+}
+
+// Additional mock classes that will fail until implemented
+class NetworkSimulator {
+    func startRegulationProcessing() async throws -> Any { throw RegulationFetchingError.serviceNotConfigured }
+    func waitForInterruptionPoint(_ point: Double) async throws { throw RegulationFetchingError.serviceNotConfigured }
+    func disconnectNetwork(duration: TimeInterval) { /* Mock disconnection */ }
+}
+
+class RateLimitSimulator {
+    func makeAPIRequest() async throws { throw NetworkError.rateLimitExceeded }
+    func handleRateLimitExceeded() async throws -> RateLimitResult { throw RegulationFetchingError.serviceNotConfigured }
+}
+
+class NetworkAdapter {
+    func createRegulationProcessor() async throws -> Any { throw RegulationFetchingError.serviceNotConfigured }
+}
+
+class MemoryConstraintSimulator {
+    func createMemoryConstrainedProcessor() async throws -> Any { throw RegulationFetchingError.serviceNotConfigured }
+}
+
+class StorageConstraintSimulator {
+    func createStorageAwareProcessor() async throws -> Any { throw RegulationFetchingError.serviceNotConfigured }
+}
+
+class OlderDeviceSimulator {
+    func createOptimizedProcessor(for device: OlderDeviceConfiguration) async throws -> Any { throw RegulationFetchingError.serviceNotConfigured }
+}
+
+class CorruptionTestHarness {
+    func createCorruptionTestProcessor() async throws -> Any { throw RegulationFetchingError.serviceNotConfigured }
+    func injectCorruption(_ scenario: CorruptionScenario) { /* Mock corruption injection */ }
+}
+
+class DatabaseCorruptionHarness {
+    func createTestDatabase(regulationCount: Int) async throws -> Any { throw RegulationFetchingError.serviceNotConfigured }
+    func injectDatabaseCorruption(_ scenario: DatabaseCorruptionScenario) { /* Mock corruption injection */ }
+}
+
+class SchemaMigrationHarness {
+    func createDatabaseWithSchema(version: String) async throws -> Any { throw RegulationFetchingError.serviceNotConfigured }
+    func createSchemaMigrator() async throws -> Any { throw RegulationFetchingError.serviceNotConfigured }
+}
+
+class AppTerminationHarness {
+    func createResilienceTestProcessor() async throws -> Any { throw RegulationFetchingError.serviceNotConfigured }
+    func simulateAppTermination(type: TerminationType) { /* Mock termination */ }
+    func restartAppAndRecoverProcessor() async throws -> Any { throw RegulationFetchingError.serviceNotConfigured }
+}
+
+class BackgroundTaskHarness {
+    func createBackgroundTaskProcessor(type: BackgroundTaskType) async throws -> Any { throw RegulationFetchingError.serviceNotConfigured }
+    func triggerBackgroundTaskExpiration(task: Task<Void, Error>) { task.cancel() }
+}
+
+enum NetworkError: Error {
+    case rateLimitExceeded
+}

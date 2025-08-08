@@ -1,0 +1,16 @@
+/Users/J/aiko/.build-isolated/checkouts/swift-collections/Sources/DequeModule/Deque+Codable.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-collections/Sources/DequeModule/Deque+Collection.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-collections/Sources/DequeModule/Deque+CustomReflectable.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-collections/Sources/DequeModule/Deque+Descriptions.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-collections/Sources/DequeModule/Deque+Equatable.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-collections/Sources/DequeModule/Deque+ExpressibleByArrayLiteral.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-collections/Sources/DequeModule/Deque+Extras.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-collections/Sources/DequeModule/Deque+Hashable.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-collections/Sources/DequeModule/Deque+Testing.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-collections/Sources/DequeModule/Deque._Storage.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-collections/Sources/DequeModule/Deque._UnsafeHandle.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-collections/Sources/DequeModule/Deque.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-collections/Sources/DequeModule/_DequeBuffer.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-collections/Sources/DequeModule/_DequeBufferHeader.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-collections/Sources/DequeModule/_DequeSlot.swift
+/Users/J/aiko/.build-isolated/checkouts/swift-collections/Sources/DequeModule/_UnsafeWrappedBuffer.swift

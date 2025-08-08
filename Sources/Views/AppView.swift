@@ -473,7 +473,7 @@ struct AuthenticationView: View {
             }
 
             if isAuthenticating {
-                ProgressView()
+                SwiftUI.ProgressView()
                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
                     .scaleEffect(1.5)
 
@@ -556,8 +556,8 @@ struct DocumentScannerSheet: View {
                     .font(.title)
 
                 if viewModel.isScanning {
-                    ProgressView("Scanning...")
-                        .progressViewStyle(CircularProgressViewStyle())
+                    SwiftUI.ProgressView("Scanning...")
+                        .progressViewStyle(.circular)
                 } else {
                     Button("Start Scanning") {
                         Task {
@@ -987,7 +987,7 @@ struct TemplateDetailSheet: View {
                             Button(action: generateDocument) {
                                 HStack {
                                     if isGenerating {
-                                        ProgressView()
+                                        SwiftUI.ProgressView()
                                             .progressViewStyle(.circular)
                                         Text("Generating Document...")
                                     } else {
@@ -1006,7 +1006,7 @@ struct TemplateDetailSheet: View {
                     Button(action: generateDocument) {
                         HStack {
                             if isGenerating {
-                                ProgressView()
+                                SwiftUI.ProgressView()
                                     .progressViewStyle(.circular)
                                 Text("Generating Document...")
                             } else {

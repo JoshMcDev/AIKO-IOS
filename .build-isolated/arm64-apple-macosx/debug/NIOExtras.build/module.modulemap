@@ -1,0 +1,4 @@
+module NIOExtras {
+    header "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/NIOExtras.build/NIOExtras-Swift.h"
+    requires objc
+}

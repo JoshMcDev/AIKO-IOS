@@ -1,0 +1,4 @@
+module GraphRAG {
+    header "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/GraphRAG-Swift.h"
+    requires objc
+}

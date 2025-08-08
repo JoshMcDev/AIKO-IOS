@@ -40,7 +40,7 @@ struct CacheSyncStatusView: View {
                 Button(action: viewModel.triggerSync) {
                     HStack(spacing: 6) {
                         if viewModel.isSyncing {
-                            ProgressView()
+                            SwiftUI.ProgressView()
                                 .scaleEffect(0.8)
                         }
                         Text(viewModel.syncButtonLabel)
@@ -122,7 +122,7 @@ struct CacheSyncIndicator: View {
     var body: some View {
         HStack(spacing: 4) {
             if viewModel.isSyncing {
-                ProgressView()
+                SwiftUI.ProgressView()
                     .scaleEffect(0.7)
             } else if viewModel.pendingChanges > 0 {
                 Image(systemName: "arrow.triangle.2.circlepath")

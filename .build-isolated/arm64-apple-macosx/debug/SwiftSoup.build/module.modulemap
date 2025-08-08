@@ -1,0 +1,4 @@
+module SwiftSoup {
+    header "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/SwiftSoup.build/SwiftSoup-Swift.h"
+    requires objc
+}

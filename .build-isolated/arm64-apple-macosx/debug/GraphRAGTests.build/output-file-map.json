@@ -1,0 +1,11 @@
+{
+  "": {
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAGTests.build/master.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/GraphRAGTests/ObjectBoxSemanticIndexTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAGTests.build/ObjectBoxSemanticIndexTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAGTests.build/ObjectBoxSemanticIndexTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAGTests.build/ObjectBoxSemanticIndexTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAGTests.build/ObjectBoxSemanticIndexTests.swiftdeps"
+  }
+}

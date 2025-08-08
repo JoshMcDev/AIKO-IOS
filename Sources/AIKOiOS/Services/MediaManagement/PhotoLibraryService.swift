@@ -487,7 +487,8 @@ public actor PhotoLibraryService: PhotoLibraryServiceProtocol {
 
     public func assetExists(_ localIdentifier: String) async -> Bool {
         let fetchResult = PHAsset.fetchAssets(withLocalIdentifiers: [localIdentifier], options: nil)
-        return fetchResult.count > 0
+        // swiftlint:disable:next empty_count
+        return fetchResult.count != 0 // PHFetchResult doesn't have isEmpty
     }
 }
 

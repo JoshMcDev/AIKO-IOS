@@ -1,0 +1,4 @@
+module Logging {
+    header "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/Logging.build/Logging-Swift.h"
+    requires objc
+}

@@ -1,0 +1,11 @@
+{
+  "": {
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXRandom.build/master.swiftdeps"
+  },
+  "/Users/J/aiko/.build-isolated/checkouts/mlx-swift/Source/MLXRandom/Random.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXRandom.build/Random.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXRandom.build/Random.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXRandom.build/Random~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXRandom.build/Random.swiftdeps"
+  }
+}

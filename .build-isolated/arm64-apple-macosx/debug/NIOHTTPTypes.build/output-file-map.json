@@ -1,0 +1,11 @@
+{
+  "": {
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/NIOHTTPTypes.build/master.swiftdeps"
+  },
+  "/Users/J/aiko/.build-isolated/checkouts/swift-nio-extras/Sources/NIOHTTPTypes/NIOHTTPTypes.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/NIOHTTPTypes.build/NIOHTTPTypes.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/NIOHTTPTypes.build/NIOHTTPTypes.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/NIOHTTPTypes.build/NIOHTTPTypes~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/NIOHTTPTypes.build/NIOHTTPTypes.swiftdeps"
+  }
+}

@@ -368,7 +368,7 @@ extension WorkflowStep: Codable {
         timestamp = try container.decode(Date.self, forKey: .timestamp)
         documentType = try container.decode(String.self, forKey: .documentType)
         formFields = try container.decode([String: String].self, forKey: .formFields)
-        userActions = try container.decode([UserAction].self, forKey: .userActions)
+        userActions = try container.decode([LegacyUserAction].self, forKey: .userActions)
     }
 
     func encode(to encoder: Encoder) throws {

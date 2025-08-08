@@ -189,7 +189,7 @@ public struct AgentChatInterface: View {
                             .frame(width: 36, height: 36)
 
                         if isGeneratingResponse {
-                            ProgressView()
+                            SwiftUI.ProgressView()
                                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                 .scaleEffect(0.7)
                         } else {

@@ -73,7 +73,7 @@ public struct SuggestionFeedbackView: View {
                 Spacer()
 
                 if isProcessing {
-                    ProgressView()
+                    SwiftUI.ProgressView()
                         .scaleEffect(0.8)
                 }
             }

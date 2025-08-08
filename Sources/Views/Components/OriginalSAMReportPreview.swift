@@ -894,7 +894,7 @@ struct FollowOnReportView: View {
                 if isGenerating {
                     // Generation in progress
                     VStack(spacing: 16) {
-                        ProgressView()
+                        SwiftUI.ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .blue))
                             .scaleEffect(1.5)
 

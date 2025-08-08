@@ -1,0 +1,11 @@
+{
+  "": {
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOPackageTests.build/master.swiftdeps"
+  },
+  "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOPackageTests.derived/runner.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOPackageTests.build/runner.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOPackageTests.build/runner.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOPackageTests.build/runner~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOPackageTests.build/runner.swiftdeps"
+  }
+}

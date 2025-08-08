@@ -1,0 +1,4 @@
+module AsyncHTTPClient {
+    header "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AsyncHTTPClient.build/AsyncHTTPClient-Swift.h"
+    requires objc
+}

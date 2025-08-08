@@ -1,0 +1,149 @@
+{
+  "": {
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/master.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/ACQTemplatesProcessing/ACQMemoryMonitor.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/ACQMemoryMonitor.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/ACQMemoryMonitor.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/ACQMemoryMonitor~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/ACQMemoryMonitor.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/ACQTemplatesProcessing/ACQTemplateTypes.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/ACQTemplateTypes.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/ACQTemplateTypes.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/ACQTemplateTypes~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/ACQTemplateTypes.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/ACQTemplatesProcessing/HybridSearchService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/HybridSearchService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/HybridSearchService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/HybridSearchService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/HybridSearchService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/ACQTemplatesProcessing/LFM2Service+Templates.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/LFM2Service+Templates.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/LFM2Service+Templates.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/LFM2Service+Templates~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/LFM2Service+Templates.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/ACQTemplatesProcessing/MemoryConstrainedTemplateProcessor.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/MemoryConstrainedTemplateProcessor.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/MemoryConstrainedTemplateProcessor.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/MemoryConstrainedTemplateProcessor~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/MemoryConstrainedTemplateProcessor.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/ACQTemplatesProcessing/MemoryPermitSystem.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/MemoryPermitSystem.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/MemoryPermitSystem.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/MemoryPermitSystem~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/MemoryPermitSystem.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/ACQTemplatesProcessing/ObjectBoxSemanticIndex+Templates.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/ObjectBoxSemanticIndex+Templates.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/ObjectBoxSemanticIndex+Templates.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/ObjectBoxSemanticIndex+Templates~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/ObjectBoxSemanticIndex+Templates.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/ACQTemplatesProcessing/ShardedTemplateIndex.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/ShardedTemplateIndex.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/ShardedTemplateIndex.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/ShardedTemplateIndex~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/ShardedTemplateIndex.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/GraphRAGTypes.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/GraphRAGTypes.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/GraphRAGTypes.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/GraphRAGTypes~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/GraphRAGTypes.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/LFM2Service.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/LFM2Service.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/LFM2Service.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/LFM2Service~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/LFM2Service.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/MemoryMonitor.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/MemoryMonitor.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/MemoryMonitor.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/MemoryMonitor~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/MemoryMonitor.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/ObjectBoxSemanticIndex.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/ObjectBoxSemanticIndex.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/ObjectBoxSemanticIndex.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/ObjectBoxSemanticIndex~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/ObjectBoxSemanticIndex.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/RegulationProcessor.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/RegulationProcessor.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/RegulationProcessor.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/RegulationProcessor~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/RegulationProcessor.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/SLMModelManager.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/SLMModelManager.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/SLMModelManager.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/SLMModelManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/SLMModelManager.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/UnifiedSearchService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UnifiedSearchService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UnifiedSearchService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UnifiedSearchService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UnifiedSearchService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/UserAcquisitionRecords/CompactWorkflowEvent.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/CompactWorkflowEvent.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/CompactWorkflowEvent.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/CompactWorkflowEvent~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/CompactWorkflowEvent.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/UserAcquisitionRecords/MockTypes.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/MockTypes.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/MockTypes.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/MockTypes~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/MockTypes.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/UserAcquisitionRecords/PrivacyEngine.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/PrivacyEngine.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/PrivacyEngine.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/PrivacyEngine~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/PrivacyEngine.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/UserAcquisitionRecords/UserAction.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UserAction.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UserAction.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UserAction~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UserAction.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/UserAcquisitionRecords/UserRecordsCapture.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UserRecordsCapture.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UserRecordsCapture.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UserRecordsCapture~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UserRecordsCapture.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/UserAcquisitionRecords/UserRecordsGraphRAGIntegration.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UserRecordsGraphRAGIntegration.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UserRecordsGraphRAGIntegration.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UserRecordsGraphRAGIntegration~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UserRecordsGraphRAGIntegration.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/UserAcquisitionRecords/UserRecordsProcessor.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UserRecordsProcessor.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UserRecordsProcessor.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UserRecordsProcessor~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UserRecordsProcessor.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/UserAcquisitionRecords/WorkflowEmbedding.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/WorkflowEmbedding.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/WorkflowEmbedding.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/WorkflowEmbedding~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/WorkflowEmbedding.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/GraphRAG/UserWorkflowTracker.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UserWorkflowTracker.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UserWorkflowTracker.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UserWorkflowTracker~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/GraphRAG.build/UserWorkflowTracker.swiftdeps"
+  }
+}

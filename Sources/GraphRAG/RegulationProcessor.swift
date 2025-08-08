@@ -171,10 +171,10 @@ actor RegulationProcessor {
         text: String,
         source: RegulationSource,
         metadata _: RegulationMetadata
-    ) -> [RegulationChunk] {
+    ) -> [GraphRAGRegulationChunk] {
         // Split by logical sections first
         let sections = splitIntoSections(text, source: source)
-        var chunks: [RegulationChunk] = []
+        var chunks: [GraphRAGRegulationChunk] = []
         var chunkIndex = 0
 
         for section in sections {
@@ -271,14 +271,14 @@ actor RegulationProcessor {
         _ section: RegulationSection,
         startingIndex: Int,
         source _: RegulationSource
-    ) -> [RegulationChunk] {
+    ) -> [GraphRAGRegulationChunk] {
         let words = section.content.components(separatedBy: .whitespacesAndNewlines)
             .filter { !$0.isEmpty }
 
         let wordsPerChunk = maxChunkSize / 4 // Rough estimate: 4 chars per token
         let overlapWords = overlapSize / 4
 
-        var chunks: [RegulationChunk] = []
+        var chunks: [GraphRAGRegulationChunk] = []
         var startIndex = 0
         var chunkIndex = startingIndex
 
@@ -287,7 +287,7 @@ actor RegulationProcessor {
             let chunkWords = Array(words[startIndex ..< endIndex])
             let content = chunkWords.joined(separator: " ")
 
-            chunks.append(RegulationChunk(
+            chunks.append(GraphRAGRegulationChunk(
                 content: content,
                 chunkIndex: chunkIndex,
                 sectionTitle: section.title

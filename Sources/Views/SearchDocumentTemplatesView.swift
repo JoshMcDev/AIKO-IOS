@@ -680,8 +680,7 @@ struct CreateTemplateView: View {
                         Button(action: generateTemplate) {
                             if isGenerating {
                                 HStack {
-                                    ProgressView()
-                                        .progressViewStyle(.circular)
+                                    SwiftUI.ProgressView()
                                     Text("Generating template...")
                                 }
                             } else {

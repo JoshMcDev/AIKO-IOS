@@ -17,12 +17,12 @@ enum RegulationSource {
 }
 
 struct ProcessedRegulation {
-    let chunks: [RegulationChunk]
+    let chunks: [GraphRAGRegulationChunk]
     let metadata: RegulationMetadata
     let source: RegulationSource
 }
 
-struct RegulationChunk {
+struct GraphRAGRegulationChunk {
     let content: String
     let chunkIndex: Int
     let sectionTitle: String?
@@ -81,10 +81,10 @@ struct WorkflowStep: Sendable {
     let timestamp: Date
     let documentType: String
     let formFields: [String: String] // Changed to Sendable type
-    let userActions: [UserAction]
+    let userActions: [LegacyUserAction]
 }
 
-struct UserAction: Sendable, Codable {
+struct LegacyUserAction: Sendable, Codable {
     let actionType: String
     let target: String
     let timestamp: Date

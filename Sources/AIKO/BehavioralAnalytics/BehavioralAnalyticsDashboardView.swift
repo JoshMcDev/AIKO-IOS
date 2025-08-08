@@ -138,8 +138,11 @@ struct OverviewTabView: View {
     var body: some View {
         Group {
             if isLoading {
-                ProgressView("Loading analytics...")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                VStack {
+                    SwiftUI.ProgressView()
+                    Text("Loading analytics...")
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if let data = dashboardData {
                 OverviewContentView(data: data)
             } else {
@@ -261,8 +264,11 @@ struct LearningTabView: View {
     var body: some View {
         Group {
             if isLoading {
-                ProgressView("Loading learning analytics...")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                VStack {
+                    SwiftUI.ProgressView()
+                    Text("Loading learning analytics...")
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 VStack(spacing: 16) {
                     Text("Learning Analytics")
@@ -284,8 +290,11 @@ struct TimeSavedTabView: View {
     var body: some View {
         Group {
             if isLoading {
-                ProgressView("Loading time saved analytics...")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                VStack {
+                    SwiftUI.ProgressView()
+                    Text("Loading time saved analytics...")
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 VStack(spacing: 16) {
                     Text("Time Saved Analytics")
@@ -307,8 +316,15 @@ struct PatternsTabView: View {
     var body: some View {
         Group {
             if isLoading {
-                ProgressView("Loading pattern analytics...")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                VStack {
+                    // Simple loading indicator
+                    Image(systemName: "arrow.2.circlepath")
+                        .font(.largeTitle)
+                        .foregroundColor(.secondary)
+                    Text("Loading pattern analytics...")
+                        .foregroundColor(.secondary)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 VStack(spacing: 16) {
                     Text("Pattern Analytics")
@@ -330,8 +346,15 @@ struct PersonalizationTabView: View {
     var body: some View {
         Group {
             if isLoading {
-                ProgressView("Loading personalization analytics...")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                VStack {
+                    // Simple loading indicator
+                    Image(systemName: "arrow.2.circlepath")
+                        .font(.largeTitle)
+                        .foregroundColor(.secondary)
+                    Text("Loading personalization analytics...")
+                        .foregroundColor(.secondary)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 VStack(spacing: 16) {
                     Text("Personalization Analytics")

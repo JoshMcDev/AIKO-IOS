@@ -119,7 +119,7 @@ public struct AcquisitionsListView: View {
     @ViewBuilder
     private var contentView: some View {
         if viewModel.isLoading {
-            ProgressView("Loading acquisitions...")
+            SwiftUI.ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else if let errorMessage = viewModel.errorMessage {
             VStack(spacing: 16) {

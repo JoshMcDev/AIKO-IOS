@@ -754,7 +754,7 @@ public final class ProfileViewModel {
             UserDefaults.standard.set(profileData, forKey: "userProfile")
 
             // Update profile in shared container for dependency injection
-            DependencyContainer.shared.register(AppCore.UserProfile.self, instance: profile)
+            AppCore.DependencyContainer.shared.register(AppCore.UserProfile.self, instance: profile)
 
             // TODO: Persist to Core Data when CoreDataManagerProtocol is implemented
             // For now, profile is persisted in DependencyContainer and via NotificationCenter

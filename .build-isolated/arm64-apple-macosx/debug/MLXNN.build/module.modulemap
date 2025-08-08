@@ -1,0 +1,4 @@
+module MLXNN {
+    header "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXNN.build/MLXNN-Swift.h"
+    requires objc
+}

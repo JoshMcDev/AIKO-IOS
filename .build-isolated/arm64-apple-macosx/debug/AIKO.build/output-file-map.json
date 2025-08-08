@@ -1,0 +1,1517 @@
+{
+  "": {
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/master.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/BehavioralAnalytics/AnalyticsCollectorService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AnalyticsCollectorService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AnalyticsCollectorService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AnalyticsCollectorService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AnalyticsCollectorService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/BehavioralAnalytics/AnalyticsModels.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AnalyticsModels.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AnalyticsModels.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AnalyticsModels~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AnalyticsModels.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/BehavioralAnalytics/AnalyticsRepository.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AnalyticsRepository.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AnalyticsRepository.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AnalyticsRepository~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AnalyticsRepository.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/BehavioralAnalytics/BehavioralAnalyticsDashboardView.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BehavioralAnalyticsDashboardView.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BehavioralAnalyticsDashboardView.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BehavioralAnalyticsDashboardView~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BehavioralAnalyticsDashboardView.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/BehavioralAnalytics/BehavioralAnalyticsFeature.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BehavioralAnalyticsFeature.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BehavioralAnalyticsFeature.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BehavioralAnalyticsFeature~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BehavioralAnalyticsFeature.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/BehavioralAnalytics/BehavioralAnalyticsTypes.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BehavioralAnalyticsTypes.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BehavioralAnalyticsTypes.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BehavioralAnalyticsTypes~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BehavioralAnalyticsTypes.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/BehavioralAnalytics/BehavioralAnalyticsViewModel.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BehavioralAnalyticsViewModel.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BehavioralAnalyticsViewModel.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BehavioralAnalyticsViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BehavioralAnalyticsViewModel.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/BehavioralAnalytics/ChartViewModel.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ChartViewModel.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ChartViewModel.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ChartViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ChartViewModel.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/BehavioralAnalytics/ExportManager.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ExportManager.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ExportManager.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ExportManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ExportManager.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/LaunchTimeRegulationFetching/BackgroundRegulationProcessor.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BackgroundRegulationProcessor.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BackgroundRegulationProcessor.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BackgroundRegulationProcessor~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BackgroundRegulationProcessor.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/LaunchTimeRegulationFetching/LFM2Service.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LFM2Service.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LFM2Service.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LFM2Service~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LFM2Service.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/LaunchTimeRegulationFetching/LaunchTimeConfiguration.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LaunchTimeConfiguration.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LaunchTimeConfiguration.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LaunchTimeConfiguration~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LaunchTimeConfiguration.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/LaunchTimeRegulationFetching/LaunchTimeRegulationSupportingServices.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LaunchTimeRegulationSupportingServices.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LaunchTimeRegulationSupportingServices.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LaunchTimeRegulationSupportingServices~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LaunchTimeRegulationSupportingServices.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/LaunchTimeRegulationFetching/LaunchTimeRegulationTypes.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LaunchTimeRegulationTypes.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LaunchTimeRegulationTypes.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LaunchTimeRegulationTypes~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LaunchTimeRegulationTypes.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/LaunchTimeRegulationFetching/MemoryPressureManager.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryPressureManager.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryPressureManager.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryPressureManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryPressureManager.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/LaunchTimeRegulationFetching/ObjectBoxSemanticIndex.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ObjectBoxSemanticIndex.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ObjectBoxSemanticIndex.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ObjectBoxSemanticIndex~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ObjectBoxSemanticIndex.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/LaunchTimeRegulationFetching/RegulationFetchService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationFetchService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationFetchService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationFetchService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationFetchService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/LaunchTimeRegulationFetching/SecureGitHubClient.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SecureGitHubClient.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SecureGitHubClient.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SecureGitHubClient~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SecureGitHubClient.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/LaunchTimeRegulationFetching/StreamingRegulationChunk.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/StreamingRegulationChunk.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/StreamingRegulationChunk.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/StreamingRegulationChunk~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/StreamingRegulationChunk.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/RegulationProcessingPipeline/ArrayExtensions.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ArrayExtensions.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ArrayExtensions.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ArrayExtensions~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ArrayExtensions.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/RegulationProcessingPipeline/AsyncChannel.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AsyncChannel.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AsyncChannel.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AsyncChannel~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AsyncChannel.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/RegulationProcessingPipeline/GraphRAGRegulationStorage.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GraphRAGRegulationStorage.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GraphRAGRegulationStorage.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GraphRAGRegulationStorage~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GraphRAGRegulationStorage.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/RegulationProcessingPipeline/MemoryManagedBatchProcessor.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryManagedBatchProcessor.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryManagedBatchProcessor.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryManagedBatchProcessor~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryManagedBatchProcessor.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/RegulationProcessingPipeline/MemoryManagementSupport.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryManagementSupport.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryManagementSupport.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryManagementSupport~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryManagementSupport.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/RegulationProcessingPipeline/MemoryMonitor.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryMonitor.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryMonitor.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryMonitor~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryMonitor.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/RegulationProcessingPipeline/MemoryOptimizedBatchProcessor.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryOptimizedBatchProcessor.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryOptimizedBatchProcessor.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryOptimizedBatchProcessor~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryOptimizedBatchProcessor.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/RegulationProcessingPipeline/RegulationEmbeddingService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationEmbeddingService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationEmbeddingService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationEmbeddingService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationEmbeddingService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/RegulationProcessingPipeline/RegulationHTMLParser.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationHTMLParser.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationHTMLParser.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationHTMLParser~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationHTMLParser.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/RegulationProcessingPipeline/SmartChunkingEngine.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SmartChunkingEngine.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SmartChunkingEngine.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SmartChunkingEngine~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SmartChunkingEngine.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/RegulationProcessingPipeline/StructureAwareChunker.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/StructureAwareChunker.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/StructureAwareChunker.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/StructureAwareChunker~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/StructureAwareChunker.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/WorkflowPrediction/MultifactorConfidenceScorer.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MultifactorConfidenceScorer.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MultifactorConfidenceScorer.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MultifactorConfidenceScorer~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MultifactorConfidenceScorer.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/WorkflowPrediction/UserPatternLearningEngine.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UserPatternLearningEngine.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UserPatternLearningEngine.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UserPatternLearningEngine~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UserPatternLearningEngine.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/WorkflowPrediction/WorkflowPredictionTypes.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/WorkflowPredictionTypes.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/WorkflowPredictionTypes.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/WorkflowPredictionTypes~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/WorkflowPredictionTypes.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AIKO/WorkflowPrediction/WorkflowStateMachine.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/WorkflowStateMachine.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/WorkflowStateMachine.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/WorkflowStateMachine~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/WorkflowStateMachine.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AgenticSuggestionUI/AIReasoningView.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AIReasoningView.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AIReasoningView.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AIReasoningView~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AIReasoningView.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AgenticSuggestionUI/AgenticSuggestionView.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AgenticSuggestionView.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AgenticSuggestionView.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AgenticSuggestionView~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AgenticSuggestionView.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AgenticSuggestionUI/ConfidenceIndicator.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ConfidenceIndicator.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ConfidenceIndicator.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ConfidenceIndicator~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ConfidenceIndicator.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AgenticSuggestionUI/SuggestionFeedbackView.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SuggestionFeedbackView.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SuggestionFeedbackView.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SuggestionFeedbackView~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SuggestionFeedbackView.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AgenticSuggestionUI/SuggestionViewModel.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SuggestionViewModel.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SuggestionViewModel.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SuggestionViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SuggestionViewModel.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Core/Animations/AnimationSystem.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AnimationSystem.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AnimationSystem.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AnimationSystem~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AnimationSystem.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Core/Components/EnhancedCard.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EnhancedCard.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EnhancedCard.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EnhancedCard~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EnhancedCard.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Core/Components/VisualEffects.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/VisualEffects.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/VisualEffects.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/VisualEffects~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/VisualEffects.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Core/Configuration/APIConfiguration.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/APIConfiguration.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/APIConfiguration.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/APIConfiguration~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/APIConfiguration.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Core/Configuration/EnhancedAPIConfiguration.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EnhancedAPIConfiguration.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EnhancedAPIConfiguration.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EnhancedAPIConfiguration~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EnhancedAPIConfiguration.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Core/Design/DynamicType.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DynamicType.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DynamicType.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DynamicType~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DynamicType.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Core/Extensions/Accessibility+Extensions.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/Accessibility+Extensions.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/Accessibility+Extensions.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/Accessibility+Extensions~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/Accessibility+Extensions.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/CoreData/MetricComparison+CoreDataClass.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricComparison+CoreDataClass.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricComparison+CoreDataClass.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricComparison+CoreDataClass~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricComparison+CoreDataClass.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/CoreData/MetricComparison+CoreDataProperties.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricComparison+CoreDataProperties.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricComparison+CoreDataProperties.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricComparison+CoreDataProperties~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricComparison+CoreDataProperties.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/CoreData/MetricInsight+CoreDataClass.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricInsight+CoreDataClass.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricInsight+CoreDataClass.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricInsight+CoreDataClass~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricInsight+CoreDataClass.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/CoreData/MetricInsight+CoreDataProperties.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricInsight+CoreDataProperties.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricInsight+CoreDataProperties.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricInsight+CoreDataProperties~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricInsight+CoreDataProperties.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/CoreData/MetricMeasurement+CoreDataClass.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricMeasurement+CoreDataClass.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricMeasurement+CoreDataClass.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricMeasurement+CoreDataClass~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricMeasurement+CoreDataClass.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/CoreData/MetricMeasurement+CoreDataProperties.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricMeasurement+CoreDataProperties.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricMeasurement+CoreDataProperties.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricMeasurement+CoreDataProperties~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricMeasurement+CoreDataProperties.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/CoreData/MetricRecommendation+CoreDataClass.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricRecommendation+CoreDataClass.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricRecommendation+CoreDataClass.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricRecommendation+CoreDataClass~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricRecommendation+CoreDataClass.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/CoreData/MetricRecommendation+CoreDataProperties.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricRecommendation+CoreDataProperties.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricRecommendation+CoreDataProperties.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricRecommendation+CoreDataProperties~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricRecommendation+CoreDataProperties.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/CoreData/MetricTrend+CoreDataClass.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricTrend+CoreDataClass.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricTrend+CoreDataClass.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricTrend+CoreDataClass~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricTrend+CoreDataClass.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/CoreData/MetricTrend+CoreDataProperties.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricTrend+CoreDataProperties.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricTrend+CoreDataProperties.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricTrend+CoreDataProperties~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricTrend+CoreDataProperties.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/CoreData/MetricValue+CoreDataClass.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricValue+CoreDataClass.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricValue+CoreDataClass.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricValue+CoreDataClass~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricValue+CoreDataClass.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/CoreData/MetricValue+CoreDataProperties.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricValue+CoreDataProperties.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricValue+CoreDataProperties.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricValue+CoreDataProperties~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricValue+CoreDataProperties.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/CoreData/MetricsReport+CoreDataClass.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricsReport+CoreDataClass.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricsReport+CoreDataClass.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricsReport+CoreDataClass~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricsReport+CoreDataClass.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/CoreData/MetricsReport+CoreDataProperties.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricsReport+CoreDataProperties.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricsReport+CoreDataProperties.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricsReport+CoreDataProperties~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricsReport+CoreDataProperties.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/CoreData/MetricsSummary+CoreDataClass.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricsSummary+CoreDataClass.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricsSummary+CoreDataClass.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricsSummary+CoreDataClass~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricsSummary+CoreDataClass.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/CoreData/MetricsSummary+CoreDataProperties.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricsSummary+CoreDataProperties.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricsSummary+CoreDataProperties.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricsSummary+CoreDataProperties~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricsSummary+CoreDataProperties.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/CoreData/TrendDataPoint+CoreDataClass.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/TrendDataPoint+CoreDataClass.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/TrendDataPoint+CoreDataClass.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/TrendDataPoint+CoreDataClass~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/TrendDataPoint+CoreDataClass.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/CoreData/TrendDataPoint+CoreDataProperties.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/TrendDataPoint+CoreDataProperties.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/TrendDataPoint+CoreDataProperties.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/TrendDataPoint+CoreDataProperties~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/TrendDataPoint+CoreDataProperties.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Domain/Base/DomainEntity.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DomainEntity.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DomainEntity.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DomainEntity~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DomainEntity.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Domain/Base/ValueObject.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ValueObject.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ValueObject.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ValueObject~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ValueObject.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Domain/Events/AcquisitionEventHandlers.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionEventHandlers.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionEventHandlers.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionEventHandlers~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionEventHandlers.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Domain/Events/DomainEventBus.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DomainEventBus.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DomainEventBus.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DomainEventBus~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DomainEventBus.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Domain/Events/DomainEventDispatcher.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DomainEventDispatcher.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DomainEventDispatcher.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DomainEventDispatcher~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DomainEventDispatcher.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Domain/Events/DomainEventStore.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DomainEventStore.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DomainEventStore.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DomainEventStore~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DomainEventStore.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Domain/Events/EventSourcingAggregate.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EventSourcingAggregate.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EventSourcingAggregate.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EventSourcingAggregate~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EventSourcingAggregate.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Domain/Factory/FormFactory.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormFactory.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormFactory.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormFactory~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormFactory.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Domain/Forms/DD1155Form.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DD1155Form.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DD1155Form.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DD1155Form~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DD1155Form.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Domain/Forms/GovernmentForm.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentForm.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentForm.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentForm~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentForm.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Domain/Forms/SF1449Form.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF1449Form.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF1449Form.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF1449Form~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF1449Form.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Domain/Forms/SF18Form.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF18Form.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF18Form.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF18Form~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF18Form.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Domain/Forms/SF26Form.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF26Form.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF26Form.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF26Form~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF26Form.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Domain/Forms/SF30Form.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF30Form.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF30Form.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF30Form~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF30Form.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Domain/Forms/SF33Form.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF33Form.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF33Form.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF33Form~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF33Form.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Domain/Forms/SF44Form.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF44Form.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF44Form.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF44Form~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SF44Form.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Domain/Models/AcquisitionAggregate.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionAggregate.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionAggregate.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionAggregate~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionAggregate.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Domain/Services/DomainService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DomainService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DomainService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DomainService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DomainService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Features/AppViewModel.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AppViewModel.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AppViewModel.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AppViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AppViewModel.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Features/OnboardingViewModel.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OnboardingViewModel.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OnboardingViewModel.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OnboardingViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OnboardingViewModel.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Features/ProfileComponents.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ProfileComponents.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ProfileComponents.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ProfileComponents~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ProfileComponents.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Features/SettingsViewModel.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SettingsViewModel.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SettingsViewModel.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SettingsViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SettingsViewModel.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Cache/BackgroundSyncHandler.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BackgroundSyncHandler.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BackgroundSyncHandler.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BackgroundSyncHandler~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BackgroundSyncHandler.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Cache/CacheConnection.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheConnection.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheConnection.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheConnection~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheConnection.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Cache/CacheExtensions.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheExtensions.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheExtensions.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheExtensions~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheExtensions.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Cache/CacheInvalidationDemo.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheInvalidationDemo.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheInvalidationDemo.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheInvalidationDemo~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheInvalidationDemo.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Cache/CachePerformanceAnalytics.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CachePerformanceAnalytics.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CachePerformanceAnalytics.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CachePerformanceAnalytics~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CachePerformanceAnalytics.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Cache/CachePerformanceAnalyticsDemo.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CachePerformanceAnalyticsDemo.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CachePerformanceAnalyticsDemo.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CachePerformanceAnalyticsDemo~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CachePerformanceAnalyticsDemo.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Cache/CacheSyncViewModel.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheSyncViewModel.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheSyncViewModel.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheSyncViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheSyncViewModel.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Cache/ConsistentHash.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ConsistentHash.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ConsistentHash.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ConsistentHash~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ConsistentHash.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Cache/DistributedCache.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DistributedCache.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DistributedCache.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DistributedCache~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DistributedCache.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Cache/DistributedCacheDemo.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DistributedCacheDemo.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DistributedCacheDemo.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DistributedCacheDemo~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DistributedCacheDemo.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Cache/DistributedCacheProtocol.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DistributedCacheProtocol.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DistributedCacheProtocol.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DistributedCacheProtocol~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DistributedCacheProtocol.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Cache/Models/CacheEntry.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheEntry.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheEntry.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheEntry~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheEntry.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Cache/Models/SyncModels.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SyncModels.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SyncModels.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SyncModels~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SyncModels.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Cache/ObjectActionCache.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ObjectActionCache.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ObjectActionCache.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ObjectActionCache~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ObjectActionCache.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Cache/OfflineCacheAPI.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OfflineCacheAPI.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OfflineCacheAPI.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OfflineCacheAPI~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OfflineCacheAPI.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Cache/OfflineCacheManager.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OfflineCacheManager.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OfflineCacheManager.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OfflineCacheManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OfflineCacheManager.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Cache/Storage/DiskCache.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DiskCache.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DiskCache.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DiskCache~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DiskCache.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Cache/Storage/MemoryCache.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryCache.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryCache.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryCache~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MemoryCache.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Cache/Storage/SecureCache.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SecureCache.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SecureCache.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SecureCache~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SecureCache.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/CoreDataActor.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CoreDataActor.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CoreDataActor.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CoreDataActor~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CoreDataActor.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/CoreDataManager.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CoreDataManager.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CoreDataManager.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CoreDataManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CoreDataManager.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/DependencyInjection/AcquisitionServiceAdapter.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionServiceAdapter.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionServiceAdapter.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionServiceAdapter~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionServiceAdapter.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/DependencyInjection/SAMGovServiceAdapter.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMGovServiceAdapter.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMGovServiceAdapter.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMGovServiceAdapter~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMGovServiceAdapter.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Extensions/Acquisition+Mapping.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/Acquisition+Mapping.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/Acquisition+Mapping.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/Acquisition+Mapping~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/Acquisition+Mapping.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Repositories/AcquisitionRepository.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionRepository.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionRepository.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionRepository~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionRepository.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Repositories/CoreDataRepository.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CoreDataRepository.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CoreDataRepository.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CoreDataRepository~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CoreDataRepository.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Repositories/DocumentRepository.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentRepository.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentRepository.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentRepository~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentRepository.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Repositories/RepositoryExtensions.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RepositoryExtensions.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RepositoryExtensions.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RepositoryExtensions~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RepositoryExtensions.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Repositories/SAMGovRepository.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMGovRepository.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMGovRepository.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMGovRepository~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMGovRepository.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Services/BaseService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BaseService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BaseService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BaseService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BaseService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Infrastructure/Services/DocumentService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Models/AppError.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AppError.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AppError.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AppError~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AppError.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Models/Compliance/ComplianceModels.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ComplianceModels.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ComplianceModels.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ComplianceModels~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ComplianceModels.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Models/CoreData/Acquisition+CoreDataClass.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/Acquisition+CoreDataClass.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/Acquisition+CoreDataClass.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/Acquisition+CoreDataClass~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/Acquisition+CoreDataClass.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Models/CoreData/Acquisition+CoreDataProperties.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/Acquisition+CoreDataProperties.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/Acquisition+CoreDataProperties.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/Acquisition+CoreDataProperties~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/Acquisition+CoreDataProperties.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Models/CoreData/AcquisitionDocument+CoreDataClass.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionDocument+CoreDataClass.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionDocument+CoreDataClass.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionDocument+CoreDataClass~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionDocument+CoreDataClass.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Models/CoreData/AcquisitionDocument+CoreDataProperties.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionDocument+CoreDataProperties.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionDocument+CoreDataProperties.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionDocument+CoreDataProperties~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionDocument+CoreDataProperties.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Models/CoreData/GeneratedFile+CoreDataClass.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GeneratedFile+CoreDataClass.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GeneratedFile+CoreDataClass.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GeneratedFile+CoreDataClass~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GeneratedFile+CoreDataClass.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Models/CoreData/GeneratedFile+CoreDataProperties.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GeneratedFile+CoreDataProperties.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GeneratedFile+CoreDataProperties.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GeneratedFile+CoreDataProperties~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GeneratedFile+CoreDataProperties.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Models/CoreData/GovernmentFormData+CoreDataClass.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentFormData+CoreDataClass.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentFormData+CoreDataClass.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentFormData+CoreDataClass~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentFormData+CoreDataClass.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Models/CoreData/GovernmentFormData+CoreDataProperties.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentFormData+CoreDataProperties.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentFormData+CoreDataProperties.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentFormData+CoreDataProperties~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentFormData+CoreDataProperties.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Models/CoreData/UploadedFile+CoreDataClass.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UploadedFile+CoreDataClass.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UploadedFile+CoreDataClass.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UploadedFile+CoreDataClass~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UploadedFile+CoreDataClass.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Models/CoreData/UploadedFile+CoreDataProperties.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UploadedFile+CoreDataProperties.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UploadedFile+CoreDataProperties.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UploadedFile+CoreDataProperties~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UploadedFile+CoreDataProperties.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Models/DocumentChain.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentChain.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentChain.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentChain~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentChain.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Models/DocumentTypeMapping.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentTypeMapping.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentTypeMapping.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentTypeMapping~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentTypeMapping.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Models/FARUpdateStatus.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARUpdateStatus.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARUpdateStatus.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARUpdateStatus~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARUpdateStatus.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Models/FollowOnAction.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FollowOnAction.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FollowOnAction.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FollowOnAction~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FollowOnAction.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Models/FormTypes.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormTypes.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormTypes.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormTypes~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormTypes.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Models/GovernmentFormModel.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentFormModel.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentFormModel.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentFormModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentFormModel.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Models/Metrics.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/Metrics.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/Metrics.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/Metrics~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/Metrics.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Models/ObjectType.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ObjectType.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ObjectType.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ObjectType~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ObjectType.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Models/RegulationModels.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationModels.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationModels.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationModels~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationModels.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Models/TestDocument.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/TestDocument.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/TestDocument.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/TestDocument~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/TestDocument.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Models/WorkflowModels.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/WorkflowModels.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/WorkflowModels.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/WorkflowModels~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/WorkflowModels.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Navigation/NavigationSplitViewContainer.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/NavigationSplitViewContainer.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/NavigationSplitViewContainer.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/NavigationSplitViewContainer~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/NavigationSplitViewContainer.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Navigation/NavigationState.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/NavigationState.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/NavigationState.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/NavigationState~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/NavigationState.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/AIDocumentGenerator.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AIDocumentGenerator.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AIDocumentGenerator.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AIDocumentGenerator~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AIDocumentGenerator.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/AcquisitionService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/AdaptiveIntelligenceService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AdaptiveIntelligenceService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AdaptiveIntelligenceService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AdaptiveIntelligenceService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AdaptiveIntelligenceService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/AgenticOrchestrator.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AgenticOrchestrator.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AgenticOrchestrator.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AgenticOrchestrator~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AgenticOrchestrator.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/BatchDocumentGenerator.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BatchDocumentGenerator.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BatchDocumentGenerator.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BatchDocumentGenerator~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BatchDocumentGenerator.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/BiometricAuthenticationService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BiometricAuthenticationService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BiometricAuthenticationService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BiometricAuthenticationService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/BiometricAuthenticationService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/CMMCComplianceTracker.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CMMCComplianceTracker.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CMMCComplianceTracker.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CMMCComplianceTracker~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CMMCComplianceTracker.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/CMMCRequirementTemplates.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CMMCRequirementTemplates.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CMMCRequirementTemplates.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CMMCRequirementTemplates~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CMMCRequirementTemplates.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/Compliance/ComplianceClassifier.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ComplianceClassifier.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ComplianceClassifier.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ComplianceClassifier~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ComplianceClassifier.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/Compliance/ComplianceGuardian.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ComplianceGuardian.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ComplianceGuardian.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ComplianceGuardian~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ComplianceGuardian.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/Compliance/DocumentAnalyzer.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentAnalyzer.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentAnalyzer.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentAnalyzer~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentAnalyzer.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/Compliance/DocumentChainManager+Compliance.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentChainManager+Compliance.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentChainManager+Compliance.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentChainManager+Compliance~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentChainManager+Compliance.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/Compliance/LocalRLAgent+Compliance.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LocalRLAgent+Compliance.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LocalRLAgent+Compliance.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LocalRLAgent+Compliance~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LocalRLAgent+Compliance.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/Compliance/SHAPExplainer.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SHAPExplainer.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SHAPExplainer.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SHAPExplainer~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SHAPExplainer.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/ConsolidatedDocumentCacheService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ConsolidatedDocumentCacheService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ConsolidatedDocumentCacheService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ConsolidatedDocumentCacheService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ConsolidatedDocumentCacheService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/CoreDataStack.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CoreDataStack.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CoreDataStack.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CoreDataStack~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CoreDataStack.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/DFTemplateService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DFTemplateService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DFTemplateService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DFTemplateService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DFTemplateService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/DataExtractor.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DataExtractor.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DataExtractor.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DataExtractor~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DataExtractor.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/DataTransformationService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DataTransformationService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DataTransformationService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DataTransformationService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DataTransformationService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/DocumentChainManager.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentChainManager.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentChainManager.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentChainManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentChainManager.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/DocumentDeliveryService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentDeliveryService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentDeliveryService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentDeliveryService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentDeliveryService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/DocumentDependencyService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentDependencyService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentDependencyService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentDependencyService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentDependencyService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/DocumentGenerationCache.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentGenerationCache.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentGenerationCache.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentGenerationCache~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentGenerationCache.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/DocumentGenerationPerformanceMonitor.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentGenerationPerformanceMonitor.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentGenerationPerformanceMonitor.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentGenerationPerformanceMonitor~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentGenerationPerformanceMonitor.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/DocumentParser.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentParser.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentParser.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentParser~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentParser.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/DocumentParser/WordDocumentParser.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/WordDocumentParser.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/WordDocumentParser.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/WordDocumentParser~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/WordDocumentParser.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/DocumentParserValidator.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentParserValidator.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentParserValidator.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentParserValidator~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentParserValidator.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/EnhancedAPIKeyManager.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EnhancedAPIKeyManager.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EnhancedAPIKeyManager.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EnhancedAPIKeyManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EnhancedAPIKeyManager.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/EnhancedContextualDefaults.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EnhancedContextualDefaults.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EnhancedContextualDefaults.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EnhancedContextualDefaults~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EnhancedContextualDefaults.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/FARCompliance.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARCompliance.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARCompliance.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARCompliance~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARCompliance.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/FARComplianceManager.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARComplianceManager.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARComplianceManager.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARComplianceManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARComplianceManager.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/FARPart12Compliance.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARPart12Compliance.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARPart12Compliance.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARPart12Compliance~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARPart12Compliance.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/FARPart12Wizard.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARPart12Wizard.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARPart12Wizard.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARPart12Wizard~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARPart12Wizard.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/FARReferenceService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARReferenceService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARReferenceService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARReferenceService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARReferenceService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/FARValidationService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARValidationService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARValidationService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARValidationService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FARValidationService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/FormIntelligenceAdapter.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormIntelligenceAdapter.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormIntelligenceAdapter.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormIntelligenceAdapter~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormIntelligenceAdapter.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/FormMappingService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormMappingService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormMappingService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormMappingService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormMappingService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/FormRepository.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormRepository.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormRepository.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormRepository~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormRepository.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/GovernmentAcquisitionPrompts.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentAcquisitionPrompts.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentAcquisitionPrompts.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentAcquisitionPrompts~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentAcquisitionPrompts.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/GovernmentFormService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentFormService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentFormService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentFormService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GovernmentFormService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/LLM/LLMConfigurationManager.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LLMConfigurationManager.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LLMConfigurationManager.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LLMConfigurationManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LLMConfigurationManager.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/LLM/LLMConversationManager.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LLMConversationManager.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LLMConversationManager.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LLMConversationManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LLMConversationManager.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/LLM/LLMDocumentGenerator.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LLMDocumentGenerator.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LLMDocumentGenerator.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LLMDocumentGenerator~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LLMDocumentGenerator.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/LLM/LLMKeychainService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LLMKeychainService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LLMKeychainService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LLMKeychainService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LLMKeychainService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/LLM/LLMManager.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LLMManager.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LLMManager.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LLMManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LLMManager.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/LLM/Providers/AzureOpenAIProvider.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AzureOpenAIProvider.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AzureOpenAIProvider.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AzureOpenAIProvider~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AzureOpenAIProvider.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/LLM/Providers/ClaudeProvider.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ClaudeProvider.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ClaudeProvider.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ClaudeProvider~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ClaudeProvider.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/LLM/Providers/GeminiProvider.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GeminiProvider.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GeminiProvider.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GeminiProvider~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/GeminiProvider.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/LLM/Providers/LocalModelProvider.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LocalModelProvider.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LocalModelProvider.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LocalModelProvider~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LocalModelProvider.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/LLM/Providers/OpenAIProvider.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OpenAIProvider.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OpenAIProvider.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OpenAIProvider~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OpenAIProvider.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/LearningLoop.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LearningLoop.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LearningLoop.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LearningLoop~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LearningLoop.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/MappingEngine.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MappingEngine.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MappingEngine.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MappingEngine~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MappingEngine.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/MetricsService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricsService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricsService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricsService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MetricsService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/NetworkService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/NetworkService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/NetworkService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/NetworkService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/NetworkService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/OTAgreementTemplates.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OTAgreementTemplates.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OTAgreementTemplates.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OTAgreementTemplates~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OTAgreementTemplates.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/ObjectActionHandler.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ObjectActionHandler.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ObjectActionHandler.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ObjectActionHandler~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ObjectActionHandler.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/OptimizedObjectActionHandler.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OptimizedObjectActionHandler.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OptimizedObjectActionHandler.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OptimizedObjectActionHandler~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OptimizedObjectActionHandler.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/ParallelDocumentGenerator.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ParallelDocumentGenerator.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ParallelDocumentGenerator.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ParallelDocumentGenerator~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ParallelDocumentGenerator.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/RL/FeatureStateEncoder.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FeatureStateEncoder.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FeatureStateEncoder.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FeatureStateEncoder~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FeatureStateEncoder.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/RL/LocalRLAgent.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LocalRLAgent.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LocalRLAgent.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LocalRLAgent~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/LocalRLAgent.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/RL/RLPersistenceManager.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RLPersistenceManager.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RLPersistenceManager.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RLPersistenceManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RLPersistenceManager.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/RL/RLTypes.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RLTypes.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RLTypes.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RLTypes~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RLTypes.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/RL/RewardCalculator.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RewardCalculator.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RewardCalculator.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RewardCalculator~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RewardCalculator.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/RTFFormatter.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RTFFormatter.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RTFFormatter.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RTFFormatter~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RTFFormatter.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/RegulationRepository.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationRepository.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationRepository.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationRepository~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationRepository.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/RegulationService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RegulationService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/RequirementAnalyzer.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RequirementAnalyzer.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RequirementAnalyzer.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RequirementAnalyzer~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RequirementAnalyzer.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/SAMGovService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMGovService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMGovService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMGovService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMGovService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/SLATemplates.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SLATemplates.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SLATemplates.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SLATemplates~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SLATemplates.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/SecureNetworkService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SecureNetworkService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SecureNetworkService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SecureNetworkService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SecureNetworkService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/SettingsManager.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SettingsManager.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SettingsManager.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SettingsManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SettingsManager.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/SmartWorkflowEngine.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SmartWorkflowEngine.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SmartWorkflowEngine.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SmartWorkflowEngine~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SmartWorkflowEngine.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/SpellCheckService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SpellCheckService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SpellCheckService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SpellCheckService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SpellCheckService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/StandardTemplateService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/StandardTemplateService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/StandardTemplateService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/StandardTemplateService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/StandardTemplateService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/Supporting/AgenticOrchestratorTypes.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AgenticOrchestratorTypes.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AgenticOrchestratorTypes.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AgenticOrchestratorTypes~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AgenticOrchestratorTypes.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/TemplateStorageService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/TemplateStorageService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/TemplateStorageService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/TemplateStorageService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/TemplateStorageService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/UnifiedTemplateService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UnifiedTemplateService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UnifiedTemplateService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UnifiedTemplateService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UnifiedTemplateService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/UserPatternTracker.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UserPatternTracker.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UserPatternTracker.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UserPatternTracker~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UserPatternTracker.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/UserProfileService.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UserProfileService.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UserProfileService.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UserProfileService~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UserProfileService.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Services/WorkflowEngine.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/WorkflowEngine.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/WorkflowEngine.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/WorkflowEngine~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/WorkflowEngine.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/TestSupport/MockDataExtensions.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MockDataExtensions.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MockDataExtensions.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MockDataExtensions~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/MockDataExtensions.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/UI/DocumentShareHelper.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentShareHelper.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentShareHelper.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentShareHelper~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentShareHelper.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/ViewModels/AcquisitionsListViewModel.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionsListViewModel.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionsListViewModel.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionsListViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionsListViewModel.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/ViewModels/DocumentExecutionViewModel.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentExecutionViewModel.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentExecutionViewModel.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentExecutionViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentExecutionViewModel.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/ViewModels/SAMGovLookupViewModel.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMGovLookupViewModel.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMGovLookupViewModel.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMGovLookupViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMGovLookupViewModel.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/AcquisitionsListView.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionsListView.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionsListView.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionsListView~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AcquisitionsListView.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/AppView.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AppView.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AppView.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AppView~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AppView.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/CacheSyncStatusView.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheSyncStatusView.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheSyncStatusView.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheSyncStatusView~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CacheSyncStatusView.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/Compliance/ComplianceWarningView.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ComplianceWarningView.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ComplianceWarningView.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ComplianceWarningView~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ComplianceWarningView.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/Components/AgentChatInterface.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AgentChatInterface.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AgentChatInterface.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AgentChatInterface~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AgentChatInterface.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/Components/ComprehensiveChatInterface.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ComprehensiveChatInterface.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ComprehensiveChatInterface.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ComprehensiveChatInterface~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ComprehensiveChatInterface.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/Components/EnhancedChatView.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EnhancedChatView.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EnhancedChatView.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EnhancedChatView~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/EnhancedChatView.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/Components/OriginalSAMGovInterface.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OriginalSAMGovInterface.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OriginalSAMGovInterface.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OriginalSAMGovInterface~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OriginalSAMGovInterface.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/Components/OriginalSAMReportPreview.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OriginalSAMReportPreview.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OriginalSAMReportPreview.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OriginalSAMReportPreview~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OriginalSAMReportPreview.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/CustomTemplateDetailView.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CustomTemplateDetailView.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CustomTemplateDetailView.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CustomTemplateDetailView~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/CustomTemplateDetailView.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/DocumentChainView.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentChainView.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentChainView.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentChainView~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentChainView.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/DocumentExecutionView.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentExecutionView.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentExecutionView.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentExecutionView~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DocumentExecutionView.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/FaceIDAuthenticationView.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FaceIDAuthenticationView.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FaceIDAuthenticationView.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FaceIDAuthenticationView~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FaceIDAuthenticationView.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/FormSelectionView.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormSelectionView.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormSelectionView.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormSelectionView~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/FormSelectionView.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/OnboardingView.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OnboardingView.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OnboardingView.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OnboardingView~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/OnboardingView.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/RichTextView.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RichTextView.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RichTextView.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RichTextView~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/RichTextView.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/SAMGovLookupView.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMGovLookupView.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMGovLookupView.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMGovLookupView~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMGovLookupView.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/SAMReportView.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMReportView.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMReportView.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMReportView~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMReportView.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/SAMReportViewPreview.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMReportViewPreview.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMReportViewPreview.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMReportViewPreview~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SAMReportViewPreview.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/SearchDocumentTemplatesView.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SearchDocumentTemplatesView.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SearchDocumentTemplatesView.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SearchDocumentTemplatesView~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SearchDocumentTemplatesView.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/SettingsView.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SettingsView.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SettingsView.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SettingsView~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/SettingsView.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/ShareButton.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ShareButton.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ShareButton.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ShareButton~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/ShareButton.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/TemplateDetailView.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/TemplateDetailView.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/TemplateDetailView.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/TemplateDetailView~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/TemplateDetailView.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/Views/UserGuideView.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UserGuideView.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UserGuideView.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UserGuideView~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/UserGuideView.swiftdeps"
+  },
+  "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/DerivedSources/resource_bundle_accessor.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/resource_bundle_accessor.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/resource_bundle_accessor.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/resource_bundle_accessor~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/resource_bundle_accessor.swiftdeps"
+  }
+}

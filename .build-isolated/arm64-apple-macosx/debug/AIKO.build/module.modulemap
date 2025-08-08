@@ -1,0 +1,4 @@
+module AIKO {
+    header "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKO.build/AIKO-Swift.h"
+    requires objc
+}

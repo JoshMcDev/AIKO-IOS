@@ -1,0 +1,4 @@
+module Atomics {
+    header "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/Atomics.build/Atomics-Swift.h"
+    requires objc
+}

@@ -1,0 +1,23 @@
+{
+  "": {
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AikoCompat.build/master.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AikoCompat/AIProvider.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AikoCompat.build/AIProvider.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AikoCompat.build/AIProvider.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AikoCompat.build/AIProvider~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AikoCompat.build/AIProvider.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AikoCompat/AnthropicWrapper.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AikoCompat.build/AnthropicWrapper.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AikoCompat.build/AnthropicWrapper.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AikoCompat.build/AnthropicWrapper~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AikoCompat.build/AnthropicWrapper.swiftdeps"
+  },
+  "/Users/J/aiko/Sources/AikoCompat/MigrationHelpers.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AikoCompat.build/MigrationHelpers.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AikoCompat.build/MigrationHelpers.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AikoCompat.build/MigrationHelpers~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AikoCompat.build/MigrationHelpers.swiftdeps"
+  }
+}

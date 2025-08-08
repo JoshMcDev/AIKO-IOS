@@ -1,0 +1,4 @@
+module DequeModule {
+    header "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/DequeModule.build/DequeModule-Swift.h"
+    requires objc
+}

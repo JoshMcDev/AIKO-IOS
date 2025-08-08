@@ -1,0 +1,533 @@
+{
+  "": {
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/master.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/ACQTemplatesProcessing/ACQActorConcurrencyTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ACQActorConcurrencyTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ACQActorConcurrencyTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ACQActorConcurrencyTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ACQActorConcurrencyTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/ACQTemplatesProcessing/ACQPerformanceBenchmarkTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ACQPerformanceBenchmarkTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ACQPerformanceBenchmarkTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ACQPerformanceBenchmarkTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ACQPerformanceBenchmarkTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/ACQTemplatesProcessing/ACQSecurityComplianceTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ACQSecurityComplianceTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ACQSecurityComplianceTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ACQSecurityComplianceTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ACQSecurityComplianceTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/ACQTemplatesProcessing/HybridSearchServiceTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/HybridSearchServiceTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/HybridSearchServiceTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/HybridSearchServiceTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/HybridSearchServiceTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/ACQTemplatesProcessing/MemoryConstrainedTemplateProcessorTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MemoryConstrainedTemplateProcessorTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MemoryConstrainedTemplateProcessorTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MemoryConstrainedTemplateProcessorTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MemoryConstrainedTemplateProcessorTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/ACQTemplatesProcessing/MemoryPermitSystemTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MemoryPermitSystemTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MemoryPermitSystemTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MemoryPermitSystemTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MemoryPermitSystemTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/ACQTemplatesProcessing/ShardedTemplateIndexTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ShardedTemplateIndexTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ShardedTemplateIndexTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ShardedTemplateIndexTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ShardedTemplateIndexTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AcquisitionsListViewModelTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AcquisitionsListViewModelTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AcquisitionsListViewModelTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AcquisitionsListViewModelTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AcquisitionsListViewModelTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AdaptiveFormRL/AcquisitionContextClassifierTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AcquisitionContextClassifierTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AcquisitionContextClassifierTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AcquisitionContextClassifierTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AcquisitionContextClassifierTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AdaptiveFormRL/AdaptiveFormEdgeCasesTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AdaptiveFormEdgeCasesTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AdaptiveFormEdgeCasesTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AdaptiveFormEdgeCasesTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AdaptiveFormEdgeCasesTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AdaptiveFormRL/AdaptiveFormIntegrationTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AdaptiveFormIntegrationTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AdaptiveFormIntegrationTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AdaptiveFormIntegrationTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AdaptiveFormIntegrationTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AdaptiveFormRL/AdaptiveFormPerformanceTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AdaptiveFormPerformanceTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AdaptiveFormPerformanceTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AdaptiveFormPerformanceTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AdaptiveFormPerformanceTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AdaptiveFormRL/AdaptiveFormPrivacyTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AdaptiveFormPrivacyTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AdaptiveFormPrivacyTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AdaptiveFormPrivacyTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AdaptiveFormPrivacyTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AdaptiveFormRL/AdaptiveFormUserExperienceTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AdaptiveFormUserExperienceTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AdaptiveFormUserExperienceTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AdaptiveFormUserExperienceTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AdaptiveFormUserExperienceTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AdaptiveFormRL/FormFieldQLearningAgentTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/FormFieldQLearningAgentTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/FormFieldQLearningAgentTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/FormFieldQLearningAgentTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/FormFieldQLearningAgentTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AdaptiveFormRL/SimpleAdaptiveFormRLTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SimpleAdaptiveFormRLTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SimpleAdaptiveFormRLTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SimpleAdaptiveFormRLTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SimpleAdaptiveFormRLTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AgenticSuggestionUI/AIReasoningViewTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AIReasoningViewTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AIReasoningViewTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AIReasoningViewTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AIReasoningViewTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AgenticSuggestionUI/AccessibilityTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AccessibilityTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AccessibilityTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AccessibilityTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AccessibilityTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AgenticSuggestionUI/AgenticOrchestratorIntegrationTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AgenticOrchestratorIntegrationTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AgenticOrchestratorIntegrationTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AgenticOrchestratorIntegrationTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AgenticOrchestratorIntegrationTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AgenticSuggestionUI/AgenticSuggestionPerformanceTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AgenticSuggestionPerformanceTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AgenticSuggestionPerformanceTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AgenticSuggestionPerformanceTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AgenticSuggestionPerformanceTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AgenticSuggestionUI/AgenticSuggestionViewTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AgenticSuggestionViewTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AgenticSuggestionViewTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AgenticSuggestionViewTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AgenticSuggestionViewTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AgenticSuggestionUI/ConfidenceIndicatorTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ConfidenceIndicatorTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ConfidenceIndicatorTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ConfidenceIndicatorTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ConfidenceIndicatorTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AgenticSuggestionUI/SecurityTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SecurityTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SecurityTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SecurityTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SecurityTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AgenticSuggestionUI/SuggestionFeedbackViewTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SuggestionFeedbackViewTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SuggestionFeedbackViewTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SuggestionFeedbackViewTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SuggestionFeedbackViewTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AgenticSuggestionUI/SuggestionViewModelTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SuggestionViewModelTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SuggestionViewModelTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SuggestionViewModelTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SuggestionViewModelTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/BasicFunctionalityTest.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/BasicFunctionalityTest.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/BasicFunctionalityTest.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/BasicFunctionalityTest~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/BasicFunctionalityTest.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/BehavioralAnalytics/AnalyticsCollectorServiceTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AnalyticsCollectorServiceTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AnalyticsCollectorServiceTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AnalyticsCollectorServiceTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AnalyticsCollectorServiceTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/BehavioralAnalytics/AnalyticsModelsTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AnalyticsModelsTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AnalyticsModelsTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AnalyticsModelsTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AnalyticsModelsTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/BehavioralAnalytics/AnalyticsRepositoryTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AnalyticsRepositoryTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AnalyticsRepositoryTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AnalyticsRepositoryTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AnalyticsRepositoryTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/BehavioralAnalytics/BehavioralAnalyticsDashboardViewTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/BehavioralAnalyticsDashboardViewTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/BehavioralAnalyticsDashboardViewTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/BehavioralAnalyticsDashboardViewTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/BehavioralAnalyticsDashboardViewTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/BehavioralAnalytics/BehavioralAnalyticsFeatureTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/BehavioralAnalyticsFeatureTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/BehavioralAnalyticsFeatureTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/BehavioralAnalyticsFeatureTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/BehavioralAnalyticsFeatureTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/BehavioralAnalytics/BehavioralAnalyticsPerformanceTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/BehavioralAnalyticsPerformanceTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/BehavioralAnalyticsPerformanceTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/BehavioralAnalyticsPerformanceTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/BehavioralAnalyticsPerformanceTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/BehavioralAnalytics/ChartViewModelTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ChartViewModelTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ChartViewModelTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ChartViewModelTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ChartViewModelTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/BehavioralAnalytics/ExportManagerTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ExportManagerTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ExportManagerTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ExportManagerTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ExportManagerTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/BehavioralAnalytics/PrivacyComplianceTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/PrivacyComplianceTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/PrivacyComplianceTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/PrivacyComplianceTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/PrivacyComplianceTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/BehavioralAnalytics/SettingsIntegrationTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SettingsIntegrationTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SettingsIntegrationTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SettingsIntegrationTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SettingsIntegrationTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/ComplianceGuardianTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ComplianceGuardianTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ComplianceGuardianTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ComplianceGuardianTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ComplianceGuardianTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/DirectLFM2Validation.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/DirectLFM2Validation.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/DirectLFM2Validation.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/DirectLFM2Validation~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/DirectLFM2Validation.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/DocumentExecutionViewModelTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/DocumentExecutionViewModelTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/DocumentExecutionViewModelTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/DocumentExecutionViewModelTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/DocumentExecutionViewModelTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/DocumentScannerGreenPhaseTest.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/DocumentScannerGreenPhaseTest.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/DocumentScannerGreenPhaseTest.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/DocumentScannerGreenPhaseTest~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/DocumentScannerGreenPhaseTest.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/DocumentScannerGreenTest.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/DocumentScannerGreenTest.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/DocumentScannerGreenTest.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/DocumentScannerGreenTest~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/DocumentScannerGreenTest.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/Integration/Integration_VisionKitAdapterTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Integration_VisionKitAdapterTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Integration_VisionKitAdapterTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Integration_VisionKitAdapterTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Integration_VisionKitAdapterTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/Isolated_LFM2ServiceTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Isolated_LFM2ServiceTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Isolated_LFM2ServiceTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Isolated_LFM2ServiceTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Isolated_LFM2ServiceTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/LLMProviderSettingsProtocolTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/LLMProviderSettingsProtocolTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/LLMProviderSettingsProtocolTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/LLMProviderSettingsProtocolTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/LLMProviderSettingsProtocolTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/LaunchTimeRegulationFetching/ActorConcurrencyTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ActorConcurrencyTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ActorConcurrencyTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ActorConcurrencyTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ActorConcurrencyTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/LaunchTimeRegulationFetching/EdgeCaseErrorScenarioTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/EdgeCaseErrorScenarioTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/EdgeCaseErrorScenarioTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/EdgeCaseErrorScenarioTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/EdgeCaseErrorScenarioTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/LaunchTimeRegulationFetching/LaunchTimeRegulationFetchingTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/LaunchTimeRegulationFetchingTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/LaunchTimeRegulationFetchingTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/LaunchTimeRegulationFetchingTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/LaunchTimeRegulationFetchingTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/LaunchTimeRegulationFetching/MockServices.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MockServices.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MockServices.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MockServices~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MockServices.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/LaunchTimeRegulationFetching/PerformanceValidationTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/PerformanceValidationTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/PerformanceValidationTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/PerformanceValidationTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/PerformanceValidationTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/LaunchTimeRegulationFetching/SecurityComplianceTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SecurityComplianceTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SecurityComplianceTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SecurityComplianceTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SecurityComplianceTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/Migration_TCAToSwiftUIValidationTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Migration_TCAToSwiftUIValidationTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Migration_TCAToSwiftUIValidationTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Migration_TCAToSwiftUIValidationTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Migration_TCAToSwiftUIValidationTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/NavigationTests/NavigationSplitViewTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/NavigationSplitViewTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/NavigationSplitViewTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/NavigationSplitViewTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/NavigationSplitViewTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/NavigationTests/NavigationStateTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/NavigationStateTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/NavigationStateTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/NavigationStateTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/NavigationStateTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/Performance/Performance_DocumentScannerTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Performance_DocumentScannerTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Performance_DocumentScannerTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Performance_DocumentScannerTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Performance_DocumentScannerTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/ProfileViewTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ProfileViewTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ProfileViewTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ProfileViewTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ProfileViewTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/RegulationProcessingPipeline/Chaos/ChaosEngineeringTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ChaosEngineeringTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ChaosEngineeringTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ChaosEngineeringTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ChaosEngineeringTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/RegulationProcessingPipeline/Integration/AsyncChannelBackPressureTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AsyncChannelBackPressureTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AsyncChannelBackPressureTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AsyncChannelBackPressureTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/AsyncChannelBackPressureTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/RegulationProcessingPipeline/Integration/DurabilityRecoveryTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/DurabilityRecoveryTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/DurabilityRecoveryTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/DurabilityRecoveryTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/DurabilityRecoveryTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/RegulationProcessingPipeline/Performance/PerformanceBenchmarkTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/PerformanceBenchmarkTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/PerformanceBenchmarkTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/PerformanceBenchmarkTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/PerformanceBenchmarkTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/RegulationProcessingPipeline/Security/RegulationSecurityTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/RegulationSecurityTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/RegulationSecurityTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/RegulationSecurityTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/RegulationSecurityTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/RegulationProcessingPipeline/Unit/GraphRAGRegulationStorageTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/GraphRAGRegulationStorageTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/GraphRAGRegulationStorageTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/GraphRAGRegulationStorageTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/GraphRAGRegulationStorageTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/RegulationProcessingPipeline/Unit/MemoryConstraintTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MemoryConstraintTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MemoryConstraintTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MemoryConstraintTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MemoryConstraintTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/RegulationProcessingPipeline/Unit/MemoryManagedBatchProcessorTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MemoryManagedBatchProcessorTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MemoryManagedBatchProcessorTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MemoryManagedBatchProcessorTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MemoryManagedBatchProcessorTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/RegulationProcessingPipeline/Unit/RegulationEmbeddingServiceTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/RegulationEmbeddingServiceTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/RegulationEmbeddingServiceTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/RegulationEmbeddingServiceTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/RegulationEmbeddingServiceTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/RegulationProcessingPipeline/Unit/RegulationHTMLParserTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/RegulationHTMLParserTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/RegulationHTMLParserTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/RegulationHTMLParserTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/RegulationHTMLParserTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/RegulationProcessingPipeline/Unit/SmartChunkingEngineTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SmartChunkingEngineTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SmartChunkingEngineTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SmartChunkingEngineTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SmartChunkingEngineTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/RegulationProcessingPipeline/Unit/StructureAwareChunkingTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/StructureAwareChunkingTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/StructureAwareChunkingTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/StructureAwareChunkingTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/StructureAwareChunkingTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/SAMGovLookupViewModelTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SAMGovLookupViewModelTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SAMGovLookupViewModelTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SAMGovLookupViewModelTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/SAMGovLookupViewModelTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/Security/Security_DocumentScannerTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Security_DocumentScannerTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Security_DocumentScannerTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Security_DocumentScannerTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Security_DocumentScannerTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/Security_LLMProviderBiometricTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Security_LLMProviderBiometricTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Security_LLMProviderBiometricTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Security_LLMProviderBiometricTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/Security_LLMProviderBiometricTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/Services/RL/FeatureStateEncoderTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/FeatureStateEncoderTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/FeatureStateEncoderTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/FeatureStateEncoderTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/FeatureStateEncoderTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/Services/RL/LocalRLAgentTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/LocalRLAgentTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/LocalRLAgentTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/LocalRLAgentTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/LocalRLAgentTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/Services/RL/RLPersistenceManagerTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/RLPersistenceManagerTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/RLPersistenceManagerTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/RLPersistenceManagerTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/RLPersistenceManagerTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/Services/RL/RewardCalculatorTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/RewardCalculatorTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/RewardCalculatorTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/RewardCalculatorTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/RewardCalculatorTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/UI/UI_DocumentScannerFlowTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UI_DocumentScannerFlowTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UI_DocumentScannerFlowTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UI_DocumentScannerFlowTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UI_DocumentScannerFlowTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/UI/UI_DocumentScannerViewModelTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UI_DocumentScannerViewModelTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UI_DocumentScannerViewModelTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UI_DocumentScannerViewModelTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UI_DocumentScannerViewModelTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/UI/UI_VisionKitBridgeTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UI_VisionKitBridgeTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UI_VisionKitBridgeTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UI_VisionKitBridgeTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UI_VisionKitBridgeTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/UI/ViewInspectorPlaceholders.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ViewInspectorPlaceholders.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ViewInspectorPlaceholders.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ViewInspectorPlaceholders~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/ViewInspectorPlaceholders.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/UserAcquisitionRecords/EnhancedTestingTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/EnhancedTestingTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/EnhancedTestingTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/EnhancedTestingTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/EnhancedTestingTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/UserAcquisitionRecords/GraphRAGIntegrationTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/GraphRAGIntegrationTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/GraphRAGIntegrationTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/GraphRAGIntegrationTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/GraphRAGIntegrationTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/UserAcquisitionRecords/PrivacyEngineTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/PrivacyEngineTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/PrivacyEngineTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/PrivacyEngineTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/PrivacyEngineTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/UserAcquisitionRecords/UserRecordsActorConcurrencyTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UserRecordsActorConcurrencyTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UserRecordsActorConcurrencyTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UserRecordsActorConcurrencyTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UserRecordsActorConcurrencyTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/UserAcquisitionRecords/UserRecordsCaptureTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UserRecordsCaptureTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UserRecordsCaptureTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UserRecordsCaptureTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UserRecordsCaptureTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/UserAcquisitionRecords/UserRecordsProcessorTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UserRecordsProcessorTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UserRecordsProcessorTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UserRecordsProcessorTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UserRecordsProcessorTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/WorkflowPrediction/MultifactorConfidenceScoringTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MultifactorConfidenceScoringTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MultifactorConfidenceScoringTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MultifactorConfidenceScoringTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/MultifactorConfidenceScoringTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/WorkflowPrediction/UserPatternLearningEngineTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UserPatternLearningEngineTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UserPatternLearningEngineTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UserPatternLearningEngineTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/UserPatternLearningEngineTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/WorkflowPrediction/WorkflowStateMachineTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/WorkflowStateMachineTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/WorkflowStateMachineTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/WorkflowStateMachineTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/WorkflowStateMachineTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/test_regulation_pipeline.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/test_regulation_pipeline.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/test_regulation_pipeline.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/test_regulation_pipeline~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AIKOTests.build/test_regulation_pipeline.swiftdeps"
+  }
+}

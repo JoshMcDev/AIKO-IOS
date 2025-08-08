@@ -1,0 +1,10 @@
+/Users/J/aiko/Tests/AppCoreTests/Integration/EndToEndSanityTests.swift
+/Users/J/aiko/Tests/AppCoreTests/Integration/OnboardingWorkflowIntegrationTests.swift
+/Users/J/aiko/Tests/AppCoreTests/Integration/SettingsWorkflowIntegrationTests.swift
+/Users/J/aiko/Tests/AppCoreTests/MediaManagement/BatchProcessingEngineTests.swift
+/Users/J/aiko/Tests/AppCoreTests/Services/MediaAssetCacheTests.swift
+/Users/J/aiko/Tests/AppCoreTests/ViewModels/OnboardingViewModelTests.swift
+/Users/J/aiko/Tests/AppCoreTests/ViewModels/ProfileViewModelTests.swift
+/Users/J/aiko/Tests/AppCoreTests/ViewModels/SettingsViewModelTests.swift
+/Users/J/aiko/Tests/AppCoreTests/Views/OnboardingViewTests.swift
+/Users/J/aiko/Tests/AppCoreTests/Views/SettingsViewTests.swift

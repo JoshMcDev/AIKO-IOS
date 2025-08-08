@@ -1,0 +1,65 @@
+{
+  "": {
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/master.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AppCoreTests/Integration/EndToEndSanityTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/EndToEndSanityTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/EndToEndSanityTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/EndToEndSanityTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/EndToEndSanityTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AppCoreTests/Integration/OnboardingWorkflowIntegrationTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/OnboardingWorkflowIntegrationTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/OnboardingWorkflowIntegrationTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/OnboardingWorkflowIntegrationTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/OnboardingWorkflowIntegrationTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AppCoreTests/Integration/SettingsWorkflowIntegrationTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/SettingsWorkflowIntegrationTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/SettingsWorkflowIntegrationTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/SettingsWorkflowIntegrationTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/SettingsWorkflowIntegrationTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AppCoreTests/MediaManagement/BatchProcessingEngineTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/BatchProcessingEngineTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/BatchProcessingEngineTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/BatchProcessingEngineTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/BatchProcessingEngineTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AppCoreTests/Services/MediaAssetCacheTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/MediaAssetCacheTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/MediaAssetCacheTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/MediaAssetCacheTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/MediaAssetCacheTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AppCoreTests/ViewModels/OnboardingViewModelTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/OnboardingViewModelTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/OnboardingViewModelTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/OnboardingViewModelTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/OnboardingViewModelTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AppCoreTests/ViewModels/ProfileViewModelTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/ProfileViewModelTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/ProfileViewModelTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/ProfileViewModelTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/ProfileViewModelTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AppCoreTests/ViewModels/SettingsViewModelTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/SettingsViewModelTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/SettingsViewModelTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/SettingsViewModelTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/SettingsViewModelTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AppCoreTests/Views/OnboardingViewTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/OnboardingViewTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/OnboardingViewTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/OnboardingViewTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/OnboardingViewTests.swiftdeps"
+  },
+  "/Users/J/aiko/Tests/AppCoreTests/Views/SettingsViewTests.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/SettingsViewTests.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/SettingsViewTests.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/SettingsViewTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/AppCoreTests.build/SettingsViewTests.swiftdeps"
+  }
+}

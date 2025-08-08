@@ -1,0 +1,818 @@
+//
+//  GraphRAGIntegrationTests.swift
+//  AIKO
+//
+//  RED Phase: Failing tests for GraphRAG Integration and Graph Updates
+//  These tests validate incremental graph updates, community detection, and ObjectBox schema extension
+//
+
+import XCTest
+import Testing
+@testable import AIKO
+
+/// Category 4: Integration Testing - GraphRAG Extension Validation  
+/// Purpose: Test seamless integration with existing infrastructure
+final class GraphRAGIntegrationTests: XCTestCase {
+
+    var userRecordsGraphUpdater: UserRecordsGraphUpdater!
+    var mockObjectBoxIndex: MockObjectBoxSemanticIndex!
+    var mockCommunityDetector: MockLeidenCommunityDetector!
+    var mockLFM2Service: MockLFM2Service!
+
+    override func setUp() async throws {
+        try await super.setUp()
+        mockObjectBoxIndex = MockObjectBoxSemanticIndex()
+        mockCommunityDetector = MockLeidenCommunityDetector()
+        mockLFM2Service = MockLFM2Service()
+
+        // This will fail - UserRecordsGraphUpdater doesn't exist yet
+        userRecordsGraphUpdater = UserRecordsGraphUpdater(
+            objectBox: mockObjectBoxIndex,
+            communityDetector: mockCommunityDetector,
+            lfm2Service: mockLFM2Service
+        )
+    }
+
+    override func tearDown() async throws {
+        userRecordsGraphUpdater = nil
+        mockObjectBoxIndex = nil
+        mockCommunityDetector = nil
+        mockLFM2Service = nil
+        try await super.tearDown()
+    }
+
+    // MARK: - Category 4.1: GraphRAG Extension Validation
+
+    /// Test: testNamespaceIsolation() - Verify UserRecords namespace separation
+    func testNamespaceIsolation() async throws {
+        // Verify UserRecords namespace is properly isolated
+        // This will fail - ObjectBoxNamespace.userRecords doesn't exist yet
+        let userRecordsNamespace = ObjectBoxNamespace.userRecords
+        XCTAssertEqual(userRecordsNamespace.name, "UserRecords", "Namespace should be named 'UserRecords'")
+
+        // Test namespace isolation in ObjectBox
+        let testWorkflowEmbedding = WorkflowEmbedding(
+            embedding: Array(repeating: 0.5, count: 384),
+            timestamp: Date(),
+            domain: .userWorkflow,
+            communityId: nil
+        )
+
+        // This will fail - insertEmbedding method doesn't exist yet
+        let insertedNode = try await userRecordsGraphUpdater.insertEmbedding(
+            testWorkflowEmbedding,
+            namespace: .userRecords
+        )
+
+        XCTAssertEqual(insertedNode.namespace, .userRecords, "Node should be in UserRecords namespace")
+
+        // Verify isolation from other namespaces
+        // This will fail - searchAcrossNamespaces method doesn't exist yet
+        let regulationResults = try await mockObjectBoxIndex.searchInNamespace(.regulations, query: testWorkflowEmbedding.embedding)
+        let templateResults = try await mockObjectBoxIndex.searchInNamespace(.templates, query: testWorkflowEmbedding.embedding)
+        let userRecordResults = try await mockObjectBoxIndex.searchInNamespace(.userRecords, query: testWorkflowEmbedding.embedding)
+
+        XCTAssertEqual(userRecordResults.count, 1, "Should find node in UserRecords namespace")
+        XCTAssertEqual(regulationResults.count, 0, "Should not find in Regulations namespace")
+        XCTAssertEqual(templateResults.count, 0, "Should not find in Templates namespace")
+    }
+
+    /// Test: testCrossDomainSearch() - Test unified search across namespaces
+    func testCrossDomainSearch() async throws {
+        // Setup test data in multiple namespaces
+        let regulationNode = await insertTestRegulationNode()
+        let templateNode = await insertTestTemplateNode()
+        let workflowNode = await insertTestWorkflowNode()
+
+        let searchQuery = "acquisition planning requirements"
+
+        // This will fail - unifiedSearch method doesn't exist yet  
+        let searchResults = try await userRecordsGraphUpdater.unifiedSearch(
+            query: searchQuery,
+            namespaces: [.regulations, .templates, .userRecords]
+        )
+
+        XCTAssertGreaterThan(searchResults.count, 0, "Should return results from unified search")
+
+        // Verify results from all namespaces
+        let namespaces = Set(searchResults.map { $0.namespace })
+        XCTAssertTrue(namespaces.contains(.regulations), "Should include regulation results")
+        XCTAssertTrue(namespaces.contains(.templates), "Should include template results")
+        XCTAssertTrue(namespaces.contains(.userRecords), "Should include user record results")
+
+        // Test weighted ranking across domains
+        // This will fail - getRankingWeights method doesn't exist yet
+        let rankingWeights = try await userRecordsGraphUpdater.getRankingWeights()
+        XCTAssertGreaterThan(rankingWeights.userWorkflowBoost, 1.0, "User workflow should have ranking boost")
+        XCTAssertGreaterThan(rankingWeights.regulationAuthority, 1.2, "Regulations should have high authority")
+
+        // Verify personalized ranking based on user patterns
+        let personalizedResults = try await userRecordsGraphUpdater.personalizeSearchResults(
+            results: searchResults,
+            userContext: generateTestUserContext()
+        )
+
+        let topResult = personalizedResults.first!
+        XCTAssertNotNil(topResult.personalizationScore, "Should have personalization score")
+        XCTAssertGreaterThan(topResult.personalizationScore!, 0.0, "Personalization score should be positive")
+    }
+
+    /// Test: testLFM2ServiceIntegration() - Validate multi-domain embeddings
+    func testLFM2ServiceIntegration() async throws {
+        let workflowText = "User opened acquisition template, customized fields, submitted for review"
+
+        // This will fail - generateMultiDomainEmbedding method doesn't exist yet
+        let multiDomainEmbedding = try await userRecordsGraphUpdater.generateMultiDomainEmbedding(
+            text: workflowText,
+            domains: [.userWorkflow, .acquisitionProcess, .complianceTracking]
+        )
+
+        XCTAssertEqual(multiDomainEmbedding.domains.count, 3, "Should generate embeddings for all domains")
+        XCTAssertEqual(multiDomainEmbedding.primaryEmbedding.count, 384, "Should use 384-dimensional embeddings")
+
+        // Verify domain-specific optimization
+        let workflowEmbedding = multiDomainEmbedding.domainEmbeddings[.userWorkflow]!
+        let processEmbedding = multiDomainEmbedding.domainEmbeddings[.acquisitionProcess]!
+
+        // Embeddings should be similar but domain-optimized
+        let similarity = cosineSimilarity(workflowEmbedding, processEmbedding)
+        XCTAssertGreaterThan(similarity, 0.7, "Domain embeddings should be related")
+        XCTAssertLessThan(similarity, 0.95, "Domain embeddings should be differentiated")
+
+        // Test embedding quality metrics
+        // This will fail - evaluateEmbeddingQuality method doesn't exist yet
+        let qualityMetrics = try await userRecordsGraphUpdater.evaluateEmbeddingQuality(multiDomainEmbedding)
+        XCTAssertGreaterThan(qualityMetrics.semanticConsistency, 0.8, "Embeddings should be semantically consistent")
+        XCTAssertGreaterThan(qualityMetrics.domainSpecificity, 0.6, "Embeddings should show domain specificity")
+    }
+
+    /// Test: testObjectBoxMigration() - Test schema extension correctness
+    func testObjectBoxMigration() async throws {
+        // This will fail - performSchemaMigration method doesn't exist yet
+        let migrationResult = try await mockObjectBoxIndex.performSchemaMigration(
+            toVersion: .userRecordsV1,
+            preserveData: true
+        )
+
+        XCTAssertTrue(migrationResult.success, "Schema migration should succeed")
+        XCTAssertEqual(migrationResult.dataPreserved, true, "Should preserve existing data")
+        XCTAssertEqual(migrationResult.newVersion, .userRecordsV1, "Should update to correct version")
+
+        // Verify new schema elements are available
+        // This will fail - getSchemaMetadata method doesn't exist yet
+        let schemaMetadata = try await mockObjectBoxIndex.getSchemaMetadata()
+        XCTAssertTrue(schemaMetadata.namespaces.contains(.userRecords), "Should include UserRecords namespace")
+        XCTAssertTrue(schemaMetadata.entityTypes.contains(.workflowEvent), "Should include WorkflowEvent entity")
+        XCTAssertTrue(schemaMetadata.relationshipTypes.contains(.userToDocument), "Should include new relationship types")
+
+        // Test backward compatibility
+        // This will fail - validateBackwardCompatibility method doesn't exist yet
+        let compatibilityCheck = try await mockObjectBoxIndex.validateBackwardCompatibility()
+        XCTAssertTrue(compatibilityCheck.regulationsAccessible, "Should maintain access to regulations")
+        XCTAssertTrue(compatibilityCheck.templatesAccessible, "Should maintain access to templates")
+        XCTAssertTrue(compatibilityCheck.existingQueriesWork, "Existing queries should continue working")
+
+        // Verify rollback capability
+        // This will fail - canRollbackMigration method doesn't exist yet
+        let rollbackCapability = try await mockObjectBoxIndex.canRollbackMigration(from: .userRecordsV1)
+        XCTAssertTrue(rollbackCapability.canRollback, "Should be able to rollback migration")
+        XCTAssertNotNil(rollbackCapability.rollbackPlan, "Should have rollback plan")
+    }
+
+    /// Test: testHybridSearchMaintenance() - Ensure performance preservation  
+    func testHybridSearchMaintenance() async throws {
+        let testQuery = "FAR Part 15 sealed bidding requirements"
+        let baselineLatency = await measureSearchLatency(query: testQuery, iterations: 100)
+
+        // Add UserRecords data
+        let workflowData = generateTestWorkflowData(count: 1000)
+        for workflow in workflowData {
+            // This will fail - insertWorkflowEmbedding method doesn't exist yet
+            try await userRecordsGraphUpdater.insertWorkflowEmbedding(workflow)
+        }
+
+        // Measure search latency after UserRecords integration
+        let postIntegrationLatency = await measureSearchLatency(query: testQuery, iterations: 100)
+
+        // Performance should not degrade significantly
+        let latencyIncrease = postIntegrationLatency / baselineLatency
+        XCTAssertLessThan(latencyIncrease, 1.1, "Search latency should increase by <10%")
+        XCTAssertLessThan(postIntegrationLatency, 0.025, "P95 latency should remain <25ms")
+
+        // This will fail - getSearchPerformanceMetrics method doesn't exist yet
+        let performanceMetrics = try await userRecordsGraphUpdater.getSearchPerformanceMetrics()
+        XCTAssertLessThan(performanceMetrics.p50Latency, 0.010, "P50 latency should be <10ms")
+        XCTAssertLessThan(performanceMetrics.p95Latency, 0.025, "P95 latency should be <25ms")
+        XCTAssertGreaterThan(performanceMetrics.throughput, 100, "Should maintain >100 searches/second")
+    }
+
+    // MARK: - Category 4.3: LFM2 Embedding Integration Testing
+
+    /// Test: testDomainSpecificOptimization() - Verify workflow embedding quality
+    func testDomainSpecificOptimization() async throws {
+        let workflowScenarios = [
+            "User opens RFP template, customizes SOW section, adds evaluation criteria",
+            "Compliance check triggered, FAR 19.5 requirements verified, approval granted",
+            "Search for similar contracts, filter by NAICS code, export results",
+            "Document generation started, user feedback applied, final version saved"
+        ]
+
+        var workflowEmbeddings: [WorkflowEmbedding] = []
+
+        for scenario in workflowScenarios {
+            // This will fail - generateOptimizedWorkflowEmbedding method doesn't exist yet
+            let embedding = try await userRecordsGraphUpdater.generateOptimizedWorkflowEmbedding(
+                workflowDescription: scenario,
+                optimizationLevel: .high
+            )
+            workflowEmbeddings.append(embedding)
+        }
+
+        // Test embedding quality
+        for embedding in workflowEmbeddings {
+            XCTAssertEqual(embedding.embedding.count, 384, "Should use 384-dimensional embeddings")
+            XCTAssertNotNil(embedding.domainSpecificFeatures, "Should have domain-specific features")
+            XCTAssertGreaterThan(embedding.qualityScore, 0.8, "Embedding quality should be high")
+        }
+
+        // Test semantic similarity detection
+        let templateEmbedding = workflowEmbeddings[0] // Template-related scenario
+        let complianceEmbedding = workflowEmbeddings[1] // Compliance-related scenario
+
+        let templateSimilarity = cosineSimilarity(templateEmbedding.embedding, workflowEmbeddings[0].embedding)
+        let crossDomainSimilarity = cosineSimilarity(templateEmbedding.embedding, complianceEmbedding.embedding)
+
+        XCTAssertGreaterThan(templateSimilarity, crossDomainSimilarity,
+                           "Similar domain embeddings should be more similar")
+    }
+
+    /// Test: testEmbeddingCacheEfficiency() - Test caching strategies
+    func testEmbeddingCacheEfficiency() async throws {
+        let testWorkflow = "User reviews contract modifications, updates terms, seeks approval"
+
+        // First embedding generation (cache miss)
+        let startTime1 = CFAbsoluteTimeGetCurrent()
+        // This will fail - generateWorkflowEmbedding method doesn't exist yet
+        let embedding1 = try await userRecordsGraphUpdater.generateWorkflowEmbedding(testWorkflow)
+        let firstGenerationTime = CFAbsoluteTimeGetCurrent() - startTime1
+
+        // Second embedding generation (cache hit)
+        let startTime2 = CFAbsoluteTimeGetCurrent()
+        let embedding2 = try await userRecordsGraphUpdater.generateWorkflowEmbedding(testWorkflow)
+        let secondGenerationTime = CFAbsoluteTimeGetCurrent() - startTime2
+
+        // Verify cache efficiency
+        XCTAssertLessThan(secondGenerationTime, firstGenerationTime / 10,
+                         "Cached generation should be >10x faster")
+        XCTAssertEqual(embedding1.embedding, embedding2.embedding, "Cached embeddings should be identical")
+
+        // This will fail - getCacheMetrics method doesn't exist yet
+        let cacheMetrics = try await userRecordsGraphUpdater.getCacheMetrics()
+        XCTAssertEqual(cacheMetrics.hitRate, 0.5, accuracy: 0.1, "Cache hit rate should be ~50%")
+        XCTAssertGreaterThan(cacheMetrics.memoryEfficiency, 0.8, "Cache should be memory efficient")
+
+        // Test cache eviction
+        // Fill cache to capacity
+        for i in 0..<1000 {
+            _ = try await userRecordsGraphUpdater.generateWorkflowEmbedding("Test workflow \(i)")
+        }
+
+        let postEvictionMetrics = try await userRecordsGraphUpdater.getCacheMetrics()
+        XCTAssertLessThan(postEvictionMetrics.size, cacheMetrics.maxSize,
+                         "Cache should not exceed maximum size")
+    }
+
+    /// Test: testBatchEmbeddingGeneration() - Validate batch processing
+    func testBatchEmbeddingGeneration() async throws {
+        let workflowBatch = generateTestWorkflowBatch(size: 100)
+
+        // Test batch generation efficiency
+        let startTime = CFAbsoluteTimeGetCurrent()
+        // This will fail - generateBatchEmbeddings method doesn't exist yet
+        let batchResults = try await userRecordsGraphUpdater.generateBatchEmbeddings(workflowBatch)
+        let batchTime = CFAbsoluteTimeGetCurrent() - startTime
+
+        XCTAssertEqual(batchResults.count, workflowBatch.count, "Should generate all embeddings")
+
+        // Compare with individual generation
+        let individualStartTime = CFAbsoluteTimeGetCurrent()
+        for workflow in Array(workflowBatch.prefix(10)) {
+            _ = try await userRecordsGraphUpdater.generateWorkflowEmbedding(workflow)
+        }
+        let individualTime = CFAbsoluteTimeGetCurrent() - individualStartTime
+        let estimatedIndividualTotal = individualTime * 10 // Estimate for full batch
+
+        XCTAssertLessThan(batchTime, estimatedIndividualTotal,
+                         "Batch generation should be more efficient than individual")
+
+        // Verify batch quality
+        let qualityScores = batchResults.map { $0.qualityScore }
+        let averageQuality = qualityScores.reduce(0, +) / Double(qualityScores.count)
+        XCTAssertGreaterThan(averageQuality, 0.8, "Batch embeddings should maintain quality")
+    }
+
+    // MARK: - Category 4.4: ACQ Templates Processing Compatibility
+
+    /// Test: testSharedMemoryManagement() - Verify permit system sharing
+    func testSharedMemoryManagement() async throws {
+        let mockPermitSystem = MockMemoryPermitSystem()
+
+        // This will fail - setSharedMemoryPermitSystem method doesn't exist yet
+        await userRecordsGraphUpdater.setSharedMemoryPermitSystem(mockPermitSystem)
+
+        // Generate concurrent workload for both systems
+        let workflowTasks = (0..<50).map { index in
+            Task {
+                let workflow = generateTestWorkflow(id: "workflow-\(index)")
+                // This will fail - processWorkflow method doesn't exist yet
+                try await userRecordsGraphUpdater.processWorkflow(workflow)
+            }
+        }
+
+        let templateTasks = (0..<50).map { index in
+            Task {
+                let template = generateTestTemplate(id: "template-\(index)")
+                // This would be from existing ACQ Templates system
+                try await processTemplate(template, permitSystem: mockPermitSystem)
+            }
+        }
+
+        // Wait for all tasks to complete
+        _ = try await withTaskGroup(of: Void.self) { group in
+            for task in workflowTasks + templateTasks {
+                group.addTask { try await task.value }
+            }
+        }
+
+        // Verify memory sharing worked correctly
+        XCTAssertLessThan(mockPermitSystem.maxMemoryUsed, 50_000_000, "Should stay within 50MB limit")
+        XCTAssertEqual(mockPermitSystem.acquiredPermitCount, mockPermitSystem.releasedPermitCount,
+                      "All permits should be released")
+
+        // This will fail - getMemoryContentionMetrics method doesn't exist yet
+        let contentionMetrics = await userRecordsGraphUpdater.getMemoryContentionMetrics()
+        XCTAssertLessThan(contentionMetrics.averageWaitTime, 0.01, "Memory contention should be minimal")
+    }
+
+    /// Test: testProcessingPipelineCoordination() - Test pipeline interaction
+    func testProcessingPipelineCoordination() async throws {
+        // This will fail - coordinateWithTemplateProcessor method doesn't exist yet
+        let coordination = try await userRecordsGraphUpdater.coordinateWithTemplateProcessor()
+
+        XCTAssertTrue(coordination.isActive, "Coordination should be active")
+        XCTAssertNotNil(coordination.sharedEventBus, "Should have shared event bus")
+
+        // Test coordinated processing
+        let testTemplate = generateTestTemplate(id: "coordination-test")
+        let testWorkflow = WorkflowEvent(
+            type: .templateCustomization,
+            templateId: testTemplate.id,
+            timestamp: Date(),
+            metadata: ["coordinationTest": true]
+        )
+
+        // This should trigger both systems
+        // This will fail - processCoordinatedEvent method doesn't exist yet
+        let processingResult = try await userRecordsGraphUpdater.processCoordinatedEvent(testWorkflow)
+
+        XCTAssertTrue(processingResult.templateProcessorNotified,
+                     "Template processor should be notified")
+        XCTAssertTrue(processingResult.workflowTracked,
+                     "Workflow should be tracked")
+        XCTAssertNotNil(processingResult.crossSystemRelationships,
+                       "Should create cross-system relationships")
+    }
+
+    /// Test: testResourceContentionResolution() - Validate fair resource allocation
+    func testResourceContentionResolution() async throws {
+        // Create resource contention scenario
+        let highPriorityWorkflows = generateTestWorkflowBatch(size: 20)
+        let normalPriorityWorkflows = generateTestWorkflowBatch(size: 30)
+        let templateProcessingTasks = generateTestTemplateTasks(count: 25)
+
+        let startTime = CFAbsoluteTimeGetCurrent()
+
+        // Process all tasks concurrently
+        await withTaskGroup(of: ProcessingResult.self) { group in
+            // High priority workflows
+            for workflow in highPriorityWorkflows {
+                group.addTask(priority: .high) {
+                    // This will fail - processWorkflowWithPriority method doesn't exist yet
+                    return try await self.userRecordsGraphUpdater.processWorkflowWithPriority(
+                        workflow,
+                        priority: .high
+                    )
+                }
+            }
+
+            // Normal priority workflows
+            for workflow in normalPriorityWorkflows {
+                group.addTask(priority: .medium) {
+                    return try await self.userRecordsGraphUpdater.processWorkflowWithPriority(
+                        workflow,
+                        priority: .normal
+                    )
+                }
+            }
+
+            // Template processing tasks
+            for task in templateProcessingTasks {
+                group.addTask(priority: .medium) {
+                    return try await self.processTemplateTask(task)
+                }
+            }
+        }
+
+        let totalTime = CFAbsoluteTimeGetCurrent() - startTime
+
+        // Verify fair resource allocation
+        // This will fail - getResourceAllocationMetrics method doesn't exist yet
+        let metrics = try await userRecordsGraphUpdater.getResourceAllocationMetrics()
+
+        XCTAssertGreaterThan(metrics.highPriorityThroughput, metrics.normalPriorityThroughput,
+                           "High priority tasks should have better throughput")
+        XCTAssertLessThan(metrics.resourceStarvationEvents, 5,
+                         "Should minimize resource starvation")
+        XCTAssertLessThan(totalTime, 10.0, "Should complete all tasks within reasonable time")
+    }
+}
+
+// MARK: - Helper Functions and Test Data Generation
+
+private extension GraphRAGIntegrationTests {
+
+    func insertTestRegulationNode() async -> GraphNode {
+        let embedding = Array(repeating: Float(0.3), count: 384)
+        return GraphNode(
+            id: UUID(),
+            embedding: embedding,
+            namespace: .regulations,
+            metadata: NodeMetadata(
+                title: "FAR 15.3 - Source Selection",
+                content: "Competitive acquisition procedures...",
+                timestamp: Date()
+            )
+        )
+    }
+
+    func insertTestTemplateNode() async -> GraphNode {
+        let embedding = Array(repeating: Float(0.6), count: 384)
+        return GraphNode(
+            id: UUID(),
+            embedding: embedding,
+            namespace: .templates,
+            metadata: NodeMetadata(
+                title: "RFP Template - IT Services",
+                content: "Request for Proposal template...",
+                timestamp: Date()
+            )
+        )
+    }
+
+    func insertTestWorkflowNode() async -> GraphNode {
+        let embedding = Array(repeating: Float(0.8), count: 384)
+        return GraphNode(
+            id: UUID(),
+            embedding: embedding,
+            namespace: .userRecords,
+            metadata: NodeMetadata(
+                title: "User Workflow - RFP Creation",
+                content: "User opened template, customized fields...",
+                timestamp: Date()
+            )
+        )
+    }
+
+    func generateTestUserContext() -> UserSearchContext {
+        return UserSearchContext(
+            recentDocuments: ["RFP-IT-Services", "FAR-Part-15"],
+            frequentTemplates: ["IT-Services-Template", "Professional-Services-Template"],
+            workflowPatterns: ["template-customization", "compliance-review"],
+            preferences: UserPreferences(
+                domainPreferences: [.templates: 0.8, .regulations: 0.6],
+                languageStyle: .formal,
+                experienceLevel: .intermediate
+            )
+        )
+    }
+
+    func generateTestWorkflowData(count: Int) -> [WorkflowEmbedding] {
+        return (0..<count).map { index in
+            WorkflowEmbedding(
+                embedding: (0..<384).map { _ in Float.random(in: -1...1) },
+                timestamp: Date(),
+                domain: .userWorkflow,
+                communityId: index % 10
+            )
+        }
+    }
+
+    func measureSearchLatency(query: String, iterations: Int) async -> TimeInterval {
+        var totalTime: TimeInterval = 0
+
+        for _ in 0..<iterations {
+            let startTime = CFAbsoluteTimeGetCurrent()
+            // This will fail - performSearch method doesn't exist yet
+            _ = try? await mockObjectBoxIndex.performSearch(query: query)
+            totalTime += CFAbsoluteTimeGetCurrent() - startTime
+        }
+
+        return totalTime / Double(iterations)
+    }
+
+    func cosineSimilarity(_ a: [Float], _ b: [Float]) -> Double {
+        guard a.count == b.count else { return 0.0 }
+
+        let dotProduct = zip(a, b).map { $0 * $1 }.reduce(0, +)
+        let magnitudeA = sqrt(a.map { $0 * $0 }.reduce(0, +))
+        let magnitudeB = sqrt(b.map { $0 * $0 }.reduce(0, +))
+
+        return Double(dotProduct / (magnitudeA * magnitudeB))
+    }
+
+    func generateTestWorkflowBatch(size: Int) -> [String] {
+        return (0..<size).map { index in
+            "Test workflow description \(index) with acquisition planning activities"
+        }
+    }
+
+    func generateTestWorkflow(id: String) -> WorkflowEvent {
+        return WorkflowEvent(
+            type: .documentEdit,
+            templateId: id,
+            timestamp: Date(),
+            metadata: ["test": true]
+        )
+    }
+
+    func generateTestTemplate(id: String) -> TemplateInfo {
+        return TemplateInfo(
+            id: id,
+            name: "Test Template \(id)",
+            category: "IT Services",
+            content: "Template content for testing..."
+        )
+    }
+
+    func generateTestTemplateTasks(count: Int) -> [TemplateTask] {
+        return (0..<count).map { index in
+            TemplateTask(
+                id: "task-\(index)",
+                type: .indexing,
+                priority: .normal,
+                estimatedMemory: 1_000_000
+            )
+        }
+    }
+
+    func processTemplate(_ template: TemplateInfo, permitSystem: MockMemoryPermitSystem) async throws {
+        // Simulate template processing
+        _ = try await permitSystem.acquire(bytes: 1_000_000, timeout: 1.0)
+        try await Task.sleep(for: .milliseconds(10))
+    }
+
+    func processTemplateTask(_ task: TemplateTask) async throws -> ProcessingResult {
+        // Simulate template task processing
+        try await Task.sleep(for: .milliseconds(Int.random(in: 5...20)))
+        return ProcessingResult(taskId: task.id, success: true, processingTime: 0.01)
+    }
+}
+
+// MARK: - Mock Types and Test Data Structures
+
+class MockObjectBoxSemanticIndex {
+    var nodes: [ObjectBoxNamespace: [GraphNode]] = [:]
+
+    func searchInNamespace(_ namespace: ObjectBoxNamespace, query: [Float]) async throws -> [GraphNode] {
+        return nodes[namespace] ?? []
+    }
+
+    func performSearch(query: String) async throws -> [SearchResult] {
+        // Mock search implementation
+        return []
+    }
+
+    func performSchemaMigration(toVersion: SchemaVersion, preserveData: Bool) async throws -> MigrationResult {
+        return MigrationResult(success: true, dataPreserved: preserveData, newVersion: toVersion)
+    }
+
+    func getSchemaMetadata() async throws -> SchemaMetadata {
+        return SchemaMetadata(
+            namespaces: [.regulations, .templates, .userRecords],
+            entityTypes: [.workflowEvent, .regulation, .template],
+            relationshipTypes: [.userToDocument, .templateToRegulation]
+        )
+    }
+
+    func validateBackwardCompatibility() async throws -> CompatibilityResult {
+        return CompatibilityResult(
+            regulationsAccessible: true,
+            templatesAccessible: true,
+            existingQueriesWork: true
+        )
+    }
+
+    func canRollbackMigration(from version: SchemaVersion) async throws -> RollbackCapability {
+        return RollbackCapability(
+            canRollback: true,
+            rollbackPlan: "Revert schema changes and restore data"
+        )
+    }
+}
+
+class MockLeidenCommunityDetector {
+    func detectCommunities(in graph: [GraphNode]) async -> [Community] {
+        // Mock community detection
+        return []
+    }
+}
+
+class MockLFM2Service {
+    func generateEmbedding(for text: String, domain: EmbeddingDomain) async throws -> [Float] {
+        return Array(repeating: 0.5, count: 384)
+    }
+}
+
+// MARK: - Data Structures (Will Fail Until Implemented)
+
+struct WorkflowEmbedding {
+    let embedding: [Float]
+    let timestamp: Date
+    let domain: EmbeddingDomain
+    let communityId: Int?
+    let domainSpecificFeatures: [String: Float]?
+    let qualityScore: Double
+
+    init(embedding: [Float], timestamp: Date, domain: EmbeddingDomain, communityId: Int?) {
+        self.embedding = embedding
+        self.timestamp = timestamp
+        self.domain = domain
+        self.communityId = communityId
+        self.domainSpecificFeatures = nil
+        self.qualityScore = 0.85 // Mock value
+    }
+}
+
+enum EmbeddingDomain {
+    case userWorkflow
+    case acquisitionProcess
+    case complianceTracking
+}
+
+enum ObjectBoxNamespace {
+    case regulations
+    case templates
+    case userRecords
+
+    var name: String {
+        switch self {
+        case .regulations: return "Regulations"
+        case .templates: return "Templates"
+        case .userRecords: return "UserRecords"
+        }
+    }
+}
+
+struct GraphNode {
+    let id: UUID
+    let embedding: [Float]
+    let namespace: ObjectBoxNamespace
+    let metadata: NodeMetadata
+}
+
+struct NodeMetadata {
+    let title: String
+    let content: String
+    let timestamp: Date
+
+    init(timestamp: Date, domain: String? = nil, privacyLevel: Double? = nil) {
+        self.timestamp = timestamp
+        self.title = "Mock Title"
+        self.content = "Mock Content"
+    }
+
+    init(title: String, content: String, timestamp: Date) {
+        self.title = title
+        self.content = content
+        self.timestamp = timestamp
+    }
+}
+
+struct SearchResult {
+    let node: GraphNode
+    let score: Double
+    let namespace: ObjectBoxNamespace
+    let personalizationScore: Double?
+}
+
+struct UserSearchContext {
+    let recentDocuments: [String]
+    let frequentTemplates: [String]
+    let workflowPatterns: [String]
+    let preferences: UserPreferences
+}
+
+struct UserPreferences {
+    let domainPreferences: [ObjectBoxNamespace: Double]
+    let languageStyle: LanguageStyle
+    let experienceLevel: ExperienceLevel
+}
+
+enum LanguageStyle { case formal, casual }
+enum ExperienceLevel { case beginner, intermediate, advanced }
+
+struct WorkflowEvent {
+    let type: WorkflowEventType
+    let templateId: String
+    let timestamp: Date
+    let metadata: [String: Any]
+}
+
+enum WorkflowEventType {
+    case templateCustomization
+    case documentEdit
+    case complianceCheck
+}
+
+struct TemplateInfo {
+    let id: String
+    let name: String
+    let category: String
+    let content: String
+}
+
+struct TemplateTask {
+    let id: String
+    let type: TaskType
+    let priority: TaskPriority
+    let estimatedMemory: Int64
+}
+
+enum TaskType { case indexing, processing, validation }
+enum TaskPriority { case high, normal, low }
+
+struct ProcessingResult {
+    let taskId: String
+    let success: Bool
+    let processingTime: TimeInterval
+    let templateProcessorNotified: Bool
+    let workflowTracked: Bool
+    let crossSystemRelationships: [String]?
+
+    init(taskId: String, success: Bool, processingTime: TimeInterval) {
+        self.taskId = taskId
+        self.success = success
+        self.processingTime = processingTime
+        self.templateProcessorNotified = false
+        self.workflowTracked = false
+        self.crossSystemRelationships = nil
+    }
+}
+
+// Additional missing types that will cause compilation failures...
+enum SchemaVersion { case userRecordsV1 }
+enum EntityType { case workflowEvent, regulation, template }
+enum RelationshipType { case userToDocument, templateToRegulation }
+
+struct MigrationResult {
+    let success: Bool
+    let dataPreserved: Bool
+    let newVersion: SchemaVersion
+}
+
+struct SchemaMetadata {
+    let namespaces: Set<ObjectBoxNamespace>
+    let entityTypes: Set<EntityType>
+    let relationshipTypes: Set<RelationshipType>
+}
+
+struct CompatibilityResult {
+    let regulationsAccessible: Bool
+    let templatesAccessible: Bool
+    let existingQueriesWork: Bool
+}
+
+struct RollbackCapability {
+    let canRollback: Bool
+    let rollbackPlan: String
+}
+
+struct Community {
+    let id: Int
+    let members: [GraphNode]
+    let coherenceScore: Double
+}
+
+// MARK: - Missing Types That Will Cause Test Failures
+
+// These types don't exist yet and will cause compilation failures:
+// - UserRecordsGraphUpdater
+// - ObjectBoxNamespace.userRecords
+// - All associated methods and properties
+// - MultiDomainEmbedding
+// - EmbeddingQualityMetrics
+// - SearchPerformanceMetrics
+// - CacheMetrics
+// - MemoryContentionMetrics
+// - ResourceAllocationMetrics
+// And many more...

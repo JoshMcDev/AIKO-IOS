@@ -1,0 +1,4 @@
+module MLX {
+    header "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLX.build/MLX-Swift.h"
+    requires objc
+}

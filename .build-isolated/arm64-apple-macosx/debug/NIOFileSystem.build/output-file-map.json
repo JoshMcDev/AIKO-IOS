@@ -1,0 +1,11 @@
+{
+  "": {
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/NIOFileSystem.build/master.swiftdeps"
+  },
+  "/Users/J/aiko/.build-isolated/checkouts/swift-nio/Sources/_NIOFileSystemExported/Exports.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/NIOFileSystem.build/Exports.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/NIOFileSystem.build/Exports.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/NIOFileSystem.build/Exports~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/NIOFileSystem.build/Exports.swiftdeps"
+  }
+}

@@ -86,8 +86,9 @@ public struct DocumentExecutionView: View {
             // Generation Status
             HStack {
                 if viewModel.isGenerating {
-                    ProgressView(value: viewModel.generationProgress)
-                        .progressViewStyle(.linear)
+                    // Simple loading indicator
+                    Image(systemName: "arrow.2.circlepath")
+                        .foregroundColor(.secondary)
                     Text(viewModel.generationStatusText)
                         .font(.caption)
                         .foregroundColor(.secondary)
@@ -209,7 +210,7 @@ public struct DocumentExecutionView: View {
 
     private var generatingView: some View {
         VStack(spacing: 16) {
-            ProgressView()
+            SwiftUI.ProgressView()
                 .progressViewStyle(.circular)
                 .scaleEffect(1.5)
 

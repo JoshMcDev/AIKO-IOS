@@ -1,0 +1,11 @@
+{
+  "": {
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXFFT.build/master.swiftdeps"
+  },
+  "/Users/J/aiko/.build-isolated/checkouts/mlx-swift/Source/MLXFFT/FFT.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXFFT.build/FFT.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXFFT.build/FFT.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXFFT.build/FFT~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXFFT.build/FFT.swiftdeps"
+  }
+}

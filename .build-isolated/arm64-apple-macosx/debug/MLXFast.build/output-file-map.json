@@ -1,0 +1,17 @@
+{
+  "": {
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXFast.build/master.swiftdeps"
+  },
+  "/Users/J/aiko/.build-isolated/checkouts/mlx-swift/Source/MLXFast/MLXFast.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXFast.build/MLXFast.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXFast.build/MLXFast.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXFast.build/MLXFast~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXFast.build/MLXFast.swiftdeps"
+  },
+  "/Users/J/aiko/.build-isolated/checkouts/mlx-swift/Source/MLXFast/MLXFastKernel.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXFast.build/MLXFastKernel.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXFast.build/MLXFastKernel.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXFast.build/MLXFastKernel~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXFast.build/MLXFastKernel.swiftdeps"
+  }
+}

@@ -1,0 +1,4 @@
+module NIOTLS {
+    header "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/NIOTLS.build/NIOTLS-Swift.h"
+    requires objc
+}

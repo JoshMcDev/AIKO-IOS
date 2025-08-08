@@ -1,0 +1,4 @@
+module _NIOConcurrency {
+    header "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/_NIOConcurrency.build/_NIOConcurrency-Swift.h"
+    requires objc
+}

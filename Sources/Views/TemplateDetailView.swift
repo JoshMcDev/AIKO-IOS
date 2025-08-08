@@ -139,7 +139,7 @@ public struct TemplateDetailView: View {
                 ScrollView {
                     if isLoading {
                         VStack {
-                            ProgressView()
+                            SwiftUI.ProgressView()
                                 .progressViewStyle(.circular)
                                 .tint(.white)
                                 .scaleEffect(1.5)

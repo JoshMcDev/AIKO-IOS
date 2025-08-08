@@ -1,0 +1,4 @@
+module MLXFFT {
+    header "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXFFT.build/MLXFFT-Swift.h"
+    requires objc
+}

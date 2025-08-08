@@ -654,7 +654,7 @@ public struct SettingsView: View {
         case .none:
             EmptyView()
         case .saving:
-            ProgressView()
+            SwiftUI.ProgressView()
                 .scaleEffect(0.8)
         case .saved:
             Image(systemName: "checkmark.circle.fill")

@@ -147,7 +147,7 @@ public struct InputArea: View {
                         // Analyze button
                         Button(action: onAnalyzeRequirements) {
                             if isGenerating {
-                                ProgressView()
+                                SwiftUI.ProgressView()
                                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                     .frame(width: 32, height: 32)
                             } else {

@@ -1,0 +1,11 @@
+{
+  "": {
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXLinalg.build/master.swiftdeps"
+  },
+  "/Users/J/aiko/.build-isolated/checkouts/mlx-swift/Source/MLXLinalg/Linalg.swift": {
+    "dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXLinalg.build/Linalg.d",
+    "object": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXLinalg.build/Linalg.swift.o",
+    "swiftmodule": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXLinalg.build/Linalg~partial.swiftmodule",
+    "swift-dependencies": "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/MLXLinalg.build/Linalg.swiftdeps"
+  }
+}

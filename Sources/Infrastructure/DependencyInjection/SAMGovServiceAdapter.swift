@@ -25,7 +25,7 @@ public extension SAMGovService {
     /// Creates a SAMGovService with API key from settings using dependency injection
     static var repositoryBased: SAMGovService {
         get async throws {
-            let container = DependencyContainer.shared
+            let container = AppCore.DependencyContainer.shared
             let settingsManager = try container.resolve(SettingsManagerProtocol.self)
             let settings = try await settingsManager.loadSettings()
             let apiKey = settings.apiSettings.samGovAPIKey

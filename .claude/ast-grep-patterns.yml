@@ -1,0 +1,61 @@
+patterns:
+  # Critical Security Patterns
+  force_unwrap:
+    pattern: '$X\!'
+    severity: critical
+    message: "Force unwrapping can cause runtime crashes"
+    
+  force_try:
+    pattern: 'try\!'
+    severity: critical
+    message: "Force try can cause runtime crashes"
+    
+  force_cast:
+    pattern: '$X as\! $Y'
+    severity: critical
+    message: "Force casting can cause runtime crashes"
+    
+  missing_error_handling:
+    pattern: |
+      do {
+        $$$BODY
+      }
+    severity: critical
+    message: "Do block without catch clause"
+    
+  hardcoded_secret:
+    patterns:
+      - pattern: 'apiKey = "$X"'
+      - pattern: 'password = "$X"'
+      - pattern: 'secret = "$X"'
+      - pattern: 'token = "$X"'
+    severity: critical
+    message: "Hardcoded secrets detected"
+    
+  # Major Code Quality Patterns
+  long_method:
+    pattern: |
+      func $NAME($$$PARAMS) $$$RETURN {
+        $$$BODY
+      }
+    constraint:
+      BODY:
+        regex: '(\n.*){20,}'
+    severity: major
+    message: "Method exceeds 20 lines"
+    
+  complex_conditional:
+    pattern: 'if $COND1 && $COND2 && $COND3 && $COND4'
+    severity: major
+    message: "Complex conditional with 4+ conditions"
+    
+  god_class:
+    pattern: |
+      class $NAME {
+        $$$BODY
+      }
+    constraint:
+      BODY:
+        regex: '(func [^}]+\{[^}]*\}){10,}'
+    severity: major
+    message: "Class has too many methods (10+)"

@@ -1,0 +1,4 @@
+module NIOPosix {
+    header "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/NIOPosix.build/NIOPosix-Swift.h"
+    requires objc
+}

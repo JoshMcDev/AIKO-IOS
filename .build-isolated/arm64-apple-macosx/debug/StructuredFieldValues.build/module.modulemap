@@ -1,0 +1,4 @@
+module StructuredFieldValues {
+    header "/Users/J/aiko/.build-isolated/arm64-apple-macosx/debug/StructuredFieldValues.build/StructuredFieldValues-Swift.h"
+    requires objc
+}
